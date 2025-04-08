@@ -1,0 +1,77 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\CivilStatus;
+use App\DataTable\CmsDataTable;
+use App\Services\CivilStatusService;
+use App\Http\Requests\CivilStatusRequest;
+use Illuminate\Support\Facades\Auth;
+
+class CivilStatusController extends Controller
+{
+    protected $civilStatusService;
+    public function __construct(CivilStatusService $civilStatusService)
+    {
+        $this->civilStatusService = $civilStatusService;
+    }
+    
+    public function index(CmsDataTable $dataTable)
+    {
+        $page_title = 'Civil Status';
+        $resource = 'civil';
+        $column = ['name', 'remarks'];
+        $data = CivilStatus::getAllCivilStatuses();
+
+        return $dataTable
+            ->render('cms.index', compact(
+                'page_title',
+                'resource',
+                'column',
+                'data',
+                'dataTable'
+            ));
+    }
+    
+    public function store(CivilStatusRequest $request)
+    {
+        $civil = $this->civilStatusService->storeCivilStatus($request->validated());
+
+        activity()
+        ->causedBy(Auth::user())
+            ->performedOn($civil)
+            ->log('civil status Created');
+
+        return redirect()
+            ->route(Auth::user()->getRoleNames()->first() . '.civil.index')
+            ->with('success', 'Civil Status Created Successfully');
+    }
+    
+    public function update(CivilStatusRequest $request, CivilStatus $civilStatus)
+    {
+        $civil = $this->civilStatusService->updateCivilStatus($request->validated(), $civilStatus);
+        
+        activity()
+            ->causedBy(Auth::user())
+            ->performedOn($civil)
+            ->log('civil status Updated');
+
+        return redirect()
+            ->route(Auth::user()->getRoleNames()->first() . '.civil.index')
+            ->with('success', 'Civil Status Updated Successfully');
+    }
+    
+    public function destroy(CivilStatus $civilStatus)
+    {
+        $civil = $this->civilStatusService->deleteCivilStatus($civilStatus);
+        
+        activity()
+            ->causedBy(Auth::user())
+            ->performedOn($civil)
+            ->log('civil status Deleted');
+
+        return redirect()
+            ->route(Auth::user()->getRoleNames()->first() . '.civil.index')
+            ->with('success', 'Civil Status Deleted Successfully');
+    }
+}
