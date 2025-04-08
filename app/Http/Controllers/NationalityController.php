@@ -41,7 +41,7 @@ class NationalityController extends Controller
         activity()
             ->causedBy(Auth::user())
             ->performedOn($nationality)
-            ->log('nationality created');
+            ->log('Created a new nationality: ' . $nationality->name);
 
         return redirect()
             ->route(Auth::user()->getRoleNames()->first() . 'nationality.index')
@@ -55,7 +55,7 @@ class NationalityController extends Controller
         activity()
             ->causedBy(Auth::user())
             ->performedOn($nationality)
-            ->log('nationality updated');
+            ->log('Updatred the nationality: ' . $nationality->name);
 
         return redirect()
             ->route(Auth::user()->getRoleNames()->first() . 'nationality.index')
@@ -69,7 +69,7 @@ class NationalityController extends Controller
         activity()
             ->causedBy(Auth::user())
             ->performedOn($nationality)
-            ->log('nationality deleted');
+            ->log('Deleted the nationality: ' . $nationality->name);
 
         return redirect()
             ->route(Auth::user()->gettRoleNames()->first() . '.nationality.index')

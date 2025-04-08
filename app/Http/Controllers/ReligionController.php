@@ -41,7 +41,7 @@ class ReligionController extends Controller
         activity()
             ->causedBy(Auth::user())
             ->performedOn($religion)
-            ->log('religion created');
+            ->log('Created a new religion: ' . $religion->name);
 
         return redirect()
             ->route(Auth::user()->getRoleNames()->first() . '.religion.index')
@@ -55,7 +55,7 @@ class ReligionController extends Controller
         activity()
             ->causedBy(Auth::user())
             ->performedOn($religion)
-            ->log('religion updated');
+            ->log('Created the religion: ' . $religion->name);
         
         return redirect()
             ->route(Auth::user()->getRoleNames()->first() . '.religion.index')
@@ -69,7 +69,7 @@ class ReligionController extends Controller
         activity()
             ->causedBy(Auth::user())
             ->performedOn($religion)
-            ->log('religion deleted');
+            ->log('Created the religion: ' . $religion->name);
 
         return redirect()
             ->route(Auth::user()->getRoleNames()->first() . '.religion.index')

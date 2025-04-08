@@ -40,7 +40,7 @@ class CivilStatusController extends Controller
         activity()
         ->causedBy(Auth::user())
             ->performedOn($civil)
-            ->log('civil status Created');
+            ->log('Created a new civil status: ' . $civil->name);
 
         return redirect()
             ->route(Auth::user()->getRoleNames()->first() . '.civil.index')
@@ -54,7 +54,7 @@ class CivilStatusController extends Controller
         activity()
             ->causedBy(Auth::user())
             ->performedOn($civil)
-            ->log('civil status Updated');
+            ->log('Updated the civil status: ' . $civil->name);
 
         return redirect()
             ->route(Auth::user()->getRoleNames()->first() . '.civil.index')
@@ -68,7 +68,7 @@ class CivilStatusController extends Controller
         activity()
             ->causedBy(Auth::user())
             ->performedOn($civil)
-            ->log('civil status Deleted');
+            ->log('Deleted the civil status: ' . $civil->name);
 
         return redirect()
             ->route(Auth::user()->getRoleNames()->first() . '.civil.index')

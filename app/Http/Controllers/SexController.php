@@ -40,7 +40,7 @@ class SexController extends Controller
         activity()
             ->causedBy(Auth::user())
             ->performedOn($gender)
-            ->log('created a gender');
+            ->log('Created a new gender: ' . $gender->name);
 
         return redirect()
             ->route(Auth::user()->getRoleNames()->first() . '.sex.index')
@@ -54,7 +54,7 @@ class SexController extends Controller
         activity()
             ->causedBy(Auth::user())
             ->performedOn($gender)
-            ->log('updated a gender');
+            ->log('Updated the gender: ' . $gender->name);
 
         return redirect()
             ->route(Auth::user()->getRoleNames()->first() . '.sex.index')
@@ -68,7 +68,7 @@ class SexController extends Controller
         activity()
             ->causedBy(Auth::user())
             ->performedOn($gender)
-            ->log('deleted a gender');
+            ->log('Delted the gender: ' . $gender->name);
 
         return redirect()
             ->route(Auth::user()->getRoleNames()->first() . '.sex.index')
