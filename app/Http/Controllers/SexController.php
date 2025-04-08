@@ -24,12 +24,14 @@ class SexController extends Controller
         $column = ['id', 'name', 'remarks'];
         $data = Sex::getAllSexes();
 
-        return $dataTable->render('cms.index', compact(
-            'page_title',
-            'resource',
-            'column',
-            'data'
-        ));
+        return $dataTable
+            ->render('cms.index', compact(
+                'dataTable',
+                'page_title',
+                'resource',
+                'column',
+                'data'
+            ));
     }
     
     public function store(SexRequest $request)

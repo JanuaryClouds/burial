@@ -5,17 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Sex extends Model
+class Religion extends Model
 {
     use HasFactory;
 
-    protected $table = 'sexes';
+    protected $table = 'religions';
     protected $fillable = [
         'name',
         'remarks',
     ];
 
-    public static function getAllSexes()
+    public static function getAllReligions()
     {
         return self::all();
     }
