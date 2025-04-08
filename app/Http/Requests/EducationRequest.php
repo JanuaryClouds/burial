@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class NationalityRequest extends FormRequest
+class EducationRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -14,7 +14,7 @@ class NationalityRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255|unique:nationalities,name,' . $this->route('nationality')?->id,
+            'name' => 'required|string|max:255|unique:educations,name,' . $this->route('education')?->id,
             'remarks' => 'nullable|string|max:255',
         ];
     }
