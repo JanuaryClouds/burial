@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ReligionRequest extends FormRequest
+class NationalityRequest extends FormRequest
 {
     public function authorize(): bool
     {
