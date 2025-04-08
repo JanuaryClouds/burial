@@ -41,7 +41,7 @@ class EducationController extends Controller
         activity()
             ->performedOn($education)
             ->causedBy(Auth::user())
-            ->log('Created Education: ' . $education->name);
+            ->log('Created a new education: ' . $education->name);
 
         return redirect()
             ->route(Auth::user()->getRoleNames()->first() . '.education.index')
@@ -55,7 +55,7 @@ class EducationController extends Controller
         activity()
             ->performedOn($education)
             ->causedBy(Auth::user())
-            ->log('Updated Education: ' . $education->name);
+            ->log('Updated the education: ' . $education->name);
             
         return redirect()
             ->route(Auth::user()->getRoleNames()->first() . '.education.index')
@@ -69,7 +69,7 @@ class EducationController extends Controller
         activity()
             ->performedOn($education)
             ->causedBy(Auth::user())
-            ->log('Deleted Education: ' . $education->name);
+            ->log('Deleted the education: ' . $education->name);
             
         return redirect()
             ->route(Auth::user()->getRoleNames()->first() . '.education.index')
