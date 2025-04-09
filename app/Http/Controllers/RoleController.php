@@ -1,0 +1,78 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Role;
+use App\DataTables\CmsDataTable;
+use App\Services\RoleService;
+use App\Http\Requests\RoleRequest;
+use Illuminate\Support\Facades\Auth;
+
+class RoleController extends Controller
+{
+    protected $roleServices;
+
+    public function __construct(RoleService $roleServices)
+    {
+        $this->roleServices = $roleServices;
+    }
+    
+    public function index(CmsDataTable $dataTable)
+    {
+        $page_title = 'Role';
+        $resource = 'role';
+        $column = ['name', 'guard'];
+        $data = Role::getAllRoles();
+        
+        return $dataTable
+            ->render('cms.index', compact(
+                'dataTable',
+                'page_title',
+                'resource',
+                'column',
+                'data',
+            ));
+    }
+    
+    public function store(RoleRequest $request)
+    {
+        $role = $this->roleServices->storeRole($request->validated());
+
+        activity()
+            ->causedBy(Auth::user())
+            ->performedOn($role)
+            ->log('Created a new role: ' . $role->name);
+
+        return redirect()
+            ->route(Auth::user()->getRoleNames()->first() . '.role.index')
+            ->with('success', 'Role created successfully.');
+    }
+    
+    public function update(RoleRequest $request, Role $role)
+    {
+        $role = $this->roleServices->updateRole($request->validated(), $role);
+
+        activity()
+            ->causedBy(Auth::user())
+            ->performedOn($role)
+            ->log('Updated the role: ' . $role->name);
+            
+        return redirect()
+            ->route(Auth::user()->getRoleNames()->first() . '.role.index')
+            ->with('success', 'Role updated successfully.');
+    }
+    
+    public function destroy(Role $role)
+    {
+        $role = $this->roleServices->deleteRole($role);
+
+        activity()
+            ->causedBy(Auth::user())
+            ->performedOn($role)
+            ->log('Deleted the role: ' . $role->name);
+            
+        return redirect()
+            ->route(Auth::user()->getRoleNames()->first() . '.role.index')
+            ->with('success', 'Role deleted successfully.');
+    }
+}
