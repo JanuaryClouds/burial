@@ -10,11 +10,11 @@ use Illuminate\Support\Facades\Auth;
 
 class ReligionController extends Controller
 {
-    protected $religionService;
+    protected $religionServices;
     
-    public function __construct(ReligionService $religionService)
+    public function __construct(ReligionService $religionServices)
     {
-        $this->religionService = $religionService;
+        $this->religionService = $religionServices;
     }
     
     public function index(CmsDataTable $dataTable)
@@ -36,7 +36,7 @@ class ReligionController extends Controller
     
     public function store(ReligionRequest $request)
     {
-        $religion = $this->religionService->storeReligion($request->validated());
+        $religion = $this->religionServices->storeReligion($request->validated());
 
         activity()
             ->causedBy(Auth::user())
@@ -50,7 +50,7 @@ class ReligionController extends Controller
     
     public function update(ReligionRequest $request, Religion $religion)
     {
-        $religion = $this->religionService->updateReligion($request->validated(), $religion);
+        $religion = $this->religionServices->updateReligion($request->validated(), $religion);
 
         activity()
             ->causedBy(Auth::user())
@@ -64,7 +64,7 @@ class ReligionController extends Controller
     
     public function destroy(Religion $religion)
     {
-        $religion = $this->religionService->deleteReligion($religion);
+        $religion = $this->religionServices->deleteReligion($religion);
 
         activity()
             ->causedBy(Auth::user())

@@ -10,11 +10,11 @@ use Illuminate\Support\Facades\Auth;
 
 class SexController extends Controller
 {
-    protected $sexService;
+    protected $sexServices;
     
-    public function __construct(SexService $sexService)
+    public function __construct(SexService $sexServices)
     {
-        $this->sexService = $sexService;
+        $this->sexService = $sexServices;
     }
     
     public function index(CmsDataTable $dataTable)
@@ -36,7 +36,7 @@ class SexController extends Controller
     
     public function store(SexRequest $request)
     {
-        $gender = $this->sexService->storeSex($request->validated());
+        $gender = $this->sexServices->storeSex($request->validated());
         activity()
             ->causedBy(Auth::user())
             ->performedOn($gender)
@@ -49,7 +49,7 @@ class SexController extends Controller
 
     public function update(SexRequest $request, Sex $sex)
     {
-        $gender = $this->sexService->updateSex($request->validated(), $sex);
+        $gender = $this->sexServices->updateSex($request->validated(), $sex);
 
         activity()
             ->causedBy(Auth::user())
@@ -63,7 +63,7 @@ class SexController extends Controller
     
     public function destroy(Sex $sex)
     {
-        $gender = $this->sexService->deleteSex($sex);
+        $gender = $this->sexServices->deleteSex($sex);
 
         activity()
             ->causedBy(Auth::user())

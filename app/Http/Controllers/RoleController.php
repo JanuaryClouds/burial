@@ -36,6 +36,7 @@ class RoleController extends Controller
     
     public function store(RoleRequest $request)
     {
+        $request['guard_name'] = 'web';
         $role = $this->roleServices->storeRole($request->validated());
 
         activity()

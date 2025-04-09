@@ -10,11 +10,11 @@ use Illuminate\Support\Facades\Auth;
 
 class RelationshipController extends Controller
 {
-    protected $relationshipService;
+    protected $relationshipServices;
     
-    public function __construct(RelationshipService $relationshipService)
+    public function __construct(RelationshipService $relationshipServices)
     {
-        $this->relationshipService = $relationshipService;
+        $this->relationshipService = $relationshipServices;
     }
     
     public function index(CmsDataTable $dataTable)
@@ -36,7 +36,7 @@ class RelationshipController extends Controller
     
     public function store(RelationshipRequest $request)
     {
-        $relationship = $this->relationshipService->storeRelationship($request->validated());
+        $relationship = $this->relationshipServices->storeRelationship($request->validated());
 
         activity()
             ->causedBy(Auth::user())
@@ -50,7 +50,7 @@ class RelationshipController extends Controller
 
     public function update(RelationshipRequest $request, Relationship $relationship)
     {
-        $relationship = $this->relationshipService->updateRelationship($request->validated(), $relationship);
+        $relationship = $this->relationshipServices->updateRelationship($request->validated(), $relationship);
 
         activity()
             ->causedBy(Auth::user())
@@ -64,7 +64,7 @@ class RelationshipController extends Controller
     
     public function destroy(Relationship $relationship)
     {
-        $relationship = $this->relationshipService->deleteRelationship($relationship);
+        $relationship = $this->relationshipServices->deleteRelationship($relationship);
         activity()
             ->causedBy(Auth::user())
             ->performedOn($relationship)

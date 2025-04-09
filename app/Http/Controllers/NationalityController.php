@@ -10,11 +10,11 @@ use Illuminate\Support\Facades\Auth;
 
 class NationalityController extends Controller
 {
-    protected $nationalityService;
+    protected $nationalityServices;
 
-    public function __construct(NationalityService $nationalityService)
+    public function __construct(NationalityService $nationalityServices)
     {
-        $this->nationalityService = $nationalityService;
+        $this->nationalityService = $nationalityServices;
     }
     
     public function index(CmsDataTable $dataTable)
@@ -36,7 +36,7 @@ class NationalityController extends Controller
     
     public function store(NationalityRequest $request)
     {
-        $nationality = $this->nationalityService->storeNationality($request->validated());
+        $nationality = $this->nationalityServices->storeNationality($request->validated());
 
         activity()
             ->causedBy(Auth::user())
@@ -50,7 +50,7 @@ class NationalityController extends Controller
     
     public function update(NationalityRequest $request, Nationality $nationality)
     {
-        $nationality = $this->nationalityService->updateNationality($request->validated(), $nationality);
+        $nationality = $this->nationalityServices->updateNationality($request->validated(), $nationality);
 
         activity()
             ->causedBy(Auth::user())
@@ -64,7 +64,7 @@ class NationalityController extends Controller
     
     public function destroy(Nationality $nationality)
     {
-        $nationality = $this->nationalityService->deleteNationality($nationality);
+        $nationality = $this->nationalityServices->deleteNationality($nationality);
 
         activity()
             ->causedBy(Auth::user())

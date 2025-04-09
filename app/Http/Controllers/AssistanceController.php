@@ -10,10 +10,10 @@ use Illuminate\Support\Facades\Auth;
 
 class AssistanceController extends Controller
 {
-    protected $assistanceService;
-    public function __construct(AssistanceService $assistanceService)
+    protected $assistanceServices;
+    public function __construct(AssistanceService $assistanceServices)
     {
-        $this->assistanceService = $assistanceService;
+        $this->assistanceService = $assistanceServices;
     }
     
     public function index(CmsDataTable $dataTable)
@@ -35,7 +35,7 @@ class AssistanceController extends Controller
     
     public function store(AssistanceRequest $request)
     {
-        $assistance = $this->assistanceService->storeAssistance($request->validated());
+        $assistance = $this->assistanceServices->storeAssistance($request->validated());
 
         activity()
             ->performedOn($assistance)
@@ -49,7 +49,7 @@ class AssistanceController extends Controller
     
     public function update(AssistanceRequest $request, Assistance $assistance)
     {
-        $assistance = $this->assistanceService->updateAssistance($request->validated(), $assistance);
+        $assistance = $this->assistanceServices->updateAssistance($request->validated(), $assistance);
 
         activity()
             ->performedOn($assistance)
@@ -63,7 +63,7 @@ class AssistanceController extends Controller
     
     public function destroy(Assistance $assistance)
     {
-        $assistance = $this->assistanceService->deleteAssistance($assistance);
+        $assistance = $this->assistanceServices->deleteAssistance($assistance);
         
         activity()
             ->performedOn($assistance)

@@ -10,11 +10,11 @@ use Illuminate\Support\Facades\Auth;
 
 class EducationController extends Controller
 {
-    protected $educationService;
+    protected $educationServices;
     
-    public function __construct(EducationService $educationService)
+    public function __construct(EducationService $educationServices)
     {
-        $this->educationService = $educationService;
+        $this->educationService = $educationServices;
     }
     
     public function index(CmsDataTable $dataTable)
@@ -36,7 +36,7 @@ class EducationController extends Controller
     
     public function store(EducationRequest $request)
     {
-        $education = $this->educationService->storeEducation($request->validated());
+        $education = $this->educationServices->storeEducation($request->validated());
 
         activity()
             ->performedOn($education)
@@ -50,7 +50,7 @@ class EducationController extends Controller
     
     public function update(EducationRequest $request, Education $education)
     {
-        $education = $this->educationService->updateEducation($request->validated(), $education);
+        $education = $this->educationServices->updateEducation($request->validated(), $education);
 
         activity()
             ->performedOn($education)
@@ -64,7 +64,7 @@ class EducationController extends Controller
     
     public function destroy(Education $education)
     {
-        $education = $this->educationService->deleteEducation($education);
+        $education = $this->educationServices->deleteEducation($education);
 
         activity()
             ->performedOn($education)

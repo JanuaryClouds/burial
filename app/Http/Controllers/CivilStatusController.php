@@ -10,10 +10,10 @@ use Illuminate\Support\Facades\Auth;
 
 class CivilStatusController extends Controller
 {
-    protected $civilStatusService;
-    public function __construct(CivilStatusService $civilStatusService)
+    protected $civilStatusServices;
+    public function __construct(CivilStatusService $civilStatusServices)
     {
-        $this->civilStatusService = $civilStatusService;
+        $this->civilStatusService = $civilStatusServices;
     }
     
     public function index(CmsDataTable $dataTable)
@@ -35,7 +35,7 @@ class CivilStatusController extends Controller
     
     public function store(CivilStatusRequest $request)
     {
-        $civil = $this->civilStatusService->storeCivilStatus($request->validated());
+        $civil = $this->civilStatusServices->storeCivilStatus($request->validated());
 
         activity()
         ->causedBy(Auth::user())
@@ -49,7 +49,7 @@ class CivilStatusController extends Controller
     
     public function update(CivilStatusRequest $request, CivilStatus $civilStatus)
     {
-        $civil = $this->civilStatusService->updateCivilStatus($request->validated(), $civilStatus);
+        $civil = $this->civilStatusServices->updateCivilStatus($request->validated(), $civilStatus);
         
         activity()
             ->causedBy(Auth::user())
@@ -63,7 +63,7 @@ class CivilStatusController extends Controller
     
     public function destroy(CivilStatus $civilStatus)
     {
-        $civil = $this->civilStatusService->deleteCivilStatus($civilStatus);
+        $civil = $this->civilStatusServices->deleteCivilStatus($civilStatus);
         
         activity()
             ->causedBy(Auth::user())
