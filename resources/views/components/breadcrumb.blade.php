@@ -1,8 +1,8 @@
-<ol class="flex items-center space-x-2 text-sm">
+<ol class="flex items-center space-x-2 text-sm p-1">
     <li>
         <button class="mr-2 text-gray-600 focus:outline-none"
             @click="(window.innerWidth >= 1024) ? sidebarCollapsed = !sidebarCollapsed : sidebarOpen = !sidebarOpen">
-            <i class="fa-solid fa-columns"></i>
+            <i class="fa-solid fa-columns hover:bg-[#F4C027] hover:text-black hover:text-white p-3 rounded"></i>
         </button>
     </li>
     <li>
@@ -12,7 +12,7 @@
     </li>
     <li>
         <a href="{{ route(Auth::user()->getRoleNames()->first() . '.dashboard') }}"
-            class="text-blue-500 hover:text-blue-600 font-medium">Dashboard</a>
+            class="text-blue-500 hover:bg-[#F4C027] hover:text-black hover:text-white p-3 rounded font-medium">Dashboard</a>
     </li>
     @foreach ($items as $index => $item)
     <li>
@@ -22,7 +22,8 @@
     </li>
     <li>
         @if (!empty($item['url']) && $index !== count($items) - 1)
-        <a href="{{ $item['url'] }}" class="text-blue-500 hover:text-blue-600 font-medium">{{ $item['label'] }}</a>
+        <a href="{{ $item['url'] }}"
+            class="text-blue-500 hover:bg-[#F4C027] hover:text-black hover:text-white p-3 rounded font-medium">{{ $item['label'] }}</a>
         @else
         <span class="text-gray-700 font-medium">{{ $item['label'] }}</span>
         @endif

@@ -11,13 +11,21 @@ class EducationService
         return Education::create($data);
     }
 
-    public function updateEducation(array $data, $education): void
+    public function updateEducation(array $data, $education): Education
     {
-        $education->update($data);
+        if($education->update($data))
+        {
+            return $education;
+        }
+        return null;
     }
 
-    public function deleteEducation(Education $education): void
+    public function deleteEducation(Education $education): Education
     {
-        $education->delete();
+        if($education->delete())
+        {
+            return $education;
+        }
+        return null;
     }
 }

@@ -11,13 +11,21 @@ class PermissionService
         return Permission::create($data);
     }
 
-    public function updatePermission(array $data, $permission): void
+    public function updatePermission(array $data, $permission): Permission
     {
-        $permission->update($data);
+        if($permission->update($data))
+        {
+            return $permission;
+        }
+        return null;
     }
 
-    public function deletePermission($permission): void
+    public function deletePermission($permission): Permission
     {
-        $permission->delete();
+        if($permission->delete())
+        {
+            return $permission;
+        }
+        return null;
     }
 }

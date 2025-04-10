@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Permission;
-use App\DataTable\CmsDataTable;
+use App\DataTables\CmsDataTable;
 use App\Services\PermissionService;
 use App\Http\Requests\PermissionRequest;
 use Illuminate\Support\Facades\Auth;
@@ -21,7 +21,7 @@ class PermissionController extends Controller
     {
         $page_title = 'Permission';
         $resource = 'permission';
-        $columns = ['name', 'guard'];
+        $columns = ['id', 'name', 'guard', 'action'];
         $data = Permission::getAllPermissions();
         
         return $dataTable

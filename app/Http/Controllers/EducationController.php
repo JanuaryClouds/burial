@@ -21,7 +21,7 @@ class EducationController extends Controller
     {
         $page_title = 'Education';
         $resource = 'education';
-        $columns = ['name', 'remarks'];
+        $columns = ['id', 'name', 'remarks', 'action'];
         $data = Education::getAllEducations();
 
         return $dataTable

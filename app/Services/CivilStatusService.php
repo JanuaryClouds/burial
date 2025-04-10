@@ -11,13 +11,21 @@ class CivilStatusService
         return CivilStatus::create($data);
     }
 
-    public function updateCivilStatus(array $data, $civil): void
+    public function updateCivilStatus(array $data, $civil): CivilStatus
     {
-        $civil->update($data);
+        if($civil->update($data))
+        {
+            return $civil;
+        }
+        return null;
     }
 
-    public function deleteCivilStatus($civil): void
+    public function deleteCivilStatus($civil): CivilStatus
     {
-        $civil->delete();
+        if($civil->delete())
+        {
+            return $civil;
+        }
+        return null;
     }
 }

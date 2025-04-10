@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CivilStatus;
-use App\DataTable\CmsDataTable;
+use App\DataTables\CmsDataTable;
 use App\Services\CivilStatusService;
 use App\Http\Requests\CivilStatusRequest;
 use Illuminate\Support\Facades\Auth;
@@ -20,7 +20,7 @@ class CivilStatusController extends Controller
     {
         $page_title = 'Civil Status';
         $resource = 'civil';
-        $columns = ['name', 'remarks'];
+        $columns = ['id', 'name', 'remarks', 'action'];
         $data = CivilStatus::getAllCivilStatuses();
 
         return $dataTable

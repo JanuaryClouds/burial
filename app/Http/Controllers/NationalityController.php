@@ -21,7 +21,7 @@ class NationalityController extends Controller
     {
         $page_title = 'Nationality';
         $resource = 'nationality';
-        $columns = ['name', 'remarks'];
+        $columns = ['id', 'name', 'remarks', 'action'];
         $data = Nationality::getAllNationalities();
 
         return $dataTable

@@ -13,4 +13,9 @@ class Relationship extends Model
         'name',
         'remarks',
     ];
+
+    public static function getAllRelationships()
+    {
+        return self::all();
+    }
 }

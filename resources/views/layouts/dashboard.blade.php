@@ -36,7 +36,8 @@
             </div>
 
             <nav class="p-4 space-y-2">
-                <a href="" class="block py-2 px-3 rounded hover:bg-[#F4C027] hover:text-black text-white transition">
+                <a href="{{ route(Auth::user()->getRoleNames()->first() . '.dashboard') }}"
+                    class="block py-2 px-3 rounded hover:bg-[#F4C027] hover:text-black text-white transition">
                     <span x-show="!sidebarCollapsed" x-cloak class="font-medium"><i
                             class="fa-solid fa-table-columns me-2"></i> Dashboard</span>
                     <span x-show="sidebarCollapsed" x-cloak class="font-medium"><i
@@ -65,7 +66,7 @@
                         </svg>
                     </button>
                     <div x-show="cmsOpen" x-cloak class="mt-2 space-y-2">
-                        <a href="#"
+                        <a href="{{ route(Auth::user()->getRoleNames()->first() . '.sex.index') }}"
                             class="font-medium block py-2 px-3 rounded hover:bg-[#F4C027] hover:text-black text-white transition">
                             <span x-show="!sidebarCollapsed" x-cloak class="font-medium pl-4">
                                 <i class="fa-solid fa-venus-mars me-2"></i> Gender
@@ -74,42 +75,42 @@
                                 <i class="fa-solid fa-venus-mars"></i>
                             </span>
                         </a>
-                        <a href="#"
+                        <a href="{{ route(Auth::user()->getRoleNames()->first() . '.religion.index') }}"
                             class="block py-2 px-3 rounded hover:bg-[#F4C027] hover:text-black text-white transition">
                             <span x-show="!sidebarCollapsed" x-cloak class="font-medium pl-4"><i
                                     class="fa-solid fa-cross me-2"></i> Religion</span>
                             <span x-show="sidebarCollapsed" x-cloak class="font-medium"><i
                                     class="fa-solid fa-cross"></i></span>
                         </a>
-                        <a href="#"
+                        <a href="{{ route(Auth::user()->getRoleNames()->first() . '.nationality.index') }}"
                             class="block py-2 px-3 rounded hover:bg-[#F4C027] hover:text-black text-white transition">
                             <span x-show="!sidebarCollapsed" x-cloak class="font-medium pl-4"><i
                                     class="fa-solid fa-earth-americas me-2"></i> Nationality</span>
                             <span x-show="sidebarCollapsed" x-cloak class="font-medium"><i
                                     class="fa-solid fa-earth-americas"></i></span>
                         </a>
-                        <a href="#"
+                        <a href="{{ route(Auth::user()->getRoleNames()->first() . '.civil.index') }}"
                             class="block py-2 px-3 rounded hover:bg-[#F4C027] hover:text-black text-white transition">
                             <span x-show="!sidebarCollapsed" x-cloak class="font-medium pl-4"><i
                                     class="fa-solid fa-heart me-2"></i> Civil Status</span>
                             <span x-show="sidebarCollapsed" x-cloak class="font-medium"><i
                                     class="fa-solid fa-heart"></i></span>
                         </a>
-                        <a href="#"
+                        <a href="{{ route(Auth::user()->getRoleNames()->first() . '.relationship.index') }}"
                             class="block py-2 px-3 rounded hover:bg-[#F4C027] hover:text-black text-white transition">
                             <span x-show="!sidebarCollapsed" x-cloak class="font-medium pl-4"><i
                                     class="fa-solid fa-people-roof me-2"></i> Relationship</span>
                             <span x-show="sidebarCollapsed" x-cloak class="font-medium"><i
                                     class="fa-solid fa-people-roof"></i></span>
                         </a>
-                        <a href="#"
+                        <a href="{{ route(Auth::user()->getRoleNames()->first() . '.education.index') }}"
                             class="block py-2 px-3 rounded hover:bg-[#F4C027] hover:text-black text-white transition">
                             <span x-show="!sidebarCollapsed" x-cloak class="font-medium pl-4"><i
                                     class="fa-solid fa-book me-2"></i> Education</span>
                             <span x-show="sidebarCollapsed" x-cloak class="font-medium"><i
                                     class="fa-solid fa-book"></i></span>
                         </a>
-                        <a href="#"
+                        <a href="{{ route(Auth::user()->getRoleNames()->first() . '.assistance.index') }}"
                             class="block py-2 px-3 rounded hover:bg-[#F4C027] hover:text-black text-white transition">
                             <span x-show="!sidebarCollapsed" x-cloak class="font-medium pl-4"><i
                                     class="fa-solid fa-handshake-angle me-2"></i> Assistance</span>
@@ -135,11 +136,19 @@
                     </button>
                     <div x-show="userDropdownOpen" x-cloak x-transition
                         class="absolute left-0 bottom-full mb-2 w-full bg-white shadow-md rounded z-10">
-                        <a href="#" class="block py-2 px-3 hover:bg-[#F4C027] hover:text-black text-black transition">
+                        <a href="{{ route(Auth::user()->getRoleNames()->first() . '.role.index') }}"
+                            class="block py-2 px-3 hover:bg-[#F4C027] hover:text-black text-black transition">
                             <span x-show="!sidebarCollapsed" x-cloak class="font-medium"><i
-                                    class="fa-solid fa-gear me-2"></i> Admin Menu</span>
+                                    class="fa-solid fa-user-tie me-2"></i> Role</span>
                             <span x-show="sidebarCollapsed" x-cloak class="font-medium"><i
-                                    class="fa-solid fa-gear"></i></span>
+                                    class="fa-solid fa-user-tie"></i></span>
+                        </a>
+                        <a href="{{ route(Auth::user()->getRoleNames()->first() . '.permission.index') }}"
+                            class="block py-2 px-3 hover:bg-[#F4C027] hover:text-black text-black transition">
+                            <span x-show="!sidebarCollapsed" x-cloak class="font-medium"><i
+                                    class="fa-solid fa-lock me-2"></i> Permission</span>
+                            <span x-show="sidebarCollapsed" x-cloak class="font-medium"><i
+                                    class="fa-solid fa-lock"></i></span>
                         </a>
                         <a href="#" class="block py-2 px-3 hover:bg-[#F4C027] hover:text-black text-black transition">
                             <span x-show="!sidebarCollapsed" x-cloak class="font-medium"><i

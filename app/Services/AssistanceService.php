@@ -11,13 +11,21 @@ class AssistanceService
         return Assistance::create($data);
     }
 
-    public function updateAssistance(array $data, $assistance): void
+    public function updateAssistance(array $data, $assistance): Assistance
     {
-        $assistance->update($data);
+        if($assistance->update($data))
+        {
+            return $assistance;
+        }
+        return null;
     }
 
-    public function deleteAssistance($assistance): void
+    public function deleteAssistance($assistance): Assistance
     {
-        $assistance->delete();
+        if($assistance->delete())
+        {
+            return $assistance;
+        }
+        return null;
     }
 }

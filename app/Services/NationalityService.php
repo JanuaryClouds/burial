@@ -11,13 +11,22 @@ class NationalityService
         return Nationality::create($data);
     }
 
-    public function updateNationality(array $data, $nationality): void
+    public function updateNationality(array $data, $nationality): Nationality
     {
-        $nationality->update($data);
+        if($nationality->update($data))
+        {
+            return $nationality;
+        }
+
+        return null;
     }
 
-    public function deleteNationality($nationality): void
+    public function deleteNationality($nationality): Nationality
     {
-        $nationality->delete();
+        if($nationality->delete())
+        {
+            return $nationality;
+        }
+        return null;
     }
 }

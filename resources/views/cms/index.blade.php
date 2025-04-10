@@ -3,7 +3,7 @@
 
 @section('breadcrumb')
 <x-breadcrumb :items="[
-        ['label' => $page_title, 'url' => route(Auth::user()->getRoleNames()->first() . '.user.index')],
+        ['label' => $page_title, 'url' => route(Auth::user()->getRoleNames()->first() . '.' . $resource . '.index')],
     ]" />
 @endsection
 
@@ -17,7 +17,7 @@
         @include('cms.create')
     </div>
 </div>
-@include('alert.index')
+@include('components.alert')
 <div class="">
     <table class="min-w-full border border-gray-200 shadow-lg" id="{{ $resource }}-table">
         <thead class="bg-[#1A4798]">
@@ -32,8 +32,13 @@
         <tbody class="text-gray-600 text-sm font-light text-center">
             @foreach ($data as $record)
             <tr class="border border-gray-200 hover:bg-gray-100 transition-colors">
+                <td class="py-3 px-4">{{ $record->id }}</td>
                 <td class="py-3 px-4">{{ $record->name }}</td>
+                @if($resource === 'role' || $resource === 'permission')
+                <td class="py-3 px-4">{{ $record->guard_name }}</td>
+                @else
                 <td class="py-3 px-4">{{ $record->remarks }}</td>
+                @endif
                 <td class="py-3 px-4">
                     <div class="inline-flex items-center space-x-2">
                         <div x-data="{ showEditModal: false }">

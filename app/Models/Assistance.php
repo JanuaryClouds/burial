@@ -13,4 +13,9 @@ class Assistance extends Model
         'name',
         'remarks',
     ];
+
+    public static function getAllAssistances()
+    {
+        return self::all();
+    }
 }

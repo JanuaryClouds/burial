@@ -21,7 +21,7 @@ class ReligionController extends Controller
     {
         $page_title = 'Religion';
         $resource = 'religion';
-        $columns = ['name', 'remarks'];
+        $columns = ['id', 'name', 'remarks', 'action'];
         $data = Religion::getAllReligions();
         
         return $dataTable

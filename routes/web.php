@@ -6,6 +6,13 @@ use App\Http\Controllers\{
     DashboardController,
     RoleController,
     PermissionController,
+    AssistanceController,
+    CivilStatusController,
+    EducationController,
+    NationalityController,
+    RelationshipController,
+    ReligionController,
+    SexController,
 };
 
 Route::get('/', function () {
@@ -31,6 +38,13 @@ Route::middleware(['auth'])
                     ->name('dashboard');
                 Route::resource('role', RoleController::class);
                 Route::resource('permission', PermissionController::class);
+                Route::resource('assistance', AssistanceController::class);
+                Route::resource('civil', CivilStatusController::class);
+                Route::resource('education', EducationController::class);
+                Route::resource('nationality', NationalityController::class);
+                Route::resource('relationship', RelationshipController::class);
+                Route::resource('religion', ReligionController::class);
+                Route::resource('sex', SexController::class);
             });
 
         // admin role

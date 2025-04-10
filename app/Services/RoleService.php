@@ -11,13 +11,21 @@ class RoleService
         return Role::create($data);
     }
 
-    public function updateRole(array $data, $role): void
+    public function updateRole(array $data, $role): Role
     {
-        $role->update($data);
+        if($role->update($data))
+        {
+            return $role;
+        }
+        return null;
     }
 
-    public function destroyRole($role): void
+    public function destroyRole($role): Role
     {
-        $role->delete();
+        if($role->delete()) 
+        {
+            return $role;
+        }
+        return null;
     }
 }

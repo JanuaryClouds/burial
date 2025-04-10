@@ -20,7 +20,7 @@ class AssistanceController extends Controller
     {
         $page_title = 'Assistance';
         $resource = 'assistance';
-        $columns = ['name', 'remarks'];
+        $columns = ['id', 'name', 'remarks', 'action'];
         $data = Assistance::getAllAssistances();
 
         return $dataTable

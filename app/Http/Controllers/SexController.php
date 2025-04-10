@@ -14,14 +14,14 @@ class SexController extends Controller
     
     public function __construct(SexService $sexServices)
     {
-        $this->sexService = $sexServices;
+        $this->sexServices = $sexServices;
     }
     
     public function index(CmsDataTable $dataTable)
     {
         $page_title = 'Sex';
         $resource = 'sex';
-        $columns = ['id', 'name', 'remarks'];
+        $columns = ['id', 'name', 'remarks', 'action'];
         $data = Sex::getAllSexes();
 
         return $dataTable

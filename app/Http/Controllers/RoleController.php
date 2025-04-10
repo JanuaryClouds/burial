@@ -21,7 +21,7 @@ class RoleController extends Controller
     {
         $page_title = 'Role';
         $resource = 'role';
-        $columns = ['name', 'guard'];
+        $columns = ['id', 'name', 'guard', 'action'];
         $data = Role::getAllRoles();
         
         return $dataTable

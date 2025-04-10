@@ -11,13 +11,20 @@ class SexService
         return Sex::create($data);
     }
 
-    public function updateSex(array $data, $sex): void
+    public function updateSex(array $data, $sex): Sex
     {
-        $sex->update($data);
+        if ($sex->update($data)) { 
+            return $sex;
+        }
+        return null;
     }
 
-    public function deleteSex($sex): void
+    public function deleteSex($sex): Sex
     {
-        $sex->delete();
+        if($sex->delete())
+        {
+            return $sex;
+        }
+        return null;
     }
 }
