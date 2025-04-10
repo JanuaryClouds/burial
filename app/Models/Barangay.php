@@ -19,4 +19,9 @@ class Barangay extends Model
     {
         return self::all();
     }
+    
+    public function client()
+    {
+        return $this->hasMany(Client::class);
+    }
 }
