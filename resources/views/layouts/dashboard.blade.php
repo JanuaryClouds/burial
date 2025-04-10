@@ -45,10 +45,10 @@
                 </a>
 
                 <a href="#" class="block py-2 px-3 rounded hover:bg-[#F4C027] hover:text-black text-white transition">
-                    <span x-show="!sidebarCollapsed" x-cloak class="font-medium"><i
-                            class="fa-solid fa-graduation-cap me-2"></i> Students</span>
+                    <span x-show="!sidebarCollapsed" x-cloak class="font-medium"><i class="fa-solid fa-person me-2"></i>
+                        Clients</span>
                     <span x-show="sidebarCollapsed" x-cloak class="font-medium"><i
-                            class="fa-solid fa-graduation-cap"></i></span>
+                            class="fa-solid fa-person"></i></span>
                 </a>
 
                 <div x-data="{ cmsOpen: false }" class="block">
@@ -130,6 +130,13 @@
                                     class="fa-solid fa-building me-2"></i> Barangay</span>
                             <span x-show="sidebarCollapsed" x-cloak class="font-medium"><i
                                     class="fa-solid fa-building"></i></span>
+                        </a>
+                        <a href="{{ route(Auth::user()->getRoleNames()->first() . '.moa.index') }}"
+                            class="block py-2 px-3 rounded hover:bg-[#F4C027] hover:text-black text-white transition">
+                            <span x-show="!sidebarCollapsed" x-cloak class="font-medium pl-4"><i
+                                    class="fa-solid fa-money-bill me-2"></i> Mode of Assitance</span>
+                            <span x-show="sidebarCollapsed" x-cloak class="font-medium"><i
+                                    class="fa-solid fa-money-bill"></i></span>
                         </a>
                     </div>
                 </div>
