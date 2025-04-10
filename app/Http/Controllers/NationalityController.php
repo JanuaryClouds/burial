@@ -14,7 +14,7 @@ class NationalityController extends Controller
 
     public function __construct(NationalityService $nationalityServices)
     {
-        $this->nationalityService = $nationalityServices;
+        $this->nationalityServices = $nationalityServices;
     }
     
     public function index(CmsDataTable $dataTable)

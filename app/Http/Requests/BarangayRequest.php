@@ -15,6 +15,7 @@ class BarangayRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255|unique:barangays,name,' . $this->route('barangay')?->id,
+            'district_id'   => 'required|numeric|exists:districts,id',
             'remarks' => 'nullable|string|max:255',
         ];
     }

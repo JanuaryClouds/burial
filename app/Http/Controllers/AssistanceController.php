@@ -11,9 +11,10 @@ use Illuminate\Support\Facades\Auth;
 class AssistanceController extends Controller
 {
     protected $assistanceServices;
+    
     public function __construct(AssistanceService $assistanceServices)
     {
-        $this->assistanceService = $assistanceServices;
+        $this->assistanceServices = $assistanceServices;
     }
     
     public function index(CmsDataTable $dataTable)

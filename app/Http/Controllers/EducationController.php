@@ -14,7 +14,7 @@ class EducationController extends Controller
     
     public function __construct(EducationService $educationServices)
     {
-        $this->educationService = $educationServices;
+        $this->educationServices = $educationServices;
     }
     
     public function index(CmsDataTable $dataTable)

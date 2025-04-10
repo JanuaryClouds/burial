@@ -34,9 +34,9 @@ class DistrictController extends Controller
             ));
     }
     
-    public function store(Request $request)
+    public function store(DistrictRequest $request)
     {
-        $district = $this->districtServices->storeDistrict($request->all());
+        $district = $this->districtServices->storeDistrict($request->validated());
         
         activity()
             ->performedOn($district)
@@ -48,7 +48,7 @@ class DistrictController extends Controller
             ->with('success', 'District created successfully!');
     }
     
-    public function update(Request $request, District $district)
+    public function update(DistrictRequest $request, District $district)
     {
         $district = $this->districtServices->updateDistrict($request->validated(), $district);
 

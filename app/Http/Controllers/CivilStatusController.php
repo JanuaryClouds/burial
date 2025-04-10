@@ -14,7 +14,7 @@ class CivilStatusController extends Controller
     
     public function __construct(CivilStatusService $civilStatusServices)
     {
-        $this->civilStatusService = $civilStatusServices;
+        $this->civilStatusServices = $civilStatusServices;
     }
     
     public function index(CmsDataTable $dataTable)

@@ -117,6 +117,20 @@
                             <span x-show="sidebarCollapsed" x-cloak class="font-medium"><i
                                     class="fa-solid fa-handshake-angle"></i></span>
                         </a>
+                        <a href="{{ route(Auth::user()->getRoleNames()->first() . '.district.index') }}"
+                            class="block py-2 px-3 rounded hover:bg-[#F4C027] hover:text-black text-white transition">
+                            <span x-show="!sidebarCollapsed" x-cloak class="font-medium pl-4"><i
+                                    class="fa-solid fa-map-pin me-2"></i> District</span>
+                            <span x-show="sidebarCollapsed" x-cloak class="font-medium"><i
+                                    class="fa-solid fa-map-pin"></i></span>
+                        </a>
+                        <a href="{{ route(Auth::user()->getRoleNames()->first() . '.barangay.index') }}"
+                            class="block py-2 px-3 rounded hover:bg-[#F4C027] hover:text-black text-white transition">
+                            <span x-show="!sidebarCollapsed" x-cloak class="font-medium pl-4"><i
+                                    class="fa-solid fa-building me-2"></i> Barangay</span>
+                            <span x-show="sidebarCollapsed" x-cloak class="font-medium"><i
+                                    class="fa-solid fa-building"></i></span>
+                        </a>
                     </div>
                 </div>
             </nav>

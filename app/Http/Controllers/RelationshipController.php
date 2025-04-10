@@ -14,7 +14,7 @@ class RelationshipController extends Controller
     
     public function __construct(RelationshipService $relationshipServices)
     {
-        $this->relationshipService = $relationshipServices;
+        $this->relationshipServices = $relationshipServices;
     }
     
     public function index(CmsDataTable $dataTable)

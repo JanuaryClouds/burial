@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Barangay;
+use App\Models\District;
 use App\DataTables\CmsDataTable;
 use App\Services\BarangayService;
 use App\Http\Requests\BarangayRequest;
@@ -23,6 +24,7 @@ class BarangayController extends Controller
         $resource = 'barangay';
         $columns = ['id', 'name', 'remarks', 'action'];
         $data = Barangay::getAllBarangays();
+        $subRecords = District::getAllDistricts();
 
         return $dataTable
             ->render('cms.index', compact(
@@ -30,7 +32,8 @@ class BarangayController extends Controller
                 'resource',
                 'columns',
                 'data',
-                'dataTable'
+                'dataTable',
+                'subRecords'
             ));
     }
     
@@ -41,11 +44,11 @@ class BarangayController extends Controller
         activity()
         ->causedBy(Auth::user())
             ->performedOn($barangay)
-            ->log('Created a new barangay status: ' . $barangay->name);
+            ->log('Created a new barangay: ' . $barangay->name);
 
         return redirect()
             ->route(Auth::user()->getRoleNames()->first() . '.barangay.index')
-            ->with('success', 'barangay Status Created Successfully');
+            ->with('success', 'Barangay Created Successfully');
     }
     
     public function update(BarangayRequest $request, Barangay $Barangay)
@@ -55,11 +58,11 @@ class BarangayController extends Controller
         activity()
             ->causedBy(Auth::user())
             ->performedOn($barangay)
-            ->log('Updated the barangay status: ' . $barangay->name);
+            ->log('Updated the barangay: ' . $barangay->name);
 
         return redirect()
             ->route(Auth::user()->getRoleNames()->first() . '.barangay.index')
-            ->with('success', 'barangay Status Updated Successfully');
+            ->with('success', 'Barangay Updated Successfully');
     }
     
     public function destroy(Barangay $Barangay)
@@ -69,10 +72,10 @@ class BarangayController extends Controller
         activity()
             ->causedBy(Auth::user())
             ->performedOn($barangay)
-            ->log('Deleted the barangay status: ' . $barangay->name);
+            ->log('Deleted the barangay: ' . $barangay->name);
 
         return redirect()
             ->route(Auth::user()->getRoleNames()->first() . '.barangay.index')
-            ->with('success', 'barangay Status Deleted Successfully');
+            ->with('success', 'Barangay Deleted Successfully');
     }
 }

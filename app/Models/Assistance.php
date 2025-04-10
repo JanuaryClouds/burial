@@ -9,7 +9,7 @@ class Assistance extends Model
 {
     use HasFactory;
     protected $table = "assistances";
-    protected $fillables = [
+    protected $fillable = [
         'name',
         'remarks',
     ];

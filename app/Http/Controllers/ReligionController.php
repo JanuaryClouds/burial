@@ -14,7 +14,7 @@ class ReligionController extends Controller
     
     public function __construct(ReligionService $religionServices)
     {
-        $this->religionService = $religionServices;
+        $this->religionServices = $religionServices;
     }
     
     public function index(CmsDataTable $dataTable)

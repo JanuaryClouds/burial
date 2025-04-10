@@ -9,13 +9,13 @@ class Barangay extends Model
 {
     use HasFactory;
     protected $table = "barangays";
-    protected $fillables = [
+    protected $fillable = [
         'name',
         'district_id',
         'remarks',
     ];
 
-    public static function getAllBrangays()
+    public static function getAllBarangays()
     {
         return self::all();
     }
