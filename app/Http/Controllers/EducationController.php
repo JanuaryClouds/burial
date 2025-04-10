@@ -21,7 +21,7 @@ class EducationController extends Controller
     {
         $page_title = 'Education';
         $resource = 'education';
-        $column = ['name', 'remarks'];
+        $columns = ['name', 'remarks'];
         $data = Education::getAllEducations();
 
         return $dataTable
@@ -29,7 +29,7 @@ class EducationController extends Controller
                 'dataTable',
                 'page_title',
                 'resource',
-                'column',
+                'columns',
                 'data'
             ));
     }

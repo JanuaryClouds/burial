@@ -20,14 +20,14 @@ class CivilStatusController extends Controller
     {
         $page_title = 'Civil Status';
         $resource = 'civil';
-        $column = ['name', 'remarks'];
+        $columns = ['name', 'remarks'];
         $data = CivilStatus::getAllCivilStatuses();
 
         return $dataTable
             ->render('cms.index', compact(
                 'page_title',
                 'resource',
-                'column',
+                'columns',
                 'data',
                 'dataTable'
             ));

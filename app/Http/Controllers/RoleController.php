@@ -21,7 +21,7 @@ class RoleController extends Controller
     {
         $page_title = 'Role';
         $resource = 'role';
-        $column = ['name', 'guard'];
+        $columns = ['name', 'guard'];
         $data = Role::getAllRoles();
         
         return $dataTable
@@ -29,7 +29,7 @@ class RoleController extends Controller
                 'dataTable',
                 'page_title',
                 'resource',
-                'column',
+                'columns',
                 'data',
             ));
     }

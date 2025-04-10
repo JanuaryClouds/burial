@@ -21,7 +21,7 @@ class SexController extends Controller
     {
         $page_title = 'Sex';
         $resource = 'sex';
-        $column = ['id', 'name', 'remarks'];
+        $columns = ['id', 'name', 'remarks'];
         $data = Sex::getAllSexes();
 
         return $dataTable
@@ -29,7 +29,7 @@ class SexController extends Controller
                 'dataTable',
                 'page_title',
                 'resource',
-                'column',
+                'columns',
                 'data'
             ));
     }

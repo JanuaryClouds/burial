@@ -21,7 +21,7 @@ class PermissionController extends Controller
     {
         $page_title = 'Permission';
         $resource = 'permission';
-        $column = ['name', 'guard'];
+        $columns = ['name', 'guard'];
         $data = Permission::getAllPermissions();
         
         return $dataTable
@@ -29,7 +29,7 @@ class PermissionController extends Controller
                 'dataTable',
                 'page_title',
                 'resource',
-                'column',
+                'columns',
                 'data',
             ));
     }

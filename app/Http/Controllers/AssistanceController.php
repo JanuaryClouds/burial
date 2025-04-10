@@ -20,7 +20,7 @@ class AssistanceController extends Controller
     {
         $page_title = 'Assistance';
         $resource = 'assistance';
-        $column = ['name', 'remarks'];
+        $columns = ['name', 'remarks'];
         $data = Assistance::getAllAssistances();
 
         return $dataTable
@@ -28,7 +28,7 @@ class AssistanceController extends Controller
                 'dataTable',
                 'page_title',
                 'resource',
-                'column',
+                'columns',
                 'data'
             ));
     }

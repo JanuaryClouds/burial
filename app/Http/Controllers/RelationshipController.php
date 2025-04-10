@@ -21,7 +21,7 @@ class RelationshipController extends Controller
     {
         $page_title = 'Relationship';
         $resource = 'relationship';
-        $column = ['name', 'remarks'];
+        $columns = ['name', 'remarks'];
         $data = Relationship::getAllRelationships();
 
         return $dataTable
@@ -29,7 +29,7 @@ class RelationshipController extends Controller
                 'dataTable',
                 'page_title',
                 'resource',
-                'column',
+                'columns',
                 'data'
             ));
     }

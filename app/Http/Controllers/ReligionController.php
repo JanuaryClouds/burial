@@ -21,7 +21,7 @@ class ReligionController extends Controller
     {
         $page_title = 'Religion';
         $resource = 'religion';
-        $column = ['name', 'remarks'];
+        $columns = ['name', 'remarks'];
         $data = Religion::getAllReligions();
         
         return $dataTable
@@ -29,7 +29,7 @@ class ReligionController extends Controller
                 'dataTable',
                 'page_title',
                 'resource',
-                'column',
+                'columns',
                 'data',
             ));
     }
