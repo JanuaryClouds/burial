@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 class CivilStatusController extends Controller
 {
     protected $civilStatusServices;
+    
     public function __construct(CivilStatusService $civilStatusServices)
     {
         $this->civilStatusService = $civilStatusServices;

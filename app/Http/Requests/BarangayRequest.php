@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class DistrictRequest extends FormRequest
+class BarangayRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -14,7 +14,7 @@ class DistrictRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255|unique:districts,name,' . $this->route('district')?->id,
+            'name' => 'required|string|max:255|unique:barangays,name,' . $this->route('barangay')?->id,
             'remarks' => 'nullable|string|max:255',
         ];
     }
