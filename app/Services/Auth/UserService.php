@@ -7,9 +7,14 @@ use Illuminate\Support\Facades\Auth;
 
 class UserService
 {
-    public function login(array $data): bool
+    public function login(array $data): User
     {
-        return Auth::attempt($data);
+        if(Auth::attempt($data))
+        {
+            return Auth::user();
+        }
+
+        return null;
     }
 
     public function logout(): void

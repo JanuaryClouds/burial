@@ -24,6 +24,8 @@ class UserController extends Controller
         
         if ($user = $this->userServices->login($request->validated()))
         {
+            Auth::login($user);
+            
             activity() 
                 ->performedOn($user)
                 ->causedBy($user)

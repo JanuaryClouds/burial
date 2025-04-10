@@ -11,7 +11,7 @@
             administrator.
         </p>
         @include('components.alert')
-        <form action="" method="POST">
+        <form action="{{ route('login') }}" method="POST">
             @csrf
             <div class="mb-4">
                 <label for="email" class="block text-gray-700 text-sm font-medium">Email</label>
