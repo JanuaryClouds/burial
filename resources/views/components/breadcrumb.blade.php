@@ -11,7 +11,7 @@
         </svg>
     </li>
     <li>
-        <a href="{{ route(Auth::user()->role . '.dashboard') }}"
+        <a href="{{ route(Auth::user()->getRoleNames()->first() . '.dashboard') }}"
             class="text-blue-500 hover:text-blue-600 font-medium">Dashboard</a>
     </li>
     @foreach ($items as $index => $item)
