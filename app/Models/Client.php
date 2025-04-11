@@ -28,6 +28,11 @@ class Client extends Model
         return self::all();
     }
 
+    public static function getClientInfo($client)
+    {
+        return self::where('id', $client)->first();
+    }
+
     public function district()
     {
         return $this->belongsTo(District::class, 'district_id');

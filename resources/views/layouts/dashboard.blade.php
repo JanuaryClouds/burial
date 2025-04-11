@@ -27,11 +27,11 @@
             <div
                 class="block m-3 flex items-center justify-center h-16 rounded hover:bg-[#F4C027] hover:text-black text-white">
                 <span x-show="!sidebarCollapsed" x-cloak class="flex items-center">
-                    <img src="" alt="" class="w-10 mr-2">
-                    (Office name here)
+                    <img src="{{ asset('images/CSWDO.webp') }}" alt="" class="w-10 mr-2">
+                    CSWDO - Burial
                 </span>
                 <span x-show="sidebarCollapsed" x-cloak class="font-bold text-xl">
-                    <img src="" alt="" class="w-10">
+                    <img src="{{ asset('images/CSWDO.webp') }}" alt="" class="w-10">
                 </span>
             </div>
 
@@ -44,7 +44,8 @@
                             class="fa-solid fa-table-columns"></i></span>
                 </a>
 
-                <a href="#" class="block py-2 px-3 rounded hover:bg-[#F4C027] hover:text-black text-white transition">
+                <a href="{{ route(Auth::user()->getRoleNames()->first() . '.client.index') }}"
+                    class="block py-2 px-3 rounded hover:bg-[#F4C027] hover:text-black text-white transition">
                     <span x-show="!sidebarCollapsed" x-cloak class="font-medium"><i class="fa-solid fa-person me-2"></i>
                         Clients</span>
                     <span x-show="sidebarCollapsed" x-cloak class="font-medium"><i

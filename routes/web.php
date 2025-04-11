@@ -16,6 +16,7 @@ use App\Http\Controllers\{
     DistrictController,
     BarangayController,
     ModeOfAssistanceController,
+    ClientController,
 };
 
 Route::get('/', function () {
@@ -51,6 +52,7 @@ Route::middleware(['auth'])
                 Route::resource('district', DistrictController::class);
                 Route::resource('barangay', BarangayController::class);
                 Route::resource('moa', ModeOfAssistanceController::class);
+                Route::resource('client', ClientController::class);
             });
 
         // admin role

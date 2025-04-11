@@ -44,7 +44,7 @@ class NationalityController extends Controller
             ->log('Created a new nationality: ' . $nationality->name);
 
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first() . 'nationality.index')
+            ->route(Auth::user()->getRoleNames()->first() . '.nationality.index')
             ->with('success', 'You have successfully create a nationality!');
     }
     
@@ -58,7 +58,7 @@ class NationalityController extends Controller
             ->log('Updatred the nationality: ' . $nationality->name);
 
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first() . 'nationality.index')
+            ->route(Auth::user()->getRoleNames()->first() . '.nationality.index')
             ->with('success', 'You have successfully updated a nationality!');
     }
     

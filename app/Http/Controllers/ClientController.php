@@ -3,63 +3,130 @@
 namespace App\Http\Controllers;
 
 use App\Models\Client;
-use Illuminate\Http\Request;
+use App\Models\Sex;
+use App\Models\Religion;
+use App\Models\Nationality;
+use App\Models\CivilStatus;
+use App\Models\Relationship;
+use App\Models\Education;
+use App\Services\ClientService;
+use App\DataTables\CmsDataTable;
+use App\Http\Requests\ClientRequest;
+use Illuminate\Support\Facades\Auth;
 
 class ClientController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    protected $clientServices;
+
+    public function __construct(ClientService $clientService)
     {
-        //
+        $this->clientServices = $clientService;
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    public function index(CmsDataTable $dataTable)
+    {
+        $page_title = 'Client';
+        $resource = 'client';
+        $columns = ['Tracking no', 'Full name', 'Address', 'Date of birth', 'Contact number', 'Action'];
+        $data = Client::getAllClients();
+
+        return $dataTable
+            ->render('client.index', compact(
+                'dataTable',
+                'page_title',
+                'resource',
+                'columns',
+                'data'
+            ));
+    }
+
     public function create()
     {
-        //
-    }
+        $page_title = 'Client information';
+        $resource = 'client';
+        $sexes = Sex::getAllgenders();
+        $religions = Religion::getAllReligions();
+        $nationalities = Nationality::getAllNationalities();
+        $civils = CivilStatus::getAllCivilStatuses();  
+        $relationships = Relationship::getAllRelationships();
+        $educations = Education::getAllEducations();
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+        return view('client.create', compact(
+            'page_title',
+            'resource',
+            'sexes',
+            'religions',
+            'nationalities',
+            'civils', 
+            'relationships',
+            'educations',
+        ));
+    }
+    
+    public function store(ClientRequest $request)
     {
-        //
+        $client = $this->clientServices->storeClient($request->validated());
+
+        activity()
+            ->performedOn($client)
+            ->causedBy(Auth::user())
+            ->log('Added the client details: ', $client->id);
+
+        return redirect()
+            ->route(Auth::user()->getRoleNames()->first() . '.client.index')
+            ->with('success', 'Client information added successfully!');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Client $client)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Client $client)
     {
-        //
-    }
+        $page_title = 'Client update';
+        $resource = 'client';
+        $data = Client::getClientInfo($client);
+        $sexes = Sex::getAllgenders();
+        $religions = Religion::getAllReligions();
+        $nationalities = Nationality::getAllNationalities();
+        $civils = CivilStatus::getAllCivilStatuses();  
+        $relationships = Relationship::getAllRelationships();
+        $educations = Education::getAllEducations();
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Client $client)
+        return view('client.edit', compact(
+            'page_title',
+            'resource',
+            'data',
+            'sexes',
+            'religions',
+            'nationalities',
+            'civils', 
+            'relationships',
+            'educations',
+        ));
+    }
+    
+    public function update(ClientRequest $request, Client $client)
     {
-        //
-    }
+        $client = $this->clientServices->updateClient($request->validated(), $client);
 
-    /**
-     * Remove the specified resource from storage.
-     */
+        activity()
+            ->performedOn($client)
+            ->causedBy(Auth::user())
+            ->log('Updated the client details: ', $client->id);
+
+        return redirect()
+            ->route(Auth::user()->getRoleNames()->first() . '.client.edit', $client->id)
+            ->with('success', 'Client information updated successfully!');
+    }
+    
     public function destroy(Client $client)
     {
-        //
+        $client = $this->clientServices->deleteClient($client);
+
+        activity()
+            ->performedOn($client)
+            ->causedBy(Auth::user())
+            ->log('Deleted a client details: ', $client->id);
+        
+        return redirect()
+            ->route(Auth::user()->getRoleNames()->first() . '.client.index')
+            ->with('success', 'Client information deleted successfully!');
     }
 }

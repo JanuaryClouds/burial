@@ -9,13 +9,12 @@
 
 <div class="flex justify-between mb-5 overflow-auto">
     <h1 class="text-3xl font-bold mb-2 text-center text-gray-800">{{ $page_title }} records</h1>
-    <div x-data="{ showModal: false }">
+    <a href="{{ route(Auth::user()->getRoleNames()->first() . '.client.create') }}">
         <button @click="showModal = true"
             class="px-5 py-2 text-white bg-[#1A4798] rounded-lg hover:bg-[#F4C027] hover:text-black hover:border border-[#F4C027] transition-colors">
             <i class="fa-solid fa-plus"></i> Add {{ $resource }}
         </button>
-        @include('cms.create')
-    </div>
+    </a>
 </div>
 @include('components.alert')
 <div class="">
