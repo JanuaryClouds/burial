@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Client;
+use App\Models\ClientBeneficiary;
 use App\Models\ClientDemographic;
 use App\Models\ClientSocialInfo;
 
@@ -42,8 +43,18 @@ class ClientService
                 'philhealth' => $data['philhealth'],
                 'skill' => $data['skill'],
             ]);
+
+            $beneficiary = ClientBeneficiary::create([
+                'client_id' => $client->id,
+                'first_name' => $data['ben_first_name'],
+                'middle_name' => $data['ben_middle_name'],
+                'last_name' => $data['ben_last_name'],
+                'sex_id' => $data['ben_sex_id'],
+                'date_of_birth' => $data['ben_date_of_birth'],
+                'place_of_birth' => $data['ben_place_of_birth'],
+            ]);
     
-            if ($demographic && $social) {
+            if ($demographic && $social && $beneficiary) {
                 return $client;
             } else {
                 $client->delete();

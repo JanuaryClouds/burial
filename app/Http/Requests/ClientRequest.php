@@ -35,6 +35,12 @@ class ClientRequest extends FormRequest
             'income' => 'required|string|max:255',
             'philhealth' => 'required|string|max:255',
             'skill' => 'required|string|max:255',
+            'ben_first_name' => 'required|string|max:255',
+            'ben_middle_name' => 'nullable|string|max:255',
+            'ben_last_name' => 'required|string|max:255',
+            'ben_sex_id' => 'required|numeric|exists:sexes,id',
+            'ben_date_of_birth' => 'required|date',
+            'ben_place_of_birth' => 'required|string|max:255',
         ];
     }
 }
