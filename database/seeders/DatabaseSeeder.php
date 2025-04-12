@@ -13,6 +13,14 @@ class DatabaseSeeder extends Seeder
             AdminSeeder::class, 
             AssistanceSeeder::class,
             MoaSeeder::class,
+            CivilSeeder::class,
+            DistrictSeeder::class,
+            EducationSeeder::class,
+            NationalitySeeder::class,
+            RelationshipSeeder::class,
+            ReligionSeeder::class,
+            SexSeeder::class,
+            BarangaySeeder::class,
         ]);
     }
 }

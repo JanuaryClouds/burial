@@ -19,4 +19,9 @@ class Religion extends Model
     {
         return self::all();
     }
+
+    public function clientDemographic()
+    {
+        return $this->hasMany(ClientDemographic::class);
+    }
 }

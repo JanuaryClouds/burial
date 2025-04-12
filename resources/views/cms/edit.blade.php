@@ -37,7 +37,7 @@
                         class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none">
                         @foreach($subRecords as $material)
                         <option value="{{ $material->id }}"
-                            {{ $record->district_id === $material->id ? 'selected' : '' }}>{{ $material->remarks }}
+                            {{ $record->district_id === $material->id ? 'selected' : '' }}>{{ $material->name }}
                         </option>
                         @endforeach
                     </select>

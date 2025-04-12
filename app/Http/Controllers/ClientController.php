@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Client;
+use App\Models\District;
+use App\Models\Barangay;
 use App\Models\Sex;
 use App\Models\Religion;
 use App\Models\Nationality;
@@ -13,6 +15,7 @@ use App\Services\ClientService;
 use App\DataTables\CmsDataTable;
 use App\Http\Requests\ClientRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Carbon;
 
 class ClientController extends Controller
 {
@@ -44,12 +47,14 @@ class ClientController extends Controller
     {
         $page_title = 'Client information';
         $resource = 'client';
-        $sexes = Sex::getAllgenders();
+        $sexes = Sex::getAllSexes();
         $religions = Religion::getAllReligions();
         $nationalities = Nationality::getAllNationalities();
         $civils = CivilStatus::getAllCivilStatuses();  
         $relationships = Relationship::getAllRelationships();
         $educations = Education::getAllEducations();
+        $districts = District::getAllDistricts();
+        $barangays = Barangay::getAllBarangays();
 
         return view('client.create', compact(
             'page_title',
@@ -60,7 +65,27 @@ class ClientController extends Controller
             'civils', 
             'relationships',
             'educations',
+            'districts',
+            'barangays',
         ));
+    }
+
+    public function getLatestTracking()
+    {
+        $year = Carbon::now()->format('Y');
+    
+        $latest = Client::where('tracking_no', 'like', "{$year}_%")
+            ->latest('created_at')
+            ->first();
+    
+        if ($latest && preg_match('/^' . $year . '_(\d{4})$/', $latest->tracking_no, $matches)) {
+            $number = (int) $matches[1] + 1;
+            $tracking_no = $year . '_' . str_pad($number, 4, '0', STR_PAD_LEFT);
+        } else {
+            $tracking_no = $year . '_0001';
+        }
+    
+        return response()->json(['tracking_no' => $tracking_no]);
     }
     
     public function store(ClientRequest $request)
@@ -82,7 +107,8 @@ class ClientController extends Controller
         $page_title = 'Client update';
         $resource = 'client';
         $data = Client::getClientInfo($client);
-        $sexes = Sex::getAllgenders();
+        $sexes = Sex::getAllSexes();
+        $districts = District::getAllDistricts();
         $religions = Religion::getAllReligions();
         $nationalities = Nationality::getAllNationalities();
         $civils = CivilStatus::getAllCivilStatuses();  
@@ -99,6 +125,7 @@ class ClientController extends Controller
             'civils', 
             'relationships',
             'educations',
+            'districts',
         ));
     }
     

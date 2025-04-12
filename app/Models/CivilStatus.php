@@ -18,4 +18,9 @@ class CivilStatus extends Model
     {
         return self::all();
     }
+
+    public function clientSocialInfo()
+    {
+        return $this->hasMany(ClientSocialInfo::class); 
+    }
 }

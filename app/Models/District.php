@@ -23,5 +23,4 @@ class District extends Model
     {
         return $this->hasMany(Client::class);
     }
-
 }

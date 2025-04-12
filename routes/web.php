@@ -30,6 +30,7 @@ Route::post('/login/check', [UserController::class, 'login'])
 
 Route::middleware(['auth'])
     ->group(function () {
+        Route::get('/client/latest-tracking', [ClientController::class, 'getLatestTracking'])->name('client.latest-tracking');
         
         // super admin role
         Route::middleware('role:superadmin')

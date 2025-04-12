@@ -19,4 +19,9 @@ class Nationality extends Model
     {
         return self::all();
     }
+
+    public function clientDemongraphic()
+    {
+        return $this->hasMany(ClientDemographic::class);
+    }
 }

@@ -31,13 +31,12 @@
         <tbody class="text-gray-600 text-sm font-light text-center">
             @foreach ($data as $record)
             <tr class="border border-gray-200 hover:bg-gray-100 transition-colors">
-                <td class="py-2 px-4">{{ $record->id }}</td>
-                <td class="py-2 px-4">{{ $record->name }}</td>
-                @if($resource === 'role' || $resource === 'permission')
-                <td class="py-2 px-4">{{ $record->guard_name }}</td>
-                @else
-                <td class="py-2 px-4">{{ $record->remarks }}</td>
-                @endif
+                <td class="py-2 px-4">{{ $record->tracking_no }}</td>
+                <td class="py-2 px-4">{{ $record->first_name }} {{ $record->middle_name }} {{ $record->last }}</td>
+                <td class="py-2 px-4"> {{ $record->house_no }} {{ $record->street }}
+                    {{ $record->barangay->name }} {{ $record->city }}</td>
+                <td class="py-2 px-4">{{ $record->date_of_birth }}</td>
+                <td class="py-2 px-4">{{ $record->contact_no }}</td>
                 <td class="py-2 px-4">
                     <div class="inline-flex items-center space-x-2">
                         <div x-data="{ showEditModal: false }">
@@ -54,7 +53,7 @@
                                 title="Delete">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
-                            @include('cms.delete')
+                            @include('client.delete')
                         </div>
                     </div>
                 </td>

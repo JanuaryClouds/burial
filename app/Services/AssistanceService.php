@@ -13,19 +13,11 @@ class AssistanceService
 
     public function updateAssistance(array $data, $assistance): Assistance
     {
-        if($assistance->update($data))
-        {
-            return $assistance;
-        }
-        return null;
+        return $assistance->update($data) ? $assistance : null;
     }
 
     public function deleteAssistance($assistance): Assistance
     {
-        if($assistance->delete())
-        {
-            return $assistance;
-        }
-        return null;
+        return $assistance->delete() ? $assistance : null;
     }
 }
