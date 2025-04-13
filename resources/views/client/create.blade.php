@@ -19,6 +19,7 @@
         @include('client.partial.clientInfo')
         @include('client.partial.beneficiaryInfo')
         @include('client.partial.beneficiaryFam')
+        @include('client.partial.beneficiaryAssessment')
         @include('client.partial.recommendedAssistance')
 
         <div class="mt-6 text-right mb-6">
@@ -57,6 +58,28 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+
+function assessmentForm() {
+    return {
+        assessments: [{
+            problem: '',
+            assessment: ''
+        }],
+        errors: {},
+        initErrors(serverErrors) {
+            this.errors = serverErrors || {};
+        },
+        addAssessment() {
+            this.assessments.push({
+                problem: '',
+                assessment: ''
+            });
+        },
+        removeAssessment(index) {
+            this.assessments.splice(index, 1);
+        }
+    }
+}
 
 function familyForm() {
     return {

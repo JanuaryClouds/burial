@@ -48,6 +48,8 @@ class ClientRequest extends FormRequest
             'fam_relationship_id.*' => 'required|numeric|exists:relationships,id',
             'fam_occupation.*' => 'required|string|max:255',
             'fam_income.*' => 'required|string|max:255',
+            'ass_problem_presented.*' => 'required|string|max:1000',
+            'ass_assessment.*' => 'required|string|max:1000',
         ];
     }
 }

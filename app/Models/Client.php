@@ -34,6 +34,31 @@ class Client extends Model
         return self::where('id', $client)->first();
     }
 
+    public function assessment()
+    {
+        return $this->hasMany(ClientAssessment::class);
+    }
+
+    public function beneficiary()
+    {
+        return $this->hasMany(ClientBeneficiary::class);
+    }
+
+    public function family()
+    {
+        return $this->hasMany(ClientBeneficiaryFamily::class);
+    }
+
+    public function demographic()
+    {
+        return $this->hasMany(ClientDemographic::class);
+    }
+
+    public function socialInfo()
+    {
+        return $this->hasMany(ClientSocialInfo::class);
+    }
+
     public function district()
     {
         return $this->belongsTo(District::class, 'district_id');

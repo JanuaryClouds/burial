@@ -38,4 +38,9 @@ class ClientSocialInfo extends Model
     {
         return $this->belongsTo(CivilStatus::class, 'civil_id');
     }
+
+    public function client()
+    {
+        return $this->belongsTo(Client::class, 'client_id');
+    }
 }

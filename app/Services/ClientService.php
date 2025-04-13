@@ -68,8 +68,17 @@ class ClientService
                     'income' => $data['fam_income'][$index],
                 ]);
             }
+
+            $assessmentRows = [];
+            foreach($data['ass_problem_presented'] as $index => $problem) {
+                $assessmentRows[] = ClientAssessment::create([
+                    'client_id' => $client->id,
+                    'problem_presented' => $problem,
+                    'assessment' => $data['ass_assessment'],
+                ]);
+            }
     
-            if ($demographic && $social && $beneficiary && count($familyRows)) {
+            if ($demographic && $social && $beneficiary && count($familyRows) && count($assessmentRows)) {
                 return $client;
             } else {
                 $client->delete();

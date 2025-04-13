@@ -35,4 +35,9 @@ class ClientDemographic extends Model
     {
         return $this->belongsTo(Nationality::class, 'nationality_id');
     }
+
+    public function client()
+    {
+        return $this->belongsTo(Client::class, 'client_id');
+    }
 }

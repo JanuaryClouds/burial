@@ -17,10 +17,10 @@
     </a>
 </div>
 @include('components.alert')
-<div class="">
+<div class="w-full bg-white p-8 rounded-lg shadow-lg border border-gray-200 overflow-auto max-h-[75vh]">
     <table class="min-w-full border border-gray-200 shadow-lg" id="{{ $resource }}-table">
         <thead class="bg-[#1A4798]">
-            <tr class="text-white uppercase text-sm leading-normal">
+            <tr class="text-white uppercase text-md leading-normal">
                 @foreach ($columns as $column)
                 <th class="py-3 px-4 cursor-pointer">
                     {{ $column }}
@@ -28,16 +28,16 @@
                 @endforeach
             </tr>
         </thead>
-        <tbody class="text-gray-600 text-sm font-light text-center">
+        <tbody class="text-gray-600 text-sm font-normal text-center">
             @foreach ($data as $record)
             <tr class="border border-gray-200 hover:bg-gray-100 transition-colors">
-                <td class="py-2 px-4">{{ $record->tracking_no }}</td>
-                <td class="py-2 px-4">{{ $record->first_name }} {{ $record->middle_name }} {{ $record->last }}</td>
-                <td class="py-2 px-4"> {{ $record->house_no }} {{ $record->street }}
+                <td class="py-1 px-4">{{ $record->tracking_no }}</td>
+                <td class="py-1 px-4">{{ $record->first_name }} {{ $record->middle_name }} {{ $record->last }}</td>
+                <td class="py-1 px-4"> {{ $record->house_no }} {{ $record->street }}
                     {{ $record->barangay->name }} {{ $record->city }}</td>
-                <td class="py-2 px-4">{{ $record->date_of_birth }}</td>
-                <td class="py-2 px-4">{{ $record->contact_no }}</td>
-                <td class="py-2 px-4">
+                <td class="py-1 px-4">{{ $record->date_of_birth }}</td>
+                <td class="py-1 px-4">{{ $record->contact_no }}</td>
+                <td class="py-1 px-4">
                     <div class="inline-flex items-center space-x-2">
                         <div x-data="{ showEditModal: false }">
                             <button @click="showEditModal = true"

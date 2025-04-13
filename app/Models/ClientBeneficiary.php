@@ -28,4 +28,9 @@ class ClientBeneficiary extends Model
     {
         return $this->belongsTo(Sex::class, 'sex_id');
     }
+
+    public function client()
+    {
+        return $this->belongsTo(Client::class, 'client_id');
+    }
 }
