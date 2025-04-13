@@ -142,10 +142,10 @@
             <option value="">-- Select Relationship --</option>
             @foreach($relationships as $relationship)
             <option value="{{ $relationship->id }}">
-                {{ old('barangay_id') == $relationship->name ? 'selected' : $relationship->name }}</option>
+                {{ old('relationship_id') == $relationship->name ? 'selected' : $relationship->name }}</option>
             @endforeach
         </select>
-        @error('barangay_id')
+        @error('relationship_id')
         <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
         @enderror
     </div>

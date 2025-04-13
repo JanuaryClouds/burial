@@ -18,7 +18,7 @@ class ClientRequest extends FormRequest
             'first_name' => 'required|string|max:255',
             'middle_name' => 'nullable|string|max:255',
             'last_name' => 'required|string|max:255',
-            'age' => 'required|numeric',
+            'age' => 'required|numeric|min:0',
             'date_of_birth' => 'required|date',
             'house_no' => 'required|string|max:20',
             'street' => 'required|string|max:255',
@@ -41,6 +41,13 @@ class ClientRequest extends FormRequest
             'ben_sex_id' => 'required|numeric|exists:sexes,id',
             'ben_date_of_birth' => 'required|date',
             'ben_place_of_birth' => 'required|string|max:255',
+            'fam_name.*' => 'required|string|max:255',
+            'fam_sex_id.*' => 'required|numeric|exists:sexes,id',
+            'fam_age.*' => 'required|numeric|min:0',
+            'fam_civil_id.*' => 'required|numeric|exists:civil_statuses,id',
+            'fam_relationship_id.*' => 'required|numeric|exists:relationships,id',
+            'fam_occupation.*' => 'required|string|max:255',
+            'fam_income.*' => 'required|string|max:255',
         ];
     }
 }

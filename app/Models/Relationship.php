@@ -23,4 +23,9 @@ class Relationship extends Model
     {
         return $this->hasMany(ClientSocialInfo::class);
     }
+
+    public function clientFamily()
+    {
+        return $this->belongsTo(ClientBeneficiaryFamily::class);
+    }
 }

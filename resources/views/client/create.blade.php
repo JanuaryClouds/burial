@@ -13,6 +13,7 @@
 </div>
 
 <div class="w-full bg-white p-8 rounded-lg shadow-lg border border-gray-200 overflow-auto max-h-[75vh]">
+    <p class="text-sm text-red-600 mb-3"><i class="fa-solid fa-asterisk"></i> Put N/A if not applicable</p>
     <form method="POST" action="{{ route(Auth::user()->getRoleNames()->first() . '.client.store') }}">
         @csrf
         @include('client.partial.clientInfo')
@@ -38,7 +39,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 });
 
-
 document.addEventListener('DOMContentLoaded', function() {
     const dobInput = document.getElementById('date_of_birth');
     const ageInput = document.getElementById('age');
@@ -56,5 +56,38 @@ document.addEventListener('DOMContentLoaded', function() {
         ageInput.value = isNaN(age) ? '' : age;
     });
 });
+
+
+function familyForm() {
+    return {
+        rows: [{
+            name: '',
+            sex_id: '',
+            age: '',
+            civil_id: '',
+            relationship_id: '',
+            occupation: '',
+            income: ''
+        }],
+        errors: {},
+        initErrors(serverErrors) {
+            this.errors = serverErrors || {};
+        },
+        addRow() {
+            this.rows.push({
+                name: '',
+                sex_id: '',
+                age: '',
+                civil_id: '',
+                relationship_id: '',
+                occupation: '',
+                income: ''
+            });
+        },
+        removeRow(index) {
+            this.rows.splice(index, 1);
+        }
+    }
+}
 </script>
 @endsection

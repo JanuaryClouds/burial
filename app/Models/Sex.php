@@ -24,4 +24,9 @@ class Sex extends Model
     {
         return $this->hasMany(ClientDemographic::class);    
     }
+
+    public function clientFamily()
+    {
+        return $this->belongsTo(ClientBeneficiaryFamily::class);
+    }
 }

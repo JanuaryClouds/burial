@@ -23,4 +23,9 @@ class CivilStatus extends Model
     {
         return $this->hasMany(ClientSocialInfo::class); 
     }
+
+    public function clientFamily()
+    {
+        return $this->hasMany(ClientBeneficiaryFamily::class);
+    }
 }

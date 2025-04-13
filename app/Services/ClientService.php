@@ -6,6 +6,7 @@ use App\Models\Client;
 use App\Models\ClientBeneficiary;
 use App\Models\ClientDemographic;
 use App\Models\ClientSocialInfo;
+use App\Models\ClientBeneficiaryFamily;
 
 class ClientService
 {
@@ -53,8 +54,22 @@ class ClientService
                 'date_of_birth' => $data['ben_date_of_birth'],
                 'place_of_birth' => $data['ben_place_of_birth'],
             ]);
+
+            $familyRows = [];
+            foreach ($data['fam_name'] as $index => $name) {
+                $familyRows[] = ClientBeneficiaryFamily::create([
+                    'client_id' => $client->id,
+                    'name' => $name,
+                    'sex_id' => $data['fam_sex_id'][$index],
+                    'age' => $data['fam_age'][$index],
+                    'civil_id' => $data['fam_civil_id'][$index],
+                    'relationship_id' => $data['fam_relationship_id'][$index],
+                    'occupation' => $data['fam_occupation'][$index],
+                    'income' => $data['fam_income'][$index],
+                ]);
+            }
     
-            if ($demographic && $social && $beneficiary) {
+            if ($demographic && $social && $beneficiary && count($familyRows)) {
                 return $client;
             } else {
                 $client->delete();
