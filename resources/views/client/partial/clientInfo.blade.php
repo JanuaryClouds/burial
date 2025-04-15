@@ -2,16 +2,6 @@
     <h1 class="text-lg font-semibold text-gray-800">I. Client's identifying information:</h1>
     <hr class="flex-grow border-t border-gray-300 mt-1">
 </div>
-<div class="grid grid-cols-1">
-    <div>
-        <label class="block font-medium text-gray-700">Tracking Number</label>
-        <input type="text" name="tracking_no" id="tracking_no" value="{{ old('tracking_no') }}"
-            class="mt-1 w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-        @error('tracking_no')
-        <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-        @enderror
-    </div>
-</div>
 <div class="grid grid-cols-1 md:grid grid-cols-2 lg:grid-cols-4 gap-4 mt-2">
     <div>
         <label class="block font-medium text-gray-700">First Name</label>
@@ -132,8 +122,9 @@
             class="mt-1 w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
             <option value="">-- Select Relationship --</option>
             @foreach($relationships as $relationship)
-            <option value="{{ $relationship->id }}">
-                {{ old('relationship_id') == $relationship->name ? 'selected' : $relationship->name }}</option>
+            <option value="{{ $relationship->id }}" {{ old('relationship_id') == $relationship->id ? 'selected' : '' }}>
+                {{ $relationship->name }}
+            </option>
             @endforeach
         </select>
         @error('relationship_id')
@@ -146,7 +137,7 @@
             class="mt-1 w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
             <option value="">-- Select Civil status --</option>
             @foreach($civils as $civil)
-            <option value="{{ $civil->id }}">{{ old('civil_id') == $civil->name ? 'selected' : $civil->name }}
+            <option value="{{ $civil->id }}" {{ old('civil_id') == $civil->id ? 'selected' : '' }}> {{ $civil->name }}
             </option>
             @endforeach
         </select>
@@ -160,8 +151,9 @@
             class="mt-1 w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
             <option value="">-- Select Nationality --</option>
             @foreach($nationalities as $nationality)
-            <option value="{{ $nationality->id }}">
-                {{ old('nationality_id') == $nationality->name ? 'selected' : $nationality->name }}</option>
+            <option value="{{ $nationality->id }}" {{ old('nationality_id') == $nationality->id ? 'selected' : '' }}>
+                {{ $nationality->name }}
+            </option>
             @endforeach
         </select>
         @error('nationality_id')
@@ -176,8 +168,8 @@
             class="mt-1 w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
             <option value="">-- Select Religion --</option>
             @foreach($religions as $religion)
-            <option value="{{ $religion->id }}">
-                {{ old('religion_id') == $religion->name ? 'selected' : $religion->name }}
+            <option value="{{ $religion->id }}" {{ old('religion_id') == $religion->id ? 'selected' : '' }}>
+                {{ $religion->name }}
             </option>
             @endforeach
         </select>
@@ -191,8 +183,8 @@
             class="mt-1 w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
             <option value="">-- Select Educational Attainment --</option>
             @foreach($educations as $education)
-            <option value="{{ $education->id }}">
-                {{ old('education_id') == $education->name ? 'selected' : $education->name }}
+            <option value="{{ $education->id }}" {{ old('education_id') == $education->id ? 'selected' : '' }}>
+                {{ $education->name }}
             </option>
             @endforeach
         </select>

@@ -5,16 +5,38 @@ namespace App\Services;
 use App\Models\Client;
 use App\Models\ClientBeneficiary;
 use App\Models\ClientDemographic;
+use App\Models\ClientRecommendation;
 use App\Models\ClientSocialInfo;
 use App\Models\ClientAssessment;
 use App\Models\ClientBeneficiaryFamily;
 
 class ClientService
 {
+    private function generateTrackingNo(): string
+    {
+        $year = date('Y');
+        
+        $latestClient = Client::where('tracking_no', 'LIKE', $year . '-%')
+            ->orderBy('created_at', 'desc')
+            ->first();
+    
+        if ($latestClient) {
+            $parts = explode('-', $latestClient->tracking_no);
+            $lastNumber = (int) end($parts);
+            $newNumber = $lastNumber + 1;
+        } else {
+            $newNumber = 1;
+        }
+        
+        return $year . '-' . str_pad($newNumber, 5, '0', STR_PAD_LEFT);
+    }
+
     public function storeClient(array $data): ?Client
     {
+        $tracking_no = $this->generateTrackingNo();
+        
         $client = Client::create([
-            'tracking_no' => $data['tracking_no'],
+            'tracking_no' => $tracking_no,
             'first_name' => $data['first_name'],
             'middle_name' => $data['middle_name'],
             'last_name' => $data['last_name'],
@@ -57,7 +79,8 @@ class ClientService
             ]);
 
             $familyRows = [];
-            foreach ($data['fam_name'] as $index => $name) {
+            foreach ($data['fam_name'] as $index => $name) 
+            {
                 $familyRows[] = ClientBeneficiaryFamily::create([
                     'client_id' => $client->id,
                     'name' => $name,
@@ -71,15 +94,50 @@ class ClientService
             }
 
             $assessmentRows = [];
-            foreach($data['ass_problem_presented'] as $index => $problem) {
+            foreach($data['ass_problem_presented'] as $index => $problem) 
+            {
                 $assessmentRows[] = ClientAssessment::create([
                     'client_id' => $client->id,
                     'problem_presented' => $problem,
                     'assessment' => $data['ass_assessment'][$index],
                 ]);
             }
+
+            $assistanceIds = $data['rec_assistance_id'] ?? [];
+
+            // Loop through each selected assistance
+            foreach ($assistanceIds as $assistanceId) {
+                if ($assistanceId == 8) { // Burial assistance
+                    ClientRecommendation::create([
+                        'client_id'     => $client->id,
+                        'assistance_id' => 8,
+                        'referral'      => $data['rec_burial_referral'][0] ?? null,
+                        'moa_id'        => $data['rec_moa'][0] ?? null,
+                        'amount'        => $data['rec_amount'][0] ?? null,
+                        'others'        => null,
+                    ]);
+                } elseif ($assistanceId == 14) { // Others assistance
+                    ClientRecommendation::create([
+                        'client_id'     => $client->id,
+                        'assistance_id' => 14,
+                        'referral'      => null,
+                        'moa_id'        => null,
+                        'amount'        => null,
+                        'others'        => $data['rec_assistance_other'][0] ?? null,
+                    ]);
+                } else { // For other assistance types that do not require extra information
+                    ClientRecommendation::create([
+                        'client_id'     => $client->id,
+                        'assistance_id' => $assistanceId,
+                        'referral'      => null,
+                        'moa_id'        => null,
+                        'amount'        => null,
+                        'others'        => null,
+                    ]);
+                }
+            }
     
-            if ($demographic && $social && $beneficiary && count($familyRows) && count($assessmentRows)) {
+            if ($demographic && $social && $beneficiary && count($familyRows) && count($assessmentRows) && count($assistanceIds)) {
                 return $client;
             } else {
                 $client->delete();

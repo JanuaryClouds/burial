@@ -12,6 +12,7 @@
     <h1 class="text-3xl font-bold mb-2 text-center text-gray-800">{{ $page_title }}</h1>
 </div>
 
+@include('components.alert')
 <div class="w-full bg-white p-8 rounded-lg shadow-lg border border-gray-200 overflow-auto max-h-[75vh]">
     <p class="text-sm text-red-600 mb-3"><i class="fa-solid fa-asterisk"></i> Put N/A if not applicable</p>
     <form method="POST" action="{{ route(Auth::user()->getRoleNames()->first() . '.client.store') }}">
@@ -32,15 +33,6 @@
 </div>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    fetch('{{ route("client.latest-tracking") }}')
-        .then(response => response.json())
-        .then(data => {
-            const input = document.getElementById('tracking_no');
-            input.value = data.tracking_no;
-        });
-});
-
-document.addEventListener('DOMContentLoaded', function() {
     const dobInput = document.getElementById('date_of_birth');
     const ageInput = document.getElementById('age');
 
@@ -58,13 +50,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-
 function assessmentForm() {
     return {
-        assessments: [{
-            problem_presented: '',
-            assessment: ''
-        }],
+        assessments: @json($oldAssessmentRows),
         errors: {},
         initErrors(serverErrors) {
             this.errors = serverErrors || {};
@@ -83,15 +71,7 @@ function assessmentForm() {
 
 function familyForm() {
     return {
-        rows: [{
-            name: '',
-            sex_id: '',
-            age: '',
-            civil_id: '',
-            relationship_id: '',
-            occupation: '',
-            income: ''
-        }],
+        rows: @json($oldFamilyRows),
         errors: {},
         initErrors(serverErrors) {
             this.errors = serverErrors || {};

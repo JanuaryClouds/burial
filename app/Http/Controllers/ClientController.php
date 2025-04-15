@@ -61,6 +61,44 @@ class ClientController extends Controller
         $moas = ModeOfAssistance::getAllMoas();
         $burial = Assistance::getBurial();
 
+        $oldFamilyRows = collect(old('fam_name', []))->map(function ($_, $i) {
+            return [
+                'name' => old("fam_name.$i"),
+                'sex_id' => old("fam_sex_id.$i"),
+                'age' => old("fam_age.$i"),
+                'civil_id' => old("fam_civil_id.$i"),
+                'relationship_id' => old("fam_relationship_id.$i"),
+                'occupation' => old("fam_occupation.$i"),
+                'income' => old("fam_income.$i"),
+            ];
+        })->values();
+        
+        if ($oldFamilyRows->isEmpty()) {
+            $oldFamilyRows = collect([[
+                'name' => '',
+                'sex_id' => '',
+                'age' => '',
+                'civil_id' => '',
+                'relationship_id' => '',
+                'occupation' => '',
+                'income' => ''
+            ]]);
+        }
+
+        $oldAssessmentRows = collect(old('ass_problem_presented', []))->map(function ($_, $i) {
+            return [
+                'problem_presented' => old("ass_problem_presented.$i"),
+                'assessment' => old("ass_assessment.$i"),
+            ];
+        })->values();
+        
+        if ($oldAssessmentRows->isEmpty()) {
+            $oldAssessmentRows = collect([[
+                'problem_presented' => '',
+                'assessment' => '',
+            ]]);
+        }
+
         return view('client.create', compact(
             'page_title',
             'resource',
@@ -75,6 +113,8 @@ class ClientController extends Controller
             'assistances',
             'moas',
             'burial',
+            'oldFamilyRows',
+            'oldAssessmentRows'
         ));
     }
 
@@ -98,6 +138,7 @@ class ClientController extends Controller
     
     public function store(ClientRequest $request)
     {
+        // dd($request);
         $client = $this->clientServices->storeClient($request->validated());
 
         activity()

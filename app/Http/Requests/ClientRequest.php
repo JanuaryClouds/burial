@@ -14,7 +14,6 @@ class ClientRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'tracking_no' => 'required|string|max:255|unique:clients,tracking_no',
             'first_name' => 'required|string|max:255',
             'middle_name' => 'nullable|string|max:255',
             'last_name' => 'required|string|max:255',
@@ -50,6 +49,11 @@ class ClientRequest extends FormRequest
             'fam_income.*' => 'required|string|max:255',
             'ass_problem_presented.*' => 'required|string|max:1000',
             'ass_assessment.*' => 'required|string|max:1000',
+            'rec_assistance_id.*'  => 'numeric|exists:assistances,id',
+            'rec_burial_referral.*' => 'nullable|string|max:255',
+            'rec_moa.*' => 'nullable|numeric|exists:mode_of_assistances,id',
+            'rec_amount.*' => 'nullable|string|max:255',
+            'rec_assistance_other.*' => 'nullable|string|max:255',
         ];
     }
 }
