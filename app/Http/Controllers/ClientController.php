@@ -138,7 +138,6 @@ class ClientController extends Controller
     
     public function store(ClientRequest $request)
     {
-        // dd($request);
         $client = $this->clientServices->storeClient($request->validated());
 
         activity()

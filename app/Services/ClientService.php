@@ -104,10 +104,8 @@ class ClientService
             }
 
             $assistanceIds = $data['rec_assistance_id'] ?? [];
-
-            // Loop through each selected assistance
             foreach ($assistanceIds as $assistanceId) {
-                if ($assistanceId == 8) { // Burial assistance
+                if ($assistanceId == 8) { 
                     ClientRecommendation::create([
                         'client_id'     => $client->id,
                         'assistance_id' => 8,
@@ -116,7 +114,7 @@ class ClientService
                         'amount'        => $data['rec_amount'][0] ?? null,
                         'others'        => null,
                     ]);
-                } elseif ($assistanceId == 14) { // Others assistance
+                } elseif ($assistanceId == 14) { 
                     ClientRecommendation::create([
                         'client_id'     => $client->id,
                         'assistance_id' => 14,
@@ -125,7 +123,7 @@ class ClientService
                         'amount'        => null,
                         'others'        => $data['rec_assistance_other'][0] ?? null,
                     ]);
-                } else { // For other assistance types that do not require extra information
+                } else {
                     ClientRecommendation::create([
                         'client_id'     => $client->id,
                         'assistance_id' => $assistanceId,
