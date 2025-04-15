@@ -12,10 +12,10 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 relative">
             <div>
                 <label class="block font-medium text-gray-700">Problem Presented</label>
-                <input type="text" name="ass_problem[]" x-model="row.problem"
+                <input type="text" name="ass_problem_presented[]" x-model="row.problem"
                     class="mt-1 w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <template x-if="errors[`ass_problem.${index}`]">
-                    <p class="text-sm text-red-600 mt-1" x-text="errors[`ass_problem.${index}`][0]"></p>
+                <template x-if="errors[`ass_problem_presented.${index}`]">
+                    <p class="text-sm text-red-600 mt-1" x-text="errors[`ass_problem_presented.${index}`][0]"></p>
                 </template>
             </div>
 

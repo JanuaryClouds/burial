@@ -41,7 +41,7 @@ class Client extends Model
 
     public function beneficiary()
     {
-        return $this->hasMany(ClientBeneficiary::class);
+        return $this->hasOne(ClientBeneficiary::class);
     }
 
     public function family()
@@ -51,12 +51,17 @@ class Client extends Model
 
     public function demographic()
     {
-        return $this->hasMany(ClientDemographic::class);
+        return $this->hasOne(ClientDemographic::class);
     }
 
     public function socialInfo()
     {
-        return $this->hasMany(ClientSocialInfo::class);
+        return $this->hasOne(ClientSocialInfo::class);
+    }
+
+    public function recommendation()
+    {
+        return $this->hasMany(ClientRecommendation::class);
     }
 
     public function district()

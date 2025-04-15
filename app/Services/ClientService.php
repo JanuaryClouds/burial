@@ -6,6 +6,7 @@ use App\Models\Client;
 use App\Models\ClientBeneficiary;
 use App\Models\ClientDemographic;
 use App\Models\ClientSocialInfo;
+use App\Models\ClientAssessment;
 use App\Models\ClientBeneficiaryFamily;
 
 class ClientService
@@ -74,7 +75,7 @@ class ClientService
                 $assessmentRows[] = ClientAssessment::create([
                     'client_id' => $client->id,
                     'problem_presented' => $problem,
-                    'assessment' => $data['ass_assessment'],
+                    'assessment' => $data['ass_assessment'][$index],
                 ]);
             }
     

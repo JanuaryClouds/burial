@@ -18,4 +18,14 @@ class Assistance extends Model
     {
         return self::all();
     }
+
+    public static function getBurial()
+    {
+        return self::where('name', 'Burial');
+    }
+
+    public function clientRecommendation()
+    {
+        return $this->hasMany(ClientRecommendation::class);
+    }
 }

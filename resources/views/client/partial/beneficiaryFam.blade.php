@@ -25,7 +25,8 @@
                         class="mt-1 w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="">-- Select gender --</option>
                         @foreach ($sexes as $gender)
-                        <option value="{{ $gender->id }}">{{ $gender->name }}</option>
+                        <option value="{{ $gender->id }} {{ old('fam_sex_id') === $gender->id ? 'selected' : '' }}">
+                            {{ $gender->name }}</option>
                         @endforeach
                     </select>
                     <template x-if="errors[`fam_sex_id.${index}`]">

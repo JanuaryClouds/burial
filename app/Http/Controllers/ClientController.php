@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Client;
 use App\Models\District;
 use App\Models\Barangay;
+use App\Models\ModeOfAssistance;
 use App\Models\Sex;
 use App\Models\Religion;
 use App\Models\Nationality;
 use App\Models\CivilStatus;
 use App\Models\Relationship;
 use App\Models\Education;
+use App\Models\Assistance;
 use App\Services\ClientService;
 use App\DataTables\CmsDataTable;
 use App\Http\Requests\ClientRequest;
@@ -55,6 +57,9 @@ class ClientController extends Controller
         $educations = Education::getAllEducations();
         $districts = District::getAllDistricts();
         $barangays = Barangay::getAllBarangays();
+        $assistances = Assistance::getAllAssistances();
+        $moas = ModeOfAssistance::getAllMoas();
+        $burial = Assistance::getBurial();
 
         return view('client.create', compact(
             'page_title',
@@ -67,6 +72,9 @@ class ClientController extends Controller
             'educations',
             'districts',
             'barangays',
+            'assistances',
+            'moas',
+            'burial',
         ));
     }
 

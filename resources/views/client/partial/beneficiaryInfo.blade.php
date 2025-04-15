@@ -36,7 +36,7 @@
             required>
             <option value="">-- Select gender --</option>
             @foreach($sexes as $gender)
-            <option value="{{ $gender->id }}" {{ old('ben_sex_id') == $gender->id ? 'selected' : $gender->id }}>
+            <option value="{{ $gender->id }}" {{ old('ben_sex_id') == $gender->id ? 'selected' : '' }}>
                 {{ $gender->name }}</option>
             @endforeach
         </select>
@@ -54,7 +54,7 @@
         @enderror
     </div>
     <div>
-        <label class="block font-medium text-gray-700">Date of Birth</label>
+        <label class="block font-medium text-gray-700">Place of Birth</label>
         <input type="text" name="ben_place_of_birth" id="ben_place_of_birth" value="{{ old('ben_place_of_birth') }}"
             class="mt-1 w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             required>

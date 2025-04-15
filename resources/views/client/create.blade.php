@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function assessmentForm() {
     return {
         assessments: [{
-            problem: '',
+            problem_presented: '',
             assessment: ''
         }],
         errors: {},
@@ -71,7 +71,7 @@ function assessmentForm() {
         },
         addAssessment() {
             this.assessments.push({
-                problem: '',
+                problem_presented: '',
                 assessment: ''
             });
         },
