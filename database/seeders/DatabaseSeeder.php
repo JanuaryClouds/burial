@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             ReligionSeeder::class,
             SexSeeder::class,
             BarangaySeeder::class,
+            BaoAccountSeeder::class,
         ]);
     }
 }
