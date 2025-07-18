@@ -17,6 +17,7 @@ use App\Http\Controllers\{
     BarangayController,
     ModeOfAssistanceController,
     ClientController,
+    BurialServiceController,
 };
 
 Route::get('/', function () {
@@ -27,6 +28,7 @@ Route::get('/login', [UserController::class, 'loginPage'])
     ->name('login.page');
 Route::post('/login/check', [UserController::class, 'login'])
     ->name('login');
+Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
 Route::middleware(['auth'])
     ->group(function () {
@@ -57,15 +59,20 @@ Route::middleware(['auth'])
             });
 
         // admin role
-        Route::middleware('role: admin')
+        Route::middleware('role:admin')
             ->prefix('admin')
             ->name('admin.')
             ->group(function () {
                 Route::post('/logout', [UserController::class, 'logout'])
-                    ->name('logout');
-                Route::get('/dashboard', [DashboardController::class, 'index'])
-                    ->name('dashboard');
+                ->name('logout');
+                Route::get('/dashboard', [DashboardController::class, 'admin'])
+                ->name('dashboard');
+                Route::get('/burial/history', [BurialServiceController::class, 'history'])
+                ->name('burial.history');
+                Route::get('/burial/new', [BurialServiceController::class, 'new'])->name('burial.new');
+                Route::resource('assistance', AssistanceController::class);
             });
+
         // user role
         Route::middleware('role:user')
             ->prefix('user')
@@ -73,7 +80,7 @@ Route::middleware(['auth'])
             ->group(function () {
                 Route::post('/logout', [UserController::class, 'logout'])
                     ->name('logout');
-                Route::get('/dashboard', [DashboardController::class, 'index'])
+                Route::get('/dashboard', [DashboardController::class, 'user'])
                     ->name('dashboard');
             });
     });
