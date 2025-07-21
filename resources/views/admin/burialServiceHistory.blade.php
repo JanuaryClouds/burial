@@ -1,4 +1,5 @@
 @extends('layouts.admin');
+@extends('layouts.admin');
 @section('content')
 
 <div class="flex flex-col gap-12">
@@ -12,6 +13,5 @@
     </header>
     <x-burial-service-history-table />
 </div>
-
 
 @endsection
