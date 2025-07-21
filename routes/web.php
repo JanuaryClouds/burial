@@ -64,12 +64,17 @@ Route::middleware(['auth'])
             ->name('admin.')
             ->group(function () {
                 Route::post('/logout', [UserController::class, 'logout'])
-                ->name('logout');
+                    ->name('logout');
                 Route::get('/dashboard', [DashboardController::class, 'admin'])
-                ->name('dashboard');
+                    ->name('dashboard');
                 Route::get('/burial/history', [BurialServiceController::class, 'history'])
-                ->name('burial.history');
-                Route::get('/burial/new', [BurialServiceController::class, 'new'])->name('burial.new');
+                    ->name('burial.history');
+                Route::get('/burial/new', [BurialServiceController::class, 'new'])
+                    ->name('burial.new');
+                Route::get('/burial/new/provider', [BurialServiceController::class, 'newProvider'])
+                    ->name('burial.new.provider');
+                Route::get('/burial/providers', [BurialServiceController::class, 'providers'])
+                    ->name('burial.providers');
                 Route::resource('assistance', AssistanceController::class);
             });
 
