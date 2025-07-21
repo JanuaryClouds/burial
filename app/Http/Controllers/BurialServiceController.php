@@ -16,4 +16,13 @@ class BurialServiceController extends Controller
         // TODO: Fetch all histories of burial services
         return view("admin.burialServiceHistory");
     }
+
+    public function providers() {
+        // TODO: Fetch all burial service providers
+        return view("admin.burialServiceProviders");
+    }
+
+    public function newProvider() {
+        return view('admin.newBurialServiceProvider');
+    }
 }
