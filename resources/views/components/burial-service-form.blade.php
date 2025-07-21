@@ -1,4 +1,4 @@
-<form action="" method="post" class="flex flex-col items-center gap-12">
+<form action="" method="post" id="burialServiceForm" class="flex flex-col items-center gap-12">
     @csrf
     @method('post')
 
@@ -12,66 +12,66 @@
                 </span>
             </span>
         </header>
+        <p class="text-gray-400 text-xs">All fields marked by (*) are required</p>
         <hr class="border-2 border-gray-700">
 
         <div class="flex flex-col gap-4">
             <h4 class="text-lg font-semibold">Details of the Deceased</h4>
             <div class="flex justify-between items-start w-full gap-2">
                 <span class="flex flex-col w-1/3 justify-between">
-                    <input type="text" name="deceased_firstname" id="deceased_lastname" class="border-2 border-gray-300 rounded-md px-2 py-1">
-                    <label for="deceased_name" class="text-sm text-gray-400 text-center">Last Name</label>
+                    <input type="text" required name="deceased_firstname" id="deceased_lastname" class="border-2 border-gray-300 rounded-md px-2 py-1">
+                    <label for="deceased_name" class="text-sm text-gray-400 text-center">Last Name*</label>
                 </span>
                 <span class="flex flex-col w-2/3 justify-between">
-                    <input type="text" name="deceased_lastname" id="deceased_firstname" class="border-2 border-gray-300 rounded-md px-2 py-1">
-                    <label for="deceased_name" class="text-sm text-gray-400 text-center">First Name</label>
+                    <input type="text" required name="deceased_lastname" id="deceased_firstname" class="border-2 border-gray-300 rounded-md px-2 py-1">
+                    <label for="deceased_name" class="text-sm text-gray-400 text-center">First Name*</label>
                 </span>
             </div>
             <h4 class="text-lg font-semibold">Representative / Contact Person</h4>
             <div class="flex justify-start items-center w-full gap-2">
                 <span class="flex flex-col w-1/3 justify-between">
-                    <input type="text" name="representative_name" id="representative_name" class="border-2 border-gray-300 rounded-md px-2 py-1">
-                    <label for="representative_name" class="text-sm text-gray-400 text-center">Full Name</label>
+                    <input type="text" required name="representative_name" id="representative_name" class="border-2 border-gray-300 rounded-md px-2 py-1">
+                    <label for="representative_name" class="text-sm text-gray-400 text-center">Full Name*</label>
                 </span>
                 <span class="flex flex-col w-1/3 justify-between">
-                    <input type="text" name="representative_contact" id="representative_contact" class="border-2 border-gray-300 rounded-md px-2 py-1">
-                    <label for="representative_contact" class="text-sm text-gray-400 text-center">Contact Details</label>
+                    <input type="text" required name="representative_contact" id="representative_contact" class="border-2 border-gray-300 rounded-md px-2 py-1">
+                    <label for="representative_contact" class="text-sm text-gray-400 text-center">Contact Details*</label>
                 </span>
 
                 <!-- NOTE: Can be a dropdown menu -->
                 <span class="flex flex-col w-1/3 justify-between">
-                    <input type="text" name="rep_relationship" id="rep_relationship" class="border-2 border-gray-300 rounded-md px-2 py-1">
-                    <label for="rep_relationship" class="text-sm text-gray-400 text-center">Relationship to the Deceased</label>
+                    <input type="text" required name="rep_relationship" id="rep_relationship" class="border-2 border-gray-300 rounded-md px-2 py-1">
+                    <label for="rep_relationship" class="text-sm text-gray-400 text-center">Relationship to the Deceased*</label>
                 </span>
             </div>
             <hr class="border-2 border-dashed border-gray-700">
 
-            
             <div class="flex flex-col gap-2">
-                <h4 class="text-lg font-semibold">Burial Service Details</h4>
+                <h4 class="text-lg font-semibold">Burial Service Details*</h4>
                 <div class="flex justify-between items-center w-full gap-2">
                     <span class="flex flex-col w-3/5 justify-between">
-                        <input type="text" name="burial_address" id="burial_address" class="border-2 border-gray-300 rounded-md px-2 py-1">
-                        <label for="burial_address" class="text-sm text-gray-400 text-center">Address of Burial (House No., Street, Barangay, District)</label>
+                        <input type="text" required name="burial_address" id="burial_address" class="border-2 border-gray-300 rounded-md px-2 py-1">
+                        <label for="burial_address" class="text-sm text-gray-400 text-center">Address of Burial (House No., Street, Barangay, District)*</label>
                     </span>
                     <span class="flex flex-col justify-between w-1/5">
-                        <input type="date" name="start_of_burial" id="start_of_burial" class="border-2 border-gray-300 rounded-md px-2 py-1">
-                        <label for="start_of_burial" class="text-sm text-gray-400 text-center">Start Date of Burial</label>
+                        <input type="date" required name="start_of_burial" id="start_of_burial" class="border-2 border-gray-300 rounded-md px-2 py-1">
+                        <label for="start_of_burial" class="text-sm text-gray-400 text-center">Start Date of Burial*</label>
                     </span>
                     <span class="flex flex-col justify-between w-1/5">
-                        <input type="date" name="end_of_burial" id="end_of_burial" class="border-2 border-gray-300 rounded-md px-2 py-1">
-                        <label for="end_of_burial" class="text-sm text-gray-400 text-center">End Date of Burial</label>
+                        <input type="date" required name="end_of_burial" id="end_of_burial" class="border-2 border-gray-300 rounded-md px-2 py-1">
+                        <label for="end_of_burial" class="text-sm text-gray-400 text-center">End Date of Burial*</label>
                     </span>
                 </div>
             </div>
 
             <div class="flex justify-between items-center w-full gap-2">
                 <span class="flex flex-col justify-between w-4/5">
-                    <select name="funeral_service" id="funeral_service" class="border-2 border-gray-300 rounded-md px-2 py-1">
+                    <select name="funeral_service" required id="funeral_service" class="border-2 border-gray-300 rounded-md px-2 py-1">
                         <option value="">Sample 1</option>
                         <option value="">Sample 2</option>
                         <option value="">Sample 3</option>
                     </select>
-                    <label for="funeral_service" class="text-sm text-gray-400 text-center">Funeral Service</label>
+                    <label for="funeral_service" class="text-sm text-gray-400 text-center">Funeral Service*</label>
                 </span>
                 <span class="flex flex-col w-1/5 justify-between">
                     <input
@@ -79,31 +79,54 @@
                         name="collected_funds"
                         id="collected_funds"
                         value="₱"
+                        required
                         oninput="this.value = this.value.replace(/[^₱\d.]/g, '').replace(/^([^₱])/, '₱$1')"
                         class="w-full border-2 border-gray-300 rounded-md px-2 py-1"
                         />
-                    <label for="collected_funds" class="text-sm text-gray-400 text-center">Collected Funds</label>
+                    <label for="collected_funds" class="text-sm text-gray-400 text-center">Collected Funds*</label>
+                </span>
+            </div>
+
+            <div class="flex justify-between items-center w-full gap-2">
+                <span class="flex flex-col justify-between w-4/5">
+                    <input type="text" readonly name="funeral_service_address" id="funeral_service_address" disabled class="border-2 border-gray-200 bg-gray-200 rounded-md px-2 py-1">
+                    <label for="funeral_service_address" class="text-sm text-gray-400 text-center">Address of Funeral Service</label>
+                </span>
+                <span class="flex flex-col justify-between w-2/5">
+                    <input type="text" name="funeral_service_contact" id="funeral_service_contact" disabled class="border-2 border-gray-200 bg-gray-200 rounded-md px-2 py-1">
+                    <label for="funeral_service_contact" class="text-sm text-gray-400 text-center">Contact Details</label>
                 </span>
             </div>
         </div>
 
         <hr class="border-2 border-dashed border-gray-700">
         <div class="flex flex-col gap-2">
-            <h4 class="text-lg font-semibold">Images</h4>
+            <h4 class="text-lg font-semibold">Images*</h4>
             <input 
                 type="file" 
                 name="images[]" 
                 id="images"
                 accept="image/*"
                 multiple
+                required
                 class="w-full border-2 border-gray-300 rounded-md px-2 py-1"
                 >
+        </div>
+        <hr class="border-2 border-dashed border-gray-700">
+        <div class="flex flex-col gap-4">
+            <h4 class="text-lg font-semibold">Remarks</h4>
+            <div class="flex justify-between items-start w-full gap-2">
+                <span class="flex flex-col w-full justify-between">
+                    <textarea type="text" rows="4" name="provider_remarks" class="border-2 border-gray-300 rounded-md px-2 py-1">
+                    </textarea>
+                </span>
+            </div>
         </div>
     </div>
 
     <span class="flex justify-center items-center gap-4">
         <button type="submit" class="px-4 py-2 text-white font-semibold tracking-widest uppercase text-sm bg-yellow-400 rounded-lg hover:bg-yellow-500 hover:text-black transition-colors">
-            Save
+            Submit
         </button>
         <button type="reset" class="px-4 py-2 text-black font-semibold tracking-widest uppercase text-sm bg-gray-100 rounded-lg hover:bg-gray-300 transition-colors">
             clear
@@ -112,4 +135,30 @@
             Cancel
         </a>
     </span>
+
 </form>
+
+<script>
+    const inputFields = document.querySelectorAll('input');
+    const submitButton = document.querySelector('button[type="submit"]');
+
+    function checkFields() {
+        let allFilled = true;
+        inputFields.forEach(field => {
+            if (input.value.trim() === '') {
+                allFilled = false;
+            }
+        });
+        if (allFilled) {
+            submitButton.disabled = false;
+        } else {
+            submitButton.disabled = true;
+        }
+    }
+
+    inputFields.forEach(field => {
+        field.addEventListener('input', checkFields);
+    });
+
+    checkFields();
+</script>
