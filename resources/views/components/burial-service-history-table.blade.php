@@ -16,13 +16,13 @@
         <td class="flex items-center gap-2">
 
             <!-- TODO: Add a modal to show the image -->
-            <button class="bg-yellow-300 rounded-lg p-1">
-                <i class="material-icons text-black">image_search</i>
+            <button class="bg-yellow-300 rounded-lg p-2">
+                <i class="fa-solid fa-magnifying-glass"></i>
             </button>
 
             <!-- TODO: Button to Redirect to a dedicated page for burial service details -->
-            <button class="bg-gray-400 rounded-lg p-1">
-                <i class="material-icons">open_in_full</i>
+            <button class="bg-gray-400 rounded-lg p-2">
+                <i class="fa-solid fa-up-right-from-square"></i>
             </button>
         </td>
     </tr>
