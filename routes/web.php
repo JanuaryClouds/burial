@@ -18,6 +18,7 @@ use App\Http\Controllers\{
     ModeOfAssistanceController,
     ClientController,
     BurialServiceController,
+    BurialServiceProviderController
 };
 
 Route::get('/', function () {
@@ -71,10 +72,15 @@ Route::middleware(['auth'])
                     ->name('burial.history');
                 Route::get('/burial/new', [BurialServiceController::class, 'new'])
                     ->name('burial.new');
-                Route::get('/burial/new/provider', [BurialServiceController::class, 'newProvider'])
-                    ->name('burial.new.provider');
+                Route::post('/burial/store', [BurialServiceController::class, 'store'])
+                    ->name('burial.store');
+                    
                 Route::get('/burial/providers', [BurialServiceController::class, 'providers'])
                     ->name('burial.providers');
+                Route::get('/burial/new/provider', [BurialServiceProviderController::class, 'newProvider'])
+                    ->name('burial.new.provider');
+                Route::post('/burial/new/provider/store', [BurialServiceProviderController::class, 'store'])
+                    ->name('burial.new.provider.store');
                 Route::resource('assistance', AssistanceController::class);
             });
 
