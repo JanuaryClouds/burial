@@ -2,6 +2,7 @@
 
 namespace App\View\Components;
 
+use App\Models\BurialService;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
@@ -21,6 +22,7 @@ class burialServiceHistoryTable extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.burial-service-history-table');
+        $burialServices = BurialService::getAllBurialServices();
+        return view('components.burial-service-history-table', compact('burialServices'));
     }
 }

@@ -5,6 +5,7 @@ namespace App\View\Components;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
+use App\Models\Barangay;
 
 class burialServiceProviderForm extends Component
 {
@@ -21,6 +22,7 @@ class burialServiceProviderForm extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.burial-service-provider-form');
+        $barangays = Barangay::getAllBarangays();
+        return view('components.burial-service-provider-form', compact('barangays'));
     }
 }
