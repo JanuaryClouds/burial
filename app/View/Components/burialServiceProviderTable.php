@@ -2,6 +2,7 @@
 
 namespace App\View\Components;
 
+use App\Models\BurialServiceProvider;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
@@ -21,6 +22,7 @@ class burialServiceProviderTable extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.burial-service-provider-table');
+        $providers = BurialServiceProvider::getAllProviders() ?? [];
+        return view('components.burial-service-provider-table', compact('providers'));
     }
 }
