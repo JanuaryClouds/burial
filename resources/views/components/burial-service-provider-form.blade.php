@@ -1,4 +1,4 @@
-<form action="" method="post" id="burialServiceProviderForm" class="flex flex-col items-center gap-12">
+<form action="{{ route('admin.burial.new.provider.store') }}" method="post" id="burialServiceProviderForm" class="flex flex-col items-center gap-12">
     @csrf
     @method('post')
 
@@ -18,18 +18,27 @@
             <h4 class="text-lg font-semibold">Details of the Provider</h4>
             <div class="flex justify-between items-start w-full gap-2">
                 <span class="flex flex-col w-2/3 justify-between">
-                    <input type="text" required name="provider_name" id="provider_name" class="border-2 border-gray-300 rounded-md px-2 py-1">
-                    <label for="provider_name" class="text-sm text-gray-400 text-center">Name of Company*</label>
+                    <input type="text" required name="name" id="name" class="border-2 border-gray-300 rounded-md px-2 py-1">
+                    <label for="name" class="text-sm text-gray-400 text-center">Name of Company*</label>
                 </span>
                 <span class="flex flex-col w-1/3 justify-between">
-                    <input type="text" required name="provider_contact" id="provider_contact" class="border-2 border-gray-300 rounded-md px-2 py-1">
-                    <label for="provider_contact" class="text-sm text-gray-400 text-center">Contact Details*</label>
+                    <input type="text" required name="contact_details" id="contact_details" class="border-2 border-gray-300 rounded-md px-2 py-1">
+                    <label for="contact_details" class="text-sm text-gray-400 text-center">Contact Details*</label>
                 </span>
             </div>
             <div class="flex justify-between items-start w-full gap-2">
                 <span class="flex flex-col w-full justify-between">
-                    <input type="text" required name="provider_address" id="provider_address" class="border-2 border-gray-300 rounded-md px-2 py-1">
-                    <label for="provider_address" class="text-sm text-gray-400 text-center">Address (Lot No., Street, Barangay, District)*</label>
+                    <input type="text" required name="address" id="address" class="border-2 border-gray-300 rounded-md px-2 py-1">
+                    <label for="address" class="text-sm text-gray-400 text-center">Address(Lot No., Building No., Street)*</label>
+                </span>
+                <span class="flex flex-col w-full justify-between">
+                    <select required name="barangay_id" id="barangay_id" class="border-2 border-gray-300 rounded-md px-2 py-1">
+                        <option value="">Select Barangay</option>
+                        @foreach ($barangays as $barangay)
+                            <option value="{{ $barangay->id }}">{{ $barangay->name }}</option>
+                        @endforeach
+                    </select>
+                    <label for="provider_address_barangay" class="text-sm text-gray-400 text-center">Barangay*</label>
                 </span>
             </div>
         </div>
@@ -38,7 +47,7 @@
             <h4 class="text-lg font-semibold">Remarks</h4>
             <div class="flex justify-between items-start w-full gap-2">
                 <span class="flex flex-col w-full justify-between">
-                    <textarea type="text" rows="4" name="provider_remarks" class="border-2 border-gray-300 rounded-md px-2 py-1">
+                    <textarea type="text" rows="4" name="remarks" class="border-2 border-gray-300 rounded-md px-2 py-1">
                     </textarea>
                 </span>
             </div>

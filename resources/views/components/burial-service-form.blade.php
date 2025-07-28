@@ -1,4 +1,4 @@
-<form action="" method="post" id="burialServiceForm" class="flex flex-col items-center gap-12">
+<form action="{{ route('admin.burial.store') }}" method="post" enctype="multipart/form-data" id="burialServiceForm" class="flex flex-col items-center gap-12">
     @csrf
     @method('post')
 
@@ -19,19 +19,19 @@
             <h4 class="text-lg font-semibold">Details of the Deceased</h4>
             <div class="flex justify-between items-start w-full gap-2">
                 <span class="flex flex-col w-1/3 justify-between">
-                    <input type="text" required name="deceased_firstname" id="deceased_lastname" class="border-2 border-gray-300 rounded-md px-2 py-1">
-                    <label for="deceased_name" class="text-sm text-gray-400 text-center">Last Name*</label>
+                    <input type="text" required name="deceased_lastname" id="deceased_lastname" class="border-2 border-gray-300 rounded-md px-2 py-1">
+                    <label for="deceased_lastname" class="text-sm text-gray-400 text-center">Last Name*</label>
                 </span>
                 <span class="flex flex-col w-2/3 justify-between">
-                    <input type="text" required name="deceased_lastname" id="deceased_firstname" class="border-2 border-gray-300 rounded-md px-2 py-1">
-                    <label for="deceased_name" class="text-sm text-gray-400 text-center">First Name*</label>
+                    <input type="text" required name="deceased_firstname" id="deceased_firstname" class="border-2 border-gray-300 rounded-md px-2 py-1">
+                    <label for="deceased_firstname" class="text-sm text-gray-400 text-center">First Name*</label>
                 </span>
             </div>
             <h4 class="text-lg font-semibold">Representative / Contact Person</h4>
             <div class="flex justify-start items-center w-full gap-2">
                 <span class="flex flex-col w-1/3 justify-between">
-                    <input type="text" required name="representative_name" id="representative_name" class="border-2 border-gray-300 rounded-md px-2 py-1">
-                    <label for="representative_name" class="text-sm text-gray-400 text-center">Full Name*</label>
+                    <input type="text" required name="representative" id="representative" class="border-2 border-gray-300 rounded-md px-2 py-1">
+                    <label for="representative" class="text-sm text-gray-400 text-center">Full Name*</label>
                 </span>
                 <span class="flex flex-col w-1/3 justify-between">
                     <input type="text" required name="representative_contact" id="representative_contact" class="border-2 border-gray-300 rounded-md px-2 py-1">
@@ -40,7 +40,12 @@
 
                 <!-- NOTE: Can be a dropdown menu -->
                 <span class="flex flex-col w-1/3 justify-between">
-                    <input type="text" required name="rep_relationship" id="rep_relationship" class="border-2 border-gray-300 rounded-md px-2 py-1">
+                    <select required name="rep_relationship" id="rep_relationship" class="border-2 border-gray-300 rounded-md px-2 py-1">
+                        <option value="">Select Relationship</option>
+                        @foreach ($relationships as $relationship)
+                            <option value="{{ $relationship->id }}">{{ $relationship->name }}</option>
+                        @endforeach
+                    </select>
                     <label for="rep_relationship" class="text-sm text-gray-400 text-center">Relationship to the Deceased*</label>
                 </span>
             </div>
@@ -48,30 +53,51 @@
 
             <div class="flex flex-col gap-2">
                 <h4 class="text-lg font-semibold">Burial Service Details*</h4>
+                <h5 class="">Address of Burial</h5>
                 <div class="flex justify-between items-center w-full gap-2">
-                    <span class="flex flex-col w-3/5 justify-between">
+                    <span class="flex flex-col w-4/6 justify-between">
                         <input type="text" required name="burial_address" id="burial_address" class="border-2 border-gray-300 rounded-md px-2 py-1">
-                        <label for="burial_address" class="text-sm text-gray-400 text-center">Address of Burial (House No., Street, Barangay, District)*</label>
+                        <label for="burial_address" class="text-sm text-gray-400 text-center">Building Number, House No., Street*</label>
                     </span>
-                    <span class="flex flex-col justify-between w-1/5">
+                    <span class="flex flex-col w-2/6 justify-between">
+                        <select name="barangay_id" id="barangay_id" class="border-2 border-gray-300 rounded-md px-2 py-1">
+                            <option value="">Select Barangay</option>
+                            @foreach ($barangays as $barangay)
+                                <option value="{{ $barangay->id }}">{{ $barangay->name }}</option>
+                            @endforeach
+                        </select>
+                        <label for="barangay_id" class="text-sm text-gray-400 text-center">Barangay*</label>
+                    </span>
+                </div>
+                <div class="flex justify-between items-center w-full gap-2">
+                    <h5 class="">Date of Burial</h5>
+                    <span class="flex justify-between items-center gap-2">
+                        <label for="start_of_burial" class="text-sm text-gray-400 text-center">Start*</label>
                         <input type="date" required name="start_of_burial" id="start_of_burial" class="border-2 border-gray-300 rounded-md px-2 py-1">
-                        <label for="start_of_burial" class="text-sm text-gray-400 text-center">Start Date of Burial*</label>
                     </span>
-                    <span class="flex flex-col justify-between w-1/5">
+                    <span class="flex justify-between items-center gap-2">
+                        <label for="end_of_burial" class="text-sm text-gray-400 text-center">End*</label>
                         <input type="date" required name="end_of_burial" id="end_of_burial" class="border-2 border-gray-300 rounded-md px-2 py-1">
-                        <label for="end_of_burial" class="text-sm text-gray-400 text-center">End Date of Burial*</label>
                     </span>
                 </div>
             </div>
 
             <div class="flex justify-between items-center w-full gap-2">
                 <span class="flex flex-col justify-between w-4/5">
-                    <select name="funeral_service" required id="funeral_service" class="border-2 border-gray-300 rounded-md px-2 py-1">
-                        <option value="">Sample 1</option>
-                        <option value="">Sample 2</option>
-                        <option value="">Sample 3</option>
+                    <select name="burial_service_provider" required id="burial_service_provider" class="border-2 border-gray-300 rounded-md px-2 py-1">
+                        <option value="">Select Provider</option>
+                        @foreach ($providers as $provider)
+                            <option
+                                value="{{ $provider->id }}"
+                                data-address="{{ $provider->address }}"
+                                data-contact="{{ $provider->contact_details }}"
+                                data-barangay="{{ $provider->barangay->name }}"
+                            >
+                                {{ $provider->name }}
+                            </option>
+                        @endforeach
                     </select>
-                    <label for="funeral_service" class="text-sm text-gray-400 text-center">Funeral Service*</label>
+                    <label for="burial_service_provider" class="text-sm text-gray-400 text-center">Burial/Funeral Service*</label>
                 </span>
                 <span class="flex flex-col w-1/5 justify-between">
                     <input
@@ -89,12 +115,13 @@
 
             <div class="flex justify-between items-center w-full gap-2">
                 <span class="flex flex-col justify-between w-4/5">
-                    <input type="text" readonly name="funeral_service_address" id="funeral_service_address" disabled class="border-2 border-gray-200 bg-gray-200 rounded-md px-2 py-1">
-                    <label for="funeral_service_address" class="text-sm text-gray-400 text-center">Address of Funeral Service</label>
+                    <input type="text" readonly name="burial_service_address" id="burial_service_address"
+                    disabled class="border-2 border-gray-200 bg-gray-200 rounded-md px-2 py-1">
+                    <label for="burial_service_address" class="text-sm text-gray-400 text-center">Address of Burial Service</label>
                 </span>
                 <span class="flex flex-col justify-between w-2/5">
-                    <input type="text" name="funeral_service_contact" id="funeral_service_contact" disabled class="border-2 border-gray-200 bg-gray-200 rounded-md px-2 py-1">
-                    <label for="funeral_service_contact" class="text-sm text-gray-400 text-center">Contact Details</label>
+                    <input type="text" name="burial_service_contact" id="burial_service_contact" readonly disabled class="border-2 border-gray-200 bg-gray-200 rounded-md px-2 py-1">
+                    <label for="burial_service_contact" class="text-sm text-gray-400 text-center">Contact Details</label>
                 </span>
             </div>
         </div>
@@ -145,7 +172,7 @@
     function checkFields() {
         let allFilled = true;
         inputFields.forEach(field => {
-            if (input.value.trim() === '') {
+            if (field.value.trim() === '') {
                 allFilled = false;
             }
         });
@@ -161,4 +188,18 @@
     });
 
     checkFields();
+
+    const providerSelect = document.getElementById('burial_service_provider');
+    const addressInput = document.getElementById('burial_service_address');
+    const contactInput = document.getElementById('burial_service_contact');
+
+    providerSelect.addEventListener('change', (e) => {
+        const selectedOption = e.target.options[e.target.selectedIndex];
+        const address = selectedOption.getAttribute('data-address') || '';
+        const barangay = selectedOption.getAttribute('data-barangay') || '';
+        const contact = selectedOption.getAttribute('data-contact') || '';
+
+        addressInput.value = address + ", " + barangay;
+        contactInput.value = contact;
+    });
 </script>
