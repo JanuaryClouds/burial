@@ -47,7 +47,7 @@
                         New Burial Service
                     </span>
                     <span x-show="sidebarCollapsed" x-cloak class="font-medium">
-                        <i class="material-icons">history</i>
+                        <i class="fa-solid fa-file-circle-plus me-1.5"></i>
                     </span>
                 </a>
                 <a href="{{ route('admin.burial.history') }}" class="block py-2 px-3 rounded hover:bg-[#F4C027] hover:text-black text-white transition">
@@ -65,7 +65,7 @@
                         Burial Service Providers
                     </span>
                     <span x-show="sidebarCollapsed" x-cloak class="font-medium">
-                        <i class="fa-solid fa-building me-2"></i>
+                        <i class="fa-solid fa-building me-2 ms-0.5"></i>
                     </span>
                 </a>
 
