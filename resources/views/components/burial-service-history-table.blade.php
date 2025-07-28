@@ -12,7 +12,7 @@
         <td>{{ $service->deceased_firstname }} {{ $service->deceased_lastname }}</td>
         <td>{{ $service->burial_address }}</td>
         <td>{{ Str::limit($service->start_of_burial, 10) }} - {{ Str::limit($service->end_of_burial,10) }}</td>
-        <td>{{ $service->provider->name }}</td>
+        <td>{{ Str::limit($service->provider->name, 25) }}</td>
         <td>{{ $service->collected_funds }}</td>
         <td class="flex items-center gap-2">
 
