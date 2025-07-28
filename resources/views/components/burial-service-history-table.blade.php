@@ -7,12 +7,13 @@
         <th>Funds Collected</th>
         <th>Action</th>
     </tr>
+    @foreach ($burialServices as $service)
     <tr class="*:py-2 *:px-4 border-2 border-gray-100">
-        <td>Sample Name</td>
-        <td>Sample Address</td>
-        <td>Sample Date</td>
-        <td>Sample Service</td>
-        <td>Sample Fund</td>
+        <td>{{ $service->deceased_firstname }} {{ $service->deceased_lastname }}</td>
+        <td>{{ $service->burial_address }}</td>
+        <td>{{ Str::limit($service->start_of_burial, 10) }} - {{ Str::limit($service->end_of_burial,10) }}</td>
+        <td>{{ $service->provider->name }}</td>
+        <td>{{ $service->collected_funds }}</td>
         <td class="flex items-center gap-2">
 
             <!-- TODO: Add a modal to show the image -->
@@ -26,4 +27,6 @@
             </button>
         </td>
     </tr>
+
+    @endforeach
 </table>
