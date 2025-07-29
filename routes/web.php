@@ -17,6 +17,8 @@ use App\Http\Controllers\{
     BarangayController,
     ModeOfAssistanceController,
     ClientController,
+    BurialServiceController,
+    BurialServiceProviderController
 };
 
 Route::get('/', function () {
@@ -27,6 +29,7 @@ Route::get('/login', [UserController::class, 'loginPage'])
     ->name('login.page');
 Route::post('/login/check', [UserController::class, 'login'])
     ->name('login');
+Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
 Route::middleware(['auth'])
     ->group(function () {
@@ -57,15 +60,30 @@ Route::middleware(['auth'])
             });
 
         // admin role
-        Route::middleware('role: admin')
+        Route::middleware('role:admin')
             ->prefix('admin')
             ->name('admin.')
             ->group(function () {
                 Route::post('/logout', [UserController::class, 'logout'])
                     ->name('logout');
-                Route::get('/dashboard', [DashboardController::class, 'index'])
+                Route::get('/dashboard', [DashboardController::class, 'admin'])
                     ->name('dashboard');
+                Route::get('/burial/history', [BurialServiceController::class, 'history'])
+                    ->name('burial.history');
+                Route::get('/burial/new', [BurialServiceController::class, 'new'])
+                    ->name('burial.new');
+                Route::post('/burial/store', [BurialServiceController::class, 'store'])
+                    ->name('burial.store');
+                    
+                Route::get('/burial/providers', [BurialServiceController::class, 'providers'])
+                    ->name('burial.providers');
+                Route::get('/burial/new/provider', [BurialServiceProviderController::class, 'newProvider'])
+                    ->name('burial.new.provider');
+                Route::post('/burial/new/provider/store', [BurialServiceProviderController::class, 'store'])
+                    ->name('burial.new.provider.store');
+                Route::resource('assistance', AssistanceController::class);
             });
+
         // user role
         Route::middleware('role:user')
             ->prefix('user')
@@ -73,7 +91,7 @@ Route::middleware(['auth'])
             ->group(function () {
                 Route::post('/logout', [UserController::class, 'logout'])
                     ->name('logout');
-                Route::get('/dashboard', [DashboardController::class, 'index'])
+                Route::get('/dashboard', [DashboardController::class, 'user'])
                     ->name('dashboard');
             });
     });

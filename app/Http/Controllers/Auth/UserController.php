@@ -46,12 +46,14 @@ class UserController extends Controller
 
     public function logout()
     {
-        $user = $this->userServices->logout();
+        $user = Auth::user();
         
         activity()
-            ->performedOn($user)
-            ->causedBy($user)
-            ->log('Successful logout');
+        ->performedOn($user)
+        ->causedBy($user)
+        ->log('Successful logout');
+        
+        $user = $this->userServices->logout();
         
         return redirect()
             ->route('login.page')

@@ -21,6 +21,10 @@ class DatabaseSeeder extends Seeder
             ReligionSeeder::class,
             SexSeeder::class,
             BarangaySeeder::class,
+            BaoAccountSeeder::class,
+            NonRelativeRelationships::class,
+            SampleBurialServiceProviders::class,
+            SpouseRelationship::class,
         ]);
     }
 }
