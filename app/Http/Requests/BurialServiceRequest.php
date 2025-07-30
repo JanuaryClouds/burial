@@ -30,7 +30,7 @@ class BurialServiceRequest extends FormRequest
             "burial_address" => "string|required|max:255",
             "barangay_id" => "required|numeric|exists:barangays,id",
             "start_of_burial" => "date|required",
-            "end_of_burial"=> "date|required",
+            "end_of_burial"=> "date|required|after:start_of_burial",
             "burial_service_provider" => "required|numeric|exists:burial_service_providers,id",
             "collected_funds" => "string|required|max:255",
             "remarks"=> "nullable|string|max:255",
