@@ -52,7 +52,7 @@
             <hr class="border-2 border-dashed border-gray-700">
 
             <div class="flex flex-col gap-2">
-                <h4 class="text-lg font-semibold">Burial Service Details*</h4>
+                <h4 class="text-lg font-semibold">Burial Service Details</h4>
                 <h5 class="">Address of Burial</h5>
                 <div class="flex justify-between items-center w-full gap-2">
                     <span class="flex flex-col w-4/6 justify-between">
@@ -144,8 +144,7 @@
             <h4 class="text-lg font-semibold">Remarks</h4>
             <div class="flex justify-between items-start w-full gap-2">
                 <span class="flex flex-col w-full justify-between">
-                    <textarea type="text" rows="4" name="provider_remarks" class="border-2 border-gray-300 rounded-md px-2 py-1">
-                    </textarea>
+                    <textarea rows="4" name="provider_remarks" class="border-2 border-gray-300 rounded-md px-2 py-1"></textarea>
                 </span>
             </div>
         </div>
