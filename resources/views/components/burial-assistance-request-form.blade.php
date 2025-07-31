@@ -1,3 +1,5 @@
+@props(['serviceRequest' => null])
+
 <form action="{{ route('burial.request.store') }}" method="POST" class="flex flex-col items-center gap-12" enctype="multipart/form-data">
     @csrf
     <div class="container mx-auto p-4 bg-white shadow-lg rounded-md">
@@ -17,11 +19,11 @@
             <h4 class="fw-semibold text-lg-start">Details of the Deceased</h4>
             <div class="flex justify-between items-start w-full gap-2">
                 <span class="flex flex-col w-1/3 justify-between">
-                    <input type="text" required name="deceased_lastname" id="deceased_lastname" class="border-2 border-gray-300 rounded-md px-2 py-1">
+                    <input type="text" required name="deceased_lastname" id="deceased_lastname" class="border-2 border-gray-300 rounded-md px-2 py-1" {{ $serviceRequest ? 'readonly disabled' : '' }} value="{{ $serviceRequest ? Str::mask($serviceRequest->deceased_lastname, '*', 2) : '' }}">
                     <label for="deceased_lastname" class="text-sm text-gray-400 text-center">Last Name*</label>
                 </span>
                 <span class="flex flex-col w-2/3 justify-between">
-                    <input type="text" required name="deceased_firstname" id="deceased_firstname" class="border-2 border-gray-300 rounded-md px-2 py-1">
+                    <input type="text" required name="deceased_firstname" id="deceased_firstname" class="border-2 border-gray-300 rounded-md px-2 py-1" {{ $serviceRequest ? 'readonly disabled' : '' }} value="{{ $serviceRequest ? Str::mask($serviceRequest->deceased_firstname, '*', 2) : '' }}">
                     <label for="deceased_firstname" class="text-sm text-gray-400 text-center">First Name M.I.*</label>
                 </span>
             </div>
@@ -31,19 +33,26 @@
             </span>
             <div class="flex justify-start items-center w-full gap-2">
                 <span class="flex flex-col w-1/3 justify-between">
-                    <input type="text" required name="representative" id="representative" class="border-2 border-gray-300 rounded-md px-2 py-1">
+                    <input type="text" required name="representative" id="representative" class="border-2 border-gray-300 rounded-md px-2 py-1"
+                    {{ $serviceRequest ? 'readonly disabled' : '' }} value="{{ $serviceRequest ? Str::mask($serviceRequest->representative, '*', 2) : '' }}">
                     <label for="representative" class="text-sm text-gray-400 text-center">Full Name*</label>
                 </span>
                 <span class="flex flex-col w-1/3 justify-between">
-                    <input type="text" required name="representative_contact" id="representative_contact" class="border-2 border-gray-300 rounded-md px-2 py-1">
+                    <input type="text" required name="representative_contact" id="representative_contact" class="border-2 border-gray-300 rounded-md px-2 py-1" 
+                    {{ $serviceRequest ? 'readonly disabled' : '' }} value="{{ $serviceRequest ? Str::mask($serviceRequest->representative_contact, '*', 2) : '' }}">
                     <label for="representative_contact" class="text-sm text-gray-400 text-center">Contact Details*</label>
                 </span>
 
                 <span class="flex flex-col w-1/3 justify-between">
-                    <select required name="rep_relationship" id="rep_relationship" class="border-2 border-gray-300 rounded-md px-2 py-1">
-                        <option value="">Select Relationship</option>
+                    <select required name="rep_relationship" id="rep_relationship" class="border-2 border-gray-300 rounded-md px-2 py-1"
+                    {{ $serviceRequest ? 'readonly disabled' : '' }}>
+                        @if ($serviceRequest)
+                            <option value="{{ $serviceRequest->rep_relationship }}">{{ $relationships->firstWhere('id', $serviceRequest->rep_relationship)->name ?? 'Unknown' }}</option>
+                        @else
+                            <option value="">Select Relationship*</option>
+                        @endif
                         @foreach ($relationships as $relationship)
-                        <option value="{{ $relationship->id }}">{{ $relationship->name }}</option>
+                            <option value="{{ $relationship->id }}">{{ $relationship->name }}</option>
                         @endforeach
                     </select>
                     <label for="rep_relationship" class="text-sm text-gray-400 text-center">Relationship to the Deceased*</label>
@@ -58,12 +67,18 @@
                 <h5>Address of Burial</h5>
                 <div class="flex justify-between items-center w-full gap-2">
                     <span class="flex flex-col w-4/6 justify-between">
-                        <input type="text" required name="burial_address" id="burial_address" class="border-2 border-gray-300 rounded-md px-2 py-1">
+                        <input type="text" required name="burial_address" id="burial_address" class="border-2 border-gray-300 rounded-md px-2 py-1"
+                        {{ $serviceRequest ? 'readonly disabled' : '' }} value="{{ $serviceRequest ? Str::mask($serviceRequest->burial_address, '*', 2) : '' }}">
                         <label for="burial_address" class="text-sm text-gray-400 text-center">Building Number, House No., Street*</label>
                     </span>
                     <span class="flex flex-col w-2/6 justify-between">
-                        <select name="barangay_id" id="barangay_id" class="border-2 border-gray-300 rounded-md px-2 py-1">
-                            <option value="">Select Barangay</option>
+                        <select name="barangay_id" id="barangay_id" class="border-2 border-gray-300 rounded-md px-2 py-1"
+                        {{ $serviceRequest ? 'readonly disabled' : '' }}>
+                            @if ($serviceRequest)
+                                <option value="{{ $serviceRequest->barangay_id }}">{{ $barangays->firstWhere('id', $serviceRequest->barangay_id)->name ?? 'Unknown' }}</option>
+                            @else
+                                <option value="">Select Barangay*</option>
+                            @endif
                             @foreach ($barangays as $barangay)
                                 <option value="{{ $barangay->id }}">{{ $barangay->name }}</option>
                             @endforeach
@@ -75,11 +90,15 @@
                     <h5 class="mr-4">Date of Burial</h5>
                     <span class="flex justify-between items-center gap-2">
                         <label for="start_of_burial" class="text-sm text-gray-400 text-center">Start*</label>
-                        <input type="date" required name="start_of_burial" id="start_of_burial" class="border-2 border-gray-300 rounded-md px-2 py-1">
+                        <input type="date" required name="start_of_burial" id="start_of_burial" class="border-2 border-gray-300 rounded-md px-2 py-1"
+                        {{ $serviceRequest ? 'hidden' : '' }}>
+                        <p class="text-sm text-gray-700 pt-3 fw-semibold {{ $serviceRequest ? '' : 'hidden' }}">{{ $serviceRequest ? Str::limit($serviceRequest->start_of_burial, 10) : '' }}</p>
                     </span>
                     <span class="flex justify-between items-center gap-2">
                         <label for="end_of_burial" class="text-sm text-gray-400 text-center">End*</label>
-                        <input type="date" required name="end_of_burial" id="end_of_burial" class="border-2 border-gray-300 rounded-md px-2 py-1">
+                        <p class="text-sm text-gray-700 pt-3 fw-semibold {{ $serviceRequest ? '' : 'hidden' }}">{{ $serviceRequest ? Str::limit($serviceRequest->end_of_burial, 10) : '' }}</p>
+                        <input type="date" required name="end_of_burial" id="end_of_burial" class="border-2 border-gray-300 rounded-md px-2 py-1"
+                        {{ $serviceRequest ? 'hidden' : '' }}>
                     </span>
                 </div>
             </div>
@@ -98,8 +117,10 @@
                     accept="image/*"
                     multiple
                     required
-                    class="w-full border-2 border-gray-300 rounded-md px-2 py-1"
+                    {{ $serviceRequest ? 'readonly disabled' : '' }}
+                    class="w-full border-2 border-gray-300 rounded-md px-2 py-1 {{ $serviceRequest ? 'd-none' : '' }}"
                     >
+                <p class="text-sm text-gray-400 {{ $serviceRequest ? 'd-block' : 'hidden' }}">Certificate of Death has been uploaded</p>
             </div>
         </div>
         <hr class="border-2 border-dashed border-gray-700">
@@ -107,7 +128,8 @@
             <h4 class="text-lg font-semibold">Remarks</h4>
             <div class="flex justify-between items-start w-full gap-2">
                 <span class="flex flex-col w-full justify-between">
-                    <textarea rows="4" name="provider_remarks" class="border-2 border-gray-300 rounded-md px-2 py-1"></textarea>
+                    <textarea rows="4" name="remarks" class="border-2 border-gray-300 rounded-md px-2 py-1"
+                    {{ $serviceRequest ? 'readonly disabled' : '' }}>{{ $serviceRequest ? $serviceRequest->remarks : '' }}</textarea>
                 </span>
             </div>
         </div>
@@ -116,7 +138,7 @@
     <!-- Confirmation Modal -->
     <!-- Button trigger modal -->
     <div
-        class="row justify-content-center align-items-center g-2"
+        class="row justify-content-center align-items-center g-2 {{ $serviceRequest ? 'd-none' : '' }}"
      >
         <div
             class="col"
@@ -195,10 +217,10 @@
             // Use above variables to manipulate the DOM
         });
     </script>
-    <span class="flex gap-1">
+    <span class="flex gap-1 {{ $serviceRequest ? 'hidden' : '' }}">
         <p class="text-gray-400 text-sm">If you have submitted a request before, please track it instead using the</p>
-        <!-- TODO: Redirect to Tracker -->
-        <a href="" class="text-blue-500 hover:underline text-sm">Tracker</a>
+        <a href="/" class="text-blue-500 hover:underline text-sm">Tracker</a>
+        <p class="text-gray-400 text-sm">from the landing page.</p>
     </span>
 </form>
 
