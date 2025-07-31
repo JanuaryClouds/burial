@@ -96,6 +96,10 @@ Route::middleware(['auth'])
                     ->name('burial.new.provider');
                 Route::post('/burial/new/provider/store', [BurialServiceProviderController::class, 'store'])
                     ->name('burial.new.provider.store');
+
+                Route::get('/burial/requests', [BurialAssistanceRequestController::class, 'index'])
+                    ->name('burial.requests');
+
                 Route::resource('assistance', AssistanceController::class);
             });
 
