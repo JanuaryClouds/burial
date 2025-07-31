@@ -28,7 +28,7 @@ class BurialServiceRequest extends FormRequest
             "representative_contact" => "string|required|max:255",
             "rep_relationship" => "required|numeric|exists:relationships,id",
             "burial_address" => "string|required|max:255",
-            "barangay_id" => "required|numeric|exists:barangays,id",
+            "barangay_id" => "required|exists:barangays,id",
             "start_of_burial" => "date|required",
             "end_of_burial"=> "date|required|after:start_of_burial",
             "burial_service_provider" => "required|numeric|exists:burial_service_providers,id",
