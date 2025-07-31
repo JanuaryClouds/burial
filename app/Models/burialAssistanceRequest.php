@@ -30,11 +30,16 @@ class burialAssistanceRequest extends Model
 
     public function barangay()
     {
-        return $this->hasOne(Barangay::class);
+        return $this->belongsTo(Barangay::class);
     }
 
     public static function getAllBurialAssistanceRequests()
     {
         return self::orderBy("created_at", "desc")->get();
+    }
+
+    public static function getBurialAssistanceRequests($status) 
+    {
+        return self::query()->where('status', $status)->orderBy("created_at","desc")->simplePaginate(10);
     }
 }
