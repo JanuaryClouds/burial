@@ -4,16 +4,14 @@
         <th>Address of Burial</th>
         <th>Date of Burial</th>
         <th>Funeral Service</th>
-        <th>Funds Collected</th>
         <th>Action</th>
     </tr>
     @foreach ($burialServices as $service)
     <tr class="*:py-2 *:px-4 border-2 border-gray-100">
         <td>{{ $service->deceased_firstname }} {{ $service->deceased_lastname }}</td>
-        <td>{{ $service->burial_address }}</td>
+        <td>{{ $service->burial_address }}, {{ $service->barangay->name }}</td>
         <td>{{ Str::limit($service->start_of_burial, 10) }} - {{ Str::limit($service->end_of_burial,10) }}</td>
         <td>{{ Str::limit($service->provider->name, 25) }}</td>
-        <td>{{ $service->collected_funds }}</td>
         <td class="flex items-center gap-2">
 
             <!-- TODO: Add a modal to show the image -->
@@ -30,3 +28,4 @@
 
     @endforeach
 </table>
+{{ $burialServices->links() }}
