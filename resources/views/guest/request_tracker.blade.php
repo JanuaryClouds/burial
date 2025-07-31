@@ -23,7 +23,7 @@
                 @endif
             </div>
         </div>
-    <div class="container align-items-start justify-content-start">
-        
+    <div class="container align-items-start justify-content-start mx-auto w-75">
+        <x-burial-assistance-request-form :serviceRequest="$serviceRequest" />
     </div>
 @endsection
