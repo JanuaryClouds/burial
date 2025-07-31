@@ -17,6 +17,7 @@ class BurialService extends Model
         "representative_contact",
         "rep_relationship",
         "burial_address",
+        "barangay_id",
         "start_of_burial",
         "end_of_burial",
         "burial_service_provider",
@@ -24,9 +25,9 @@ class BurialService extends Model
         "remarks",
     ];
 
-    public function barangays()
+    public function barangay()
     {
-        return $this->hasOne(Barangay::class);
+        return $this->belongsTo(Barangay::class);
     }
 
     public function provider() {
@@ -35,7 +36,7 @@ class BurialService extends Model
 
     public static function getAllBurialServices()
     {
-        return self::orderBy("created_at","desc")->get();
+        return self::query()->simplePaginate(10);
     }
 
 }
