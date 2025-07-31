@@ -7,7 +7,9 @@ use Illuminate\Http\Request;
 use App\Http\Requests\BurialAssistanceReqRequest;
 use App\Services\BurialAssistanceRequestService;
 use App\Models\BurialAssistanceRequest;
+use Illuminate\Support\Facades\Storage;
 use Validator;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Str;
 
 class BurialAssistanceRequestController extends Controller
@@ -33,19 +35,20 @@ class BurialAssistanceRequestController extends Controller
         }
         
         $serviceRequest = $this->burialAssistanceRequestService->store($data);
-        $filename = "burial-assistance-request-{$serviceRequest->id}";
         
         if ($serviceRequest && $request->hasFile('images')) {
             foreach ($request->file('images') as $index => $file) {
-                $filenameWithIndex = "{$filename}-{$index}." . $file->getClientOriginalExtension();
-                $file->storeAs('death_certificates', $filenameWithIndex, 'public');
+                $extension = $file->getClientOriginalExtension();
+                $filename = "{$serviceRequest->uuid}-{$index}.".$extension;
+
+                $encryptedFile = Crypt::encrypt($file->getContent());
+                Storage::put('/public/death_certificates/' . $filename, $encryptedFile);
             }
 
             return redirect()->route('guest.request.submit.success')->with('success', 'Burial Assistance Request created successfully.')->with('service', $serviceRequest->uuid);
         } else {
             return redirect()->back()->withErrors(['error' => 'Failed to create Burial Assistance Request.']);
-        }
-        
+        }        
     }
 
     public function track(Request $request) {
@@ -59,5 +62,10 @@ class BurialAssistanceRequestController extends Controller
         }
         // dd($serviceRequest);
         return view('guest.request_tracker', compact('serviceRequest'));
+    }
+
+    public function index() {
+        $serviceRequests = BurialAssistanceRequest::query()->simplePaginate(10);
+        return view('admin.burial-requests', compact('serviceRequests'));
     }
 }
