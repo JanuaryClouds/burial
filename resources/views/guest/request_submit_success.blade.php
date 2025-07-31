@@ -9,7 +9,6 @@
 
         @php
             $serviceRequestUuid = session('service');
-            $serviceRequestUuid = "f65b9274-2e1d-46f6-94dd-6a82cb559fff";
         @endphp
 
         <div class="d-flex justify-content-center">
@@ -66,7 +65,7 @@
                         ></button>
                     </div>
                     <div class="modal-body">
-                        <div class="container-fluid">The code has been copied to your clipboard. Where do you want to be redirected?</div>
+                        <div class="container-fluid">The code has been copied to your clipboard. You can track your request from the landing page.</div>
                     </div>
                     <div class="modal-footer">
                         <a
@@ -77,21 +76,13 @@
                             role="button"
                             >Home</a
                         >
-                        <a
-                            name=""
-                            id=""
-                            class="btn btn-secondary"
-                            href="#"
-                            role="button"
-                            >Tracker</a
-                        >
                     </div>
                 </div>
             </div>
         </div>
         
         <script>
-            var modalId = document.getElementById('modalId');
+            var modalId = document.getElementById('reditectMenu');
         
             modalId.addEventListener('show.bs.modal', function (event) {
                   // Button that triggered the modal
