@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://kit.fontawesome.com/4f2d7302b1.js" crossorigin="anonymous"></script>
-    <title>Burial assistance</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -13,7 +12,7 @@
     @vite('resources/js/app.js')
 </head>
 <body class="bg-[#ff5147] text-gray-800">
-<div class="fixed inset-0 z-20 bg-black/50 bg-opacity-50 transition-opacity lg:hidden"
+    <div class="fixed inset-0 z-20 bg-black/50 bg-opacity-50 transition-opacity lg:hidden"
         :class="sidebarOpen ? 'block' : 'hidden'" @click="sidebarOpen = false">
     </div>
 
@@ -57,6 +56,15 @@
                     </span>
                     <span x-show="sidebarCollapsed" x-cloak class="font-medium">
                         <i class="fa-solid fa-clock-rotate-left me-2"></i>
+                    </span>
+                </a>
+                <a href="{{ route('admin.burial.requests') }}" class="block py-2 px-3 rounded hover:bg-[#F4C027] hover:text-black text-white transition">
+                    <span x-show="!sidebarCollapsed" x-cloak class="font-medium">
+                        <i class="fa-solid fa-list me-2"></i>
+                        Burial Requests
+                    </span>
+                    <span x-show="sidebarCollapsed" x-cloak class="font-medium">
+                        <i class="fa-solid fa-list me-2"></i>
                     </span>
                 </a>
                 <a href="{{ route('admin.burial.providers') }}" class="block py-2 px-3 rounded hover:bg-[#F4C027] hover:text-black text-white transition">
