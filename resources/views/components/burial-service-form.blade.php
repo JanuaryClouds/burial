@@ -60,7 +60,7 @@
                         <label for="burial_address" class="text-sm text-gray-400 text-center">Building Number, House No., Street*</label>
                     </span>
                     <span class="flex flex-col w-2/6 justify-between">
-                        <select name="barangay_id" id="barangay_id" class="border-2 border-gray-300 rounded-md px-2 py-1">
+                        <select name="barangay_id" id="barangay_id" required class="border-2 border-gray-300 rounded-md px-2 py-1">
                             <option value="">Select Barangay</option>
                             @foreach ($barangays as $barangay)
                                 <option value="{{ $barangay->id }}">{{ $barangay->name }}</option>
