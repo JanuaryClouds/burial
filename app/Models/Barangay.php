@@ -34,4 +34,9 @@ class Barangay extends Model
     {
         return $this->hasMany(BurialServiceProvider::class);
     }
+
+    public function burialAssistanceRequests()
+    {
+        return $this->hasMany(BurialAssistanceRequest::class);
+    }
 }
