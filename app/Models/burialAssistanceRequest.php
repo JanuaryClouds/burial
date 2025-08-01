@@ -12,6 +12,9 @@ class burialAssistanceRequest extends Model
 
     protected $table = "burial_assistance_requests";
     protected $BurialAssistanceRequestService;
+    protected $primaryKey = 'uuid';
+    public $incrementing = false;
+    protected $keyType = 'string';
 
     protected $fillable = [
         "uuid",
