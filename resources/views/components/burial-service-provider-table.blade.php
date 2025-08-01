@@ -12,9 +12,9 @@
         <td>{{ $provider->contact_details }}</td>
         <td class="flex items-center gap-2">
             <!-- TODO: Add a modal to show the image -->
-            <button class="bg-yellow-300 rounded-lg p-2">
+            <a href="{{ route('admin.burial.provider.view', ['id' => $provider->id]) }}" class="bg-yellow-300 rounded-lg p-2 cursor:pointer">
                 <i class="fa-solid fa-pen"></i>
-            </button>
+            </a>
         </td>
     </tr>
     @endforeach
