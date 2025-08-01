@@ -4,13 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
-class BurialService extends Model
+class burialAssistanceRequest extends Model
 {
     use HasFactory;
-    protected $table = "burial_services";
-    protected $BurialServiceService;
+
+    protected $table = "burial_assistance_requests";
+    protected $BurialAssistanceRequestService;
+
     protected $fillable = [
+        "uuid",
         "deceased_firstname",
         "deceased_lastname",
         "representative",
@@ -20,8 +24,7 @@ class BurialService extends Model
         "barangay_id",
         "start_of_burial",
         "end_of_burial",
-        "burial_service_provider",
-        "collected_funds",
+        "type_of_assistance",
         "remarks",
     ];
 
@@ -30,13 +33,13 @@ class BurialService extends Model
         return $this->belongsTo(Barangay::class);
     }
 
-    public function provider() {
-        return $this->hasOne(BurialServiceProvider::class, 'id', 'burial_service_provider');
-    }
-
-    public static function getAllBurialServices()
+    public static function getAllBurialAssistanceRequests()
     {
-        return self::query()->simplePaginate(10);
+        return self::orderBy("created_at", "desc")->get();
     }
 
+    public static function getBurialAssistanceRequests($status) 
+    {
+        return self::query()->where('status', $status)->orderBy("created_at","desc")->simplePaginate(10);
+    }
 }

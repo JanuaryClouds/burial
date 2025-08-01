@@ -14,7 +14,7 @@ class UserService
             return Auth::user();
         }
 
-        return null;
+        return Auth::user();
     }
 
     public function logout(): void

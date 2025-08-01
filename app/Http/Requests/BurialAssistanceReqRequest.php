@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class BurialServiceRequest extends FormRequest
+class BurialAssistanceReqRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -19,6 +19,15 @@ class BurialServiceRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'type_of_assistance' => 8, // Default type of assistance
+            'status' => 'pending', // Default status
+        ]);
+    }
+
     public function rules(): array
     {
         return [
@@ -28,12 +37,10 @@ class BurialServiceRequest extends FormRequest
             "representative_contact" => "string|required|max:255",
             "rep_relationship" => "required|numeric|exists:relationships,id",
             "burial_address" => "string|required|max:255",
-            "barangay_id" => "required|exists:barangays,id",
-            "start_of_burial" => "date|required",
-            "end_of_burial"=> "date|required|after:start_of_burial",
-            "burial_service_provider" => "required|numeric|exists:burial_service_providers,id",
-            "collected_funds" => "string|required|max:255",
-            "remarks"=> "nullable|string|max:255",
+            "barangay_id" => "required|numeric|exists:barangays,id",
+            "start_of_burial" => "required|date",
+            "end_of_burial" => "required|date|after:start_of_burial",
+            "remarks" => "string|nullable|max:255",
         ];
     }
 }

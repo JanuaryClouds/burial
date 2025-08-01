@@ -18,12 +18,27 @@ use App\Http\Controllers\{
     ModeOfAssistanceController,
     ClientController,
     BurialServiceController,
-    BurialServiceProviderController
+    BurialServiceProviderController,
+    BurialAssistanceRequestController
 };
 
 Route::get('/', function () {
-    return view('auth.login');
-});
+    return view('landingpage');
+})->name('landing.page');
+
+Route::get('/burial/request', function () {
+    return view('guest.burial_request');
+})->name('guest.burial.request');
+
+Route::get('/burial/request/success', function () {
+    return view('guest.request_submit_success');
+})->name('guest.request.submit.success');
+
+Route::post('/burial/request/tracker', [BurialAssistanceRequestController::class, 'track'])
+    ->name('guest.request.tracker');
+
+Route::post('/burial/request/store', [BurialAssistanceRequestController::class, 'store'])
+    ->name('burial.request.store');
 
 Route::get('/login', [UserController::class, 'loginPage'])
     ->name('login.page');
@@ -81,6 +96,10 @@ Route::middleware(['auth'])
                     ->name('burial.new.provider');
                 Route::post('/burial/new/provider/store', [BurialServiceProviderController::class, 'store'])
                     ->name('burial.new.provider.store');
+
+                Route::get('/burial/requests', [BurialAssistanceRequestController::class, 'index'])
+                    ->name('burial.requests');
+
                 Route::resource('assistance', AssistanceController::class);
             });
 

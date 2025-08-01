@@ -5,7 +5,7 @@
     ['label' => 'Burial History', 'url' => route('admin.burial.history')]
     ]" />
 @endsection
-
+<title>Burial Service History</title>
 <div class="flex flex-col gap-12">
     <header class="flex justify-between items-center">
         <h2 class="font-bold text-xl text-gray-700">Burial Service History</h2>

@@ -32,6 +32,6 @@ class BurialServiceProvider extends Model
     }
 
     public function barangay() {
-        return $this->belongsTo(Barangay::class, 'barangay_id');
+        return $this->belongsTo(Barangay::class);
     }
 }

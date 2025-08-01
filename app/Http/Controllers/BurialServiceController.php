@@ -45,12 +45,10 @@ class BurialServiceController extends Controller
     }
 
     public function history() {
-        // TODO: Fetch all histories of burial services
         return view("admin.burialServiceHistory");
     }
 
     public function providers() {
-        // TODO: Fetch all burial service providers
         return view("admin.burialServiceProviders");
     }
 
