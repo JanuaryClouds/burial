@@ -31,18 +31,50 @@
                 <td></td>
             </tr>
         </thead>
-        <tbody>
-            <tr class="border-2 border-gray-100 *:py-2 *:px-4" x-show="showRequest === 'pending'" x-cloak x-transition>
-                @foreach ($pendingRequests as $request)
+        <tbody x-show="showRequest === 'pending'" x-cloak x-transition">
+            @foreach ($pendingRequests as $request)
+                <tr class="border-2 border-gray-100 *:py-2 *:px-4" x-cloak x-transition>
                     <td>{{ $request->deceased_firstname }} {{ $request->deceased_lastname }}</td>
                     <td>{{ $request->representative }} / {{ $request->representative_contact }}</td>
                     <td>{{ $request->burial_address }}, {{ $request->barangay->name }}</td>
                     <td>{{ Str::limit($request->start_of_burial, 10) }}, {{ Str::limit($request->end_of_burial, 10) }}</td>
                     <td>
-                        <!-- TODO: Add actions to show options Either redirect or open a bunch of modals -->
+                        <a href="{{ route('admin.burial.request.view', ['uuid' => $request->uuid]) }}">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
                     </td>
-                @endforeach
-            </tr>
+                </tr>
+            @endforeach
+        </tbody>
+        <tbody x-show="showRequest === 'approved'" x-cloak x-transition">
+            @foreach ($approvedRequests as $request)
+                <tr class="border-2 border-gray-100 *:py-2 *:px-4" x-cloak x-transition>
+                    <td>{{ $request->deceased_firstname }} {{ $request->deceased_lastname }}</td>
+                    <td>{{ $request->representative }} / {{ $request->representative_contact }}</td>
+                    <td>{{ $request->burial_address }}, {{ $request->barangay->name }}</td>
+                    <td>{{ Str::limit($request->start_of_burial, 10) }}, {{ Str::limit($request->end_of_burial, 10) }}</td>
+                    <td>
+                        <a href="{{ route('admin.burial.request.view', ['uuid' => $request->uuid]) }}">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
+        <tbody x-show="showRequest === 'rejected'" x-cloak x-transition">
+            @foreach ($rejectedRequests as $request)
+                <tr class="border-2 border-gray-100 *:py-2 *:px-4" x-cloak x-transition>
+                    <td>{{ $request->deceased_firstname }} {{ $request->deceased_lastname }}</td>
+                    <td>{{ $request->representative }} / {{ $request->representative_contact }}</td>
+                    <td>{{ $request->burial_address }}, {{ $request->barangay->name }}</td>
+                    <td>{{ Str::limit($request->start_of_burial, 10) }}, {{ Str::limit($request->end_of_burial, 10) }}</td>
+                    <td>
+                        <a href="{{ route('admin.burial.request.view', ['uuid' => $request->uuid]) }}">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                    </td>
+                </tr>
+            @endforeach
         </tbody>
     </table>
 </div>
