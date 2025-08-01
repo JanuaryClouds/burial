@@ -47,8 +47,7 @@
             <h4 class="text-lg font-semibold">Remarks</h4>
             <div class="flex justify-between items-start w-full gap-2">
                 <span class="flex flex-col w-full justify-between">
-                    <textarea type="text" rows="4" name="remarks" class="border-2 border-gray-300 rounded-md px-2 py-1">
-                    </textarea>
+                    <textarea type="text" rows="4" name="remarks" class="border-2 border-gray-300 rounded-md px-2 py-1"></textarea>
                 </span>
             </div>
         </div>
