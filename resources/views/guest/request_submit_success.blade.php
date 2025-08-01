@@ -1,6 +1,7 @@
 @use('SimpleSoftwareIO\QrCode\Facades\QrCode')
 @extends('layouts.guest')
 @section('content')
+<title>Successfully Submited Request</title>
     <div class="container align-items-center justify-content-center">
         <img src="{{ asset('images/CSWDO.webp') }}" alt="" class="img-fluid w-36 mx-auto">
         <h1 class="text-center">Request Submitted Successfully</h1>
