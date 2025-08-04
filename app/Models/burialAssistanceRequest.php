@@ -45,4 +45,19 @@ class burialAssistanceRequest extends Model
     {
         return self::query()->where('status', $status)->orderBy("created_at","desc")->simplePaginate(10);
     }
+
+    public static function getApprovedAssistanceRequestsByDate($period) {
+        $query = self::query()->where('status', 'approved');
+
+        if ($period === "waiting") {
+            $query->where('start_of_burial', '>', now('Asia/Manila'));
+        } elseif ($period === "on-going") {
+            $query->where('start_of_burial', '<=', now('Asia/Manila'))
+                ->where('end_of_burial', '>=', now('Asia/Manila'));
+        } elseif ($period === "completed") {
+            $query->where('end_of_burial', '<', now('Asia/Manila'));
+        }
+
+        return $query->orderBy('start_of_burial', 'desc')->get();
+    }
 }
