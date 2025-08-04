@@ -108,6 +108,9 @@ Route::middleware(['auth'])
                 Route::put('/burial/requests/{uuid}/update', [BurialAssistanceRequestController::class, 'updateStatus'])
                     ->name('burial.request.update');
 
+                Route::get('/burial/request/{uuid}/toService', [BurialServiceController::class, 'requestToService'])
+                    ->name('burial.request.to.service');
+
                 Route::resource('assistance', AssistanceController::class);
             });
 
