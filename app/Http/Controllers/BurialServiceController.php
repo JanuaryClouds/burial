@@ -6,6 +6,7 @@ use App\Http\Requests\BurialServiceRequest;
 use Illuminate\Http\Request;
 use Validator;
 use App\Services\BurialServiceService;
+use App\Models\burialAssistanceRequest;
 
 class BurialServiceController extends Controller
 {
@@ -52,5 +53,13 @@ class BurialServiceController extends Controller
         return view("admin.burialServiceProviders");
     }
 
-    
+    public function requestToService($uuid) {
+        $approvedAssistanceRequest = BurialAssistanceRequest::where('uuid', $uuid)->first();
+
+        if (!$approvedAssistanceRequest) {
+            return redirect()->route('admin.dashboard')->with('error','Unable to find burial assistance request.');
+        }
+
+        return view('admin.request-to-service', compact('approvedAssistanceRequest'));
+    }
 }
