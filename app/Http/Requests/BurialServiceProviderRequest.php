@@ -22,7 +22,7 @@ class BurialServiceProviderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255|unique:burial_service_providers,name,',
+            'name' => 'required|string|max:255',
             'contact_details' => 'required|string|max:255',
             'address' => 'required|string|max:255',
             'barangay_id' => 'required|exists:barangays,id',

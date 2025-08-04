@@ -35,19 +35,29 @@
     </div>
 </div>
 
-<div class="bg-white rounded shadow p-4">
-    <h2 class="font-bold text-gray-700">Charts</h2>
-    <div class="mt-4 w-full h-full flex justify-start">
-        <span class="w-96 h-96">
-            <canvas id="requestsDistributionChart"></canvas>
-        </span>
-        <span class="w-96 h-96">
-            <canvas id="providersDistributionChart"></canvas>
-        </span>
-        <span class="w-96 h-96">
-            <canvas id="servicesDistributionChart"></canvas>
-        </span>
+<div class="flex flex-col bg-white rounded shadow p-4 gap-8">
+    <div class="flex flex-col gap-2">
+        <h2 class="font-bold text-gray-700">Charts</h2>
+        <div class="mt-4 w-full h-full flex justify-start">
+            <span class="w-96 h-96">
+                <canvas id="requestsDistributionChart"></canvas>
+            </span>
+            <span class="w-96 h-96">
+                <canvas id="providersDistributionChart"></canvas>
+            </span>
+            <span class="w-96 h-96">
+                <canvas id="servicesDistributionChart"></canvas>
+            </span>
+        </div>
     </div>
+</div>
+
+<div class="flex flex-col gap-2 bg-white rounded shadow p-4 mt-4">
+    <h2 class="font-bold text-gray-700">Approved Burial Requests</h2>
+    <p class="text-sm text-gray-500 mb-4">These are approved burial assistance requests. Please take note of the duration of the requests' burial. Generate a burial service form once the burial has finished</p>
+    <x-approved-requests-board />
+</div>
+
     <script>
         const requestsDistribution = document.getElementById('requestsDistributionChart').getContext('2d');
         const requestsChartData = {
@@ -147,5 +157,4 @@
         new Chart(servicesDistribution, servicesChartConfig);
     </script>
 
-</div>
 @endsection

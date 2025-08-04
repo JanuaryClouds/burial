@@ -56,7 +56,7 @@ class UserController extends Controller
         $user = $this->userServices->logout();
         
         return redirect()
-            ->route('login.page')
+            ->route('landing.page')
             ->with('success','You have successfully logged out!');
     }
 

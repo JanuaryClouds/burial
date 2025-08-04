@@ -19,11 +19,11 @@
             <h4 class="fw-semibold text-lg-start">Details of the Deceased</h4>
             <div class="flex justify-between items-start w-full gap-2">
                 <span class="flex flex-col w-1/3 justify-between">
-                    <input type="text" required name="deceased_lastname" id="deceased_lastname" class="border-2 border-gray-300 rounded-md px-2 py-1" {{ $serviceRequest ? 'readonly disabled' : '' }} value="{{ $serviceRequest ? Str::mask($serviceRequest->deceased_lastname, '*', 2) : '' }}">
+                    <input type="text" required name="deceased_lastname" id="deceased_lastname" class="border-2 border-gray-300 rounded-md px-2 py-1" {{ $serviceRequest ? 'readonly disabled' : '' }} value="{{ $serviceRequest ? $serviceRequest->deceased_lastname : '' }}">
                     <label for="deceased_lastname" class="text-sm text-gray-400 text-center">Last Name*</label>
                 </span>
                 <span class="flex flex-col w-2/3 justify-between">
-                    <input type="text" required name="deceased_firstname" id="deceased_firstname" class="border-2 border-gray-300 rounded-md px-2 py-1" {{ $serviceRequest ? 'readonly disabled' : '' }} value="{{ $serviceRequest ? Str::mask($serviceRequest->deceased_firstname, '*', 2) : '' }}">
+                    <input type="text" required name="deceased_firstname" id="deceased_firstname" class="border-2 border-gray-300 rounded-md px-2 py-1" {{ $serviceRequest ? 'readonly disabled' : '' }} value="{{ $serviceRequest ? $serviceRequest->deceased_firstname : '' }}">
                     <label for="deceased_firstname" class="text-sm text-gray-400 text-center">First Name M.I.*</label>
                 </span>
             </div>
@@ -34,12 +34,12 @@
             <div class="flex justify-start items-center w-full gap-2">
                 <span class="flex flex-col w-1/3 justify-between">
                     <input type="text" required name="representative" id="representative" class="border-2 border-gray-300 rounded-md px-2 py-1"
-                    {{ $serviceRequest ? 'readonly disabled' : '' }} value="{{ $serviceRequest ? Str::mask($serviceRequest->representative, '*', 2) : '' }}">
+                    {{ $serviceRequest ? 'readonly disabled' : '' }} value="{{ $serviceRequest ? $serviceRequest->representative : '' }}">
                     <label for="representative" class="text-sm text-gray-400 text-center">Full Name*</label>
                 </span>
                 <span class="flex flex-col w-1/3 justify-between">
                     <input type="text" required name="representative_contact" id="representative_contact" class="border-2 border-gray-300 rounded-md px-2 py-1" 
-                    {{ $serviceRequest ? 'readonly disabled' : '' }} value="{{ $serviceRequest ? Str::mask($serviceRequest->representative_contact, '*', 2) : '' }}">
+                    {{ $serviceRequest ? 'readonly disabled' : '' }} value="{{ $serviceRequest ? $serviceRequest->representative_contact : '' }}">
                     <label for="representative_contact" class="text-sm text-gray-400 text-center">Contact Details*</label>
                 </span>
 
@@ -68,7 +68,7 @@
                 <div class="flex justify-between items-center w-full gap-2">
                     <span class="flex flex-col w-4/6 justify-between">
                         <input type="text" required name="burial_address" id="burial_address" class="border-2 border-gray-300 rounded-md px-2 py-1"
-                        {{ $serviceRequest ? 'readonly disabled' : '' }} value="{{ $serviceRequest ? Str::mask($serviceRequest->burial_address, '*', 2) : '' }}">
+                        {{ $serviceRequest ? 'readonly disabled' : '' }} value="{{ $serviceRequest ? $serviceRequest->burial_address : '' }}">
                         <label for="burial_address" class="text-sm text-gray-400 text-center">Building Number, House No., Street*</label>
                     </span>
                     <span class="flex flex-col w-2/6 justify-between">
@@ -117,6 +117,7 @@
                     accept="image/*"
                     multiple
                     required
+                    onchange="limitFiles(this)"
                     {{ $serviceRequest ? 'readonly disabled' : '' }}
                     class="w-full border-2 border-gray-300 rounded-md px-2 py-1 {{ $serviceRequest ? 'd-none' : '' }}"
                     >
@@ -134,6 +135,8 @@
             </div>
         </div>
     </div>
+
+    @if (!auth()->user())
     
     <!-- Confirmation Modal -->
     <!-- Button trigger modal -->
@@ -164,7 +167,7 @@
         role="dialog"
         aria-labelledby="modalTitleId"
         aria-hidden="true"
-    >
+        >
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -172,21 +175,21 @@
                         Confirm Submission
                     </h5>
                     <button
-                        type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close"
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
                     ></button>
                 </div>
                 <div class="modal-body">
                     <div class="container-fluid">
                         <div
-                            class="row justify-content-start align-items-start g-2"
+                        class="row justify-content-start align-items-start g-2"
                         >
-                            <p>Are you certain you want to submit this request? Please ensure all the information you have provided are factual and accurate to the death certificate you provided. Failure to provide correct information will result in the rejection of your request.</p>
-                            <p class="fw-semibold">Note: You cannot edit or change the information after submitting the request</p>
-                        </div>
-                        
+                        <p>Are you certain you want to submit this request? Please ensure all the information you have provided are factual and accurate to the death certificate you provided. Failure to provide correct information will result in the rejection of your request.</p>
+                        <p class="fw-semibold">Note: You cannot edit or change the information after submitting the request</p>
+                    </div>
+                    
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -194,7 +197,7 @@
                         type="button"
                         class="btn btn-secondary"
                         data-bs-dismiss="modal"
-                    >
+                        >
                         Close
                     </button>
                     <button type="submit" class="btn btn-primary">
@@ -216,12 +219,20 @@
     
             // Use above variables to manipulate the DOM
         });
+
+        function limitFiles(input) {
+            if (input.files && input.files.length > 2) {
+                alert("You can only upload two file at a time.");
+                input.value = "";
+            }
+        }
     </script>
     <span class="flex gap-1 {{ $serviceRequest ? 'hidden' : '' }}">
         <p class="text-gray-400 text-sm">If you have submitted a request before, please track it instead using the</p>
         <a href="/" class="text-blue-500 hover:underline text-sm">Tracker</a>
         <p class="text-gray-400 text-sm">from the landing page.</p>
     </span>
+    @endif
 </form>
 
 <script>

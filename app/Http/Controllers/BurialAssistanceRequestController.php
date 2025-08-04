@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Http\Requests\BurialAssistanceReqRequest;
 use App\Services\BurialAssistanceRequestService;
 use App\Models\BurialAssistanceRequest;
+use App\Models\Relationship;
+use App\Models\Barangay;
 use Illuminate\Support\Facades\Storage;
 use Validator;
 use Illuminate\Support\Facades\Crypt;
@@ -25,7 +27,12 @@ class BurialAssistanceRequestController extends Controller
     {
         $data = $request->validated();
         $data['uuid'] = Str::uuid()->toString();
+        
+        if (count($request->file('images')) > 2) {
+            return back()->withErrors(['images' => 'You can only upload up to 2 images.']);
+        }
         $validator = Validator::make($request->all(), [
+            'images' => 'required|array|min:1|max:2',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
@@ -37,12 +44,18 @@ class BurialAssistanceRequestController extends Controller
         $serviceRequest = $this->burialAssistanceRequestService->store($data);
         
         if ($serviceRequest && $request->hasFile('images')) {
+            $fileCount = 0; // Prevent the user from uploading too many files
             foreach ($request->file('images') as $index => $file) {
+                if ($fileCount >= 2) {
+                    break;
+                }
+
                 $extension = $file->getClientOriginalExtension();
                 $filename = "{$serviceRequest->uuid}-{$index}.".$extension;
 
                 $encryptedFile = Crypt::encrypt($file->getContent());
                 Storage::put('/public/death_certificates/' . $filename, $encryptedFile);
+                $fileCount++;
             }
 
             return redirect()->route('guest.request.submit.success')->with('success', 'Burial Assistance Request created successfully.')->with('service', $serviceRequest->uuid);
@@ -60,6 +73,15 @@ class BurialAssistanceRequestController extends Controller
         if (!$serviceRequest) {
             return redirect()->back()->withErrors(['error' => 'Burial Assistance Request not found.']);
         }
+        
+        if (!auth()->check()) {
+            $serviceRequest->deceased_lastname = Str::mask($serviceRequest->deceased_lastname, '*', 3);
+            $serviceRequest->deceased_firstname = Str::mask($serviceRequest->deceased_firstname, '*', 3);
+            $serviceRequest->representative = Str::mask($serviceRequest->representative, '*', 3);
+            $serviceRequest->representative_contact = Str::mask($serviceRequest->representative_contact, '*', 3);
+            $serviceRequest->burial_address = Str::mask($serviceRequest->burial_address, '*', 3);
+        }
+
         // dd($serviceRequest);
         return view('guest.request_tracker', compact('serviceRequest'));
     }
@@ -67,5 +89,58 @@ class BurialAssistanceRequestController extends Controller
     public function index() {
         $serviceRequests = BurialAssistanceRequest::query()->simplePaginate(10);
         return view('admin.burial-requests', compact('serviceRequests'));
+    }
+
+    public function view($uuid) {
+        $serviceRequest = BurialAssistanceRequest::where('uuid', $uuid)->first();
+        if (!$serviceRequest) {
+            return redirect()->back()->withErrors(['error' => 'Burial Assistance Request not found.']);
+        }
+        $requestImageFileName = $serviceRequest->uuid;
+        $requestImages = [];
+
+        $disk = 'public';
+        $folder = 'death_certificates';
+
+        $allFiles = Storage::disk($disk)->files($folder);
+
+        $matchedFiles = collect($allFiles)->filter(function ($filePath) use ($requestImageFileName) {
+            return str_starts_with(basename($filePath), $requestImageFileName);
+        });
+
+        foreach ($matchedFiles as $filePath) {
+            try {
+                $encryptedContent = Storage::disk($disk)->get($filePath);
+                $decryptedContent = Crypt::decrypt($encryptedContent);
+
+                $requestImages[] = [
+                    'filename' => basename($filePath),
+                    'content' => $decryptedContent,
+                ];
+            } catch (\Exception $e) {
+                // Optional: log or skip if decryption fails
+                continue;
+            }
+        }
+
+        $relationships = Relationship::getAllRelationships();
+        $barangays = Barangay::getAllBarangays();
+        return view('admin.manage-request', [
+            'serviceRequest' => $serviceRequest,
+            'relationships'=> $relationships,
+            'barangays' => $barangays,
+            'requestImages' => $requestImages
+        ]);
+    }
+
+    public function updateStatus(Request $request, $uuid) {
+        $serviceRequest = BurialAssistanceRequest::where('uuid', $uuid)->first();
+        if (!$serviceRequest) {
+            return redirect()->back()->withErrors(['error' => 'Burial Assistance Request not found.']);
+        } 
+
+        $serviceRequest->status = $request->status;
+        $serviceRequest->update();
+        return redirect()->route('admin.burial.requests')->with('success', 'Status updated successfully.');
     }
 }

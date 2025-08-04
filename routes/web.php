@@ -96,9 +96,20 @@ Route::middleware(['auth'])
                     ->name('burial.new.provider');
                 Route::post('/burial/new/provider/store', [BurialServiceProviderController::class, 'store'])
                     ->name('burial.new.provider.store');
+                Route::get('/burial/providers/{id}', [BurialServiceProviderController::class, 'view'])
+                    ->name('burial.provider.view');
+                Route::put('/burial/providers/{id}/update', [BurialServiceProviderController::class, 'update'])
+                    ->name('burial.provider.update');
 
                 Route::get('/burial/requests', [BurialAssistanceRequestController::class, 'index'])
                     ->name('burial.requests');
+                Route::get('/burial/requests/{uuid}', [BurialAssistanceRequestController::class, 'view'])
+                    ->name('burial.request.view');
+                Route::put('/burial/requests/{uuid}/update', [BurialAssistanceRequestController::class, 'updateStatus'])
+                    ->name('burial.request.update');
+
+                Route::get('/burial/request/{uuid}/toService', [BurialServiceController::class, 'requestToService'])
+                    ->name('burial.request.to.service');
 
                 Route::resource('assistance', AssistanceController::class);
             });
