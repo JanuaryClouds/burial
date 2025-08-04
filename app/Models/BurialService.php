@@ -38,5 +38,4 @@ class BurialService extends Model
     {
         return self::query()->simplePaginate(10);
     }
-
 }
