@@ -109,15 +109,20 @@
         </div>
     </div>
 
-    <form action="{{ route('admin.burial.request.update', ['uuid' => $serviceRequest->uuid]) }}" method="post" class="flex justify-center gap-2">
-        @csrf
-        @method('PUT')
-        <select name="status" id="status" class="border-2 border-gray-300 rounded-md px-2 py-1">
-            <option value="pending">Pending</option>
-            <option value="approved">Approved</option>
-            <option value="rejected">Rejected</option>
-        </select>
-        <button type="submit" class="px-4 py-2 text-white bg-gray-700 rounded-md hover:bg-gray-300 hover:text-black transition-colors cursor-pointer">Update Status</button>
-    </form>
+    @if ($serviceRequest->end_of_burial >= now()->format('Y-m-d'))
+        <form action="{{ route('admin.burial.request.update', ['uuid' => $serviceRequest->uuid]) }}" method="post" class="flex justify-center gap-2">
+            @csrf
+            @method('PUT')
+            <select name="status" id="status" class="border-2 border-gray-300 rounded-md px-2 py-1">
+                <option value="{{ $serviceRequest->status }}">{{ Str::ucfirst($serviceRequest->status) }}</option>
+                @foreach (['pending', 'approved', 'rejected'] as $status)
+                    @if ($status != $serviceRequest->status)
+                        <option value="{{ $status }}">{{ Str::ucfirst($status) }}</option>
+                    @endif                
+                @endforeach
+            </select>
+            <button type="submit" class="px-4 py-2 text-white bg-gray-700 rounded-md hover:bg-gray-300 hover:text-black transition-colors cursor-pointer">Update Status</button>
+        </form>
+    @endif
 </div>
 @endsection
