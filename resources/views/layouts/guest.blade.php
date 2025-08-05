@@ -12,10 +12,10 @@
     @vite('resources/css/app.css')
     @vite('resources/js/app.js')
 </head>
-<body class="flex flex-col min-h-screen bg-gray-100 p-4">
-    <main class="flex-grow-1 h-100">
-        @yield('content')
-    </main>
+<body class="min-vh-100"
+style="background: url('{{ asset('images/cover.webp') }}') no-repeat center center / cover;"
+>
+    @yield('content')
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 </body>
 </html>

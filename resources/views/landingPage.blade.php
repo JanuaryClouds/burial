@@ -1,24 +1,30 @@
 @extends('layouts.guest')
 @section('content')
 <title>CSWDO Burial Assistance</title>
-<div class="d-flex min-vh-100 align-items-center justify-content-center">
-    <div class="container align-items-center justify-content-center bg-white p-4 rounded shadow mx-auto w-100 w-md-75 w-lg-50" style="max-width: 600px;">
-        <div class="container">
-            <img class="w-30 mx-auto block" src="{{ asset('images/CSWDO.webp') }}" alt="">
+<div 
+    class="container d-flex min-vh-100 min-vw-100 align-items-center justify-content-center"
+>
+    <div
+        class="row flex-column justify-content-center align-items-center g-2 bg-white p-4 rounded shadow mx-auto w-50 w-md-75 w-lg-50"
+    >
+        <div class="col d-flex flex-column container">
+            <img class="w-25 mx-auto" src="{{ asset('images/CSWDO.webp') }}" alt="" >
             <h3 class="text-center fw-semibold">Welcome to CSWDO Burial Assistance</h3>
         </div>
-        <div class="container flex flex-column gap-4">
-            <p class="text-center text-sm text-gray-600">Please choose your next action</p>
-            <div class="flex flex-col gap-4 w-full">
-                <a
-                    name=""
-                    id=""
-                    class="btn btn-primary w-50 mx-auto"
-                    href="{{ route('guest.burial.request') }}"
-                    role="button"
-                    >Request Burial Assistance</a
-                >
-                <form action="{{ route('guest.request.tracker', 'uuid') }}" method="post" class="container flex flex-column align-items-center">
+        <div class="col d-flex flex-column gap-2">
+            <a
+                name=""
+                id=""
+                class="btn btn-primary w-50 mx-auto"
+                href="{{ route('guest.burial.request') }}"
+                role="button"
+                >Request Burial Assistance</a
+            >
+            <p class="text-sm text-center text-gray-600">or use the tracker below if you have requested a burial assistance before</p>
+            <div
+                class="row d-flex flex-column justify-content-center align-items-center g-2"
+            >
+                <form action="{{ route('guest.request.tracker', 'uuid') }}" method="post" class="col d-flex flex-column justify-content-center align-items-center">
                     @csrf
                     <input
                         type="text"
@@ -40,21 +46,19 @@
                         </div>
                     @endif
                 </form>
-                
-                <span class="flex flex-col gap-2 items-center">
-                    <a
-                        name=""
-                        id=""
-                        class="btn btn-outline-secondary w-50 mx-auto"
-                        href="{{ route('login.page') }}"
-                        role="button"
-                        >Manage Burial Services</a
-                    >
-                    <p class="text-sm text-center text-gray-600">This action is only intended for CSWDO Employees and <br> BAO employees of the Taguig City Hall</p>
-                </span>
-                </div>
             </div>
+        </div>
+        <div class="col d-flex flex-column mt-4">
+            <p class="text-sm text-center text-gray-600">For BAO Employees, access the manager below:</p>
+            <a
+                name=""
+                id=""
+                class="btn btn-outline-secondary w-50 mx-auto"
+                href="{{ route('login.page') }}"
+                role="button"
+                >Manage Burial Services</a
+            >
+        </div>
     </div>
 </div>
-
 @endsection
