@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://kit.fontawesome.com/4f2d7302b1.js" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap5.min.css">
+    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap5.min.js"></script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
 
@@ -15,12 +16,12 @@
 <body class="min-vh-100 row row-gap-0 vw-100 g-0">
     <!-- sidebar -->
     <nav
-        class="col-2 row d-flex flex-column g-2 px-4"
+        class="col-2 row d-flex flex-column g-2 shadow"
         x-show="sidebarOpen"
     >
         <!-- sidebar content -->
         <div
-            class="col row flex-column gap-4 bg-white position-sticky g-0 top-0 h-100 overflow-y-auto"
+            class="col row flex-column gap-4 bg-white position-sticky g-0 px-3 top-0 h-100 overflow-y-auto"
         >
             <!-- logo -->
             <div class="col-2 row g-2 mt-0 w-auto">
@@ -34,6 +35,10 @@
             </div>
             <!-- sidebar links -->
             <div class="col-10 g-2 text-black w-100 d-flex flex-column gap-4">
+                <a href="{{ route('admin.dashboard') }}" class="nav-link d-flex gap-2 align-items-center">
+                    <i class="fa-solid fa-house"></i>
+                    Dashboard
+                </a>
                 <a href="{{ route('admin.burial.new') }}" class="nav-link d-flex gap-2 align-items-center">
                     <i class="fa-solid fa-file-circle-plus"></i>
                     New Burial Service
@@ -56,10 +61,12 @@
     </nav>
 
     <!-- main -->
-    <div class="col-10 g-0 vh-100 overflow-y-auto position-relative">
+    <div class="col-10 g-0 vh-100 overflow-y-auto overflow-x-hidden position-relative" style="background-color: #fbfbfb">
         <div class="position-absolute top-0 start-0 w-100 h-25" style="background-color: #ff5147; z-index: 0;"></div>
-        <div class="position-relative container d-flex justify-content-between align-items-center mx-2" style="z-index: 2; height: 5em;">
-            
+        <div class="position-relative container d-flex justify-content-between align-items-center px-4" style="z-index: 2; height: 5em;">
+            <div>
+                <!-- TODO: Search bar here -->
+            </div>
             <div class="dropdown open" style="z-index: 2;">
                 <button
                     class="btn btn-primary dropdown-toggle"
@@ -72,12 +79,12 @@
                     {{ Auth::user()->first_name }} {{ Auth::user()->middle_name }} {{ Auth::user()->last_name }}
                 </button>
                 <div class="dropdown-menu" aria-labelledby="triggerId">
-                        <a href="#" class="btn w-100">
-                            <span x-show="!sidebarCollapsed" x-cloak class="fw-medium"><i
-                                    class="fa-solid fa-user me-2"></i> Profile</span>
-                            <span x-show="sidebarCollapsed" x-cloak class="fw-medium"><i
-                                    class="fa-solid fa-user"></i></span>
-                        </a>
+                    <a href="#" class="btn w-100">
+                        <span x-show="!sidebarCollapsed" x-cloak class="fw-medium"><i
+                                class="fa-solid fa-user me-2"></i> Profile</span>
+                        <span x-show="sidebarCollapsed" x-cloak class="fw-medium"><i
+                                class="fa-solid fa-user"></i></span>
+                    </a>
                     <form action="{{ route('logout') }}" method="POST" class="block">
                         @csrf
                         <button type="submit"
@@ -94,7 +101,7 @@
             </div>
             
         </div>
-        <main class="mx-4 position-relative" style="z-index: 1;">
+        <main class="row mx-4 position-relative p-4 rounded-2 bg-white" style="z-index: 1;">
             @yield('content')
         </main>
     </div>
