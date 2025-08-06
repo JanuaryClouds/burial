@@ -7,11 +7,100 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
 
     @vite('resources/css/app.css')
     @vite('resources/js/app.js')
 </head>
-<body class="bg-[#ff5147] text-gray-800">
+<body class="min-vh-100 row row-gap-0 vw-100 g-0">
+    <!-- sidebar -->
+    <nav
+        class="col-2 row d-flex flex-column g-2 px-4"
+        x-show="sidebarOpen"
+    >
+        <!-- sidebar content -->
+        <div
+            class="col row flex-column gap-4 bg-white position-sticky g-0 top-0 h-100 overflow-y-auto"
+        >
+            <!-- logo -->
+            <div class="col-2 row g-2 mt-0 w-auto">
+                <div class="col-4 mt-0">
+                    <img src="{{ asset('images/CSWDO.webp') }}" alt="CSWDO Logo" class="w-100 mt-0">
+                </div>
+                <div class="col row d-flex flex-column">
+                    <p class="fw-semibold mb-0">CSWDO</p>
+                    <p class="fw-semibold text-black mb-0">Burial Assistance</p>
+                </div>
+            </div>
+            <!-- sidebar links -->
+            <div class="col-10 g-2 text-black w-100 d-flex flex-column gap-4">
+                <a href="{{ route('admin.burial.new') }}" class="nav-link d-flex gap-2 align-items-center">
+                    <i class="fa-solid fa-file-circle-plus"></i>
+                    New Burial Service
+                </a>
+                <a href="{{ route('admin.burial.history') }}" class="nav-link d-flex gap-2 align-items-center">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    Burial History
+                </a>
+                <a href="{{ route('admin.burial.requests') }}" class="nav-link d-flex gap-2 align-items-center">
+                    <i class="fa-solid fa-list"></i>
+                    Burial Requests
+                </a>
+                <a href="{{ route('admin.burial.providers') }}" class="nav-link d-flex gap-2 align-items-center">
+                    <i class="fa-solid fa-building" style="margin-left: 1.5px; margin-right: 1.5px;"></i>
+                    Burial Service Providers
+                </a>
+            </div>
+
+        </div>
+    </nav>
+
+    <!-- main -->
+    <div class="col-10 g-0 vh-100 overflow-y-auto position-relative">
+        <div class="position-absolute top-0 start-0 w-100 h-25" style="background-color: #ff5147; z-index: 0;"></div>
+        <div class="position-relative container d-flex justify-content-between align-items-center mx-2" style="z-index: 2; height: 5em;">
+            
+            <div class="dropdown open" style="z-index: 2;">
+                <button
+                    class="btn btn-primary dropdown-toggle"
+                    type="button"
+                    id="triggerId"
+                    data-bs-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                >
+                    {{ Auth::user()->first_name }} {{ Auth::user()->middle_name }} {{ Auth::user()->last_name }}
+                </button>
+                <div class="dropdown-menu" aria-labelledby="triggerId">
+                        <a href="#" class="btn w-100">
+                            <span x-show="!sidebarCollapsed" x-cloak class="fw-medium"><i
+                                    class="fa-solid fa-user me-2"></i> Profile</span>
+                            <span x-show="sidebarCollapsed" x-cloak class="fw-medium"><i
+                                    class="fa-solid fa-user"></i></span>
+                        </a>
+                    <form action="{{ route('logout') }}" method="POST" class="block">
+                        @csrf
+                        <button type="submit"
+                            class="btn w-100">
+                            <span x-show="!sidebarCollapsed" x-cloak class="fw-medium">
+                                <i class="fa-solid fa-right-from-bracket me-2"></i> Logout
+                            </span>
+                            <span x-show="sidebarCollapsed" x-cloak class="fw-medium">
+                                <i class="fa-solid fa-right-from-bracket"></i>
+                            </span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+        </div>
+        <main class="mx-4 position-relative" style="z-index: 1;">
+            @yield('content')
+        </main>
+    </div>
+    
+
+<!--
     <div class="fixed inset-0 z-20 bg-black/50 bg-opacity-50 transition-opacity lg:hidden"
         :class="sidebarOpen ? 'block' : 'hidden'" @click="sidebarOpen = false">
     </div>
@@ -126,11 +215,13 @@
                     @endif
                 </nav>
                 <main class="p-5 overflow-y-auto">
-                    @yield('content')
                 </main>
             </div>
         </div>
     </div>
     @stack('scripts')
+-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+
 </body>
 </html>
