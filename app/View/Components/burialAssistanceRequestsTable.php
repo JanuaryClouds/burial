@@ -22,9 +22,7 @@ class burialAssistanceRequestsTable extends Component
      */
     public function render(): View|Closure|string
     {
-        $pendingRequests = burialAssistanceRequest::getBurialAssistanceRequests('pending');
-        $approvedRequests = burialAssistanceRequest::getBurialAssistanceRequests('approved');
-        $rejectedRequests = burialAssistanceRequest::getBurialAssistanceRequests('rejected');
-        return view('components.burial-assistance-requests-table', compact('pendingRequests', 'approvedRequests', 'rejectedRequests'));
+        $allRequests = burialAssistanceRequest::getAllBurialAssistanceRequests();
+        return view('components.burial-assistance-requests-table', compact('allRequests'));
     }
 }
