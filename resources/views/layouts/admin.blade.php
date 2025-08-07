@@ -6,9 +6,9 @@
     <script src="https://kit.fontawesome.com/4f2d7302b1.js" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.bootstrap5.min.css">
-    <script src="https://cdn.datatables.net/2.3.2/js/dataTables.bootstrap5.min.js"></script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.18/index.global.min.js"></script>
 
     @vite('resources/css/app.css')
     @vite('resources/js/app.js')
@@ -34,24 +34,24 @@
                 </div>
             </div>
             <!-- sidebar links -->
-            <div class="col-10 g-2 text-black w-100 d-flex flex-column gap-4">
-                <a href="{{ route('admin.dashboard') }}" class="nav-link d-flex gap-2 align-items-center">
+            <div class="col-10 g-2 text-black w-100 d-flex flex-column gap-1">
+                <a href="{{ route('admin.dashboard') }}" class="nav-link btn btn-link d-flex gap-2 align-items-center">
                     <i class="fa-solid fa-house"></i>
                     Dashboard
                 </a>
-                <a href="{{ route('admin.burial.new') }}" class="nav-link d-flex gap-2 align-items-center">
+                <a href="{{ route('admin.burial.new') }}" class="nav-link btn btn-link d-flex gap-2 align-items-center">
                     <i class="fa-solid fa-file-circle-plus"></i>
                     New Burial Service
                 </a>
-                <a href="{{ route('admin.burial.history') }}" class="nav-link d-flex gap-2 align-items-center">
+                <a href="{{ route('admin.burial.history') }}" class="nav-link btn btn-link d-flex gap-2 align-items-center">
                     <i class="fa-solid fa-clock-rotate-left"></i>
                     Burial History
                 </a>
-                <a href="{{ route('admin.burial.requests') }}" class="nav-link d-flex gap-2 align-items-center">
+                <a href="{{ route('admin.burial.requests') }}" class="nav-link btn btn-link d-flex gap-2 align-items-center">
                     <i class="fa-solid fa-list"></i>
                     Burial Requests
                 </a>
-                <a href="{{ route('admin.burial.providers') }}" class="nav-link d-flex gap-2 align-items-center">
+                <a href="{{ route('admin.burial.providers') }}" class="nav-link btn btn-link d-flex gap-2 align-items-center">
                     <i class="fa-solid fa-building" style="margin-left: 1.5px; margin-right: 1.5px;"></i>
                     Burial Service Providers
                 </a>
@@ -69,7 +69,7 @@
             </div>
             <div class="dropdown open" style="z-index: 2;">
                 <button
-                    class="btn btn-primary dropdown-toggle"
+                    class="btn btn-light dropdown-toggle"
                     type="button"
                     id="triggerId"
                     data-bs-toggle="dropdown"
