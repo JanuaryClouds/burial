@@ -4,7 +4,7 @@
     @csrf
     <div class="container mx-auto p-4 bg-white shadow-lg rounded-md">
         <header class="row d-flex">
-            <span class="d-flex align-middle gap-2">
+            <span class="d-flex align-items-center gap-2">
                 <img src="{{ asset('images/CSWDO.webp') }}" alt="" class="mr-2" style="width: 100px">
                 <span class="d-flex flex-column justify-content-center">
                     <h3 class="fw-semibold">Burial Service Form</h3>
@@ -154,6 +154,14 @@
             <button type="reset" class="btn btn-secondary">
                 Clear
             </button>
+            <a
+                name=""
+                id=""
+                class="btn btn-outline-primary"
+                href="/"
+                role="button"
+                >Cancel</a
+            >
         </div>
     <!-- Modal -->
     <div
@@ -190,12 +198,12 @@
                 </div>
                 <div class="modal-footer">
                     <button
-                    type="button"
-                    class="btn btn-secondary"
-                    data-bs-dismiss="modal"
+                        type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal"
                     >
-                    Close
-                </button>
+                        Close
+                    </button>
                     <button type="submit" class="btn btn-primary">
                         Confirm Submission
                     </button>
