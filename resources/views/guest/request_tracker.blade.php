@@ -7,7 +7,7 @@
         class="row fixed-top z-1 justify-content-center align-items-center p-4 bg-white bg-opacity-75 shadow"
     >
         <div class="col">
-            <a href="/" class="text-decoration-none text-primary">
+            <a href="/" class="btn btn-primary">
                 <i class="fa-solid fa-arrow-left"></i>
                 Back
             </a>
