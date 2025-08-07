@@ -39,7 +39,7 @@
         </div>
     </div>
     
-    <h4 class="g-0">Charts</h4>
+    <h4 class="g-0 mt-4">Charts</h4>
     <div class="row justify-content-center align-items-center gap-2">
         <span class="col">
             <canvas id="requestsDistributionChart"></canvas>
@@ -53,11 +53,19 @@
     </div>
     
     <div
-    class="row flex-column gap-2 g-0"
+        class="row flex-column gap-2 g-0 mt-4"
     >
-    <h4 class="fw-bold">Approved Burial Requests</h4>
-    <p class="">These are approved burial assistance requests. Please take note of the duration of the requests' burial. Generate a burial service form once the burial has finished.</p>
-    <x-approved-requests-board />
+        <h4 class="fw-bold">Schedule of Burials</h4>
+        <p class="">These are approved burial assistance requests. Please take note of the duration of the requests' burial. Generate a burial service form once the burial has finished.</p>
+        <div
+            class="row justify-content-center align-items-center g-2"
+        >
+            <div
+                class="col w-75"
+            >
+                <x-burial-calendar />
+            </div>
+        </div>   
 </div>
 
 <script>
