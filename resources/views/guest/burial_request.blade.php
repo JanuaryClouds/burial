@@ -2,10 +2,10 @@
 @section('content')
                 <title>CSWDO Burial Assistance Form</title>
 
-                                <a href="/" class="fixed-top text-decoration-none text-secondary m-4">
+                                <!-- <a href="/" class="d-flex justify-content-between align-items-center fixed-top text-decoration-none btn btn-secondary m-4" style="width: 6em;">
                                                 <i class="fa-solid fa-arrow-left"></i>
                                                 Back
-                                </a>
+                                </a> -->
                                 
                                 <div class="container d-flex justify-content-center align-middle p-5">
                                                 @if ($errors->any())
