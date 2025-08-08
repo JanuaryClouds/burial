@@ -15,7 +15,7 @@ class BaoAccountSeeder extends Seeder
     public function run(): void
     {
         // TODO: Please change the credentials to be the official BAO account credentials. Credentials provided are placeholder credetials.
-        $userRole = Role::firstOrCreate(['name' => 'user']);
+        $userRole = Role::firstOrCreate(['name' => 'admin']);
 
         $baoAccount = User::firstOrCreate(
             ['email' => 'janmichaelcristianbcruz@gmail.com'],
