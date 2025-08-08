@@ -85,11 +85,16 @@ Route::middleware(['auth'])
                     ->name('dashboard');
                 Route::get('/burial/history', [BurialServiceController::class, 'history'])
                     ->name('burial.history');
-                Route::get('/burial/new', [BurialServiceController::class, 'new'])
+
+                // Burial Service
+                Route::get('/burial/service/new', [BurialServiceController::class, 'new'])
                     ->name('burial.new');
-                Route::post('/burial/store', [BurialServiceController::class, 'store'])
+                Route::get('/burial/service/{id}', [BurialServiceController::class, 'view'])
+                    ->name('burial.view');
+                Route::post('/burial/service/store', [BurialServiceController::class, 'store'])
                     ->name('burial.store');
                     
+                // Burial Service Providers
                 Route::get('/burial/providers', [BurialServiceController::class, 'providers'])
                     ->name('burial.providers');
                 Route::get('/burial/new/provider', [BurialServiceProviderController::class, 'newProvider'])
@@ -101,6 +106,7 @@ Route::middleware(['auth'])
                 Route::put('/burial/providers/{id}/update', [BurialServiceProviderController::class, 'update'])
                     ->name('burial.provider.update');
 
+                // Burial Assistance Requests
                 Route::get('/burial/requests', [BurialAssistanceRequestController::class, 'index'])
                     ->name('burial.requests');
                 Route::get('/burial/requests/{uuid}', [BurialAssistanceRequestController::class, 'view'])
@@ -108,6 +114,7 @@ Route::middleware(['auth'])
                 Route::put('/burial/requests/{uuid}/update', [BurialAssistanceRequestController::class, 'updateStatus'])
                     ->name('burial.request.update');
 
+                // Requests to Service
                 Route::get('/burial/request/{uuid}/toService', [BurialServiceController::class, 'requestToService'])
                     ->name('burial.request.to.service');
 
