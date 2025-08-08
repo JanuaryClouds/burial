@@ -17,15 +17,7 @@
             <td>{{ Str::limit($service->provider->name, 25) }}</td>
             <td class="flex items-center gap-2">
 
-                <!-- TODO: Add a modal to show the image -->
-                <button class="btn btn-primary">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                </button>
-
-                <!-- TODO: Button to Redirect to a dedicated page for burial service details -->
-                <button class="btn btn-secondary">
-                    <i class="fa-solid fa-up-right-from-square"></i>
-                </button>
+                <x-table-actions :data="$service" :type="'service'" />
             </td>
         </tr>
         @endforeach
