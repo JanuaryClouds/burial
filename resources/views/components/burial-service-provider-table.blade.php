@@ -13,11 +13,8 @@
             <td>{{ $provider->name }}</td>
             <td>{{ $provider->address }}, {{ $provider->barangay->name }}</td>
             <td>{{ $provider->contact_details }}</td>
-            <td class="flex items-center gap-2">
-                <!-- TODO: Add a modal to show the image -->
-                <a href="{{ route('admin.burial.provider.view', ['id' => $provider->id]) }}" class="btn btn-primary">
-                    <i class="fa-solid fa-pen"></i>
-                </a>
+            <td class="">
+                <x-table-actions :data="$provider" :type="'provider'" />
             </td>
         </tr>
         @endforeach
