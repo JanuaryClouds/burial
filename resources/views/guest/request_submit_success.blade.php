@@ -1,47 +1,56 @@
 @use('SimpleSoftwareIO\QrCode\Facades\QrCode')
 @extends('layouts.guest')
 @section('content')
+@php
+    $serviceRequestUuid = session('service');
+@endphp
+
 <title>Successfully Submited Request</title>
-    <div class="container align-items-center justify-content-center">
-        <img src="{{ asset('images/CSWDO.webp') }}" alt="" class="img-fluid w-36 mx-auto">
-        <h1 class="text-center">Request Submitted Successfully</h1>
-        <p class="text-center">Your request will be processed. Please ensure the contact details you provided are active.</p>
-        <p class="text-center fw-semibold">Use the QR code below to copy the code to your request or click the button to copy.</p>
-
-        @php
-            $serviceRequestUuid = session('service');
-        @endphp
-
-        <div class="d-flex justify-content-center">
-            <div class="card">
-                <div class="card-header mx-auto bg-white">
-                    @if ($serviceRequestUuid)
-                        {!! QrCode::format('svg')->size(250)->generate($serviceRequestUuid) !!}
-                    @endif
-                </div>
-                <div class="card-body text-center">
-                    <!-- Button trigger modal -->
-                    <button
-                        type="button"
-                        class="btn btn-outline-primary"
-                        data-bs-toggle="modal"
-                        data-bs-target="#reditectMenu"
-                        onclick="copyToClipboard('{{ $serviceRequestUuid }}')"
-                    >
-                        Copy Tracking Code
-                    </button>
-
-                    <script>
-                        function copyToClipboard(text) {
-                            navigator.clipboard.writeText(text).then(function() {
-                            }, function(err) {
-                                console.error('Could not copy text: ', err);
-                            });
-                        }
-                    </script>
+    <div class="container d-flex flex-column min-vh-100 align-items-center justify-content-center" x-cloak x-tranition">
+        <div
+            class="row d-flex flex-column justify-content-center align-items-center g-2 bg-white p-4 rounded shadow mx-auto w-50 w-md-75 w-lg-50"
+        >
+            <div class="col d-flex flex-column">
+                <img src="{{ asset('images/CSWDO.webp') }}" alt="" class="img-fluid mx-auto" style="width: 100px">
+                <h2 class="text-center">Request Submitted Successfully</h2>
+                <p class="text-center text-body">Your request will be processed. Please ensure the contact details you provided are active.</p>
+                <p class="text-center fw-semibold text-danger">Use the QR code below to copy the code to your request or click the button to copy.<br>Do NOT share your code to anyone who are not affiliated with the request or burial.</p>
+            </div>
+            <div class="col d-flex justify-content-center">
+                <div class="card">
+                    <div class="card-header mx-auto bg-white">
+                        @if ($serviceRequestUuid)
+                            {!! QrCode::format('svg')->size(150)->generate($serviceRequestUuid) !!}
+                        @endif
+                    </div>
+                    <div class="card-body text-center">
+                        <!-- Button trigger modal -->
+                        <button
+                            type="button"
+                            class="btn btn-outline-primary"
+                            data-bs-toggle="modal"
+                            data-bs-target="#reditectMenu"
+                            onclick="copyToClipboard('{{ $serviceRequestUuid }}')"
+                        >
+                            Copy Tracking Code
+                        </button>
+    
+                        <script>
+                            function copyToClipboard(text) {
+                                navigator.clipboard.writeText(text).then(function() {
+                                }, function(err) {
+                                    console.error('Could not copy text: ', err);
+                                });
+                            }
+                        </script>
+                    </div>
                 </div>
             </div>
         </div>
+        
+
+
+
 
         <!-- Modal -->
         <div

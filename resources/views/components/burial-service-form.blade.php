@@ -1,90 +1,87 @@
-<form action="{{ route('admin.burial.store') }}" method="post" enctype="multipart/form-data" id="burialServiceForm" class="flex flex-col items-center gap-12">
+<form action="{{ route('admin.burial.store') }}" method="post" enctype="multipart/form-data" id="burialServiceForm" class="row flex-column w-75 mx-auto gap-4">
     @csrf
     @method('post')
 
-    <div class="flex flex-col gap-4 bg-white shadow-lg rounded-md p-4 mx-36">
-        <header class="flex justify-between">
-            <span class="flex justify-between items-center gap-2">
-                <img src="{{ asset('images/CSWDO.webp') }}" alt="" class="w-24 mr-2">
-                <span class="flex flex-col gap-2">
-                    <h3 class="text-4xl font-semibold">Burial Service Form</h3>
+    <div class="container mx-auto p-4 gap-4 bg-white shadow rounded-md p-4">
+        <header class="row d-flex">
+            <span class="d-flex align-items-center gap-2">
+                <img src="{{ asset('images/CSWDO.webp') }}" alt="" class="mr-2" style="width: 100px">
+                <span class="d-flex flex-column justify-content-center">
+                    <h3 class="fw-semibold">Burial Service Form</h3>
                     <p class="text-lg text-gray-600">CSWDO Burial Assistance</p>
                 </span>
             </span>
         </header>
-        <p class="text-gray-400 text-xs">All fields marked by (*) are required</p>
-        <hr class="border-2 border-gray-700">
+        <small class="text-xs">All fields marked by (*) are required</small>
+        <hr class="border-1">
 
-        <div class="flex flex-col gap-4">
-            <h4 class="text-lg font-semibold">Details of the Deceased</h4>
-            <div class="flex justify-between items-start w-full gap-2">
-                <span class="flex flex-col w-1/3 justify-between">
-                    <input type="text" required name="deceased_lastname" id="deceased_lastname" class="border-2 border-gray-300 rounded-md px-2 py-1">
-                    <label for="deceased_lastname" class="text-sm text-gray-400 text-center">Last Name*</label>
+        <div class="row row-gap-2">
+            <h4 class="text-black">Details of the Deceased</h4>
+            <div class="d-flex justify-content-between align-items-start gap-2">
+                <span class="d-flex flex-column w-25 justify-content-between">
+                    <input type="text" required name="deceased_lastname" id="deceased_lastname" class="form-control">
+                    <label for="deceased_lastname" class="form-label text-sm text-center">Last Name*</label>
                 </span>
-                <span class="flex flex-col w-2/3 justify-between">
-                    <input type="text" required name="deceased_firstname" id="deceased_firstname" class="border-2 border-gray-300 rounded-md px-2 py-1">
-                    <label for="deceased_firstname" class="text-sm text-gray-400 text-center">First Name*</label>
+                <span class="d-flex flex-column w-75 justify-content-between">
+                    <input type="text" required name="deceased_firstname" id="deceased_firstname" class="form-control">
+                    <label for="deceased_firstname" class="text-sm form-label text-center">First Name M.I.*</label>
                 </span>
             </div>
-            <h4 class="text-lg font-semibold">Representative / Contact Person</h4>
-            <div class="flex justify-start items-center w-full gap-2">
-                <span class="flex flex-col w-1/3 justify-between">
-                    <input type="text" required name="representative" id="representative" class="border-2 border-gray-300 rounded-md px-2 py-1">
-                    <label for="representative" class="text-sm text-gray-400 text-center">Full Name*</label>
+            <h4 class="fw-semibold text-black">Representative / Contact Person</h4>
+            <div class="d-flex justify-content-start align-items-center w-100 gap-1">
+                <span class="d-flex flex-column w-50 justify-content-between">
+                    <input type="text" required name="representative" id="representative" class="form-control">
+                    <label for="representative" class="text-sm form-label text-center">Full Name*</label>
                 </span>
-                <span class="flex flex-col w-1/3 justify-between">
-                    <input type="text" required name="representative_contact" id="representative_contact" class="border-2 border-gray-300 rounded-md px-2 py-1">
-                    <label for="representative_contact" class="text-sm text-gray-400 text-center">Contact Details*</label>
+                <span class="d-flex flex-column w-25 justify-content-between">
+                    <input type="text" required name="representative_contact" id="representative_contact" class="form-control">
+                    <label for="representative_contact" class="text-sm form-label text-center">Contact Details*</label>
                 </span>
-
-                <!-- NOTE: Can be a dropdown menu -->
-                <span class="flex flex-col w-1/3 justify-between">
-                    <select required name="rep_relationship" id="rep_relationship" class="border-2 border-gray-300 rounded-md px-2 py-1">
+                <span class="d-flex flex-column w-25 justify-content-between">
+                    <select required name="rep_relationship" id="rep_relationship" class="form-select">
                         <option value="">Select Relationship</option>
                         @foreach ($relationships as $relationship)
                             <option value="{{ $relationship->id }}">{{ $relationship->name }}</option>
                         @endforeach
                     </select>
-                    <label for="rep_relationship" class="text-sm text-gray-400 text-center">Relationship to the Deceased*</label>
+                    <label for="rep_relationship" class="text-sm form-label text-center">Relationship to the Deceased*</label>
                 </span>
             </div>
-            <hr class="border-2 border-dashed border-gray-700">
-
-            <div class="flex flex-col gap-2">
-                <h4 class="text-lg font-semibold">Burial Service Details</h4>
+            <hr class="border-2">
+            <div class="d-flex flex-column gap-2">
+                <h4 class="fw-semibold text-black">Burial Service Details</h4>
                 <h5 class="">Address of Burial</h5>
-                <div class="flex justify-between items-center w-full gap-2">
-                    <span class="flex flex-col w-4/6 justify-between">
-                        <input type="text" required name="burial_address" id="burial_address" class="border-2 border-gray-300 rounded-md px-2 py-1">
-                        <label for="burial_address" class="text-sm text-gray-400 text-center">Building Number, House No., Street*</label>
+                <div class="d-flex justify-content-between align-items-center w-100 gap-1">
+                    <span class="d-flex flex-column w-75 justify-between">
+                        <input type="text" required name="burial_address" id="burial_address" class="form-control">
+                        <label for="burial_address" class="text-sm form-label text-center">Building Number, House No., Street*</label>
                     </span>
-                    <span class="flex flex-col w-2/6 justify-between">
-                        <select name="barangay_id" id="barangay_id" required class="border-2 border-gray-300 rounded-md px-2 py-1">
+                    <span class="d-flex flex-column w-25 justify-content-between">
+                        <select name="barangay_id" id="barangay_id" required class="form-select">
                             <option value="">Select Barangay</option>
                             @foreach ($barangays as $barangay)
                                 <option value="{{ $barangay->id }}">{{ $barangay->name }}</option>
                             @endforeach
                         </select>
-                        <label for="barangay_id" class="text-sm text-gray-400 text-center">Barangay*</label>
+                        <label for="barangay_id" class="form-label text-center">Barangay*</label>
                     </span>
                 </div>
-                <div class="flex justify-between items-center w-full gap-2">
-                    <h5 class="">Date of Burial</h5>
-                    <span class="flex justify-between items-center gap-2">
-                        <label for="start_of_burial" class="text-sm text-gray-400 text-center">Start*</label>
-                        <input type="date" required name="start_of_burial" id="start_of_burial" class="border-2 border-gray-300 rounded-md px-2 py-1">
+                <div class="d-flex justify-content-start align-items-center w-100 gap-4">
+                    <h5 class="mb-0">Date of Burial</h5>
+                    <span class="d-flex justify-content0between align-items-center gap-1">
+                        <label for="start_of_burial" class="form-label text-center mb-0">Start*</label>
+                        <input type="date" required name="start_of_burial" id="start_of_burial" class="form-control">
                     </span>
-                    <span class="flex justify-between items-center gap-2">
-                        <label for="end_of_burial" class="text-sm text-gray-400 text-center">End*</label>
-                        <input type="date" required name="end_of_burial" id="end_of_burial" class="border-2 border-gray-300 rounded-md px-2 py-1">
+                    <span class="d-flex justify-content-between align-items-center gap-1">
+                        <label for="end_of_burial" class="form-label text-center mb-0">End*</label>
+                        <input type="date" required name="end_of_burial" id="end_of_burial" class="form-control">
                     </span>
                 </div>
             </div>
 
-            <div class="flex justify-between items-center w-full gap-2">
-                <span class="flex flex-col justify-between w-4/5">
-                    <select name="burial_service_provider" required id="burial_service_provider" class="border-2 border-gray-300 rounded-md px-2 py-1">
+            <div class="d-flex justify-content-between align-items-center w-full gap-2">
+                <span class="d-flex flex-column justify-content-between w-75">
+                    <select name="burial_service_provider" required id="burial_service_provider" class="form-select">
                         <option value="">Select Provider</option>
                         @foreach ($providers as $provider)
                             <option
@@ -97,38 +94,40 @@
                             </option>
                         @endforeach
                     </select>
-                    <label for="burial_service_provider" class="text-sm text-gray-400 text-center">Burial/Funeral Service*</label>
+                    <label for="burial_service_provider" class="form-label text-center">Burial/Funeral Service*</label>
                 </span>
-                <span class="flex flex-col w-1/5 justify-between">
-                    <input
-                        type="text"
-                        name="collected_funds"
-                        id="collected_funds"
-                        value="₱"
-                        required
-                        oninput="this.value = this.value.replace(/[^₱\d.]/g, '').replace(/^([^₱])/, '₱$1')"
-                        class="w-full border-2 border-gray-300 rounded-md px-2 py-1"
+                <span class="d-flex flex-column w-25 justify-content-between">
+                    <span class="input-group">
+                        <span class="input-group-text">₱</span>
+                        <input
+                            type="text"
+                            name="collected_funds"
+                            id="collected_funds"
+                            required
+                            class="form-control"
                         />
-                    <label for="collected_funds" class="text-sm text-gray-400 text-center">Collected Funds*</label>
+                        <span class="input-group-text">.00</span>
+                    </span>
+                    <label for="collected_funds" class="form-label text-center">Collected Funds*</label>
                 </span>
             </div>
 
-            <div class="flex justify-between items-center w-full gap-2">
-                <span class="flex flex-col justify-between w-4/5">
+            <div class="d-flex justify-content-between align-items-center w-full gap-2">
+                <span class="d-flex flex-column justify-content-between w-75">
                     <input type="text" readonly name="burial_service_address" id="burial_service_address"
-                    disabled class="border-2 border-gray-200 bg-gray-200 rounded-md px-2 py-1">
-                    <label for="burial_service_address" class="text-sm text-gray-400 text-center">Address of Burial Service</label>
+                    disabled class="form-control">
+                    <label for="burial_service_address" class="form-label text-center">Address of Burial Service</label>
                 </span>
-                <span class="flex flex-col justify-between w-2/5">
-                    <input type="text" name="burial_service_contact" id="burial_service_contact" readonly disabled class="border-2 border-gray-200 bg-gray-200 rounded-md px-2 py-1">
-                    <label for="burial_service_contact" class="text-sm text-gray-400 text-center">Contact Details</label>
+                <span class="d-flex flex-column justify-content-between w-25">
+                    <input type="text" name="burial_service_contact" id="burial_service_contact" readonly disabled class="form-control">
+                    <label for="burial_service_contact" class="form` text-center">Contact Details</label>
                 </span>
             </div>
         </div>
 
-        <hr class="border-2 border-dashed border-gray-700">
-        <div class="flex flex-col gap-2">
-            <h4 class="text-lg font-semibold">Images*</h4>
+        <hr class="border-2">
+        <div class="d-flex flex-column gap-1">
+            <h4 class="fw-semibold">Images*</h4>
             <input 
                 type="file" 
                 name="images[]" 
@@ -136,28 +135,28 @@
                 accept="image/*"
                 multiple
                 required
-                class="w-full border-2 border-gray-300 rounded-md px-2 py-1"
+                class="form-control"
                 >
         </div>
-        <hr class="border-2 border-dashed border-gray-700">
-        <div class="flex flex-col gap-4">
-            <h4 class="text-lg font-semibold">Remarks</h4>
-            <div class="flex justify-between items-start w-full gap-2">
-                <span class="flex flex-col w-full justify-between">
-                    <textarea rows="4" name="provider_remarks" class="border-2 border-gray-300 rounded-md px-2 py-1"></textarea>
+        <hr class="border-2">
+        <div class="d-flex flex-column gap-2">
+            <h4 class="fw-semibold">Remarks</h4>
+            <div class="d-flex justify-content-between align-items-start w-100 gap-1">
+                <span class="d-flex flex-column w-100 justify-content-between">
+                    <textarea rows="4" name="provider_remarks" class="form-control"></textarea>
                 </span>
             </div>
         </div>
     </div>
 
-    <span class="flex justify-center items-center gap-4">
-        <button type="submit" class="px-4 py-2 text-white font-semibold tracking-widest uppercase text-sm bg-yellow-400 rounded-lg hover:bg-yellow-500 hover:text-black transition-colors">
+    <span class="d-flex justify-content-center align-items-center gap-2">
+        <button type="submit" class="btn btn-primary">
             Submit
         </button>
-        <button type="reset" class="px-4 py-2 text-black font-semibold tracking-widest uppercase text-sm bg-gray-100 rounded-lg hover:bg-gray-300 transition-colors">
-            clear
+        <button type="reset" class="btn btn-secondary">
+            Clear
         </button>
-        <a href="{{ route('admin.burial.history') }}" class="px-4 py-2 text-white font-semibold tracking-widest uppercase text-sm bg-gray-700 rounded-lg hover:bg-gray-300 hover:text-black transition-colors">
+        <a href="{{ route('admin.burial.history') }}" class="btn btn-outline-primary">
             Cancel
         </a>
     </span>

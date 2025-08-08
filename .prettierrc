@@ -1,0 +1,22 @@
+{
+  "tabWidth": 2,
+  "useTabs": false,
+  "semi": true,
+  "trailingComma": "es5",
+  "singleAttributePerLine": true,
+  "bladeSingleLineTags": true,
+  "printWidth": 80,
+
+  "plugins": [
+    "@prettier/plugin-php",
+    "prettier-plugin-blade"
+  ],
+  "overrides": [
+    {
+      "files": ["*.blade.php"],
+      "options": {
+        "parser": "blade"
+      }
+    }
+  ]
+}

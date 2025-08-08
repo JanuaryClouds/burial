@@ -3,27 +3,27 @@
 @extends('layouts.guest')
 @section('content')
     <title>CSWDO Burial Assistance Request Tracker</title>
-        <div
-            class="row justify-content-start align-items-baseline g-2"
-        >
-            <a href="/" class="col g-2 text-decoration-none text-secondary flex-shrink-1">
+    <div
+        class="row fixed-top z-1 justify-content-center align-items-center p-4 bg-white bg-opacity-75 shadow"
+    >
+        <div class="col">
+            <a href="/" class="btn btn-primary">
                 <i class="fa-solid fa-arrow-left"></i>
                 Back
             </a>
-            <div
-                class="col flex justify-content-end align-items-baseline gap-3"
-            >
-                <p class="d-none d-md-block">Request Status:</p>
-                @if ($serviceRequest->status === 'pending')
-                    <span class="badge bg-secondary">Pending</span>
-                @elseif ($serviceRequest->status === 'approved')
-                    <span class="badge bg-success">Approved</span>
-                @elseif ($serviceRequest->status === 'rejected')
-                    <span class="badge bg-danger">Rejected</span>
-                @endif
-            </div>
         </div>
-    <div class="container align-items-start justify-content-start mx-auto w-75">
+        <div class="col d-flex justify-content-end align-items-center gap-2">
+            <p class="d-none d-md-inline align-middle mb-0">Request Status:</p>
+            @if ($serviceRequest->status === 'pending')
+                <span class="badge bg-primary h-50">Pending</span>
+            @elseif ($serviceRequest->status === 'approved')
+                <span class="badge bg-success">Approved</span>
+            @elseif ($serviceRequest->status === 'rejected')
+                <span class="badge bg-danger">Rejected</span>
+            @endif
+        </div>
+    </div>
+    <div class="container d-flex justify-content-center align-middle p-5 mt-5">
         <x-burial-assistance-request-form :serviceRequest="$serviceRequest" />
     </div>
 @endsection

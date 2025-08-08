@@ -60,4 +60,19 @@ class burialAssistanceRequest extends Model
 
         return $query->orderBy('start_of_burial', 'desc')->get();
     }
+
+    public static function getBurialSchedules() {
+        $schedule = self::where('status', 'approved')
+        ->get()
+        ->map(function ($request) {
+            return [
+                'title' => 'Burial for ' . $request->deceased_firstname .' '. $request->deceased_lastname,
+                'start' => $request->start_of_burial,
+                'end' => $request->end_of_burial,
+                'url' => route('admin.burial.request.view', ['uuid' => $request->uuid]),
+            ];
+        });
+
+        return $schedule;
+    }
 }
