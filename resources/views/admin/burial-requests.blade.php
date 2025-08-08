@@ -7,6 +7,20 @@
 @endsection
 
     <title>Burial Requests</title>
-    <x-burial-assistance-requests-table />
+
+    <div
+        class="container-fluid flex-column"
+    >
+        <div
+            class="row justify-content-start d-flex flex-column g-2"
+        >
+            <div class="col">
+                <h3>Burial Requests</h3>
+            </div>
+            <div class="col">
+                <x-burial-assistance-requests-table />
+            </div>
+        </div>        
+    </div>
 
 @endsection
