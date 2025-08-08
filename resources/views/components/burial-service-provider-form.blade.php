@@ -2,7 +2,7 @@
     @csrf
     @method('post')
 
-    <div class="container mx-auto p-4 gap-4 bg-white shadow rounded-md p-4">
+    <div class="row flex-column w-75 mx-auto gap-4">
         <header class="row d-flex">
             <span class="d-flex gap-2">
                 <img src="{{ asset('images/CSWDO.webp') }}" alt="" class="mr-2" style="width: 100px;">
