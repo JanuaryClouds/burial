@@ -1,3 +1,7 @@
+@props([
+    'service' => null,
+])
+
 <form action="{{ route('admin.burial.store') }}" method="post" enctype="multipart/form-data" id="burialServiceForm" class="row flex-column w-75 mx-auto gap-4">
     @csrf
     @method('post')
@@ -143,7 +147,7 @@
             <h4 class="fw-semibold">Remarks</h4>
             <div class="d-flex justify-content-between align-items-start w-100 gap-1">
                 <span class="d-flex flex-column w-100 justify-content-between">
-                    <textarea rows="4" name="provider_remarks" class="form-control"></textarea>
+                    <textarea rows="4" name="remarks" class="form-control"></textarea>
                 </span>
             </div>
         </div>
