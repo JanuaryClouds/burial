@@ -6,6 +6,7 @@ use App\Http\Requests\BurialServiceRequest;
 use Illuminate\Http\Request;
 use Validator;
 use Illuminate\Support\Facades\Storage;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Services\BurialServiceService;
 use App\Models\BurialService;
 use App\Models\Relationship;
@@ -76,6 +77,7 @@ class BurialServiceController extends Controller
         return view("admin.burialServiceProviders");
     }
 
+    // TODO
     public function requestToService($uuid) {
         $approvedAssistanceRequest = BurialAssistanceRequest::where('uuid', $uuid)->first();
 
@@ -84,5 +86,39 @@ class BurialServiceController extends Controller
         }
 
         return view('admin.request-to-service', compact('approvedAssistanceRequest'));
+    }
+
+    // TODO: Add messaging API via email or SMS
+    public function contact($id) {
+        $success = true; // placeholder 
+
+        if ($success) {
+            return redirect()->route('admin.burial.history')->with('success','Successfuly messaged burial service representative.');
+        }
+
+        return redirect()->route('admin.burial.history')->with('error','Failed to message burial service representative.');
+    }
+
+    public function exportPDF($id) {
+        $service = BurialService::findOrFail( $id );
+        $relationships = Relationship::getAllRelationships();
+        $barangays = Barangay::getAllBarangays();
+        $providers = BurialServiceProvider::getAllProviders();
+
+        $disk = 'public';
+        $folder = 'burial_images';
+        $prefix = 'burial-service-' . $id . '-';
+
+        $serviceImages = collect(Storage::disk($disk) ->files($folder))
+        ->filter(function ($filePath) use ($prefix) {
+            return str_starts_with(basename($filePath), $prefix);
+        });
+
+        $pdf = Pdf::loadView('admin.printable-service-form', compact('service', 'relationships', 'barangays', 'providers', 'serviceImages'))
+            ->setPaper('letter', 'portrait');
+
+        // return $pdf->download("{$service->deceased_firstname} {$service->deceased_lastname}-burial-service-form.pdf");
+
+        return view('admin.printable-service-form', compact('service', 'relationships', 'barangays', 'providers', 'serviceImages'));
     }
 }
