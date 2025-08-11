@@ -49,4 +49,15 @@ class BurialServiceProviderController extends Controller
         $provider->update($data);
         return redirect()->route('admin.burial.providers')->with('success','Successfully updated the provider\'s information.');
     }
+
+    // TODO: Add messaging API via email or SMS
+    public function contact($id) {
+        $success = true; //placeholder
+
+        if ($success) {
+            return redirect()->route('admin.burial.providers')->with('success', 'Successfully messaged burial service provider.');
+        }
+
+        return redirect()->route('admin.burial.providers')->with('error', 'Failed to message burial service provider.');
+    }
 }
