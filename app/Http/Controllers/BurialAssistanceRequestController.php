@@ -143,4 +143,14 @@ class BurialAssistanceRequestController extends Controller
         $serviceRequest->update();
         return redirect()->route('admin.burial.requests')->with('success', 'Status updated successfully.');
     }
+
+    public function contact($uuid) {
+        $success = true; // placeholder
+
+        if ($success) {
+            return redirect()->route('admin.burial.requests')->with('success', 'Successfully messaged burial assistance request.');
+        }
+
+        return redirect()->route('admin.burial.requests')->with('error','Failed to message burial assistance requestor');
+    }
 }
