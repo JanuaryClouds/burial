@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Storage;
 use Validator;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Str;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class BurialAssistanceRequestController extends Controller
 {
@@ -152,5 +153,44 @@ class BurialAssistanceRequestController extends Controller
         }
 
         return redirect()->route('admin.burial.requests')->with('error','Failed to message burial assistance requestor');
+    }
+
+    public function exportPdf($uuid) {
+        $assistanceRequest = BurialAssistanceRequest::findOrFail($uuid);
+        $relationships = Relationship::getAllRelationships();
+        $barangays = Barangay::getAllBarangays();
+
+        if (!$assistanceRequest) {
+            return redirect()->back()->withErrors(['error' => 'Burial Assistance Request not found.']);
+        }
+        $disk = 'public';
+        $folder = 'death_certificates';
+        $requestImageFileName = $assistanceRequest->uuid;
+
+        $allFiles = Storage::disk($disk)->files($folder);
+        $matchedFiles = collect($allFiles)->filter(function ($filePath) use ($requestImageFileName) {
+            return str_starts_with(basename($filePath), $requestImageFileName);
+        });
+
+        foreach ($matchedFiles as $filePath) {
+            try {
+                $encryptedContent = Storage::disk($disk)->get($filePath);
+                $decryptedContent = Crypt::decrypt($encryptedContent);
+
+                $requestImages[] = [
+                    'filename' => basename($filePath),
+                    'content' => $decryptedContent,
+                ];
+            } catch (\Exception $e) {
+                continue;
+            }
+        }
+
+        $relationships = Relationship::getAllRelationships();
+        $barangays = Barangay::getAllBarangays();
+        $pdf = Pdf::loadView('admin.printable-request-form', compact('assistanceRequest', 'relationships', 'barangays', 'requestImages'))
+            ->setPaper('letter', 'portrait');
+
+        return $pdf->stream("{$assistanceRequest->deceased_firstname} {$assistanceRequest->deceased_lastname}-burial-request-form.pdf");
     }
 }

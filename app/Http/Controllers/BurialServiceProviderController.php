@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Barangay;
 use App\Services\BurialServiceProviderService;
 use App\Http\Requests\BurialServiceProviderRequest;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class BurialServiceProviderController extends Controller
 {
@@ -59,5 +60,14 @@ class BurialServiceProviderController extends Controller
         }
 
         return redirect()->route('admin.burial.providers')->with('error', 'Failed to message burial service provider.');
+    }
+
+    public function exportPdf($id) {
+        $provider = BurialServiceProvider::findOrFail($id);
+        $barangays = Barangay::getAllBarangays();
+        $pdf = Pdf::loadView('admin.printable-provider-form', compact('provider', 'barangays'))
+            ->setPaper('letter', 'portrait');
+
+        return $pdf->stream("{$provider->name}-burial-service-provider-form.pdf");
     }
 }
