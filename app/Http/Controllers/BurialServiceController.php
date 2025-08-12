@@ -119,6 +119,8 @@ class BurialServiceController extends Controller
 
         // return $pdf->download("{$service->deceased_firstname} {$service->deceased_lastname}-burial-service-form.pdf");
 
-        return view('admin.printable-service-form', compact('service', 'relationships', 'barangays', 'providers', 'serviceImages'));
+        return $pdf->stream("{$service->deceased_firstname} {$service->deceased_lastname}-burial-service-form.pdf");
+
+        // return view('admin.printable-service-form', compact('service', 'relationships', 'barangays', 'providers', 'serviceImages'));
     }
 }
