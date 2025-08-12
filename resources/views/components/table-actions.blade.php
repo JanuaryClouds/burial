@@ -4,20 +4,20 @@
 ])
 
 <div
-    class="row justify-content-center align-items-center g-2"
+    class="row align-items-center g-1 flex-nowrap"
 >
     @if ($type === 'service')
         @php
             $contactType = "representative_contact";
             $formLink = route('admin.burial.service.contact', ['id' => $data->id]);
         @endphp
-        <div class="col" title="View Service">
+        <div class="col mt-0" title="View Service">
             <a href="{{ route('admin.burial.view', ['id' => $data->id]) }}" class="btn btn-primary">
                 <i class="fa-solid fa-arrow-up-right-from-square"></i>
             </a>
         </div>
         
-        <div class="col">
+        <div class="col mt-0">
             <a
                 name=""
                 id=""
@@ -28,31 +28,53 @@
                 ><i class="fa-solid fa-file-pdf"></i></a
             >
         </div>
-    @elseif ($type === 'provider')
+        @elseif ($type === 'provider')
         @php
             $contactType = "contact_details";
             $formLink = route('admin.burial.provider.contact', ['id' => $data->id]);
         @endphp
-        <div class="col" title="View Provider">
+        <div class="col mt-0" title="View Provider">
             <a href="{{ route('admin.burial.provider.view', ['id' => $data->id]) }}" class="btn btn-primary">
                 <i class="fa-solid fa-arrow-up-right-from-square"></i>
             </a>
+        </div>
+        <div class="col mt-0">
+            <a
+                name=""
+                id=""
+                class="btn btn-secondary"
+                href="{{ route('admin.burial.provider.print', ['id' => $data->id]) }}"
+                role="button"
+                target="_blank"
+                ><i class="fa-solid fa-file-pdf"></i></a
+            >
         </div>
     @elseif ($type === 'request')
         @php
             $contactType = "representative_details";
             $formLink = route('admin.burial.request.contact', ['uuid' => $data->uuid]);
         @endphp
-        <div class="col" title="View Request">
+        <div class="col mt-0" title="View Request">
             <a href="{{ route('admin.burial.request.view', ['uuid' => $data->uuid]) }}" class="btn btn-primary">
                 <i class="fa-solid fa-arrow-up-right-from-square"></i>
             </a>
         </div>
-    @endif
-
-    <div class="col">
-        <!-- Modal trigger button -->
-        <button
+        <div class="col mt-0">
+            <a
+                name=""
+                id=""
+                class="btn btn-secondary"
+                href="{{ route('admin.burial.request.print', ['uuid' => $data->uuid]) }}"
+                role="button"
+                target="_blank"
+                ><i class="fa-solid fa-file-pdf"></i></a
+            >
+        </div>
+        @endif
+        
+        <div class="col mt-0">
+            <!-- Modal trigger button -->
+            <button
             type="button"
             class="btn btn-secondary"
             data-bs-toggle="modal"
