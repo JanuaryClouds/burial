@@ -24,6 +24,7 @@
                 class="btn btn-secondary"
                 href="{{ route('admin.burial.service.print', ['id' => $data->id]) }}"
                 role="button"
+                target="_blank"
                 ><i class="fa-solid fa-file-pdf"></i></a
             >
         </div>
