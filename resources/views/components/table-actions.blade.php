@@ -16,8 +16,7 @@
                 <i class="fa-solid fa-arrow-up-right-from-square"></i>
             </a>
         </div>
-        
-        <div class="col mt-0">
+        <div class="col mt-0" title="Export to PDF">
             <a
                 name=""
                 id=""
@@ -28,7 +27,7 @@
                 ><i class="fa-solid fa-file-pdf"></i></a
             >
         </div>
-        @elseif ($type === 'provider')
+    @elseif ($type === 'provider')
         @php
             $contactType = "contact_details";
             $formLink = route('admin.burial.provider.contact', ['id' => $data->id]);
@@ -38,7 +37,7 @@
                 <i class="fa-solid fa-arrow-up-right-from-square"></i>
             </a>
         </div>
-        <div class="col mt-0">
+        <div class="col mt-0" title="Export details to PDF">
             <a
                 name=""
                 id=""
@@ -59,7 +58,7 @@
                 <i class="fa-solid fa-arrow-up-right-from-square"></i>
             </a>
         </div>
-        <div class="col mt-0">
+        <div class="col mt-0" title="Export details to PDF">
             <a
                 name=""
                 id=""
@@ -72,7 +71,7 @@
         </div>
         @endif
         
-        <div class="col mt-0">
+        <div class="col mt-0" title="Contact">
             <!-- Modal trigger button -->
             <button
             type="button"

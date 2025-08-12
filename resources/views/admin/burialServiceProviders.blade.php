@@ -9,11 +9,20 @@
 <div class="container d-flex flex-column gap-5">
     <header class="d-flex justify-content-between gap-2">
         <h2 class="fw-bold">Burial Service Providers</h2>
-
-        <a href="{{ route('admin.burial.new.provider') }}" class="btn btn-primary d-flex gap-2 align-items-center">
-            <i class="fa-solid fa-plus"></i>
-            New Burial Service Provider
-        </a>
+        <span class="d-flex gap-2">
+            <a
+                name=""
+                id=""
+                class="btn btn-outline-primary d-flex align-items-center gap-2"
+                href="{{ route('admin.burial.provider.csv') }}"
+                role="button"
+                target="_blank"
+                ><i class="fa-solid fa-file-csv"></i>Export to CSV</a>
+            <a href="{{ route('admin.burial.new.provider') }}" class="btn btn-primary d-flex gap-2 align-items-center">
+                <i class="fa-solid fa-plus"></i>
+                New Burial Service Provider
+            </a>
+        </span>
     </header>
     <x-burial-service-provider-table />
 </div>

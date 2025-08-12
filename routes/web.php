@@ -97,6 +97,8 @@ Route::middleware(['auth'])
                     ->name('burial.service.contact');
                 Route::get('/burial/services/{id}/export', [BurialServiceController::class, 'exportPdf'])
                     ->name('burial.service.print');
+                Route::get('/burial/services/csv', [BurialServiceController::class,'exportCsv'])
+                    ->name('burial.service.csv');
                     
                     // Burial Service Providers
                 Route::get('/burial/providers', [BurialServiceController::class, 'providers'])
@@ -113,6 +115,8 @@ Route::middleware(['auth'])
                     ->name('burial.provider.contact');
                 Route::get('/burial/providers/{id}/export', [BurialServiceProviderController::class, 'exportPdf'])
                     ->name('burial.provider.print');
+                Route::get('/burial/providers/csv', [BurialServiceProviderController::class, 'exportCsv'])
+                    ->name('burial.provider.csv');
                     
                     // Burial Assistance Requests
                 Route::get('/burial/requests', [BurialAssistanceRequestController::class, 'index'])

@@ -8,6 +8,8 @@ use App\Models\Barangay;
 use App\Services\BurialServiceProviderService;
 use App\Http\Requests\BurialServiceProviderRequest;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Exports\BurialServiceProviderExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class BurialServiceProviderController extends Controller
 {
@@ -69,5 +71,10 @@ class BurialServiceProviderController extends Controller
             ->setPaper('letter', 'portrait');
 
         return $pdf->stream("{$provider->name}-burial-service-provider-form.pdf");
+    }
+
+    // TODO: returns an error
+    public function exportCsv() {
+        return Excel::download(new BurialServiceProviderExport(), 'burial_service_providers.csv');
     }
 }

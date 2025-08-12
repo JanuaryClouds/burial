@@ -8,6 +8,8 @@ use Validator;
 use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Services\BurialServiceService;
+use App\Exports\BurialServicesExport;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Models\BurialService;
 use App\Models\Relationship;
 use App\Models\Barangay;
@@ -122,5 +124,9 @@ class BurialServiceController extends Controller
         return $pdf->stream("{$service->deceased_firstname} {$service->deceased_lastname}-burial-service-form.pdf");
 
         // return view('admin.printable-service-form', compact('service', 'relationships', 'barangays', 'providers', 'serviceImages'));
+    }
+
+    public function exportCsv() {
+        return Excel::download(new BurialServicesExport(), 'burial_services.csv');
     }
 }
