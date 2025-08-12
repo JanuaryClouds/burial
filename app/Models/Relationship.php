@@ -28,4 +28,8 @@ class Relationship extends Model
     {
         return $this->belongsTo(ClientBeneficiaryFamily::class);
     }
+
+    public function burialServices() {
+        return $this->hasMany(BurialService::class);
+    }
 }

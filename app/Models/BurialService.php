@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Relationship;
 
 class BurialService extends Model
 {
@@ -32,6 +33,10 @@ class BurialService extends Model
 
     public function provider() {
         return $this->hasOne(BurialServiceProvider::class, 'id', 'burial_service_provider');
+    }
+
+    public function relationship() {
+        return $this->belongsTo(Relationship::class);
     }
 
     public static function getAllBurialServices()
