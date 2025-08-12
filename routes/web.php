@@ -111,6 +111,8 @@ Route::middleware(['auth'])
                     ->name('burial.provider.update');
                 Route::post('/burial/providers/{id}/contact', [BurialServiceProviderController::class, 'contact'])
                     ->name('burial.provider.contact');
+                Route::get('/burial/providers/{id}/export', [BurialServiceProviderController::class, 'exportPdf'])
+                    ->name('burial.provider.print');
                     
                     // Burial Assistance Requests
                 Route::get('/burial/requests', [BurialAssistanceRequestController::class, 'index'])
@@ -121,6 +123,8 @@ Route::middleware(['auth'])
                     ->name('burial.request.update');
                 Route::post('/burial/requests/{uuid}/contact', [BurialAssistanceRequestController::class, 'contact'])
                     ->name('burial.request.contact');
+                Route::get('/burial/requests/{uuid}/export', [BurialAssistanceRequestController::class, 'exportPdf'])
+                    ->name('burial.request.print');
 
                 // Requests to Service
                 Route::get('/burial/request/{uuid}/toService', [BurialServiceController::class, 'requestToService'])
