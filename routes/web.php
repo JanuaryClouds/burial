@@ -83,12 +83,14 @@ Route::middleware(['auth'])
                     ->name('logout');
                 Route::get('/dashboard', [DashboardController::class, 'admin'])
                     ->name('dashboard');
+                    
+                // Burial Service
                 Route::get('/burial/history', [BurialServiceController::class, 'history'])
                     ->name('burial.history');
-
-                // Burial Service
                 Route::get('/burial/service/new', [BurialServiceController::class, 'new'])
                     ->name('burial.new');
+                Route::get('/burial/services/xlsx', [BurialServiceController::class,'exportXlsx'])
+                    ->name('burial.service.xlsx');
                 Route::get('/burial/service/{id}', [BurialServiceController::class, 'view'])
                     ->name('burial.view');
                 Route::post('/burial/service/store', [BurialServiceController::class, 'store'])
@@ -97,12 +99,12 @@ Route::middleware(['auth'])
                     ->name('burial.service.contact');
                 Route::get('/burial/services/{id}/export', [BurialServiceController::class, 'exportPdf'])
                     ->name('burial.service.print');
-                Route::get('/burial/services/csv', [BurialServiceController::class,'exportCsv'])
-                    ->name('burial.service.csv');
                     
-                    // Burial Service Providers
+                // Burial Service Providers
                 Route::get('/burial/providers', [BurialServiceController::class, 'providers'])
                 ->name('burial.providers');
+                Route::get('/burial/providers/xlsx', [BurialServiceProviderController::class, 'exportXslx'])
+                    ->name('burial.provider.xlsx');
                 Route::get('/burial/new/provider', [BurialServiceProviderController::class, 'newProvider'])
                 ->name('burial.new.provider');
                 Route::post('/burial/new/provider/store', [BurialServiceProviderController::class, 'store'])
@@ -115,12 +117,12 @@ Route::middleware(['auth'])
                     ->name('burial.provider.contact');
                 Route::get('/burial/providers/{id}/export', [BurialServiceProviderController::class, 'exportPdf'])
                     ->name('burial.provider.print');
-                Route::get('/burial/providers/csv', [BurialServiceProviderController::class, 'exportCsv'])
-                    ->name('burial.provider.csv');
                     
                     // Burial Assistance Requests
                 Route::get('/burial/requests', [BurialAssistanceRequestController::class, 'index'])
                     ->name('burial.requests');
+                Route::get('/burial/requests/xlsx', [BurialAssistanceRequestController::class, 'exportXlsx'])
+                    ->name('burial.request.xlsx');
                 Route::get('/burial/requests/{uuid}', [BurialAssistanceRequestController::class, 'view'])
                     ->name('burial.request.view');
                 Route::put('/burial/requests/{uuid}/update', [BurialAssistanceRequestController::class, 'updateStatus'])
