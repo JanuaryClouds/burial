@@ -36,7 +36,7 @@ class BurialService extends Model
     }
 
     public function relationship() {
-        return $this->belongsTo(Relationship::class);
+        return $this->belongsTo(Relationship::class, "rep_relationship", 'id');
     }
 
     public static function getAllBurialServices()
