@@ -29,7 +29,7 @@
                 <div class="col-4 mt-0">
                     <img src="{{ asset('images/CSWDO.webp') }}" alt="CSWDO Logo" class="w-100 mt-0">
                 </div>
-                <div class="col row d-flex flex-column">
+                <div class="col row d-flex flex-column justify-content-center">
                     <p class="fw-semibold mb-0">CSWDO</p>
                     <p class="fw-semibold text-black mb-0">Burial Assistance</p>
                 </div>
@@ -70,14 +70,14 @@
             </div>
             <div class="dropdown open" style="z-index: 2;">
                 <button
-                    class="btn btn-light dropdown-toggle"
+                    class="btn btn-light dropdown-toggle d-flex gap-2 align-items-center"
                     type="button"
                     id="triggerId"
                     data-bs-toggle="dropdown"
                     aria-haspopup="true"
                     aria-expanded="false"
                 >
-                    {{ Auth::user()->first_name }} {{ Auth::user()->middle_name }} {{ Auth::user()->last_name }}
+                    <i class="fa-solid fa-user"></i>{{ Auth::user()->first_name }} {{ Auth::user()->middle_name }} {{ Auth::user()->last_name }}
                 </button>
                 <div class="dropdown-menu" aria-labelledby="triggerId">
                     <a href="#" class="btn w-100">
