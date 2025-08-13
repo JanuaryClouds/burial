@@ -24,7 +24,7 @@
                 href="{{ route('admin.burial.service.print', ['id' => $data->id]) }}"
                 role="button"
                 target="_blank"
-                ><i class="fa-solid fa-file-pdf"></i></a
+                ><i class="fa-solid fa-print"></i></a
             >
         </div>
     @elseif ($type === 'provider')
@@ -45,7 +45,7 @@
                 href="{{ route('admin.burial.provider.print', ['id' => $data->id]) }}"
                 role="button"
                 target="_blank"
-                ><i class="fa-solid fa-file-pdf"></i></a
+                ><i class="fa-solid fa-print"></i></a
             >
         </div>
     @elseif ($type === 'request')
@@ -66,7 +66,7 @@
                 href="{{ route('admin.burial.request.print', ['uuid' => $data->uuid]) }}"
                 role="button"
                 target="_blank"
-                ><i class="fa-solid fa-file-pdf"></i></a
+                ><i class="fa-solid fa-print"></i></a
             >
         </div>
         @endif
