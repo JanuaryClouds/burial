@@ -53,7 +53,7 @@
                     Burial Requests
                 </a>
                 <a href="{{ route('admin.burial.providers') }}" class="nav-link btn btn-link d-flex gap-2 align-items-center">
-                    <i class="fa-solid fa-building" style="margin-left: 1.5px; margin-right: 1.5px;"></i>
+                    <i class="fa-solid fa-building" style="padding-left: 2px; margin-right: 1px;"></i>
                     Burial Service Providers
                 </a>
             </div>
