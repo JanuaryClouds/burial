@@ -22,7 +22,7 @@
                     class="btn btn-outline-primary d-flex align-items-center gap-2"
                     href="{{ route('admin.burial.request.xlsx') }}"
                     role="button"
-                    ><i class="fa-solid fa-file-excel"></i>Export to XLSX</a
+                    ><i class="fa-solid fa-file-excel"></i>Export All to XLSX</a
                 >
             </div>
             <div class="col">
