@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\BurialServiceRequest;
 use Illuminate\Http\Request;
-use App\Models\burialAssistanceRequest;
+use App\Models\BurialAssistanceRequest;
 use App\Models\BurialServiceProvider;
 use App\Models\BurialService;
 use Illuminate\Support\Facades\DB;
@@ -18,7 +18,7 @@ class DashboardController extends Controller
 
     public function admin()
     {
-        $requestsData = burialAssistanceRequest::select('barangay_id', DB::raw('count(*) as total'))
+        $requestsData = BurialAssistanceRequest::select('barangay_id', DB::raw('count(*) as total'))
             ->with('barangay')
             ->groupBy('barangay_id')
             ->where('status','pending')
@@ -53,7 +53,7 @@ class DashboardController extends Controller
                 ];
             });
         
-        $serviceRequests = burialAssistanceRequest::getBurialAssistanceRequests('pending');
+        $serviceRequests = BurialAssistanceRequest::getBurialAssistanceRequests('pending');
         $providers = BurialServiceProvider::all();
         $services = BurialService::all();
         return view('admin.dashboard', compact('serviceRequests', 'providers', 'services', 'requestsData', 'providersData', 'servicesData'));

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\BurialAssistanceRequestsExport;
 use App\Http\Requests\BurialServiceRequest;
 use Illuminate\Http\Request;
 use App\Http\Requests\BurialAssistanceReqRequest;
@@ -14,6 +15,7 @@ use Validator;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Str;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
 
 class BurialAssistanceRequestController extends Controller
 {
@@ -192,5 +194,14 @@ class BurialAssistanceRequestController extends Controller
             ->setPaper('letter', 'portrait');
 
         return $pdf->stream("{$assistanceRequest->deceased_firstname} {$assistanceRequest->deceased_lastname}-burial-request-form.pdf");
+    }
+
+    public function exportXlsx() {
+        try {
+            return Excel::download(new BurialAssistanceRequestsExport(), 'burial_assistance_requests.xlsx');
+        } catch (\Throwable $e) {
+            \Log::error('Export error: ' . $e->getMessage());
+            return back()->with('error', 'Export failed: ' . $e->getMessage());
+        }
     }
 }

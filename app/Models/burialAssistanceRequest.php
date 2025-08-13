@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
-class burialAssistanceRequest extends Model
+class BurialAssistanceRequest extends Model
 {
     use HasFactory;
 
@@ -33,7 +33,11 @@ class burialAssistanceRequest extends Model
 
     public function barangay()
     {
-        return $this->belongsTo(Barangay::class);
+        return $this->belongsTo(Barangay::class, "barangay_id", "id");
+    }
+
+    public function relationship() {
+        return $this->belongsTo(Relationship::class, "rep_relationship", 'id');
     }
 
     public static function getAllBurialAssistanceRequests()

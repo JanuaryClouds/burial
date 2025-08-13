@@ -5,7 +5,7 @@ namespace App\View\Components;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
-use App\Models\burialAssistanceRequest;
+use App\Models\BurialAssistanceRequest;
 
 class approvedRequestsBoard extends Component
 {
@@ -22,9 +22,9 @@ class approvedRequestsBoard extends Component
      */
     public function render(): View|Closure|string
     {
-        $waitingBurials = burialAssistanceRequest::getApprovedAssistanceRequestsByDate('waiting');
-        $onGoingBurials = burialAssistanceRequest::getApprovedAssistanceRequestsByDate('on-going');
-        $completedBurials = burialAssistanceRequest::getApprovedAssistanceRequestsByDate('completed');
+        $waitingBurials = BurialAssistanceRequest::getApprovedAssistanceRequestsByDate('waiting');
+        $onGoingBurials = BurialAssistanceRequest::getApprovedAssistanceRequestsByDate('on-going');
+        $completedBurials = BurialAssistanceRequest::getApprovedAssistanceRequestsByDate('completed');
         return view('components.approved-requests-board', compact('waitingBurials', 'onGoingBurials', 'completedBurials'));
     }
 }

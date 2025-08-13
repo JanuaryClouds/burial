@@ -14,7 +14,7 @@ use App\Models\BurialService;
 use App\Models\Relationship;
 use App\Models\Barangay;
 use App\Models\BurialServiceProvider;
-use App\Models\burialAssistanceRequest;
+use App\Models\BurialAssistanceRequest;
 
 class BurialServiceController extends Controller
 {
@@ -126,7 +126,7 @@ class BurialServiceController extends Controller
         // return view('admin.printable-service-form', compact('service', 'relationships', 'barangays', 'providers', 'serviceImages'));
     }
 
-    public function exportCsv() {
-        return Excel::download(new BurialServicesExport(), 'burial_services.csv');
+    public function exportXlsx() {
+        return Excel::download(new BurialServicesExport(), 'burial_services.xlsx');
     }
 }
