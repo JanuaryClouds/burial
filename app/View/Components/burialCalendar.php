@@ -7,7 +7,7 @@ use App\Http\Requests\BurialServiceRequest;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
-use App\Models\burialAssistanceRequest;
+use App\Models\BurialAssistanceRequest;
 
 class burialCalendar extends Component
 {

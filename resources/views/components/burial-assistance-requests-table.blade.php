@@ -1,24 +1,24 @@
-<table id="requestsTable" class="table table-borderless">
+<table id="requestsTable" class="table table-borderless dt-body-center">
     <thead>
         <tr class="bg-primary">
             <th class="text-white">Name of Deceased</th>
             <th class="text-white">Representative / Contact Details</th>
             <th class="text-white">Address</th>
             <th class="text-white">Duration of Burial</th>
+            <th class="text-white">Status</th>
             <th class="text-white">Action</th>
         </tr>
     </thead>
     <tbody>
         @foreach ($allRequests as $request)
-            <tr>
+            <tr class="">
                 <td>{{ $request->deceased_firstname }} {{ $request->deceased_lastname }}</td>
                 <td>{{ $request->representative }} / {{ $request->representative_contact }}</td>
                 <td>{{ $request->burial_address }}, {{ $request->barangay->name }}</td>
                 <td>{{ Str::limit($request->start_of_burial, 10) }}, {{ Str::limit($request->end_of_burial, 10) }}</td>
+                <td>{{ Str::ucfirst($request->status) }}</td>
                 <td>
-                    <a href="{{ route('admin.burial.request.view', ['uuid' => $request->uuid]) }}" class="btn btn-primary">
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                    </a>
+                    <x-table-actions :data="$request" :type="'request'" />
                 </td>
             </tr>
         @endforeach

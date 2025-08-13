@@ -25,13 +25,12 @@ class BurialServiceProvider extends Model
         return self::all();
     }
 
-    public function servicesProvided()
+    public function burialServices()
     {
-        // TODO: create a burial service model
-        // return $this->hasMany();
+        return $this->hasMany(BurialService::class);
     }
 
     public function barangay() {
-        return $this->belongsTo(Barangay::class);
+        return $this->belongsTo(Barangay::class, 'barangay_id', 'id');
     }
 }

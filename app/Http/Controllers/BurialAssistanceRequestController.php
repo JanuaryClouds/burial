@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\BurialAssistanceRequestsExport;
 use App\Http\Requests\BurialServiceRequest;
 use Illuminate\Http\Request;
 use App\Http\Requests\BurialAssistanceReqRequest;
@@ -13,6 +14,8 @@ use Illuminate\Support\Facades\Storage;
 use Validator;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Str;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
 
 class BurialAssistanceRequestController extends Controller
 {
@@ -142,5 +145,63 @@ class BurialAssistanceRequestController extends Controller
         $serviceRequest->status = $request->status;
         $serviceRequest->update();
         return redirect()->route('admin.burial.requests')->with('success', 'Status updated successfully.');
+    }
+
+    public function contact($uuid) {
+        $success = true; // placeholder
+
+        if ($success) {
+            return redirect()->route('admin.burial.requests')->with('success', 'Successfully messaged burial assistance request.');
+        }
+
+        return redirect()->route('admin.burial.requests')->with('error','Failed to message burial assistance requestor');
+    }
+
+    public function exportPdf($uuid) {
+        $assistanceRequest = BurialAssistanceRequest::findOrFail($uuid);
+        $relationships = Relationship::getAllRelationships();
+        $barangays = Barangay::getAllBarangays();
+
+        if (!$assistanceRequest) {
+            return redirect()->back()->withErrors(['error' => 'Burial Assistance Request not found.']);
+        }
+        $disk = 'public';
+        $folder = 'death_certificates';
+        $requestImageFileName = $assistanceRequest->uuid;
+
+        $allFiles = Storage::disk($disk)->files($folder);
+        $matchedFiles = collect($allFiles)->filter(function ($filePath) use ($requestImageFileName) {
+            return str_starts_with(basename($filePath), $requestImageFileName);
+        });
+
+        foreach ($matchedFiles as $filePath) {
+            try {
+                $encryptedContent = Storage::disk($disk)->get($filePath);
+                $decryptedContent = Crypt::decrypt($encryptedContent);
+
+                $requestImages[] = [
+                    'filename' => basename($filePath),
+                    'content' => $decryptedContent,
+                ];
+            } catch (\Exception $e) {
+                continue;
+            }
+        }
+
+        $relationships = Relationship::getAllRelationships();
+        $barangays = Barangay::getAllBarangays();
+        $pdf = Pdf::loadView('admin.printable-request-form', compact('assistanceRequest', 'relationships', 'barangays', 'requestImages'))
+            ->setPaper('letter', 'portrait');
+
+        return $pdf->stream("{$assistanceRequest->deceased_firstname} {$assistanceRequest->deceased_lastname}-burial-request-form.pdf");
+    }
+
+    public function exportXlsx() {
+        try {
+            return Excel::download(new BurialAssistanceRequestsExport(), 'burial_assistance_requests.xlsx');
+        } catch (\Throwable $e) {
+            \Log::error('Export error: ' . $e->getMessage());
+            return back()->with('error', 'Export failed: ' . $e->getMessage());
+        }
     }
 }

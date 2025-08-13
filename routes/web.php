@@ -83,34 +83,60 @@ Route::middleware(['auth'])
                     ->name('logout');
                 Route::get('/dashboard', [DashboardController::class, 'admin'])
                     ->name('dashboard');
+                    
+                // Burial Service
                 Route::get('/burial/history', [BurialServiceController::class, 'history'])
                     ->name('burial.history');
-                Route::get('/burial/new', [BurialServiceController::class, 'new'])
+                Route::get('/burial/service/new', [BurialServiceController::class, 'new'])
                     ->name('burial.new');
-                Route::post('/burial/store', [BurialServiceController::class, 'store'])
+                Route::get('/burial/services/xlsx', [BurialServiceController::class,'exportXlsx'])
+                    ->name('burial.service.xlsx');
+                Route::get('/burial/service/{id}', [BurialServiceController::class, 'view'])
+                    ->name('burial.view');
+                Route::post('/burial/service/store', [BurialServiceController::class, 'store'])
                     ->name('burial.store');
+                Route::post('/burial/service/{id}/contact', [BurialServiceController::class, 'contact'])
+                    ->name('burial.service.contact');
+                Route::get('/burial/services/{id}/export', [BurialServiceController::class, 'exportPdf'])
+                    ->name('burial.service.print');
                     
+                // Burial Service Providers
                 Route::get('/burial/providers', [BurialServiceController::class, 'providers'])
-                    ->name('burial.providers');
+                ->name('burial.providers');
+                Route::get('/burial/providers/xlsx', [BurialServiceProviderController::class, 'exportXslx'])
+                    ->name('burial.provider.xlsx');
                 Route::get('/burial/new/provider', [BurialServiceProviderController::class, 'newProvider'])
-                    ->name('burial.new.provider');
+                ->name('burial.new.provider');
                 Route::post('/burial/new/provider/store', [BurialServiceProviderController::class, 'store'])
                     ->name('burial.new.provider.store');
                 Route::get('/burial/providers/{id}', [BurialServiceProviderController::class, 'view'])
                     ->name('burial.provider.view');
                 Route::put('/burial/providers/{id}/update', [BurialServiceProviderController::class, 'update'])
                     ->name('burial.provider.update');
-
+                Route::post('/burial/providers/{id}/contact', [BurialServiceProviderController::class, 'contact'])
+                    ->name('burial.provider.contact');
+                Route::get('/burial/providers/{id}/export', [BurialServiceProviderController::class, 'exportPdf'])
+                    ->name('burial.provider.print');
+                    
+                    // Burial Assistance Requests
                 Route::get('/burial/requests', [BurialAssistanceRequestController::class, 'index'])
                     ->name('burial.requests');
+                Route::get('/burial/requests/xlsx', [BurialAssistanceRequestController::class, 'exportXlsx'])
+                    ->name('burial.request.xlsx');
                 Route::get('/burial/requests/{uuid}', [BurialAssistanceRequestController::class, 'view'])
                     ->name('burial.request.view');
                 Route::put('/burial/requests/{uuid}/update', [BurialAssistanceRequestController::class, 'updateStatus'])
                     ->name('burial.request.update');
+                Route::post('/burial/requests/{uuid}/contact', [BurialAssistanceRequestController::class, 'contact'])
+                    ->name('burial.request.contact');
+                Route::get('/burial/requests/{uuid}/export', [BurialAssistanceRequestController::class, 'exportPdf'])
+                    ->name('burial.request.print');
 
+                // Requests to Service
                 Route::get('/burial/request/{uuid}/toService', [BurialServiceController::class, 'requestToService'])
                     ->name('burial.request.to.service');
 
+                
                 Route::resource('assistance', AssistanceController::class);
             });
 

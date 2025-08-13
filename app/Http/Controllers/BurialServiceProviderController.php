@@ -3,10 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\BurialServiceProvider;
+use Exception;
 use Illuminate\Http\Request;
 use App\Models\Barangay;
 use App\Services\BurialServiceProviderService;
 use App\Http\Requests\BurialServiceProviderRequest;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Exports\BurialServiceProviderExport;
+use Maatwebsite\Excel\Facades\Excel;
+use function Laravel\Prompts\error;
 
 class BurialServiceProviderController extends Controller
 {
@@ -48,5 +53,34 @@ class BurialServiceProviderController extends Controller
         }
         $provider->update($data);
         return redirect()->route('admin.burial.providers')->with('success','Successfully updated the provider\'s information.');
+    }
+
+    // TODO: Add messaging API via email or SMS
+    public function contact($id) {
+        $success = true; //placeholder
+
+        if ($success) {
+            return redirect()->route('admin.burial.providers')->with('success', 'Successfully messaged burial service provider.');
+        }
+
+        return redirect()->route('admin.burial.providers')->with('error', 'Failed to message burial service provider.');
+    }
+
+    public function exportPdf($id) {
+        $provider = BurialServiceProvider::findOrFail($id);
+        $barangays = Barangay::getAllBarangays();
+        $pdf = Pdf::loadView('admin.printable-provider-form', compact('provider', 'barangays'))
+            ->setPaper('letter', 'portrait');
+
+        return $pdf->stream("{$provider->name}-burial-service-provider-form.pdf");
+    }
+
+    // TODO: returns an error
+    public function exportXslx() {
+        try {
+            return Excel::download(new BurialServiceProviderExport(), 'burial_service_providers.csv');
+        } catch (Exception $e) {
+            return redirect()->route('admin.burial.providers')->with('error', $e->getMessage());
+        }
     }
 }

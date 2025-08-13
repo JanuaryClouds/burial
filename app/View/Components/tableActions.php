@@ -5,9 +5,8 @@ namespace App\View\Components;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
-use App\Models\BurialAssistanceRequest;
 
-class burialAssistanceRequestsTable extends Component
+class tableActions extends Component
 {
     /**
      * Create a new component instance.
@@ -22,7 +21,6 @@ class burialAssistanceRequestsTable extends Component
      */
     public function render(): View|Closure|string
     {
-        $allRequests = BurialAssistanceRequest::getAllBurialAssistanceRequests();
-        return view('components.burial-assistance-requests-table', compact('allRequests'));
+        return view('components.table-actions');
     }
 }
