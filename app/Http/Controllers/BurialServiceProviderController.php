@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\BurialServiceProvider;
+use Exception;
 use Illuminate\Http\Request;
 use App\Models\Barangay;
 use App\Services\BurialServiceProviderService;
@@ -10,6 +11,7 @@ use App\Http\Requests\BurialServiceProviderRequest;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Exports\BurialServiceProviderExport;
 use Maatwebsite\Excel\Facades\Excel;
+use function Laravel\Prompts\error;
 
 class BurialServiceProviderController extends Controller
 {
@@ -74,7 +76,11 @@ class BurialServiceProviderController extends Controller
     }
 
     // TODO: returns an error
-    public function exportCsv() {
-        return Excel::download(new BurialServiceProviderExport(), 'burial_service_providers.csv');
+    public function exportXslx() {
+        try {
+            return Excel::download(new BurialServiceProviderExport(), 'burial_service_providers.csv');
+        } catch (Exception $e) {
+            return redirect()->route('admin.burial.providers')->with('error', $e->getMessage());
+        }
     }
 }
