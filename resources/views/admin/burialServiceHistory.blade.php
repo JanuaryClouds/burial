@@ -17,7 +17,7 @@
                 href="{{ route('admin.burial.service.xlsx') }}"
                 role="button"
                 target="_blank"
-                ><i class="fa-solid fa-file-excel"></i>Export to XLSX</a
+                ><i class="fa-solid fa-file-excel"></i>Export All to XLSX</a
             >
             <a href="{{ route('admin.burial.new') }}" class="btn btn-primary d-flex gap-2 align-items-center">
                 <i class="fa-solid fa-plus"></i>
