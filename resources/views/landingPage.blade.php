@@ -9,7 +9,7 @@
     >
         <div class="col d-flex flex-column container">
             <img class="w-25 mx-auto" src="{{ asset('images/CSWDO.webp') }}" alt="" >
-            <h3 class="text-center fw-semibold">Welcome to CSWDO Burial Assistance</h3>
+            <h3 class="text-center fw-semibold">CSWDO Burial Assistance</h3>
         </div>
         <div class="col d-flex flex-column gap-2">
             <a
