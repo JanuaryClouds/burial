@@ -10,7 +10,7 @@
         <div style="display: table-cell;">
             <h3 class="fw-semibold" 
                 style="font-family: sans-serif; grid-row;"
-            >Burial Service Form</h3>
+            >Burial Service Request Form</h3>
             <p class="text-lg text-gray-600" style="grid-row">CSWDO Burial Assistance</p>
         </div>
     </div>
