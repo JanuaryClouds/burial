@@ -16,7 +16,7 @@
                 class="btn btn-outline-primary d-flex align-items-center gap-2"
                 href="{{ route('admin.burial.provider.xlsx') }}"
                 role="button"
-                ><i class="fa-solid fa-file-csv"></i>Export to CSV</a>
+                ><i class="fa-solid fa-file-excel"></i>Export All to XLSX</a>
             <a href="{{ route('admin.burial.new.provider') }}" class="btn btn-primary d-flex gap-2 align-items-center">
                 <i class="fa-solid fa-plus"></i>
                 New Burial Service Provider
