@@ -1,14 +1,9 @@
 @extends('layouts.admin');
 @section('content')
-@section('breadcrumb')
-<x-breadcrumb :items="[
-    ['label' => 'Burial History', 'url' => route('admin.burial.history')]
-    ]" />
-@endsection
 <title>Burial Service History</title>
-<div class="container d-flex flex-column gap-5">
-    <header class="d-flex justify-content-between gap-2">
-        <h2 class="d-flex fw-bold">Burial Service History</h2>
+<div class="d-flex flex-column justify-content-start gap-4 p-0">
+    <header class="d-flex justify-content-between gap-2 p-3 bg-white rounded shadow-sm">
+        <h2 class="d-flex mb-0">Burial Service History</h2>
         <span class="d-flex gap-2">
             <a
                 name=""
@@ -26,7 +21,9 @@
         </span>
     </header>
 
-    <x-burial-service-history-table />
+    <div class="bg-white p-3 rounded shadow-sm">
+        <x-burial-service-history-table />
+    </div>
 </div>
 
 @endsection
