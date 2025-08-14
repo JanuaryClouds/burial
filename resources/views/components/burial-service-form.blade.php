@@ -12,7 +12,7 @@
                 <img src="{{ asset('images/CSWDO.webp') }}" alt="" class="mr-2" style="width: 100px">
                 <span class="d-flex flex-column justify-content-center">
                     <h3 class="fw-semibold">Burial Service Form</h3>
-                    <p class="text-lg text-gray-600">CSWDO Burial Assistance</p>
+                    <p class="text-lg text-gray-600 mb-0">CSWDO Burial Assistance</p>
                 </span>
             </span>
         </header>
