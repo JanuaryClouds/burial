@@ -1,17 +1,12 @@
 @extends('layouts.admin')
 @section('content')
-@section('breadcrumb')
-    <x-breadcrumb :items="[
-        "label" => "Dashboard"
-        ]"/>
-@endsection
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <title>Dashboard</title>
-<h1 class="g-0">Dashboard</h1>
-<div class="row d-flex flex-column justify-content-start gap-4">
-    <div class="row d-flex flex-nowrap gap-3 justify-content-start align-items-center gap-2 w-100">
+<div class="d-flex flex-column justify-content-start gap-4 p-0">
+    <h1 class="g-0 bg-white p-3 rounded shadow-sm w-100">Dashboard</h1>
+    <div class="row d-flex flex-nowrap justify-content-start align-items-center gap-2 w-100 p-0 ms-1">
         <div class="col-3 bg-white d-flex justify-content-start rounded shadow-sm g-0">
-            <span class="col-4 d-flex rounded align-items-center justify-content-center me-2 g-0 fs-3 text-white" style="background-color: #F4C027;">
+            <span class="col-4 d-flex rounded align-items-center justify-content-center me-2 g-0 fs-3 text-white" style="background-color: #F4C027; aspect-ratio: 1;">
                 <i class="fa-solid fa-bell-concierge"></i>
             </span>
             <span class="col-9 d-flex flex-column justify-content-between p-2">
@@ -39,21 +34,23 @@
         </div>
     </div>
     
-    <h2 class="g-0 mt-4">Charts</h2>
-    <div class="row justify-content-center align-items-center gap-2">
-        <span class="col">
-            <canvas id="requestsDistributionChart"></canvas>
-        </span>
-        <span class="col">
-            <canvas id="providersDistributionChart"></canvas>
-        </span>
-        <span class="col">
-            <canvas id="servicesDistributionChart"></canvas>
-        </span>
+    <div class="bg-white rounded shadow-sm p-3">
+        <h2 class="g-0">Charts</h2>
+        <div class="row justify-content-center align-items-center gap-2">
+            <span class="col">
+                <canvas id="requestsDistributionChart"></canvas>
+            </span>
+            <span class="col">
+                <canvas id="providersDistributionChart"></canvas>
+            </span>
+            <span class="col">
+                <canvas id="servicesDistributionChart"></canvas>
+            </span>
+        </div>
     </div>
     
     <div
-        class="row flex-column gap-2 g-0 mt-4"
+        class="row flex-column gap-2 g-0 mt-4 bg-white rounded shadow-sm p-3"
     >
         <h2 class="fw-bold">Schedule of Burials</h2>
         <p class="">These are approved burial assistance requests. Please take note of the duration of the requests' burial. Generate a burial service form once the burial has finished.</p>

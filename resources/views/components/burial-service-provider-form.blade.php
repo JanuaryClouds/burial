@@ -1,8 +1,8 @@
-<form action="{{ route('admin.burial.new.provider.store') }}" method="post" id="burialServiceProviderForm" class="row flex-column w-75 mx-auto gap-4">
+<form action="{{ route('admin.burial.new.provider.store') }}" method="post" id="burialServiceProviderForm" class="row flex-column w-75 mx-auto gap-4 bg-white shadow-sm rounded-md p-4">
     @csrf
     @method('post')
 
-    <div class="row flex-column w-75 mx-auto gap-4">
+    <div class="row flex-column mx-auto gap-4">
         <header class="row d-flex">
             <span class="d-flex gap-2">
                 <img src="{{ asset('images/CSWDO.webp') }}" alt="" class="mr-2" style="width: 100px;">

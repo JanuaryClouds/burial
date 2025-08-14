@@ -108,7 +108,7 @@
         </div>
     </div>
 
-    @if ($serviceRequest->start_of_burial > now()->format('Y-m-d'))
+    @if ($serviceRequest->start_of_burial > now()->format('Y-m-d') && !$existingService)
         <form action="{{ route('admin.burial.request.update', ['uuid' => $serviceRequest->uuid]) }}" method="post" class="d-flex justify-content-center gap-1">
             @csrf
             @method('PUT')
@@ -122,6 +122,18 @@
             </select>
             <button type="submit" class="btn btn-primary">Update Status</button>
         </form>
+        @if ($serviceRequest->status == 'approved')
+            <div class="d-flex justify-content-center">
+                <a
+                    name=""
+                    id=""
+                    class="btn btn-success"
+                    href="{{ route('admin.burial.request.to.service', ['uuid' => $serviceRequest->uuid]) }}"
+                    role="button"
+                    >Save as Serviced</a
+                >
+            </div>
+        @endif
     @endif
 </div>
 @endsection

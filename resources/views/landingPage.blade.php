@@ -5,7 +5,10 @@
     class="container d-flex min-vh-100 min-vw-100 align-items-center justify-content-center"
 >
     <div
-        class="row flex-column justify-content-center align-items-center g-2 bg-white p-4 rounded shadow mx-auto w-50 w-md-75 w-lg-50"
+        class="row flex-column justify-content-center align-items-center g-2 bg-white p-4 rounded shadow mx-auto w-sm-100 w-md-75 w-50"
+        style="@media screen {
+            
+        }"
     >
         <div class="col d-flex flex-column container">
             <img class="w-25 mx-auto" src="{{ asset('images/CSWDO.webp') }}" alt="" >

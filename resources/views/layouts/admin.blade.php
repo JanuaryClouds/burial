@@ -13,7 +13,7 @@
     @vite('resources/css/app.css')
     @vite('resources/js/app.js')
 </head>
-<body class="min-vh-100 row row-gap-0 vw-100 g-0">
+<body class="min-vh-100 row row-gap-0 vw-100 g-0" style="background-color: #fafafa;">
     <!-- sidebar -->
     <nav
         class="col-2 row d-flex flex-column mt-0 g-2 ps-0"
@@ -35,7 +35,7 @@
                 </div>
             </div>
             <!-- sidebar links -->
-            <div class="col-10 g-2 text-black w-100 d-flex flex-column gap-1">
+            <div class="col-10 g-2 w-100 d-flex flex-column gap-1" style="">
                 <a href="{{ route('admin.dashboard') }}" class="nav-link btn btn-link d-flex gap-2 align-items-center">
                     <i class="fa-solid fa-house"></i>
                     Dashboard
@@ -52,57 +52,54 @@
                     <i class="fa-solid fa-list"></i>
                     Burial Requests
                 </a>
-                <a href="{{ route('admin.burial.providers') }}" class="nav-link btn btn-link d-flex gap-2 align-items-center">
-                    <i class="fa-solid fa-building" style="padding-left: 2px; margin-right: 1px;"></i>
+                <a href="{{ route('admin.burial.providers') }}" class="nav-link btn btn-link d-flex gap-1 align-items-center">
+                    <i class="fa-solid fa-building" style="padding-left: 2px; margin-right: 5px;"></i>
                     Burial Service Providers
                 </a>
             </div>
-
         </div>
     </nav>
 
     <!-- main -->
     <div class="col-10 g-0 vh-100 overflow-y-auto overflow-x-hidden" style="">
-        <div class="position-absolute top-0 end-0 w-100 h-25" style="background-color: #ff5147; z-index: -1;"></div>
-        <div class="position-relative container d-flex justify-content-between align-items-center px-4" style="z-index: 1; height: 5em;">
-            <div>
-                <!-- TODO: Search bar here -->
-            </div>
-            <div class="dropdown open" style="z-index: 2;">
-                <button
-                    class="btn btn-light dropdown-toggle d-flex gap-2 align-items-center"
-                    type="button"
-                    id="triggerId"
-                    data-bs-toggle="dropdown"
-                    aria-haspopup="true"
-                    aria-expanded="false"
-                >
-                    <i class="fa-solid fa-user"></i>{{ Auth::user()->first_name }} {{ Auth::user()->middle_name }} {{ Auth::user()->last_name }}
-                </button>
-                <div class="dropdown-menu" aria-labelledby="triggerId">
-                    <a href="#" class="btn w-100">
-                        <span x-show="!sidebarCollapsed" x-cloak class="fw-medium"><i
-                                class="fa-solid fa-user me-2"></i> Profile</span>
-                        <span x-show="sidebarCollapsed" x-cloak class="fw-medium"><i
-                                class="fa-solid fa-user"></i></span>
-                    </a>
-                    <form action="{{ route('logout') }}" method="POST" class="block">
-                        @csrf
-                        <button type="submit"
-                            class="btn w-100">
-                            <span x-show="!sidebarCollapsed" x-cloak class="fw-medium">
-                                <i class="fa-solid fa-right-from-bracket me-2"></i> Logout
-                            </span>
-                            <span x-show="sidebarCollapsed" x-cloak class="fw-medium">
-                                <i class="fa-solid fa-right-from-bracket"></i>
-                            </span>
-                        </button>
-                    </form>
-                </div>
-            </div>
-            
+        <div class="position-relative px-4" style="background-color: #ff5147; z-index: -1; height: 10em;">
         </div>
-        <main class="row mx-4 p-4 rounded-2 bg-white" style="z-index: 1;">
+
+        <div class="d-flex dropdown open justify-content-end mx-4" style="z-index: 3; margin-top: -8em;">
+            <button
+                class="btn btn-light dropdown-toggle d-flex gap-2 align-items-center"
+                type="button"
+                id="triggerId"
+                data-bs-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+            >
+                <i class="fa-solid fa-user"></i>{{ Auth::user()->first_name }} {{ Auth::user()->middle_name }} {{ Auth::user()->last_name }}
+            </button>
+            <div class="dropdown-menu" aria-labelledby="triggerId">
+                <a href="#" class="btn w-100">
+                    <span x-show="!sidebarCollapsed" x-cloak class="fw-medium"><i
+                            class="fa-solid fa-user me-2"></i> Profile</span>
+                    <span x-show="sidebarCollapsed" x-cloak class="fw-medium"><i
+                            class="fa-solid fa-user"></i></span>
+                </a>
+                <form action="{{ route('logout') }}" method="POST" class="block">
+                    @csrf
+                    <button type="submit"
+                        class="btn w-100">
+                        <span x-show="!sidebarCollapsed" x-cloak class="fw-medium">
+                            <i class="fa-solid fa-right-from-bracket me-2"></i> Logout
+                        </span>
+                        <span x-show="sidebarCollapsed" x-cloak class="fw-medium">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                        </span>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <main class="row mx-4 p-0 pb-5 g-0 rounded-2" style="z-index: 1; margin-top: 2em;">
+
             @yield('content')
 
             <div aria-live="polite" aria-atomic="true" class="position-fixed bottom-0 end-0 p-3 d-flex justify-content-end" style="z-index: 2;">

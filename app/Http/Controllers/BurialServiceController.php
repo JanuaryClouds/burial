@@ -82,12 +82,57 @@ class BurialServiceController extends Controller
     // TODO
     public function requestToService($uuid) {
         $approvedAssistanceRequest = BurialAssistanceRequest::where('uuid', $uuid)->first();
+        $providers = BurialServiceProvider::getAllProviders();
+        $barangays = Barangay::getAllBarangays();
 
         if (!$approvedAssistanceRequest) {
             return redirect()->route('admin.dashboard')->with('error','Unable to find burial assistance request.');
         }
 
-        return view('admin.request-to-service', compact('approvedAssistanceRequest'));
+        return view('admin.request-to-service', compact('approvedAssistanceRequest', 'providers', 'barangays'));
+    }
+
+    public function saveRequestAsServiced(Request $request, $uuid) {
+        $approvedAssistanceRequest = BurialAssistanceRequest::where('uuid', $uuid)
+            ->where('status', 'approved')
+            ->firstOrFail();
+
+        $data = [
+            'deceased_firstname' => $approvedAssistanceRequest->deceased_firstname,
+            'deceased_lastname' => $approvedAssistanceRequest->deceased_lastname,
+            'representative' => $approvedAssistanceRequest->representative,
+            'representative_contact' => $approvedAssistanceRequest->representative_contact,
+            'rep_relationship' => $approvedAssistanceRequest->rep_relationship,
+            'burial_address' => $approvedAssistanceRequest->burial_address,
+            'barangay_id' => $approvedAssistanceRequest->barangay_id,
+            'start_of_burial' => $approvedAssistanceRequest->start_of_burial,
+            'end_of_burial' => $approvedAssistanceRequest->end_of_burial,
+            'burial_service_provider' => $request->burial_service_provider,
+            'collected_funds' => $request->collected_funds,
+            'remarks' => $request->remarks
+        ];
+
+        $validator = Validator::make($request->all(), [
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        if ($validator->fails()) {
+            // Return the validation errors
+            return response()->json(['errors' => $validator->messages()], 422);
+        }
+        
+        $service = $this->BurialServiceService->store($data);
+        $filename = "burial-service-{$service->id}";
+        
+        if ($service && $request->hasFile('images')) {
+            foreach ($request->file('images') as $index => $file) {
+            $filenameWithIndex = "{$filename}-{$index}." . $file->getClientOriginalExtension();
+            $file->storeAs('burial_images', $filenameWithIndex, 'public');
+        }
+
+        return redirect()->route('admin.burial.history')->with('success', 'Burial service created successfully.');
+    }
+        return redirect()->back()->withErrors(['error' => 'Failed to create burial service.']);
     }
 
     // TODO: Add messaging API via email or SMS

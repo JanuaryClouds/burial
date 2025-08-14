@@ -135,6 +135,8 @@ Route::middleware(['auth'])
                 // Requests to Service
                 Route::get('/burial/request/{uuid}/toService', [BurialServiceController::class, 'requestToService'])
                     ->name('burial.request.to.service');
+                Route::post('/burial/request/{uuid}/toService/store', [BurialServiceController::class, 'saveRequestAsServiced'])
+                    ->name('burial.request.to.service.store');
 
                 
                 Route::resource('assistance', AssistanceController::class);
