@@ -22,7 +22,10 @@ class burialAssistanceRequestsTable extends Component
      */
     public function render(): View|Closure|string
     {
-        $allRequests = BurialAssistanceRequest::getAllBurialAssistanceRequests();
+        $allRequests = BurialAssistanceRequest::where(function ($query) {
+            $query->where("status", "pending")
+                ->where("start_of_burial", ">", now("Asia/Manila"));
+        });
         return view('components.burial-assistance-requests-table', compact('allRequests'));
     }
 }
