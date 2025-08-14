@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\BurialAssistanceReqRequest;
 use App\Services\BurialAssistanceRequestService;
 use App\Models\BurialAssistanceRequest;
+use App\Models\BurialService;
 use App\Models\Relationship;
 use App\Models\Barangay;
 use Illuminate\Support\Facades\Storage;
@@ -29,6 +30,18 @@ class BurialAssistanceRequestController extends Controller
     public function store(BurialAssistanceReqRequest $request)
     {
         $data = $request->validated();
+        $existingRequest = BurialAssistanceRequest::where(function ($query) use ($request) {
+        $query->where('deceased_lastname', $request->input('deceased_lastname'))
+              ->where('deceased_firstname', $request->input('deceased_firstname'))
+              ->where('burial_address', $request->input('burial_address'))
+              ->where('barangay_id', $request->input('barangay_id'));
+        })
+        ->exists();
+
+        if ($existingRequest) {
+            return redirect()->route('landing.page')->with('info', "Burial Assistance Request for {$request->input('deceased_lastname')}, {$request->input('deceased_firstname')} already exists.");
+        }
+
         $data['uuid'] = Str::uuid()->toString();
         
         if (count($request->file('images')) > 2) {
@@ -90,12 +103,19 @@ class BurialAssistanceRequestController extends Controller
     }
 
     public function index() {
-        $serviceRequests = BurialAssistanceRequest::query()->simplePaginate(10);
-        return view('admin.burial-requests', compact('serviceRequests'));
+        return view('admin.burial-requests');
     }
 
     public function view($uuid) {
         $serviceRequest = BurialAssistanceRequest::where('uuid', $uuid)->first();
+        $existingService = BurialService::where(function ($query)use ($serviceRequest) {
+            $query
+                ->where('deceased_lastname', $serviceRequest->deceased_lastname)
+                ->where('deceased_firstname', $serviceRequest->deceased_firstname)
+                ->where('burial_address', $serviceRequest->burial_address)
+                ->where('barangay_id', $serviceRequest->barangay_id);
+        })->exists();
+
         if (!$serviceRequest) {
             return redirect()->back()->withErrors(['error' => 'Burial Assistance Request not found.']);
         }
@@ -132,7 +152,8 @@ class BurialAssistanceRequestController extends Controller
             'serviceRequest' => $serviceRequest,
             'relationships'=> $relationships,
             'barangays' => $barangays,
-            'requestImages' => $requestImages
+            'requestImages' => $requestImages,
+            'existingService' => $existingService
         ]);
     }
 
