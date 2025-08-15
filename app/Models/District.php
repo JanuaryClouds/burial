@@ -23,4 +23,9 @@ class District extends Model
     {
         return $this->hasMany(Client::class);
     }
+
+    public function barangay()
+    {
+        return $this->hasMany(Barangay::class);
+    }
 }
