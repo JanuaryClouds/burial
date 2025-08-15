@@ -19,7 +19,8 @@ use App\Http\Controllers\{
     ClientController,
     BurialServiceController,
     BurialServiceProviderController,
-    BurialAssistanceRequestController
+    BurialAssistanceRequestController,
+    CmsController
 };
 
 Route::get('/', function () {
@@ -57,8 +58,28 @@ Route::middleware(['auth'])
             ->group(function () {
                 Route::post('/logout', [UserController::class, 'logout'])
                     ->name('logout');
-                Route::get('/dashboard', [DashboardController::class, 'index'])
+                Route::get('/dashboard', [DashboardController::class, 'superadmin'])
                     ->name('dashboard');
+                Route::get('/cms/barangays', [CmsController::class, 'barangays'])
+                    ->name('cms.barangays');
+                Route::get('/cms/requests', [CmsController::class, 'burialAssistanceReqeusts'])
+                    ->name('cms.requests');
+                Route::get('/cms/services', [CmsController::class, 'burialServices'])
+                    ->name('cms.services');
+                Route::get('/cms/providers', [CmsController::class, 'burialServiceProviders'])
+                    ->name('cms.providers');
+                Route::get('/cms/relationships', [CmsController::class, 'relationships'])
+                    ->name('cms.relationships');
+
+                Route::post('/cms/{type}/store', [CmsController::class, 'storeContent'])
+                    ->name('cms.store');
+                    
+                Route::post('/cms/{type}/{id}/update', [CmsController::class, 'updateContent'])
+                    ->name('cms.update');
+
+                Route::delete('/cms/{type}/{id}/delete', [CmsController::class, 'deleteContent'])
+                    ->name('cms.delete');
+
                 Route::resource('role', RoleController::class);
                 Route::resource('permission', PermissionController::class);
                 Route::resource('assistance', AssistanceController::class);
