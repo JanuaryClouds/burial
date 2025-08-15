@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\BurialAssistanceRequest;
 use App\Models\BurialServiceProvider;
 use App\Models\BurialService;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
@@ -62,5 +63,14 @@ class DashboardController extends Controller
     public function user()
     {
         return view('user.dashboard');
+    }
+
+    public function superadmin()
+    {
+       $totalData = BurialAssistanceRequest::all()->count() + BurialServiceProvider::all()->count() + BurialService::all()->count();
+        
+       return view('superadmin.dashboard', compact(
+        'totalData'
+       ));
     }
 }
