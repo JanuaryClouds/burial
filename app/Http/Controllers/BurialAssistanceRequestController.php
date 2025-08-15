@@ -74,6 +74,13 @@ class BurialAssistanceRequestController extends Controller
                 $fileCount++;
             }
 
+            $ip = request()->ip();
+            $browser = request()->header('User-Agent');
+            activity()
+                ->performedOn($serviceRequest)
+                ->causedBy("Guest")
+                ->log("Successful burial assistance request submission: ({$ip} - {$browser})");
+
             return redirect()->route('guest.request.submit.success')->with('success', 'Burial Assistance Request created successfully.')->with('service', $serviceRequest->uuid);
         } else {
             return redirect()->back()->withErrors(['error' => 'Failed to create Burial Assistance Request.']);
