@@ -23,7 +23,7 @@
 		<!-- Modal trigger button -->
 		<button
 			type="button"
-			class="btn btn-primary btn-lg"
+			class="btn btn-primary btn-lg d-flex gap-2 align-items-center"
 			data-bs-toggle="modal"
 			data-bs-target="#newContent"
 		>
@@ -132,7 +132,7 @@
 				action="{{ route($routeName, ['type' => $type, 'id' => $item->$paramKey]) }}" 
 				method="post"
 				class="d-flex" 
-				style="width: 49%;"
+				style="width: 32.87%;"
 			>
 				@csrf
 				@method('post')
@@ -174,13 +174,13 @@
 							@endif
 						@endforeach
 						<small class="card-text">{{ $item->updated_at }}</small>
-						<div class="d-flex justify-content-end">
+						<div class="d-flex justify-content-end gap-2">
 							<!-- Modal trigger button -->
 								<button
 									type="button"
 									class="btn btn-danger btn-lg"
 									data-bs-toggle="modal"
-									data-bs-target="#deleteModal"
+									data-bs-target="#deleteModal-{{ $item->$paramKey }}"
 								>
 									Delete
 								</button>
@@ -188,13 +188,13 @@
 								<!-- Delete Modal -->
 								<div
 									class="modal fade"
-									id="deleteModal"
+									id="deleteModal-{{ $item->$paramKey }}"
 									tabindex="-1"
 									data-bs-backdrop="static"
 									data-bs-keyboard="false"
 									
 									role="dialog"
-									aria-labelledby="modalTitleId"
+									aria-labelledby="modalTitleId-{{ $item->$paramKey }}"
 									aria-hidden="true"
 								>
 									<div
@@ -204,7 +204,7 @@
 										<div class="modal-content">
 											<div class="modal-header">
 												<h5 class="modal-title" id="modalTitleId">
-													Delete {{ Str::ucfirst($type) }}
+													Delete {{ Str::ucfirst($item->name) }}
 												</h5>
 												<button
 													type="button"
