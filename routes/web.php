@@ -60,6 +60,7 @@ Route::middleware(['auth'])
                     ->name('logout');
                 Route::get('/dashboard', [DashboardController::class, 'superadmin'])
                     ->name('dashboard');
+                Route::get('/tracking-activity', [DashboardController::class, 'trackerEvents']);
                 Route::get('/cms/barangays', [CmsController::class, 'barangays'])
                     ->name('cms.barangays');
                 Route::get('/cms/requests', [CmsController::class, 'burialAssistanceRequests'])
