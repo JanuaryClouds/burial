@@ -82,10 +82,20 @@ class CmsController extends Controller
                 $relationship->save();
                 $tempName = $request->name;
             }
+            return redirect()->back()->with('success', Str::ucfirst($tempName) . ' updated Successfully');
         }
 
-        // TODO: Add delete snippet and update key
-        return redirect()->back()->with('success', Str::ucfirst($tempName) . ' updated Successfully');
+        if ($request->action === 'delete') {
+            if ($type == 'barangays') {
+                $tempName = $request->name;
+                Barangay::find($id)->delete();
+            }
+            if ($type == 'relationships') {
+                $tempName = $request->name;
+                Relationship::find($id)->delete();
+            }
+            return redirect()->back()->with('success', Str::ucfirst($tempName) . ' deleted Successfully');
+        }
     }
 
     public function deleteContent(Request $request, $type, $id) {
