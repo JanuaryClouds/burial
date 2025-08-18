@@ -28,6 +28,7 @@ class BurialAssistanceRequest extends Model
         "start_of_burial",
         "end_of_burial",
         "type_of_assistance",
+        "service_id",
         "remarks",
     ];
 
@@ -38,6 +39,10 @@ class BurialAssistanceRequest extends Model
 
     public function relationship() {
         return $this->belongsTo(Relationship::class, "rep_relationship", 'id');
+    }
+
+    public function service() {
+        return $this->belongsTo(BurialService::class);
     }
 
     public static function getAllBurialAssistanceRequests()
