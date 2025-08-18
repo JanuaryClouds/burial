@@ -88,6 +88,20 @@
 										@endforeach
 									</select>
 								</div>
+							@elseif ($type === 'providers')
+								<div class="mb-3">
+									<label for="barangay_id" class="form-label">Barangay</label>
+									<select
+										class="form-select form-select-lg"
+										name="barangay_id"
+										id="barangay_id"
+									>
+										@foreach ($barangays as $barangay)
+											<option value="{{ $barangay->id }}">{{ $barangay->name }}</option>
+										@endforeach
+									</select>
+								</div>
+
 							@endif
 							<div class="mb-3">
 								<label for="remarks" class="form-label">Remarks</label>
@@ -146,18 +160,27 @@
 								<span class="input-group">
 									<span class="input-group-text">{{ $options['label'] }}</span>
 									<select name="{{ $field }}" id="{{ $field }}" class="form-select" x-on:change="showSave = true">
-										<!-- @foreach($options['options'] ?? [] as $value => $label)
-											<option value="{{ $value }}" {{ $item->$field == $value ? 'selected' : '' }}>
-												{{ $label->name }}
-											</option>
-										@endforeach -->
-										<option value="{{ $item->$field }}">{{ $item->$field }}</option>
-										@foreach($districts as $district)
-											@if ($item->$field !== $district->id)
-												<option value="{{ $district->id }}">{{ $district->name }}</option>
-											@endif
-										@endforeach
+										@if ($type === 'barangays')
+											<option value="{{ $item->$field }}">{{ $item->$field }}</option>
+											@foreach($districts as $district)
+												@if ($item->$field !== $district->id)
+													<option value="{{ $district->id }}">{{ $district->name }}</option>
+												@endif
+											@endforeach
+										@elseif ($type === 'providers')
+											<option value="{{ $item->$field }}">{{ $item->barangay->name }}</option>
+											@foreach($barangays as $barangay)
+												@if ($item->$field !== $barangay->id)
+													<option value="{{ $barangay->id }}">{{ $barangay->name }}</option>
+												@endif
+											@endforeach
+										@endif
 									</select>
+								</span>
+							@elseif ($field === 'uuid' || $field === 'id')
+								<span class="input-group d-flex align-items-center w-100 flex-nowrap">
+									<span class="input-group-text w-25">{{ $options['label'] }}</span>
+									<p class="mb-0 border-1 border py-2 rounded-end px-2 overflow-hidden text-nowrap">{{ $item->$field }}</p>
 								</span>
 							@else
 								<span class="input-group">
@@ -181,6 +204,7 @@
 									class="btn btn-danger btn-lg"
 									data-bs-toggle="modal"
 									data-bs-target="#deleteModal-{{ $item->$paramKey }}"
+									x-show="type !== barangay"
 								>
 									Delete
 								</button>
