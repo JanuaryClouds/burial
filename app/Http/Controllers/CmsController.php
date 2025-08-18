@@ -13,38 +13,6 @@ use Str;
 
 class CmsController extends Controller
 {
-    public function barangays() {
-        $data = Barangay::all()->sortBy('name');
-        $districts = District::all();
-        $type = 'barangays';
-        $fields = [
-            'name' => ['label' => 'name', 'type' => 'text'],
-            'district_id' => [
-                'label' => 'district_id', 
-                'type' => 'select', 
-                'options' => $districts
-            ],
-            'remarks' => ['label' => 'remarks', 'type' => 'text'],
-        ];
-        return view('superadmin.cms', compact(
-            ['data', 
-            'fields', 
-            'districts', 
-            'type', 
-        ]));
-    }
-
-    public function relationships() {
-        $data = Relationship::all();
-        $type = 'relationships';
-        $fields = [
-            'name' => ['label' => 'name', 'type' => 'text'],
-            'remarks' => ['label' => 'name', 'type' => 'text'],
-        ];
-
-        return view('superadmin.cms', compact('data', 'type', 'fields'));
-    }
-
     public function storeContent(Request $request, $type) {
         if ($type == 'barangays') {
             $data = $request->validate([
@@ -112,24 +80,81 @@ class CmsController extends Controller
         return redirect()->back()->with('success', Str::ucfirst($tempName) . ' deleted Successfully');
     }
 
+    public function barangays() {
+        $data = Barangay::all()->sortBy('name');
+        $districts = District::all();
+        $type = 'barangays';
+        $fields = [
+            'name' => ['label' => 'name', 'type' => 'text'],
+            'district_id' => [
+                'label' => 'district_id', 
+                'type' => 'select', 
+                'options' => $districts
+            ],
+            'remarks' => ['label' => 'remarks', 'type' => 'text'],
+        ];
+        return view('superadmin.cms', compact(
+            ['data', 
+            'fields', 
+            'districts', 
+            'type', 
+        ]));
+    }
+
+    public function relationships() {
+        $data = Relationship::all();
+        $type = 'relationships';
+        $fields = [
+            'name' => ['label' => 'name', 'type' => 'text'],
+            'remarks' => ['label' => 'name', 'type' => 'text'],
+        ];
+
+        return view('superadmin.cms', compact('data', 'type', 'fields'));
+    }
+
     public function burialAssistanceRequests() {
         $data = BurialAssistanceRequest::all();
         $type = 'requests';
         $fields = [
-
+            'uuid' => ['label' => 'uuid', 'type' => 'text'],
+            'deceased_lastname' => ['label' => 'deceased_lastname', 'type' => 'text'],
+            'deceased_firstname' => ['label' => 'deceased_firstname', 'type' => 'text'],
+            'status' => [
+                'label' => 'status',
+                'type' => 'text',
+                'options' => [
+                    'pending' => 'Pending',
+                    'approved' => 'Approved',
+                    'declined' => 'Declined',
+                ]
+            ],
         ];
-        return view('superadmin.cms', compact('data', 'type'));
+        return view('superadmin.cms', compact('data', 'type', 'fields'));
     }
 
     public function burialServices() {
         $data = BurialService::all();
         $type = 'services';
-        return view('superadmin.cms', compact('data', 'type'));
+        $fields = [
+            'deceased_lastname' => ['label' => 'deceased_lastname', 'type' => 'text'],
+            'deceased_firstname' => ['label' => 'deceased_firstname', 'type' => 'text'],
+        ];
+        return view('superadmin.cms', compact('data', 'type', 'fields'));
     }
     
     public function burialServiceProviders() {
         $data = BurialServiceProvider::all();
         $type = 'providers';
-        return view('superadmin.cms', compact('data', 'type'));
+        $barangays = Barangay::all();
+        $fields = [
+            'name' => ['label' => 'name', 'type' => 'text'],
+            'address' => ['label' => 'address', 'type' => 'text'],
+            'barangay_id' => [
+                'label' => 'barangay_id',
+                'type' => 'select',
+                'options' => $barangays
+            ],
+        ];
+        return view('superadmin.cms', compact('data', 'type', 'fields', 'barangays'));
     }
 }
