@@ -77,9 +77,9 @@ class BurialAssistanceRequestController extends Controller
             $ip = request()->ip();
             $browser = request()->header('User-Agent');
             activity()
-                ->performedOn($serviceRequest)
-                ->causedBy("Guest")
-                ->log("Successful burial assistance request submission: ({$ip} - {$browser})");
+                ->causedBy(null)
+                ->withProperties(['ip' => $ip, 'browser' => $browser])
+                ->log('Burial Assistance Request submitted by guest');
 
             return redirect()->route('guest.request.submit.success')->with('success', 'Burial Assistance Request created successfully.')->with('service', $serviceRequest->uuid);
         } else {
@@ -104,6 +104,13 @@ class BurialAssistanceRequestController extends Controller
             $serviceRequest->representative_contact = Str::mask($serviceRequest->representative_contact, '*', 3);
             $serviceRequest->burial_address = Str::mask($serviceRequest->burial_address, '*', 3);
         }
+
+        $ip = request()->ip();
+        $browser = request()->header('User-Agent');
+        activity()
+            ->causedBy(null)
+            ->withProperties(['ip' => $ip, 'browser' => $browser])
+            ->log('Burial Assistance Request tracked by guest');
 
         // dd($serviceRequest);
         return view('guest.request_tracker', compact('serviceRequest'));
