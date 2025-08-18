@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\BurialServiceRequest;
+use App\Services\BurialAssistanceRequestService;
 use Illuminate\Http\Request;
 use Validator;
 use Illuminate\Support\Facades\Storage;
@@ -79,7 +80,6 @@ class BurialServiceController extends Controller
         return view("admin.burialServiceProviders");
     }
 
-    // TODO
     public function requestToService($uuid) {
         $approvedAssistanceRequest = BurialAssistanceRequest::where('uuid', $uuid)->first();
         $providers = BurialServiceProvider::getAllProviders();
@@ -122,6 +122,7 @@ class BurialServiceController extends Controller
         }
         
         $service = $this->BurialServiceService->store($data);
+        $approvedAssistanceRequest->update(['service_id' => $service->id]);
         $filename = "burial-service-{$service->id}";
         
         if ($service && $request->hasFile('images')) {
