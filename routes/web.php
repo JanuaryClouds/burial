@@ -62,7 +62,7 @@ Route::middleware(['auth'])
                     ->name('dashboard');
                 Route::get('/cms/barangays', [CmsController::class, 'barangays'])
                     ->name('cms.barangays');
-                Route::get('/cms/requests', [CmsController::class, 'burialAssistanceReqeusts'])
+                Route::get('/cms/requests', [CmsController::class, 'burialAssistanceRequests'])
                     ->name('cms.requests');
                 Route::get('/cms/services', [CmsController::class, 'burialServices'])
                     ->name('cms.services');
