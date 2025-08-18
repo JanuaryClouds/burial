@@ -9,6 +9,8 @@ use App\Models\BurialServiceProvider;
 use App\Models\BurialService;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Spatie\Activitylog\Models\Activity;
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
@@ -68,9 +70,49 @@ class DashboardController extends Controller
     public function superadmin()
     {
        $totalData = BurialAssistanceRequest::all()->count() + BurialServiceProvider::all()->count() + BurialService::all()->count();
+       $totalUsers = User::all()->count();
+
+       $totalRequestLogs = Activity::where('description', 'like', 'Burial Assistance Request %')->count();
+       $firstRequest = Activity::where('description', 'like', 'Burial Assistance Request %')->oldest()->first();
+       $lastRequest = Activity::where('description', 'like', 'Burial Assistance Request %')->latest()->first();
+
+       if ($firstRequest && $lastRequest) {
+        $months = Carbon::parse($firstRequest->created_at)->diffInMonths(Carbon::parse($lastRequest->created_at)) + 1;
+        $avgRequestsPerMonth = $totalRequestLogs / $months;
+        } else {
+            $avgRequestsPerMonth = 0;
+        }
+
+        $totalTrackLogs = Activity::where('description', 'like', 'Burial Assistance Request tracked by guest')->count();
+        $firstTrack = Activity::where('description', 'like', 'Burial Assistance Request tracked by guest')->oldest()->first();
+        $lastTrack = Activity::where('description', 'like', 'Burial Assistance Request tracked by guest')->latest()->first();
+
+        if ($firstTrack && $lastTrack) {
+            $months = Carbon::parse($firstTrack->created_at)->diffInMonths(Carbon::parse($lastTrack->created_at)) + 1;
+            $avgTracksPerMonth = $totalTrackLogs / $months;
+        } else {
+            $avgTracksPerMonth = 0;
+        }
         
+
        return view('superadmin.dashboard', compact(
-        'totalData'
+        'totalData',
+        'totalUsers',
+        'avgRequestsPerMonth',
+        'avgTracksPerMonth',
        ));
+    }
+
+    public function trackerEvents() {
+        $logs = Activity::where('description', 'like', 'Burial Assistance Request tracked by guest')->get();
+
+        $events = $logs->map(function ($log) {
+            return [
+                'title' => $log->properties,
+                'date' => $log->created_at->toDateString()
+            ];         
+        });
+
+        return response()->json($events);
     }
 }
