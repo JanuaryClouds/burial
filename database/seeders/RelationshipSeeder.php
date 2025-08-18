@@ -20,6 +20,7 @@ class RelationshipSeeder extends Seeder
             'Cousin',
             'Uncle',
             'Auntie',
+            'Sibling',
         ];
 
         foreach ($Relationships as $Relationship) {
