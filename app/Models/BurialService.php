@@ -43,4 +43,8 @@ class BurialService extends Model
     {
         return self::query()->simplePaginate(10);
     }
+
+    public function request() {
+        return $this->hasOne(BurialAssistanceRequest::class);
+    }
 }
