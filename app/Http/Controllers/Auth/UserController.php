@@ -29,7 +29,8 @@ class UserController extends Controller
             activity() 
                 ->performedOn($user)
                 ->causedBy($user)
-                ->log("Successful login: ({$ip} - {$browser})");
+                ->withProperties(['ip' => $ip, 'browser' => $browser])
+                ->log("Successful login");
                 
             return redirect()
                 ->route(Auth::user()->getRoleNames()->first() . '.dashboard')

@@ -40,6 +40,7 @@ class BurialAssistanceReqRequest extends FormRequest
             "barangay_id" => "required|numeric|exists:barangays,id",
             "start_of_burial" => "required|date",
             "end_of_burial" => "required|date|after:start_of_burial",
+            "service_id" => "required|nullable|numeric|exists:burial_services,id",
             "remarks" => "string|nullable|max:255",
         ];
     }

@@ -18,6 +18,9 @@
     <div class="col bg-white p-3 shadow-sm rounded">
         <x-burial-assistance-requests-table />
     </div>
-</div>        
+    <div class="col bg-white p-3 shadow-sm rounded">
+        <x-burial-calendar />
+    </div>
+</div>   
 
 @endsection

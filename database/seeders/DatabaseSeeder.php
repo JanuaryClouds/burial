@@ -25,6 +25,8 @@ class DatabaseSeeder extends Seeder
             NonRelativeRelationships::class,
             SampleBurialServiceProviders::class,
             SpouseRelationship::class,
+            BurialServiceSeeder::class,
+            BurialRequestsSeeder::class,
         ]);
     }
 }

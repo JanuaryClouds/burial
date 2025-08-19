@@ -89,13 +89,13 @@
                     <!-- TODO: Error: The invalid form control with name=‘start_of_burial’ is not focusable. -->
                     <span class="d-flex justify-content-between align-items-baseline gap-1">
                         <label for="start_of_burial" class="form-label text-center">Start*</label>
-                        <input type="date" required name="start_of_burial" id="start_of_burial" value="{{ $serviceRequest ? $serviceRequest->start_of_burial : '' }}" class="form-control"
                         >
+                        <p class="px-2 py-2 border rounded">{{ $serviceRequest ? $serviceRequest->start_of_burial : '' }}</p>
                     </span>
                     <span class="d-flex justify-content-between align-items-baseline gap-1">
                         <label for="end_of_burial" class="form-label text-center">End*</label>
-                        <input type="date" required name="end_of_burial" id="end_of_burial" value="{{ $serviceRequest ? $serviceRequest->end_of_burial : '' }}" class="form-control"
                         >
+                        <p class="px-2 py-2 border rounded">{{ $serviceRequest ? $serviceRequest->end_of_burial : '' }}</p>
                     </span>
                 </div>
             </div>

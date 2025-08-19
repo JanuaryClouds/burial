@@ -25,6 +25,10 @@ class Barangay extends Model
         return $this->hasMany(Client::class);
     }
 
+    public function district() {
+        return $this->belongsTo(District::class);
+    }
+
     public function burialServices()
     {
         return $this->hasMany(BurialService::class);
