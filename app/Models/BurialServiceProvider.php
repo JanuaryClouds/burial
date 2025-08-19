@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use Laravel\Scout\Searchable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class BurialServiceProvider extends Model
 {
     use HasFactory;
+    use Searchable;
 
     protected $table = "burial_service_providers";
     protected $BurialServiceProviderService;
@@ -32,5 +34,16 @@ class BurialServiceProvider extends Model
 
     public function barangay() {
         return $this->belongsTo(Barangay::class, 'barangay_id', 'id');
+    }
+
+    public function toSearchableArray() {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'contact_details' => $this->contact_details,
+            'address' => $this->address,
+            'barangay_id' => optional($this->barangay)->name,
+            'remarks' => $this->remarks,
+        ];
     }
 }
