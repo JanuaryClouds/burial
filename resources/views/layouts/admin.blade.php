@@ -65,7 +65,85 @@
         <div class="position-relative px-4" style="background-color: #ff5147; z-index: -1; height: 10em;">
         </div>
 
-        <div class="d-flex dropdown open justify-content-end mx-4" style="z-index: 3; margin-top: -8em;">
+        <div class="d-flex dropdown open justify-content-between mx-4" style="z-index: 3; margin-top: -8em;">
+            <div>
+                <!-- TODO: Search -->
+                 <!-- 1. When the user clicks on the search  -->
+                <!-- Modal trigger button -->
+                <button
+                    type="button"
+                    class="btn btn-primary btn-outline-light"
+                    data-bs-toggle="modal"
+                    data-bs-target="#searchModal"
+                >
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+                
+                <!-- Modal Body -->
+                <!-- if you want to close by clicking outside the modal, delete the last endpoint:data-bs-backdrop and data-bs-keyboard -->
+                <div
+                    class="modal fade"
+                    id="searchModal"
+                    tabindex="-1"
+                    data-bs-backdrop="static"
+                    data-bs-keyboard="false"
+                    
+                    role="dialog"
+                    aria-labelledby="modalTitleId"
+                    aria-hidden="true"
+                >
+                    <div
+                        class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm position-relative"
+                        role="document"
+                    >
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalTitleId">
+                                    Modal title
+                                </h5>
+                                <button
+                                    type="button"
+                                    class="btn-close"
+                                    data-bs-dismiss="modal"
+                                    aria-label="Close"
+                                ></button>
+                            </div>
+                            <div class="modal-body">Body</div>
+                            <div class="modal-footer">
+                                <button
+                                    type="button"
+                                    class="btn btn-secondary"
+                                    data-bs-dismiss="modal"
+                                >
+                                    Close
+                                </button>
+                                <button type="button" class="btn btn-primary">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Optional: Place to the bottom of scripts -->
+                <script>
+                    const myModal = new bootstrap.Modal(
+                        document.getElementById("modalId"),
+                        options,
+                    );
+                </script>
+                
+
+                <input type="text"
+                    id="globalSearch"
+                    class="form-control"
+                    placeholder="Search..."
+                    autocomplete="off"
+                >
+                <div id="searchResults"
+                    class="list-group position-absolute w-100 shadow-sm"
+                    style="z-index: 1050; display: none; max-height: 300px; overflow-y: auto;"
+                ></div>
+            </div>
+            
             <button
                 class="btn btn-light dropdown-toggle d-flex gap-2 align-items-center"
                 type="button"
@@ -141,5 +219,57 @@
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchInput = document.getElementById("globalSearch");
+            const resultsBox = document.getElementById("searchResults");
+            const searchUrl = @json(route('admin.admin.search'));
+            let timeout = null;
+
+            searchInput.addEventListener("keyup", function () {
+                clearTimeout(timeout);
+                const query = this.value.trim();
+
+                if (!query) {
+                    resultsBox.style.display = "none";
+                    return;
+                }
+
+                // debounce: wait 300ms after typing stops
+                timeout = setTimeout(() => {
+                    fetch(`${searchUrl}?q=${encodeURIComponent(query)}`, {
+                        headers: { "Accept": "application/json" }
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+                            resultsBox.innerHTML = "";
+                            if (data.length > 0) {
+                                data.forEach(item => {
+                                    const link = document.createElement("a");
+                                    link.href = item.url;
+                                    link.classList.add("list-group-item", "list-group-item-action");
+                                    link.innerHTML = `
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span><strong>${item.name}</strong></span>
+                                            <small class="text-muted">${item.type}</small>
+                                        </div>`;
+                                    resultsBox.appendChild(link);
+                                });
+                                resultsBox.style.display = "block";
+                            } else {
+                                resultsBox.style.display = "none";
+                            }
+                        });
+                }, 300);
+            });
+
+            // hide results when clicking outside
+            document.addEventListener("click", function (e) {
+                if (!resultsBox.contains(e.target) && e.target !== searchInput) {
+                    resultsBox.style.display = "none";
+                }
+            });
+        });
+    </script>
 </body>
 </html>
