@@ -76,8 +76,6 @@
             <div class="col">
                 <x-tracking-activity-calendar />
             </div>
-            <div class="col">Column</div>
-            <div class="col">Column</div>
         </div>
         
     </div>
