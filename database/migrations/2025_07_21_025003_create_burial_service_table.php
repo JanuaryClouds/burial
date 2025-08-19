@@ -25,6 +25,7 @@ return new class extends Migration
             $table->datetime('start_of_burial');
             $table->datetime('end_of_burial');
             $table->foreignId('burial_service_provider')
+                ->nullable()
                 ->constrained('burial_service_providers')
                 ->noActionOnDelete()
                 ->noActionOnUpdate();
