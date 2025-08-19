@@ -11,7 +11,7 @@
     <x-alert type="error" :message="session('error')" />
 @endif
 <div class="container d-flex flex-column justify-content-between align-items-center">
-    <form action="{{ route('admin.burial.provider.update', ['id' => $serviceProvider->id]) }}" method="POST" id="burialServiceProviderForm" class="row flex-column align-items-center shadow w-50 p-2 gap-4">
+    <form action="{{ route('admin.burial.provider.update', ['id' => $serviceProvider->id]) }}" method="POST" id="burialServiceProviderForm" class="row flex-column bg-white align-items-center shadow w-50 p-2 py-4 gap-4">
     @csrf
     @method('PUT')
 
