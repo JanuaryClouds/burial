@@ -21,6 +21,7 @@
 	<div class="g-0 bg-white p-3 d-flex justify-content-between align-items-center rounded shadow-sm w-100">
 		<h1 class="mb-0">Manage {{ Str::ucfirst($type) }}</h1>
 		<!-- Modal trigger button -->
+		@if ($type !== 'requests' && $type !== 'services' && $type !== 'providers')
 		<button
 			type="button"
 			class="btn btn-primary btn-lg d-flex gap-2 align-items-center"
@@ -138,7 +139,7 @@
 				options,
 			);
 		</script>
-		
+		@endif
 	</div>
 	<div class="d-flex justify-content-start flex-wrap p-0 gap-2">
 		@foreach ($data as $item)
@@ -159,23 +160,44 @@
 							@if ($options['type'] === 'select')
 								<span class="input-group">
 									<span class="input-group-text">{{ $options['label'] }}</span>
-									<select name="{{ $field }}" id="{{ $field }}" class="form-select" x-on:change="showSave = true">
-										@if ($type === 'barangays')
-											<option value="{{ $item->$field }}">{{ $item->$field }}</option>
-											@foreach($districts as $district)
-												@if ($item->$field !== $district->id)
-													<option value="{{ $district->id }}">{{ $district->name }}</option>
+									@if ($type !== 'requests')
+										<select 
+											name="{{ $field }}" 
+											id="{{ $field }}" 
+											class="form-select" 
+											x-on:change="showSave = true"
+											{{ $type === 'providers' ? 'disabled' : '' }}
+										>
+											@if ($type === 'barangays')
+												<option value="{{ $item->$field }}">{{ $item->$field }}</option>
+												@foreach($districts as $district)
+													@if ($item->$field !== $district->id)
+														<option value="{{ $district->id }}">{{ $district->name }}</option>
+													@endif
+												@endforeach
+											@elseif ($type === 'providers')
+												<option value="{{ $item->$field }}">{{ $item->barangay->name }}</option>
+												@foreach($barangays as $barangay)
+													@if ($item->$field !== $barangay->id)
+														<option value="{{ $barangay->id }}">{{ $barangay->name }}</option>
+													@endif
+												@endforeach
+											@endif
+										</select>
+										@elseif ($type === 'requests')
+											<select 
+												name="{{ $field }}" 
+												id="{{ $field }}"
+												class="form-select"
+												disabled
+											>
+											@foreach (['pending', 'approved', 'rejected'] as $status)
+												@if ($item->$field == $status)
+													<option value="{{ $status }}">{{ $status }}</option>
 												@endif
 											@endforeach
-										@elseif ($type === 'providers')
-											<option value="{{ $item->$field }}">{{ $item->barangay->name }}</option>
-											@foreach($barangays as $barangay)
-												@if ($item->$field !== $barangay->id)
-													<option value="{{ $barangay->id }}">{{ $barangay->name }}</option>
-												@endif
-											@endforeach
-										@endif
-									</select>
+										</select>
+									@endif
 								</span>
 							@elseif ($field === 'uuid' || $field === 'id')
 								<span class="input-group d-flex align-items-center w-100 flex-nowrap">
@@ -192,11 +214,13 @@
 										class="form-control"
 										value="{{ $item->$field }}"
 										x-on:input="showSave = true"
+										{{ $type === 'requests' || $type === 'services' || $type === 'providers' ? 'disabled' : '' }}
 									>
 								</span>
 							@endif
 						@endforeach
 						<small class="card-text">{{ $item->updated_at }}</small>
+						@if ($type !== 'requests' || ($type === 'requests' && $item?->status === 'rejected'))
 						<div class="d-flex justify-content-end gap-2">
 							<!-- Modal trigger button -->
 								<button
@@ -204,7 +228,6 @@
 									class="btn btn-danger btn-lg"
 									data-bs-toggle="modal"
 									data-bs-target="#deleteModal-{{ $item->$paramKey }}"
-									x-show="type !== barangay"
 								>
 									Delete
 								</button>
@@ -228,7 +251,10 @@
 										<div class="modal-content">
 											<div class="modal-header">
 												<h5 class="modal-title" id="modalTitleId">
-													Delete {{ Str::ucfirst($item->name) }}
+													Delete {{ Str::ucfirst(
+													$type === 'barangays' || $type === 'relationships' || $type === 'providers' ? $item?->name :
+													$item?->deceased_firstname . ' ' . $item?->deceased_lastname  
+													) }}
 												</h5>
 												<button
 													type="button"
@@ -237,7 +263,8 @@
 													aria-label="Close"
 												></button>
 											</div>
-											<div class="modal-body">Are you sure you want do delete {{ $item->name }} in the database? Once submitted, it cannot be undone and may cause issues with other data.</div>
+											<div class="modal-body">Are you sure you want to delete {{ Str::ucfirst(
+													$type === 'barangays' || $type === 'relationships' || $type === 'providers' ? $item?->name : $item?->deceased_firstname . ' ' . $item?->deceased_lastname) }} in the database? Once submitted, it cannot be undone and may cause issues with other data.</div>
 											<div class="modal-footer">
 												<button
 													type="button"
@@ -270,6 +297,7 @@
 								Update
 							</button>
 						</div>
+						@endif
 					</div>
 				</div>
 			</form>		
