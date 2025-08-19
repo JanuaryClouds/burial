@@ -62,6 +62,21 @@ class CmsController extends Controller
                 $tempName = $request->name;
                 Relationship::find($id)->delete();
             }
+            if ($type == 'requests') {
+                $tempData = BurialAssistanceRequest::find($id);
+                $tempName = $tempData->deceased_firstname . " " .  $tempData->deceased_lastname . "'s request has";
+                BurialAssistanceRequest::find($id)->delete();
+            }
+            if ($type == 'providers') {
+                $tempName = $request->name;
+                BurialServiceProvider::find($id)->delete();
+            }
+            if ($type == 'services') {
+                $tempData = BurialService::find($id);
+                $tempName = $tempData->deceased_firstname . " " .  $tempData->deceased_lastname . "'s burial service has";
+                BurialService::find($id)->delete();
+            }
+
             return redirect()->back()->with('success', Str::ucfirst($tempName) . ' deleted Successfully');
         }
     }
@@ -121,7 +136,7 @@ class CmsController extends Controller
             'deceased_firstname' => ['label' => 'deceased_firstname', 'type' => 'text'],
             'status' => [
                 'label' => 'status',
-                'type' => 'text',
+                'type' => 'select',
                 'options' => [
                     'pending' => 'Pending',
                     'approved' => 'Approved',
