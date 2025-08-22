@@ -4,7 +4,7 @@
 ])
 
 <div
-    class="row align-items-center g-1 flex-nowrap"
+    class="row align-items-center g-1 flex-nowrap p-0"
 >
     @if ($type === 'service')
         @php
@@ -69,7 +69,7 @@
                 ><i class="fa-solid fa-print"></i></a
             >
         </div>
-        @endif
+    @endif
         
         <div class="col mt-0" title="Contact">
             <!-- Modal trigger button -->
