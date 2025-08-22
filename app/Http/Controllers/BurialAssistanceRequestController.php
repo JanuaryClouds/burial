@@ -209,6 +209,7 @@ class BurialAssistanceRequestController extends Controller
             return str_starts_with(basename($filePath), $requestImageFileName);
         });
 
+        $requestImages = [];
         foreach ($matchedFiles as $filePath) {
             try {
                 $encryptedContent = Storage::disk($disk)->get($filePath);
@@ -219,6 +220,7 @@ class BurialAssistanceRequestController extends Controller
                     'content' => $decryptedContent,
                 ];
             } catch (\Exception $e) {
+                $requestImaes[] = [];
                 continue;
             }
         }
