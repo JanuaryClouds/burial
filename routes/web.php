@@ -62,6 +62,8 @@ Route::middleware(['auth'])
                 Route::get('/dashboard', [DashboardController::class, 'superadmin'])
                     ->name('dashboard');
                 Route::get('/tracking-activity', [DashboardController::class, 'trackerEvents']);
+                Route::get('/superadmin/search', [SearchController::class, 'superadmin'])
+                    ->name('search');
                 Route::get('/cms/barangays', [CmsController::class, 'barangays'])
                     ->name('cms.barangays');
                 Route::get('/cms/requests', [CmsController::class, 'burialAssistanceRequests'])
@@ -106,8 +108,8 @@ Route::middleware(['auth'])
                     ->name('logout');
                 Route::get('/dashboard', [DashboardController::class, 'admin'])
                     ->name('dashboard');
-                Route::get('/admin/search', [SearchController::class, 'search'])
-                    ->name('admin.search');
+                Route::get('/admin/search', [SearchController::class, 'admin'])
+                    ->name('search');
                     
                 // Burial Service
                 Route::get('/burial/history', [BurialServiceController::class, 'history'])
