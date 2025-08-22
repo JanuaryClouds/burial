@@ -168,8 +168,9 @@
 </form>
 
 <script>
-    const inputFields = document.querySelectorAll('input');
-    const submitButton = document.querySelector('button[type="submit"]');
+    const form = document.getElementById('burialServiceForm');
+    const inputFields = form.querySelectorAll('input');
+    const submitButton = form.querySelector('button[type="submit"]');
 
     function checkFields() {
         let allFilled = true;
