@@ -40,15 +40,16 @@ class BurialService extends Model
     public function relationship() {
         return $this->belongsTo(Relationship::class, "rep_relationship", 'id');
     }
+    
+    public function request() {
+        return $this->hasOne(BurialAssistanceRequest::class);
+    }
 
     public static function getAllBurialServices()
     {
         return self::query()->simplePaginate(10);
     }
 
-    public function request() {
-        return $this->hasOne(BurialAssistanceRequest::class);
-    }
 
     public function toSearchableArray() {
         return [
