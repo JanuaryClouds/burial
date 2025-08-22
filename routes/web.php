@@ -20,7 +20,8 @@ use App\Http\Controllers\{
     BurialServiceController,
     BurialServiceProviderController,
     BurialAssistanceRequestController,
-    CmsController
+    CmsController,
+    SearchController,
 };
 
 Route::get('/', function () {
@@ -105,6 +106,8 @@ Route::middleware(['auth'])
                     ->name('logout');
                 Route::get('/dashboard', [DashboardController::class, 'admin'])
                     ->name('dashboard');
+                Route::get('/admin/search', [SearchController::class, 'search'])
+                    ->name('admin.search');
                     
                 // Burial Service
                 Route::get('/burial/history', [BurialServiceController::class, 'history'])

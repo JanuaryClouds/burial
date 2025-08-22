@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Laravel\Scout\Searchable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -9,6 +10,7 @@ use Illuminate\Support\Str;
 class BurialAssistanceRequest extends Model
 {
     use HasFactory;
+    use Searchable;
 
     protected $table = "burial_assistance_requests";
     protected $BurialAssistanceRequestService;
@@ -42,7 +44,7 @@ class BurialAssistanceRequest extends Model
     }
 
     public function service() {
-        return $this->belongsTo(BurialService::class);
+        return $this->belongsTo(BurialService::class, "service_id", "id");
     }
 
     public static function getAllBurialAssistanceRequests()
@@ -83,5 +85,21 @@ class BurialAssistanceRequest extends Model
         });
 
         return $schedule;
+    }
+
+    public function toSearchableArray() {
+        return [
+            'uuid' => $this->uuid,
+            'deceased_firstname' => $this->deceased_firstname,
+            'deceased_lastname' => $this->deceased_lastname,
+            'representative' => $this->representative,
+            'representative_contact' => $this->representative_contact,
+            'burial_address' => $this->burial_address,
+            'barangay_id' => $this->barangay,
+            'start_of_burial' => $this->start_of_burial,
+            'end_of_burial' => $this->end_of_burial,
+            'service_id' => $this->service,
+            'remarks' => $this->remarks,
+        ];
     }
 }

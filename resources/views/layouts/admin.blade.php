@@ -65,18 +65,33 @@
         <div class="position-relative px-4" style="background-color: #ff5147; z-index: -1; height: 10em;">
         </div>
 
-        <div class="d-flex dropdown open justify-content-end mx-4" style="z-index: 3; margin-top: -8em;">
+        <div class="d-flex dropdown open justify-content-between mx-4" style="z-index: 3; margin-top: -8em;">
+            <div>
+                <!-- TODO: Search -->
+                 <!-- 1. When the user clicks on the search  -->
+                <!-- Search Modal trigger button -->
+                <button
+                    type="button"
+                    class="btn btn-light"
+                    data-bs-toggle="modal"
+                    data-bs-target="#searchModal"
+                >
+                    <i class="fa-solid fa-magnifying-glass"></i> Search
+                </button>
+            </div>
+            
             <button
-                class="btn btn-light dropdown-toggle d-flex gap-2 align-items-center"
+                class="btn dropdown-toggle text-white d-flex gap-2 align-items-center"
+                onmouseover="this.style.backgroundColor='#00000000';"
                 type="button"
-                id="triggerId"
+                id="accountOptions"
                 data-bs-toggle="dropdown"
                 aria-haspopup="true"
                 aria-expanded="false"
             >
                 <i class="fa-solid fa-user"></i>{{ Auth::user()->first_name }} {{ Auth::user()->middle_name }} {{ Auth::user()->last_name }}
             </button>
-            <div class="dropdown-menu" aria-labelledby="triggerId">
+            <div class="dropdown-menu" aria-labelledby="accountOptions">
                 <a href="#" class="btn w-100">
                     <span x-show="!sidebarCollapsed" x-cloak class="fw-medium"><i
                             class="fa-solid fa-user me-2"></i> Profile</span>
@@ -87,11 +102,8 @@
                     @csrf
                     <button type="submit"
                         class="btn w-100">
-                        <span x-show="!sidebarCollapsed" x-cloak class="fw-medium">
+                        <span class="fw-medium">
                             <i class="fa-solid fa-right-from-bracket me-2"></i> Logout
-                        </span>
-                        <span x-show="sidebarCollapsed" x-cloak class="fw-medium">
-                            <i class="fa-solid fa-right-from-bracket"></i>
                         </span>
                     </button>
                 </form>
@@ -138,8 +150,125 @@
         </main>  
     </div>
 
+    <div
+        class="modal fade"
+        id="searchModal"
+        tabindex="-1"
+        
+        role="dialog"
+        aria-labelledby="modalTitleId"
+        aria-hidden="true"
+    >
+        <div
+            class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg"
+            role="document"
+        >
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitleId">
+                        Search System
+                    </h5>
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                    ></button>
+                </div>
+                <div class="modal-body">
+                    <input type="text"
+                        id="globalSearch"
+                        class="form-control"
+                        placeholder="Search..."
+                        autocomplete="off"
+                        autofocus="on"
+                    >
+                    <div id="searchResults"
+                        class="list-group w-100 shadow-sm"
+                        style="z-index: 1050; display: none; max-height: 300px; overflow-y: auto;"
+                    ></div>
+                </div>
+            </div>
+        </div>
+    </div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchInput = document.getElementById("globalSearch");
+
+            const searchModal = document.getElementById("searchModal");
+            searchModal.addEventListener("show.bs.modal", function () {
+                setTimeout(() => searchInput.focus({ preventScroll: true }), 500);
+            })
+
+            const resultsBox = document.getElementById("searchResults");
+            const searchUrl = @json(route('admin.admin.search'));
+            let timeout = null;
+
+            searchInput.addEventListener("keyup", function () {
+                clearTimeout(timeout);
+                const query = this.value.trim();
+
+                if (!query) {
+                    resultsBox.style.display = "none";
+                    return;
+                }
+
+                // debounce: wait 300ms after typing stops
+                timeout = setTimeout(() => {
+                    fetch(`${searchUrl}?q=${encodeURIComponent(query)}`, {
+                        headers: { "Accept": "application/json" }
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+                            resultsBox.innerHTML = "";
+                            if (data.length > 0) {
+                                data.forEach(item => {
+                                    const link = document.createElement("a");
+                                    link.href = item.url;
+                                    link.classList.add("list-group-item", "list-group-item-action");
+                                    if (item.type === 'Requests') {
+                                        link.innerHTML += `
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span><strong>${item.deceased_firstname} ${item.deceased_lastname}</strong> - ${item.burial_address}, ${item.barangay} - ${item.start_of_burial.substring(0, 10)} to ${item.end_of_burial.substring(0, 10)}</span>
+                                                <small class="text-muted d-flex align-items-center gap-2"><span class="badge badge-dark badge-pill">${item.status.charAt(0).toUpperCase() + item.status.slice(1)}</span> ${item.type}</small>
+                                            </div>`;
+                                    } else if (item.type === 'Services') {
+                                        link.innerHTML += `
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span><strong>${item.deceased_firstname} ${item.deceased_lastname}</strong> ${item.provider} - ${item.burial_address}, ${item.barangay}</span>
+                                                <small class="text-muted">${item.type}</small>
+                                            </div>`;
+                                    } else if (item.type === 'Providers') {
+                                        link.innerHTML += `
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span><strong>${item.name}</strong> - ${item.contact} - ${item.address}, ${item.barangay}</span>
+                                                <small class="text-muted">${item.type}</small>
+                                            </div>`;
+                                    }
+                                    resultsBox.appendChild(link);
+                                });
+                                resultsBox.style.display = "block";
+                            } else if (data.length === 0) {
+                                const noResults = document.createElement("p");
+                                noResults.classList.add("list-group-item");
+                                noResults.textContent = "No results found.";
+                                resultsBox.appendChild(noResults);
+                                resultsBox.style.display = "block";
+                            }
+                        });
+                }, 300);
+            });
+
+            // hide results when clicking outside
+            document.addEventListener("click", function (e) {
+                if (!resultsBox.contains(e.target) && e.target !== searchInput) {
+                    resultsBox.style.display = "none";
+                }
+            });
+        });
+    </script>
 </body>
 </html>
