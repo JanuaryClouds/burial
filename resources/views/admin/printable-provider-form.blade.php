@@ -14,6 +14,11 @@
             <p class="text-lg text-gray-600" style="grid-row">CSWDO Burial Assistance</p>
         </div>
     </div>
+    <div style="display: table; column-count: 2;">
+        <span style="">
+            Print Date: {{ now()->format('F d, Y') }}
+        </span>
+    </div>
     <hr>
     <h3>Details of Burial Service Provider</h3>
     <div style="display: table; font-size: small; column-count: 2; column-gap: 5rem; margin-bottom: 1em;">
