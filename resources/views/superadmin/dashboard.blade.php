@@ -3,7 +3,7 @@
 @section('content')
 <div class="container d-flex flex-column gap-4 g-0 p-0">
     <h1 class="g-0 bg-white p-3 rounded shadow-sm w-100 mb-0">Dashboard</h1>
-    <div class="d-flex justify-content-start overflow-scroll flex-wrap gap-4 p-0">
+    <div class="d-flex justify-content-start flex-wrap gap-4 p-0">
         <div class="card mb-3 rounded shadow-sm" style="max-width: 480px;" >
             <div class="row g-0">
                 <div class="col-md-4 d-flex justify-content-center align-items-center rounded" style="background-color: chartreuse;">
