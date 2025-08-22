@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- <title>{{ $service->deceased_firstname }} {{ $service->deceased_lastname }}</title> -->
+    <title>{{ $service->deceased_firstname }} {{ $service->deceased_lastname }} Burial Service Form</title>
 
-    <!-- @vite('resources/css/app.css')
-    @vite('resources/js/app.js') -->
+    @vite('resources/css/app.css')
+    @vite('resources/js/app.js')
 </head>
 <body class="min-vh-100 row row-gap-0 vw-100 g-0">
     <div style="display: table;">
@@ -17,6 +17,11 @@
             >Burial Service Form</h3>
             <p class="text-lg text-gray-600" style="grid-row">CSWDO Burial Assistance</p>
         </div>
+    </div>
+    <div style="display: table; column-count: 2;">
+        <span style="">
+            Print Date: {{ now()->format('F d, Y') }}
+        </span>
     </div>
     <hr>
     <h3>Details of Deceased</h3>
@@ -54,7 +59,7 @@
             <b style="color: darkgray; font-weight: normal;">Burial Service Provider:</b> {{ $providers->firstWhere('id', $service->burial_service_provider)->name }}
         </span>
         <span style="table-cell">
-            <b style="color: darkgray; font-weight: normal;">Collected Funds:</b> Php {{ Str::substr($service->collected_funds, 1,10) }}
+            <b style="color: darkgray; font-weight: normal;">Collected Funds:</b> Php {{ $service->collected_funds }}
         </span>
     </div>
     <div style="display: table; font-size: small; margin-top: 1em; margin-bottom: 2em;">
