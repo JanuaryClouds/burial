@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" x-data="{ sidebarOpen: true, sidebarCollapsed: false }">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" x-data="{ sidebarOpen: true, sidebarCollapsed: $persist(false) }">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,63 +13,111 @@
     @vite('resources/css/app.css')
     @vite('resources/js/app.js')
 </head>
-<body class="min-vh-100 row row-gap-0 vw-100 g-0" style="background-color: #fafafa;">
+<body 
+    class="min-vh-100 g-0"
+    x-bind:class="{ 'row row-gap-0 vw-100': !sidebarCollapsed, 'min-vw-100': sidebarCollapsed }"
+    style="background-color: #fafafa;"
+>
     <!-- sidebar -->
     <nav
-        class="col-2 row d-flex flex-column mt-0 g-2 ps-0"
-        class="z-index: 1;"
-        x-show="sidebarOpen"
+        class="mt-0 g-2 ps-0"
+        x-bind:class="{ 'col-2 row d-flex flex-column': !sidebarCollapsed, 'position-fixed fixed-top vh-100': sidebarCollapsed }"
+        x-bind:style="{ width: sidebarCollapsed ? '3.25em' : '' }"
+        x-transition
+        x-cloak
     >
         <!-- sidebar content -->
         <div
             class="col row flex-column gap-4 bg-white position-sticky g-0 p-2 top-0 h-100 overflow-y-auto"
+            x-bind:class="{ 'mt-0' : !sidebarCollapsed, 'mt-2': sidebarCollapsed }"
         >
             <!-- logo -->
-            <div class="col-2 row g-2 mt-0 w-auto">
+            <div class="col-2 row g-2 w-auto"
+                x-bind:class="{ 'px-2 mt-0': !sidebarCollapsed, 'px-1 mt-1': sidebarCollapsed }"
+            >
                 <div class="col-4 mt-0">
-                    <img src="{{ asset('images/CSWDO.webp') }}" alt="CSWDO Logo" class="w-100 mt-0">
+                    <img src="{{ asset('images/CSWDO.webp') }}" alt="CSWDO Logo"
+                        class="mt-0"
+                        x-bind:class="{ 'w-100': !sidebarCollapsed }"
+                        x-bind:style="{ 'width': sidebarCollapsed ? '25px' : 'auto' }"
+                    >
                 </div>
-                <div class="col row d-flex flex-column justify-content-center">
-                    <p class="fw-semibold mb-0">CSWDO</p>
-                    <p class="fw-semibold text-black mb-0">Burial Assistance</p>
+                <div class="col row flex-column justify-content-center" 
+                    x-bind:class="{ 'd-none': sidebarCollapsed, 'd-flex': !sidebarCollapsed }"
+                    x-transition
+                    x-cloak
+                >
+                    <p class="fw-semibold mb-0" x-show="!sidebarCollapsed" x-transition x-cloak>CSWDO</p>
+                    <p class="fw-semibold text-black mb-0" x-show="!sidebarCollapsed" x-transition x-cloak>Burial Assistance</p>
                 </div>
             </div>
             <!-- sidebar links -->
-            <div class="col-10 g-2 w-100 d-flex flex-column gap-1" style="">
-                <a href="{{ route('admin.dashboard') }}" class="nav-link btn btn-link d-flex gap-2 align-items-center">
+            <div class="col-10 g-2 w-100 d-flex flex-column" x-bind:class="{ 'gap-2': !sidebarCollapsed, 'gap-4': sidebarCollapsed }">
+                <a href="{{ route('admin.dashboard') }}" 
+                    class="nav-link btn btn-link d-flex gap-2 align-items-center"
+                    x-bind:disabled="sidebarCollapsed"
+                    x-bind:class="{ 'btn btn-link': !sidebarCollapsed, 'px-1': sidebarCollapsed }"
+                    title="Dashboard"
+                    >
                     <i class="fa-solid fa-house"></i>
-                    Dashboard
+                    <p x-show="!sidebarCollapsed" class="mb-0" x-cloak>Dashboard</p>
                 </a>
-                <a href="{{ route('admin.burial.new') }}" class="nav-link btn btn-link d-flex gap-2 align-items-center">
+                <a href="{{ route('admin.burial.new') }}" 
+                    class="nav-link btn btn-link d-flex gap-2 align-items-center"
+                    x-bind:disabled="sidebarCollapsed"
+                    x-bind:class="{ 'btn btn-link': !sidebarCollapsed, 'px-1': sidebarCollapsed }"
+                    title="New Burial Service"
+                >
                     <i class="fa-solid fa-file-circle-plus"></i>
-                    New Burial Service
+                    <p x-show="!sidebarCollapsed" class="mb-0" x-cloak>New Burial Service</p>
                 </a>
-                <a href="{{ route('admin.burial.history') }}" class="nav-link btn btn-link d-flex gap-2 align-items-center">
-                    <i class="fa-solid fa-clock-rotate-left"></i>
-                    Burial History
+                <a href="{{ route('admin.burial.history') }}" 
+                    class="nav-link btn btn-link d-flex gap-2 align-items-center"
+                    x-bind:disabled="sidebarCollapsed"
+                    x-bind:class="{ 'btn btn-link': !sidebarCollapsed, 'px-1': sidebarCollapsed }"
+                    title="Burial History"
+                >
+                    <i class="fa-solid fa-clock-rotate-left" style="width: 14px;"></i>
+                    <p x-show="!sidebarCollapsed" class="mb-0" x-cloak>Burial History</p>
                 </a>
-                <a href="{{ route('admin.burial.requests') }}" class="nav-link btn btn-link d-flex gap-2 align-items-center">
-                    <i class="fa-solid fa-list"></i>
-                    Burial Requests
+                <a href="{{ route('admin.burial.requests') }}" 
+                    class="nav-link btn btn-link d-flex gap-2 align-items-center"
+                    x-bind:disabled="sidebarCollapsed"
+                    x-bind:class="{ 'btn btn-link': !sidebarCollapsed, 'px-1': sidebarCollapsed }"
+                    title="Burial Requests"
+                >
+                    <i class="fa-solid fa-list" style="width: 14px;"></i>
+                    <p x-show="!sidebarCollapsed" class="mb-0" x-cloak>Burial Requests</p>
                 </a>
-                <a href="{{ route('admin.burial.providers') }}" class="nav-link btn btn-link d-flex gap-1 align-items-center">
+                <a href="{{ route('admin.burial.providers') }}" 
+                    class="nav-link btn btn-link d-flex gap-1 align-items-center"
+                    x-bind:disabled="sidebarCollapsed"
+                    x-bind:class="{ 'btn btn-link': !sidebarCollapsed, 'px-1': sidebarCollapsed }"
+                    title="Burial Service Providers"
+                >
                     <i class="fa-solid fa-building" style="padding-left: 2px; margin-right: 5px;"></i>
-                    Burial Service Providers
+                    <p x-show="!sidebarCollapsed" class="mb-0" x-cloak>Burial Service Providers</p>
                 </a>
             </div>
         </div>
     </nav>
 
     <!-- main -->
-    <div class="col-10 g-0 vh-100 overflow-y-auto overflow-x-hidden" style="">
+    <div 
+        class="g-0 vh-100 overflow-y-auto overflow-x-hidden" style=""
+        x-bind:class="{ 'vw-100 ps-5 -ms-5': sidebarCollapsed, 'col-10': !sidebarCollapsed}"
+        x-transition
+        x-cloak
+    >
         <div class="position-relative px-4" style="background-color: #ff5147; z-index: -1; height: 10em;">
         </div>
 
         <div class="d-flex dropdown open justify-content-between mx-4" style="z-index: 3; margin-top: -8em;">
-            <div>
-                <!-- TODO: Search -->
-                 <!-- 1. When the user clicks on the search  -->
-                <!-- Search Modal trigger button -->
+            <div class="d-flex gap-2">
+                <button x-on:click="sidebarCollapsed = !sidebarCollapsed" class="btn btn-light">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+
                 <button
                     type="button"
                     class="btn btn-light"
@@ -204,7 +252,7 @@
             })
 
             const resultsBox = document.getElementById("searchResults");
-            const searchUrl = @json(route('admin.admin.search'));
+            const searchUrl = @json(route('admin.search'));
             let timeout = null;
 
             searchInput.addEventListener("keyup", function () {
