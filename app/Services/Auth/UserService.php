@@ -7,14 +7,16 @@ use Illuminate\Support\Facades\Auth;
 
 class UserService
 {
-    public function login(array $data): User
+    public function login(array $data)
     {
         if(Auth::attempt($data))
         {
-            return Auth::user();
+            $user = Auth::user();
+            Auth::login($user);
+            return $user;
         }
 
-        return Auth::user();
+        return redirect()->back()->with("error","Invalid login credentials.");
     }
 
     public function logout(): void

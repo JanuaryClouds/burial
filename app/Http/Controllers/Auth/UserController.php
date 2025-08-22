@@ -21,41 +21,39 @@ class UserController extends Controller
     {
         $ip = request()->ip();
         $browser = request()->header('User-Agent');
-        
-        if ($user = $this->userServices->login($request->validated()))
-        {
+
+        if (Auth::attempt($request->validated())) {
+            $user = Auth::user();
             Auth::login($user);
-            
-            activity() 
-                ->performedOn($user)
+            activity()
                 ->causedBy($user)
                 ->withProperties(['ip' => $ip, 'browser' => $browser])
-                ->log("Successful login");
+                ->log("Successful login attempt");
                 
-            return redirect()
+                return redirect()
                 ->route(Auth::user()->getRoleNames()->first() . '.dashboard')
                 ->with('success', 'You have successfully logged in!');
         } else {
             activity()
-                ->log("Failed login attempt: ({$ip} - {$browser})");
-            
+                ->causedBy(null)
+                ->withProperties(['ip' => $ip, 'browser' => $browser])
+                ->log("Unsuccessful login attempt");
+                
             return redirect()
-                ->route('login.page')
+                ->back()
                 ->with('error', 'Invalid login credentials.');
-        }
+        }   
     }
 
     public function logout()
     {
         $user = Auth::user();
-        
         activity()
         ->performedOn($user)
         ->causedBy($user)
         ->log('Successful logout');
         
-        $user = $this->userServices->logout();
-        
+        Auth::logout();
         return redirect()
             ->route('landing.page')
             ->with('success','You have successfully logged out!');
