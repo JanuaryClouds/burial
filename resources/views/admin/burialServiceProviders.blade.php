@@ -1,4 +1,4 @@
-@extends('layouts.admin');
+@extends('layouts.admin')
 @section('content')
 <title>Burial Service Providers</title>
 <div class="container d-flex flex-column gap-2">
