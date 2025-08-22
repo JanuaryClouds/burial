@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" x-data="{ sidebarOpen: true, sidebarCollapsed: false }">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" x-data="{ sidebarOpen: true, sidebarCollapsed: $persist(false) }">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,92 +13,151 @@
     @vite('resources/css/app.css')
     @vite('resources/js/app.js')
 </head>
-<body class="min-vh-100 row row-gap-0 vw-100 g-0" style="background-color: #fafafa;">
+<body
+    class="min-vh-100 g-0" 
+    style="background-color: #fafafa;"
+    x-bind:class="{ 'row row-gap-0 vw-100': !sidebarCollapsed, 'min-vw-100': sidebarCollapsed }"
+    >
     <!-- sidebar -->
     <nav
-        class="col-2 row d-flex flex-column mt-0 g-2 ps-0"
-        class="z-index: 1;"
-        x-show="sidebarOpen"
+        class="mt-0 g-2 ps-0"
+        x-bind:class="{ 'col-2 row d-flex flex-column': !sidebarCollapsed, 'position-fixed fixed-top vh-100': sidebarCollapsed }"
+        x-bind:style="{ width: sidebarCollapsed ? '3.25em' : '' }"
+        x-transition
+        x-cloak
     >
         <!-- sidebar content -->
         <div
             class="col row flex-column gap-4 bg-white position-sticky g-0 p-2 top-0 h-100 overflow-y-auto"
         >
             <!-- logo -->
-            <div class="col-2 row g-2 mt-0 w-auto">
+            <div class="col-2 row g-2 w-auto"
+                x-bind:class="{ 'px-2 mt-0': !sidebarCollapsed, 'px-1 mt-1': sidebarCollapsed }"
+            >
                 <div class="col-4 mt-0">
-                    <img src="{{ asset('images/CSWDO.webp') }}" alt="CSWDO Logo" class="w-100 mt-0">
+                    <img src="{{ asset('images/CSWDO.webp') }}" alt="CSWDO Logo"
+                        class="mt-0"
+                        x-bind:class="{ 'w-100': !sidebarCollapsed }"
+                        x-bind:style="{ 'width': sidebarCollapsed ? '25px' : 'auto' }"
+                    >
                 </div>
-                <div class="col row d-flex flex-column justify-content-center">
-                    <p class="fw-semibold mb-0">CSWDO</p>
-                    <p class="fw-semibold text-black mb-0">Burial Assistance</p>
+                <div class="col row flex-column justify-content-center" 
+                    x-bind:class="{ 'd-none': sidebarCollapsed, 'd-flex': !sidebarCollapsed }"
+                    x-transition
+                    x-cloak
+                >
+                    <p class="fw-semibold mb-0" x-show="!sidebarCollapsed" x-transition x-cloak>CSWDO</p>
+                    <p class="fw-semibold text-black mb-0" x-show="!sidebarCollapsed" x-transition x-cloak>Burial Assistance</p>
                 </div>
             </div>
             <!-- sidebar links -->
-            <div class="col-10 g-2 w-100 d-flex flex-column gap-1" style="">
-                <small class="ms-2">Common</small>
+            <div class="col-10 g-2 w-100 d-flex flex-column" x-bind:class="{ 'gap-2': !sidebarCollapsed, 'gap-4': sidebarCollapsed }">
+                <small class="ms-2" x-show="!sidebarCollapsed">Common</small>
                 <a
                     name=""
                     id=""
                     class="nav-link btn btn-link d-flex gap-2 align-items-center"
                     href="{{ route('superadmin.dashboard') }}"
-                    role="button"
-                    ><i class="fa-solid fa-house"></i>Dashboard</a
-                >
-                <small class="ms-2">Models</small>
+                    x-bind:disabled="sidebarCollapsed"
+                    x-bind:class="{ 'btn btn-link': !sidebarCollapsed, 'px-1': sidebarCollapsed }"
+                    title="Dashboard"
+                    ><i class="fa-solid fa-house"></i>
+                    <p x-show="!sidebarCollapsed" class="mb-0" x-cloak>Dashboard</p>
+                </a>
+                <small class="ms-2" x-show="!sidebarCollapsed">Models</small>
+                <hr x-show="sidebarCollapsed">
                 <a
                     name=""
                     id=""
                     class="nav-link btn btn-link d-flex gap-2 align-items-center"
                     href="{{ route('superadmin.cms.barangays') }}"
                     role="button"
-                    ><i class="fa-solid fa-city"></i>Barangays</a
-                >
+                    x-bind:disabled="sidebarCollapsed"
+                    x-bind:class="{ 'btn btn-link': !sidebarCollapsed, 'px-1': sidebarCollapsed }"
+                    title="Barangays"
+                    ><i class="fa-solid fa-city"></i>
+                    <p x-show="!sidebarCollapsed" class="mb-0" x-cloak">Barangays</p>
+                </a>
                 <a
                     name=""
                     id=""
                     class="nav-link btn btn-link d-flex gap-2 align-items-center"
                     href="{{ route('superadmin.cms.requests') }}"
                     role="button"
-                    ><i class="fa-solid fa-list" style="margin-right: 2px; padding-left: 1px;"></i>Burial Assistance Requests</a
-                >
+                    x-bind:disabled="sidebarCollapsed"
+                    x-bind:class="{ 'btn btn-link': !sidebarCollapsed, 'px-1': sidebarCollapsed }"
+                    title="Burial Assistance Requests"
+                    ><i class="fa-solid fa-list" style="margin-right: 2px; padding-left: 1px;"></i>
+                    <p x-show="!sidebarCollapsed" class="mb-0" x-cloak>Burial Assistance Requests</p>
+                </a>
                 <a
                     name=""
                     id=""
                     class="nav-link btn btn-link d-flex gap-2 align-items-center"
                     href="{{ route('superadmin.cms.services') }}" 
                     role="button"
-                    ><i class="fa-solid fa-bell-concierge" style="margin-right: 2px; padding-left: 1px;"></i>Burial Services</a
-                >
+                    x-bind:disabled="sidebarCollapsed"
+                    x-bind:class="{ 'btn btn-link': !sidebarCollapsed, 'px-1': sidebarCollapsed }"
+                    title="Burial Services"
+                    ><i class="fa-solid fa-bell-concierge" style="margin-right: 2px; padding-left: 1px;"></i>
+                    <p x-show="!sidebarCollapsed" class="mb-0" x-cloak">Burial Services</p>
+                </a>
                 <a
                     name=""
                     id=""
                     class="nav-link btn btn-link d-flex gap-2 align-items-center"
                     href="{{ route('superadmin.cms.providers') }}"
                     role="button"
-                    ><i class="fa-solid fa-building" style="padding-left: 2px; margin-right: 4px;"></i>Burial Service Providers</a
-                >
+                    x-bind:disabled="sidebarCollapsed"
+                    x-bind:class="{ 'btn btn-link': !sidebarCollapsed, 'px-1': sidebarCollapsed }"
+                    title="Burial Service Providers"
+                    ><i class="fa-solid fa-building" style="padding-left: 2px; margin-right: 4px;"></i>
+                    <p x-show="!sidebarCollapsed" class="mb-0" x-cloak>Burial Service Providers</p>
+                </a>
                 <a
                     name=""
                     id=""
                     class="nav-link btn btn-link d-flex gap-2 align-items-center"
                     href="{{ route('superadmin.cms.relationships') }}" 
                     role="button"
-                    ><i class="fa-solid fa-circle-nodes" style="margin-right: 2px; padding-left: 1px;"></i>Relationships</a
-                >
-
+                    x-bind:disabled="sidebarCollapsed"
+                    x-bind:class="{ 'btn btn-link': !sidebarCollapsed, 'px-1': sidebarCollapsed }"
+                    title="Relationships"
+                    ><i class="fa-solid fa-circle-nodes" style="margin-right: 2px; padding-left: 1px;"></i>
+                    <p x-show="!sidebarCollapsed" class="mb-0" x-cloak>Relationships</p>
+                </a>
             </div>
         </div>
     </nav>
 
     <!-- main -->
-    <div class="col-10 g-0 vh-100 overflow-y-auto overflow-x-hidden" style="">
+    <div class="g-0 vh-100 overflow-y-auto overflow-x-hidden" style=""
+        x-bind:class="{ 'vw-100 ps-5 -ms-5': sidebarCollapsed, 'col-10': !sidebarCollapsed}"
+        x-transition
+        x-cloak
+    >
         <div class="position-relative px-4" style="background-color: #ff5147; z-index: -1; height: 10em;">
         </div>
 
-        <div class="d-flex dropdown open justify-content-end mx-4" style="z-index: 3; margin-top: -8em;">
+        <div class="d-flex dropdown open justify-content-between mx-4" style="z-index: 3; margin-top: -8em;">
+            <div class="d-flex gap-2">
+                <button x-on:click="sidebarCollapsed = !sidebarCollapsed" class="btn btn-light">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+
+                <button
+                    type="button"
+                    class="btn btn-light"
+                    data-bs-toggle="modal"
+                    data-bs-target="#searchModal"
+                >
+                    <i class="fa-solid fa-magnifying-glass"></i> Search
+                </button>
+            </div>
+
             <button
-                class="btn btn-light dropdown-toggle d-flex gap-2 align-items-center"
+                class="btn dropdown-toggle text-white d-flex gap-2 align-items-center"
+                onmouseover="this.style.backgroundColor='#00000000';"
                 type="button"
                 id="triggerId"
                 data-bs-toggle="dropdown"
@@ -118,11 +177,8 @@
                     @csrf
                     <button type="submit"
                         class="btn w-100">
-                        <span x-show="!sidebarCollapsed" x-cloak class="fw-medium">
+                        <span x-cloak class="fw-medium">
                             <i class="fa-solid fa-right-from-bracket me-2"></i> Logout
-                        </span>
-                        <span x-show="sidebarCollapsed" x-cloak class="fw-medium">
-                            <i class="fa-solid fa-right-from-bracket"></i>
                         </span>
                     </button>
                 </form>
@@ -169,7 +225,137 @@
         </main>  
     </div>
 
+    <div
+        class="modal fade"
+        id="searchModal"
+        tabindex="-1"
+        
+        role="dialog"
+        aria-labelledby="modalTitleId"
+        aria-hidden="true"
+    >
+        <div
+            class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg"
+            role="document"
+        >
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitleId">
+                        Search System
+                    </h5>
+                    <button
+                        type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                    ></button>
+                </div>
+                <div class="modal-body">
+                    <input type="text"
+                        id="globalSearch"
+                        class="form-control"
+                        placeholder="Search..."
+                        autocomplete="off"
+                        autofocus="on"
+                    >
+                    <div id="searchResults"
+                        class="list-group w-100 shadow-sm"
+                        style="z-index: 1050; display: none; max-height: 300px; overflow-y: auto;"
+                    ></div>
+                </div>
+            </div>
+        </div>
+    </div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchInput = document.getElementById("globalSearch");
+
+            const searchModal = document.getElementById("searchModal");
+            searchModal.addEventListener("show.bs.modal", function () {
+                setTimeout(() => searchInput.focus({ preventScroll: true }), 500);
+            })
+
+            const resultsBox = document.getElementById("searchResults");
+            const searchUrl = @json(route('superadmin.search'));
+            let timeout = null;
+
+            searchInput.addEventListener("keyup", function () {
+                clearTimeout(timeout);
+                const query = this.value.trim();
+
+                if (!query) {
+                    resultsBox.style.display = "none";
+                    return;
+                }
+
+                // debounce: wait 300ms after typing stops
+                timeout = setTimeout(() => {
+                    fetch(`${searchUrl}?q=${encodeURIComponent(query)}`, {
+                        headers: { "Accept": "application/json" }
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+                            resultsBox.innerHTML = "";
+                            if (data.length > 0) {
+                                data.forEach(item => {
+                                    const link = document.createElement("a");
+                                    link.href = item.url;
+                                    link.classList.add("list-group-item", "list-group-item-action");
+                                    if (item.type === 'Requests') {
+                                        link.innerHTML += `
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span><strong>${item.deceased_firstname} ${item.deceased_lastname}</strong> - ${item.burial_address}, ${item.barangay} - ${item.start_of_burial.substring(0, 10)} to ${item.end_of_burial.substring(0, 10)}</span>
+                                                <small class="text-muted d-flex align-items-center gap-2"><span class="badge badge-dark badge-pill">${item.status.charAt(0).toUpperCase() + item.status.slice(1)}</span> ${item.type}</small>
+                                            </div>`;
+                                    } else if (item.type === 'Services') {
+                                        link.innerHTML += `
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span><strong>${item.deceased_firstname} ${item.deceased_lastname}</strong> ${item.provider} - ${item.burial_address}, ${item.barangay}</span>
+                                                <small class="text-muted">${item.type}</small>
+                                            </div>`;
+                                    } else if (item.type === 'Providers') {
+                                        link.innerHTML += `
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span><strong>${item.name}</strong> - ${item.contact} - ${item.address}, ${item.barangay}</span>
+                                                <small class="text-muted">${item.type}</small>
+                                            </div>`;
+                                    } else if (item.type === 'Barangays') {
+                                        link.innerHTML += `
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span><strong>${item.name}</strong> - District ${item.district}</span>
+                                                <small class="text-muted">${item.type}</small>
+                                            </div>`;
+                                    } else if (item.type === 'Relationships') {
+                                        link.innerHTML += `
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span><strong>${item.name}</strong></span>
+                                                <small class="text-muted">${item.type}</small>
+                                            </div>`;
+                                    }
+                                    resultsBox.appendChild(link);
+                                });
+                                resultsBox.style.display = "block";
+                            } else if (data.length === 0) {
+                                const noResults = document.createElement("p");
+                                noResults.classList.add("list-group-item");
+                                noResults.textContent = "No results found.";
+                                resultsBox.appendChild(noResults);
+                                resultsBox.style.display = "block";
+                            }
+                        });
+                }, 300);
+            });
+
+            // hide results when clicking outside
+            document.addEventListener("click", function (e) {
+                if (!resultsBox.contains(e.target) && e.target !== searchInput) {
+                    resultsBox.style.display = "none";
+                }
+            });
+        });
+    </script>
 </body>
 </html>
