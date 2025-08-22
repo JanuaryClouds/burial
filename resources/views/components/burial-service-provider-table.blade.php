@@ -13,7 +13,7 @@
             <td>{{ $provider->name }}</td>
             <td>{{ $provider->address }}, {{ $provider->barangay->name }}</td>
             <td>{{ $provider->contact_details }}</td>
-            <td class="">
+            <td class="d-flex align-items-center gap-1">
                 <x-table-actions :data="$provider" :type="'provider'" />
             </td>
         </tr>
