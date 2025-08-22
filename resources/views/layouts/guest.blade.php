@@ -33,11 +33,11 @@ style="background: url('{{ asset('images/cover.webp') }}') no-repeat center cent
         <div class="toast bg-danger text-white" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="toast-header bg-danger gap-2 align-items-center">
                 <i class="fa-solid fa-xmark"></i>
-            <strong class="me-auto">Failed</strong>
+            <strong class="me-auto">Error</strong>
                 <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
-            <div class="toast-body">
-                {{ session('failed') }}
+            <div class="toast-body text-black">
+                {{ session('error') }}
             </div>
         </div>
     @elseif (session()->has('info'))
