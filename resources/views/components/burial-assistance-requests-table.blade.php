@@ -11,13 +11,13 @@
     </thead>
     <tbody>
         @foreach ($allRequests as $request)
-            <tr class="">
+            <tr class="border-1">
                 <td>{{ $request->deceased_firstname }} {{ $request->deceased_lastname }}</td>
                 <td>{{ $request->representative }} / {{ $request->representative_contact }}</td>
                 <td>{{ $request->burial_address }}, {{ $request->barangay->name }}</td>
                 <td>{{ Str::limit($request->start_of_burial, 10) }}, {{ Str::limit($request->end_of_burial, 10) }}</td>
                 <td>{{ Str::ucfirst($request->status) }}</td>
-                <td>
+                <td class="d-flex justify-content-start align-items-center gap-1">
                     <x-table-actions :data="$request" :type="'request'" />
                 </td>
             </tr>
