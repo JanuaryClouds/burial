@@ -101,8 +101,9 @@ class BurialServiceController extends Controller
             'deceased_firstname' => $approvedAssistanceRequest->deceased_firstname,
             'deceased_lastname' => $approvedAssistanceRequest->deceased_lastname,
             'representative' => $approvedAssistanceRequest->representative,
-            'representative_contact' => $approvedAssistanceRequest->representative_contact,
-            'rep_relationship' => $approvedAssistanceRequest->rep_relationship,
+            'representative_phone' => $approvedAssistanceRequest->representative_phone,
+            'representative_email' => $approvedAssistanceRequest->representative_phone,
+            'representative_relationship' => $approvedAssistanceRequest->representative_relationship,
             'burial_address' => $approvedAssistanceRequest->burial_address,
             'barangay_id' => $approvedAssistanceRequest->barangay_id,
             'start_of_burial' => $approvedAssistanceRequest->start_of_burial,
@@ -134,17 +135,6 @@ class BurialServiceController extends Controller
         return redirect()->route('admin.burial.history')->with('success', 'Burial service created successfully.');
     }
         return redirect()->back()->withErrors(['error' => 'Failed to create burial service.']);
-    }
-
-    // TODO: Add messaging API via email or SMS
-    public function contact($id) {
-        $success = true; // placeholder 
-
-        if ($success) {
-            return redirect()->route('admin.burial.history')->with('success','Successfuly messaged burial service representative.');
-        }
-
-        return redirect()->route('admin.burial.history')->with('error','Failed to message burial service representative.');
     }
 
     public function exportPDF($id) {

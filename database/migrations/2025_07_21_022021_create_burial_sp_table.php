@@ -14,8 +14,13 @@ return new class extends Migration
         Schema::create('burial_service_providers', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('contact_details');
+            $table->string('phone');
+            $table->string('email')->nullable();
             $table->string('address');
+            $table->foreignId('barangay_id')
+                ->nullable()
+                ->constrained('barangays')
+                ->nullOnDelete();
             $table->string('remarks')->nullable()->max(255);
             $table->timestamps();
         });

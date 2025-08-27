@@ -11,15 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('burial_services', function (Blueprint $table) {
-            Schema::dropColumns('burial_services', ['burial_address']);
-            $table->string('burial_address')->nullable()->after('rep_relationship');
-            $table->foreignId('barangay_id')
-                ->nullable()
-                ->constrained('barangays')
-                ->nullOnDelete()
-                ->after('burial_address');
-        });
+        // Schema::table('burial_services', function (Blueprint $table) {
+        //     Schema::dropColumns('burial_services', ['burial_address']);
+        //     $table->string('burial_address')->nullable()->after('rep_relationship');
+        //     $table->foreignId('barangay_id')
+        //         ->nullable()
+        //         ->constrained('barangays')
+        //         ->nullOnDelete()
+        //         ->after('burial_address');
+        // });
     }
 
     /**

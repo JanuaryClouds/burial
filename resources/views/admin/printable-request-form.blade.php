@@ -45,10 +45,13 @@
             <b style="color: darkgray; font-weight: normal;">Name:</b> {{ $assistanceRequest->representative }}
         </span>
         <span style="margin-left: 2rem;">
-            <b style="color: darkgray; font-weight: normal;">Contact:</b> {{ $assistanceRequest->representative_contact }}
+            <b style="color: darkgray; font-weight: normal;">Phone:</b> {{ $assistanceRequest->representative_phone }}
         </span>
         <span style="margin-left: 2rem;">
-            <b style="color: darkgray; font-weight: normal;">Relationship:</b> {{ $relationships->firstWhere('id', $assistanceRequest->rep_relationship)->name ?? 'Unknown' }} 
+            <b style="color: darkgray; font-weight: normal;">Email:</b> {{ $assistanceRequest?->representative_email ?? 'N/A' }}
+        </span>
+        <span style="margin-left: 2rem;">
+            <b style="color: darkgray; font-weight: normal;">Relationship:</b> {{ $relationships->firstWhere('id', $assistanceRequest->representative_relationship)->name ?? 'Unknown' }} 
         </span>
     </div>
     <h3>Burial Service Details</h3>

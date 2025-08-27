@@ -17,13 +17,17 @@
         <div class="flex flex-col gap-4">
             <h4 class="text-black">Details of the Provider</h4>
             <div class="d-flex justify-content-between align-items-start gap-2">
-                <span class="d-flex flex-column w-75 justify-content-between">
+                <span class="d-flex flex-column w-50 justify-content-between">
                     <input type="text" required name="name" id="name" class="form-control">
                     <label for="name" class="form-label text-center">Name of Company*</label>
                 </span>
                 <span class="d-flex flex-column justify-content-between">
-                    <input type="text" required name="contact_details" id="contact_details" class="form-control">
-                    <label for="contact_details" class="form-label text-center">Contact Details*</label>
+                    <input type="text" required name="phone" id="phone" class="form-control">
+                    <label for="phone" class="form-label text-center">Phone (Mobile or Landline)*</label>
+                </span>
+                <span class="d-flex flex-column justify-content-between">
+                    <input type="text" name="email" id="contact_details" class="form-control">
+                    <label for="email" class="form-label text-center">Email</label>
                 </span>
             </div>
             <div class="d-flex justify-content-between align-items-start w-100 gap-1">

@@ -11,7 +11,7 @@
     <x-alert type="error" :message="session('error')" />
 @endif
 <div class="container d-flex flex-column justify-content-between align-items-center">
-    <form action="{{ route('admin.burial.provider.update', ['id' => $serviceProvider->id]) }}" method="POST" id="burialServiceProviderForm" class="row flex-column bg-white align-items-center shadow w-50 p-2 py-4 gap-4">
+    <form action="{{ route('admin.burial.provider.update', ['id' => $serviceProvider->id]) }}" method="POST" id="burialServiceProviderForm" class="row flex-column bg-white align-items-center shadow w-75 p-2 py-4 gap-4">
     @csrf
     @method('PUT')
 
@@ -30,13 +30,17 @@
         <div class="d-flex flex-column gap-1">
             <h4 class="text-black tw-semibold">Details of the Provider</h4>
             <div class="d-flex justify-content-between align-items-start w-100 gap-1">
-                <span class="d-flex flex-column w-75 justify-content-between">
+                <span class="d-flex flex-column w-50 justify-content-between">
                     <input type="text" required value="{{ $serviceProvider->name }}" name="name" id="name" class="form-control">
                     <label for="name" class="form-label">Name of Company*</label>
                 </span>
                 <span class="d-flex flex-column w-25 justify-content-between">
-                    <input type="text" readonly value="{{ $serviceProvider->contact_details }}" name="contact_details" id="contact_details" class="form-control">
-                    <label for="contact_details" class="form-label">Contact Details*</label>
+                    <input type="text" required name="phone" id="phone" value= {{ $serviceProvider->phone }} class="form-control">
+                    <label for="phone" class="form-label text-center">Phone (Mobile or Landline)*</label>
+                </span>
+                <span class="d-flex flex-column w-25 justify-content-between">
+                    <input type="text" name="email" id="contact_details" class="form-control" value="{{ $serviceProvider->email }}">
+                    <label for="email" class="form-label text-center">Email</label>
                 </span>
             </div>
             <div class="d-flex justify-content-between align-items-start w-100 gap-1">

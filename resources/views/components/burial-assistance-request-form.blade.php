@@ -1,6 +1,6 @@
 @props(['serviceRequest' => null])
 
-<form action="{{ route('burial.request.store') }}" method="POST" class="row w-75" enctype="multipart/form-data">
+<form action="{{ route('guest.request.verify') }}" method="post" class="row w-75" enctype="multipart/form-data">
     @csrf
     <div class="container mx-auto p-4 bg-white shadow-lg rounded-md">
         <header class="row d-flex">
@@ -32,22 +32,27 @@
                 <p class="text-sm">Please state the name and contact details of the person who will be the representative/contact person in the burial.</p>
             </span>
             <div class="d-flex justify-content-start align-items-center w-100 gap-2">
-                <span class="d-flex flex-column w-50 justify-content-between">
+                <span class="d-flex flex-column w-25 justify-content-between">
                     <input type="text" required name="representative" id="representative" class="form-control"
                     {{ $serviceRequest ? 'readonly disabled' : '' }} value="{{ $serviceRequest ? $serviceRequest->representative : '' }}">
                     <label for="representative" class="form-label text-sm text-center">Full Name*</label>
                 </span>
                 <span class="d-flex flex-column w-25 justify-content-between">
-                    <input type="text" required name="representative_contact" id="representative_contact" class="form-control" 
-                    {{ $serviceRequest ? 'readonly disabled' : '' }} value="{{ $serviceRequest ? $serviceRequest->representative_contact : '' }}">
-                    <label for="representative_contact" class="form-label text-sm text-center">Contact Details*</label>
+                    <input type="text" required name="representative_phone" id="representative_phone" class="form-control" 
+                    {{ $serviceRequest ? 'readonly disabled' : '' }} value="{{ $serviceRequest ? $serviceRequest->representative_phone : '' }}">
+                    <label for="representative_phone" class="form-label text-sm text-center">Phone (Mobile / Landline)*</label>
+                </span>
+                <span class="d-flex flex-column w-25 justify-content-between">
+                    <input type="text" required name="representative_email" id="representative_email" class="form-control" 
+                    {{ $serviceRequest ? 'readonly disabled' : '' }} value="{{ $serviceRequest ? $serviceRequest?->representative_email : '' }}">
+                    <label for="representative_email" class="form-label text-sm text-center">Email*</label>
                 </span>
 
                 <span class="d-flex flex-column w-25 justify-content-between">
-                    <select required name="rep_relationship" id="rep_relationship" class="form-select"
+                    <select required name="representative_relationship" id="representative_relationship" class="form-select"
                     {{ $serviceRequest ? 'readonly disabled' : '' }}>
                         @if ($serviceRequest)
-                            <option value="{{ $serviceRequest->rep_relationship }}">{{ $relationships->firstWhere('id', $serviceRequest->rep_relationship)->name ?? 'Unknown' }}</option>
+                            <option value="{{ $serviceRequest->representative_relationship }}">{{ $relationships->firstWhere('id', $serviceRequest->representative_relationship)->name ?? 'Unknown' }}</option>
                         @else
                             <option value="">Select Relationship*</option>
                         @endif
@@ -55,7 +60,7 @@
                             <option value="{{ $relationship->id }}">{{ $relationship->name }}</option>
                         @endforeach
                     </select>
-                    <label for="rep_relationship" class="form-label text-sm text-center">Relationship to the Deceased*</label>
+                    <label for="representative_relationship" class="form-label text-sm text-center">Relationship to the Deceased*</label>
                 </span>
             </div>
             <hr class="border-2 border-gray-700 border-dashed">
@@ -146,6 +151,7 @@
             <button
                 type="button"
                 class="btn btn-primary"
+                id="submitButton"
                 data-bs-toggle="modal"
                 data-bs-target="#confirmationSubmit"
                 >
@@ -242,7 +248,7 @@
 
 <script>
     const inputFields = document.querySelectorAll('input');
-    const submitButton = document.querySelector('button[type="submit"]');
+    const submitButton = document.getElementById('submitButton');
     
     function checkFields() {
         let allFilled = true;

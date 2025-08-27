@@ -38,11 +38,14 @@
         <span style="table-cell">
             <b style="color: darkgray; font-weight: normal;">Name:</b> {{ $service->representative }}
         </span>
-        <span style="table-cell">
-            <b style="color: darkgray; font-weight: normal;">Contact:</b> {{ $service->representative_contact }}
+        <span style="margin-left: 2rem;">
+            <b style="color: darkgray; font-weight: normal;">Phone:</b> {{ $assistanceRequest->representative_phone }}
+        </span>
+        <span style="margin-left: 2rem;">
+            <b style="color: darkgray; font-weight: normal;">Email:</b> {{ $assistanceRequest?->representative_email ?? 'N/A' }}
         </span>
         <span style="table-cell">
-            <b style="color: darkgray; font-weight: normal;">Relationship:</b> {{ $relationships->firstWhere('id', $service->rep_relationship)->name ?? 'Unknown' }} 
+            <b style="color: darkgray; font-weight: normal;">Relationship:</b> {{ $relationships->firstWhere('id', $service->representative_relationship)->name ?? 'Unknown' }} 
         </span>
     </div>
     <h3>Burial Service Details</h3>

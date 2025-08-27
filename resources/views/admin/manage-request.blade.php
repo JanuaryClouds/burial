@@ -35,24 +35,28 @@
             </div>
             <h4 class="fw-semibold text-black">Representative / Contact Person</h4>
             <div class="d-flex justify-content-start align-items-center w-100 gap-1">
-                <span class="d-flex flex-column w-50 justify-content-between">
+                <span class="d-flex flex-column w-25 justify-content-between">
                     <input type="text" value="{{ $serviceRequest->representative }}" name="representative" id="representative" class="form-control">
                     <label for="representative" class="form-label text-center">Full Name*</label>
                 </span>
                 <span class="d-flex flex-column w-25 justify-content-between">
-                    <input type="text" readonly value="{{ $serviceRequest->representative_contact }}" name="representative_contact" id="representative_contact" class="form-control">
-                    <label for="representative_contact" class="form-label text-center">Contact Details*</label>
+                    <input type="text" readonly value="{{ $serviceRequest->representative_phone }}" name="representative_phone" id="representative_phone" class="form-control">
+                    <label for="representative_phone" class="form-label text-center">Phone (Mobile or Landline)*</label>
+                </span>
+                <span class="d-flex flex-column w-25 justify-content-between">
+                    <input type="text" readonly value="{{ $serviceRequest->representative_email }}" name="representative_email" id="representative_email" class="form-control">
+                    <label for="representative_email" class="form-label text-center">Email</label>
                 </span>
 
                 <span class="d-flex flex-column w-25 justify-content-between">
-                    <select readonly name="rep_relationship" id="rep_relationship" class="form-select">
+                    <select readonly name="representative_relationship" id="representative_relationship" class="form-select">
                         @if ($serviceRequest)
-                            <option value="{{ $serviceRequest->rep_relationship }}">{{ $relationships->firstWhere('id', $serviceRequest->rep_relationship)->name ?? 'Unknown' }}</option>
+                            <option value="{{ $serviceRequest->representative_relationship }}">{{ $relationships->firstWhere('id', $serviceRequest->representative_relationship)->name ?? 'Unknown' }}</option>
                         @else
                             <option value="">Select Relationship*</option>
                         @endif
                     </select>
-                    <label for="rep_relationship" class="form-label text-center">Relationship to the Deceased*</label>
+                    <label for="representative_relationship" class="form-label text-center">Relationship to the Deceased*</label>
                 </span>
             </div>
             <hr class="border-1">
