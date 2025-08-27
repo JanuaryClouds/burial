@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 @section('content')
 <title>Burial Service Providers</title>
-<div class="container d-flex flex-column gap-2">
+<div class="container d-flex flex-column gap-2 px-0">
     <header class="d-flex justify-content-between gap-2 bg-white rounded p-3 shadow-sm">
         <h2 class="mb-0">Burial Service Providers</h2>
         <span class="d-flex gap-2">
