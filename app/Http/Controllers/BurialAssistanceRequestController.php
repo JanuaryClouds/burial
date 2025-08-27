@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exports\BurialAssistanceRequestsExport;
 use App\Http\Requests\BurialServiceRequest;
+use App\Mail\VerifyAssistanceRequestMail;
 use Illuminate\Http\Request;
 use App\Http\Requests\BurialAssistanceReqRequest;
 use App\Services\BurialAssistanceRequestService;
@@ -27,8 +28,7 @@ class BurialAssistanceRequestController extends Controller
         $this->burialAssistanceRequestService = $burialAssistanceRequestService;
     }
 
-    public function store(BurialAssistanceReqRequest $request)
-    {
+    public function verify(BurialAssistanceReqRequest $request) {
         $data = $request->validated();
         $existingRequest = BurialAssistanceRequest::where(function ($query) use ($request) {
         $query->where('deceased_lastname', $request->input('deceased_lastname'))
@@ -43,36 +43,53 @@ class BurialAssistanceRequestController extends Controller
         }
 
         $data['uuid'] = Str::uuid()->toString();
-        
-        if (count($request->file('images')) > 2) {
-            return back()->withErrors(['images' => 'You can only upload up to 2 images.']);
-        }
-        $validator = Validator::make($request->all(), [
+
+        $verificationCode = rand(100000, 999999);
+
+        $request->validate([
             'images' => 'required|array|min:1|max:2',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
-
-        if ($validator->fails()) {
-            // Return the validation errors
-            return response()->json(['errors' => $validator->messages()], 422);
+        
+        $tempPaths = [];
+        foreach ($request->file('images', []) as $file) {  // safe default empty array
+            $path = $file->store('tmp');
+            $tempPaths[] = $path;
         }
-        
+
+        session([
+            'verifiation_code' => $verificationCode,
+            'data' => $data,
+            'temp_images' => $tempPaths
+        ]);
+
+        \Mail::to($data['representative_email'])->send(new VerifyAssistanceRequestMail(
+            $verificationCode
+        ));
+
+        return view('guest.verification');
+    }
+
+    public function store(Request $request)
+    {
+        $enteredCode = $request->verification_code;
+        $storedCode = strval(session('verification_code'));
+        $data = session('data');
+        $tempImages = session('temp_images', []);
+
+        if ($enteredCode !== $storedCode) {
+            return back()->with('error', 'Invalid verification code.');
+        }
+
         $serviceRequest = $this->burialAssistanceRequestService->store($data);
-        
-        if ($serviceRequest && $request->hasFile('images')) {
-            $fileCount = 0; // Prevent the user from uploading too many files
-            foreach ($request->file('images') as $index => $file) {
-                if ($fileCount >= 2) {
-                    break;
-                }
+        foreach ($tempImages as $index => $tempPath) {
+            $extension = pathinfo($tempPath, PATHINFO_EXTENSION);
+            $filename = "{$serviceRequest->uuid}-{$index}.".$extension;
 
-                $extension = $file->getClientOriginalExtension();
-                $filename = "{$serviceRequest->uuid}-{$index}.".$extension;
-
-                $encryptedFile = Crypt::encrypt($file->getContent());
-                Storage::put('/public/death_certificates/' . $filename, $encryptedFile);
-                $fileCount++;
-            }
+            $encryptedFile = Crypt::encrypt(Storage::get($tempPath));
+            Storage::put('/public/death_certificates/' . $filename, $encryptedFile);
+            Storage::delete($tempPath);
+        }
 
             $ip = request()->ip();
             $browser = request()->header('User-Agent');
@@ -82,9 +99,6 @@ class BurialAssistanceRequestController extends Controller
                 ->log('Burial Assistance Request submitted by guest');
 
             return redirect()->route('guest.request.submit.success')->with('success', 'Burial Assistance Request created successfully.')->with('service', $serviceRequest->uuid);
-        } else {
-            return redirect()->back()->withErrors(['error' => 'Failed to create Burial Assistance Request.']);
-        }        
     }
 
     public function track(Request $request) {
@@ -101,7 +115,8 @@ class BurialAssistanceRequestController extends Controller
             $serviceRequest->deceased_lastname = Str::mask($serviceRequest->deceased_lastname, '*', 3);
             $serviceRequest->deceased_firstname = Str::mask($serviceRequest->deceased_firstname, '*', 3);
             $serviceRequest->representative = Str::mask($serviceRequest->representative, '*', 3);
-            $serviceRequest->representative_contact = Str::mask($serviceRequest->representative_contact, '*', 3);
+            $serviceRequest->representative_phone = Str::mask($serviceRequest->representative_phone, '*', 3);
+            $serviceRequest->representative_email = Str::mask($serviceRequest->representative_email, '*', 3) ?? '';
             $serviceRequest->burial_address = Str::mask($serviceRequest->burial_address, '*', 3);
         }
 
