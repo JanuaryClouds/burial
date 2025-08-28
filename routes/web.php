@@ -33,10 +33,18 @@ Route::get('/burial/request', function () {
     return view('guest.burial_request');
 })->name('guest.burial.request');
 
-Route::post('/burial/request/verify', [BurialAssistanceRequestController::class, 'verify'])
-    ->name('guest.request.verify');
+Route::post('/burial/request/back', [BurialAssistanceRequestController::class, 'backToForm'])
+    ->name('guest.request.back');
 
-// TODO: ERROR: The GET method is not supported for route burial/request/verify. Supported methods: POST.
+Route::post('/burial/request/temp/store', [BurialAssistanceRequestController::class, 'tempStore'])
+    ->name('guest.request.temp.store');
+
+Route::get('/burial/request/verify', [BurialAssistanceRequestController::class, 'toVerify'])
+    ->name('guest.request.verify.view');
+
+// Route::post('/burial/request/verify', [BurialAssistanceRequestController::class, 'verifyCode'])
+//     ->name('guest.request.verify');
+
 Route::post('/burial/request/store', [BurialAssistanceRequestController::class, 'store'])
     ->name('burial.request.store');
 
