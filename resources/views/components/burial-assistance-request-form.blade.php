@@ -1,6 +1,12 @@
 @props(['serviceRequest' => null])
+@php
+    if (session('data')) {
+        $serviceRequest = session('data')['serviceRequest'] ?? null;
+        
+    }
+@endphp
 
-<form action="{{ route('guest.request.verify') }}" method="post" class="row w-75" enctype="multipart/form-data">
+<form action="{{ route('guest.request.temp.store') }}" method="post" class="row w-75" enctype="multipart/form-data">
     @csrf
     <div class="container mx-auto p-4 bg-white shadow-lg rounded-md">
         <header class="row d-flex">
