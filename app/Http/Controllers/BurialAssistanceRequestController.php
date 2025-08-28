@@ -28,7 +28,7 @@ class BurialAssistanceRequestController extends Controller
         $this->burialAssistanceRequestService = $burialAssistanceRequestService;
     }
 
-    public function verify(BurialAssistanceReqRequest $request) {
+    public function tempStore(BurialAssistanceReqRequest $request) {
         $data = $request->validated();
         $existingRequest = BurialAssistanceRequest::where(function ($query) use ($request) {
         $query->where('deceased_lastname', $request->input('deceased_lastname'))
@@ -42,30 +42,62 @@ class BurialAssistanceRequestController extends Controller
             return redirect()->route('landing.page')->with('info', "Burial Assistance Request for {$request->input('deceased_lastname')}, {$request->input('deceased_firstname')} already exists.");
         }
 
-        $data['uuid'] = Str::uuid()->toString();
-
-        $verificationCode = rand(100000, 999999);
-
         $request->validate([
             'images' => 'required|array|min:1|max:2',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
         
+        $data['uuid'] = Str::uuid()->toString();
+
         $tempPaths = [];
-        foreach ($request->file('images', []) as $file) {  // safe default empty array
-            $path = $file->store('tmp');
-            $tempPaths[] = $path;
+        foreach ($request->file('images', []) as $index => $file) {
+            $extension = $file->getClientOriginalExtension();
+            $filename = $data['uuid'] . '-' . $index . '.' . $extension;
+
+            if (Storage::disk('public')->exists('tmp/' . $filename)) {
+                Storage::disk('public')->delete('tmp/' . $filename);
+            } 
+
+            Storage::putFileAs('public/tmp/', $file, $filename);
+            $tempPaths[] = $filename;
         }
+        // dd($tempPaths);
+        
+        return redirect()->route('guest.request.verify.view')->with(
+            session([
+                'data' => $data,
+                'temp_images' => $tempPaths
+            ])
+        );
+    }
 
-        session([
-            'verifiation_code' => $verificationCode,
-            'data' => $data,
-            'temp_images' => $tempPaths
-        ]);
+    // TODO: Not working, no data is loaded in the form when pressing the back button
+    public function backToForm() {
+        $data = session('data', []);
+        $temp_images = session('temp_images', []);
+        return redirect()->route('guest.burial.request')->with(
+            session([
+                'data' => $data,
+                'temp_images' => $temp_images
+            ])
+        );
+    }
 
-        \Mail::to($data['representative_email'])->send(new VerifyAssistanceRequestMail(
+    public function toVerify() {
+        $verificationCode = rand(100000, 999999);
+        $data = session('data', []);
+        $email = session('data')['representative_email'] ?? null;
+        // $temp_images = session('temp_images', []);
+
+        \Mail::to($email)->send(new VerifyAssistanceRequestMail(
             $verificationCode
         ));
+
+        session([
+            'verification_code' => $verificationCode,
+            'data' => $data,
+            // 'temp_images' => $temp_images
+        ]);
 
         return view('guest.verification');
     }
@@ -74,21 +106,20 @@ class BurialAssistanceRequestController extends Controller
     {
         $enteredCode = $request->verification_code;
         $storedCode = strval(session('verification_code'));
-        $data = session('data');
-        $tempImages = session('temp_images', []);
 
         if ($enteredCode !== $storedCode) {
             return back()->with('error', 'Invalid verification code.');
         }
 
+        $data = session('data');
+        $tempImages = session('temp_images', []);
         $serviceRequest = $this->burialAssistanceRequestService->store($data);
-        foreach ($tempImages as $index => $tempPath) {
-            $extension = pathinfo($tempPath, PATHINFO_EXTENSION);
-            $filename = "{$serviceRequest->uuid}-{$index}.".$extension;
 
-            $encryptedFile = Crypt::encrypt(Storage::get($tempPath));
-            Storage::put('/public/death_certificates/' . $filename, $encryptedFile);
-            Storage::delete($tempPath);
+        foreach ($tempImages as $tempPath) {
+            $contents = Storage::get('public/tmp/' . $tempPath);
+            $encryptedContents = Crypt::encrypt($contents);
+            Storage::put('public/death_certificates/' . $tempPath, $encryptedContents);
+            Storage::delete('public/tmp/' . $tempPath);
         }
 
             $ip = request()->ip();
