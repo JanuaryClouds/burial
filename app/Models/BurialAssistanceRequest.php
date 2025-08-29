@@ -23,8 +23,9 @@ class BurialAssistanceRequest extends Model
         "deceased_firstname",
         "deceased_lastname",
         "representative",
-        "representative_contact",
-        "rep_relationship",
+        "representative_phone",
+        "representative_email",
+        "representative_relationship",
         "burial_address",
         "barangay_id",
         "start_of_burial",
@@ -40,7 +41,7 @@ class BurialAssistanceRequest extends Model
     }
 
     public function relationship() {
-        return $this->belongsTo(Relationship::class, "rep_relationship", 'id');
+        return $this->belongsTo(Relationship::class, "representative_relationship", 'id');
     }
 
     public function service() {
@@ -93,7 +94,8 @@ class BurialAssistanceRequest extends Model
             'deceased_firstname' => $this->deceased_firstname,
             'deceased_lastname' => $this->deceased_lastname,
             'representative' => $this->representative,
-            'representative_contact' => $this->representative_contact,
+            'representative_phone' => $this->representative_phone,
+            'representative_email' => $this->representative_email,
             'burial_address' => $this->burial_address,
             'barangay_id' => $this->barangay,
             'start_of_burial' => $this->start_of_burial,

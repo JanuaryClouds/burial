@@ -8,8 +8,15 @@
 >
     @if ($type === 'service')
         @php
-            $contactType = "representative_contact";
-            $formLink = route('admin.burial.service.contact', ['id' => $data->id]);
+            $contactType = "service";
+            $paramKey = 'id';
+            $formLink = route('admin.burial.service.email', ['id' => $data->$paramKey]);
+
+            if ($data->representative_email) {
+                $email = true;
+            } else {
+                $email = false;
+            }
         @endphp
         <div class="col mt-0" title="View Service">
             <a href="{{ route('admin.burial.view', ['id' => $data->id]) }}" class="btn btn-primary">
@@ -29,8 +36,15 @@
         </div>
     @elseif ($type === 'provider')
         @php
-            $contactType = "contact_details";
-            $formLink = route('admin.burial.provider.contact', ['id' => $data->id]);
+            $contactType = "provider";
+            $paramKey = 'id';
+            $formLink = route('admin.burial.provider.email', ['id' => $data->$paramKey]);
+
+            if ($data->email) {
+                $email = true;
+            } else {
+                $email = false;
+            }
         @endphp
         <div class="col mt-0" title="View Provider">
             <a href="{{ route('admin.burial.provider.view', ['id' => $data->id]) }}" class="btn btn-primary">
@@ -50,8 +64,15 @@
         </div>
     @elseif ($type === 'request')
         @php
-            $contactType = "representative_details";
-            $formLink = route('admin.burial.request.contact', ['uuid' => $data->uuid]);
+            $contactType = "requestor";
+            $paramKey = 'uuid';
+            $formLink = route('admin.burial.request.email', ['uuid' => $data->$paramKey]);
+
+            if ($data->representative_email) {
+                $email = true;
+            } else {
+                $email = false;
+            }
         @endphp
         <div class="col mt-0" title="View Request">
             <a href="{{ route('admin.burial.request.view', ['uuid' => $data->uuid]) }}" class="btn btn-primary">
@@ -70,33 +91,33 @@
             >
         </div>
     @endif
-        
+        @if ($email)
         <div class="col mt-0" title="Contact">
             <!-- Modal trigger button -->
             <button
             type="button"
             class="btn btn-secondary"
             data-bs-toggle="modal"
-            data-bs-target="#messageModal"
+            data-bs-target="#messageModal-{{ $data->$paramKey }}"
         >
-            <i class="fa-solid fa-message"></i>
+            <i class="fa-solid fa-envelope"></i>
         </button>
         
         <!-- Modal Body -->
         <!-- if you want to close by clicking outside the modal, delete the last endpoint:data-bs-backdrop and data-bs-keyboard -->
         <div
             class="modal fade"
-            id="messageModal"
+            id="messageModal-{{ $data->$paramKey }}"
             tabindex="-1"
             data-bs-backdrop="static"
             data-bs-keyboard="false"
             
             role="dialog"
-            aria-labelledby="modalTitleId"
+            aria-labelledby="modalTitleId-{{ $data->$paramKey }}"
             aria-hidden="true"
         >
             <div
-                class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm"
+                class="modal-dialog modal-dialog-scrollable modal-dialog-centered"
                 role="document"
                 style="z-index: 2"
             >
@@ -107,11 +128,11 @@
                         <div class="modal-header">
                             <h5 class="modal-title" id="modalTitleId">
                                 @if ($type == 'service')
-                                    Contact Person
+                                    Contact {{ $data->representative }}
                                 @elseif ($type == 'request')
-                                    Contact Requester
+                                    Contact {{ $data->representative }}
                                 @elseif ($type == 'provider')
-                                    Contact Provider
+                                    Contact {{ $data->name }}
                                 @endif
                             </h5>
                             <button
@@ -122,6 +143,18 @@
                             ></button>
                         </div>
                         <div class="modal-body">
+                                <div class="mb-3">
+                                    <label for="subject" class="form-label">Subject</label>
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        name="subject"
+                                        id="subject"
+                                        aria-describedby="helpId"
+                                        placeholder="Subject"
+                                    />
+                                </div>
+                                
                                 <p class=text-body>Insert the message below</p>
                                 <textarea 
                                     name="message" 
@@ -145,5 +178,6 @@
                 </div>
             </div>
         </div>
+        @endif
     </div>
 </div>

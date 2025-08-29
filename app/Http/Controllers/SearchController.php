@@ -25,8 +25,9 @@ class SearchController extends Controller
                 $q->where('deceased_firstname', 'like', "%{$term}%")
                 ->orWhere('deceased_lastname', 'like', "%{$term}%")
                 ->orWhere('representative', 'like', "%{$term}%")
-                ->orWhere('representative_contact', 'like', "%{$term}%")
-                ->orWhere('rep_relationship', 'like', "%{$term}%")
+                ->orWhere('representative_phone', 'like', "%{$term}%")
+                ->orWhere('representative_email', 'like', "%{$term}%")
+                ->orWhere('representative_relationship', 'like', "%{$term}%")
                 ->orWhere('barangay_id', 'like', "%{$term}%")
                 ->orWhere('burial_address', 'like', "%{$term}%")
                 ->orWhere('start_of_burial', 'like', "%{$term}%")
@@ -42,7 +43,8 @@ class SearchController extends Controller
                 'deceased_firstname' => $r->deceased_firstname,
                 'deceased_lastname' => $r->deceased_lastname,
                 'representative' => $r->representative,
-                'representative_contact' => $r->representative_contact,
+                'representative_phone' => $r->representative_phone,
+                'representative_email' => $r?->representative_email ?? '',
                 'barangay' => optional($r->barangay)->name,
                 'burial_address' => $r->burial_address,
                 'start_of_burial' => $r->start_of_burial,
@@ -57,8 +59,9 @@ class SearchController extends Controller
                 $s->where('deceased_firstname', 'like', "%{$term}%")
                 ->orWhere('deceased_lastname', 'like', "%{$term}%")
                 ->orWhere('representative', 'like', "%{$term}%")
-                ->orWhere('representative_contact', 'like', "%{$term}%")
-                ->orWhere('rep_relationship', 'like', "%{$term}%")
+                ->orWhere('representative_phone', 'like', "%{$term}%")
+                ->orWhere('representative_email', 'like', "%{$term}%")
+                ->orWhere('representative_relationship', 'like', "%{$term}%")
                 ->orWhere('burial_address', 'like', "%{$term}%")
                 ->orWhere('barangay_id', 'like', "%{$term}%")
                 ->orWhere('start_of_burial', 'like', "%{$term}%")
@@ -74,7 +77,8 @@ class SearchController extends Controller
                 'deceased_firstname' => $s->deceased_firstname,
                 'deceased_lastname' => $s->deceased_lastname,
                 'representative' => $s->representative,
-                'representative_contact' => $s->representative_contact,
+                'representative_phone' => $s->representative_phone,
+                'representative_email' => $s?->representative_email ?? '',
                 'burial_address' => $s->burial_address,
                 'barangay' => optional($s->barangay)->name,
                 'start_of_burial' => $s->start_of_burial,
@@ -120,8 +124,9 @@ class SearchController extends Controller
                 $q->where('deceased_firstname', 'like', "%{$term}%")
                 ->orWhere('deceased_lastname', 'like', "%{$term}%")
                 ->orWhere('representative', 'like', "%{$term}%")
-                ->orWhere('representative_contact', 'like', "%{$term}%")
-                ->orWhere('rep_relationship', 'like', "%{$term}%")
+                ->orWhere('representative_phone', 'like', "%{$term}%")
+                ->orWhere('representative_email', 'like', "%{$term}%")
+                ->orWhere('representative_relationship', 'like', "%{$term}%")
                 ->orWhere('barangay_id', 'like', "%{$term}%")
                 ->orWhere('burial_address', 'like', "%{$term}%")
                 ->orWhere('start_of_burial', 'like', "%{$term}%")
@@ -137,7 +142,8 @@ class SearchController extends Controller
                 'deceased_firstname' => $r->deceased_firstname,
                 'deceased_lastname' => $r->deceased_lastname,
                 'representative' => $r->representative,
-                'representative_contact' => $r->representative_contact,
+                'representative_phone' => $r->representative_phone,
+                'representative_email' => $r?->representative_email ?? '',
                 'barangay' => optional($r->barangay)->name,
                 'burial_address' => $r->burial_address,
                 'start_of_burial' => $r->start_of_burial,
@@ -152,8 +158,9 @@ class SearchController extends Controller
                 $s->where('deceased_firstname', 'like', "%{$term}%")
                 ->orWhere('deceased_lastname', 'like', "%{$term}%")
                 ->orWhere('representative', 'like', "%{$term}%")
-                ->orWhere('representative_contact', 'like', "%{$term}%")
-                ->orWhere('rep_relationship', 'like', "%{$term}%")
+                ->orWhere('representative_phone', 'like', "%{$term}%")
+                ->orWhere('representative_email', 'like', "%{$term}%")
+                ->orWhere('representative_relationship', 'like', "%{$term}%")
                 ->orWhere('burial_address', 'like', "%{$term}%")
                 ->orWhere('barangay_id', 'like', "%{$term}%")
                 ->orWhere('start_of_burial', 'like', "%{$term}%")
@@ -169,7 +176,8 @@ class SearchController extends Controller
                 'deceased_firstname' => $s->deceased_firstname,
                 'deceased_lastname' => $s->deceased_lastname,
                 'representative' => $s->representative,
-                'representative_contact' => $s->representative_contact,
+                'representative_phone' => $s->representative_phone,
+                'representative_email' => $s?->representative_email ?? '',
                 'burial_address' => $s->burial_address,
                 'barangay' => optional($s->barangay)->name,
                 'start_of_burial' => $s->start_of_burial,

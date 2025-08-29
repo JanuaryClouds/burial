@@ -37,19 +37,23 @@
                     </div>
                     <h4 class="fw-semibold text-black">Representative / Contact Person</h4>
                     <div class="d-flex justify-content-start align-items-center w-100 gap-1">
-                        <span class="d-flex flex-column w-50 justify-content-between">
+                        <span class="d-flex flex-column w-25 justify-content-between">
                             <input type="text" disabled value="{{ $service->representative }}" name="representative" id="representative" class="form-control">
                             <label for="representative" class="text-sm form-label text-center">Full Name*</label>
                         </span>
                         <span class="d-flex flex-column w-25 justify-content-between">
-                            <input type="text" disabled value="{{ $service->representative_contact }}" name="representative_contact" id="representative_contact" class="form-control disabled">
-                            <label for="representative_contact" class="text-sm form-label text-center">Contact Details*</label>
+                            <input type="text" disabled value="{{ $service->representative_phone }}" name="representative_phone" id="representative_phone" class="form-control disabled">
+                            <label for="representative_phone" class="text-sm form-label text-center">Phone (Mobile / Landline)*</label>
                         </span>
                         <span class="d-flex flex-column w-25 justify-content-between">
-                            <select required name="rep_relationship" id="rep_relationship" class="form-select"
+                            <input type="text" disabled value="{{ $service?->representative_email ?? 'N/A' }}" name="representative_email" id="representative_email" class="form-control disabled">
+                            <label for="representative_email" class="text-sm form-label text-center">Email*</label>
+                        </span>
+                        <span class="d-flex flex-column w-25 justify-content-between">
+                            <select required name="representative_relationship" id="representative_relationship" class="form-select"
                             {{ $service ? 'readonly disabled' : '' }}>
                                 @if ($service)
-                                    <option value="{{ $service->rep_relationship }}">{{ $relationships->firstWhere('id', $service->rep_relationship)->name ?? 'Unknown' }}</option>
+                                    <option value="{{ $service->representative_relationship }}">{{ $relationships->firstWhere('id', $service->representative_relationship)->name ?? 'Unknown' }}</option>
                                 @else
                                     <option value="">Select Relationship*</option>
                                 @endif
@@ -57,7 +61,7 @@
                                     <option value="{{ $relationship->id }}">{{ $relationship->name }}</option>
                                 @endforeach
                             </select>
-                            <label for="rep_relationship" class="text-sm form-label text-center">Relationship to the Deceased*</label>
+                            <label for="representative_relationship" class="text-sm form-label text-center">Relationship to the Deceased*</label>
                         </span>
                     </div>
                     <hr class="border-2">

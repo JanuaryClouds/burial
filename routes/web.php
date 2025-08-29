@@ -22,6 +22,7 @@ use App\Http\Controllers\{
     BurialAssistanceRequestController,
     CmsController,
     SearchController,
+    MailController,
 };
 
 Route::get('/', function () {
@@ -32,15 +33,27 @@ Route::get('/burial/request', function () {
     return view('guest.burial_request');
 })->name('guest.burial.request');
 
+Route::post('/burial/request/back', [BurialAssistanceRequestController::class, 'backToForm'])
+    ->name('guest.request.back');
+
+Route::post('/burial/request/temp/store', [BurialAssistanceRequestController::class, 'tempStore'])
+    ->name('guest.request.temp.store');
+
+Route::get('/burial/request/verify', [BurialAssistanceRequestController::class, 'toVerify'])
+    ->name('guest.request.verify.view');
+
+// Route::post('/burial/request/verify', [BurialAssistanceRequestController::class, 'verifyCode'])
+//     ->name('guest.request.verify');
+
+Route::post('/burial/request/store', [BurialAssistanceRequestController::class, 'store'])
+    ->name('burial.request.store');
+
 Route::get('/burial/request/success', function () {
     return view('guest.request_submit_success');
 })->name('guest.request.submit.success');
 
 Route::post('/burial/request/tracker', [BurialAssistanceRequestController::class, 'track'])
     ->name('guest.request.tracker');
-
-Route::post('/burial/request/store', [BurialAssistanceRequestController::class, 'store'])
-    ->name('burial.request.store');
 
 Route::get('/login', [UserController::class, 'loginPage'])
     ->name('login.page');
@@ -122,8 +135,8 @@ Route::middleware(['auth'])
                     ->name('burial.view');
                 Route::post('/burial/service/store', [BurialServiceController::class, 'store'])
                     ->name('burial.store');
-                Route::post('/burial/service/{id}/contact', [BurialServiceController::class, 'contact'])
-                    ->name('burial.service.contact');
+                Route::post('/burial/services/{id}/email', [MailController::class, 'service'])
+                    ->name('burial.service.email');
                 Route::get('/burial/services/{id}/export', [BurialServiceController::class, 'exportPdf'])
                     ->name('burial.service.print');
                     
@@ -140,8 +153,8 @@ Route::middleware(['auth'])
                     ->name('burial.provider.view');
                 Route::put('/burial/providers/{id}/update', [BurialServiceProviderController::class, 'update'])
                     ->name('burial.provider.update');
-                Route::post('/burial/providers/{id}/contact', [BurialServiceProviderController::class, 'contact'])
-                    ->name('burial.provider.contact');
+                Route::post('/burial/providers/{id}/email', [MailController::class, 'provider'])
+                    ->name('burial.provider.email');
                 Route::get('/burial/providers/{id}/export', [BurialServiceProviderController::class, 'exportPdf'])
                     ->name('burial.provider.print');
                     
@@ -154,8 +167,8 @@ Route::middleware(['auth'])
                     ->name('burial.request.view');
                 Route::put('/burial/requests/{uuid}/update', [BurialAssistanceRequestController::class, 'updateStatus'])
                     ->name('burial.request.update');
-                Route::post('/burial/requests/{uuid}/contact', [BurialAssistanceRequestController::class, 'contact'])
-                    ->name('burial.request.contact');
+                Route::post('/burial/requests/{uuid}/email', [MailController::class, 'request'])
+                    ->name('burial.request.email');
                 Route::get('/burial/requests/{uuid}/export', [BurialAssistanceRequestController::class, 'exportPdf'])
                     ->name('burial.request.print');
 
@@ -165,7 +178,6 @@ Route::middleware(['auth'])
                 Route::post('/burial/request/{uuid}/toService/store', [BurialServiceController::class, 'saveRequestAsServiced'])
                     ->name('burial.request.to.service.store');
 
-                
                 Route::resource('assistance', AssistanceController::class);
             });
 

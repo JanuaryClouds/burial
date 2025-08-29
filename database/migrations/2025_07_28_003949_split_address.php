@@ -11,18 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('burial_service_providers', function (Blueprint $table) {
-            Schema::dropColumns('burial_service_providers', ['address']);
-        });
+        // Schema::table('burial_service_providers', function (Blueprint $table) {
+        //     Schema::dropColumns('burial_service_providers', ['address']);
+        // });
 
-        Schema::table('burial_service_providers', function (Blueprint $table) {
-            $table->string('address')->after('contact_details');
-            $table->foreignId('barangay_id')
-                ->nullable()
-                ->constrained('barangays')
-                ->nullOnDelete()
-                ->after('address');  
-        });
+        // Schema::table('burial_service_providers', function (Blueprint $table) {
+        //     $table->string('address')->after('contact_details');
+        //     $table->foreignId('barangay_id')
+        //         ->nullable()
+        //         ->constrained('barangays')
+        //         ->nullOnDelete()
+        //         ->after('address');  
+        // });
     }
 
     /**

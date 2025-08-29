@@ -16,8 +16,9 @@ return new class extends Migration
             $table->string('deceased_firstname');
             $table->string('deceased_lastname');
             $table->string('representative');
-            $table->string('representative_contact');
-            $table->foreignId('rep_relationship')
+            $table->string('representative_phone');
+            $table->string('representative_email')->nullable();
+            $table->foreignId('representative_relationship')
                 ->constrained('relationships')
                 ->noActionOnDelete()
                 ->noActionOnUpdate();

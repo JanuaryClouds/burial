@@ -17,19 +17,22 @@ class SampleBurialServiceProviders extends Seeder
 
         $sampleBurialServiceProviders = [
             ['name' => 'Sample Provider 1',
-             'contact_details' => '123-456-7890', 
+             'phone' => '123-456-7890',
+             'email' => 'sample.provider1@domain.com', 
              'address' => '123 Sample St',
              'barangay_id' => $barangays->random(),
              'remarks' => 'Seeder Generated'
             ],
             ['name' => 'Sample Provider 2',
-             'contact_details' => '456-789-0123', 
-             'address' => '234 Sample St',
-             'barangay_id' => $barangays->random(),
-             'remarks' => 'Seeder Generated'
-            ],
+            'phone' => '456-789-0123', 
+            'email' => 'sample.provider2@domain.com', 
+            'address' => '234 Sample St',
+            'barangay_id' => $barangays->random(),
+            'remarks' => 'Seeder Generated'
+        ],
             ['name' => 'Sample Provider 3',
-             'contact_details' => '789-012-3456', 
+            'phone' => '789-012-3456', 
+            'email' => 'sample.provider3@domain.com', 
              'address' => '567 Sample St',
              'barangay_id' => $barangays->random(),
              'remarks' => 'Seeder Generated'

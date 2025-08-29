@@ -16,12 +16,17 @@ return new class extends Migration
             $table->string('deceased_firstname');
             $table->string('deceased_lastname');
             $table->string('representative');
-            $table->string('representative_contact');
-            $table->foreignId('rep_relationship')
+            $table->string('representative_phone');
+            $table->string('representative_email')->nullable();
+            $table->foreignId('representative_relationship')
                 ->constrained('relationships')
                 ->noActionOnDelete()
                 ->noActionOnUpdate();
             $table->string('burial_address');
+            $table->foreignId('barangay_id')
+                ->constrained('barangays')
+                ->noActionOnDelete()
+                ->noActionOnUpdate();
             $table->datetime('start_of_burial');
             $table->datetime('end_of_burial');
             $table->foreignId('burial_service_provider')

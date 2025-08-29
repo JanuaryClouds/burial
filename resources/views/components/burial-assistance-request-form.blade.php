@@ -1,6 +1,6 @@
 @props(['serviceRequest' => null])
 
-<form action="{{ route('burial.request.store') }}" method="POST" class="row w-75" enctype="multipart/form-data">
+<form action="{{ route('guest.request.temp.store') }}" method="post" class="row w-75" enctype="multipart/form-data">
     @csrf
     <div class="container mx-auto p-4 bg-white shadow-lg rounded-md">
         <header class="row d-flex">
@@ -32,22 +32,27 @@
                 <p class="text-sm">Please state the name and contact details of the person who will be the representative/contact person in the burial.</p>
             </span>
             <div class="d-flex justify-content-start align-items-center w-100 gap-2">
-                <span class="d-flex flex-column w-50 justify-content-between">
+                <span class="d-flex flex-column w-25 justify-content-between">
                     <input type="text" required name="representative" id="representative" class="form-control"
                     {{ $serviceRequest ? 'readonly disabled' : '' }} value="{{ $serviceRequest ? $serviceRequest->representative : '' }}">
                     <label for="representative" class="form-label text-sm text-center">Full Name*</label>
                 </span>
                 <span class="d-flex flex-column w-25 justify-content-between">
-                    <input type="text" required name="representative_contact" id="representative_contact" class="form-control" 
-                    {{ $serviceRequest ? 'readonly disabled' : '' }} value="{{ $serviceRequest ? $serviceRequest->representative_contact : '' }}">
-                    <label for="representative_contact" class="form-label text-sm text-center">Contact Details*</label>
+                    <input type="text" required name="representative_phone" id="representative_phone" class="form-control" 
+                    {{ $serviceRequest ? 'readonly disabled' : '' }} value="{{ $serviceRequest ? $serviceRequest->representative_phone : '' }}">
+                    <label for="representative_phone" class="form-label text-sm text-center">Phone (Mobile / Landline)*</label>
+                </span>
+                <span class="d-flex flex-column w-25 justify-content-between">
+                    <input type="text" required name="representative_email" id="representative_email" class="form-control" 
+                    {{ $serviceRequest ? 'readonly disabled' : '' }} value="{{ $serviceRequest ? $serviceRequest?->representative_email : '' }}">
+                    <label for="representative_email" class="form-label text-sm text-center">Email*</label>
                 </span>
 
                 <span class="d-flex flex-column w-25 justify-content-between">
-                    <select required name="rep_relationship" id="rep_relationship" class="form-select"
+                    <select required name="representative_relationship" id="representative_relationship" class="form-select"
                     {{ $serviceRequest ? 'readonly disabled' : '' }}>
                         @if ($serviceRequest)
-                            <option value="{{ $serviceRequest->rep_relationship }}">{{ $relationships->firstWhere('id', $serviceRequest->rep_relationship)->name ?? 'Unknown' }}</option>
+                            <option value="{{ $serviceRequest->representative_relationship }}">{{ $relationships->firstWhere('id', $serviceRequest->representative_relationship)->name ?? 'Unknown' }}</option>
                         @else
                             <option value="">Select Relationship*</option>
                         @endif
@@ -55,7 +60,7 @@
                             <option value="{{ $relationship->id }}">{{ $relationship->name }}</option>
                         @endforeach
                     </select>
-                    <label for="rep_relationship" class="form-label text-sm text-center">Relationship to the Deceased*</label>
+                    <label for="representative_relationship" class="form-label text-sm text-center">Relationship to the Deceased*</label>
                 </span>
             </div>
             <hr class="border-2 border-gray-700 border-dashed">
@@ -134,115 +139,116 @@
                 </span>
             </div>
         </div>
-
         
         @if (!$serviceRequest)
-        
-        <!-- Confirmation Modal -->
-        <!-- Button trigger modal -->
-        <div
-            class="col d-flex w-100 mt-4 justify-content-center align-items-center gap-2"
-        >
-            <button
-                type="button"
-                class="btn btn-primary"
-                data-bs-toggle="modal"
-                data-bs-target="#confirmationSubmit"
-                >
-                Submit
-            </button>
-            <button type="reset" class="btn btn-secondary">
-                Clear
-            </button>
-            <a
-                name=""
-                id=""
-                class="btn btn-outline-primary"
-                href="/"
-                role="button"
-                >Cancel</a
+            
+            <!-- Confirmation Modal -->
+            <!-- Button trigger modal -->
+            <div
+                class="col d-flex w-100 mt-4 justify-content-center align-items-center gap-2"
             >
-        </div>
-    <!-- Modal -->
-    <div
-        class="modal fade"
-        id="confirmationSubmit"
-        tabindex="-1"
-        role="dialog"
-        aria-labelledby="modalTitleId"
-        aria-hidden="true"
-        >
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalTitleId">
-                        Confirm Submission
-                    </h5>
-                    <button
+                <button
                     type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"
-                    aria-label="Close"
-                    ></button>
-                </div>
-                <div class="modal-body">
-                    <div class="container-fluid">
-                        <div
-                        class="row justify-content-start align-items-start g-2"
-                        >
-                        <p>Are you certain you want to submit this request? Please ensure all the information you have provided are factual and accurate to the death certificate you provided. Failure to provide correct information will result in the rejection of your request.</p>
-                        <p class="fw-semibold">Note: You cannot edit or change the information after submitting the request</p>
-                    </div>
-                    
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button
-                        type="button"
-                        class="btn btn-secondary"
-                        data-bs-dismiss="modal"
+                    class="btn btn-primary"
+                    id="submitButton"
+                    data-bs-toggle="modal"
+                    data-bs-target="#confirmationSubmit"
                     >
-                        Close
-                    </button>
-                    <button type="submit" class="btn btn-primary">
-                        Confirm Submission
-                    </button>
+                    Submit
+                </button>
+                <button type="reset" class="btn btn-secondary">
+                    Clear
+                </button>
+                <a
+                    name=""
+                    id=""
+                    class="btn btn-outline-primary"
+                    href="/"
+                    role="button"
+                    >Cancel</a
+                >
+            </div>
+            <!-- Modal -->
+            <div
+                class="modal fade"
+                id="confirmationSubmit"
+                tabindex="-1"
+                role="dialog"
+                aria-labelledby="modalTitleId"
+                aria-hidden="true"
+                >
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalTitleId">
+                                Confirm Submission
+                            </h5>
+                            <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"
+                            ></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="container-fluid">
+                                <div
+                                class="row justify-content-start align-items-start g-2"
+                                >
+                                <p>Are you certain you want to submit this request? Please ensure all the information you have provided are factual and accurate to the death certificate you provided. Failure to provide correct information will result in the rejection of your request.</p>
+                                <p class="fw-semibold">Note: You cannot edit or change the information after submitting the request</p>
+                            </div>
+                            
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button
+                                type="button"
+                                class="btn btn-secondary"
+                                data-bs-dismiss="modal"
+                            >
+                                Close
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                Confirm Submission
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
+        
+            <script>
+                var modalId = document.getElementById('confirmationSubmit');
+                
+                modalId.addEventListener('show.bs.modal', function (event) {
+                    // Button that triggered the modal
+                    let button = event.relatedTarget;
+                    // Extract info from data-bs-* attributes
+                    let recipient = button.getAttribute('data-bs-whatever');
+                    
+                    // Use above variables to manipulate the DOM
+                });
+
+                function limitFiles(input) {
+                    if (input.files && input.files.length > 2) {
+                        alert("You can only upload two file at a time.");
+                        input.value = "";
+                    }
+                }
+            </script>
+            <span class="d-flex gap-1 justify-content-center mt-3 {{ $serviceRequest ? 'hidden' : '' }}">
+                <p class="text-gray-400 text-sm">If you have submitted a request before, please track it instead using the</p>
+                <a href="/" class="text-blue-500 hover:underline text-sm pt-1">Tracker</a>
+                <p class="text-gray-400 text-sm">from the landing page.</p>
+            </span>
+        @endif
     </div>
     
-    <script>
-        var modalId = document.getElementById('confirmationSubmit');
-        
-        modalId.addEventListener('show.bs.modal', function (event) {
-            // Button that triggered the modal
-            let button = event.relatedTarget;
-            // Extract info from data-bs-* attributes
-            let recipient = button.getAttribute('data-bs-whatever');
-            
-            // Use above variables to manipulate the DOM
-        });
-
-        function limitFiles(input) {
-            if (input.files && input.files.length > 2) {
-                alert("You can only upload two file at a time.");
-                input.value = "";
-            }
-        }
-        </script>
-    <span class="d-flex gap-1 justify-content-center mt-3 {{ $serviceRequest ? 'hidden' : '' }}">
-        <p class="text-gray-400 text-sm">If you have submitted a request before, please track it instead using the</p>
-        <a href="/" class="text-blue-500 hover:underline text-sm pt-1">Tracker</a>
-        <p class="text-gray-400 text-sm">from the landing page.</p>
-    </span>
-    @endif
-</div>
 </form>
 
 <script>
     const inputFields = document.querySelectorAll('input');
-    const submitButton = document.querySelector('button[type="submit"]');
+    const submitButton = document.getElementById('submitButton');
     
     function checkFields() {
         let allFilled = true;

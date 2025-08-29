@@ -13,7 +13,7 @@
         @foreach ($allRequests as $request)
             <tr class="border-1">
                 <td>{{ $request->deceased_firstname }} {{ $request->deceased_lastname }}</td>
-                <td>{{ $request->representative }} / {{ $request->representative_contact }}</td>
+                <td>{{ $request->representative }} / {{ $request->representative_phone }}</td>
                 <td>{{ $request->burial_address }}, {{ $request->barangay->name }}</td>
                 <td>{{ Str::limit($request->start_of_burial, 10) }}, {{ Str::limit($request->end_of_burial, 10) }}</td>
                 <td>{{ Str::ucfirst($request->status) }}</td>

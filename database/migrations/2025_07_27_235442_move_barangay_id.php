@@ -20,7 +20,7 @@ return new class extends Migration
                 ->nullable()
                 ->constrained('barangays')
                 ->nullOnDelete()
-                ->after('rep_relationship');
+                ->after('representative_relationship');
         });
         DB::statement('ALTER TABLE burial_services MODIFY barangay_id BIGINT UNSIGNED NULL AFTER burial_address');
 
