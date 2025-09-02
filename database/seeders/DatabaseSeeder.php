@@ -27,6 +27,8 @@ class DatabaseSeeder extends Seeder
             SpouseRelationship::class,
             BurialServiceSeeder::class,
             BurialRequestsSeeder::class,
+            HandlerSeeder::class,
+            WorkflowSeeder::class,
         ]);
     }
 }
