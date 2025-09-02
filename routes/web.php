@@ -23,6 +23,7 @@ use App\Http\Controllers\{
     CmsController,
     SearchController,
     MailController,
+    VerificationController,
 };
 
 Route::get('/', function () {
@@ -44,6 +45,9 @@ Route::get('/burial/request/verify', [BurialAssistanceRequestController::class, 
 
 // Route::post('/burial/request/verify', [BurialAssistanceRequestController::class, 'verifyCode'])
 //     ->name('guest.request.verify');
+
+Route::post('/send-verification-code', [VerificationController::class, 'sendCode']);
+Route::post('/verify-code', [VerificationController::class, 'verifyCode']);
 
 Route::post('/burial/request/store', [BurialAssistanceRequestController::class, 'store'])
     ->name('burial.request.store');

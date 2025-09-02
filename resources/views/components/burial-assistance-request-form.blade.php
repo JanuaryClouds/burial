@@ -1,6 +1,7 @@
 @props(['serviceRequest' => null])
 
-<form action="{{ route('guest.request.temp.store') }}" method="post" class="row w-75" enctype="multipart/form-data">
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<form id="burialAssistanceRequestForm" action="{{ route('burial.request.store') }}" method="post" class="row w-75" enctype="multipart/form-data">
     @csrf
     <div class="container mx-auto p-4 bg-white shadow-lg rounded-md">
         <header class="row d-flex">
@@ -139,134 +140,155 @@
                 </span>
             </div>
         </div>
+
         
         @if (!$serviceRequest)
-            
-            <!-- Confirmation Modal -->
-            <!-- Button trigger modal -->
-            <div
-                class="col d-flex w-100 mt-4 justify-content-center align-items-center gap-2"
+        
+        <!-- Confirmation Modal -->
+        <!-- Button trigger modal -->
+        <div
+            class="col d-flex w-100 mt-4 justify-content-center align-items-center gap-2"
+        >
+            <button
+                type="button"
+                class="btn btn-primary"
+                id="submitButton"
+                data-bs-toggle="modal"
+                data-bs-target="#confirmationSubmit"
+                >
+                Submit
+            </button>
+            <button type="reset" class="btn btn-secondary">
+                Clear
+            </button>
+            <a
+                name=""
+                id=""
+                class="btn btn-outline-primary"
+                href="/"
+                role="button"
+                >Cancel</a
             >
-                <button
+        </div>
+    <!-- Modal -->
+    <div
+        class="modal fade"
+        id="confirmationSubmit"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="modalTitleId"
+        aria-hidden="true"
+        >
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitleId">
+                        Confirm Submission
+                    </h5>
+                    <button
                     type="button"
-                    class="btn btn-primary"
-                    id="submitButton"
-                    data-bs-toggle="modal"
-                    data-bs-target="#confirmationSubmit"
-                    >
-                    Submit
-                </button>
-                <button type="reset" class="btn btn-secondary">
-                    Clear
-                </button>
-                <a
-                    name=""
-                    id=""
-                    class="btn btn-outline-primary"
-                    href="/"
-                    role="button"
-                    >Cancel</a
-                >
-            </div>
-            <!-- Modal -->
-            <div
-                class="modal fade"
-                id="confirmationSubmit"
-                tabindex="-1"
-                role="dialog"
-                aria-labelledby="modalTitleId"
-                aria-hidden="true"
-                >
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="modalTitleId">
-                                Confirm Submission
-                            </h5>
-                            <button
-                            type="button"
-                            class="btn-close"
-                            data-bs-dismiss="modal"
-                            aria-label="Close"
-                            ></button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="container-fluid">
-                                <div
-                                class="row justify-content-start align-items-start g-2"
-                                >
-                                <p>Are you certain you want to submit this request? Please ensure all the information you have provided are factual and accurate to the death certificate you provided. Failure to provide correct information will result in the rejection of your request.</p>
-                                <p class="fw-semibold">Note: You cannot edit or change the information after submitting the request</p>
-                            </div>
-                            
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button
-                                type="button"
-                                class="btn btn-secondary"
-                                data-bs-dismiss="modal"
-                            >
-                                Close
-                            </button>
-                            <button type="submit" class="btn btn-primary">
-                                Confirm Submission
-                            </button>
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                    ></button>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid">
+                        <div
+                        class="row justify-content-start align-items-start g-2"
+                        >
+                            <p>Are you certain you want to submit this request? Please ensure all the information you have provided are factual and accurate to the death certificate you provided. Failure to provide correct information will result in the rejection of your request.</p>
+                            <p class="fw-semibold">Note: You cannot edit or change the information after submitting the request</p>
+                            <p>A verification code has been sent to the representative&apos;s email address. To proceed to the submission, please input the code sent below</p>
+                            <input type="text" name="verification_code" id="verificationCodeField" class="form-control" required>
                         </div>
                     </div>
                 </div>
+                <div class="modal-footer">
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal"
+                    >
+                        Close
+                    </button>
+                    <button id="verifyBtn" class="btn btn-primary">Verify Code</button>
+                </div>
             </div>
-        
-            <script>
-                var modalId = document.getElementById('confirmationSubmit');
-                
-                modalId.addEventListener('show.bs.modal', function (event) {
-                    // Button that triggered the modal
-                    let button = event.relatedTarget;
-                    // Extract info from data-bs-* attributes
-                    let recipient = button.getAttribute('data-bs-whatever');
-                    
-                    // Use above variables to manipulate the DOM
-                });
-
-                function limitFiles(input) {
-                    if (input.files && input.files.length > 2) {
-                        alert("You can only upload two file at a time.");
-                        input.value = "";
-                    }
-                }
-            </script>
-            <span class="d-flex gap-1 justify-content-center mt-3 {{ $serviceRequest ? 'hidden' : '' }}">
-                <p class="text-gray-400 text-sm">If you have submitted a request before, please track it instead using the</p>
-                <a href="/" class="text-blue-500 hover:underline text-sm pt-1">Tracker</a>
-                <p class="text-gray-400 text-sm">from the landing page.</p>
-            </span>
-        @endif
+        </div>
     </div>
     
-</form>
+    <script>
+        var modalId = document.getElementById('confirmationSubmit');
+        const inputs = document.querySelectorAll('.form-control');
+        const inputArray = Array.from(inputs);
+        inputArray.pop(); // Remove the verification code field
 
-<script>
-    const inputFields = document.querySelectorAll('input');
-    const submitButton = document.getElementById('submitButton');
-    
-    function checkFields() {
-        let allFilled = true;
-        inputFields.forEach(field => {
-            if (field.value.trim() === '') {
-                allFilled = false;
+        function checkFields() {
+            let allFilled = true;
+            inputArray.forEach(field => {
+                if (field.value.trim() === '') {
+                    allFilled = false;
+                }
+            });
+            if (allFilled) {
+                document.getElementById('submitButton').disabled = false;
+            } else {
+                document.getElementById('submitButton').disabled = true;
             }
-        });
-        if (allFilled) {
-            submitButton.disabled = false;
-        } else {
-            submitButton.disabled = true;
         }
-    }
 
-    inputFields.forEach(field => {
-        field.addEventListener('input', checkFields);
-    });
+        inputArray.forEach(field => {
+            field.addEventListener('input', checkFields);
+        });
 
-    checkFields();
-</script>
+        checkFields();
+
+        modalId.addEventListener('show.bs.modal', async function (event) {
+            // Button that triggered the modal
+            let button = event.relatedTarget;
+            let verifyBtn = document.getElementById('verifyBtn');
+            let verificationCodeField = document.getElementById('verificationCodeField');
+            // Extract info from data-bs-* attributes
+            // let recipient = button.getAttribute('data-bs-whatever');
+            const email = document.getElementById('representative_email').value;
+
+            let response = await fetch('/send-verification-code', {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({ email })
+            });
+            let data = await response.json();
+            const code = data.code;
+
+            verifyBtn.addEventListener('click', function() {
+                const form = document.getElementById('burialAssistanceRequestForm');
+                const inputCode = verificationCodeField.value;
+                console.log(inputCode, code);
+                if(inputCode == code) {
+                    form.submit();
+                } else {
+                    sessionStorage.setItem('error', 'The verification code you entered is incorrect. Please try again.');
+                }
+            });
+            // Use above variables to manipulate the DOM
+        });
+
+        function limitFiles(input) {
+            if (input.files && input.files.length > 2) {
+                alert("You can only upload two file at a time.");
+                input.value = "";
+            }
+        }
+        </script>
+    <span class="d-flex gap-1 justify-content-center mt-3 {{ $serviceRequest ? 'hidden' : '' }}">
+        <p class="text-gray-400 text-sm">If you have submitted a request before, please track it instead using the</p>
+        <a href="/" class="text-blue-500 hover:underline text-sm pt-1">Tracker</a>
+        <p class="text-gray-400 text-sm">from the landing page.</p>
+    </span>
+    @endif
+</div>
+</form>
