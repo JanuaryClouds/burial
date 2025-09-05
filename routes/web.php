@@ -23,11 +23,21 @@ use App\Http\Controllers\{
     CmsController,
     SearchController,
     MailController,
+    BurialAssistanceController,
 };
 
 Route::get('/', function () {
     return view('landingpage');
 })->name('landing.page');
+
+Route::get('/burial-assistance', [BurialAssistanceController::class, 'view'])
+    ->name('guest.burial-assistance.view');
+
+Route::post('/burial-assistance/store', [BurialAssistanceController::class, 'store'])
+    ->name('guest.burial-assistance.store');
+
+Route::post('/burial-assistance/tracker', [BurialAssistanceController::class, 'track'])
+    ->name('guest.burial-assistance.tracker');
 
 Route::get('/burial/request', function () {
     return view('guest.burial_request');
