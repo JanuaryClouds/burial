@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('claimants', function (Blueprint $table) {
             $table->id();
-            $table->string('given_name');
+            $table->string('first_name');
             $table->string('middle_name')->nullable();
             $table->string('last_name');
             $table->string('suffix')->nullable();
@@ -22,6 +22,11 @@ return new class extends Migration
                   ->onDelete('cascade')
                   ->onUpdate('cascade');
             $table->string('mobile_number')->nullable();
+            $table->string('address');
+            $table->foreignId('barangay_id')
+                ->constrained('barangays')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
             $table->timestamps();
         });
     }

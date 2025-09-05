@@ -15,4 +15,8 @@ class Cheque extends Model
         'date_claimed',
     ];
     protected $table = 'cheques';
+
+    public function burialAssistance() {
+        return $this->belongsTo(BurialAssistance::class, 'burial_assistance_id', 'id');
+    }
 }

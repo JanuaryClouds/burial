@@ -19,6 +19,7 @@ class WorkflowSeeder extends Seeder
             [
               'order_no' => 1,
               'handler_id' => 1,
+              'description' => 'Reviewed by CSWDO',
               'requires_extra_data' => false,
               'is_optional' => false,
               'extra_data_schema' => null,
@@ -26,6 +27,7 @@ class WorkflowSeeder extends Seeder
             [
               'order_no' => 2,
               'handler_id' => 2,
+              'description'=> 'Received by Admin Staff',
               'requires_extra_data' => false,
               'is_optional' => false,
               'extra_data_schema' => null,
@@ -33,13 +35,17 @@ class WorkflowSeeder extends Seeder
             [
               'order_no' => 3,
               'handler_id' => 3,
-              'requires_extra_data' => false,
+              'description'=> 'Compiled Documents by Worker',
+              'requires_extra_data' => true,
               'is_optional' => false,
-              'extra_data_schema' => null,
+              'extra_data_schema' => json_encode([
+                'compiled_docs' => 'string',
+              ]),
             ],
             [
               'order_no' => 4,
               'handler_id' => 1,
+              'description' => 'Received by CSWDO',
               'requires_extra_data' => false,
               'is_optional' => false,
               'extra_data_schema' => null,
@@ -47,6 +53,7 @@ class WorkflowSeeder extends Seeder
             [
               'order_no' => 5,
               'handler_id' => 1,
+              'description' => 'Processed by CSWDO',
               'requires_extra_data' => false,
               'is_optional' => false,
               'extra_data_schema' => null,
@@ -54,6 +61,7 @@ class WorkflowSeeder extends Seeder
             [
               'order_no' => 6,
               'handler_id' => 4,
+              'description' => 'Evaluated by CSWDO',
               'requires_extra_data' => false,
               'is_optional' => false,
               'extra_data_schema' => null,
@@ -61,6 +69,7 @@ class WorkflowSeeder extends Seeder
             [
               'order_no' => 7,
               'handler_id' => 5,
+              'description' => 'Reviewed by CSWDO',
               'requires_extra_data' => false,
               'is_optional' => false,
               'extra_data_schema' => null,
@@ -68,6 +77,7 @@ class WorkflowSeeder extends Seeder
             [
               'order_no' => 8,
               'handler_id' => 6,
+              'description' => 'Forwarded to BAO',
               'requires_extra_data' => false,
               'is_optional' => false,
               'extra_data_schema' => null,
@@ -75,6 +85,7 @@ class WorkflowSeeder extends Seeder
             [
                 'order_no' => 9,
                 'handler_id' => 7,
+                'description'=> 'Fowarded to Budget Department',
                 'requires_extra_data' => true,
                 'is_optional' => false,
                 'extra_data_schema' => json_encode([
@@ -87,6 +98,7 @@ class WorkflowSeeder extends Seeder
             [
               'order_no' => 10,
               'handler_id' => 8,
+              'description' => 'Received by Accounting Office',
               'requires_extra_data' => false,
               'is_optional' => false,
               'extra_data_schema' => null,
@@ -94,6 +106,7 @@ class WorkflowSeeder extends Seeder
             [
               'order_no' => 11,
               'handler_id' => 9,
+              'description' => 'Received by Treasury Office',
               'requires_extra_data' => false,
               'is_optional' => false,
               'extra_data_schema' => null,
