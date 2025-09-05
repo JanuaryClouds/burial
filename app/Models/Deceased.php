@@ -9,16 +9,21 @@ class Deceased extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'given_name',
+        'first_name',
         'middle_name',
         'last_name',
         'suffix',
         'date_of_birth',
         'date_of_death',
         'gender',
-        'address',
-        'barangay_id',
     ];
     protected $table = "deceased";
 
+    public function burialAssistance() {
+        return $this->hasMany(BurialAssistance::class, 'deceased_id', 'id');
+    }
+
+    public function gender() {
+        return $this->hasOne(Sex::class, 'gender', 'id');
+    }
 }
