@@ -15,14 +15,82 @@
             <h3 class="text-center fw-semibold">CSWDO Burial Assistance</h3>
         </div>
         <div class="col d-flex flex-column gap-2">
-            <a
-                name=""
-                id=""
-                class="btn btn-primary w-50 mx-auto"
-                href="{{ route('guest.burial.request') }}"
-                role="button"
-                >Request Burial Assistance</a
+            <!-- Button trigger modal -->
+            <button
+                type="button"
+                class="btn btn-primary mx-auto w-50"
+                data-bs-toggle="modal"
+                data-bs-target="#requestModal"
             >
+                Request Burial Assistance
+            </button>
+            
+            <!-- Modal -->
+            <div
+                class="modal fade"
+                id="requestModal"
+                tabindex="-1"
+                role="dialog"
+                aria-labelledby="modalTitleId"
+                aria-hidden="true"
+            >
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalTitleId">
+                                Notice
+                            </h5>
+                        </div>
+                        <div class="modal-body">
+                            <div class="container-fluid">
+                                <p>Before proceeding with the request, please ensure you have the following requirements saved in image files:</p>
+                                <ul class="list-group">
+                                    <li class="list-group-item active">Required to All</li>
+                                    <li class="list-group-item">Certified True Copy of Registered Death Certificate</li>
+                                    <li class="list-group-item">Original Copy of Funeral Contract</li>
+                                    <li class="list-group-item">Photocopy of Valid ID of Deceased and Claimant of the Burial Assistance</li>
+                                    <li class="list-group-item">Proof of Relationship (such as Marriage Contract, Birth Certificate, and Baptismal Certificate)</li>
+                                </ul>
+                                <ul class="list-group mt-4">
+                                    <li class="list-group-item active">For Muslim Citizens</li>
+                                    <li class="list-group-item">Certificate of Burial Rites</li>
+                                    <li class="list-group-item">Certificate of Internment</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="modal-footer justify-content-end">
+                            <button
+                                type="button"
+                                class="btn btn-secondary"
+                                data-bs-dismiss="modal"
+                            >
+                                Close
+                            </button>
+                            <a
+                                name=""
+                                id=""
+                                class="btn btn-primary"
+                                href="{{ route('guest.burial-assistance.view') }}"
+                                role="button"
+                                >Proceed to Request</a
+                            >
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <script>
+                var modalId = document.getElementById('modalId');
+            
+                modalId.addEventListener('show.bs.modal', function (event) {
+                      // Button that triggered the modal
+                      let button = event.relatedTarget;
+                      // Extract info from data-bs-* attributes
+                      let recipient = button.getAttribute('data-bs-whatever');
+            
+                    // Use above variables to manipulate the DOM
+                });
+            </script>
             <p class="text-sm text-center text-gray-600">or use the tracker below if you have requested a burial assistance before</p>
             <div
                 class="row d-flex flex-column justify-content-center align-items-center w-50 mx-auto mt-0 g-2"
@@ -48,9 +116,8 @@
                 >
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
-                            <form action="{{ route('guest.request.tracker', 'uuid') }}" method="post">
+                            <form action="{{ route('guest.burial-assistance.tracker') }}" method="post">
                                 @csrf
-                                @method('POST')
                                 <div class="modal-header">
                                     <h5 class="modal-title" id="modalTitleId">
                                         Track Request
@@ -67,16 +134,30 @@
                                         <div
                                         class="row d-flex flex-column justify-content-center g-2"
                                         >
-                                        <div class="col">Track your request by providing the request's code below</div>
-                                        <div class="col">
-                                            <input
+                                        <div class="col">Track your application by providing the application's code below and the last four digits of your phone number</div>
+                                        <div class="col d-flex flex-column gap-2 align-items-center">
+                                            <!-- <input
                                             type="text"
                                                 class="form-control"
                                                 name="uuid"
                                                 id="uuid"
                                                 aria-describedby="helpId"
                                                 placeholder=""
-                                                />
+                                                /> -->
+                                                <input 
+                                                    class="form-control text-center" 
+                                                    type="text" 
+                                                    name="tracking_code" 
+                                                    id="tracking_code"
+                                                    placeholder="XXXXXX"
+                                                >
+                                                <input 
+                                                    class="form-control text-center"
+                                                    type="text" 
+                                                    name="mobile_number" 
+                                                    id="tracking_code"
+                                                    placeholder="XXXX"
+                                                >
                                             </div>
                                         </div>
                                     </div>
