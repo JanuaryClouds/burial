@@ -43,4 +43,8 @@ class Barangay extends Model
     {
         return $this->hasMany(BurialAssistanceRequest::class);
     }
+
+    public function deceased() {
+        return $this->hasMany(Deceased::class, 'barangay_id', 'id');
+    }
 }
