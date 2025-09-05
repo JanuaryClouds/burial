@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('burial_assistances', function (Blueprint $table) {
             $table->id();
             $table->string('tracking_no')->unique();
+            $table->string('tracking_code')->unique();
             $table->date('application_date');
-            $table->string('swa');
+            $table->string('swa')->nullable();
             $table->foreignId('encoder')
                 ->nullable()
                 ->constrained('users')
@@ -30,7 +31,7 @@ return new class extends Migration
                 ->constrained('claimants')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
-            $table->string('amount');
+            $table->string('amount')->nullable();
             $table->enum('status', [
                 'pending', 
                 'processing',
