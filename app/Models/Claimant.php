@@ -9,12 +9,34 @@ class Claimant extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'given_name',
+        'first_name',
         'middle_name',
         'last_name',
         'suffix',
         'relationship_to_deceased',
         'mobile_number',
+        'address',
+        'barangay_id',
     ];
     protected $table = "claimants";
+
+    public function burialAssistance() {
+        return $this->hasMany(BurialAssistance::class, 'claimant_id', 'id');
+    }
+
+    public function relationship() {
+        return $this->hasOne(Relationship::class, 'relationship_to_deceased', 'id');
+    }
+
+    public function oldClaimantChanges() {
+        return $this->hasMany(ClaimantChange::class, 'new_claimant_id','id');
+    }
+
+    public function newClaimantChanges() {
+        return $this->hasMany(ClaimantChange::class, 'old_claimant_id','id');
+    }
+
+    public function barangay() {
+        return $this->hasOne(Barangay::class, 'barangay_id', 'id');
+    }
 }
