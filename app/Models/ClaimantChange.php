@@ -16,4 +16,16 @@ class ClaimantChange extends Model
         'reason_for_change',
     ];
     protected $table = 'claimant_changes';
+
+    public function burialAssistance() {
+        return $this->belongsTo(BurialAssistance::class, 'burial_assistance_id', 'id');
+    }
+
+    public function oldClaimant() {
+        return $this->belongsTo(Claimant::class, 'old_claimant_id', 'id');
+    }
+
+    public function newClaimant() {
+        return $this->belongsTo(Claimant::class, 'new_claimant_id', 'id');
+    }
 }
