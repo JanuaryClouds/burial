@@ -17,4 +17,12 @@ class ProcessLog extends Model
         'extra_data',
     ];
     protected $table = 'process_logs';
+
+    public function burialAssistance() {
+        return $this->belongsTo(BurialAssistance::class, 'burial_assistance_id', 'id');
+    }
+
+    public function workflowStep() {
+        return $this->hasOne(WorkflowStep::class, 'workflow_step_id', 'id');
+    }
 }
