@@ -15,4 +15,8 @@ class Handler extends Model
         'is_active',
     ];
     protected $table = 'handlers';
+
+    public function workflow() {
+        return $this->belongsTo(WorkflowStep::class, 'handler_id', 'id');
+    }
 }
