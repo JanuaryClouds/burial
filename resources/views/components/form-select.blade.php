@@ -15,7 +15,7 @@
     @endif
 
     <select
-        class="form-select"
+        class="form-control"
         name="{{ $name }}"
         id="{{ $id }}"
         {{ $disabled ? 'disabled' : '' }}
