@@ -16,6 +16,11 @@ class ProcessLog extends Model
         'comments',
         'extra_data',
     ];
+
+    protected $casts = [
+        'extra_data' => 'array',
+    ];
+
     protected $table = 'process_logs';
 
     public function burialAssistance() {
@@ -23,6 +28,6 @@ class ProcessLog extends Model
     }
 
     public function workflowStep() {
-        return $this->hasOne(WorkflowStep::class, 'workflow_step_id', 'id');
+        return $this->belongsTo(WorkflowStep::class, 'workflow_step_id', 'id');
     }
 }
