@@ -7,24 +7,24 @@
     $totalWorkflowSteps = WorkflowStep::all()->count() + 1;
     switch ($burialAssistance->status) {
         case 'processing':
-            $badgeColor = "text-bg-primary";
+            $badgeColor = "primary";
             break;
         case 'approved':
-            $badgeColor = "text-bg-success";
+            $badgeColor = "success";
             break;
         case 'released':
-            $badgeColor = "text-bg-success";
+            $badgeColor = "success";
             break;
         case 'rejected':
-            $badgeColor = "text-bg-danger";
+            $badgeColor = "danger";
             break;
         default:
-            $badgeColor = "text-bg-secondary";
+            $badgeColor = "secondary";
             break;
     }
 @endphp
 <div
-    class="container bg-white rounded p-4 shadow"
+    class="bg-white rounded p-4 shadow-sm"
 >
     <div
         class="row flex-column justify-content-start align-items-end g-2"
@@ -36,10 +36,10 @@
             <p class="fw-bold">Keep the provided mobile number as this is the main mode of communication. Updates to this application will be sent via the provided phone number.</p>
             <div class="d-flex flex-wrap gap-4 justify-content-between align-items-baseline sticky-top">
                 <h3 class="fw-semibold">Progress</h3>
-                <span class="d-flex gap-2 align-items-baseline">
-                    <p class="fw-semibold mb-0">Status: </p>
+                <span class="d-flex align-items-baseline">
+                    <p class="fw-semibold mb-0 mr-2">Status: </p>
                     <span
-                        class="badge rounded-pill {{ $badgeColor }}"
+                        class="badge rounded-pill badge-{{ $badgeColor }}"
                         >{{ Str::ucfirst($burialAssistance->status) }}</span
                     >
                 </span>
@@ -69,7 +69,7 @@
                     <li
                         class="list-group-item d-flex justify-content-between align-items-center"
                     >
-                        {{ $log->workflowStep->name }}
+                        {{ $log->workflowStep->description }}
                         <span class="badge bg-secondary badge-pill">{{ $log->date_in }}</span>
                     </li>
                 @endforeach
