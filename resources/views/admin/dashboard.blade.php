@@ -1,9 +1,74 @@
-@extends('layouts.admin')
+@extends('layouts.stisla.admin')
 @section('content')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <title>Dashboard</title>
-<div class="d-flex flex-column justify-content-start gap-4 p-0">
-    <h1 class="g-0 bg-white p-3 rounded shadow-sm w-100">Dashboard</h1>
+<div class="main-content">
+    <section class="section">
+        <div class="section-header">
+            <h1>Dashboard</h1>
+        </div>
+        <div class="row">
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <div class="card card-statistic-1">
+                    <div class="card-icon bg-primary">
+                        <i class="far fa-hourglass"></i>
+                    </div>
+                    <div class="card-header">
+                        <h4 class="text-capitalize">Total Applications</h4>
+                    </div>
+                    <div class="card-body">
+                        {{ $pendingApplications->count() }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <div class="card card-statistic-1">
+                    <div class="card-icon bg-secondary">
+                        <i class="far fa-file-alt"></i>
+                    </div>
+                    <div class="card-header">
+                        <h4 class="text-capitalize">Applications being processed</h4>
+                    </div>
+                    <div class="card-body">
+                        {{ $processingApplications->count() }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <div class="card card-statistic-1">
+                    <div class="card-icon bg-danger">
+                        <i class="far fa-credit-card"></i>
+                    </div>
+                    <div class="card-header">
+                        <h4 class="text-capitalize">Applications With Cheques</h4>
+                    </div>
+                    <div class="card-body">
+                        {{ $approvedApplications->count() }}
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+                <div class="card card-statistic-1">
+                    <div class="card-icon bg-success">
+                        <i class="far fa-circle-check"></i>
+                    </div>
+                    <div class="card-header">
+                        <h4 class="text-capitalize">Applications finished</h4>
+                    </div>
+                    <div class="card-body">
+                        {{ $releasedApplications->count() }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-title"><h2>Urgent Applications</h2></div>
+        <div class="section-lead">Burial Assistance Applications that require immediate attention</div>
+    </section>
+
+
+    <!-- <h1 class="g-0 bg-white p-3 rounded shadow-sm w-100">Dashboard</h1>
     <div class="row d-flex flex-nowrap justify-content-start align-items-center gap-2 w-100 p-0 ms-1">
         <div class="col-3 bg-white d-flex justify-content-start rounded shadow-sm g-0">
             <span class="col-4 d-flex rounded align-items-center justify-content-center me-2 g-0 fs-3 text-white" style="background-color: #F4C027; aspect-ratio: 1;">
@@ -163,7 +228,7 @@
         new Chart(providersDistribution, providersDataConfig);
         new Chart(servicesDistribution, servicesChartConfig);
     </script>
-</div>
+</div> -->
 </div>
 
 @endsection
