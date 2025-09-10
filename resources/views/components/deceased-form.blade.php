@@ -8,7 +8,7 @@
     'disabled' => false,
 ])
 
-<div class="container bg-white shadow rounded p-4">
+<div class="bg-white shadow-sm rounded p-4">
     <div class="d-flex justify-content-between align-items-center">
         <h2>Deceased Information</h2>
     </div>
