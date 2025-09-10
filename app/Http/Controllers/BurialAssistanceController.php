@@ -79,4 +79,50 @@ class BurialAssistanceController extends Controller
 
         return view('guest.burial-assistance.tracker', compact('burialAssistance'));
     }
+
+    // Admin Side
+    public function pending() {
+        $applications = BurialAssistance::where('status','pending')->get();
+        $status = 'pending';
+        $badge = 'primary';
+        return view('applications.list', compact('applications', 'status', 'badge'));
+    }
+
+    public function processing() {
+        $applications = BurialAssistance::where('status','processing')->get();
+        $status = 'processing';
+        $badge = 'info';
+        return view('applications.list', compact('applications', 'status', 'badge'));
+    }
+    
+    public function approved() {
+        $applications = BurialAssistance::where('status','approved')->get();
+        $status = 'approved';
+        $badge = 'success';
+        return view('applications.list', compact('applications', 'status', 'badge'));
+    }
+
+    public function released() {
+        $applications = BurialAssistance::where('status','released')->get();
+        $status = 'released';
+        $badge = 'success';
+        return view('applications.list', compact('applications', 'status', 'badge'));
+    }
+
+    public function manage($status, $id) {
+        $application = BurialAssistance::where('id',$id)->first();
+        return view('applications.manage', compact('application'));
+    }
+
+    public function reject($status, $id) {
+        $application = BurialAssistance::where('id',$id)->first();
+        if (!$application) {
+            return back()->with('error','Application not found.');
+        }
+
+        $application->status = 'rejected';
+        $application->update();
+
+        return redirect()->route('admin.applications.manage')->with('success', 'Successfully rejected burial assistance application.');
+    }
 }
