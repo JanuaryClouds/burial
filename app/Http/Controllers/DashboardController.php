@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\BurialServiceRequest;
+use App\Models\BurialAssistance;
 use Illuminate\Http\Request;
 use App\Models\BurialAssistanceRequest;
 use App\Models\BurialServiceProvider;
@@ -59,7 +60,13 @@ class DashboardController extends Controller
         $serviceRequests = BurialAssistanceRequest::getBurialAssistanceRequests('pending');
         $providers = BurialServiceProvider::all();
         $services = BurialService::all();
-        return view('admin.dashboard', compact('serviceRequests', 'providers', 'services', 'requestsData', 'providersData', 'servicesData'));
+
+        $pendingApplications = BurialAssistance::where('status', 'pending')->get();
+        $processingApplications = BurialAssistance::where('status', 'processing')->get();
+        $approvedApplications = BurialAssistance::where('status', 'approved')->get();
+        $releasedApplications = BurialAssistance::where('status', 'released')->get();
+
+        return view('admin.dashboard', compact('serviceRequests', 'providers', 'services', 'requestsData', 'providersData', 'servicesData', 'pendingApplications', 'processingApplications', 'approvedApplications', 'releasedApplications'));
     }
 
     public function user()
