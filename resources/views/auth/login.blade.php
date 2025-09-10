@@ -27,7 +27,10 @@
                 <div class="mb-6" x-data="{ show: false }">
                     <label for="password" class="form-label">Password</label>
                     <div class="d-flex">
-                        <input :type="show ? 'text' : 'password'" id="password" name="password"
+                        <input 
+                            :type="show ? 'text' : 'password'" 
+                            id="password" 
+                            name="password"
                             placeholder="Enter your password"
                             class="form-control"
                             required>
