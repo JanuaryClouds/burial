@@ -19,7 +19,7 @@ class assistanceProcessTracker extends Component
     {
         $this->burialAssistance = $burialAssistance;
         $this->processLogs = $burialAssistance
-            ? $burialAssistance->processLogs()->latest()->get()
+            ? $burialAssistance->processLogs()->oldest()->get()
             : collect();
     }
 
