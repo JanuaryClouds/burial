@@ -57,20 +57,20 @@
                 ></div>
             </div>
         </div>
-        <div class="col">
+        <div class="col mt-4">
             <ul class="list-group">
                 <li
                     class="list-group-item d-flex justify-content-between align-items-center"
-                >
+                    >
                     Submitted Application
-                    <span class="badge bg-secondary badge-pill">{{ $burialAssistance->created_at }}</span>
+                    <span class="badge badge-pill">{{ $burialAssistance->created_at }}</span>
                 </li>
                 @foreach ($processLogs as $log)
                     <li
-                        class="list-group-item d-flex justify-content-between align-items-center"
+                        class="list-group-item d-flex justify-content-between align-items-center {{ $loop->last ? 'bg-primary' : '' }}"
                     >
-                        {{ $log->workflowStep->description }}
-                        <span class="badge bg-secondary badge-pill">{{ $log->date_in }}</span>
+                        <p class="mb-0 {{ $loop->last ? 'fw-bold text-white' : 'text-black' }}">{{ $log->workflowStep->description }}</p>
+                        <span class="badge badge-pill {{ $loop->last ? 'text-white fw-bold' : 'text-black' }}">{{ $log->date_in }}</span>
                     </li>
                 @endforeach
             </ul>
