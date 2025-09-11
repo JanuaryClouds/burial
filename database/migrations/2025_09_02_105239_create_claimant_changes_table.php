@@ -27,7 +27,8 @@ return new class extends Migration
                 ->constrained('claimants')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
-            $table->dateTime('changed_at');
+            $table->dateTime('changed_at')->nullable();
+            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->text('reason_for_change')->nullable();
 
             $table->timestamps();
