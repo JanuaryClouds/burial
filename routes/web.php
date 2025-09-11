@@ -25,46 +25,54 @@ use App\Http\Controllers\{
     MailController,
     BurialAssistanceController,
     ProcessLogController,
+    ClaimantChangeController,
 };
 
 Route::get('/', function () {
     return view('landingpage');
 })->name('landing.page');
 
-Route::get('/burial-assistance', [BurialAssistanceController::class, 'view'])
-    ->name('guest.burial-assistance.view');
+Route::name('guest.')
+    ->group(function () {
+        Route::get('/burial-assistance', [BurialAssistanceController::class, 'view'])
+            ->name('burial-assistance.view');
+        
+        Route::post('/burial-assistance/store', [BurialAssistanceController::class, 'store'])
+            ->name('burial-assistance.store');
+        
+        Route::post('/burial-assistance/tracker', [BurialAssistanceController::class, 'track'])
+            ->name('burial-assistance.tracker');
+        
+        Route::post('/burial-assistance/{id}/claimant-change', [ClaimantChangeController::class, 'store'])
+            ->name('burial-assistance.claimant-change');
+        
+        Route::get('/burial/request', function () {
+            return view('guest.burial_request');
+        })->name('burial.request');
+        
+        Route::post('/burial/request/back', [BurialAssistanceRequestController::class, 'backToForm'])
+            ->name('request.back');
+        
+        Route::post('/burial/request/temp/store', [BurialAssistanceRequestController::class, 'tempStore'])
+            ->name('request.temp.store');
+        
+        Route::get('/burial/request/verify', [BurialAssistanceRequestController::class, 'toVerify'])
+            ->name('request.verify.view');
+        
+        // Route::post('/burial/request/verify', [BurialAssistanceRequestController::class, 'verifyCode'])
+        //     ->name('guest.request.verify');
+        
+        Route::post('/burial/request/store', [BurialAssistanceRequestController::class, 'store'])
+            ->name('burial.request.store');
+        
+        Route::get('/burial/request/success', function () {
+            return view('guest.request_submit_success');
+        })->name('request.submit.success');
+        
+        Route::post('/burial/request/tracker', [BurialAssistanceRequestController::class, 'track'])
+            ->name('request.tracker');
+    });
 
-Route::post('/burial-assistance/store', [BurialAssistanceController::class, 'store'])
-    ->name('guest.burial-assistance.store');
-
-Route::post('/burial-assistance/tracker', [BurialAssistanceController::class, 'track'])
-    ->name('guest.burial-assistance.tracker');
-
-Route::get('/burial/request', function () {
-    return view('guest.burial_request');
-})->name('guest.burial.request');
-
-Route::post('/burial/request/back', [BurialAssistanceRequestController::class, 'backToForm'])
-    ->name('guest.request.back');
-
-Route::post('/burial/request/temp/store', [BurialAssistanceRequestController::class, 'tempStore'])
-    ->name('guest.request.temp.store');
-
-Route::get('/burial/request/verify', [BurialAssistanceRequestController::class, 'toVerify'])
-    ->name('guest.request.verify.view');
-
-// Route::post('/burial/request/verify', [BurialAssistanceRequestController::class, 'verifyCode'])
-//     ->name('guest.request.verify');
-
-Route::post('/burial/request/store', [BurialAssistanceRequestController::class, 'store'])
-    ->name('burial.request.store');
-
-Route::get('/burial/request/success', function () {
-    return view('guest.request_submit_success');
-})->name('guest.request.submit.success');
-
-Route::post('/burial/request/tracker', [BurialAssistanceRequestController::class, 'track'])
-    ->name('guest.request.tracker');
 
 Route::get('/login', [UserController::class, 'loginPage'])
     ->name('login.page');
