@@ -14,7 +14,7 @@
         <section class="section">
             <div class="table-responsive">
                 <div class="dataTables_wrapper container-fluid dt-bootstrap4">
-                    <table id="applications-table" class="table table-striped data-table" style="width:100%">
+                    <table id="applications-table" class="table dataTable" style="width:100%">
                         <thead>
                             <tr role="row">
                                 <th class="sorting sort-handler">Tracking No.</th>
@@ -26,7 +26,7 @@
                         </thead>
                         <tbody>
                             @foreach ($applications as $application)
-                                <tr>
+                                <tr class="bg-white">
                                     <td>{{ $application->tracking_no }}</td>
                                     <td>
                                         {{ $application->deceased->first_name }}
