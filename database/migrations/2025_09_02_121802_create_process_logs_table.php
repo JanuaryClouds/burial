@@ -22,8 +22,8 @@ return new class extends Migration
                 ->constrained('workflow_steps')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
-            $table->dateTime('date_in');
-            $table->dateTime('date_out')->nullable();
+            $table->date('date_in');
+            $table->date('date_out')->nullable();
             $table->string('comments')->nullable();
             $table->json('extra_data')->nullable();
 
