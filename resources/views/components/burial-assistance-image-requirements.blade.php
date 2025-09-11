@@ -1,4 +1,4 @@
-<div class="container bg-white shadow rounded p-4">
+<div class="bg-white shadow rounded p-4">
     <h2>Image Requirements</h2>
     <div class="row flex-column justify-content-center align-items-center g-2">
         <div
@@ -20,16 +20,22 @@
             />
         </div>
         <div
-            class="col container px-0 d-flex justify-content-between align-items-center gap-2"
+            class="col"
         >
-            <x-form-image-submission
-                name="burial_assistance[deceased_valid_id]"
-                label="Photocopy of Valid Identification Card of Deceased"
-            />
-            <x-form-image-submission
-                name="burial_assistance[claimant_valid_id]"
-                label="Photocopy of Valid Identification Card of Claimant"
-            />
+            <div class="row">
+                <div class="col">
+                    <x-form-image-submission
+                        name="burial_assistance[claimant_valid_id]"
+                        label="Photocopy of Valid Identification Card of Claimant"
+                    />
+                </div>
+                <div class="col">
+                    <x-form-image-submission
+                        name="burial_assistance[deceased_valid_id]"
+                        label="Photocopy of Valid Identification Card of Deceased"
+                    />
+                </div>
+            </div>
         </div>
         <hr>
         <h2>For Muslim Citizens</h2>

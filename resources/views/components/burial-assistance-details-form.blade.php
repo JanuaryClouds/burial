@@ -4,7 +4,7 @@
     "disabled" => false
 ])
 <div
-    class="container bg-white shadow rounded p-4"
+    class="bg-white shadow-sm rounded p-4"
 >
     <h2>Additional Details</h2>
     <div

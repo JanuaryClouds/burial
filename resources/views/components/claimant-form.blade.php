@@ -4,7 +4,7 @@
     'disabled' => false
 ])
 
-<div class="container bg-white shadow rounded p-4">
+<div class="bg-white shadow-sm rounded p-4">
     <h2>Claimant Information</h2>
     <p>Please fill out the following information. Fields marked with an asterisk are required. Leave blank if inapplicable.</p>
 
