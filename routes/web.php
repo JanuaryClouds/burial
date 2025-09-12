@@ -153,13 +153,16 @@ Route::middleware(['auth'])
                 Route::get('/applications/released', [BurialAssistanceController::class, 'released'])
                     ->name('applications.released');
 
-                Route::get('/applications/{status}/{id}', [BurialAssistanceController::class, 'manage'])
+                Route::post('/applications/{id}/claimant-change/{change}/decision', [ClaimantChangeController::class, 'decide'])
+                    ->name('application.claimant-change.decision');
+
+                Route::get('/applications/{id}', [BurialAssistanceController::class, 'manage'])
                     ->name('applications.manage');
                 
-                Route::get('/applications/{status}/{id}/reject', [BurialAssistanceController::class, 'reject'])
+                Route::get('/applications/{id}/reject', [BurialAssistanceController::class, 'reject'])
                     ->name('applications.reject');
                     
-                Route::post('/applications/{status}/{id}/addLog/{step}', [ProcessLogController::class, 'add'])
+                Route::post('/applications/{id}/addLog/{stepId}', [ProcessLogController::class, 'add'])
                     ->name('application.addLog');
 
                 // Burial Service
