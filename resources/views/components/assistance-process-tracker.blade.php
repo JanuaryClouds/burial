@@ -1,9 +1,8 @@
 @props(['burialAssistance'])
 @php
     use App\Models\WorkflowStep;
-
     $latestStep = $processLogs->last();
-    $currentStep = $latestStep?->workflowStep->order_no + 1;
+    $currentStep = $latestStep?->loggable?->order_no + 1;
     $totalWorkflowSteps = WorkflowStep::all()->count() + 1;
     switch ($burialAssistance->status) {
         case 'processing':
@@ -65,16 +64,41 @@
                     Submitted Application
                     <span class="badge badge-pill">{{ $burialAssistance->created_at }}</span>
                 </li>
-                @foreach ($processLogs as $log)
-                    <li
-                        class="list-group-item d-flex justify-content-between align-items-center {{ $loop->last ? 'bg-primary' : '' }}"
-                    >
-                        <p class="mb-0 {{ $loop->last ? 'fw-bold text-white' : 'text-black' }}">{{ $log->workflowStep->description }}</p>
-                        <span class="badge badge-pill {{ $loop->last ? 'text-white fw-bold' : 'text-black' }}">{{ $log->date_in }}</span>
-                    </li>
+                @foreach ($claimants as $claimant)
+                    @foreach ($processLogs as $log)
+                        <li
+                            class="list-group-item d-flex justify-content-between align-items-center {{ $loop->last ? 'bg-primary text-white' : '' }}"
+                        >
+                            <!-- TODO: Conditionally render the Comments -->
+                            <p class="mb-0 {{ $loop->last ? 'fw-bold text-white' : 'text-black' }}">{{ $log->loggable?->description }} - {{ $log->comments }}</p>
+                            <!-- TODO: Conditionally render the date-in and date-out -->
+                            <span class="badge badge-pill {{ $loop->last ? 'text-white fw-bold' : 'text-black' }}">In: {{ $log->date_in }} / Out: {{ $log?->date_out }}</span>
+                        </li>
+                    @endforeach
+
+                    @php
+                        $lastLogDate = $claimant->processLogs->last()?->date_in;
+                        $change = $claimantChanges->first(function($c) use ($lastLogDate) {
+                            return $lastLogDate === null || $c->changed_at > $lastLogDate;
+                        });
+                    @endphp
+
+                    @if($change)
+                        <li
+                            class="list-group-item d-flex justify-content-between align-items-center {{ $loop->last ? 'bg-primary text-white' : '' }}"
+                        >
+                            <p class="mb-0 {{ $loop->last ? 'fw-bold text-white' : 'text-black' }}">
+                                Changed claimant to 
+                                {{ $change->newClaimant->first_name }} 
+                                {{ Str::charAt($change->newClaimant?->middle_name, 0) }}, 
+                                {{ $change->newClaimant->last_name }} 
+                                {{ $change->newClaimant?->suffix }}
+                            </p>
+                            <span class="badge badge-pill {{ $loop->last ? 'text-white fw-bold' : 'text-black' }}">{{ $change->changed_at }}</span>
+                        </li>
+                    @endif
                 @endforeach
             </ul>
-        </div>
-        
+        </div>        
     </div>
 </div>
