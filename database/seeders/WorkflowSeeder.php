@@ -19,7 +19,7 @@ class WorkflowSeeder extends Seeder
             [
               'order_no' => 1,
               'handler_id' => 1,
-              'description' => 'Reviewed by CSWDO',
+              'description' => 'Reviewed by Ms. Maricar',
               'requires_extra_data' => false,
               'is_optional' => false,
               'extra_data_schema' => null,
@@ -45,7 +45,7 @@ class WorkflowSeeder extends Seeder
             [
               'order_no' => 4,
               'handler_id' => 1,
-              'description' => 'Received by CSWDO',
+              'description' => 'Received by Ms. Maricar',
               'requires_extra_data' => false,
               'is_optional' => false,
               'extra_data_schema' => null,
@@ -53,7 +53,7 @@ class WorkflowSeeder extends Seeder
             [
               'order_no' => 5,
               'handler_id' => 1,
-              'description' => 'Processed by CSWDO',
+              'description' => 'Processed by Ms. Maricar',
               'requires_extra_data' => false,
               'is_optional' => false,
               'extra_data_schema' => null,
@@ -61,7 +61,7 @@ class WorkflowSeeder extends Seeder
             [
               'order_no' => 6,
               'handler_id' => 4,
-              'description' => 'Evaluated by CSWDO',
+              'description' => 'Evaluated by Ms. Emma',
               'requires_extra_data' => false,
               'is_optional' => false,
               'extra_data_schema' => null,
@@ -69,7 +69,7 @@ class WorkflowSeeder extends Seeder
             [
               'order_no' => 7,
               'handler_id' => 5,
-              'description' => 'Reviewed by CSWDO',
+              'description' => 'Reviewed by Ms. Nikki',
               'requires_extra_data' => false,
               'is_optional' => false,
               'extra_data_schema' => null,
