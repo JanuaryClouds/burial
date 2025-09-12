@@ -7,6 +7,7 @@ use App\Models\Claimant;
 use Illuminate\Http\Request;
 use App\Models\ClaimantChange;
 use App\Models\BurialAssistance;
+use App\Models\ProcessLog;
 
 class ClaimantChangeController extends Controller
 {
@@ -35,10 +36,48 @@ class ClaimantChangeController extends Controller
             $claimantChange = ClaimantChange::create($validated);
             
             if( $claimantChange ) {
-                return view('guest.burial-assistance.tracker', compact('burialAssistance'))->with("success","Claimant change submitted successfully.");
+                return redirect()->route('guest.burial-assistance.tracker', compact('burialAssistance'));
             } else {
                 return redirect()->back()->with("error","Failed to submit claimant change.");
             }
         }
+    }
+
+    public function decide(Request $request, $applicationId, $changeId) {
+        $change = ClaimantChange::where('burial_assistance_id', $applicationId)
+            ->where('id', $changeId)
+            ->firstOrFail();
+
+        if ($request->decision == 'approved') {
+            $change->update([
+                'status' => 'approved',
+                'changed_at' => now(),
+            ]);
+
+            ProcessLog::create([
+                'burial_assistance_id' => $change->burialAssistance->id,
+                'claimant_id' => $change->newClaimant->id,
+                'loggable_id' => $change->id,
+                'loggable_type' => ClaimantChange::class,
+                'date_in' => now(),
+                'comments' => 'Claimant change approved by ' . auth()->user()->first_name . ' ' . auth()->user()->last_name,
+                'is_progress_step' => false
+            ]);
+
+            // $change->burialAssistace->processLogs::create([
+            //     'burial_assistance_id' => $change->burialAssistance->id,
+            //     'loggable_id' => $change->id,
+            //     'loggable_type' => ClaimantChange::class,
+            //     'date_in' => now(),
+            //     'comments' => 'Claimant change approved by ' . auth()->user()->name,
+            //     'is_progress_step' => false
+            // ]);
+        } elseif ($request->decision == 'rejected') {
+            $change->update([
+                'status' => 'rejected',
+            ]);
+        }
+
+        return back()->with('success','Claimant change ' . ($request->decision === 'approve' ? 'approved' : 'rejected') . ' successfully.');
     }
 }
