@@ -109,7 +109,7 @@ class BurialAssistanceController extends Controller
         return view('applications.list', compact('applications', 'status', 'badge'));
     }
 
-    public function manage($status, $id) {
+    public function manage($id) {
         $application = BurialAssistance::where('id',$id)->first();
         return view('applications.manage', compact('application'));
     }
