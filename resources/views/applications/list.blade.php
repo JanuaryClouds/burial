@@ -1,5 +1,5 @@
 @extends('layouts.stisla.admin')
-<title>Pending Applications</title>
+<title>{{ Str::ucfirst($status) }} Applications</title>
 @section('content')
     <div class="main-content">
         <section class="section">
