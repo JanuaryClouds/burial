@@ -40,7 +40,7 @@ class BurialAssistance extends Model
         return $this->belongsTo(Claimant::class, 'claimant_id', 'id');
     }
 
-    public function claimantChange() {
+    public function claimantChanges() {
         return $this->hasMany(ClaimantChange::class, 'burial_assistance_id', 'id');
     }
 
