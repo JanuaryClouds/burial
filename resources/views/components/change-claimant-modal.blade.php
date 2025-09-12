@@ -36,7 +36,7 @@
                     <x-claimant-form />
                     <div class="my-3 bg-white p-4 rounded shadow-sm">
                         <x-form-input 
-                            name="claimant[reason_for_change]"
+                            name="reason_for_change"
                             id="reason_for_change"
                             label="Reason for Change"
                             placeholder=""
