@@ -39,4 +39,8 @@ class Claimant extends Model
     public function barangay() {
         return $this->hasOne(Barangay::class, 'barangay_id', 'id');
     }
+
+    public function processLogs() {
+        return $this->hasMany(ProcessLog::class, 'claimant_id', 'id');
+    }
 }
