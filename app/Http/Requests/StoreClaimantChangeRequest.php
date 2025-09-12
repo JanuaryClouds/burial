@@ -30,7 +30,7 @@ class StoreClaimantChangeRequest extends FormRequest
             'claimant.mobile_number' => 'required|string|digits:11',
             'claimant.address' => 'required|string|max:255',
             'claimant.barangay_id' => 'required|exists:barangays,id',
-            'claimant.reason_for_change' => 'required|string|max:255',
+            'reason_for_change' => 'required|string|max:255',
         ];
     }
 }
