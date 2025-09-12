@@ -10,8 +10,9 @@ use App\Models\Handler;
 
 class ProcessLogController extends Controller
 {
-    public function add(Request $request, $status, $id, $step) {
+    public function add(Request $request, $id, $stepId) {
         $application = BurialAssistance::findOrFail($id);
+        $step = WorkflowStep::findOrFail($stepId);
         // dd('Function hit!', $request);
         $validated = $request->validate([
             'date_in' => 'required|date',
@@ -23,10 +24,12 @@ class ProcessLogController extends Controller
         if ($application) {
             $application->status = 'processing';
             $application->update();
-
             $application->processLogs()->create([
-                'workflow_step_id' => $step,
+                'loggable_id' => $step->id,
+                'loggable_type' => WorkflowStep::class,
+                'is_progress_step' => true,
                 'burial_assistance_id' => $application->id,
+                'claimant_id' => $application->claimant->id,
                 'date_in' => $validated['date_in'],
                 'date_out'=> $validated['date_out'] ?? null,
                 'comments' => $validated['comments'] ?? null,
