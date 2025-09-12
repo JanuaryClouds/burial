@@ -19,7 +19,7 @@
 
 <div class="container">
     <div class="d-flex justify-content-start align-items-center">
-        <a name="" id="" class="btn btn-primary" href="{{ route($routeName, ['status' => $status, 'id' => $application->id]) }}" role="button">
+        <a name="" id="" class="btn btn-primary" href="{{ route($routeName, ['id' => $application->id]) }}" role="button">
           <i class="fas fa-external-link-square-alt"></i>  
         </a>
     </div>
