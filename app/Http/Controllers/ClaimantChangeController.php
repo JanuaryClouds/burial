@@ -36,6 +36,7 @@ class ClaimantChangeController extends Controller
             $claimantChange = ClaimantChange::create($validated);
             
             if( $claimantChange ) {
+                // TODO: Returns a GET request on POST route error
                 return redirect()->route('guest.burial-assistance.tracker', compact('burialAssistance'));
             } else {
                 return redirect()->back()->with("error","Failed to submit claimant change.");
