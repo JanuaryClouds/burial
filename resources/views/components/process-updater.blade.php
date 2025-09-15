@@ -1,11 +1,16 @@
 @php
-    $processLogs = $processLogs->sortBy(fn($log) => $log->loggable?->created_at)->values();
-    $lastStep = $processLogs->last()?->loggable;
-    $schema = $lastStep?->extra_data_schema ? json_decode($lastStep->extra_data_schema, true) : [];
+    if ($processLogs->count() != 0) {
+        $processLogs = $processLogs->sortBy(fn($log) => $log->created_at)->values();
+        $lastStep = $processLogs->last()?->loggable;
+        $schema = $lastStep?->extra_data_schema ? json_decode($lastStep->extra_data_schema, true) : [];
+        if (class_basename($processLogs->last()->loggable) === 'ClaimantChange') {
+            $processLogs->last()->loggable->order_no = 0;
+        }
+    }
 @endphp
 <div id="add-process" class="modal fade flex justify-content-center" tabindex="-1" role="dialog" aria-labelledby="add-proces" aria-hidden="true">
     @foreach ($workflowSteps as $step)
-        @if ($processLogs->count() == 0 || ($step?->order_no > $processLogs->first()->loggable?->order_no))
+        @if ($processLogs->count() == 0 || ($step?->order_no > $processLogs?->last()->loggable?->order_no))
             <div class="modal-dialog" role="document">
                 <form action="{{ route('admin.application.addLog', ['id' => $application->id, 'stepId' => $step->id]) }}" method="post">
                 @csrf
@@ -19,7 +24,7 @@
                         <div class="modal-body">
                             <section class="section">
                                 <div class="section-title">
-                                    <h6 class="text-muted">Previous Step: {{ $processLogs->first()->loggable?->description ?? 'Submitted at ' . $application->application_date }}</h6>
+                                    <h6 class="text-muted">Previous Step: {{ $processLogs->last()->loggable?->description ?? 'Submitted at ' . $application->application_date }}</h6>
                                 </div>
                             </section>
                             <section class="section">
@@ -39,7 +44,7 @@
                                 @endphp
                                 @foreach ($schema as $key => $field)
                                     @if(is_string($field))
-                                        <div class="form-group col-lg-6 col-sm-12 p-0">
+                                        <div class="form-group col-12 p-0">
                                             <label for="">{{ ucfirst(str_replace('_', ' ', $key)) }}</label>
                                             <input 
                                                 type="{{ $field }}"
@@ -50,7 +55,7 @@
                                         </div>
                                     @elseif (is_array($field))
                                         @foreach ($field as $subkey => $subField)
-                                            <div class="form-group col-lg-6 col-sm-12">
+                                            <div class="form-group col-12 p-0">
                                                 <label for="">{{ ucfirst(str_replace('_', ' ', $subkey)) }}</label>
                                                 <input type="{{ $subField }}" class="form-control" name="extra[{{ $key }}][{{ $subkey }} }}" required>
                                             </div>
