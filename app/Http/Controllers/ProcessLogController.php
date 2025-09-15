@@ -13,6 +13,7 @@ class ProcessLogController extends Controller
     public function add(Request $request, $id, $stepId) {
         $application = BurialAssistance::findOrFail($id);
         $step = WorkflowStep::findOrFail($stepId);
+        $allSteps = WorkflowStep::all();
         // dd('Function hit!', $request);
         $validated = $request->validate([
             'date_in' => 'required|date',
@@ -22,7 +23,14 @@ class ProcessLogController extends Controller
         ]);
         
         if ($application) {
-            $application->status = 'processing';
+            if ($application->status == 'pending') {
+                $application->status = 'processing';
+            } elseif ($application->status == 'processing' && str_contains($step->description, 'Cheque available for pickup')) {
+                $application->status = 'approved';
+            } elseif ($application->status == 'approved' && str_contains($step->description, 'Cheque claimed')) {
+                $application->status = 'released';
+            }
+
             $application->update();
             $application->processLogs()->create([
                 'loggable_id' => $step->id,
