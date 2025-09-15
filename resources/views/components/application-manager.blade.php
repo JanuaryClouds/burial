@@ -1,7 +1,7 @@
 @props([
     'application' => []
 ])
-@if ($processLogs->count() == 0 || ($application->status != 'rejected' || $application->status != 'released'|| $application->status != 'approved'))
+@if ($processLogs->count() == 0 || ($application->status != 'rejected' && $application->status != 'released'))
     @if ($application->claimantChanges->count() == 0 || $claimantChange->status != 'pending')
         <div class="bg-white rounded shadow-sm p-4">
             <div class="d-flex justify-content-end">
