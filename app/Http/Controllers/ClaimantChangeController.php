@@ -61,7 +61,7 @@ class ClaimantChangeController extends Controller
                 'loggable_id' => $change->id,
                 'loggable_type' => ClaimantChange::class,
                 'date_in' => now(),
-                'comments' => 'Claimant change approved by ' . auth()->user()->first_name . ' ' . auth()->user()->last_name,
+                'comments' => 'Change of claimant has been approved',
                 'is_progress_step' => false
             ]);
 
