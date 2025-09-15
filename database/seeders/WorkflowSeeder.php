@@ -90,7 +90,7 @@ class WorkflowSeeder extends Seeder
                 'is_optional' => false,
                 'extra_data_schema' => json_encode([
                     'OBR' => [
-                        'obr_number' => 'string',
+                        'oBR_number' => 'string',
                         'date' => 'date',
                     ],
                 ]),
@@ -110,6 +110,25 @@ class WorkflowSeeder extends Seeder
               'requires_extra_data' => false,
               'is_optional' => false,
               'extra_data_schema' => null,
+            ],
+            [
+              'order_no' => 12,
+              'handler_id' => null,
+              'description' => 'Cheque available for pickup',
+              'requires_extra_data' => true,
+              'is_optional' => false,
+              'extra_data_schema' => json_encode([
+                'cheque_number' => 'string',
+                'date'=> 'date',
+              ])
+            ],
+            [
+              'order_no' => 13,
+              'handler_id' => null,
+              'description' => 'Cheque claimed',
+              'requires_extra_data' => false,
+              'is_optional' => false,
+              'extra_data_schema' => null
             ],
         ];
 
