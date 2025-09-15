@@ -90,7 +90,7 @@
                 </div>
                 <div class="d-flex justify-content-between align-items-center w-100 gap-4">
                     <h5 class="mb-0">Date of Burial</h5>
-                    <!-- TODO: Error: The invalid form control with name=‘start_of_burial’ is not focusable. -->
+                    <!-- ! Error: The invalid form control with name=‘start_of_burial’ is not focusable. -->
                     <span class="d-flex justify-content-between align-items-baseline gap-1">
                         <label for="start_of_burial" class="form-label text-center">Start*</label>
                         >
