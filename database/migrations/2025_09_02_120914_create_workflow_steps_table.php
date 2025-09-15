@@ -16,9 +16,10 @@ return new class extends Migration
 
             $table->integer('order_no');
             $table->foreignId('handler_id')
-                  ->constrained('handlers')
-                  ->onDelete('cascade')
-                  ->onUpdate('cascade');
+                ->nullable()
+                ->constrained('handlers')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
             $table->string('description');
             $table->boolean('requires_extra_data')->default(false);
             $table->boolean('is_optional')->default(false);
