@@ -28,9 +28,13 @@
                                 >
                                 </button>
                             </span>
-                            <span class="mr-2">
-                                <button class="btn btn-secondary" type="button" data-toggle="modal" data-target="#changeClaimantModal">Change Claimant</button>
-                            </span>
+                            @if (($burialAssistance->status == 'pending' || $burialAssistance->status == 'processing'))
+                                @if ($burialAssistance->claimantChanges->count() < 0)
+                                    <span class="mr-2">
+                                        <button class="btn btn-secondary" type="button" data-toggle="modal" data-target="#changeClaimantModal">Change Claimant</button>
+                                    </span>
+                                @endif
+                            @endif
                             <span class="mr-2">
                                 <a
                                     name=""
