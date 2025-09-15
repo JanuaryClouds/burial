@@ -21,6 +21,7 @@
                 disabled="{{ $disabled }}"
             />
         </div>
+        <!-- TODO: Add amount field -->
         <div class="col">
             <x-form-textarea 
                 name="burial_assistance[remarks]"
