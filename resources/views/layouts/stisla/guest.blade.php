@@ -27,7 +27,7 @@
     </script>
     <!-- END GA -->
 </head>
-<body class="w-100 h-100"
+<body class="min-vw-100 min-vh-100"
 	style="background: url('{{ asset('images/cover.webp') }}') no-repeat center center / cover;">
 	<div id="app">
 		<div class="main-wrapper">
