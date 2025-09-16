@@ -1,4 +1,4 @@
-<div class="bg-white shadow rounded p-4">
+<div class="bg-white shadow-sm rounded p-4">
     <h2>Image Requirements</h2>
     <div class="row flex-column justify-content-center align-items-center g-2">
         <div

@@ -1,5 +1,5 @@
 @extends('layouts.stisla.admin')
-<title>Pending Applications</title>
+<title>{{ Str::ucfirst($status) }} Applications</title>
 @section('content')
     <div class="main-content">
         <section class="section">
@@ -13,20 +13,23 @@
 
         <section class="section">
             <div class="table-responsive">
-                <div class="dataTables_wrapper container-fluid dt-bootstrap4">
-                    <table id="applications-table" class="table table-striped data-table" style="width:100%">
+                <div class="dataTables_wrapper container-fluid">
+                    <table id="applications-table" class="table data-table" style="width:100%">
                         <thead>
                             <tr role="row">
                                 <th class="sorting sort-handler">Tracking No.</th>
                                 <th class="sorting">Deceased</th>
                                 <th class="sorting">Claimant</th>
-                                <th class="sorting">Submitted</th>
+                                <th class="sorting">Submitted on</th>
+                                @if (Request::is('admin/applications/history'))
+                                    <th class="sorting">Status</th>
+                                @endif
                                 <th class="">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($applications as $application)
-                                <tr>
+                                <tr class="bg-white">
                                     <td>{{ $application->tracking_no }}</td>
                                     <td>
                                         {{ $application->deceased->first_name }}
@@ -41,6 +44,21 @@
                                         {{ $application->claimant->suffix }}
                                     </td>
                                     <td>{{ $application->application_date }}</td>
+                                    @if (Request::is('admin/applications/history'))
+                                        <td>
+                                            @if ($application->status === 'pending')
+                                                <span class="badge badge-pill badge-primary">{{ ucfirst($application->status) }}</span>
+                                            @elseif ($application->status === 'processing')
+                                                <span class="badge badge-pill badge-secondary">{{ ucfirst($application->status) }}</span>
+                                            @elseif ($application->status === 'approved')
+                                                <span class="badge badge-pill badge-success">{{ ucfirst($application->status) }}</span>
+                                            @elseif ($application->status === 'released')
+                                                <span class="badge badge-pill badge-success">{{ ucfirst($application->status) }}</span>
+                                            @elseif ($application->status === 'rejected')
+                                                <span class="badge badge-pill badge-danger">{{ ucfirst($application->status) }}</span>
+                                            @endif
+                                        </td>
+                                    @endif
                                     <td><x-application-actions :application="$application" /></td>
                                 </tr>
                             @endforeach

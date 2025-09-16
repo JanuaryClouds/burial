@@ -3,7 +3,7 @@
     'id' => null,
     'label' => null,
     'type' => 'text',
-    'placeholder' => 'Aa',
+    'placeholder' => null,
     'value' => '',
     'required' => false,
     'helpText' => false,

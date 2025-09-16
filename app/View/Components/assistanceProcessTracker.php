@@ -12,6 +12,8 @@ class assistanceProcessTracker extends Component
 {
     public $processLogs;
     public $burialAssistance;
+    public $claimantChanges;
+    public $claimants;
     /**
      * Create a new component instance.
      */
@@ -19,8 +21,10 @@ class assistanceProcessTracker extends Component
     {
         $this->burialAssistance = $burialAssistance;
         $this->processLogs = $burialAssistance
-            ? $burialAssistance->processLogs()->latest()->get()
+            ? $burialAssistance->processLogs()->oldest()->get()
             : collect();
+        $this->claimantChanges = $burialAssistance ? $burialAssistance->claimantChanges()->latest()->get() : collect();
+        $this->claimants = $burialAssistance ? $burialAssistance->claimant()->get() : collect();
     }
 
     /**

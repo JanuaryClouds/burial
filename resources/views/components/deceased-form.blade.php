@@ -21,7 +21,6 @@
         >
             <x-form-input 
                 name="deceased[first_name]"
-                placeholder="Juan"
                 label="Given Name"
                 required="true"
                 value="{{ $deceased->first_name ?? '' }}"
@@ -34,7 +33,6 @@
             >
             <x-form-input 
                 name="deceased[middle_name]"
-                placeholder="Santos"
                 label="Middle Name"
                 value="{{ $deceased->middle_name ?? '' }}"
                 disabled="{{ $disabled }}"
@@ -46,7 +44,6 @@
         >
             <x-form-input 
                 name="deceased[last_name]"
-                placeholder="Dela Cruz"
                 label="Last Name"
                 required="true"
                 value="{{ $deceased->last_name ?? '' }}"
@@ -59,7 +56,6 @@
         >
             <x-form-input
                 name="deceased[suffix]"
-                placeholder="Jr."
                 label="Suffix"
                 value="{{ $deceased->suffix ?? '' }}"
                 disabled="{{ $disabled }}"

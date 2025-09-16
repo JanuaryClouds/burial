@@ -21,7 +21,7 @@ $(document).ready(function () {
     $('#applications-table').DataTable({
         responsive: true,
         ordering: true, // keep ordering functional
-        dom: 'lrtip',   // optional: controls what UI elements appear
+        // dom: 'lrtip',   // optional: controls what UI elements appear
         columnDefs: [
             { orderable: false, targets: [4] } // disable sorting on the Actions column
         ],

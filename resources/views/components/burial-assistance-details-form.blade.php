@@ -15,8 +15,18 @@
                 name="burial_assistance[funeraria]"
                 label="Funeraria"
                 required="true"
-                placeholder="Funeraria"
                 value="{{ $burialAssistance->funeraria ?? '' }}"
+                readonly="{{ $readonly }}"
+                disabled="{{ $disabled }}"
+            />
+        </div>
+        <div class="col">
+            <x-form-input 
+                name="burial_assistance[amount]"
+                label="Amount"
+                type="number"
+                required="true"
+                value="{{ $burialAssistance->amount ?? '' }}"
                 readonly="{{ $readonly }}"
                 disabled="{{ $disabled }}"
             />
@@ -25,7 +35,6 @@
             <x-form-textarea 
                 name="burial_assistance[remarks]"
                 label="Remarks"
-                placeholder="Additional comments can be inserted here."
                 value="{{ $burialAssistance->remarks ?? '' }}"
                 readonly="{{ $readonly }}"
                 disabled="{{ $disabled }}"

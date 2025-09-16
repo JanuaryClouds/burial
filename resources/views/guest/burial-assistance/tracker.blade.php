@@ -1,90 +1,112 @@
-@extends('layouts.guest')
+@extends('layouts.stisla.guest')
 @section('content')
-    <title>{{ $burialAssistance->deceased->first_name }} {{ $burialAssistance->deceased->last_name }} Burial Assistance</title>
-    <div
-        class="container d-flex min-vh-100 align-items-center justify-content-center m-5"
-    >
+<title>{{ $burialAssistance->deceased->first_name }} {{ $burialAssistance->deceased->last_name }} Burial Assistance</title>
+<section class="section d-flex justify-content-center align-items-center min-vh-100 p-4">
+    <div class="section-body d-flex align-items-center">
         <div
-            class="row w-100"
+            class="row d-flex flex-column justify-content-center align-items-center"
+            x-data="{ showApplication: false, showClaimantChangeRequest: false }"
         >
-            <div class="col-12 col-lg-8 mx-auto">
+            <div class="col-sm-11 col-lg-10">
+                <x-assistance-process-tracker :burialAssistance="$burialAssistance"/>
+            </div>
+            <div class="col-sm-11 col-lg-10 mt-4">
                 <div
-                    class="row d-flex flex-column justify-content-center align-items-center g-2 gap-4"
-                    x-data="{ showApplication: false }"
+                    class="container bg-white shadow rounded p-4"
                 >
-                    <div class="col">
-                        <x-assistance-process-tracker :burialAssistance="$burialAssistance"/>
-                    </div>
-                    <div class="col">
-                        <div
-                            class="container bg-white shadow rounded p-4"
-                        >
-                            <div
-                                class="row"
-                            >
-                                <div
-                                    class="col d-flex gap-2 justify-content-end align-items-end"
-                                >
-                                    <x-change-claimant-modal :burialAssistance="$burialAssistance"/>
-                                    <button
-                                        class="btn btn-primary"
-                                        x-on:click="showApplication = !showApplication"
-                                        x-text="showApplication ? 'Hide Application' : 'Show Application'"
-                                    >
-                                    </button>
-                                    <a
-                                        name=""
-                                        id=""
-                                        class="btn btn-secondary"
-                                        href="{{ route('landing.page') }}"
-                                        role="button"
-                                        >Back to Landing Page</a
-                                    >
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                     <div
-                        class="col"
-                        x-show="showApplication"
-                        x-transition=""
+                        class="row"
                     >
                         <div
-                            class="container bg-white shadow rounded p-4"
+                            class="col d-flex justify-content-end align-items-end"
                         >
-                            <div
-                                class="row flex-column justify-content-center align-items-center g-2"
-                            >
-                                <div class="col">
-                                    <h1>Submitted Application</h1>
-                                </div>
-                                <div class="col">
-                                    <p>This is a copy of the burial assistance application. All fields in this copy are not editable and fixed. This allows you to track the progress of your application. Some text have to be hidden for privacy.</p>
-                                </div>
-                            </div>
+                            <span class="mr-2">
+                                <button
+                                    class="btn btn-primary"
+                                    x-on:click="showApplication = !showApplication"
+                                    x-text="showApplication ? 'Hide Application' : 'Show Application'"
+                                >
+                                </button>
+                            </span>
+                            @if ($burialAssistance->status === 'pending' || $burialAssistance->status === 'processing')
+                                @if ($burialAssistance->claimantChanges->count() == 0)
+                                    <span class="mr-2">
+                                        <button class="btn btn-secondary" type="button" data-toggle="modal" data-target="#changeClaimantModal">Change Claimant</button>
+                                    </span>
+                                @else
+                                    <div class="btn-group mr-2" role="group" aria-label="Button group">
+                                        <button class="btn btn-secondary disabled" type="button" disabled title="Claimant Change Request Pending">Change Claimant</button>
+                                        <button
+                                            class="btn btn-secondary"
+                                            x-on:click="showClaimantChangeRequest = !showClaimantChangeRequest"
+                                        >
+                                            <i class="fa fa-eye" x-show="!showClaimantChangeRequest" x-cloak></i>
+                                            <i class="fa fa-eye-slash" x-show="showClaimantChangeRequest" x-cloak aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                @endif
+                            @endif
+                            <span class="mr-2">
+                                <a
+                                    name=""
+                                    id=""
+                                    class="btn btn-secondary"
+                                    href="{{ route('landing.page') }}"
+                                    role="button"
+                                    >Back to Landing Page</a
+                                >
+                            </span>
                         </div>
-                    </div>
-                    <div class="col"
-                        x-show="showApplication"
-                        x-transition=""
-                    >
-                        <x-deceased-form :deceased="$burialAssistance->deceased" disabled="true" readonly="true"/>
-                    </div>
-                    <div class="col"
-                        x-show="showApplication"
-                        x-transition=""
-                    >
-                        <x-claimant-form :claimant="$burialAssistance->claimant" disabled="true" readonly="true"/>
-                    </div>
-                    <div class="col"
-                        x-show="showApplication"
-                        x-transition=""
-                    >
-                        <x-burial-assistance-details-form :burialAssistance="$burialAssistance" disabled="true" readonly="true"/>
                     </div>
                 </div>
             </div>
+            <div
+                class="col-sm-11 col-lg-10 mt-4"
+                x-show="showApplication"
+                x-transition=""
+            >
+                <div
+                    class="container bg-white shadow rounded p-4"
+                >
+                    <div
+                        class="row flex-column justify-content-center align-items-center g-2"
+                    >
+                        <div class="col">
+                            <h1>Submitted Application</h1>
+                        </div>
+                        <div class="col">
+                            <p>This is a copy of the burial assistance application. All fields in this copy are not editable and fixed. This allows you to track the progress of your application. Some text have to be hidden for privacy.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-11 col-lg-10"
+                x-show="showApplication"
+                x-transition=""
+            >
+                <x-deceased-form :deceased="$burialAssistance->deceased" disabled="true" readonly="true"/>
+            </div>
+            <div class="col-sm-11 col-lg-10"
+                x-show="showApplication"
+                x-transition=""
+            >
+                <x-claimant-form :claimant="$burialAssistance->claimant" disabled="true" readonly="true"/>
+            </div>
+            <div class="col-sm-11 col-lg-10"
+                x-show="showClaimantChangeRequest"
+                x-transition=""
+            >
+                <x-claimant-form :claimant="$burialAssistance->claimantChanges->last()->newclaimant" disabled="true" readonly="true"/>
+            </div>
+            <div class="col-sm-11 col-lg-10"
+                x-show="showApplication"
+                x-transition=""
+            >
+                <x-burial-assistance-details-form :burialAssistance="$burialAssistance" disabled="true" readonly="true"/>
+            </div>
         </div>
     </div>
+</section>
+<x-change-claimant-modal :burialAssistance="$burialAssistance"/>
     
 @endsection

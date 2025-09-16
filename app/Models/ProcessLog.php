@@ -10,7 +10,10 @@ class ProcessLog extends Model
     use HasFactory;
     protected $fillable = [
         'burial_assistance_id',
-        'workflow_step_id',
+        'claimant_id',
+        'loggable_id',
+        'loggable_type',
+        'is_progress_step',
         'date_in',
         'date_out',
         'comments',
@@ -29,5 +32,13 @@ class ProcessLog extends Model
 
     public function workflowStep() {
         return $this->belongsTo(WorkflowStep::class, 'workflow_step_id', 'id');
+    }
+
+    public function claimant() {
+        return $this->belongsTo(Claimant::class, 'claimant_id', 'id');
+    }
+
+    public function loggable() {
+        return $this->morphTo();
     }
 }

@@ -55,7 +55,7 @@ class BurialServiceProviderController extends Controller
         return redirect()->route('admin.burial.providers')->with('success','Successfully updated the provider\'s information.');
     }
 
-    // TODO: Add messaging API via email or SMS
+    // ! Add messaging API via email or SMS
     public function contact($id) {
         $success = true; //placeholder
 
@@ -75,7 +75,7 @@ class BurialServiceProviderController extends Controller
         return $pdf->stream("{$provider->name}-burial-service-provider-form.pdf");
     }
 
-    // TODO: returns an error
+    // ! returns an error
     public function exportXslx() {
         try {
             return Excel::download(new BurialServiceProviderExport(), 'burial_service_providers.csv');

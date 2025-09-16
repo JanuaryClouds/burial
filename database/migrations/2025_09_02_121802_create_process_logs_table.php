@@ -18,12 +18,14 @@ return new class extends Migration
                 ->constrained('burial_assistances')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
-            $table->foreignId('workflow_step_id')
-                ->constrained('workflow_steps')
+            $table->foreignId('claimant_id')
+                ->constrained('claimants')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
-            $table->dateTime('date_in');
-            $table->dateTime('date_out')->nullable();
+            $table->nullableMorphs('loggable');
+            $table->boolean('is_progress_step')->default(true);
+            $table->date('date_in');
+            $table->date('date_out')->nullable();
             $table->string('comments')->nullable();
             $table->json('extra_data')->nullable();
 

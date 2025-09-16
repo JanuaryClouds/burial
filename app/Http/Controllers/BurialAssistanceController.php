@@ -62,14 +62,6 @@ class BurialAssistanceController extends Controller
 
         // dd($burialAssistance);
 
-        if (!auth()->check()) {
-            $burialAssistance->claimant->first_name = Str::mask($burialAssistance->claimant->first_name, '*', 3);
-            $burialAssistance->claimant->middle_name = Str::mask($burialAssistance->claimant->middle_name, '*', 3);
-            $burialAssistance->claimant->last_name = Str::mask($burialAssistance->claimant->last_name, '*', 3);
-            $burialAssistance->claimant->mobile_number = Str::mask($burialAssistance->claimant->mobile_number, '*', 4, 3);
-            $burialAssistance->claimant->address = Str::mask($burialAssistance->claimant->address, '*', 3);
-        }
-
         $ip = request()->ip();
         $browser = request()->header('User-Agent');
         activity()
@@ -77,6 +69,19 @@ class BurialAssistanceController extends Controller
             ->withProperties(['ip' => $ip, 'browser' => $browser])
             ->log('Burial Assistance tracked by guest');
 
+        // return view('guest.burial-assistance.tracker', compact('burialAssistance'));
+        return redirect()->route('guest.burial-assistance.track-page', ['code' => $request->tracking_code]);
+    }
+
+    public function trackPage($code) {
+        $burialAssistance = BurialAssistance::where('tracking_code', $code)->first();
+        if (!auth()->check()) {
+            $burialAssistance->claimant->first_name = Str::mask($burialAssistance->claimant->first_name, '*', 3);
+            $burialAssistance->claimant->middle_name = Str::mask($burialAssistance->claimant->middle_name, '*', 3);
+            $burialAssistance->claimant->last_name = Str::mask($burialAssistance->claimant->last_name, '*', 3);
+            $burialAssistance->claimant->mobile_number = Str::mask($burialAssistance->claimant->mobile_number, '*', 4, 3);
+            $burialAssistance->claimant->address = Str::mask($burialAssistance->claimant->address, '*', 3);
+        }
         return view('guest.burial-assistance.tracker', compact('burialAssistance'));
     }
 
@@ -109,7 +114,13 @@ class BurialAssistanceController extends Controller
         return view('applications.list', compact('applications', 'status', 'badge'));
     }
 
-    public function manage($status, $id) {
+    public function history() {
+        $applications = BurialAssistance::all()->sortByDesc('created_at');
+        $status = 'All';
+        return view('applications.list', compact('applications', 'status'));
+    }
+
+    public function manage($id) {
         $application = BurialAssistance::where('id',$id)->first();
         return view('applications.manage', compact('application'));
     }

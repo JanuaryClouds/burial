@@ -1,9 +1,8 @@
 @props(['burialAssistance'])
 @php
     use App\Models\WorkflowStep;
-
     $latestStep = $processLogs->last();
-    $currentStep = $latestStep?->workflowStep->order_no + 1;
+    $currentStep = $latestStep?->loggable?->order_no + 1;
     $totalWorkflowSteps = WorkflowStep::all()->count() + 1;
     switch ($burialAssistance->status) {
         case 'processing':
@@ -57,24 +56,53 @@
                 ></div>
             </div>
         </div>
-        <div class="col">
+        <div class="col mt-4">
             <ul class="list-group">
                 <li
                     class="list-group-item d-flex justify-content-between align-items-center"
-                >
-                    Submitted Application
-                    <span class="badge bg-secondary badge-pill">{{ $burialAssistance->created_at }}</span>
-                </li>
-                @foreach ($processLogs as $log)
-                    <li
-                        class="list-group-item d-flex justify-content-between align-items-center"
                     >
-                        {{ $log->workflowStep->description }}
-                        <span class="badge bg-secondary badge-pill">{{ $log->date_in }}</span>
-                    </li>
+                    Submitted Application
+                    <span class="badge badge-pill">{{ $burialAssistance->created_at }}</span>
+                </li>
+                @foreach ($claimants as $claimant)
+                    @foreach ($processLogs as $log)
+                        <li
+                            class="list-group-item d-flex justify-content-between align-items-center {{ $loop->last ? 'bg-primary text-white' : '' }}"
+                        >
+                            <p class="mb-0 {{ $loop->last ? 'fw-bold text-white' : 'text-black' }} d-flex align-items-baseline">
+                                <b>{{ class_basename($log->loggable) === 'WorkflowStep' ? $log->loggable?->description : $log->comments }}</b>
+                                @if (class_basename($log->loggable) === 'WorkflowStep' && $log->comments)
+                                    <a class="ml-4 {{ $loop->last ? 'text-white' : '' }}" data-target="#show-comments-{{ $log->id }}" data-toggle="collapse" aria-expanded="false" aria-controls="show-comments{{ $log->id }}">
+                                        <i class="fa fa-comment-alt"></i>
+                                    </a>
+                                @endif
+                            </p>
+                            @if (class_basename($log->loggable) === 'WorkflowStep')
+                                <span class="badge badge-pill {{ $loop->last ? 'text-white fw-bold' : 'text-black' }}">
+                                    In: {{ $log->date_in }} 
+                                    {{ $log->date_out ? '/ Out: ' . $log->date_out : '' }}
+                                </span>
+                            @else
+                                <span class="badge badge-pill {{ $loop->last ? 'text-white fw-bold' : 'text-black' }}">{{ $log->date_in }}</span>
+                            @endif
+                        </li>
+                        <div id="show-comments-{{ $log->id }}" class="collapse">
+                            <li
+                                class="list-group-item border-top-0 {{ $loop->last ? 'bg-primary text-white' : '' }}"
+                            >
+                                <p class="mb-0">{{ $log->comments }}</p>
+                            </li>
+                        </div>
+                    @endforeach
+
+                    @php
+                        $lastLogDate = $claimant->processLogs->last()?->date_in;
+                        $change = $claimantChanges->first(function($c) use ($lastLogDate) {
+                            return $lastLogDate === null || $c->changed_at > $lastLogDate;
+                        });
+                    @endphp
                 @endforeach
             </ul>
-        </div>
-        
+        </div>        
     </div>
 </div>
