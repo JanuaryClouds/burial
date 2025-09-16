@@ -26,7 +26,7 @@
                 <a href="{{ route('admin.applications.released') }}" class="nav-link"><i class="far fa-circle-check"></i><span>Released</span"></a>
             </li>
             <li @class(['active' => Request::is('admin/applications/history*')])>
-                <a href="" class="nav-link"><i class="fas fa-history"></i><span>History</span"></a>
+                <a href="{{ route('admin.applications.history') }}" class="nav-link"><i class="fas fa-history"></i><span>History</span"></a>
             </li>
         </ul>
     </aside>
