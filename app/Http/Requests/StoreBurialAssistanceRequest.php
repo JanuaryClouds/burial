@@ -49,7 +49,7 @@ class StoreBurialAssistanceRequest extends FormRequest
             'burial_assistance.remarks'   => 'nullable|string|max:255',
             'swa'    => 'nullable|string|max:255',
             'encoder'=> 'nullable|string|max:255',
-            'amount' => 'nullable|string|max:255',
+            'burial_assistance.amount' => 'nullable|string|max:255',
             'initial_checker' => 'nullable|exists:users,id',
 
             // System-generated
