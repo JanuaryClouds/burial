@@ -1,10 +1,21 @@
 <div class="navbar-bg"></div>
 <nav class="navbar navbar-expand-lg main-navbar justify-content-between px-4">
-    <ul class="navbar-nav mr-3">
-        <li><a href="#"
-                @click.prevent="sidebarMini = !sidebarMini"
-                class="nav-link nav-link-lg"><i class="fas fa-bars"></i></a></li>
-    </ul>
+    <span class="d-flex align-items-baseline">
+        <ul class="navbar-nav mr-3">
+            <li><a href="#"
+                    @click.prevent="sidebarMini = !sidebarMini"
+                    class="nav-link nav-link-lg"><i class="fas fa-bars"></i></a></li>
+        </ul>
+        <nav aria-label="Page breadcrumb">
+            <ol class="breadcrumb mb-0">
+                @foreach (Request::segments() as $url)
+                    <li class="breadcrumb-item {{ $loop->last ? 'active' : '' }}">
+                        <a href="">{{ $url }}</a>
+                    </li>
+                @endforeach
+            </ol>
+        </nav>
+    </span>
     <ul class="navbar-nav">
         <li class="dropdown">
             <a href="" data-toggle="dropdown" class="nav-link dropdown-toggle nav-link-lg nav-link-user">
