@@ -42,6 +42,9 @@ Route::name('guest.')
         
         Route::post('/burial-assistance/tracker', [BurialAssistanceController::class, 'track'])
             ->name('burial-assistance.tracker');
+
+        Route::get('/burial-assistance/tracker/{code}', [BurialAssistanceController::class, 'trackPage'])
+            ->name('burial-assistance.track-page');
         
         Route::post('/burial-assistance/{id}/claimant-change', [ClaimantChangeController::class, 'store'])
             ->name('burial-assistance.claimant-change');
@@ -145,13 +148,15 @@ Route::middleware(['auth'])
 
                 // Burial Applications
                 Route::get('/applications/pending', [BurialAssistanceController::class, 'pending'])
-                    ->name('applications.pending');
+                ->name('applications.pending');
                 Route::get('/applications/processing', [BurialAssistanceController::class, 'processing'])
                     ->name('applications.processing');
                 Route::get('/applications/approved', [BurialAssistanceController::class, 'approved'])
                     ->name('applications.approved');
                 Route::get('/applications/released', [BurialAssistanceController::class, 'released'])
                     ->name('applications.released');
+                Route::get('/applications/history', [BurialAssistanceController::class, 'history'])
+                    ->name('applications.history');
 
                 Route::post('/applications/{id}/claimant-change/{change}/decision', [ClaimantChangeController::class, 'decide'])
                     ->name('application.claimant-change.decision');
