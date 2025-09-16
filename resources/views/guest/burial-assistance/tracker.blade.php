@@ -5,7 +5,7 @@
     <div class="section-body d-flex align-items-center">
         <div
             class="row d-flex flex-column justify-content-center align-items-center"
-            x-data="{ showApplication: false }"
+            x-data="{ showApplication: false, showClaimantChangeRequest: false }"
         >
             <div class="col-sm-11 col-lg-10">
                 <x-assistance-process-tracker :burialAssistance="$burialAssistance"/>
@@ -28,11 +28,22 @@
                                 >
                                 </button>
                             </span>
-                            @if (($burialAssistance->status == 'pending' || $burialAssistance->status == 'processing'))
-                                @if ($burialAssistance->claimantChanges->count() < 0)
+                            @if ($burialAssistance->status === 'pending' || $burialAssistance->status === 'processing')
+                                @if ($burialAssistance->claimantChanges->count() == 0)
                                     <span class="mr-2">
                                         <button class="btn btn-secondary" type="button" data-toggle="modal" data-target="#changeClaimantModal">Change Claimant</button>
                                     </span>
+                                @else
+                                    <div class="btn-group mr-2" role="group" aria-label="Button group">
+                                        <button class="btn btn-secondary disabled" type="button" disabled title="Claimant Change Request Pending">Change Claimant</button>
+                                        <button
+                                            class="btn btn-secondary"
+                                            x-on:click="showClaimantChangeRequest = !showClaimantChangeRequest"
+                                        >
+                                            <i class="fa fa-eye" x-show="!showClaimantChangeRequest" x-cloak></i>
+                                            <i class="fa fa-eye-slash" x-show="showClaimantChangeRequest" x-cloak aria-hidden="true"></i>
+                                        </button>
+                                    </div>
                                 @endif
                             @endif
                             <span class="mr-2">
@@ -80,6 +91,12 @@
                 x-transition=""
             >
                 <x-claimant-form :claimant="$burialAssistance->claimant" disabled="true" readonly="true"/>
+            </div>
+            <div class="col-sm-11 col-lg-10"
+                x-show="showClaimantChangeRequest"
+                x-transition=""
+            >
+                <x-claimant-form :claimant="$burialAssistance->claimantChanges->last()->newclaimant" disabled="true" readonly="true"/>
             </div>
             <div class="col-sm-11 col-lg-10"
                 x-show="showApplication"
