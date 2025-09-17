@@ -25,7 +25,7 @@ class Claimant extends Model
     }
 
     public function relationship() {
-        return $this->hasOne(Relationship::class, 'relationship_to_deceased', 'id');
+        return $this->belongsTo(Relationship::class, 'relationship_to_deceased', 'id');
     }
 
     public function oldClaimantChanges() {
@@ -37,7 +37,7 @@ class Claimant extends Model
     }
 
     public function barangay() {
-        return $this->hasOne(Barangay::class, 'barangay_id', 'id');
+        return $this->belongsTo(Barangay::class, 'barangay_id', 'id');
     }
 
     public function processLogs() {
