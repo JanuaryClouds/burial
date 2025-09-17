@@ -28,7 +28,7 @@ class BurialAssistance extends Model
             $year = now()->format('Y');
             $count = self::whereYear('created_at', $year)->count() + 1;
     
-            $burialAssistance->tracking_no = sprintf('%s-%03d', $year, $count);
+            $burialAssistance->tracking_no = sprintf('%s-%04d', $year, $count);
         });
     }
 
