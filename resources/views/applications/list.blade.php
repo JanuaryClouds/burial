@@ -19,7 +19,7 @@
                                 <th class="sorting">Deceased</th>
                                 <th class="sorting">Claimant</th>
                                 <th class="sorting">Submitted on</th>
-                                @if (Request::is('admin/applications/history/simple'))
+                                @if (Request::is('admin/applications/history'))
                                     <th class="sorting">Status</th>
                                 @endif
                                 <th class="">Actions</th>
@@ -42,7 +42,7 @@
                                         {{ $application->claimant->suffix }}
                                     </td>
                                     <td>{{ $application->application_date }}</td>
-                                    @if (Request::is('admin/applications/history/simple'))
+                                    @if (Request::is('admin/applications/history'))
                                         <td>
                                             @if ($application->status === 'pending')
                                                 <span class="badge badge-pill badge-primary">{{ ucfirst($application->status) }}</span>
