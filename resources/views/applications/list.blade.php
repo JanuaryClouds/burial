@@ -6,11 +6,9 @@
             <div class="section-header">
                 <h1>{{ Str::ucfirst($status) }} Applications</h1>
             </div>
-            <div class="section-header-breadcrumb">
-
+            <div class="section-header-button">
             </div>
         </section>
-
         <section class="section">
             <div class="table-responsive">
                 <div class="dataTables_wrapper container-fluid">
@@ -21,7 +19,7 @@
                                 <th class="sorting">Deceased</th>
                                 <th class="sorting">Claimant</th>
                                 <th class="sorting">Submitted on</th>
-                                @if (Request::is('admin/applications/history'))
+                                @if (Request::is('admin/applications/history/simple'))
                                     <th class="sorting">Status</th>
                                 @endif
                                 <th class="">Actions</th>
@@ -44,7 +42,7 @@
                                         {{ $application->claimant->suffix }}
                                     </td>
                                     <td>{{ $application->application_date }}</td>
-                                    @if (Request::is('admin/applications/history'))
+                                    @if (Request::is('admin/applications/history/simple'))
                                         <td>
                                             @if ($application->status === 'pending')
                                                 <span class="badge badge-pill badge-primary">{{ ucfirst($application->status) }}</span>
