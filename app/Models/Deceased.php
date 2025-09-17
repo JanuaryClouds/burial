@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Sex;
 
 class Deceased extends Model
 {
@@ -24,6 +25,6 @@ class Deceased extends Model
     }
 
     public function gender() {
-        return $this->hasOne(Sex::class, 'gender', 'id');
+        return $this->belongsTo(Sex::class, 'gender', 'id');
     }
 }
