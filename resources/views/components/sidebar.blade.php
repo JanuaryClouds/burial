@@ -14,16 +14,16 @@
             </li>
             <li class="menu-header">Applications</li>
             <li @class(['active' => Request::is('admin/applications/pending*')])>
-                <a href="{{ route('admin.applications.pending') }}" class="nav-link"><i class="far fa-hourglass"></i><span>Pending</span"></a>
+                <a href="{{ route('admin.applications.pending') }}" class="nav-link"><i class="fas fa-hourglass"></i><span>Pending</span"></a>
             </li>
             <li @class(['active' => Request::is('admin/applications/processing*')])>
-                <a href="{{ route('admin.applications.processing') }}" class="nav-link"><i class="far fa-file-alt"></i><span>Processing</span"></a>
+                <a href="{{ route('admin.applications.processing') }}" class="nav-link"><i class="fas fa-file-alt"></i><span>Processing</span"></a>
             </li>
             <li @class(['active' => Request::is('admin/applications/approved*')])>
-                <a href="{{ route('admin.applications.approved') }}" class="nav-link"><i class="far fa-credit-card"></i><span>Approved (w/ Cheques)</span"></a>
+                <a href="{{ route('admin.applications.approved') }}" class="nav-link"><i class="fas fa-credit-card"></i><span>Approved (w/ Cheques)</span"></a>
             </li>
             <li @class(['active' => Request::is('admin/applications/released*')])>
-                <a href="{{ route('admin.applications.released') }}" class="nav-link"><i class="far fa-circle-check"></i><span>Released</span"></a>
+                <a href="{{ route('admin.applications.released') }}" class="nav-link"><i class="fas fa-circle-check"></i><span>Released</span"></a>
             </li>
             <li @class(['active' => Request::is('admin/applications/history*')])>
                 <a href="{{ route('admin.applications.history') }}" class="nav-link"><i class="fas fa-history"></i><span>History</span"></a>
