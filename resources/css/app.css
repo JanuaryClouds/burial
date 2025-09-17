@@ -2,14 +2,17 @@
 @import "bootstrap/dist/css/bootstrap.min.css";
 
 /* DataTables Bootstrap 4 theme */
+@import url('datatables.net-bs4');
+@import url('datatables.net-buttons-bs4');
+@import url('datatables.net-responsive-bs4');
 @import "datatables.net-bs4/css/dataTables.bootstrap4.css";
 @import "datatables.net-responsive-bs4/css/responsive.bootstrap4.css";
-@import './dataTables.bootstrap4.min.css';
 
 /* Stisla */
 @import './style.css';
 @import './components.css';
 @import './custom.css';
+
 
 /* Custom fonts and overrides */
 @font-face {

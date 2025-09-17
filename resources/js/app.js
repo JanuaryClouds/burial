@@ -7,10 +7,17 @@ import "bootstrap/dist/js/bootstrap.bundle";
 
 
 // 4. DataTables (depends on jQuery)
-import "datatables.net-bs4";
+import jszip from 'jszip';
+import pdfmake from 'pdfmake';
+import DataTable from "datatables.net-responsive-bs4";
 import "datatables.net-bs4/css/dataTables.bootstrap4.min.css";
-import "datatables.net-responsive-bs4";
-import "datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css";
+import 'datatables.net-buttons-bs4';
+import 'datatables.net-buttons/js/buttons.html5.mjs';
+import 'datatables.net-buttons/js/buttons.print.mjs';
+import 'datatables.net-responsive-bs4';
+
+DataTable.Buttons.jszip(jszip);
+DataTable.Buttons.pdfMake(pdfmake);
 
 // 3. jQuery plugins (must come AFTER jQuery is set globally)
 import "jquery.nicescroll";   // Stisla requires this
@@ -21,7 +28,26 @@ $(document).ready(function () {
     $('#applications-table').DataTable({
         responsive: true,
         ordering: true, // keep ordering functional
-        // dom: 'lrtip',   // optional: controls what UI elements appear
+        dom:
+            // First row: buttons on the left, filter on the right
+            "<'row mb-2'<'col-sm-6 d-flex align-items-center'l<'mr-3'>B><'col-sm-6 d-flex justify-content-end'f>>" +
+            // Table
+            "<'row'<'col-12'tr>>" +
+            // Bottom row: info and pagination
+            "<'row mt-2'<'col-sm-6'i><'col-sm-6 d-flex justify-content-end'p>>",
+        buttons: [
+            // 'copy',
+            // 'csv',
+            // 'excel',
+            // 'pdf',
+            // 'print'
+            {
+                text: 'Export to Excel',
+                action: function() {
+                    window.location.href = '/admin/applications/history/export'
+                }
+            }
+        ],
         columnDefs: [
             { orderable: false, targets: [4] } // disable sorting on the Actions column
         ],
