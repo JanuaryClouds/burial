@@ -24,23 +24,35 @@ class BurialAssistanceController extends Controller
 
     public function store(StoreBurialAssistanceRequest $request) {
         $validated = $request->validated();
-        $claimant = Claimant::create($validated['claimant']);
-        $deceased = Deceased::create($validated['deceased']);
-
-        $burialAssistance = BurialAssistance::create([
-            'tracking_code' => strtoupper(Str::random(6)),
-            'application_date' => now(),
-            'claimant_id' => $claimant->id,
-            'deceased_id' => $deceased->id,
-            'funeraria' => $validated['burial_assistance']['funeraria'],
-            'remarks' => $validated['burial_assistance']['remarks'],
-        ]);
-
-        return redirect()->route('landing.page')
-            ->with(
-                'success', 
-                'Successfully submitted burial assistance application. Please check your messages for the assistance\'s tracking code. You can use the given code to track the progress of the assistance application.'
-            );
+        
+        $existingDeceased = Deceased::where(function ($query) use ($validated) {
+            $query->where('first_name', $validated['deceased']['first_name']);
+            $query->where('middle_name', $validated['deceased']['middle_name']);
+            $query->where('last_name', $validated['deceased']['last_name']);
+            $query->where('suffix', $validated['deceased']['suffix']);
+        })->first();
+        if (!$existingDeceased) {
+            $deceased = Deceased::create($validated['deceased']);
+            $claimant = Claimant::create($validated['claimant']);
+            $burialAssistance = BurialAssistance::create([
+                'tracking_code' => strtoupper(Str::random(6)),
+                'application_date' => now(),
+                'claimant_id' => $claimant->id,
+                'deceased_id' => $deceased->id,
+                'funeraria' => $validated['burial_assistance']['funeraria'],
+                'remarks' => $validated['burial_assistance']['remarks'],
+            ]);
+    
+            return redirect()->route('landing.page')
+                ->with(
+                    'success', 
+                    'Successfully submitted burial assistance application. Please check your messages for the assistance\'s tracking code. You can use the given code to track the progress of the assistance application.'
+                );
+        } else {
+            return redirect()->route('landing.page')
+            ->with('info', 'A burial assistance have been submitted for this deceased person.');
+        }
+        
     }
 
     public function track(Request $request) {
