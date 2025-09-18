@@ -69,8 +69,14 @@
                             </section>
                         </div>
                         <div class="modal-footer">
-                            <button class="btn btn-primary" type="submit">Submit</button>
-                            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fas fa-check"></i>
+                                Submit
+                            </button>
+                            <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                <i class="fas fa-times"></i>
+                                Cancel
+                            </button>
                         </div>
                     </div>
                 </form>
