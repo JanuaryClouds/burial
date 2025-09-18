@@ -45,12 +45,12 @@ class BurialAssistanceController extends Controller
     
             return redirect()->route('landing.page')
                 ->with(
-                    'success', 
-                    'Successfully submitted burial assistance application. Please check your messages for the assistance\'s tracking code. You can use the given code to track the progress of the assistance application.'
+                    'alertSuccess', 
+                    "Successfully submitted burial assistance application. Please check your messages for the assistance's tracking code. You can use the given code to track the progress of the assistance application."
                 );
         } else {
-            return redirect()->route('landing.page')
-            ->with('info', 'A burial assistance have been submitted for this deceased person.');
+            return redirect()->back()
+            ->with('alertInfo', 'A burial assistance has already been submitted for this deceased person.');
         }
         
     }
