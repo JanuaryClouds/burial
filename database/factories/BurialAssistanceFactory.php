@@ -21,10 +21,11 @@ class BurialAssistanceFactory extends Factory
         return [
             'tracking_code' => $this->faker->regexify('[A-Z0-9]{6}'),
             'application_date' => $this->faker->dateTimeBetween('-1 week', now()),
+            'amount' => $this->faker->randomFloat(0, 100, 10000),
             'funeraria' => $this->faker->company(),
             'claimant_id' => Claimant::factory(),
             'deceased_id' => Deceased::factory(),
-            'status' => $this->faker->randomelement( ['pending', 'processing', 'approved', 'released', 'rejected']),
+            'status' => $this->faker->randomelement( ['pending']),
             'remarks' => $this->faker->sentence(8),
         ];
     }
