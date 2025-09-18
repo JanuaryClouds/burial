@@ -6,7 +6,7 @@
                     @click.prevent="sidebarMini = !sidebarMini"
                     class="nav-link nav-link-lg"><i class="fas fa-bars"></i></a></li>
         </ul>
-        <nav aria-label="Page breadcrumb">
+        <!-- <nav aria-label="Page breadcrumb">
             <ol class="breadcrumb mb-0">
                 @foreach (Request::segments() as $url)
                     <li class="breadcrumb-item {{ $loop->last ? 'active' : '' }}">
@@ -14,7 +14,7 @@
                     </li>
                 @endforeach
             </ol>
-        </nav>
+        </nav> -->
     </span>
     <ul class="navbar-nav">
         <li class="dropdown">
