@@ -22,7 +22,10 @@
                 <div class="col">
                     @if ($application->claimantChanges->count() > 0 && $application->claimantChanges->last()->status == 'approved')
                         <x-claimant-form :claimant="$application->claimantChanges->last()->newClaimant" disabled="true" readonly="true"/>
-                        <button class="btn btn-secondary mt-4" data-target="#old-claimant" data-toggle="collapse" aria-expanded="false" aria-controls="old-claimant">Previous Claimant</button>
+                        <button class="btn btn-secondary mt-4" data-target="#old-claimant" data-toggle="collapse" aria-expanded="false" aria-controls="old-claimant">
+                            <i class="fas fa-diagram-predecessor"></i>
+                            Previous Claimant
+                        </button>
                         <div id="old-claimant" class="collapse mt-2 p-4">
                             <x-claimant-form :claimant="$application->claimant" disabled="true" readonly="true"/>
                         </div>
