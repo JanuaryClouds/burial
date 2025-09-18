@@ -6,11 +6,9 @@
             <div class="section-header">
                 <h1>{{ Str::ucfirst($status) }} Applications</h1>
             </div>
-            <div class="section-header-breadcrumb">
-
+            <div class="section-header-button">
             </div>
         </section>
-
         <section class="section">
             <div class="table-responsive">
                 <div class="dataTables_wrapper container-fluid">

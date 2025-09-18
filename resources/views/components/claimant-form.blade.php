@@ -61,7 +61,7 @@
             <x-form-select
                 name="claimant[relationship_to_deceased]"
                 id="relationship"
-                label="Relationship to the Deceased"
+                label="Relationship of the Deceased to the Claimant"
                 required="true"
                 :options="$relationships->pluck('name', 'id')"
                 :selected="$claimant->relationship_to_deceased ?? ''"

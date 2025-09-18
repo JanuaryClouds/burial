@@ -14,12 +14,12 @@ class ProcessLogController extends Controller
         $application = BurialAssistance::findOrFail($id);
         $step = WorkflowStep::findOrFail($stepId);
         $allSteps = WorkflowStep::all();
-        // dd('Function hit!', $request);
+        // dd('Function hit!', $request->all());
         $validated = $request->validate([
             'date_in' => 'required|date',
             'date_out' => 'nullable|date|before_or_equal:date_in',
             'comments' => 'nullable|string',
-            'extra_data' => 'sometimes|string',
+            'extra_data' => 'sometimes|array',
         ]);
         
         if ($application) {
@@ -32,12 +32,18 @@ class ProcessLogController extends Controller
             }
 
             $application->update();
+            if ($application->claimantChanges->where('status', 'approved')->first()) {
+                $claimant = $application->claimantChanges->where('status', 'approved')->first()->newClaimant;
+            } else {
+                $claimant = $application->claimant;
+            }
+
             $application->processLogs()->create([
                 'loggable_id' => $step->id,
                 'loggable_type' => WorkflowStep::class,
                 'is_progress_step' => true,
                 'burial_assistance_id' => $application->id,
-                'claimant_id' => $application->claimant->id,
+                'claimant_id' => $claimant->id,
                 'date_in' => $validated['date_in'],
                 'date_out'=> $validated['date_out'] ?? null,
                 'comments' => $validated['comments'] ?? null,

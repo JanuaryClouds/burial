@@ -26,6 +26,7 @@ use App\Http\Controllers\{
     BurialAssistanceController,
     ProcessLogController,
     ClaimantChangeController,
+    ExportController,
 };
 
 Route::get('/', function () {
@@ -157,6 +158,8 @@ Route::middleware(['auth'])
                     ->name('applications.released');
                 Route::get('/applications/history', [BurialAssistanceController::class, 'history'])
                     ->name('applications.history');
+                Route::get('/applications/history/export', [ExportController::class,'applications'])
+                    ->name('applications.export.all');
 
                 Route::post('/applications/{id}/claimant-change/{change}/decision', [ClaimantChangeController::class, 'decide'])
                     ->name('application.claimant-change.decision');

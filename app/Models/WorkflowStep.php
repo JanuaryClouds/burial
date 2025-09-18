@@ -22,8 +22,9 @@ class WorkflowStep extends Model
     ];
     protected $table = "workflow_steps";
 
+    // ! No longer used in replacement of Loggable
     public function processLog() {
-        return $this->hasMany(ProcessLog::class, 'workflow_step_id', 'id');
+        return $this->hasMany(ProcessLog::class);
     }
 
     public function handler() {

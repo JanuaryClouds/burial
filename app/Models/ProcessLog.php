@@ -30,8 +30,9 @@ class ProcessLog extends Model
         return $this->belongsTo(BurialAssistance::class, 'burial_assistance_id', 'id');
     }
 
+    // ! No longer used in replacement of Loggable
     public function workflowStep() {
-        return $this->belongsTo(WorkflowStep::class, 'workflow_step_id', 'id');
+        return $this->belongsTo(WorkflowStep::class);
     }
 
     public function claimant() {

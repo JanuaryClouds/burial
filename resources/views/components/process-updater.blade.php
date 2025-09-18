@@ -4,7 +4,7 @@
         $lastStep = $processLogs->last()?->loggable;
         $schema = $lastStep?->extra_data_schema ? json_decode($lastStep->extra_data_schema, true) : [];
         if (class_basename($processLogs->last()->loggable) === 'ClaimantChange') {
-            $processLogs->last()->loggable->order_no = 0;
+            $processLogs->last()->loggable->order_no = 3;
         }
     }
 @endphp
@@ -49,7 +49,7 @@
                                             <input 
                                                 type="{{ $field }}"
                                                 class="form-control"
-                                                name="extra[{{ $key }}]"
+                                                name="extra_data[{{ $key }}]"
                                                 required
                                             >
                                         </div>
@@ -57,7 +57,7 @@
                                         @foreach ($field as $subkey => $subField)
                                             <div class="form-group col-12 p-0">
                                                 <label for="">{{ ucfirst(str_replace('_', ' ', $subkey)) }}</label>
-                                                <input type="{{ $subField }}" class="form-control" name="extra[{{ $key }}][{{ $subkey }} }}" required>
+                                                <input type="{{ $subField }}" class="form-control" name="extra_data[{{ $key }}][{{ $subkey }}]" required>
                                             </div>
                                         @endforeach
                                     @endif

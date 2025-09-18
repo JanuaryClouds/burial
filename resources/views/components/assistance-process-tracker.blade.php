@@ -72,8 +72,13 @@
                             <p class="mb-0 {{ $loop->last ? 'fw-bold text-white' : 'text-black' }} d-flex align-items-baseline">
                                 <b>{{ class_basename($log->loggable) === 'WorkflowStep' ? $log->loggable?->description : $log->comments }}</b>
                                 @if (class_basename($log->loggable) === 'WorkflowStep' && $log->comments)
-                                    <a class="ml-4 {{ $loop->last ? 'text-white' : '' }}" data-target="#show-comments-{{ $log->id }}" data-toggle="collapse" aria-expanded="false" aria-controls="show-comments{{ $log->id }}">
+                                    <a class="ml-4 {{ $loop->last ? 'text-white' : '' }}" data-target="#show-comments-{{ $log->id }}" data-toggle="collapse" aria-expanded="false" aria-controls="show-comments-{{ $log->id }}">
                                         <i class="fa fa-comment-alt"></i>
+                                    </a>
+                                @endif
+                                @if (class_basename($log->loggable) === 'WorkflowStep' && $log->extra_data)
+                                    <a class="ml-4 {{ $loop->last ? 'text-white' : '' }}" data-target="#show-extra-data-{{ $log->id }}" data-toggle="collapse" aria-expanded="false" aria-controls="show-comments-{{ $log->id }}">
+                                        <i class="fas fa-circle-info"></i>
                                     </a>
                                 @endif
                             </p>
@@ -93,6 +98,27 @@
                                 <p class="mb-0">{{ $log->comments }}</p>
                             </li>
                         </div>
+                        @if (class_basename($log->loggable) === 'WorkflowStep' && $log->extra_data)
+                            <div id="show-extra-data-{{ $log->id }}" class="collapse">
+                                <li
+                                    class="list-group-item border-top-0 {{ $loop->last ? 'bg-primary text-white' : '' }}"
+                                >
+                                    @foreach ($log->extra_data as $key => $subKey)
+                                        @if (is_array($subKey))
+                                            @foreach ($subKey as $data => $value)
+                                                <p class="mb-0">
+                                                    <b>{{ ucfirst(str_replace('_', ' ', $data)) }}</b> - {{ $value }}
+                                                </p>
+                                            @endforeach
+                                        @elseif (is_string($subKey))
+                                                <p class="mb-0">
+                                                    <b>{{ ucfirst(str_replace('_', ' ', $key)) }}</b> - {{ $subKey }}
+                                                </p>
+                                        @endif
+                                    @endforeach
+                                </li>
+                            </div>
+                        @endif
                     @endforeach
 
                     @php
