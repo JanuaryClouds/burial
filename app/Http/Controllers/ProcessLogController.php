@@ -54,4 +54,22 @@ class ProcessLogController extends Controller
         }
         return redirect()->back()->with('error','Unable to save process log.');
     }
+
+    public function delete($id, $stepId) {
+        $application = BurialAssistance::findOrFail($id);
+        if ($application) {
+            $log = $application->processLogs()
+                ->whereHasMorph('loggable', [WorkflowStep::class], fn($q) => $q->where('order_no', $stepId))
+                ->with('loggable')
+                ->first();
+            if ($log) {
+                $log->delete();
+                return redirect()->back()->with('success','Process log deleted successfully.');
+            } else {
+                return redirect()->back()->with('error','Unable to find process log.');
+            }
+        } else {
+            return redirect()->back()->with('error','Unable to find application.');
+        }
+    }
 }
