@@ -3,7 +3,7 @@
     use App\Models\WorkflowStep;
     $latestStep = $processLogs->last();
     $currentStep = $latestStep?->loggable?->order_no;
-    $totalWorkflowSteps = WorkflowStep::all()->count() + 1;
+    $totalWorkflowSteps = WorkflowStep::all()->count();
     switch ($burialAssistance->status) {
         case 'processing':
             $badgeColor = "primary";
@@ -88,7 +88,7 @@
                                         In: {{ $log->date_in }}
                                         {{ $log->date_out ? '/ Out: ' . $log->date_out : '' }}
                                     </span>
-                                    @if ((auth()->user() && auth()->user()->hasRole('admin')) && $loop->last && ($log->loggable->order_no + 1 !== $totalWorkflowSteps))
+                                    @if ((auth()->user() && auth()->user()->hasRole('admin')) && $loop->last && ($log->loggable->order_no !== $totalWorkflowSteps))
                                         <!-- An edit function would lose data integrity. To ensure data integrity, CSWDO must delete the log and create a new one -->
                                         <span class="d-flex align-items-center btn-toolbar">
                                             <x-delete-log :id="$burialAssistance->id" :stepId="$log->loggable->order_no" />
