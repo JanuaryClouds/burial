@@ -2,7 +2,7 @@
 @php
     use App\Models\WorkflowStep;
     $latestStep = $processLogs->last();
-    $currentStep = $latestStep?->loggable?->order_no + 1;
+    $currentStep = $latestStep?->loggable?->order_no;
     $totalWorkflowSteps = WorkflowStep::all()->count() + 1;
     switch ($burialAssistance->status) {
         case 'processing':
@@ -62,7 +62,7 @@
                     class="list-group-item d-flex justify-content-between align-items-center"
                     >
                     Submitted Application
-                    <span class="badge badge-pill">{{ $burialAssistance->created_at }}</span>
+                    <span class="badge badge-pill p-0">{{ $burialAssistance->created_at }}</span>
                 </li>
                 @foreach ($claimants as $claimant)
                     @foreach ($processLogs as $log)
@@ -83,12 +83,20 @@
                                 @endif
                             </p>
                             @if (class_basename($log->loggable) === 'WorkflowStep')
-                                <span class="badge badge-pill {{ $loop->last ? 'text-white fw-bold' : 'text-black' }}">
-                                    In: {{ $log->date_in }} 
-                                    {{ $log->date_out ? '/ Out: ' . $log->date_out : '' }}
+                                <span class="d-flex justify-content-center align-items-center">
+                                    <span class="badge badge-pill p-0 m-0 d-flex align-items-center {{ $loop->last ? 'text-white fw-bold' : 'text-black' }}">
+                                        In: {{ $log->date_in }}
+                                        {{ $log->date_out ? '/ Out: ' . $log->date_out : '' }}
+                                    </span>
+                                    @if ((auth()->user() && auth()->user()->hasRole('admin')) && $loop->last && ($log->loggable->order_no + 1 !== $totalWorkflowSteps))
+                                        <!-- An edit function would lose data integrity. To ensure data integrity, CSWDO must delete the log and create a new one -->
+                                        <span class="d-flex align-items-center btn-toolbar">
+                                            <x-delete-log :id="$burialAssistance->id" :stepId="$log->loggable->order_no" />
+                                        </span>
+                                    @endif
                                 </span>
                             @else
-                                <span class="badge badge-pill {{ $loop->last ? 'text-white fw-bold' : 'text-black' }}">{{ $log->date_in }}</span>
+                                <span class="badge badge-pill p-0 {{ $loop->last ? 'text-white fw-bold' : 'text-black' }}">{{ $log->date_in }}</span>
                             @endif
                         </li>
                         <div id="show-comments-{{ $log->id }}" class="collapse">

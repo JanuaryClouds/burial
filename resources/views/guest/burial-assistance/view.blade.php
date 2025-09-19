@@ -1,11 +1,11 @@
-@extends('layouts.guest')
+@extends('layouts.stisla.guest')
 @section('content')
     <title>CSWDO Burial Assistance</title>
     <div
-        class="container d-flex min-vh-100 align-items-center justify-content-center m-5"
+        class="container d-flex min-vh-100 align-items-center justify-content-center p-5"
     >
         <div class="row w-100">
-            <div class="col-12 col-lg-8 mx-auto">
+            <div class="col-12 col-lg-10 mx-auto">
                 <form action="{{ route('guest.burial-assistance.store') }}" method="post">
                     @csrf
                     <div
@@ -28,20 +28,20 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col">
+                        <div class="col mt-4">
                             <x-deceased-form />
                         </div>
-                        <div class="col">
+                        <div class="col mt-2">
                             <x-claimant-form />
                         </div>
-                        <div class="col">
+                        <div class="col mt-2">
                             <x-burial-assistance-details-form />
                         </div>
-                        <div class="col">
+                        <div class="col mt-2">
                             <x-burial-assistance-image-requirements />
                         </div>
                         <div
-                            class="col"
+                            class="col mt-4"
                         >
                             <div
                                 class="container bg-white rounded p-4 shadow"
@@ -49,24 +49,25 @@
                                 <p class="">
                                     By submitting this form, you agree to providing CSDWO of Taguig City the information required for the burial assistance. Please ensure the information provided is accurate and complete. Failure to comply will result into the rejection of your request.
                                 </p>
-                                <div class="d-flex justify-content-center gap-2">
+                                <div class="d-flex justify-content-center">
+                                    <!-- Button trigger modal -->
+                                    <button
+                                        type="button"
+                                        class="btn btn-primary mr-2"
+                                        data-toggle="modal"
+                                        data-target="#confirmationModal"
+                                    >
+                                        <i class="fas fa-paper-plane"></i>
+                                        Submit
+                                    </button>
                                     <a
                                         name=""
                                         id=""
                                         class="btn btn-secondary"
                                         href="{{ route('landing.page') }}"
                                         role="button"
-                                        >Cancel</a
+                                        ><i class="fa-solid fa-times mr-1"></i>Cancel</a
                                     >
-                                    <!-- Button trigger modal -->
-                                    <button
-                                        type="button"
-                                        class="btn btn-primary"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#confirmationModal"
-                                    >
-                                        Submit
-                                    </button>
                                     
                                     <!-- Modal -->
                                     <div
@@ -98,7 +99,7 @@
                                                     <button
                                                         type="button"
                                                         class="btn btn-secondary"
-                                                        data-bs-dismiss="modal"
+                                                        data-dismiss="modal"
                                                     >
                                                         Close
                                                     </button>
@@ -114,19 +115,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                    
-                                    <script>
-                                        var modalId = document.getElementById('modalId');
-                                    
-                                        modalId.addEventListener('show.bs.modal', function (event) {
-                                              // Button that triggered the modal
-                                              let button = event.relatedTarget;
-                                              // Extract info from data-bs-* attributes
-                                              let recipient = button.getAttribute('data-bs-whatever');
-                                    
-                                            // Use above variables to manipulate the DOM
-                                        });
-                                    </script>
                                 </div>
                             </div>
                         </div>

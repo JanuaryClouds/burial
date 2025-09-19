@@ -36,10 +36,10 @@
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                     <a name="" id="" class="btn btn-primary"
                                         href="{{ route('guest.burial-assistance.view') }}" role="button">Proceed to
                                         Request</a>
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                 </div>
                             </div>
                         </div>
@@ -71,8 +71,14 @@
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                                        <button type="submit" class="btn btn-primary">Track</button>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-magnifying-glass"></i>
+                                            Track
+                                        </button>
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                            <i class="fas fa-times"></i>
+                                            Cancel
+                                        </button>
                                     </div>
                                 </form>
                             </div>
