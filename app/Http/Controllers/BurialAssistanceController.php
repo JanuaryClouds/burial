@@ -52,7 +52,6 @@ class BurialAssistanceController extends Controller
             return redirect()->back()
             ->with('alertInfo', 'A burial assistance has already been submitted for this deceased person.');
         }
-        
     }
 
     public function track(Request $request) {
@@ -135,6 +134,20 @@ class BurialAssistanceController extends Controller
     public function manage($id) {
         $application = BurialAssistance::where('id',$id)->first();
         return view('applications.manage', compact('application'));
+    }
+
+    public function saveSwa(Request $request, $id) {
+        $request->validate([
+            'swa' => 'required|string|max:255',
+        ]);
+        $application = BurialAssistance::findOrFail($id);
+        if ($application) {
+            $application->swa = $request->swa;
+            $application->update();
+            return redirect()->back()->with('alertSuccess', 'Successfully updated SWA.');
+        } else {
+            return redirect()->back()->with('alertInfo', 'Application not found.');
+        }
     }
 
     public function reject($status, $id) {
