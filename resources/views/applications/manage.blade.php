@@ -17,6 +17,9 @@
                     <x-application-manager :application="$application"/>
                 </div>
                 <div class="col mt-5">
+                    <x-swa-form :application="$application" :disabled="false" :readonly="false"/>
+                </div>
+                <div class="col mt-4">
                     <x-deceased-form :deceased="$application->deceased" disabled="true" readonly="true"/>
                 </div>
                 <div class="col">
