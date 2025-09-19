@@ -110,6 +110,10 @@ Route::middleware(['auth'])
                     ->name('cms.providers');
                 Route::get('/cms/relationships', [CmsController::class, 'relationships'])
                     ->name('cms.relationships');
+                Route::get('/cms/workflow', [CmsController::class, 'workflow'])
+                    ->name('cms.workflow');
+                Route::get('/cms/handlers', [CmsController::class, 'handlers'])
+                    ->name('cms.handlers');
 
                 Route::post('/cms/{type}/store', [CmsController::class, 'storeContent'])
                     ->name('cms.store');
@@ -117,7 +121,7 @@ Route::middleware(['auth'])
                 Route::post('/cms/{type}/{id}/update', [CmsController::class, 'updateContent'])
                     ->name('cms.update');
 
-                Route::delete('/cms/{type}/{id}/delete', [CmsController::class, 'deleteContent'])
+                Route::post('/cms/{type}/{id}/delete', [CmsController::class, 'deleteContent'])
                     ->name('cms.delete');
 
                 Route::resource('role', RoleController::class);
