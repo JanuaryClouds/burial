@@ -176,6 +176,9 @@ Route::middleware(['auth'])
                 Route::post('/applications/{id}/delete/{stepId}', [ProcessLogController::class,'delete'])
                     ->name('application.deleteLog');
 
+                Route::post('/applications/{id}/swa/save', [BurialAssistanceController::class, 'saveSwa'])
+                    ->name('applications.swa.save');
+
                 // Burial Service
                 Route::get('/burial/history', [BurialServiceController::class, 'history'])
                     ->name('burial.history');

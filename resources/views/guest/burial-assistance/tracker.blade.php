@@ -67,6 +67,7 @@
                     </p>
                 </div>
 
+                <x-swa-form :application="$burialAssistance" :disabled="true" :readonly="true" class="mb-4"/>
                 <x-deceased-form :deceased="$burialAssistance->deceased" disabled="true" readonly="true" class="mb-4"/>
                 <x-claimant-form :claimant="$burialAssistance->claimant" disabled="true" readonly="true" class="mb-4"/>
                 <x-burial-assistance-details-form :burialAssistance="$burialAssistance" disabled="true" readonly="true"/>
