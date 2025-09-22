@@ -39,9 +39,9 @@
 	</section>
 	<!-- Add content modal -->
 		<div id="newContent" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="newContent" aria-hidden="true">
-			<div class="modal-dialog modal-dialog-centered" role="document">
-				<form action="{{ route('superadmin.cms.store', ['type' => $type]) }}" method="post">
-					@csrf
+			<form action="{{ route('superadmin.cms.store', ['type' => $type]) }}" method="post">
+				@csrf
+				<div class="modal-dialog modal-dialog-centered" role="document">
 					<div class="modal-content">
 						<div class="modal-header">
 							<h5 class="modal-title" id="newContent">Add New {{ Str::substr(Str::ucfirst($type), 0, -1) }}</h5>
@@ -73,8 +73,8 @@
 							</button>
 						</div>
 					</div>
-				</form>
-			</div>
+				</div>
+			</form>
 		</div>
 </div>
 @endsection
