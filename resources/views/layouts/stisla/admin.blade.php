@@ -35,7 +35,9 @@
 		<div class="main-wrapper">
 			@yield('content')
             <script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
+            <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
             <x-toast-notification />
+            <x-alert />
 		</div>
         @include('components.footer')
 	</div>

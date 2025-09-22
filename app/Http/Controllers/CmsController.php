@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Handler;
+use App\Models\WorkflowStep;
 use Illuminate\Http\Request;
 use App\Models\Barangay;
 use App\Models\BurialAssistanceRequest;
@@ -21,7 +23,7 @@ class CmsController extends Controller
                 'remarks' => 'nullable',
             ]);
             Barangay::create($data);
-            return redirect()->back()->with('success', Str::ucfirst($request->name) . ' added Successfully');
+            return redirect()->back()->with('alertSuccess', Str::ucfirst($request->name) . ' added Successfully');
         }
         if ($type == 'relationships') {
             $data = $request->validate([
@@ -29,70 +31,49 @@ class CmsController extends Controller
                 'remarks' => 'nullable',
             ]);
             Relationship::create($data);
-            return redirect()->back()->with('success', Str::ucfirst($request->name) . ' added Successfully');
+            return redirect()->back()->with('alertSuccess', Str::ucfirst($request->name) . ' added Successfully');
         }
     }
 
     public function updateContent(Request $request, $type, $id) {
-        if ($request->action === 'update') {
-            if ($type == 'barangays') {
-                $barangay = Barangay::find($id);
-                $barangay->name = $request->name;
-                $barangay->district_id = $request->district_id;
-                $barangay->remarks = $request->remarks;
-                $barangay->save();
-                $tempName = $request->name;
-            }
-            if ($type == 'relationships') {
-                $relationship = Relationship::find($id);
-                $relationship->name = $request->name;
-                $relationship->remarks = $request->remarks;
-                $relationship->save();
-                $tempName = $request->name;
-            }
-            return redirect()->back()->with('success', Str::ucfirst($tempName) . ' updated Successfully');
+        if ($type == 'barangays') {
+            $barangay = Barangay::find($id);
+            $barangay->name = $request->name;
+            $barangay->district_id = $request->district_id;
+            $barangay->remarks = $request->remarks;
+            $barangay->save();
+            $tempName = $request->name;
         }
-
-        if ($request->action === 'delete') {
-            if ($type == 'barangays') {
-                $tempName = $request->name;
-                Barangay::find($id)->delete();
-            }
-            if ($type == 'relationships') {
-                $tempName = $request->name;
-                Relationship::find($id)->delete();
-            }
-            if ($type == 'requests') {
-                $tempData = BurialAssistanceRequest::find($id);
-                $tempName = $tempData->deceased_firstname . " " .  $tempData->deceased_lastname . "'s request has";
-                BurialAssistanceRequest::find($id)->delete();
-            }
-            if ($type == 'providers') {
-                $tempName = $request->name;
-                BurialServiceProvider::find($id)->delete();
-            }
-            if ($type == 'services') {
-                $tempData = BurialService::find($id);
-                $tempName = $tempData->deceased_firstname . " " .  $tempData->deceased_lastname . "'s burial service has";
-                BurialService::find($id)->delete();
-            }
-
-            return redirect()->back()->with('success', Str::ucfirst($tempName) . ' deleted Successfully');
+        if ($type == 'relationships') {
+            $relationship = Relationship::find($id);
+            $relationship->name = $request->name;
+            $relationship->remarks = $request->remarks;
+            $relationship->save();
+            $tempName = $request->name;
         }
+        return redirect()->back()->with('alertSuccess', Str::ucfirst($tempName) . ' updated Successfully');
     }
 
     public function deleteContent(Request $request, $type, $id) {
-        dd($request->name);
         if ($type == 'barangays') {
-            $tempName = $request->name;
-            Barangay::find($id)->delete();
+            $barangay = Barangay::findOrFail($id);
+            $tempName = $barangay->name;
+            if ($barangay) {
+                $barangay->delete();                
+            } else {
+                return redirect()->back()->with('alertError', Str::ucfirst($tempName) . ' not found');
+            }
         }
         if ($type == 'relationships') {
-            $tempName = $request->name;
-            Relationship::find($id)->delete();
+            $relationship = Relationship::find($id);
+            $tempName = $relationship->name;
+            if ($relationship) {
+                $relationship->delete();
+            } else {
+                return redirect()->back()->with('alertError', Str::ucfirst($tempName) . ' not found');
+            }
         }
-
-        return redirect()->back()->with('success', Str::ucfirst($tempName) . ' deleted Successfully');
+        return redirect()->back()->with('alertSuccess', Str::ucfirst($tempName) . ' deleted Successfully');
     }
 
     public function barangays() {
@@ -171,5 +152,17 @@ class CmsController extends Controller
             ],
         ];
         return view('superadmin.cms', compact('data', 'type', 'fields', 'barangays'));
+    }
+
+    public function workflow() {
+        $data = WorkflowStep::all();
+        $type = 'workflows';
+        return view('superadmin.cms', compact('data', 'type'));
+    }
+
+    public function handlers() {
+        $data = Handler::all();
+        $type = 'handlers';
+        return view('superadmin.cms', compact('data', 'type'));
     }
 }
