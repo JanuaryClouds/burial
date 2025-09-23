@@ -149,6 +149,7 @@ class BurialAssistanceController extends Controller
         $storedFiles = Storage::disk('local')->files($path);
         $files = [];
         foreach ($storedFiles as $storedFile) {
+            // TODO: Use API to store images
             $encryptedFile = Storage::disk('local')->get($storedFile);
             $decryptedFile = Crypt::decrypt($encryptedFile);
             $finfo = new \finfo(FILEINFO_MIME_TYPE);

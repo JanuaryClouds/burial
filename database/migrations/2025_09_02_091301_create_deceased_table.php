@@ -29,6 +29,7 @@ return new class extends Migration
             //     ->constrained('barangays')
             //     ->onDelete('cascade')
             //     ->onUpdate('cascade');
+            // TODO: Religion column
 
             $table->timestamps();
         });

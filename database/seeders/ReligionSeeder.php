@@ -10,6 +10,7 @@ class ReligionSeeder extends Seeder
 {
     public function run(): void
     {
+        // TODO: Update this seeder to use correct religions
         $Religions = [
             'Son',
             'Daughter',
