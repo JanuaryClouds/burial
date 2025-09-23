@@ -22,7 +22,7 @@
         @endforeach
     @else
         <div
-            class="col"
+            class="col mb-4"
         >
             <x-form-image-submission
                 name="images[death_certificate]"
@@ -32,7 +32,7 @@
             />
         </div>
         <div
-            class="col"
+            class="col mb-4"
         >
             <x-form-image-submission
                 name="images[funeral_contract]"
@@ -41,30 +41,24 @@
                 required="true"
             />
         </div>
-        <div
-            class="col"
-        >
-            <div class="row">
-                <div class="col">
-                    <x-form-image-submission
-                        name="images[claimant_valid_id]"
-                        label="Photocopy of Valid Identification Card of Claimant"
-                        required="true"
-                    />
-                </div>
-                <div class="col">
-                    <x-form-image-submission
-                        name="images[deceased_valid_id]"
-                        label="Photocopy of Valid Identification Card of Deceased"
-                        required="true"
-                    />
-                </div>
-            </div>
+        <div class="col mb-4">
+            <x-form-image-submission
+                name="images[claimant_valid_id]"
+                label="Photocopy of Valid Identification Card of Claimant"
+                required="true"
+            />
+        </div>
+        <div class="col mb-4">
+            <x-form-image-submission
+                name="images[deceased_valid_id]"
+                label="Photocopy of Valid Identification Card of Deceased"
+                required="true"
+            />
         </div>
         <hr>
         <h2>For Muslim Citizens</h2>
         <div
-            class="col"
+            class="col mb-4"
         >
             <x-form-image-submission
                 name="images[burial_rites]"
@@ -83,7 +77,7 @@
         </div>
         <hr>
         <div
-            class="col mt-4"
+            class="col mb-4"
         >
             <x-form-image-submission
                 name="images[proof_of_relationship]"
@@ -91,6 +85,8 @@
                 helpText="From Taguig City Civil Registry or Philippine Statistics Authority (PSA)."
                 required="true"
             />
+        </div>
+        <div class="col mb-4">
             <ul class="list-group">
                 <li class="list-group-item active">Example of documents for Proof of Relationship</li>
                 <li class="list-group-item">Marriage Contract (Spouse) - From Taguig City Civil Registry</li>
