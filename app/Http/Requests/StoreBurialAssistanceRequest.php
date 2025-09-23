@@ -51,6 +51,7 @@ class StoreBurialAssistanceRequest extends FormRequest
             'encoder'=> 'nullable|string|max:255',
             'burial_assistance.amount' => 'nullable|string|max:255',
             'initial_checker' => 'nullable|exists:users,id',
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
 
             // System-generated
             // 'tracking_no' => handled in model, not request
