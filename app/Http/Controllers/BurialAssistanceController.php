@@ -28,7 +28,6 @@ class BurialAssistanceController extends Controller
     public function store(StoreBurialAssistanceRequest $request) {
         try {
             $validated = $request->validated();
-            // TODO: not storing images
             $existingDeceased = Deceased::where(function ($query) use ($validated) {
                 $query->where('first_name', $validated['deceased']['first_name']);
                 $query->where('middle_name', $validated['deceased']['middle_name']);
@@ -56,7 +55,7 @@ class BurialAssistanceController extends Controller
                 return redirect()->route('landing.page')
                     ->with(
                         'alertSuccess', 
-                        "Successfully submitted burial assistance application. Please check your messages for the assistance's tracking code. You can use the given code to track the progress of the assistance application."
+                        "Successfully submitted burial assistance application. Please check your SMS messages for the assistance tracking code. You can use the given code to track the progress of the assistance application."
                     );
             } else {
                 return redirect()->back()
