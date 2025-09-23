@@ -6,7 +6,7 @@
     >
         <div class="row w-100">
             <div class="col-12 col-lg-10 mx-auto">
-                <form action="{{ route('guest.burial-assistance.store') }}" method="post">
+                <form action="{{ route('guest.burial-assistance.store') }}" method="post" enctype="multipart/form-data">
                     @csrf
                     <div
                         class="row d-flex flex-column justify-content-center align-items-center g-2 gap-4"
@@ -38,7 +38,7 @@
                             <x-burial-assistance-details-form />
                         </div>
                         <div class="col mt-2">
-                            <x-burial-assistance-image-requirements />
+                            <x-burial-assistance-image-requirements :readonly="false" />
                         </div>
                         <div
                             class="col mt-4"
