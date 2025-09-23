@@ -6,13 +6,13 @@
     'helpText' => false,  
 ])
 
-<div class="mb-3">
+<div class="custom-file">
     @if ($label)
-        <label for="{{ $name }}" class="form-label">{{ $label }}{{ $required ? '*' : '' }}</label>
+        <label for="{{ $name }}" class="custom-file-label">{{ $label }}{{ $required ? '*' : '' }}</label>
     @endif
     <input
         type="file"
-        class="form-control"
+        class="custom-file-input"
         name="{{ $name }}"
         id="{{ $id }}"
         placeholder=""
