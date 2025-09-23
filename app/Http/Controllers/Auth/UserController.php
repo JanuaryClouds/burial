@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\Auth\UserService;
 use App\Http\Requests\Auth\LoginRequest;
+use Exception;
 use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
@@ -19,30 +20,38 @@ class UserController extends Controller
     
     public function login(LoginRequest $request)
     {
-        $ip = request()->ip();
-        $browser = request()->header('User-Agent');
-
-        if (Auth::attempt($request->validated())) {
-            $user = Auth::user();
-            Auth::login($user);
-            activity()
-                ->causedBy($user)
-                ->withProperties(['ip' => $ip, 'browser' => $browser])
-                ->log("Successful login attempt");
-                
+        try {
+            $ip = request()->ip();
+            $browser = request()->header('User-Agent');
+    
+            if (Auth::attempt($request->validated())) {
+                $user = Auth::user();
+                if ($user->is_active) {
+                    Auth::login($user);
+                    activity()
+                        ->causedBy($user)
+                        ->withProperties(['ip' => $ip, 'browser' => $browser])
+                        ->log("Successful login attempt");
+                        
+                        return redirect()
+                        ->route(Auth::user()->getRoleNames()->first() . '.dashboard')
+                        ->with('success', 'You have successfully logged in!');
+                } else {
+                    return redirect()->back()->with('alertWarning', 'Your account is inactive. Please contact the superadmin.');
+                }
+            } else {
+                activity()
+                    ->causedBy(null)
+                    ->withProperties(['ip' => $ip, 'browser' => $browser])
+                    ->log("Unsuccessful login attempt");
+                    
                 return redirect()
-                ->route(Auth::user()->getRoleNames()->first() . '.dashboard')
-                ->with('success', 'You have successfully logged in!');
-        } else {
-            activity()
-                ->causedBy(null)
-                ->withProperties(['ip' => $ip, 'browser' => $browser])
-                ->log("Unsuccessful login attempt");
-                
-            return redirect()
-                ->back()
-                ->with('error', 'Invalid login credentials.');
-        }   
+                    ->back()
+                    ->with('error', 'Invalid login credentials.');
+            }   
+        } catch (Exception $e) {
+            return redirect()->back()->with('alertError', $e->getMessage());
+        }
     }
 
     public function logout()

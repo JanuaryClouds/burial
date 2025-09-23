@@ -6,6 +6,7 @@ use App\Models\ClaimantChange;
 use App\Models\WorkflowStep;
 use Illuminate\Http\Request;
 use App\Models\BurialAssistance;
+use App\Models\User;
 use App\Exports\BurialAssistancesExport;
 use App\Exports\BurialAssistancesExportTemplate;
 use Maatwebsite\Excel\Facades\Excel;
@@ -43,6 +44,8 @@ class ExportController extends Controller
         ])->get() as $ba) {
             $dob = Carbon::parse($ba->deceased->date_of_birth);
             $dod = Carbon::parse($ba->deceased->date_of_death);
+            $encoder = User::find($ba->encoder);
+            $initialChecker = User::find($ba->initial_checker);
             $age = $dob->diffInYears($dod);
             $approvedChange = $ba->claimantChanges->firstwhere('status', 'approved');
             if ($approvedChange) {
@@ -55,7 +58,7 @@ class ExportController extends Controller
             $sheet->setCellValue("A{$row}", $ba->tracking_no);
             $sheet->setCellValue("B{$row}", $ba->application_date);
             $sheet->setCellValue("C{$row}", $ba->swa);
-            $sheet->setCellValue("D{$row}", $ba->encoder);
+            $sheet->setCellValue("D{$row}", $encoder ? $encoder->first_name . ' ' . $encoder->last_name : '');
             $sheet->setCellValue("E{$row}", $firstClaimant->last_name);
             $sheet->setCellValue("F{$row}", $firstClaimant->first_name);
             $sheet->setCellValue("G{$row}", $firstClaimant?->middle_name);
@@ -124,7 +127,7 @@ class ExportController extends Controller
             }
             $sheet->setCellValue("BK{$row}", $ba?->status ?? '');
             $sheet->setCellValue("BL{$row}", $ba?->remarks ?? '');
-            $sheet->setCellValue("BM{$row}", $ba?->initial_checker ?? '');
+            $sheet->setCellValue("BM{$row}", $initialChecker ? $initialChecker->first_name . ' ' . $initialChecker->last_name : '');
             $row++;
         };
 

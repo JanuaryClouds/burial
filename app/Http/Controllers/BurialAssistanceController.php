@@ -143,6 +143,7 @@ class BurialAssistanceController extends Controller
         $application = BurialAssistance::findOrFail($id);
         if ($application) {
             $application->swa = $request->swa;
+            $application->encoder = auth()->user()->id;
             $application->update();
             return redirect()->back()->with('alertSuccess', 'Successfully updated SWA.');
         } else {

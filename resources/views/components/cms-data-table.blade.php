@@ -2,13 +2,26 @@
     'data',
     'type',
 ])
+@php
+    $excemptions = [
+        'created_at',
+        'updated_at',
+        'extra_data_schema',
+        'is_optional',
+        'requires_extra_data',
+        'email_verified_at',
+        'password',
+        'remember_token',
+        'is_active',
+    ];
+@endphp
 <div class="table-responsive">
     <div class="dataTables_wrapper container-fluid">
         <table id="cms-table" class="table data-table" style="width:100%">
             <thead>
                 <tr role="row">
                     @foreach ($data->first()->getAttributes() as $column => $value)
-                        @if (!in_array($column, ['created_at','updated_at', 'extra_data_schema', 'is_optional', 'requires_extra_data']))
+                        @if (!in_array($column, $excemptions))
                             <th class="sorting sort-handler">{{ Str::replace('_', ' ', Str::title($column)) }}</th>
                         @endif
                     @endforeach
@@ -19,15 +32,38 @@
                 @foreach ($data as $entry)
                     <tr class="bg-white">
                         @foreach ($entry->getAttributes() as $key =>$value)
-                            @if(!in_array($key, ['created_at','updated_at', 'extra_data_schema', 'is_optional', 'requires_extra_data']))
+                            @if(!in_array($key, $excemptions))
                                 <td>{{ $value }}</td>
                             @endif
                         @endforeach
                         <td>
-                            <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#edit-modal-{{ $entry->id }}">
-                               <i class="fas fa-edit"></i> 
-                            </button>
-                            @if (!Request::routeIs('superadmin.cms.workflow') && !Request::routeIs('superadmin.cms.handlers'))
+                            @if (Request::routeIs('superadmin.cms.users'))
+                                @if (Request::routeIs('superadmin.cms.users') && !$entry?->hasRole('superadmin'))
+                                    <form
+                                        id="update-is-active-{{ $entry->id }}"
+                                        action="{{ route('superadmin.cms.update', ['type' => $type, 'id' => $entry->id]) }}"
+                                        method="post"
+                                    >
+                                        @csrf
+                                        <div class="custom-control custom-switch">
+                                            <input 
+                                                id="is_active-{{ $entry->id }}" 
+                                                class="custom-control-input" 
+                                                type="checkbox" 
+                                                name="is_active" 
+                                                {{ $entry->is_active ? 'checked' : '' }}
+                                                x-on:change="document.getElementById('update-is-active-{{ $entry->id }}').submit()"
+                                            >
+                                            <label for="is_active-{{ $entry->id }}" class="custom-control-label">Active</label>
+                                        </div>
+                                    </form>
+                                @endif
+                            @else
+                                <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#edit-modal-{{ $entry->id }}">
+                                    <i class="fas fa-edit"></i> 
+                                </button>
+                            @endif
+                            @if (!Request::routeIs('superadmin.cms.workflow') && !Request::routeIs('superadmin.cms.handlers') && !Request::routeIs('superadmin.cms.users'))
                                 <button class="btn btn-danger" type="button" data-toggle="modal" data-target="#delete-modal-{{ $entry->id }}">
                                     <i class="fas fa-trash"></i>
                                 </button>

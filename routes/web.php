@@ -114,6 +114,8 @@ Route::middleware(['auth'])
                     ->name('cms.workflow');
                 Route::get('/cms/handlers', [CmsController::class, 'handlers'])
                     ->name('cms.handlers');
+                Route::get('/cms/users', [CmsController::class, 'users'])
+                    ->name('cms.users');
 
                 Route::post('/cms/{type}/store', [CmsController::class, 'storeContent'])
                     ->name('cms.store');

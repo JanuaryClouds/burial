@@ -48,7 +48,16 @@ class BurialAssistance extends Model
         return $this->hasMany(ProcessLog::class, 'burial_assistance_id', 'id');
     }
 
+    // ! Unused
     public function cheque() {
         return $this->hasOne(Cheque::class, 'burial_assistance_id', 'id');
+    }
+
+    public function encoder() {
+        return $this->belongsTo(User::class, 'encoder', 'id');
+    }
+
+    public function initialChecker() {
+        return $this->belongsTo(User::class, 'initial_checker', 'id');
     }
 }
