@@ -40,16 +40,13 @@
                     <span>Handlers</span>
                 </a>
             </li>
-            <!-- TODO: Users Link -->
             <li @class(['active' => Request::is('superadmin/cms/users')])>
                 <a href="{{ route('superadmin.cms.users') }}">
                     <i class="fas fa-users"></i>
                     <span>Users</span>
                 </a>
             </li>
-            
             <!-- TODO: Applications Link -->
-            <!-- TODO: Users Link -->
         </ul>
     </aside>
 </div>
