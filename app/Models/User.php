@@ -36,4 +36,16 @@ class User extends Authenticatable
     {
         return $this->hasRole('admin');
     }
+
+    public function processLogs() {
+        return $this->hasMany(ProcessLog::class, 'added_by', 'id');
+    }
+
+    public function encoder() {
+        return $this->hasMany(BurialAssistance::class, 'encoder', 'id');
+    }
+
+    public function initialChecker() {
+        return $this->hasMany(BurialAssistance::class, 'initial_checker', 'id');
+    }
 }
