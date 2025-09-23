@@ -55,7 +55,7 @@ class ProcessLogController extends Controller
                     'date_out'=> $validated['date_out'] ?? null,
                     'comments' => $validated['comments'] ?? null,
                     'extra_data' => $validated['extra_data'] ?? [],
-                    'added_by' => $validated['added_by'] ?? auth()->user()->id
+                    'added_by' => auth()->user()->id // TODO: add admin ID
                 ]);
     
                 return back()->with('alertSuccess','Process log added successfully.');
