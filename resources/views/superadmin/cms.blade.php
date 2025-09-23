@@ -13,7 +13,6 @@
 	} else {
 		$paramKey = 'uuid';
 	}
-
 @endphp
 
 @section('content')
@@ -25,7 +24,7 @@
 	</section>
 		<div class="section-body">
 			<div>
-				@if (Request::is('superadmin/cms/barangays') || Request::is('superadmin/cms/relationships'))
+				@if (Request::is('superadmin/cms/barangays') || Request::is('superadmin/cms/relationships') || Request::is('superadmin/cms/users'))
 					<button class="btn btn-primary" type="button" data-toggle="modal" data-target="#newContent">
 						<i class="fas fa-plus"></i>	
 						Add New {{ Str::substr(Str::ucfirst($type), 0, -1) }}
@@ -51,7 +50,7 @@
 						</div>
 						<div class="modal-body">
 							@foreach ($data->last()->getAttributes() as $field => $value)
-								@if(!in_array($field, ['id','created_at','updated_at'])) 
+								@if(!in_array($field, ['id','created_at','updated_at', 'email_verified_at', 'remember_token', 'is_active'])) 
 									<div class="form-group">
 										<label for="{{ $field }}">{{ ucfirst(str_replace('_',' ', $field)) }}</label>
 										<input type="text" 
