@@ -11,69 +11,102 @@ use App\Models\BurialService;
 use App\Models\BurialServiceProvider;
 use App\Models\Relationship;
 use App\Models\District;
+use App\Models\User;
+use Exception;
 use Str;
 
 class CmsController extends Controller
 {
     public function storeContent(Request $request, $type) {
-        if ($type == 'barangays') {
-            $data = $request->validate([
-                'name' => 'required',
-                'district_id' => 'required',
-                'remarks' => 'nullable',
-            ]);
-            Barangay::create($data);
-            return redirect()->back()->with('alertSuccess', Str::ucfirst($request->name) . ' added Successfully');
-        }
-        if ($type == 'relationships') {
-            $data = $request->validate([
-                'name' => 'required',
-                'remarks' => 'nullable',
-            ]);
-            Relationship::create($data);
-            return redirect()->back()->with('alertSuccess', Str::ucfirst($request->name) . ' added Successfully');
+        try {
+            if ($type == 'barangays') {
+                $data = $request->validate([
+                    'name' => 'required',
+                    'district_id' => 'required',
+                    'remarks' => 'nullable',
+                ]);
+                Barangay::create($data);
+                return redirect()->back()->with('alertSuccess', Str::ucfirst($request->name) . ' added Successfully');
+            }
+            if ($type == 'relationships') {
+                $data = $request->validate([
+                    'name' => 'required',
+                    'remarks' => 'nullable',
+                ]);
+                Relationship::create($data);
+                return redirect()->back()->with('alertSuccess', Str::ucfirst($request->name) . ' added Successfully');
+            }
+            if ($type == 'users') {
+                $data = $request->validate([
+                    'first_name' => 'required|string|max:255',
+                    'last_name' => 'required|string|max:255',
+                    'middle_name' => 'nullable|string|max:255',
+                    'email' => 'required|string|email|max:255|unique:users',
+                    'contact_number' => 'required|string|max:11',
+                    'password' => 'required|string|min:8',
+                ]);
+                $user = User::create($data);
+                $user->assignRole('admin');
+                return redirect()->back()->with('alertSuccess', Str::ucfirst($type) . ' added Successfully');
+            }
+        } catch (Exception $e) {
+            return redirect()->back()->with('alertError', $e->getMessage());
         }
     }
 
     public function updateContent(Request $request, $type, $id) {
-        if ($type == 'barangays') {
-            $barangay = Barangay::find($id);
-            $barangay->name = $request->name;
-            $barangay->district_id = $request->district_id;
-            $barangay->remarks = $request->remarks;
-            $barangay->save();
-            $tempName = $request->name;
+        try {
+            if ($type == 'barangays') {
+                $barangay = Barangay::find($id);
+                $barangay->name = $request->name;
+                $barangay->district_id = $request->district_id;
+                $barangay->remarks = $request->remarks;
+                $barangay->save();
+                $tempName = $request->name;
+            }
+            if ($type == 'relationships') {
+                $relationship = Relationship::find($id);
+                $relationship->name = $request->name;
+                $relationship->remarks = $request->remarks;
+                $relationship->save();
+                $tempName = $request->name;
+            }
+            if ($type == 'users') {
+                $user = User::find($id);
+                $user->is_active = !$user->is_active;
+                $user->save();
+                $tempName = $user->first_name . ' ' . $user->last_name;
+            }
+            return redirect()->back()->with('alertSuccess', Str::ucfirst($tempName) . ' updated Successfully');
+        } catch (Exception $e) {
+            return redirect()->back()->with('alertError', $e->getMessage());
         }
-        if ($type == 'relationships') {
-            $relationship = Relationship::find($id);
-            $relationship->name = $request->name;
-            $relationship->remarks = $request->remarks;
-            $relationship->save();
-            $tempName = $request->name;
-        }
-        return redirect()->back()->with('alertSuccess', Str::ucfirst($tempName) . ' updated Successfully');
     }
 
     public function deleteContent(Request $request, $type, $id) {
-        if ($type == 'barangays') {
-            $barangay = Barangay::findOrFail($id);
-            $tempName = $barangay->name;
-            if ($barangay) {
-                $barangay->delete();                
-            } else {
-                return redirect()->back()->with('alertError', Str::ucfirst($tempName) . ' not found');
+        try {
+            if ($type == 'barangays') {
+                $barangay = Barangay::findOrFail($id);
+                $tempName = $barangay->name;
+                if ($barangay) {
+                    $barangay->delete();                
+                } else {
+                    return redirect()->back()->with('alertError', Str::ucfirst($tempName) . ' not found');
+                }
             }
-        }
-        if ($type == 'relationships') {
-            $relationship = Relationship::find($id);
-            $tempName = $relationship->name;
-            if ($relationship) {
-                $relationship->delete();
-            } else {
-                return redirect()->back()->with('alertError', Str::ucfirst($tempName) . ' not found');
+            if ($type == 'relationships') {
+                $relationship = Relationship::find($id);
+                $tempName = $relationship->name;
+                if ($relationship) {
+                    $relationship->delete();
+                } else {
+                    return redirect()->back()->with('alertError', Str::ucfirst($tempName) . ' not found');
+                }
             }
+            return redirect()->back()->with('alertSuccess', Str::ucfirst($tempName) . ' deleted Successfully');
+        } catch (Exception $e) {
+            return redirect()->back()->with('alertError', $e->getMessage());
         }
-        return redirect()->back()->with('alertSuccess', Str::ucfirst($tempName) . ' deleted Successfully');
     }
 
     public function barangays() {
@@ -163,6 +196,12 @@ class CmsController extends Controller
     public function handlers() {
         $data = Handler::all();
         $type = 'handlers';
+        return view('superadmin.cms', compact('data', 'type'));
+    }
+
+    public function users() {
+        $data = User::all();
+        $type = 'users';
         return view('superadmin.cms', compact('data', 'type'));
     }
 }
