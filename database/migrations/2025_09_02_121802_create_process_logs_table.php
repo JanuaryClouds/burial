@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use function Livewire\on;
 
 return new class extends Migration
 {
@@ -28,6 +29,11 @@ return new class extends Migration
             $table->date('date_out')->nullable();
             $table->string('comments')->nullable();
             $table->json('extra_data')->nullable();
+            $table->foreignId('added_by')
+                ->nullable()
+                ->constrained('users')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
 
             $table->timestamps();
         });
