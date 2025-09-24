@@ -24,4 +24,8 @@ class Religion extends Model
     {
         return $this->hasMany(ClientDemographic::class);
     }
+
+    public function deceased() {
+        return $this->hasMany(Deceased::class, 'religion_id', 'id');
+    }
 }

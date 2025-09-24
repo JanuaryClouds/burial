@@ -29,7 +29,10 @@ return new class extends Migration
             //     ->constrained('barangays')
             //     ->onDelete('cascade')
             //     ->onUpdate('cascade');
-            // TODO: Religion column
+            $table->foreignId('religion_id')
+                ->constrained('religions')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
 
             $table->timestamps();
         });

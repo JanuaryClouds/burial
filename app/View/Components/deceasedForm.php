@@ -7,6 +7,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 use App\Models\Barangay;
 use App\Models\Sex;
+use App\Models\Religion;
 
 class deceasedForm extends Component
 {
@@ -25,9 +26,11 @@ class deceasedForm extends Component
     {
         $barangays = Barangay::all();
         $sexes = Sex::all();
+        $religions = Religion::all();
         return view('components.deceased-form', compact(
             'barangays',
-            'sexes'
+            'sexes',
+            'religions',
         ));
     }
 }

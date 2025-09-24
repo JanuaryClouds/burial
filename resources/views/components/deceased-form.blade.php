@@ -1,6 +1,8 @@
 @php
     use App\Models\Sex;
+    use App\Models\Religion;
     $genders = Sex::getAllSexes();
+    $religions = Religion::getAllReligions();
 @endphp
 @props([
     'deceased',
@@ -73,6 +75,16 @@
                 required="true"
                 :options="$genders->pluck('name', 'id')"
                 :selected="$deceased->gender ?? ''"
+                disabled="{{ $disabled }}"
+            />
+        </div>
+        <div class="col-3">
+            <x-form-select
+                name="deceased[religion]"
+                label="Religion"
+                required="true"
+                :options="$religions->pluck('name', 'id')"
+                :selected="$deceased->religion_id ?? ''"
                 disabled="{{ $disabled }}"
             />
         </div>
