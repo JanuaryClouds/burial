@@ -47,10 +47,10 @@ class StoreBurialAssistanceRequest extends FormRequest
             'claimant.barangay_id' => 'required|exists:barangays,id',
 
             'burial_assistance.funeraria' => 'required|string|max:255',
+            'burial_assistance.amount' => 'nullable|string|max:255',
             'burial_assistance.remarks'   => 'nullable|string|max:255',
             'swa'    => 'nullable|string|max:255',
             'encoder'=> 'nullable|string|max:255',
-            'burial_assistance.amount' => 'nullable|string|max:255',
             'initial_checker' => 'nullable|exists:users,id',
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
 
