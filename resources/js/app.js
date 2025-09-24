@@ -22,6 +22,7 @@ DataTable.Buttons.pdfMake(pdfmake);
 // 3. jQuery plugins (must come AFTER jQuery is set globally)
 import "jquery.nicescroll";   // Stisla requires this
 import "moment";              // Stisla also uses moment
+import { renderPieChart } from "./charts";
 
 $(document).ready(function () {
     console.log("Initializing DataTable...");
@@ -79,7 +80,17 @@ $(document).ready(function () {
             sortable: ''     // override neutral sortable class 
         }
     })
+
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    const perBarangayChart = document.getElementById('applicationsDistributions');
+    if (perBarangayChart) {
+        const chartData = JSON.parse(perBarangayChart.dataset.chartData);
+        const chartLabels = JSON.parse(perBarangayChart.dataset.chartLabels);
+        renderPieChart(chartData, "applicationsDistributions", chartLabels);
+    }
+})
 
 console.log("DataTables is running:", $.fn.dataTable ? true : false);
 
