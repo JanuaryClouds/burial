@@ -129,10 +129,14 @@
         religion.addEventListener('change', function () {
             if (religion.value == 2) {
                 muslimRequirements.classList.remove('d-none');
+                document.getElementById('burialRites').setAttribute('required', 'required');
+                document.getElementById('internmentCertificate').setAttribute('required', 'required');
             } else {
                 muslimRequirements.classList.add('d-none');
                 document.getElementById('burialRites').value = '';
                 document.getElementById('internmentCertificate').value = '';
+                document.getElementById('burialRites').removeAttribute('required');
+                document.getElementById('internmentCertificate').removeAttribute('required');
             }
         })
     </script>
