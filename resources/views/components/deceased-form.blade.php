@@ -80,12 +80,13 @@
         </div>
         <div class="col-3">
             <x-form-select
-                name="deceased[religion]"
+                name="deceased[religion_id]"
                 label="Religion"
                 required="true"
                 :options="$religions->pluck('name', 'id')"
                 :selected="$deceased->religion_id ?? ''"
                 disabled="{{ $disabled }}"
+                id="religion"  
             />
         </div>
         <div class="col-3">

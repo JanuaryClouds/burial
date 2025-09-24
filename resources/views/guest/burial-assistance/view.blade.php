@@ -123,5 +123,17 @@
             </div>
         </div>
     </div>
-    
+    <script>
+        const religion = document.getElementById('religion');
+        const muslimRequirements = document.getElementById('muslim-requirements');
+        religion.addEventListener('change', function () {
+            if (religion.value == 2) {
+                muslimRequirements.classList.remove('d-none');
+            } else {
+                muslimRequirements.classList.add('d-none');
+                document.getElementById('burialRites').value = '';
+                document.getElementById('internmentCertificate').value = '';
+            }
+        })
+    </script>
 @endsection

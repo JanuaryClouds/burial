@@ -56,24 +56,28 @@
             />
         </div>
         <hr>
-        <h2>For Muslim Citizens</h2>
-        <div
-            class="col mb-4"
-        >
-            <x-form-image-submission
-                name="images[burial_rites]"
-                label="Certificate of Burial Rites (signed by IMAM)"
-                helpText="From Muslim/Islam Religious Community"
-            />
-        </div>
-        <div
-            class="col"
-        >
-            <x-form-image-submission
-                name="images[internment_certificate]"
-                label="Certificate of Internment"
-                helpText="From Muslim/Islam Religious Community"
-            />
+        <div id="muslim-requirements" class="col mb-4 p-0">
+            <h2 class="text-center">For Muslim Citizens</h2>
+            <div
+                class="col mb-4"
+            >
+                <x-form-image-submission
+                    name="images[burial_rites]"
+                    label="Certificate of Burial Rites (signed by IMAM)"
+                    helpText="From Muslim/Islam Religious Community"
+                    id="burialRites"
+                />
+            </div>
+            <div
+                class="col"
+            >
+                <x-form-image-submission
+                    name="images[internment_certificate]"
+                    label="Certificate of Internment"
+                    helpText="From Muslim/Islam Religious Community"
+                    id="internmentCertificate"
+                />
+            </div>
         </div>
         <hr>
         <div
