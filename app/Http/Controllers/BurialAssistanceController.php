@@ -43,6 +43,7 @@ class BurialAssistanceController extends Controller
                     'claimant_id' => $claimant->id,
                     'deceased_id' => $deceased->id,
                     'funeraria' => $validated['burial_assistance']['funeraria'],
+                    'amount' => $validated['burial_assistance']['amount'],
                     'remarks' => $validated['burial_assistance']['remarks'],
                 ]);
                 foreach ($request->file('images', []) as $fieldName => $uploadedFile) {
