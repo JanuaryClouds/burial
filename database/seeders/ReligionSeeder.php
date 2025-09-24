@@ -11,15 +11,17 @@ class ReligionSeeder extends Seeder
     public function run(): void
     {
         $Religions = [
-            'Son',
-            'Daughter',
-            'Mother',
-            'Father',
-            'Grandmother',
-            'Grandfather',
-            'Cousin',
-            'Uncle',
-            'Auntie',
+            'Catholic',
+            'Muslim',
+            'Iglesia ni Cristo',
+            'Philippine Independent Church',
+            'Seventh-day Adventist',
+            'Bible Baptist Church',
+            'United Church of Christ',
+            'Jehova\'s Witnesses',
+            'Church of Christ',
+            'Others',
+            'None',
         ];
 
         foreach ($Religions as $Religion) {

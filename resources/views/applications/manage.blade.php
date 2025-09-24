@@ -40,7 +40,7 @@
                     <x-burial-assistance-details-form :burialAssistance="$application" disabled="true" readonly="true"/>
                 </div>
                 <div class="col">
-                    <x-burial-assistance-image-requirements :burialAssistance="$application" disabled="true" readonly="true"/>
+                    <x-burial-assistance-image-requirements :burialAssistance="$application" disabled="true" readonly="true" :files="$files"/>
                 </div>
             </div>
         </div>

@@ -44,7 +44,6 @@ class ProcessLogController extends Controller
                 } else {
                     $claimant = $application->claimant;
                 }
-    
                 $application->processLogs()->create([
                     'loggable_id' => $step->id,
                     'loggable_type' => WorkflowStep::class,
@@ -55,7 +54,7 @@ class ProcessLogController extends Controller
                     'date_out'=> $validated['date_out'] ?? null,
                     'comments' => $validated['comments'] ?? null,
                     'extra_data' => $validated['extra_data'] ?? [],
-                    'added_by' => $validated['added_by'] ?? auth()->user()->id
+                    'added_by' => auth()->user()->id,
                 ]);
     
                 return back()->with('alertSuccess','Process log added successfully.');

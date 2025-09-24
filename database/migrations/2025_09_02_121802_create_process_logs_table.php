@@ -30,7 +30,7 @@ return new class extends Migration
             $table->json('extra_data')->nullable();
             $table->foreignId('added_by')
                 ->nullable()
-                ->constrained('users')
+                ->constrained('users', 'id')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
 

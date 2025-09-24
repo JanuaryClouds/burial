@@ -1,71 +1,96 @@
+@props([
+    'readonly' => false,
+    'files' => []
+])
+
 <div class="bg-white shadow-sm rounded p-4">
     <h2>Image Requirements</h2>
     <div class="row flex-column justify-content-center align-items-center g-2">
+    @if ($readonly)
+        @foreach ($files as $file)
+            <div class="col mb-2">
+                <section class="section">
+                    <div class="section-title">
+                        <h3>{{ Str::replace('_', ' ',Str::title(Str::substr($file['name'], 0, -4))) }}</h3>
+                    </div>
+                    @if(Str::startsWith($file['mime'], 'image/'))
+                        <img src="data:{{ $file['mime'] }};base64,{{ base64_encode($file['content']) }}" 
+                            alt="{{ $file['name'] }}" class="w-100">
+                    @endif
+                </section>
+            </div>
+        @endforeach
+    @else
         <div
-            class="col"
+            class="col mb-4"
         >
             <x-form-image-submission
-                name="burial_assistance[death_certificate]"
+                name="images[death_certificate]"
                 label="Certified True Copy of Registered Death Certificate"
                 helpText="From Taguig City Civil Registry."
+                required="true"
             />
         </div>
         <div
-            class="col"
+            class="col mb-4"
         >
             <x-form-image-submission
-                name="burial_assistance[funeral_contract]"
+                name="images[funeral_contract]"
                 label="Certified True Copy of Funeral Contract"
                 helpText="From Funeral Establishment."
+                required="true"
             />
         </div>
-        <div
-            class="col"
-        >
-            <div class="row">
-                <div class="col">
-                    <x-form-image-submission
-                        name="burial_assistance[claimant_valid_id]"
-                        label="Photocopy of Valid Identification Card of Claimant"
-                    />
-                </div>
-                <div class="col">
-                    <x-form-image-submission
-                        name="burial_assistance[deceased_valid_id]"
-                        label="Photocopy of Valid Identification Card of Deceased"
-                    />
-                </div>
+        <div class="col mb-4">
+            <x-form-image-submission
+                name="images[claimant_valid_id]"
+                label="Photocopy of Valid Identification Card of Claimant"
+                required="true"
+            />
+        </div>
+        <div class="col mb-4">
+            <x-form-image-submission
+                name="images[deceased_valid_id]"
+                label="Photocopy of Valid Identification Card of Deceased"
+                required="true"
+            />
+        </div>
+        <hr>
+        <div id="muslim-requirements" class="col mb-4 p-0">
+            <h2 class="text-center">For Muslim Citizens</h2>
+            <div
+                class="col mb-4"
+            >
+                <x-form-image-submission
+                    name="images[burial_rites]"
+                    label="Certificate of Burial Rites (signed by IMAM)"
+                    helpText="From Muslim/Islam Religious Community"
+                    id="burialRites"
+                />
+            </div>
+            <div
+                class="col"
+            >
+                <x-form-image-submission
+                    name="images[internment_certificate]"
+                    label="Certificate of Internment"
+                    helpText="From Muslim/Islam Religious Community"
+                    id="internmentCertificate"
+                />
             </div>
         </div>
         <hr>
-        <h2>For Muslim Citizens</h2>
         <div
-            class="col"
+            class="col mb-4"
         >
             <x-form-image-submission
-                name="burial_assistance[burial_rites]"
-                label="Certificate of Burial Rites (signed by IMAM)"
-                helpText="From Muslim/Islam Religious Community"
-            />
-        </div>
-        <div
-            class="col"
-        >
-            <x-form-image-submission
-                name="burial_assistance[internment_certificate]"
-                label="Certificate of Internment"
-                helpText="From Muslim/Islam Religious Community"
-            />
-        </div>
-        <hr>
-        <div
-            class="col mt-4"
-        >
-            <x-form-image-submission
-                name="burial_assistance[proof_of_relationship]"
+                name="images[proof_of_relationship]"
                 label="Proof of Relationship between Claimant and Deceased"
                 helpText="From Taguig City Civil Registry or Philippine Statistics Authority (PSA)."
+                required="true"
             />
+        </div>
+        <div class="col mb-4">
             <ul class="list-group">
                 <li class="list-group-item active">Example of documents for Proof of Relationship</li>
                 <li class="list-group-item">Marriage Contract (Spouse) - From Taguig City Civil Registry</li>
@@ -73,5 +98,6 @@
                 <li class="list-group-item">Baptismal Certificate (for Siblings, Children, Parents) - Church where the claimant is baptized</li>
             </ul>
         </div>
+    @endif
     </div>
 </div>

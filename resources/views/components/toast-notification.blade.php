@@ -1,4 +1,3 @@
-<!-- TODO: Either use Toastr or use bootstrap's toast notification -->
 @if (session()->has('success'))
     <script>
         iziToast.success({

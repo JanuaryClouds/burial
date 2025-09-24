@@ -116,6 +116,8 @@ Route::middleware(['auth'])
                     ->name('cms.handlers');
                 Route::get('/cms/users', [CmsController::class, 'users'])
                     ->name('cms.users');
+                Route::get('/cms/religions', [CmsController::class, 'religions'])
+                    ->name('cms.religions');
 
                 Route::post('/cms/{type}/store', [CmsController::class, 'storeContent'])
                     ->name('cms.store');
@@ -164,7 +166,7 @@ Route::middleware(['auth'])
                     ->name('applications.released');
                 Route::get('/applications/history', [BurialAssistanceController::class, 'history'])
                     ->name('applications.history');
-                Route::get('/applications/history/export', [ExportController::class,'applications'])
+                Route::get('/applications/{status}/export', [ExportController::class,'applications'])
                     ->name('applications.export.all');
 
                 Route::post('/applications/{id}/claimant-change/{change}/decision', [ClaimantChangeController::class, 'decide'])

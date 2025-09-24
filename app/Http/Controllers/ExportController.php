@@ -17,7 +17,7 @@ use Carbon\Carbon;
 
 class ExportController extends Controller
 {
-    public function applications() {
+    public function applications($status) {
         $templatePath = storage_path('app/templates/burial-assistances-template.xlsx');
         $spreadsheet = IOFactory::load($templatePath);
 
@@ -31,7 +31,7 @@ class ExportController extends Controller
                 ->first();
         };
 
-        foreach (BurialAssistance::with([
+        $query = BurialAssistance::with([
             'claimant.relationship',
             'claimant.barangay',
             'deceased',
@@ -41,7 +41,15 @@ class ExportController extends Controller
             'claimantChanges',
             'claimantChanges.oldClaimant',
             'claimantChanges.newClaimant',
-        ])->get() as $ba) {
+        ]);
+
+        if ($status !== 'history') {
+            $query->where('status', $status);
+        }
+
+        $burialAssistances = $query->get();
+
+        foreach ($burialAssistances as $ba) {
             $dob = Carbon::parse($ba->deceased->date_of_birth);
             $dod = Carbon::parse($ba->deceased->date_of_death);
             $encoder = User::find($ba->encoder);
@@ -131,7 +139,7 @@ class ExportController extends Controller
             $row++;
         };
 
-        $filename = 'burial-assistances-database-export-' . now()->format('YmdHis') . '.xlsx';
+        $filename = 'burial-assistances-database-export-' . $status . '-' . now()->format('YmdHis') . '.xlsx';
         return response()->streamDownload(function () use ($spreadsheet) {
             $writer = new Xlsx($spreadsheet);
             $writer->save('php://output');

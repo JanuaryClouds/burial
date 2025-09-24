@@ -17,6 +17,7 @@ class Deceased extends Model
         'date_of_birth',
         'date_of_death',
         'gender',
+        'religion_id',
     ];
     protected $table = "deceased";
 
@@ -26,5 +27,9 @@ class Deceased extends Model
 
     public function gender() {
         return $this->belongsTo(Sex::class, 'gender', 'id');
+    }
+
+    public function religion() {
+        return $this->belongsTo(Religion::class, 'religion_id', 'id');
     }
 }

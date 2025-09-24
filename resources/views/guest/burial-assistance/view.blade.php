@@ -6,7 +6,7 @@
     >
         <div class="row w-100">
             <div class="col-12 col-lg-10 mx-auto">
-                <form action="{{ route('guest.burial-assistance.store') }}" method="post">
+                <form action="{{ route('guest.burial-assistance.store') }}" method="post" enctype="multipart/form-data">
                     @csrf
                     <div
                         class="row d-flex flex-column justify-content-center align-items-center g-2 gap-4"
@@ -38,7 +38,7 @@
                             <x-burial-assistance-details-form />
                         </div>
                         <div class="col mt-2">
-                            <x-burial-assistance-image-requirements />
+                            <x-burial-assistance-image-requirements :readonly="false" />
                         </div>
                         <div
                             class="col mt-4"
@@ -123,5 +123,21 @@
             </div>
         </div>
     </div>
-    
+    <script>
+        const religion = document.getElementById('religion');
+        const muslimRequirements = document.getElementById('muslim-requirements');
+        religion.addEventListener('change', function () {
+            if (religion.value == 2) {
+                muslimRequirements.classList.remove('d-none');
+                document.getElementById('burialRites').setAttribute('required', 'required');
+                document.getElementById('internmentCertificate').setAttribute('required', 'required');
+            } else {
+                muslimRequirements.classList.add('d-none');
+                document.getElementById('burialRites').value = '';
+                document.getElementById('internmentCertificate').value = '';
+                document.getElementById('burialRites').removeAttribute('required');
+                document.getElementById('internmentCertificate').removeAttribute('required');
+            }
+        })
+    </script>
 @endsection

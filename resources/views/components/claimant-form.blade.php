@@ -11,7 +11,7 @@
     <div
         class="row justify-content-start align-items-center g-2"
     >
-        <div class="col-6">
+        <div class="col-12 col-md-4 col-lg-6">
             <x-form-input
                 name="claimant[first_name]"
                 id="first_name"
@@ -22,7 +22,7 @@
                 disabled="{{ $disabled }}"
             />
         </div>
-        <div class="col-2">
+        <div class="col-12 col-md-4 col-lg-2">
             <x-form-input
                 name="claimant[middle_name]"
                 id="middle_name"
@@ -32,7 +32,7 @@
                 disabled="{{ $disabled }}"
             />
         </div>
-        <div class="col-2">
+        <div class="col-6 col-lg-2">
             <x-form-input
                 name="claimant[last_name]"
                 id="last_name"
@@ -43,7 +43,7 @@
                 disabled="{{ $disabled }}"
             />
         </div>
-        <div class="col-2">
+        <div class="col-6 col-lg-2">
             <x-form-input
                 name="claimant[suffix]"
                 id="suffix"
@@ -55,9 +55,9 @@
         </div>
     </div>
     <div
-        class="row justify-content-start align-items-center g-2"
+        class="row justify-content-start align-items-center"
     >
-        <div class="col">
+        <div class="col-12 col-lg-5">
             <x-form-select
                 name="claimant[relationship_to_deceased]"
                 id="relationship"
@@ -68,7 +68,7 @@
                 disabled="{{ $disabled }}"
             />
         </div>
-        <div class="col">
+        <div class="col-12 col-lg-3">
             <x-form-input
                 name="claimant[mobile_number]"
                 id="mobile_number"
@@ -84,7 +84,7 @@
     <div
         class="row justify-content-start align-items-center g-2"
     >
-        <div class="col-8">
+        <div class="col-12 col-lg-8">
             <x-form-input
                 name="claimant[address]"
                 id="address"
@@ -95,7 +95,7 @@
                 disabled="{{ $disabled }}"
             />
         </div>
-        <div class="col-4">
+        <div class="col-12 col-lg-4">
             <x-form-select
                 name="claimant[barangay_id]"
                 id="barangay_id"
