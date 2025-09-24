@@ -57,7 +57,7 @@
     <div
         class="row justify-content-start align-items-center"
     >
-        <div class="col-12 col-lg-4">
+        <div class="col-12 col-lg-5">
             <x-form-select
                 name="claimant[relationship_to_deceased]"
                 id="relationship"
@@ -68,7 +68,7 @@
                 disabled="{{ $disabled }}"
             />
         </div>
-        <div class="col-12 col-lg-2">
+        <div class="col-12 col-lg-3">
             <x-form-input
                 name="claimant[mobile_number]"
                 id="mobile_number"
