@@ -18,6 +18,7 @@ class ProcessLog extends Model
         'date_out',
         'comments',
         'extra_data',
+        'added_by',
     ];
 
     protected $casts = [
