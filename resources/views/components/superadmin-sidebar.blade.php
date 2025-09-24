@@ -46,7 +46,6 @@
                     <span>Users</span>
                 </a>
             </li>
-            <!-- TODO: Applications Link -->
             <li @class(['active' => Request::is('superadmin/cms/religions')])>
                 <a href="{{ route('superadmin.cms.religions') }}">
                     <i class="fas fa-church"></i>
