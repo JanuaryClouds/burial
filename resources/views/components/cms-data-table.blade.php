@@ -85,7 +85,7 @@
                                     </div>
                                     <div class="modal-body">
                                         @foreach ($entry->getAttributes() as $field => $value)
-                                            @if(in_array($field, ['name', 'description', 'department']))
+                                            @if(in_array($field, ['name', 'description', 'department', 'remarks']))
                                                 <x-form-input
                                                     name="{{ $field }}"
                                                     id="{{ $field }}"
