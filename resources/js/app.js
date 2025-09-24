@@ -44,7 +44,9 @@ $(document).ready(function () {
             {
                 text: 'Export to Excel',
                 action: function() {
-                    window.location.href = '/admin/applications/history/export'
+                    const url = window.location.href;
+                    const status = url.substring(url.lastIndexOf('/') + 1);
+                    window.location.href = '/admin/applications/' + status + '/export'
                 }
             }
         ],
