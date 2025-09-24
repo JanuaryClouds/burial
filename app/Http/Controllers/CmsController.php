@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Handler;
+use App\Models\Religion;
 use App\Models\WorkflowStep;
 use Illuminate\Http\Request;
 use App\Models\Barangay;
@@ -49,6 +50,14 @@ class CmsController extends Controller
                 $user->assignRole('admin');
                 return redirect()->back()->with('alertSuccess', Str::ucfirst($type) . ' added Successfully');
             }
+            if ($type == 'religions') {
+                $data = $request->validate([
+                    'name' => 'required|string|max:255',
+                    'remarks' => 'nullable|string|max:255',
+                ]);
+                $religion = Religion::create($data);
+                return redirect()->back()->with('alertSuccess', Str::ucfirst($religion->name) . ' added Successfully');
+            }
         } catch (Exception $e) {
             return redirect()->back()->with('alertError', $e->getMessage());
         }
@@ -76,6 +85,13 @@ class CmsController extends Controller
                 $user->is_active = !$user->is_active;
                 $user->save();
                 $tempName = $user->first_name . ' ' . $user->last_name;
+            }
+            if ($type == 'religions') {
+                $religion = Religion::find($id);
+                $religion->name = $request->name;
+                $religion->remarks = $request->remarks;
+                $religion->save();
+                $tempName = $request->name;
             }
             return redirect()->back()->with('alertSuccess', Str::ucfirst($tempName) . ' updated Successfully');
         } catch (Exception $e) {
@@ -202,6 +218,12 @@ class CmsController extends Controller
     public function users() {
         $data = User::all();
         $type = 'users';
+        return view('superadmin.cms', compact('data', 'type'));
+    }
+
+    public function religions() {
+        $data = Religion::all();
+        $type = 'religions';
         return view('superadmin.cms', compact('data', 'type'));
     }
 }

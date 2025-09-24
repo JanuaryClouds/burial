@@ -24,7 +24,7 @@
 	</section>
 		<div class="section-body">
 			<div>
-				@if (Request::is('superadmin/cms/barangays') || Request::is('superadmin/cms/relationships') || Request::is('superadmin/cms/users'))
+				@if (!Request::routeIs('superadmin.cms.workflow') && !Request::routeIs('superadmin.cms.handlers'))
 					<button class="btn btn-primary" type="button" data-toggle="modal" data-target="#newContent">
 						<i class="fas fa-plus"></i>	
 						Add New {{ Str::substr(Str::ucfirst($type), 0, -1) }}
