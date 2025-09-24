@@ -8,11 +8,11 @@
 
 <div class="custom-file">
     @if ($label)
-        <label for="{{ $name }}" class="custom-file-label">{{ $label }}{{ $required ? '*' : '' }}</label>
+        <label for="{{ $name }}" class="form-label">{{ $label }}{{ $required ? '*' : '' }}</label>
     @endif
     <input
         type="file"
-        class="custom-file-input"
+        class="form-control"
         name="{{ $name }}"
         id="{{ $id }}"
         placeholder=""
