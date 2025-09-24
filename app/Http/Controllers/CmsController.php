@@ -119,6 +119,15 @@ class CmsController extends Controller
                     return redirect()->back()->with('alertError', Str::ucfirst($tempName) . ' not found');
                 }
             }
+            if ($type == 'religions') {
+                $religion = Religion::find($id);
+                $tempName = $religion->name;
+                if ($religion) {
+                    $religion->delete();
+                } else {
+                    return redirect()->back()->with('alertError', Str::ucfirst($tempName) . ' not found');
+                }
+            }
             return redirect()->back()->with('alertSuccess', Str::ucfirst($tempName) . ' deleted Successfully');
         } catch (Exception $e) {
             return redirect()->back()->with('alertError', $e->getMessage());
