@@ -6,6 +6,7 @@ use App\Http\Requests\BurialServiceRequest;
 use App\Models\Barangay;
 use App\Models\BurialAssistance;
 use App\Models\Claimant;
+use App\Models\ProcessLog;
 use Illuminate\Http\Request;
 use App\Models\BurialAssistanceRequest;
 use App\Models\BurialServiceProvider;
@@ -82,9 +83,27 @@ class DashboardController extends Controller
                ];
             });
         
+        $lastLogs = ProcessLog::with('burialAssistance')->latest()->limit(5)->get();
+        $pendingApplications = BurialAssistance::where('status', 'pending')->oldest()->limit(5)->get();
+        $monthlyActivity = ProcessLog::where('added_by', auth()->user()->id)
+        ->select(
+            DB::raw('MONTH(created_at) as month'),
+            DB::raw('COUNT(*) as count')
+        )
+        ->groupBy('month')
+        ->get()
+        ->map(function ($item) {
+            return [
+                'month' => Carbon::create()->month($item->month)->format('F'),
+                'count' => $item->count,
+            ];
+        });
+
         return view('admin.dashboard', compact(
             'perBarangay',
-            'barangays'
+            'lastLogs',
+            'pendingApplications',
+            'monthlyActivity',
         ));
     }
 
