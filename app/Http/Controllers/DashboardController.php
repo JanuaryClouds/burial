@@ -25,53 +25,6 @@ class DashboardController extends Controller
 
     public function admin()
     {
-        $barangays = Barangay::all();
-        // $requestsData = BurialAssistanceRequest::select('barangay_id', DB::raw('count(*) as total'))
-        //     ->with('barangay')
-        //     ->groupBy('barangay_id')
-        //     ->where('status','pending')
-        //     ->get()
-        //     ->map(function ($item) {
-        //         return [
-        //             'name' => $item->barangay->name ?? 'Unknown',
-        //             'count' => $item->total,
-        //         ];
-        //     });
-
-        // $providersData = BurialServiceProvider::select('barangay_id', DB::raw('count(*) as total'))
-        //     ->with('barangay')
-        //     ->groupBy('barangay_id')
-        //     ->get()
-        //     ->map(function ($item) {
-        //         return [
-        //             'name' => $item->barangay->name ?? 'Unknown',
-        //             'count' => $item->total,
-        //         ];
-        //     });
-
-        // $servicesData = BurialService::select('barangay_id',
-        // DB::raw('count(*) as total'))
-        //     ->with('barangay')
-        //     ->groupBy('barangay_id')
-        //     ->get()
-        //     ->map(function ($item) {
-        //         return [
-        //             'name' => $item->barangay->name ?? 'Unknown',
-        //             'count' => $item->total,
-        //         ];
-        //     });
-        
-        // $serviceRequests = BurialAssistanceRequest::getBurialAssistanceRequests('pending');
-        // $providers = BurialServiceProvider::all();
-        // $services = BurialService::all();
-
-        // $pendingApplications = BurialAssistance::where('status', 'pending')->get();
-        // $processingApplications = BurialAssistance::where('status', 'processing')->get();
-        // $approvedApplications = BurialAssistance::where('status', 'approved')->get();
-        // $releasedApplications = BurialAssistance::where('status', 'released')->get();
-
-        // return view('admin.dashboard', compact('serviceRequests', 'providers', 'services', 'requestsData', 'providersData', 'servicesData', 'pendingApplications', 'processingApplications', 'approvedApplications', 'releasedApplications'));
-
         $perBarangay = Claimant::select('barangay_id', DB::raw('count(*) as total'))
             ->with('barangay')
             ->groupBy('barangay_id')
@@ -83,7 +36,12 @@ class DashboardController extends Controller
                ];
             });
         
-        $lastLogs = ProcessLog::with('burialAssistance')->latest()->limit(5)->get();
+        $applicationsByBarangay = BurialAssistance::with(['claimant.barangay'])
+            ->whereYear('created_at', now()->year)
+            ->get()
+            ->groupBy(fn($item) => $item->claimant->barangay->name);
+
+        $lastLogs = ProcessLog::with('burialAssistance')->where('added_by', auth()->user()->id)->latest()->limit(4)->get();
         $pendingApplications = BurialAssistance::where('status', 'pending')->oldest()->limit(5)->get();
         $monthlyActivity = ProcessLog::where('added_by', auth()->user()->id)
         ->select(
@@ -104,6 +62,7 @@ class DashboardController extends Controller
             'lastLogs',
             'pendingApplications',
             'monthlyActivity',
+            'applicationsByBarangay',
         ));
     }
 
