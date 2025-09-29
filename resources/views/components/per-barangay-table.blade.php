@@ -27,7 +27,7 @@
                             </div>
 
                             {{-- Records under this barangay --}}
-                            <template x-if="open">
+                            <template x-if="open" x-transition x-cloak>
                                 <table class="table table-sm mt-2">
                                     <thead>
                                         <tr>
