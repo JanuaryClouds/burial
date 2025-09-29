@@ -40,6 +40,10 @@ class ProcessLog extends Model
         return $this->belongsTo(Claimant::class, 'claimant_id', 'id');
     }
 
+    public function addedBy() {
+        return $this->belongsTo(User::class, 'added_by', 'id');
+    }
+
     public function loggable() {
         return $this->morphTo();
     }
