@@ -40,6 +40,11 @@ return new class extends Migration
                 'rejected'])
                 ->default('pending');
             $table->string('remarks')->nullable();
+            $table->foreignId('assigned_to')
+                ->nullable()
+                ->constrained('users')
+                ->onDelete('set null')
+                ->onUpdate('cascade');
             $table->foreignId('initial_checker')
                 ->nullable()
                 ->constrained('users')
