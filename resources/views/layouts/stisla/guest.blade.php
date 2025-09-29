@@ -29,7 +29,7 @@
     <!-- END GA -->
 </head>
 <body class="min-vw-100 min-vh-100"
-	style="background: url('{{ asset('images/cover.webp') }}') no-repeat center center / cover;">
+	style="background: url('{{ asset('images/cover.webp') }}') no-repeat center center / cover; overflow-x: hidden;">
 	<div id="app">
 		<div class="main-wrapper">
             @yield('content')

@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html 
     lang="{{ str_replace('_', '-', app()->getLocale()) }}" 
-    x-data="{ sidebarMini: $persist(true), screenSmall: window.innerWidth < 1024}" 
-    x-init="window.addEventListener('resize', () => {screenSmall = window.innerWidth < 1024;})"
+    x-data="{ sidebarMini: $persist(true), screenSmall: window.innerWidth < 1400}" 
+    x-init="window.addEventListener('resize', () => {screenSmall = window.innerWidth < 1400;})"
 >
 <head>
     <meta charset="UTF-8">

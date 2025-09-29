@@ -7,7 +7,7 @@
     <div class="row w-100" 
          x-data="{ showApplication: false, showClaimantChangeRequest: false }">
         <div class="col-12 col-lg-10 mx-auto mb-4">
-            <x-assistance-process-tracker :burialAssistance="$burialAssistance"/>
+            <x-assistance-process-tracker :burialAssistance="$burialAssistance" :updateAverage="$updateAverage"/>
         </div>
         <div class="col-12 col-lg-10 mx-auto mb-4">
             <div class="bg-white shadow rounded p-4">
@@ -19,7 +19,7 @@
                     </button>
 
                     @if ($burialAssistance->status === 'pending' || $burialAssistance->status === 'processing')
-                        @if ($burialAssistance->claimantChanges->count() == 0 && $burialAssistance->processLogs->last->loggable->order_no >= 3)
+                        @if ($burialAssistance->claimantChanges->count() == 0 && $burialAssistance->processLogs->last()->loggable->order_no >= 3)
                             <button class="btn btn-secondary mr-2"
                                     type="button" 
                                     data-toggle="modal" 
@@ -73,11 +73,15 @@
                 <x-burial-assistance-details-form :burialAssistance="$burialAssistance" disabled="true" readonly="true"/>
             </div>
         </template>
-        <template x-if="showClaimantChangeRequest">
-            <div class="col-12 col-lg-10 mx-auto mb-4">
-                <x-claimant-form :claimant="$burialAssistance->claimantChanges->last()->newclaimant" disabled="true" readonly="true"/>
-            </div>
-        </template>
+        @if ($burialAssistance->claimantChanges->count() > 0)
+            <template x-if="showClaimantChangeRequest">
+                @if ($burialAssistance->claimantChanges->last()->status != 'rejected' || $burialAssistance->claimantChanges->count() != 0)
+                    <div class="col-12 col-lg-10 mx-auto mb-4">
+                        <x-claimant-form :claimant="$burialAssistance?->claimantChanges->last()->newclaimant" disabled="true" readonly="true"/>
+                    </div>
+                @endif
+            </template>
+        @endif
     </div>
 </div>
 

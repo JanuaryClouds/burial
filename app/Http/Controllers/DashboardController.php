@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\BurialServiceRequest;
+use App\Models\Barangay;
 use App\Models\BurialAssistance;
+use App\Models\Claimant;
+use App\Models\ProcessLog;
 use Illuminate\Http\Request;
 use App\Models\BurialAssistanceRequest;
 use App\Models\BurialServiceProvider;
@@ -22,51 +25,70 @@ class DashboardController extends Controller
 
     public function admin()
     {
-        $requestsData = BurialAssistanceRequest::select('barangay_id', DB::raw('count(*) as total'))
-            ->with('barangay')
-            ->groupBy('barangay_id')
-            ->where('status','pending')
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'name' => $item->barangay->name ?? 'Unknown',
-                    'count' => $item->total,
-                ];
-            });
-
-        $providersData = BurialServiceProvider::select('barangay_id', DB::raw('count(*) as total'))
+        $perBarangay = Claimant::select('barangay_id', DB::raw('count(*) as total'))
             ->with('barangay')
             ->groupBy('barangay_id')
             ->get()
             ->map(function ($item) {
-                return [
-                    'name' => $item->barangay->name ?? 'Unknown',
-                    'count' => $item->total,
-                ];
-            });
-
-        $servicesData = BurialService::select('barangay_id',
-        DB::raw('count(*) as total'))
-            ->with('barangay')
-            ->groupBy('barangay_id')
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'name' => $item->barangay->name ?? 'Unknown',
-                    'count' => $item->total,
-                ];
+               return [
+                   'name' => $item->barangay->name ?? 'Unknown',
+                   'count' => $item->total,
+               ];
             });
         
-        $serviceRequests = BurialAssistanceRequest::getBurialAssistanceRequests('pending');
-        $providers = BurialServiceProvider::all();
-        $services = BurialService::all();
+        $applicationsByBarangay = BurialAssistance::with(['claimant.barangay'])
+            ->whereYear('created_at', now()->year)
+            ->get()
+            ->groupBy(fn($item) => $item->claimant->barangay->name);
 
-        $pendingApplications = BurialAssistance::where('status', 'pending')->get();
-        $processingApplications = BurialAssistance::where('status', 'processing')->get();
-        $approvedApplications = BurialAssistance::where('status', 'approved')->get();
-        $releasedApplications = BurialAssistance::where('status', 'released')->get();
+        $lastLogs = ProcessLog::with('burialAssistance')->where('added_by', auth()->user()->id)->latest()->limit(4)->get();
+        $pendingApplications = BurialAssistance::where('status', 'pending')->oldest()->limit(5)->get();
+        $monthlyActivity = ProcessLog::where('added_by', auth()->user()->id)
+        ->select(
+            DB::raw('YEAR(created_at) as year'),
+            DB::raw('WEEK(created_at, 1) as week'),
+            DB::raw('COUNT(*) as count')
+        )
+        ->groupBy('year', 'week')
+        ->orderBy('year', 'asc')
+        ->orderBy('week', 'asc')
+        ->get()
+        ->map(function ($item) {
+            $start = Carbon::now()->setISODate($item->year, $item->week)->startOfWeek();
+            $end = Carbon::now()->setISODate($item->year, $item->week)->endOfWeek();
+            return [
+                'week' => $start->format('M d') . ' - ' . $end->format('M d'),
+                'count' => $item->count,
+            ];
+        });
 
-        return view('admin.dashboard', compact('serviceRequests', 'providers', 'services', 'requestsData', 'providersData', 'servicesData', 'pendingApplications', 'processingApplications', 'approvedApplications', 'releasedApplications'));
+        $swaEncoded = BurialAssistance::where('encoder', auth()->user()->id)->count();
+        $logsAdded = ProcessLog::where('added_by', auth()->user()->id)->count();
+        
+
+        $cardData = [
+            [
+                'label' => 'SWAs Encoded',
+                'bg' => 'bg-primary',
+                'icon' => 'fa-align-left',
+                'count' => $swaEncoded,
+            ],
+            [
+                'label' => 'Updates Added',
+                'bg' => 'bg-secondary',
+                'icon' => 'fa-list',
+                'count' => $logsAdded,
+            ],
+        ];
+
+        return view('admin.dashboard', compact(
+            'perBarangay',
+            'lastLogs',
+            'pendingApplications',
+            'monthlyActivity',
+            'applicationsByBarangay',
+            'cardData'
+        ));
     }
 
     public function user()
@@ -76,9 +98,6 @@ class DashboardController extends Controller
 
     public function superadmin()
     {
-       $totalData = BurialAssistanceRequest::all()->count() + BurialServiceProvider::all()->count() + BurialService::all()->count();
-       $totalUsers = User::all()->count();
-
        $totalRequestLogs = Activity::where('description', 'like', 'Burial Assistance Request %')->count();
        $firstRequest = Activity::where('description', 'like', 'Burial Assistance Request %')->oldest()->first();
        $lastRequest = Activity::where('description', 'like', 'Burial Assistance Request %')->latest()->first();
@@ -100,14 +119,92 @@ class DashboardController extends Controller
         } else {
             $avgTracksPerMonth = 0;
         }
+    
+        $perBarangay = Claimant::select('barangay_id', DB::raw('count(*) as total'))
+            ->with('barangay')
+            ->groupBy('barangay_id')
+            ->get()
+            ->map(function ($item) {
+               return [
+                   'name' => $item->barangay->name ?? 'Unknown',
+                   'count' => $item->total,
+               ];
+            });
         
+        $applicationsByBarangay = BurialAssistance::with(['claimant.barangay'])
+            ->whereYear('created_at', now()->year)
+            ->get()
+            ->groupBy(fn($item) => $item->claimant->barangay->name);
 
-       return view('superadmin.dashboard', compact(
-        'totalData',
-        'totalUsers',
-        'avgRequestsPerMonth',
-        'avgTracksPerMonth',
-       ));
+        $applicationsByAdmin = User::whereHas('encoder')
+            ->with('encoder')
+            ->get();
+
+        $totalApplications = BurialAssistance::where(function ($query) {
+            $query->where('status', '!=', 'rejected');
+        })->count();
+
+        $lastLogs = ProcessLog::orderBy('created_at', 'desc')->limit(5)->get();
+        $pendingApplications = BurialAssistance::where('status', 'pending')->oldest()->limit(10)->get();
+
+        $applicationAverages = BurialAssistance::with(['processLogs' => function ($query) {
+            $query->orderBy('created_at', 'asc');
+        }])
+            ->get()
+            ->map(function ($application) {
+                $logs = $application->processLogs;
+                if ($logs->count() < 2) {
+                    return null;
+                }
+
+                $diffs = [];
+                for ($i = 0; $i < $logs->count() - 1; $i++) {
+                    $start = Carbon::parse($logs[$i]->created_at);
+                    $end = Carbon::parse($logs[$i + 1]->created_at);
+                    $diffs[] = $start->diffInHours($end);
+                }
+                return collect($diffs)->avg();
+            })
+            ->filter()
+            ->values();
+
+        $globalAverageProcessing = $applicationAverages->avg();
+
+        $cardData = [
+            [
+                'label' => 'Requests/Month',
+                'bg' => 'bg-primary',
+                'icon' => 'fa-align-left',
+                'count' => number_format($avgRequestsPerMonth, 2) . '%',
+            ],
+            [
+                'label' => 'Tracks/Month',
+                'bg' => 'bg-secondary',
+                'icon' => 'fa-list',
+                'count' => number_format($avgTracksPerMonth, 2) . '%',
+            ],
+            [
+                'label' => 'Total Applications',
+                'bg' => 'bg-success',
+                'icon' => 'fa-bell-concierge',
+                'count' => $totalApplications,
+            ],
+            [
+                'label' => 'Avg. Processing Time per Update',
+                'bg' => 'bg-warning',
+                'icon' => 'fa-clock',
+                'count' => $globalAverageProcessing . ' hr',
+            ],
+        ];
+
+        return view('superadmin.dashboard', compact(
+            'perBarangay',
+            'applicationsByBarangay',
+            'cardData',
+            'applicationsByAdmin',
+            'lastLogs',
+            'pendingApplications',
+        ));
     }
 
     public function trackerEvents() {

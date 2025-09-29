@@ -1,4 +1,4 @@
-@props(['burialAssistance'])
+@props(['burialAssistance', 'updateAverage'])
 @php
     use App\Models\WorkflowStep;
     $latestStep = $processLogs->last();
@@ -137,6 +137,12 @@
                     @endphp
                 @endforeach
             </ul>
-        </div>        
+        </div>
+
+        <div class="col mt-4">
+            @if ($updateAverage != null)
+                <p class="text-muted">Average Processing Time: {{ $updateAverage }} hr per update</p>
+            @endif        
+        </div>
     </div>
 </div>

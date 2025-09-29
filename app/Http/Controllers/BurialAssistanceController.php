@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreBurialAssistanceRequest;
 use Exception;
 use Crypt;
+use Carbon\Carbon;
 use Storage;
 use Illuminate\Http\Request;
 use App\Models\Barangay;
@@ -52,6 +53,11 @@ class BurialAssistanceController extends Controller
                     $path = "burial-assistance/{$burialAssistance->tracking_no}/";
                     Storage::disk('local')->put($path . $filename, Crypt::encrypt(file_get_contents($uploadedFile)));
                 }
+
+                activity()
+                    ->causedBy(null)
+                    ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
+                    ->log('Burial Assistance application submitted by guest');
         
                 return redirect()->route('landing.page')
                     ->with(
@@ -99,6 +105,27 @@ class BurialAssistanceController extends Controller
 
     public function trackPage($code) {
         $burialAssistance = BurialAssistance::where('tracking_code', $code)->first();
+
+        $updateAverage = $burialAssistance::with(['processLogs'])
+            ->get()
+            ->map(function ($application) {
+                $logs = $application->processLogs->sortBy('created_at')->values();
+                if ($logs->count() < 2) {
+                    return null;
+                }
+
+                $diffs = [];
+                for ($i = 0; $i < $logs->count() - 1; $i++) {
+                    $start = Carbon::parse($logs[$i]->created_at);
+                    $end = Carbon::parse($logs[$i + 1]->created_at);
+                    $diffs[] = $start->diffInHours($end);
+                }
+                return collect($diffs)->avg();
+            })
+            ->filter()
+            ->values()
+            ->avg();
+
         if (!auth()->check()) {
             $burialAssistance->claimant->first_name = Str::mask($burialAssistance->claimant->first_name, '*', 3);
             $burialAssistance->claimant->middle_name = Str::mask($burialAssistance->claimant->middle_name, '*', 3);
@@ -106,7 +133,7 @@ class BurialAssistanceController extends Controller
             $burialAssistance->claimant->mobile_number = Str::mask($burialAssistance->claimant->mobile_number, '*', 4, 3);
             $burialAssistance->claimant->address = Str::mask($burialAssistance->claimant->address, '*', 3);
         }
-        return view('guest.burial-assistance.tracker', compact('burialAssistance'));
+        return view('guest.burial-assistance.tracker', compact('burialAssistance', 'updateAverage'));
     }
 
     // Admin Side
