@@ -11,7 +11,7 @@
         <div class="section-body">
             <div class="row flex flex-column gap-5">
                 <div class="col">
-                    <x-assistance-process-tracker :burialAssistance="$application"/>
+                    <x-assistance-process-tracker :burialAssistance="$application" :updateAverage="$updateAverage"/>
                 </div>
                 <div class="col">
                     <x-application-manager :application="$application"/>

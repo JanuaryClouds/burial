@@ -60,4 +60,8 @@ class BurialAssistance extends Model
     public function initialChecker() {
         return $this->belongsTo(User::class, 'initial_checker', 'id');
     }
+
+    public function assignedTo() {
+        return $this->belongsTo(User::class, 'assigned_to', 'id');
+    }
 }

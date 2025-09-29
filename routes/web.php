@@ -100,6 +100,12 @@ Route::middleware(['auth'])
                 Route::get('/tracking-activity', [DashboardController::class, 'trackerEvents']);
                 Route::get('/superadmin/search', [SearchController::class, 'superadmin'])
                     ->name('search');
+
+                Route::get('/assignments', [BurialAssistanceController::class, 'assignments'])
+                    ->name('assignments');
+                Route::post('/assignments/{id}/assign', [BurialAssistanceController::class, 'assign'])
+                    ->name('assignments.assign');
+
                 Route::get('/cms/barangays', [CmsController::class, 'barangays'])
                     ->name('cms.barangays');
                 Route::get('/cms/requests', [CmsController::class, 'burialAssistanceRequests'])

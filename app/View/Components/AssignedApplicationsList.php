@@ -5,9 +5,8 @@ namespace App\View\Components;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
-use App\Models\User;
 
-class applicationActions extends Component
+class AssignedApplicationsList extends Component
 {
     /**
      * Create a new component instance.
@@ -22,10 +21,6 @@ class applicationActions extends Component
      */
     public function render(): View|Closure|string
     {
-        $admins = User::where(function ($query) {
-            $query->where('is_active', true)
-                ->role('admin');
-        })->get();
-        return view('components.application-actions', compact('admins'));
+        return view('components.assigned-applications-list');
     }
 }

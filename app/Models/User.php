@@ -48,4 +48,8 @@ class User extends Authenticatable
     public function initialChecker() {
         return $this->hasMany(BurialAssistance::class, 'initial_checker', 'id');
     }
+
+    public function assignedTo() {
+        return $this->hasMany(BurialAssistance::class, 'assigned_to', 'id');
+    }
 }

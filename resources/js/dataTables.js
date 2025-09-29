@@ -99,5 +99,45 @@ export function checkAndRenderDataTables() {
                 sortable: ''     // override neutral sortable class 
             }
         })
+
+        $('#assignments-table').DataTable({
+            responsive: true,
+            ordering: true,
+            dom: 
+                // First row: buttons on the left, filter on the right
+                "<'row mb-2'<'col-sm-6 d-flex align-items-center'l<'mr-3'>><'col-sm-6 d-flex justify-content-end'f>>" +
+                // Table
+                "<'row'<'col-12'tr>>" +
+                // Bottom row: info and pagination
+                "<'row mt-2'<'col-sm-6'i><'col-sm-6 d-flex justify-content-end'p>>",
+            buttons:[
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
+            classes: {
+                sortAsc: '',     // override ascending class
+                sortDesc: '',    // override descending class
+                sortable: ''     // override neutral sortable class 
+            }
+        })
+
+        $('#assigned-applications-table').DataTable({
+            responsive: true,
+            ordering: true,
+            dom: 
+                // First row: buttons on the left, filter on the right
+                "<'row mb-2'<'col-sm-6 d-flex align-items-center'l<'mr-3'>><'col-sm-6 d-flex justify-content-end'f>>" +
+                // Table
+                "<'row'<'col-12'tr>>" +
+                // Bottom row: info and pagination
+                "<'row mt-2'<'col-sm-6'i><'col-sm-6 d-flex justify-content-end'p>>",
+            buttons:[
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
+            classes: {
+                sortAsc: '',     // override ascending class
+                sortDesc: '',    // override descending class
+                sortable: ''     // override neutral sortable class 
+            }
+        })
     });
 }
