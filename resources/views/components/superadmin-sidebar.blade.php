@@ -2,7 +2,7 @@
     <aside class="sidebar-wrapper">
         <div class="sidebar-brand">
             <img alt="image" src="{{ asset('images/CSWDO.webp') }}" class="" style="width: 50px" />
-            <a href="{{ route('admin.dashboard') }}">Burial Assistance</a>
+            <a href="{{ route('superadmin.dashboard') }}">Burial Assistance</a>
         </div>
         <div class="sidebar-brand sidebar-brand-sm">
             <img alt="image" src="{{ asset('images/CSWDO.webp') }}" class="" style="width: 50px" />
@@ -13,6 +13,12 @@
                 <a href="{{ route('superadmin.dashboard') }}">
                     <i class="fas fa-home"></i>
                     <span>Dashboard</span>
+                </a>
+            </li>
+            <li @class(['active' => Request::is('superadmin/assignments')])>
+                <a href="{{ route('superadmin.assignments') }}">
+                    <i class="fas fa-check-to-slot"></i>
+                    <span>Assignments</span>
                 </a>
             </li>
             <li class="menu-header">CMS</li>
