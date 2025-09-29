@@ -9,6 +9,11 @@
     </section>
     <!-- TODO: Add Count cards -->
     <section class="section">
+        <div class="section-body">
+            <x-admin-dashboard-cards :cardData="$cardData" />
+        </div>
+    </section>
+    <section class="section">
         <div class="section-title">Activity</div>
         <div class="section-body">
             <div class="row">
@@ -49,7 +54,7 @@
                             <canvas 
                                 id="montlyActivityGraph"
                                 data-chart-data='@json($monthlyActivity->pluck('count'))'
-                                data-chart-labels='@json($monthlyActivity->pluck('month'))'
+                                data-chart-labels='@json($monthlyActivity->pluck('week'))'
                                 data-chart-type="line"
                             ></canvas>
                         </div>
