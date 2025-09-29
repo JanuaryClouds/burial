@@ -14,13 +14,22 @@
         </div>
     </section>
     <section class="section">
-        <div class="section-title">Activity</div>
+        <div class="section-title">For You</div>
         <div class="section-body">
             <div class="row">
+                <div class="col-12 col-md-12 col-lg-8">
+                    <x-assigned-applications-list :applications="$assignedApplications" />
+                </div>
                 <div class="col-12 col-md-12 col-lg-4">
                     <x-recent-activity :lastLogs="$lastLogs" />
                 </div>
-                <div class="col-12 col-md-12 col-lg-8">
+            </div>
+        </div>
+    </section>
+    <section class="section">
+        <div class="section-body">
+            <div class="row">
+                <div class="col-12">
                     <x-pending-applications-list :pendingApplications="$pendingApplications" />
                 </div>
             </div>        
