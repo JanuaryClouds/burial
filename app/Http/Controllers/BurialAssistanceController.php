@@ -176,6 +176,25 @@ class BurialAssistanceController extends Controller
         $path = "burial-assistance/{$application->tracking_no}";
         $storedFiles = Storage::disk('local')->files($path);
         $files = [];
+        $updateAverage = $application::with(['processLogs'])
+            ->get()
+            ->map(function ($application) {
+                $logs = $application->processLogs->sortBy('created_at')->values();
+                if ($logs->count() < 2) {
+                    return null;
+                }
+
+                $diffs = [];
+                for ($i = 0; $i < $logs->count() - 1; $i++) {
+                    $start = Carbon::parse($logs[$i]->created_at);
+                    $end = Carbon::parse($logs[$i + 1]->created_at);
+                    $diffs[] = $start->diffInHours($end);
+                }
+                return collect($diffs)->avg();
+            })
+            ->filter()
+            ->values()
+            ->avg();
         foreach ($storedFiles as $storedFile) {
             // TODO: Use API to store images
             $encryptedFile = Storage::disk('local')->get($storedFile);
@@ -189,7 +208,7 @@ class BurialAssistanceController extends Controller
                 'mime' => $mime,
             ];
         }
-        return view('applications.manage', compact('application', 'files'));
+        return view('applications.manage', compact('application', 'files', 'updateAverage'));
     }
 
     public function saveSwa(Request $request, $id) {
@@ -217,5 +236,26 @@ class BurialAssistanceController extends Controller
         $application->update();
 
         return redirect()->route('admin.applications.manage')->with('success', 'Successfully rejected burial assistance application.');
+    }
+
+    public function assignments() {
+        $applications = BurialAssistance::all()->sortByDesc('created_at');
+        return view('superadmin.assignment', compact('applications'));
+    }
+
+    public function assign(Request $request, $id) {
+        $request->validate([
+            'assigned_to' => 'nullable|exists:users,id',
+        ]);
+
+        $application = BurialAssistance::where('id', $id)->first();
+        if (!$application) {
+            return back()->with('alertError', 'Application not found.');
+        }
+
+        $application->assigned_to = $request->assigned_to;
+        $application->update();
+
+        return redirect()->route('superadmin.assignments')->with('alertSuccess', 'Successfully updated assignment.');
     }
 }
