@@ -139,10 +139,10 @@
             </ul>
         </div>
 
-        <div class="col mt-4">
-            @if ($updateAverage != null)
+        @if ($updateAverage && $updateAverage != null)
+            <div class="col mt-4">
                 <p class="text-muted">Average Processing Time: {{ $updateAverage }} hr per update</p>
-            @endif        
-        </div>
+            </div>
+        @endif        
     </div>
 </div>
