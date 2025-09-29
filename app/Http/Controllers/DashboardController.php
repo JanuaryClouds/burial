@@ -62,9 +62,34 @@ class DashboardController extends Controller
             ];
         });
 
+        $updatesPerHour = BurialAssistance::with(['processLogs' => function ($query) {
+            $query->where('added_by', auth()->user()->id);
+        }])
+            ->get()
+            ->map(function ($application) {
+                $logs = $application->processLogs;
+                if ($logs->count() < 2) {
+                    return 0; 
+                }
+                $diffs = [];
+                for ($i = 0; $i < $logs->count() - 1; $i++) {
+                    $start = Carbon::parse($logs[$i]->created_at);
+                    $end = Carbon::parse($logs[$i + 1]->created_at);
+                    $diffs[] = $start->diffInHours($end);
+                }
+                return collect($diffs)->avg();
+            })
+            ->filter()
+            ->values()
+            ->avg();
+
         $swaEncoded = BurialAssistance::where('encoder', auth()->user()->id)->count();
         $logsAdded = ProcessLog::where('added_by', auth()->user()->id)->count();
-        
+        $assignedApplications = BurialASsistance::where(function ($query) {
+            $query->where('status', '!=', 'rejected')
+                ->where('status', '!=', 'released')
+                ->where('assigned_to', auth()->user()->id);   
+        })->get();
 
         $cardData = [
             [
@@ -79,6 +104,18 @@ class DashboardController extends Controller
                 'icon' => 'fa-list',
                 'count' => $logsAdded,
             ],
+            [
+                'label' => 'Avg. Updates/Hour',
+                'bg' => 'bg-success',
+                'icon' => 'fa-bell-concierge',
+                'count' => $updatesPerHour ? number_format($updatesPerHour, 2) . ' hr' : '0 hr',
+            ],
+            [
+                'label' => 'Assigned Applications',
+                'bg' => 'bg-info',
+                'icon' => 'fa-equals',
+                'count' => $assignedApplications->count(),
+            ]
         ];
 
         return view('admin.dashboard', compact(
@@ -87,7 +124,8 @@ class DashboardController extends Controller
             'pendingApplications',
             'monthlyActivity',
             'applicationsByBarangay',
-            'cardData'
+            'cardData',
+            'assignedApplications',
         ));
     }
 
@@ -154,7 +192,7 @@ class DashboardController extends Controller
             ->map(function ($application) {
                 $logs = $application->processLogs;
                 if ($logs->count() < 2) {
-                    return null;
+                    return 0;
                 }
 
                 $diffs = [];
@@ -193,7 +231,7 @@ class DashboardController extends Controller
                 'label' => 'Avg. Processing Time per Update',
                 'bg' => 'bg-warning',
                 'icon' => 'fa-clock',
-                'count' => $globalAverageProcessing . ' hr',
+                'count' => $globalAverageProcessing ? $globalAverageProcessing . ' hr' : '0 hr',
             ],
         ];
 
