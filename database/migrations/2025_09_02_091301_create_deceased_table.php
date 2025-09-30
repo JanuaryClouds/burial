@@ -24,6 +24,7 @@ return new class extends Migration
                 ->constrained('sexes')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
+            // TODO: Bring these back
             // $table->string('address');
             // $table->foreignId('barangay_id')
             //     ->constrained('barangays')
