@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreBurialAssistanceRequest;
+use App\Services\ProcessLogService;
 use Exception;
 use Crypt;
 use Carbon\Carbon;
@@ -17,6 +18,8 @@ use Str;
 
 class BurialAssistanceController extends Controller
 {
+    protected $processLogService;
+
     public function view() {
         $barangays = Barangay::all();
         $relationships = Relationship::all();
@@ -103,28 +106,10 @@ class BurialAssistanceController extends Controller
         return redirect()->route('guest.burial-assistance.track-page', ['code' => $request->tracking_code]);
     }
 
-    public function trackPage($code) {
+    public function trackPage($code, ProcessLogService $processLogService) {
         $burialAssistance = BurialAssistance::where('tracking_code', $code)->first();
 
-        $updateAverage = $burialAssistance::with(['processLogs'])
-            ->get()
-            ->map(function ($application) {
-                $logs = $application->processLogs->sortBy('created_at')->values();
-                if ($logs->count() < 2) {
-                    return null;
-                }
-
-                $diffs = [];
-                for ($i = 0; $i < $logs->count() - 1; $i++) {
-                    $start = Carbon::parse($logs[$i]->created_at);
-                    $end = Carbon::parse($logs[$i + 1]->created_at);
-                    $diffs[] = $start->diffInHours($end);
-                }
-                return collect($diffs)->avg();
-            })
-            ->filter()
-            ->values()
-            ->avg();
+        $updateAverage = $processLogService->getAvgProcessingTime($burialAssistance)->avg();
 
         if (!auth()->check()) {
             $burialAssistance->claimant->first_name = Str::mask($burialAssistance->claimant->first_name, '*', 3);
@@ -171,30 +156,13 @@ class BurialAssistanceController extends Controller
         return view('applications.list', compact('applications', 'status'));
     }
 
-    public function manage($id) {
+    public function manage($id, ProcessLogService $processLogService) {
         $application = BurialAssistance::findOrFail($id);
         $path = "burial-assistance/{$application->tracking_no}";
         $storedFiles = Storage::disk('local')->files($path);
         $files = [];
-        $updateAverage = $application::with(['processLogs'])
-            ->get()
-            ->map(function ($application) {
-                $logs = $application->processLogs->sortBy('created_at')->values();
-                if ($logs->count() < 2) {
-                    return null;
-                }
+        $updateAverage = $processLogService->getAvgProcessingTime($application)->avg();
 
-                $diffs = [];
-                for ($i = 0; $i < $logs->count() - 1; $i++) {
-                    $start = Carbon::parse($logs[$i]->created_at);
-                    $end = Carbon::parse($logs[$i + 1]->created_at);
-                    $diffs[] = $start->diffInHours($end);
-                }
-                return collect($diffs)->avg();
-            })
-            ->filter()
-            ->values()
-            ->avg();
         foreach ($storedFiles as $storedFile) {
             // TODO: Use API to store images
             $encryptedFile = Storage::disk('local')->get($storedFile);
