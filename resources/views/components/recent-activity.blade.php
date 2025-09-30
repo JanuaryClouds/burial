@@ -32,7 +32,7 @@
                                     @if (auth()->user()->isAdmin())
                                         <span>
                                             <i class="fas fa-user mr-1"></i>
-                                            {{ $log->burialAssistance->deceased->last_name }} {{ $log->burialAssistance->deceased->first_name }}
+                                            {{ $log->burialAssistance->deceased->first_name }} {{ $log->burialAssistance->deceased->last_name }}
                                         </span>
                                     @else
                                         <span>
