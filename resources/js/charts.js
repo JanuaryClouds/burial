@@ -19,6 +19,8 @@ export function checkAndRenderCharts() {
             renderPieChart(chartData, chartId, chartLabels, chartTitle);
         } else if (chartType === 'line') {
             renderLineChart(chartData, chartId, chartLabels, chartTitle);
+        } else if (chartType === 'bar') {
+            renderBarChart(chartData, chartId, chartLabels, chartTitle);
         }
     }
 
@@ -67,6 +69,32 @@ export function checkAndRenderCharts() {
                         tension: 0.1
                     }],
                     borderWidth: 1
+                },
+                options: {
+                    responsive: true,
+                    legend: {
+                        display: false,
+                    },
+                    title: {
+                        display: !!chartTitle,
+                        text: chartTitle
+                    }
+                }
+            })
+        }
+    }
+
+    function renderBarChart(chartData, chartId, chartLabels, chartTitle) {
+        const barChart = document.getElementById(chartId);
+        if (barChart) {
+            new Chart(barChart, {
+                type: 'bar',
+                data: {
+                    labels: chartLabels,
+                    datasets: [{
+                        data: chartData,
+                        backgroundColor: '#3b82f6',
+                    }],
                 },
                 options: {
                     responsive: true,
