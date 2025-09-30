@@ -27,6 +27,7 @@ use App\Http\Controllers\{
     ProcessLogController,
     ClaimantChangeController,
     ExportController,
+    ReportController,
 };
 
 Route::get('/', function () {
@@ -87,6 +88,9 @@ Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 Route::middleware(['auth'])
     ->group(function () {
         Route::get('/client/latest-tracking', [ClientController::class, 'getLatestTracking'])->name('client.latest-tracking');
+
+        Route::get('/applications/export', [ExportController::class,'applications'])
+            ->name('applications.export.all');
         
         // super admin role
         Route::middleware('role:superadmin')
@@ -100,6 +104,16 @@ Route::middleware(['auth'])
                 Route::get('/tracking-activity', [DashboardController::class, 'trackerEvents']);
                 Route::get('/superadmin/search', [SearchController::class, 'superadmin'])
                     ->name('search');
+
+                Route::post('/reports/generate', [ReportController::class, 'generate'])
+                    ->name('reports.generate');
+
+                Route::get('/reports/burial-assistances', [ReportController::class, 'burialAssistances'])
+                    ->name('reports.burial-assistances');
+                Route::get('/reports/deceased', [ReportController::class, 'deceased'])
+                    ->name('reports.deceased');
+                Route::get('/reports/claimants', [ReportController::class, 'claimants'])
+                    ->name('reports.claimants');
 
                 Route::get('/assignments', [BurialAssistanceController::class, 'assignments'])
                     ->name('assignments');
@@ -172,8 +186,6 @@ Route::middleware(['auth'])
                     ->name('applications.released');
                 Route::get('/applications/history', [BurialAssistanceController::class, 'history'])
                     ->name('applications.history');
-                Route::get('/applications/{status}/export', [ExportController::class,'applications'])
-                    ->name('applications.export.all');
 
                 Route::post('/applications/{id}/claimant-change/{change}/decision', [ClaimantChangeController::class, 'decide'])
                     ->name('application.claimant-change.decision');
