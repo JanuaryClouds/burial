@@ -27,7 +27,9 @@
                                         <th class="sorting">Claimant</th>
                                         <th class="sorting">Submitted on</th>
                                         <th class="sorting">Status</th>
-                                        <th class="">Actions</th>
+                                        @if (!Request::is('superadmin/reports/*'))
+                                            <th class="">Actions</th>
+                                        @endif
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -60,7 +62,9 @@
                                                     <span class="badge badge-pill badge-danger">{{ ucfirst($application->status) }}</span>
                                                 @endif
                                             </td>
-                                            <td><x-application-actions :application="$application" /></td>
+                                            @if (!Request::is('superadmin/reports/*'))
+                                                <td><x-application-actions :application="$application" /></td>
+                                            @endif
                                         </tr>
                                     @endforeach
                                 </tbody>
