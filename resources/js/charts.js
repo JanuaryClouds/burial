@@ -104,6 +104,17 @@ export function checkAndRenderCharts() {
                     title: {
                         display: !!chartTitle,
                         text: chartTitle
+                    },
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true,
+                                stepSize: 1,  // force steps of 1
+                                callback: function(value) {
+                                    return Number.isInteger(value) ? value : null; // only show whole numbers
+                                }
+                            }
+                        }]
                     }
                 }
             })
