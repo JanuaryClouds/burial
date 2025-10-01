@@ -36,5 +36,7 @@ console.log("DataTables is running:", $.fn.dataTable ? true : false);
 import Alpine from "alpinejs";
 import persist from "@alpinejs/persist";
 Alpine.plugin(persist);
+
+import "./autofill";
 window.Alpine = Alpine;
 Alpine.start();

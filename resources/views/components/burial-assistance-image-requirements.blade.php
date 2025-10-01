@@ -3,10 +3,16 @@
     'files' => []
 ])
 
+@php
+    if (app()->isLocal()) {
+        $readonly = false;
+    }
+@endphp
+
 <div class="bg-white shadow-sm rounded p-4">
     <h2>Image Requirements</h2>
     <div class="row flex-column justify-content-center align-items-center g-2">
-    @if ($readonly)
+    @if (count($files) > 0)
         @foreach ($files as $file)
             <div class="col mb-2">
                 <section class="section">
@@ -20,7 +26,7 @@
                 </section>
             </div>
         @endforeach
-    @else
+    @elseif (count($files) == 0 && (!auth()->user() || !auth()->user()->isAdmin()))
         <div
             class="col mb-4"
         >
@@ -28,7 +34,7 @@
                 name="images[death_certificate]"
                 label="Certified True Copy of Registered Death Certificate"
                 helpText="From Taguig City Civil Registry."
-                required="true"
+                required="{{ $readonly }}"
             />
         </div>
         <div
@@ -38,21 +44,21 @@
                 name="images[funeral_contract]"
                 label="Certified True Copy of Funeral Contract"
                 helpText="From Funeral Establishment."
-                required="true"
+                required="{{ $readonly }}"
             />
         </div>
         <div class="col mb-4">
             <x-form-image-submission
                 name="images[claimant_valid_id]"
                 label="Photocopy of Valid Identification Card of Claimant"
-                required="true"
+                required="{{ $readonly }}"
             />
         </div>
         <div class="col mb-4">
             <x-form-image-submission
                 name="images[deceased_valid_id]"
                 label="Photocopy of Valid Identification Card of Deceased"
-                required="true"
+                required="{{ $readonly }}"
             />
         </div>
         <hr>
@@ -87,7 +93,7 @@
                 name="images[proof_of_relationship]"
                 label="Proof of Relationship between Claimant and Deceased"
                 helpText="From Taguig City Civil Registry or Philippine Statistics Authority (PSA)."
-                required="true"
+                required="{{ $readonly }}"
             />
         </div>
         <div class="col mb-4">
