@@ -192,4 +192,52 @@ class ReportService
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         ]);
     }
+
+    public function deceasedByMonth($startDate, $endDate) {
+        return Deceased::selectRaw('YEAR(date_of_death) as year, MONTH(date_of_death) as month, COUNT(*) as total')
+            ->whereBetween('date_of_death', [$startDate, $endDate])
+            ->groupBy('year', 'month')
+            ->orderBy('year')
+            ->orderBy('month')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'period' => Carbon::create($item->year, $item->month)->format('F Y'),
+                    'count'  => $item->total,
+                ];
+            });
+    }
+    
+    public function deceasedByWeek($startDate, $endDate) {
+        return Deceased::selectRaw('YEAR(date_of_death) as year, WEEK(date_of_death, 1) as week, COUNT(*) as total')
+        ->whereBetween('date_of_death', [$startDate, $endDate])
+        ->groupBy('year', 'week')
+        ->orderBy('year')
+        ->orderBy('week')
+        ->get()
+        ->map(function ($item) {
+            $startOfWeek = Carbon::now()->setISODate($item->year, $item->week)->startOfWeek();
+            $endOfWeek = (clone $startOfWeek)->endOfWeek();
+
+            return [
+                'period' => $startOfWeek->format('M d, Y') . ' - ' . $endOfWeek->format('M d, Y'),
+                'count'  => $item->total,
+            ];
+        });
+    }
+
+    public function deceasedByDay($startDate, $endDate) {
+        return Deceased::selectRaw('DATE(date_of_death) as day, COUNT(*) as total')
+            ->whereBetween('date_of_death', [$startDate, $endDate])
+            ->groupBy('day')
+            ->orderBy('day')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'period' => Carbon::parse($item->day)->format('M d, Y'),
+                    'count'  => $item->total,
+                ];
+        });
+    }
+
 }

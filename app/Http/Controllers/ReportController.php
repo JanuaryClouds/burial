@@ -7,6 +7,7 @@ use App\Models\Deceased;
 use Illuminate\Http\Request;
 use App\Services\ReportService;
 use App\Models\BurialAssistance;
+use Carbon\Carbon;
 
 class ReportController extends Controller
 {
@@ -19,7 +20,7 @@ class ReportController extends Controller
     ];
 
     public function burialAssistances() {
-        $burialAssistances = BurialAssistance::all();
+        $burialAssistances = BurialAssistance::select('id', 'tracking_no', 'claimant_id', 'deceased_id', 'application_date', 'status', 'created_at')->get();
         $statistics = [
             $burialAssistanceStatistics = [
                 'type' => 'burial_assistance',
@@ -39,16 +40,61 @@ class ReportController extends Controller
         return view('reports.burial-assistances', compact('burialAssistances', 'statistics'));
     }
 
-    public function deceased() {
-        // TODO: optimise by using query instead of all
-        $deceased = Deceased::all();
-        return view('reports.deceased', compact('deceased'));
+    public function deceased(ReportService $reportService) {
+        $deceased = Deceased::select('id', 'first_name', 'middle_name', 'last_name', 'suffix', 'gender', 'date_of_birth', 'date_of_death', 'address', 'barangay_id')->get();
+        $deceasedThisMonth = $reportService->deceasedByMonth(Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth());
+        $deceasedThisWeek = $reportService->deceasedByWeek(Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek());
+        $deceasedThisDay = $reportService->deceasedByDay(Carbon::now()->startOfDay(), Carbon::now()->endOfDay());
+        $deceasedByBarangay = Deceased::selectRaw('barangay_id, COUNT(*) as total')
+            ->with('barangay')
+            ->groupBy('barangay_id')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'name'  => $item->barangay->name ?? 'Unknown',
+                    'count' => $item->total,
+                ];
+            });
+
+        return view('reports.deceased', compact(
+            'deceased',
+            'deceasedThisMonth',
+            'deceasedThisWeek',
+            'deceasedThisDay',
+            'deceasedByBarangay',
+        ));
     }
 
     public function claimants() {
         // TODO: optimise by using query instead of all
-        $claimants = Claimant::all();
-        return view('reports.claimants', compact('claimants'));
+        $claimants = Claimant::select('first_name', 'middle_name', 'last_name', 'suffix', 'relationship_to_deceased', 'mobile_number', 'address', 'barangay_id')->get();
+        $claimantsPerBarangay = Claimant::selectRaw('barangay_id, COUNT(*) as total')
+            ->with('barangay')
+            ->groupBy('barangay_id')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'name'  => $item->barangay->name ?? 'Unknown',
+                    'count' => $item->total,
+                ];
+            });
+
+        $claimantsPerRelationship = Claimant::selectRaw('relationship_to_deceased, COUNT(*) as total')
+            ->with('relationship')
+            ->groupBy('relationship_to_deceased')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'name'  => $item->relationship->name ?? 'Unknown',
+                    'count' => $item->total,
+                ];
+            });
+
+        return view('reports.claimants', compact(
+            'claimants', 
+            'claimantsPerBarangay',
+            'claimantsPerRelationship'
+        ));
     }
 
     public function generate(Request $request, ReportService $reportService) {
