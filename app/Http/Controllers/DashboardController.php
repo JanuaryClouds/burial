@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\BurialServiceRequest;
+use App\Models\Deceased;
 use App\Services\ProcessLogService;
 use App\Models\Barangay;
 use App\Models\BurialAssistance;
@@ -172,10 +173,9 @@ class DashboardController extends Controller
                ];
             });
 
-        // TODO: Use Deceased barangay instead after updating deceased model
-        $applicationsThisYear = Claimant::select('barangay_id', DB::raw('count(*) as total'))
+        $applicationsThisYear = Deceased::select('barangay_id', DB::raw('count(*) as total'))
             ->with('barangay')
-            ->whereYear('created_at', now()->year)
+            ->whereYear('date_of_death', now()->year)
             ->groupBy('barangay_id')
             ->get()
             ->map(function ($item) {
@@ -186,9 +186,9 @@ class DashboardController extends Controller
             });
 
 
-        $applicationsThisMonth = Claimant::select('barangay_id', DB::raw('count(*) as total'))
+        $applicationsThisMonth = Deceased::select('barangay_id', DB::raw('count(*) as total'))
             ->with('barangay')
-            ->whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])
+            ->whereBetween('date_of_death', [now()->startOfMonth(), now()->endOfMonth()])
             ->groupBy('barangay_id')
             ->get()
             ->map(function ($item) {
@@ -198,9 +198,9 @@ class DashboardController extends Controller
                 ];
             });
 
-        $applicationsThisWeek = Claimant::select('barangay_id', DB::raw('count(*) as total'))
+        $applicationsThisWeek = Deceased::select('barangay_id', DB::raw('count(*) as total'))
             ->with('barangay')
-            ->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])
+            ->whereBetween('date_of_death', [now()->startOfWeek(), now()->endOfWeek()])
             ->groupBy('barangay_id')
             ->get()
             ->map(function ($item) {
@@ -210,9 +210,9 @@ class DashboardController extends Controller
                 ];
             });
 
-        $applicationsThisDay = Claimant::select('barangay_id', DB::raw('count(*) as total'))
+        $applicationsThisDay = Deceased::select('barangay_id', DB::raw('count(*) as total'))
             ->with('barangay')
-            ->where('created_at', now())
+            ->where('date_of_death', now())
             ->groupBy('barangay_id')
             ->get()
             ->map(function ($item) {
@@ -221,16 +221,14 @@ class DashboardController extends Controller
                     'count' => $item->total,
                 ];
             });
-        
+        // dd($applicationsThisYear, $applicationsThisMonth, $applicationsThisWeek, $applicationsThisDay);
         
         $applicationsByBarangay = BurialAssistance::with(['claimant.barangay'])
-            ->whereYear('created_at', now()->year)
+            ->where(function ($query)  { 
+                $query->where('status', '!=', 'rejected'); })
+                ->whereYear('created_at', now()->year)
             ->get()
             ->groupBy(fn($item) => $item->claimant->barangay->name);
-
-        $applicationsByAdmin = User::whereHas('encoder')
-            ->with('encoder')
-            ->get();
 
         $totalApplications = BurialAssistance::where(function ($query) {
             $query->where('status', '!=', 'rejected');
@@ -253,7 +251,7 @@ class DashboardController extends Controller
                 for ($i = 0; $i < $logs->count() - 1; $i++) {
                     $start = Carbon::parse($logs[$i]->created_at);
                     $end = Carbon::parse($logs[$i + 1]->created_at);
-                    $diffs[] = $start->diffInHours($end);
+                    $diffs[] = $start->diffInRealMinutes($end);
                 }
                 return collect($diffs)->avg();
             })
@@ -267,13 +265,13 @@ class DashboardController extends Controller
                 'label' => 'Applications/Month',
                 'bg' => 'bg-primary',
                 'icon' => 'fa-align-left',
-                'count' => number_format($avgRequestsPerMonth, 2) . '%',
+                'count' => number_format($avgRequestsPerMonth, 2) . '/month',
             ],
             [
                 'label' => 'Tracks/Month',
                 'bg' => 'bg-secondary',
                 'icon' => 'fa-list',
-                'count' => number_format($avgTracksPerMonth, 2) . '%',
+                'count' => number_format($avgTracksPerMonth, 2) . '/month',
             ],
             [
                 'label' => 'Total Applications',
@@ -297,7 +295,6 @@ class DashboardController extends Controller
             'applicationsThisWeek',
             'applicationsThisDay',
             'cardData',
-            'applicationsByAdmin',
             'lastLogs',
             'pendingApplications',
         ));
