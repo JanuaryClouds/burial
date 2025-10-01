@@ -6,8 +6,7 @@ export function checkAndRenderDataTables() {
             ordering: true, // keep ordering functional
             dom:
                 // First row: buttons on the left, filter on the right
-                // TODO: Move buttons to the right and be green
-                "<'row mb-2'<'col-sm-6 d-flex align-items-center'l<'mr-3'>><'col-sm-6 d-flex justify-content-end'fB>>" +
+                "<'row mb-2'<'col-sm-6 d-flex align-items-center'l<'mr-3'>><'col-sm-6 d-flex justify-content-end align-items-center'f<'ml-3'>B>>" +
                 // Table
                 "<'row'<'col-12'tr>>" +
                 // Bottom row: info and pagination
@@ -19,7 +18,7 @@ export function checkAndRenderDataTables() {
                 // 'pdf',
                 // 'print'
                 {
-                    text: 'Excel',
+                    className: 'btn btn-success p-0 px-3 fas fa-file-excel',
                     action: function() {
                         const url = window.location.href;
                         const status = url.substring(url.lastIndexOf('/') + 1);
