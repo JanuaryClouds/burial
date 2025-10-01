@@ -21,8 +21,8 @@ class BurialAssistanceController extends Controller
     protected $processLogService;
 
     public function view() {
-        $barangays = Barangay::all();
-        $relationships = Relationship::all();
+        $barangays = Barangay::select('id', 'name')->get();
+        $relationships = Relationship::select('id', 'name')->get();
         return view('guest.burial-assistance.view', compact(
             'barangays',
             'relationships',
@@ -151,7 +151,7 @@ class BurialAssistanceController extends Controller
     }
 
     public function history() {
-        $applications = BurialAssistance::all()->sortByDesc('created_at');
+        $applications = BurialAssistance::select('id', 'deceased_id', 'claimant_id', 'tracking_no', 'application_date', 'status', 'created_at')->get();
         $status = 'All';
         return view('applications.list', compact('applications', 'status'));
     }
@@ -207,7 +207,7 @@ class BurialAssistanceController extends Controller
     }
 
     public function assignments() {
-        $applications = BurialAssistance::all()->sortByDesc('created_at');
+        $applications = BurialAssistance::select('id', 'tracking_no', 'deceased_id', 'claimant_id', 'application_date', 'status', 'assigned_to')->get();
         return view('superadmin.assignment', compact('applications'));
     }
 
