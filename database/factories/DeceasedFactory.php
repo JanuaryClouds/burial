@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Religion;
 use App\Models\Sex;
+use App\Models\Barangay;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -28,6 +29,8 @@ class DeceasedFactory extends Factory
             'date_of_birth' => $this->faker->date('Y-m-d'),
             'date_of_death' => $this->faker->dateTimeBetween('-2 years', now()),
             'gender' => Sex::inRandomOrder()->first()->id,
+            'address' => $this->faker->address(),
+            'barangay_id' => Barangay::inRandomOrder()->first()->id,
             'religion_id' => Religion::inRandomOrder()->first()->id,
         ];
     }
