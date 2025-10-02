@@ -1,6 +1,7 @@
 import Chart from 'chart.js';
 
 export function checkAndRenderCharts() {
+    window.renderedCharts = window.renderedCharts || {};
     const canvases = document.querySelectorAll('canvas')
 
     canvases.forEach(canvas => {
@@ -27,7 +28,7 @@ export function checkAndRenderCharts() {
     function renderPieChart(chartData, chartId, chartLabels, chartTitle) {
         const piChart = document.getElementById(chartId);
         if (piChart) {
-            new Chart(piChart, {
+            const chart = new Chart(piChart, {
                type: 'pie', 
                data: {
                     labels: chartLabels,
@@ -52,13 +53,15 @@ export function checkAndRenderCharts() {
                     }
                }
             });
+
+            window.renderedCharts[chartId] = chart;
         }
     }
 
     function renderLineChart(chartData, chartId, chartLabels, chartTitle) {
         const lineChart = document.getElementById(chartId);
         if (lineChart) {
-            new Chart(lineChart, {
+            const chart = new Chart(lineChart, {
                 type: 'line',
                 data: {
                     labels: chartLabels,
@@ -81,13 +84,15 @@ export function checkAndRenderCharts() {
                     }
                 }
             })
+            
+            window.renderedCharts[chartId] = chart;
         }
     }
 
     function renderBarChart(chartData, chartId, chartLabels, chartTitle) {
         const barChart = document.getElementById(chartId);
         if (barChart) {
-            new Chart(barChart, {
+            const chart = new Chart(barChart, {
                 type: 'bar',
                 data: {
                     labels: chartLabels,
@@ -118,6 +123,8 @@ export function checkAndRenderCharts() {
                     }
                 }
             })
+            
+            window.renderedCharts[chartId] = chart;
         }
     }
 }
