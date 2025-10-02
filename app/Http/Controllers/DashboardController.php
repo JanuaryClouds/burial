@@ -283,7 +283,7 @@ class DashboardController extends Controller
                 'label' => 'Avg. Processing Time per Update',
                 'bg' => 'bg-warning',
                 'icon' => 'fa-clock',
-                'count' => $globalAverageProcessing ? $globalAverageProcessing . ' hr' : '0 hr',
+                'count' => $globalAverageProcessing ? number_format($globalAverageProcessing, 2) . ' m' : '<1 m',
             ],
         ];
 
