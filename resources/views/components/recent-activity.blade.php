@@ -50,7 +50,7 @@
                                     <div class="progress" style="height: 8px;">
                                         <div 
                                             class="progress-bar bg-primary" 
-                                            style="width: {{ ($log->loggable->order_no / App\Models\WorkflowStep::all()->count()) * 100 }}%;" 
+                                            style="width: {{ ($log->loggable->order_no / App\Models\WorkflowStep::select('id')->count()) * 100 }}%;" 
                                             role="progressbar" 
                                             aria-valuenow="25" 
                                             aria-valuemin="0" 

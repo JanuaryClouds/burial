@@ -26,4 +26,5 @@ class BurialAssistanceService
 		}
 		return false;
 	}
+
 }

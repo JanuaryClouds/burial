@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Services\ReportService;
 use App\Models\BurialAssistance;
 use Carbon\Carbon;
+use Storage;
 
 class ReportController extends Controller
 {
@@ -40,33 +41,39 @@ class ReportController extends Controller
         return view('reports.burial-assistances', compact('burialAssistances', 'statistics'));
     }
 
-    public function deceased(ReportService $reportService) {
-        $deceased = Deceased::select('id', 'first_name', 'middle_name', 'last_name', 'suffix', 'gender', 'date_of_birth', 'date_of_death', 'address', 'barangay_id')->get();
-        $deceasedThisMonth = $reportService->deceasedByMonth(Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth());
-        $deceasedThisWeek = $reportService->deceasedByWeek(Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek());
-        $deceasedThisDay = $reportService->deceasedByDay(Carbon::now()->startOfDay(), Carbon::now()->endOfDay());
-        $deceasedByBarangay = Deceased::selectRaw('barangay_id, COUNT(*) as total')
-            ->with('barangay')
-            ->groupBy('barangay_id')
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'name'  => $item->barangay->name ?? 'Unknown',
-                    'count' => $item->total,
-                ];
-            });
+    public function deceased(Request $request, ReportService $reportService) {
+        if ($request->has('start_date') && $request->start_date != '') {
+            $startDate = Carbon::parse($request->start_date);
+        } else {
+            $startDate = Carbon::now()->subMonth();
+        }
+        
+        if ($request->has('end_date') && $request->end_date != '') {
+            $endDate = Carbon::parse($request->end_date);
+        } else {
+            $endDate = Carbon::now()->addMonth();
+        }
 
+        $deceased = Deceased::select('id', 'first_name', 'middle_name', 'last_name', 'suffix', 'gender', 'date_of_birth', 'date_of_death', 'address', 'barangay_id')
+            ->whereBetween('date_of_death', [$startDate, $endDate])
+            ->get();
+
+        $deceasedThisMonth = $reportService->deceasedByMonth($startDate, $endDate);
+        $deceasedByBarangay = $reportService->deceasedByBarangay($startDate, $endDate);
+        $deceasedByReligion = $reportService->deceasedByReligion($startDate, $endDate);
+        $deceasedByGender = $reportService->deceasedByGender($startDate, $endDate);
         return view('reports.deceased', compact(
             'deceased',
             'deceasedThisMonth',
-            'deceasedThisWeek',
-            'deceasedThisDay',
             'deceasedByBarangay',
+            'deceasedByReligion',
+            'deceasedByGender',
+            'startDate',
+            'endDate'
         ));
     }
 
     public function claimants() {
-        // TODO: optimise by using query instead of all
         $claimants = Claimant::select('first_name', 'middle_name', 'last_name', 'suffix', 'relationship_to_deceased', 'mobile_number', 'address', 'barangay_id')->get();
         $claimantsPerBarangay = Claimant::selectRaw('barangay_id, COUNT(*) as total')
             ->with('barangay')
