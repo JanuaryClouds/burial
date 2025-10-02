@@ -240,4 +240,44 @@ class ReportService
         });
     }
 
+    public function deceasedByBarangay($startDate, $endDate) {
+        return Deceased::selectRaw('barangay_id, COUNT(*) as total')
+            ->with('barangay')
+            ->groupBy('barangay_id')
+            ->whereBetween('date_of_death', [$startDate, $endDate])
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'name'  => $item->barangay->name ?? 'Unknown',
+                    'count' => $item->total,
+                ];
+            });
+    }
+
+    public function deceasedByReligion($startDate, $endDate) {
+        return Deceased::selectRaw('religion_id, COUNT(*) as total')
+            ->with('religion')
+            ->groupBy('religion_id')
+            ->whereBetween('date_of_death', [$startDate, $endDate])
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'name'  => $item->religion->name ?? 'Unknown',
+                    'count' => $item->total,
+                ];
+            });
+    }
+
+    public function deceasedByGender($startDate, $endDate) {
+        return Deceased::selectRaw('gender, COUNT(*) as total')
+            ->groupBy('gender')
+            ->whereBetween('date_of_death', [$startDate, $endDate])
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'name'  => $item->gender == 1 ? 'Male' : 'Female',
+                    'count' => $item->total,
+                ];
+            });
+    }
 }
