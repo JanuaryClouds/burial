@@ -3,7 +3,7 @@
     'startDate' => now()->startOfYear()->format('Y-m-d'),
     'endDate' => now()->endOfYear()->format('Y-m-d')
 ])
-<form action="{{ route('superadmin.reports.' . $type) }}" method="POST">
+<form action="{{ route('reports.' . $type) }}" method="POST">
     @csrf
     <div class="card">
         <div class="card-body">
@@ -37,7 +37,7 @@
                 <button class="btn btn-secondary mr-2" type="button" id="preset-month-now">This Month</button>
             </span>
             <span class="d-flex align-items-center">
-                <a href="{{ route('superadmin.reports.deceased') }}" class="btn btn-secondary mr-2">
+                <a href="{{ route('reports.deceased') }}" class="btn btn-secondary mr-2">
                     <i class="fas fa-sync"></i>
                     Reset
                 </a>

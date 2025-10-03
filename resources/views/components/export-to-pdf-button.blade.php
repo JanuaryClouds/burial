@@ -1,5 +1,5 @@
 @props(['type', 'startDate', 'endDate'])
-<form action="{{ route('superadmin.reports.' . $type . '.pdf', ['startDate' => $startDate, 'endDate' => $endDate]) }}" method="post" id="export-to-pdf-form" target="_blank">
+<form action="{{ route('reports.' . $type . '.pdf', ['startDate' => $startDate, 'endDate' => $endDate]) }}" method="post" id="export-to-pdf-form" target="_blank">
     @csrf
     <button class="btn btn-primary" type="submit">
         <i class="fas fa-file-pdf"></i>

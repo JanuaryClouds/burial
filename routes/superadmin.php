@@ -41,19 +41,6 @@ Route::middleware('role:superadmin')
         Route::post('/reports/generate', [ReportController::class, 'generate'])
             ->name('reports.generate');
 
-        Route::get('/reports/burial-assistances', [ReportController::class, 'burialAssistances'])
-            ->name('reports.burial-assistances');
-        Route::match(['get', 'post'], '/reports/deceased', [ReportController::class, 'deceased'])
-            ->name('reports.deceased');
-        Route::match(['get', 'post'], '/reports/claimants', [ReportController::class, 'claimants'])
-            ->name('reports.claimants');
-
-        Route::post('/reports/export/deceased/{startDate}/{endDate}', [DeceasedController::class, 'generatePdfReport'])
-            ->name('reports.deceased.pdf');
-
-        Route::post('/reports/export/claimant/{startDate}/{endDate}', [ClaimantController::class, 'generatePdfReport'])
-            ->name('reports.claimant.pdf');
-
         Route::get('/assignments', [BurialAssistanceController::class, 'assignments'])
             ->name('assignments');
         Route::post('/assignments/{id}/assign', [BurialAssistanceController::class, 'assign'])
