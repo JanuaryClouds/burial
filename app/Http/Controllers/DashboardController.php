@@ -66,6 +66,7 @@ class DashboardController extends Controller
             ];
         });
 
+        // TODO: Not working and displays 0
         $updatesPerHour = BurialAssistance::with(['processLogs' => function ($query) {
             $query->where('added_by', auth()->user()->id);
         }])
