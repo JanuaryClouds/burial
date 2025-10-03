@@ -15,6 +15,8 @@
         'deceased-per-month',
         'deceased-per-religion',
         'deceased-per-barangay',
+        'claimant-per-barangay',
+        'claimant-per-relationship',
     ];
 
     function getChartImage(chartId) {

@@ -17,9 +17,9 @@
                     </div>
                     <div class="card-body">
                         <canvas 
-                            id="applicationsDistributions"
-                            data-chart-data='@json($claimantsPerBarangay->pluck('count'))'
-                            data-chart-labels='@json($claimantsPerBarangay->pluck('name'))'
+                            id="claimant-per-barangay"
+                            data-chart-data='@json($claimantsByBarangay->pluck('count'))'
+                            data-chart-labels='@json($claimantsByBarangay->pluck('name'))'
                             data-chart-type="pie"
                         ></canvas>
                     </div>
@@ -32,9 +32,9 @@
                     </div>
                     <div class="card-body">
                         <canvas 
-                            id="relationshipDistributions"
-                            data-chart-data='@json($claimantsPerRelationship->pluck('count'))'
-                            data-chart-labels='@json($claimantsPerRelationship->pluck('name'))'
+                            id="claimant-per-relationship"
+                            data-chart-data='@json($claimantsByRelationship->pluck('count'))'
+                            data-chart-labels='@json($claimantsByRelationship->pluck('name'))'
                             data-chart-type="pie"
                         ></canvas>
                     </div>
@@ -83,6 +83,9 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div class="d-flex justify-content-center">
+        <x-export-to-pdf-button :startDate="$startDate" :endDate="$endDate" type="claimant" />
     </div>
 </div>
 @endsection

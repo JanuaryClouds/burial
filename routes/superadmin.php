@@ -22,6 +22,7 @@ use App\Http\Controllers\{
     BurialAssistanceController,
     ReportController,
     DeceasedController,
+    ClaimantController,
 };
 
 // super admin role
@@ -47,8 +48,11 @@ Route::middleware('role:superadmin')
         Route::match(['get', 'post'], '/reports/claimants', [ReportController::class, 'claimants'])
             ->name('reports.claimants');
 
-        Route::post('/reports/export/{startDate}/{endDate}', [DeceasedController::class, 'generatePdfReport'])
+        Route::post('/reports/export/deceased/{startDate}/{endDate}', [DeceasedController::class, 'generatePdfReport'])
             ->name('reports.deceased.pdf');
+
+        Route::post('/reports/export/claimant/{startDate}/{endDate}', [ClaimantController::class, 'generatePdfReport'])
+            ->name('reports.claimant.pdf');
 
         Route::get('/assignments', [BurialAssistanceController::class, 'assignments'])
             ->name('assignments');
