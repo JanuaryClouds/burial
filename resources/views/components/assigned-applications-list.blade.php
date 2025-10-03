@@ -33,10 +33,15 @@
                                         {{ $application->deceased->suffix }}
                                     </td>
                                     <td>
-                                        {{ $application->claimant->first_name }}
-                                        {{ $application->claimant->middle_name ? Str::charAt($application->claimant->middle_name, 0).'.' : '' }}
-                                        {{ $application->claimant->last_name }}
-                                        {{ $application->claimant->suffix }}
+                                        @if ($application?->claimantChanges->isNotEmpty())
+                                            @foreach ($application->claimantChanges as $cc)
+                                                @if ($cc->status === 'approved')
+                                                    {{ $cc->newClaimant->first_name }} {{ Str::limit($cc->newClaimant->middle_name, 1, '.') }} {{ $cc->newClaimant->last_name }} {{ $cc?->newClaimant->suffix }}
+                                                @endif
+                                            @endforeach
+                                        @else
+                                            {{ $application->claimant->first_name }} {{ Str::limit($application->claimant->middle_name, 1, '.') }} {{ $application->claimant->last_name }} {{ $application?->claimant->suffix }}
+                                        @endif
                                     </td>
                                     <td>{{ $application->application_date }}</td>
                                     @if (Request::is('admin/applications/history'))
