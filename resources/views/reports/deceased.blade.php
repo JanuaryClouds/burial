@@ -1,5 +1,12 @@
 @props(['deceased'])
-@extends('layouts.stisla.superadmin')
+@php
+    if (auth()->user()->hasRole('admin')) {
+        $role = 'admin';
+    } else if (auth()->user()->hasRole('superadmin')) {
+        $role = 'superadmin';
+    }
+@endphp
+@extends('layouts.stisla.' . $role)
 <title>Deceased</title>
 <meta name="csrf-token" content="{{ csrf_token() }}">
 @section('content')
@@ -18,13 +25,13 @@
                         <h4>Deceased By Gender</h4>
                     </div>
                     <div class="card-body">
-                        @if (!$deceasedByGender->isEmpty())
+                        @if (!$deceasedPerGender->isEmpty())
                             <canvas 
-                                id="deceased-per-gender"
-                                data-chart-data='@json($deceasedByGender->pluck('count'))'
-                                data-chart-labels='@json($deceasedByGender->pluck('name'))'
+                                id="deceased-by-gender"
+                                data-chart-data='@json($deceasedPerGender->pluck('count'))'
+                                data-chart-labels='@json($deceasedPerGender->pluck('name'))'
                                 data-chart-type="bar"
-                                data-empty="{{ $deceasedByGender->isEmpty() ? 'true' : 'false' }}"
+                                data-empty="{{ $deceasedPerGender->isEmpty() ? 'true' : 'false' }}"
                             ></canvas>
                         @else
                             <p class="text-muted">No Data</p>
@@ -41,10 +48,10 @@
                         <div>
                             <canvas
                                 id="deceased-per-religion"
-                                data-chart-data='@json($deceasedByReligion->pluck('count'))'
-                                data-chart-labels='@json($deceasedByReligion->pluck('name'))'
+                                data-chart-data='@json($deceasedPerReligion->pluck('count'))'
+                                data-chart-labels='@json($deceasedPerReligion->pluck('name'))'
                                 data-chart-type="pie"
-                                data-empty="{{ $deceasedByReligion->isEmpty() ? 'true' : 'false' }}"
+                                data-empty="{{ $deceasedPerReligion->isEmpty() ? 'true' : 'false' }}"
                             ></canvas>
                         </div>
                     </div>
@@ -60,7 +67,7 @@
                     <div class="card-body">
                         @if (!$deceasedThisMonth->isEmpty())
                             <canvas 
-                                id="deceased-per-month"
+                                id="deceased-by-month"
                                 data-chart-data='@json($deceasedThisMonth->pluck('count'))'
                                 data-chart-labels='@json($deceasedThisMonth->pluck('period'))'
                                 data-chart-type="bar"
@@ -80,11 +87,11 @@
                     <div class="card-body">
                         <div>
                             <canvas
-                                id="deceased-per-barangay"
-                                data-chart-data='@json($deceasedByBarangay->pluck('count'))'
-                                data-chart-labels='@json($deceasedByBarangay->pluck('name'))'
+                                id="deceased-Per-barangay"
+                                data-chart-data='@json($deceasedPerBarangay->pluck('count'))'
+                                data-chart-labels='@json($deceasedPerBarangay->pluck('name'))'
                                 data-chart-type="pie"
-                                data-empty="{{ $deceasedByBarangay->isEmpty() ? 'true' : 'false' }}"
+                                data-empty="{{ $deceasedPerBarangay->isEmpty() ? 'true' : 'false' }}"
                             ></canvas>
                         </div>
                     </div>

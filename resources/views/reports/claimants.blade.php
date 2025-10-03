@@ -1,5 +1,12 @@
 @props(['deceased'])
-@extends('layouts.stisla.superadmin')
+@php
+    if (auth()->user()->hasRole('admin')) {
+        $role = 'admin';
+    } else if (auth()->user()->hasRole('superadmin')) {
+        $role = 'superadmin';
+    }
+@endphp
+@extends('layouts.stisla.' . $role)
 <title>Claimants</title>
 @section('content')
 <div class="main-content">
@@ -18,8 +25,8 @@
                     <div class="card-body">
                         <canvas 
                             id="claimant-per-barangay"
-                            data-chart-data='@json($claimantsByBarangay->pluck('count'))'
-                            data-chart-labels='@json($claimantsByBarangay->pluck('name'))'
+                            data-chart-data='@json($claimantsPerBarangay->pluck('count'))'
+                            data-chart-labels='@json($claimantsPerBarangay->pluck('name'))'
                             data-chart-type="pie"
                         ></canvas>
                     </div>
@@ -33,8 +40,8 @@
                     <div class="card-body">
                         <canvas 
                             id="claimant-per-relationship"
-                            data-chart-data='@json($claimantsByRelationship->pluck('count'))'
-                            data-chart-labels='@json($claimantsByRelationship->pluck('name'))'
+                            data-chart-data='@json($claimantsPerRelationship->pluck('count'))'
+                            data-chart-labels='@json($claimantsPerRelationship->pluck('name'))'
                             data-chart-type="pie"
                         ></canvas>
                     </div>

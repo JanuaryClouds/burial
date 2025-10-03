@@ -8,6 +8,7 @@ use App\Http\Controllers\{
     ReportController,
     DeceasedController,
     ClaimantController,
+    BurialAssistanceController,
 };
 
 Route::get('/', function () {
@@ -29,12 +30,15 @@ Route::middleware(['auth'])
         Route::get('/applications/export', [ExportController::class,'applications'])
             ->name('applications.export.all');
 
-        Route::get('/reports/burial-assistances', [ReportController::class, 'burialAssistances'])
+        Route::match(['get', 'post'], '/reports/burial-assistances', [ReportController::class, 'burialAssistances'])
             ->name('reports.burial-assistances');
         Route::match(['get', 'post'], '/reports/deceased', [ReportController::class, 'deceased'])
             ->name('reports.deceased');
         Route::match(['get', 'post'], '/reports/claimants', [ReportController::class, 'claimants'])
             ->name('reports.claimants');
+
+        Route::post('/reports/export/burial-assistances/{startDate}/{endDate}', [BurialAssistanceController::class, 'generatePdfReport'])
+            ->name('reports.burial-assistances.pdf');
 
         Route::post('/reports/export/deceased/{startDate}/{endDate}', [DeceasedController::class, 'generatePdfReport'])
             ->name('reports.deceased.pdf');
