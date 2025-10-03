@@ -24,9 +24,11 @@
                                     <div class="col">
                                         <p>Please fill out the following information. Fields marked with an asterisk are required. Leave blank if inapplicable.</p>
                                         <p class="fw-bold">Upon submission, the application will be sent to the CSWDO of Taguig City for review. After of which, information you provided will be permanent and cannot be edited or deleted. However, you are allowed to request a change of claimants of the assistance after a short review. You can use the system's tracker to check the status of your request</p>
-                                        <button class="btn btn-outline-primary" id="autofillBtn">
-                                            <i class="fas fa-wand-magic-sparkles"></i>
-                                        </button>
+                                        @if (app()->isLocal())
+                                            <button class="btn btn-outline-primary" id="autofillBtn">
+                                                <i class="fas fa-wand-magic-sparkles"></i>
+                                            </button>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
