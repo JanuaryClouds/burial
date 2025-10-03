@@ -56,6 +56,7 @@
     <table>
         <thead>
             <tr>
+                <th>Assistance Tracking Number</th>
                 <th>Full Name (First Name MI. Last Name, Suffix)</th>
                 <th>Gender</th>
                 <th>Religion</th>
@@ -67,6 +68,9 @@
         <tbody>
             @foreach ($deceased as $d)
                 <tr>
+                    <td>
+                        {{ $d->burialAssistance->tracking_no }}
+                    </td>
                     <td>{{ $d->first_name }} {{ $d->middle_name == null ? '' : Str::limit($d?->middle_name, 1, '.') }} {{ $d->last_name }} {{ $d?->suffix }}</td>
                     <td>{{ $d->gender == 1 ? 'Male' : 'Female' }}</td>
                     <td>{{ $d->religion->name }}</td>
