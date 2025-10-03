@@ -27,7 +27,7 @@ class DeceasedFactory extends Factory
                 'Jr.', 'Sr.', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X',
             ]),
             'date_of_birth' => $this->faker->date('Y-m-d'),
-            'date_of_death' => $this->faker->dateTimeBetween('-2 years', now()),
+            'date_of_death' => $this->faker->dateTimeBetween('-1 week', now()),
             'gender' => Sex::inRandomOrder()->first()->id,
             'address' => $this->faker->address(),
             'barangay_id' => Barangay::inRandomOrder()->first()->id,
