@@ -7,8 +7,8 @@
         body {font-size: 12px;}
         table {width: 100%; border-collapse: collapse; margin-top: 20px;}
         .text-center {text-align: center;}
-        .title {font-weight: bold; font-size: 24px; text-transform: uppercase;}
-        .subtitle {font-size: 16px; text-transform: uppercase;}
+        .title {font-weight: bold; font-size: 24px; text-transform: uppercase; font-family: serif;}
+        .subtitle {font-size: 16px; text-transform: uppercase; font-family: serif;}
         .logo {width: 70%; height: auto;}
         .no-border {border: none !important;}
         th, td {border: 1px solid #000000; padding: 6px; text-align: left;}
@@ -24,8 +24,8 @@
             <td class="no-border">
                 <h1 class="title text-center">Taguig City CSWDO</h1>
                 <p class="subtitle text-center" style="font-weight: bold;">Burial Assistance</p>
-                <h2 class="text-center">Deceased Persons Report</h2>
-                <p class="text-center">{{ \Carbon\Carbon::parse($startDate)->format('M d, Y') }} to {{ \Carbon\Carbon::parse($endDate)->format('M d, Y') }}</p>
+                <h2 class="text-center" style="font-family: serif; text-transform: uppercase;">Deceased Persons Report</h2>
+                <p class="text-center" style="font-family: serif;">{{ \Carbon\Carbon::parse($startDate)->format('F d, Y') }} to {{ \Carbon\Carbon::parse($endDate)->format('F d, Y') }}</p>
             </td>
             <td style="width: 30%; text-align: center;" class="no-border">
                 <img src="./images/city_logo.webp" alt="" class="logo">
@@ -77,6 +77,40 @@
             @endforeach
         </tbody>
     </table>
-    <h3>Total: {{ $deceased->count() }}</h3>
+    <strong>Total: </strong>{{ $deceased->count() }}
+    <table style="margin-top: 20px;">
+        <thead>
+            <tr>
+                <th>Barangay</th>
+                <th>Count of Deceased Persons</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($barangays as $b)
+                <tr>
+                    <td>{{ $b->name }}</td>
+                    <td>{{ $b->deceased->count() }}</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+    <strong>Total: </strong> {{ $barangays->count() }}
+    <table style="margin-top: 20px;">
+        <thead>
+            <tr>
+                <th>Religion</th>
+                <th>Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($religions as $r)
+                <tr>
+                    <td>{{ $r->name }}</td>
+                    <td>{{ $r->deceased->count() }}</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+    <strong>Total: </strong>{{ $religions->count() }}
 </body>
 </html>

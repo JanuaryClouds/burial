@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Barangay;
+use App\Models\Religion;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use App\Models\Deceased;
@@ -28,14 +30,35 @@ class DeceasedController extends Controller
             ->with('gender', 'religion', 'barangay')
             ->whereBetween('date_of_death', [$startDate, $endDate])
             ->get();
+
+            $barangays = Barangay::with(['deceased' => function($query) use ($startDate, $endDate) {
+                $query->whereBetween('deceased.date_of_death', [$startDate, $endDate]);
+            }])
+                ->select('id', 'name')
+                ->whereHas('deceased', function($query) use ($startDate, $endDate) {
+                    $query->whereBetween('deceased.date_of_death', [$startDate, $endDate]);
+                })
+                ->get();
+
+            $religions = Religion::with(['deceased' => function($query) use ($startDate, $endDate) {
+                $query->whereBetween('deceased.date_of_death', [$startDate, $endDate]);
+            }])
+                ->select('id', 'name')
+                ->with('deceased')
+                ->whereHas('deceased', function($query) use ($startDate, $endDate) {
+                    $query->whereBetween('deceased.date_of_death', [$startDate, $endDate]);
+                })
+                ->get();
             
             $charts = $request->input('charts', []);
 
             $pdf = Pdf::loadView('pdf.deceased', compact(
                 'deceased',
+                'barangays',
+                'religions',
                 'startDate',
                 'endDate',
-                'charts'
+                'charts',
                 ))
                 ->setPaper('letter', 'portrait');
 
