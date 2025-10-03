@@ -49,8 +49,8 @@ class ExportController extends Controller
             $age = $dob->diffInYears($dod);
             $approvedChange = $ba->claimantChanges->firstwhere('status', 'approved');
             if ($approvedChange) {
-                $newClaimant = $approvedChange?->newClaimant;
-                $firstClaimant = $approvedChange?->oldClaimant;
+                $newClaimant = $approvedChange?->oldClaimant;
+                $firstClaimant = $approvedChange?->newClaimant;
             } else {
                 $firstClaimant = $ba->claimant;
             }
