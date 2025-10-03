@@ -193,7 +193,7 @@ class ReportService
         ]);
     }
 
-    public function deceasedByMonth($startDate, $endDate) {
+    public function deceasedPerMonth($startDate, $endDate) {
         return Deceased::selectRaw('YEAR(date_of_death) as year, MONTH(date_of_death) as month, COUNT(*) as total')
             ->whereBetween('date_of_death', [$startDate, $endDate])
             ->groupBy('year', 'month')
@@ -208,7 +208,7 @@ class ReportService
             });
     }
     
-    public function deceasedByWeek($startDate, $endDate) {
+    public function deceasedPerWeek($startDate, $endDate) {
         return Deceased::selectRaw('YEAR(date_of_death) as year, WEEK(date_of_death, 1) as week, COUNT(*) as total')
         ->whereBetween('date_of_death', [$startDate, $endDate])
         ->groupBy('year', 'week')
@@ -226,7 +226,7 @@ class ReportService
         });
     }
 
-    public function deceasedByDay($startDate, $endDate) {
+    public function deceasedPerDay($startDate, $endDate) {
         return Deceased::selectRaw('DATE(date_of_death) as day, COUNT(*) as total')
             ->whereBetween('date_of_death', [$startDate, $endDate])
             ->groupBy('day')
@@ -240,7 +240,7 @@ class ReportService
         });
     }
 
-    public function deceasedByBarangay($startDate, $endDate) {
+    public function deceasedPerBarangay($startDate, $endDate) {
         return Deceased::selectRaw('barangay_id, COUNT(*) as total')
             ->with('barangay')
             ->groupBy('barangay_id')
@@ -254,7 +254,7 @@ class ReportService
             });
     }
 
-    public function deceasedByReligion($startDate, $endDate) {
+    public function deceasedPerReligion($startDate, $endDate) {
         return Deceased::selectRaw('religion_id, COUNT(*) as total')
             ->with('religion')
             ->groupBy('religion_id')
@@ -268,7 +268,7 @@ class ReportService
             });
     }
 
-    public function deceasedByGender($startDate, $endDate) {
+    public function deceasedPerGender($startDate, $endDate) {
         return Deceased::selectRaw('gender, COUNT(*) as total')
             ->groupBy('gender')
             ->whereBetween('date_of_death', [$startDate, $endDate])
@@ -281,7 +281,7 @@ class ReportService
             });
     }
 
-    public function claimantByBarangay($startDate, $endDate) {
+    public function claimantPerBarangay($startDate, $endDate) {
         return Claimant::selectRaw('barangay_id, COUNT(*) as total')
             ->with('barangay')
             ->groupBy('barangay_id')
@@ -295,7 +295,7 @@ class ReportService
             });
     }
 
-    public function claimantByRelationship($startDate, $endDate) {
+    public function claimantPerRelationship($startDate, $endDate) {
         return Claimant::selectRaw('relationship_to_deceased, COUNT(*) as total')
             ->with('relationship')
             ->groupBy('relationship_to_deceased')
