@@ -45,13 +45,13 @@ class ReportController extends Controller
         if ($request->has('start_date') && $request->start_date != '') {
             $startDate = Carbon::parse($request->start_date);
         } else {
-            $startDate = Carbon::now()->subMonth();
+            $startDate = Carbon::now()->startOfYear();
         }
         
         if ($request->has('end_date') && $request->end_date != '') {
             $endDate = Carbon::parse($request->end_date);
         } else {
-            $endDate = Carbon::now()->addMonth();
+            $endDate = Carbon::now()->endOfYear();
         }
 
         $deceased = Deceased::select('id', 'first_name', 'middle_name', 'last_name', 'suffix', 'gender', 'date_of_birth', 'date_of_death', 'address', 'barangay_id')
