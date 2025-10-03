@@ -1,4 +1,11 @@
-@extends('layouts.stisla.superadmin')
+@php
+    if (auth()->user()->hasRole('admin')) {
+        $role = 'admin';
+    } else if (auth()->user()->hasRole('superadmin')) {
+        $role = 'superadmin';
+    }
+@endphp
+@extends('layouts.stisla.' . $role)
 <title>Burial Assistances</title>
 @section('content')
 <div class="main-content">
@@ -8,12 +15,51 @@
         </div>
     </div>
     <div class="">
+        <div>
+            <x-filter-data-form type="burial-assistances" :startDate="$startDate" :endDate="$endDate" />
+        </div>
         <div class="row">
             @foreach ($statistics as $statistic)
                 <div class="col-12">
                     <x-card-stats :statistics="$statistic"/>
                 </div>
             @endforeach
+            <div class="col-12 col-lg-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Deceased Per Religion</h4>
+                    </div>
+                    <div class="card-body">
+                        <div>
+                            <canvas
+                                id="deceased-per-religion"
+                                data-chart-data='@json($deceasedPerReligion->pluck('count'))'
+                                data-chart-labels='@json($deceasedPerReligion->pluck('name'))'
+                                data-chart-type="pie"
+                                data-empty="{{ $deceasedPerReligion->isEmpty() ? 'true' : 'false' }}"
+                            ></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Deceased Per Barangay</h4>
+                    </div>
+                    <div class="card-body">
+                        <div>
+                            <canvas
+                                id="deceased-per-barangay"
+                                data-chart-data='@json($deceasedPerBarangay->pluck('count'))'
+                                data-chart-labels='@json($deceasedPerBarangay->pluck('name'))'
+                                data-chart-type="pie"
+                                data-empty="{{ $deceasedPerBarangay->isEmpty() ? 'true' : 'false' }}"
+                            ></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
@@ -74,6 +120,9 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="d-flex justify-content-center">
+            <x-export-to-pdf-button :startDate="$startDate" :endDate="$endDate" type="burial-assistances" />
         </div>
     </div>
 </div>

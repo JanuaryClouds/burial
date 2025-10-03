@@ -20,8 +20,25 @@ class ReportController extends Controller
         // TODO: Cheques Report
     ];
 
-    public function burialAssistances() {
-        $burialAssistances = BurialAssistance::select('id', 'tracking_no', 'claimant_id', 'deceased_id', 'application_date', 'status', 'created_at')->get();
+    public function burialAssistances(Request $request, ReportService $reportService) {
+        if ($request->has('start_date') && $request->start_date != '') {
+            $startDate = Carbon::parse($request->start_date);
+        } else {
+            $startDate = Carbon::now()->startOfYear();
+        }
+        
+        if ($request->has('end_date') && $request->end_date != '') {
+            $endDate = Carbon::parse($request->end_date);
+        } else {
+            $endDate = Carbon::now()->endOfYear();
+        }
+
+        $burialAssistances = BurialAssistance::select('id', 'tracking_no', 'claimant_id', 'deceased_id', 'application_date', 'status', 'created_at')
+            ->whereBetween('application_date', [$startDate, $endDate])
+            ->get();
+
+        $deceasedPerBarangay = $reportService->deceasedPerBarangay($startDate, $endDate);
+        $deceasedPerReligion = $reportService->deceasedPerReligion($startDate, $endDate); 
         $statistics = [
             $burialAssistanceStatistics = [
                 'type' => 'burial_assistance',
@@ -38,7 +55,15 @@ class ReportController extends Controller
                 ]
             ],
         ];
-        return view('reports.burial-assistances', compact('burialAssistances', 'statistics'));
+
+        return view('reports.burial-assistances', compact(
+            'burialAssistances', 
+            'statistics',
+            'deceasedPerBarangay',
+            'deceasedPerReligion',
+            'startDate',
+            'endDate',
+        ));
     }
 
     public function deceased(Request $request, ReportService $reportService) {
@@ -58,16 +83,16 @@ class ReportController extends Controller
             ->whereBetween('date_of_death', [$startDate, $endDate])
             ->get();
 
-        $deceasedThisMonth = $reportService->deceasedByMonth($startDate, $endDate);
-        $deceasedByBarangay = $reportService->deceasedByBarangay($startDate, $endDate);
-        $deceasedByReligion = $reportService->deceasedByReligion($startDate, $endDate);
-        $deceasedByGender = $reportService->deceasedByGender($startDate, $endDate);
+        $deceasedThisMonth = $reportService->deceasedPerMonth($startDate, $endDate);
+        $deceasedPerBarangay = $reportService->deceasedPerBarangay($startDate, $endDate);
+        $deceasedPerReligion = $reportService->deceasedPerReligion($startDate, $endDate);
+        $deceasedPerGender = $reportService->deceasedPerGender($startDate, $endDate);
         return view('reports.deceased', compact(
             'deceased',
             'deceasedThisMonth',
-            'deceasedByBarangay',
-            'deceasedByReligion',
-            'deceasedByGender',
+            'deceasedPerBarangay',
+            'deceasedPerReligion',
+            'deceasedPerGender',
             'startDate',
             'endDate'
         ));
@@ -87,13 +112,13 @@ class ReportController extends Controller
         }
         
         $claimants = Claimant::select('first_name', 'middle_name', 'last_name', 'suffix', 'relationship_to_deceased', 'mobile_number', 'address', 'barangay_id')->get();
-        $claimantsByBarangay = $reportService->claimantByBarangay($startDate, $endDate);
-        $claimantsByRelationship = $reportService->claimantByRelationship($startDate, $endDate);
+        $claimantsPerBarangay = $reportService->claimantPerBarangay($startDate, $endDate);
+        $claimantsPerRelationship = $reportService->claimantPerRelationship($startDate, $endDate);
 
         return view('reports.claimants', compact(
             'claimants', 
-            'claimantsByBarangay',
-            'claimantsByRelationship',
+            'claimantsPerBarangay',
+            'claimantsPerRelationship',
             'startDate',
             'endDate',
         ));

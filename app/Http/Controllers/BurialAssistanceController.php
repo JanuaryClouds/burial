@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreBurialAssistanceRequest;
+use App\Models\Religion;
 use App\Services\ProcessLogService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Exception;
 use Crypt;
 use Carbon\Carbon;
@@ -234,5 +236,61 @@ class BurialAssistanceController extends Controller
         $application->update();
 
         return redirect()->route('superadmin.assignments')->with('alertSuccess', 'Successfully updated assignment.');
+    }
+
+    public function generatePdfReport(Request $request, $startDate, $endDate) {
+        // try {
+            $burialAssistance = BurialAssistance::select(
+                'id',
+                'tracking_no',
+                'application_date',
+                'encoder',
+                'funeraria',
+                'deceased_id',
+                'claimant_id',
+                'amount',
+                'initial_checker',
+                'assigned_to',
+                'created_at',
+            )
+            ->with('deceased', 'claimant', 'assignedTo', 'encoder', 'initialChecker')
+            ->whereBetween('application_date', [$startDate, $endDate])
+            ->get();
+
+            $barangays = Barangay::with(['deceased' => function($query) use ($startDate, $endDate) {
+                $query->whereBetween('deceased.date_of_death', [$startDate, $endDate]);
+            }])
+                ->select('id', 'name')
+                ->whereHas('deceased', function($query) use ($startDate, $endDate) {
+                    $query->whereBetween('deceased.date_of_death', [$startDate, $endDate]);
+                })
+                ->get();
+
+            $religions = Religion::with(['deceased' => function($query) use ($startDate, $endDate) {
+                $query->whereBetween('deceased.date_of_death', [$startDate, $endDate]);
+            }])
+                ->select('id', 'name')
+                ->with('deceased')
+                ->whereHas('deceased', function($query) use ($startDate, $endDate) {
+                    $query->whereBetween('deceased.date_of_death', [$startDate, $endDate]);
+                })
+                ->get();
+            
+            $charts = $request->input('charts', []);
+
+            $pdf = Pdf::loadView('pdf.burial-assistance', compact(
+                'burialAssistance', 
+                'barangays', 
+                'religions', 
+                'charts',
+                'startDate',
+                'endDate'
+            ))
+            ->setPaper('letter', 'portrait');
+
+            return $pdf->stream("burial-assistance-report-{$startDate}-to-{$endDate}.pdf");
+        // } catch (Exception $e) {
+        //     return back()->with('alertError', 'Error generating report: ' . $e->getMessage());
+        // }
     }
 }
