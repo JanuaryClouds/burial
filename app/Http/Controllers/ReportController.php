@@ -73,34 +73,29 @@ class ReportController extends Controller
         ));
     }
 
-    public function claimants() {
+    public function claimants(Request $request, ReportService $reportService) {
+        if ($request->has('start_date') && $request->start_date != '') {
+            $startDate = Carbon::parse($request->start_date);
+        } else {
+            $startDate = Carbon::now()->startOfYear();
+        }
+        
+        if ($request->has('end_date') && $request->end_date != '') {
+            $endDate = Carbon::parse($request->end_date);
+        } else {
+            $endDate = Carbon::now()->endOfYear();
+        }
+        
         $claimants = Claimant::select('first_name', 'middle_name', 'last_name', 'suffix', 'relationship_to_deceased', 'mobile_number', 'address', 'barangay_id')->get();
-        $claimantsPerBarangay = Claimant::selectRaw('barangay_id, COUNT(*) as total')
-            ->with('barangay')
-            ->groupBy('barangay_id')
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'name'  => $item->barangay->name ?? 'Unknown',
-                    'count' => $item->total,
-                ];
-            });
-
-        $claimantsPerRelationship = Claimant::selectRaw('relationship_to_deceased, COUNT(*) as total')
-            ->with('relationship')
-            ->groupBy('relationship_to_deceased')
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'name'  => $item->relationship->name ?? 'Unknown',
-                    'count' => $item->total,
-                ];
-            });
+        $claimantsByBarangay = $reportService->claimantByBarangay($startDate, $endDate);
+        $claimantsByRelationship = $reportService->claimantByRelationship($startDate, $endDate);
 
         return view('reports.claimants', compact(
             'claimants', 
-            'claimantsPerBarangay',
-            'claimantsPerRelationship'
+            'claimantsByBarangay',
+            'claimantsByRelationship',
+            'startDate',
+            'endDate',
         ));
     }
 

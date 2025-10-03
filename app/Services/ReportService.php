@@ -280,4 +280,32 @@ class ReportService
                 ];
             });
     }
+
+    public function claimantByBarangay($startDate, $endDate) {
+        return Claimant::selectRaw('barangay_id, COUNT(*) as total')
+            ->with('barangay')
+            ->groupBy('barangay_id')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'name'  => $item->barangay->name ?? 'Unknown',
+                    'count' => $item->total,
+                ];
+            });
+    }
+
+    public function claimantByRelationship($startDate, $endDate) {
+        return Claimant::selectRaw('relationship_to_deceased, COUNT(*) as total')
+            ->with('relationship')
+            ->groupBy('relationship_to_deceased')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'name'  => $item->relationship->name ?? 'Unknown',
+                    'count' => $item->total,
+                ];
+            });
+    }
 }
