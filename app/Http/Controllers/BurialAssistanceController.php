@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreBurialAssistanceRequest;
+use App\Models\Religion;
+use App\Services\ProcessLogService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Exception;
 use Crypt;
 use Carbon\Carbon;
@@ -17,9 +20,11 @@ use Str;
 
 class BurialAssistanceController extends Controller
 {
+    protected $processLogService;
+
     public function view() {
-        $barangays = Barangay::all();
-        $relationships = Relationship::all();
+        $barangays = Barangay::select('id', 'name')->get();
+        $relationships = Relationship::select('id', 'name')->get();
         return view('guest.burial-assistance.view', compact(
             'barangays',
             'relationships',
@@ -80,11 +85,20 @@ class BurialAssistanceController extends Controller
         ]);
 
         $burialAssistance = BurialAssistance::where('tracking_code', $request->tracking_code)->first();
+        if ($burialAssistance->claimantChanges()->count() > 0) {
+            if ($burialAssistance->claimantChanges()->latest()->first()->where('status', 'approved')) {
+                $mobileNumber = substr($burialAssistance->claimantChanges()->where('status', 'approved')->latest()->first()->newclaimant->mobile_number, -4);
+            } else {
+                $mobileNumber = substr($burialAssistance->claimant->mobile_number, -4);
+            }
+        } else {
+            $mobileNumber = substr($burialAssistance->claimant->mobile_number, -4);
+        }
         if (!$burialAssistance) {
             return redirect()->back()->with([
                 'error'=> 'Burial Assistance Application not found.'
             ]);
-        } elseif ($request->mobile_number != substr($burialAssistance->claimant->mobile_number, -4)) {
+        } elseif ($request->mobile_number != $mobileNumber) {
             return redirect()->back()->with([
                 'info' => 'Mobile number does not match. Please try again.'
             ]);
@@ -103,28 +117,10 @@ class BurialAssistanceController extends Controller
         return redirect()->route('guest.burial-assistance.track-page', ['code' => $request->tracking_code]);
     }
 
-    public function trackPage($code) {
+    public function trackPage($code, ProcessLogService $processLogService) {
         $burialAssistance = BurialAssistance::where('tracking_code', $code)->first();
 
-        $updateAverage = $burialAssistance::with(['processLogs'])
-            ->get()
-            ->map(function ($application) {
-                $logs = $application->processLogs->sortBy('created_at')->values();
-                if ($logs->count() < 2) {
-                    return null;
-                }
-
-                $diffs = [];
-                for ($i = 0; $i < $logs->count() - 1; $i++) {
-                    $start = Carbon::parse($logs[$i]->created_at);
-                    $end = Carbon::parse($logs[$i + 1]->created_at);
-                    $diffs[] = $start->diffInHours($end);
-                }
-                return collect($diffs)->avg();
-            })
-            ->filter()
-            ->values()
-            ->avg();
+        $updateAverage = $processLogService->getAvgProcessingTime($burialAssistance)->avg();
 
         if (!auth()->check()) {
             $burialAssistance->claimant->first_name = Str::mask($burialAssistance->claimant->first_name, '*', 3);
@@ -166,35 +162,18 @@ class BurialAssistanceController extends Controller
     }
 
     public function history() {
-        $applications = BurialAssistance::all()->sortByDesc('created_at');
+        $applications = BurialAssistance::select('id', 'deceased_id', 'claimant_id', 'tracking_no', 'application_date', 'status', 'created_at')->get();
         $status = 'All';
         return view('applications.list', compact('applications', 'status'));
     }
 
-    public function manage($id) {
+    public function manage($id, ProcessLogService $processLogService) {
         $application = BurialAssistance::findOrFail($id);
         $path = "burial-assistance/{$application->tracking_no}";
         $storedFiles = Storage::disk('local')->files($path);
         $files = [];
-        $updateAverage = $application::with(['processLogs'])
-            ->get()
-            ->map(function ($application) {
-                $logs = $application->processLogs->sortBy('created_at')->values();
-                if ($logs->count() < 2) {
-                    return null;
-                }
+        $updateAverage = $processLogService->getAvgProcessingTime($application)->avg();
 
-                $diffs = [];
-                for ($i = 0; $i < $logs->count() - 1; $i++) {
-                    $start = Carbon::parse($logs[$i]->created_at);
-                    $end = Carbon::parse($logs[$i + 1]->created_at);
-                    $diffs[] = $start->diffInHours($end);
-                }
-                return collect($diffs)->avg();
-            })
-            ->filter()
-            ->values()
-            ->avg();
         foreach ($storedFiles as $storedFile) {
             // TODO: Use API to store images
             $encryptedFile = Storage::disk('local')->get($storedFile);
@@ -239,7 +218,7 @@ class BurialAssistanceController extends Controller
     }
 
     public function assignments() {
-        $applications = BurialAssistance::all()->sortByDesc('created_at');
+        $applications = BurialAssistance::select('id', 'tracking_no', 'deceased_id', 'claimant_id', 'application_date', 'status', 'assigned_to')->get();
         return view('superadmin.assignment', compact('applications'));
     }
 
@@ -257,5 +236,61 @@ class BurialAssistanceController extends Controller
         $application->update();
 
         return redirect()->route('superadmin.assignments')->with('alertSuccess', 'Successfully updated assignment.');
+    }
+
+    public function generatePdfReport(Request $request, $startDate, $endDate) {
+        // try {
+            $burialAssistance = BurialAssistance::select(
+                'id',
+                'tracking_no',
+                'application_date',
+                'encoder',
+                'funeraria',
+                'deceased_id',
+                'claimant_id',
+                'amount',
+                'initial_checker',
+                'assigned_to',
+                'created_at',
+            )
+            ->with('deceased', 'claimant', 'assignedTo', 'encoder', 'initialChecker')
+            ->whereBetween('application_date', [$startDate, $endDate])
+            ->get();
+
+            $barangays = Barangay::with(['deceased' => function($query) use ($startDate, $endDate) {
+                $query->whereBetween('deceased.date_of_death', [$startDate, $endDate]);
+            }])
+                ->select('id', 'name')
+                ->whereHas('deceased', function($query) use ($startDate, $endDate) {
+                    $query->whereBetween('deceased.date_of_death', [$startDate, $endDate]);
+                })
+                ->get();
+
+            $religions = Religion::with(['deceased' => function($query) use ($startDate, $endDate) {
+                $query->whereBetween('deceased.date_of_death', [$startDate, $endDate]);
+            }])
+                ->select('id', 'name')
+                ->with('deceased')
+                ->whereHas('deceased', function($query) use ($startDate, $endDate) {
+                    $query->whereBetween('deceased.date_of_death', [$startDate, $endDate]);
+                })
+                ->get();
+            
+            $charts = $request->input('charts', []);
+
+            $pdf = Pdf::loadView('pdf.burial-assistance', compact(
+                'burialAssistance', 
+                'barangays', 
+                'religions', 
+                'charts',
+                'startDate',
+                'endDate'
+            ))
+            ->setPaper('letter', 'portrait');
+
+            return $pdf->stream("burial-assistance-report-{$startDate}-to-{$endDate}.pdf");
+        // } catch (Exception $e) {
+        //     return back()->with('alertError', 'Error generating report: ' . $e->getMessage());
+        // }
     }
 }

@@ -6,7 +6,7 @@ export function checkAndRenderDataTables() {
             ordering: true, // keep ordering functional
             dom:
                 // First row: buttons on the left, filter on the right
-                "<'row mb-2'<'col-sm-6 d-flex align-items-center'l<'mr-3'>B><'col-sm-6 d-flex justify-content-end'f>>" +
+                "<'row mb-2'<'col-sm-6 d-flex align-items-center'l<'mr-3'>><'col-sm-6 d-flex justify-content-end align-items-center'f<'ml-3'>B>>" +
                 // Table
                 "<'row'<'col-12'tr>>" +
                 // Bottom row: info and pagination
@@ -18,11 +18,11 @@ export function checkAndRenderDataTables() {
                 // 'pdf',
                 // 'print'
                 {
-                    text: 'Export to Excel',
+                    className: 'btn btn-success p-0 px-3 fas fa-file-excel',
                     action: function() {
                         const url = window.location.href;
                         const status = url.substring(url.lastIndexOf('/') + 1);
-                        window.location.href = '/admin/applications/' + status + '/export'
+                        window.location.href = '/applications/export'
                     }
                 }
             ],
@@ -126,6 +126,26 @@ export function checkAndRenderDataTables() {
             dom: 
                 // First row: buttons on the left, filter on the right
                 "<'row mb-2'<'col-sm-6 d-flex align-items-center'l<'mr-3'>><'col-sm-6 d-flex justify-content-end'f>>" +
+                // Table
+                "<'row'<'col-12'tr>>" +
+                // Bottom row: info and pagination
+                "<'row mt-2'<'col-sm-6'i><'col-sm-6 d-flex justify-content-end'p>>",
+            buttons:[
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
+            classes: {
+                sortAsc: '',     // override ascending class
+                sortDesc: '',    // override descending class
+                sortable: ''     // override neutral sortable class 
+            }
+        })
+
+        $('#generic-table').DataTable({
+            responsive: true,
+            ordering: true,
+            dom: 
+                // First row: buttons on the left, filter on the right
+                "<'row mb-2'<'col-sm-6 d-flex align-items-center'l<'mr-3'>B><'col-sm-6 d-flex justify-content-end'f>>" +
                 // Table
                 "<'row'<'col-12'tr>>" +
                 // Bottom row: info and pagination

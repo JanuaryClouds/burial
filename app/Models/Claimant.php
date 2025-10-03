@@ -29,11 +29,11 @@ class Claimant extends Model
     }
 
     public function oldClaimantChanges() {
-        return $this->hasMany(ClaimantChange::class, 'new_claimant_id','id');
+        return $this->hasMany(ClaimantChange::class, 'old_claimant_id','id');
     }
 
     public function newClaimantChanges() {
-        return $this->hasMany(ClaimantChange::class, 'old_claimant_id','id');
+        return $this->hasMany(ClaimantChange::class, 'new_claimant_id','id');
     }
 
     public function barangay() {

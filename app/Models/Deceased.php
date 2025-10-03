@@ -17,16 +17,22 @@ class Deceased extends Model
         'date_of_birth',
         'date_of_death',
         'gender',
+        'address',
+        'barangay_id',
         'religion_id',
     ];
     protected $table = "deceased";
 
     public function burialAssistance() {
-        return $this->hasMany(BurialAssistance::class, 'deceased_id', 'id');
+        return $this->hasOne(BurialAssistance::class, 'deceased_id', 'id');
     }
 
     public function gender() {
         return $this->belongsTo(Sex::class, 'gender', 'id');
+    }
+
+    public function barangay() {
+        return $this->belongsTo(Barangay::class, 'barangay_id', 'id');
     }
 
     public function religion() {

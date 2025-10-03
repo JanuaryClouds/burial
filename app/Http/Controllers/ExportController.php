@@ -6,6 +6,7 @@ use App\Models\ClaimantChange;
 use App\Models\WorkflowStep;
 use Illuminate\Http\Request;
 use App\Models\BurialAssistance;
+use App\Services\ProcessLogService;
 use App\Models\User;
 use App\Exports\BurialAssistancesExport;
 use App\Exports\BurialAssistancesExportTemplate;
@@ -17,19 +18,14 @@ use Carbon\Carbon;
 
 class ExportController extends Controller
 {
-    public function applications($status) {
+    protected $processLogService;
+
+    public function applications(ProcessLogService $processLogService) {
         $templatePath = storage_path('app/templates/burial-assistances-template.xlsx');
         $spreadsheet = IOFactory::load($templatePath);
 
         $sheet = $spreadsheet->getActiveSheet();
         $row = 4;
-
-        function getLog($claimant, $order) {
-            return $claimant->processLogs()
-                ->whereHasMorph('loggable', [WorkflowStep::class], fn($q) => $q->where('order_no', $order))
-                ->with('loggable')
-                ->first();
-        };
 
         $query = BurialAssistance::with([
             'claimant.relationship',
@@ -43,10 +39,6 @@ class ExportController extends Controller
             'claimantChanges.newClaimant',
         ]);
 
-        if ($status !== 'history') {
-            $query->where('status', $status);
-        }
-
         $burialAssistances = $query->get();
 
         foreach ($burialAssistances as $ba) {
@@ -57,8 +49,8 @@ class ExportController extends Controller
             $age = $dob->diffInYears($dod);
             $approvedChange = $ba->claimantChanges->firstwhere('status', 'approved');
             if ($approvedChange) {
-                $newClaimant = $approvedChange?->newClaimant;
-                $firstClaimant = $approvedChange?->oldClaimant;
+                $newClaimant = $approvedChange?->oldClaimant;
+                $firstClaimant = $approvedChange?->newClaimant;
             } else {
                 $firstClaimant = $ba->claimant;
             }
@@ -85,31 +77,31 @@ class ExportController extends Controller
             $sheet->setCellValue("T{$row}", $ba->amount);
             $sheet->setCellValue("U{$row}", $ba->deceased->date_of_death);
             $sheet->setCellValue("V{$row}", $firstClaimant->mobile_number);
-            $sheet->setCellValue("W{$row}", getLog($firstClaimant, 1)?->date_out ?? '');
-            $sheet->setCellValue("X{$row}", getLog($firstClaimant, 1)?->date_in ?? '');
-            $sheet->setCellValue("Y{$row}", getLog($firstClaimant, 1)?->comments ?? '');
-            $sheet->setCellValue("Z{$row}", getLog($firstClaimant, 2)?->date_in ?? '');
-            $sheet->setCellValue("AA{$row}", getLog($firstClaimant, 3)?->extra_data['compiled_docs'] ?? '');
-            $sheet->setCellValue("AB{$row}", getLog($firstClaimant, 3)?->date_out ?? '');
-            $sheet->setCellValue("AC{$row}", getLog($firstClaimant, 3)?->date_in ?? '');
-            $sheet->setCellValue("AD{$row}", getLog($firstClaimant, 4)?->date_out ?? '');
-            $sheet->setCellValue("AE{$row}", getLog($firstClaimant, 4)?->date_in ?? '');
-            $sheet->setCellValue("AF{$row}", getLog($firstClaimant, 4)?->comments ?? '');
-            $sheet->setCellValue("AG{$row}", getLog($firstClaimant, 5)?->date_out ?? '');
-            $sheet->setCellValue("AH{$row}", getLog($firstClaimant, 5)?->date_in ?? '');
-            $sheet->setCellValue("AI{$row}", getLog($firstClaimant, 6)?->date_out ?? '');
-            $sheet->setCellValue("AJ{$row}", getLog($firstClaimant, 6)?->date_in ?? '');
-            $sheet->setCellValue("AK{$row}", getLog($firstClaimant, 7)?->date_out ?? '');
-            $sheet->setCellValue("AL{$row}", getLog($firstClaimant, 7)?->date_in ?? '');
-            $sheet->setCellValue("AM{$row}", getLog($firstClaimant, 8)?->date_in ?? '');
-            $sheet->setCellValue("AN{$row}", getLog($firstClaimant, 9)?->date_in ?? '');
-            $sheet->setCellValue("AO{$row}", getLog($firstClaimant, 9)?->extra_data['OBR']['obr_number'] ?? '');
-            $sheet->setCellValue("AP{$row}", getLog($firstClaimant, 9)?->extra_data['OBR']['date'] ?? '');
-            $sheet->setCellValue("AQ{$row}", getLog($firstClaimant, 10)?->date_in ?? '');
-            $sheet->setCellValue("AR{$row}", getLog($firstClaimant, 11)?->date_in ?? '');
-            $sheet->setCellValue("AS{$row}", getLog($firstClaimant, 12)?->extra_data['cheque_number'] ?? '');
-            $sheet->setCellValue("AT{$row}", getLog($firstClaimant, 12)?->extra_data['date'] ?? '');
-            $sheet->setCellValue("AU{$row}", getLog($firstClaimant, 13)?->date_in ?? '');
+            $sheet->setCellValue("W{$row}", $processLogService->getLog($firstClaimant, 1)?->date_out ?? '');
+            $sheet->setCellValue("X{$row}", $processLogService->getLog($firstClaimant, 1)?->date_in ?? '');
+            $sheet->setCellValue("Y{$row}", $processLogService->getLog($firstClaimant, 1)?->comments ?? '');
+            $sheet->setCellValue("Z{$row}", $processLogService->getLog($firstClaimant, 2)?->date_in ?? '');
+            $sheet->setCellValue("AA{$row}", $processLogService->getLog($firstClaimant, 3)?->extra_data['compiled_docs'] ?? '');
+            $sheet->setCellValue("AB{$row}", $processLogService->getLog($firstClaimant, 3)?->date_out ?? '');
+            $sheet->setCellValue("AC{$row}", $processLogService->getLog($firstClaimant, 3)?->date_in ?? '');
+            $sheet->setCellValue("AD{$row}", $processLogService->getLog($firstClaimant, 4)?->date_out ?? '');
+            $sheet->setCellValue("AE{$row}", $processLogService->getLog($firstClaimant, 4)?->date_in ?? '');
+            $sheet->setCellValue("AF{$row}", $processLogService->getLog($firstClaimant, 4)?->comments ?? '');
+            $sheet->setCellValue("AG{$row}", $processLogService->getLog($firstClaimant, 5)?->date_out ?? '');
+            $sheet->setCellValue("AH{$row}", $processLogService->getLog($firstClaimant, 5)?->date_in ?? '');
+            $sheet->setCellValue("AI{$row}", $processLogService->getLog($firstClaimant, 6)?->date_out ?? '');
+            $sheet->setCellValue("AJ{$row}", $processLogService->getLog($firstClaimant, 6)?->date_in ?? '');
+            $sheet->setCellValue("AK{$row}", $processLogService->getLog($firstClaimant, 7)?->date_out ?? '');
+            $sheet->setCellValue("AL{$row}", $processLogService->getLog($firstClaimant, 7)?->date_in ?? '');
+            $sheet->setCellValue("AM{$row}", $processLogService->getLog($firstClaimant, 8)?->date_in ?? '');
+            $sheet->setCellValue("AN{$row}", $processLogService->getLog($firstClaimant, 9)?->date_in ?? '');
+            $sheet->setCellValue("AO{$row}", $processLogService->getLog($firstClaimant, 9)?->extra_data['OBR']['obr_number'] ?? '');
+            $sheet->setCellValue("AP{$row}", $processLogService->getLog($firstClaimant, 9)?->extra_data['OBR']['date'] ?? '');
+            $sheet->setCellValue("AQ{$row}", $processLogService->getLog($firstClaimant, 10)?->date_in ?? '');
+            $sheet->setCellValue("AR{$row}", $processLogService->getLog($firstClaimant, 11)?->date_in ?? '');
+            $sheet->setCellValue("AS{$row}", $processLogService->getLog($firstClaimant, 12)?->extra_data['cheque_number'] ?? '');
+            $sheet->setCellValue("AT{$row}", $processLogService->getLog($firstClaimant, 12)?->extra_data['date'] ?? '');
+            $sheet->setCellValue("AU{$row}", $processLogService->getLog($firstClaimant, 13)?->date_in ?? '');
             // Change of Claimants start here if it exists
             if ($approvedChange) {
                 $sheet->setCellValue("AV{$row}", $newClaimant->last_name);
@@ -117,20 +109,20 @@ class ExportController extends Controller
                 $sheet->setCellValue("AX{$row}", $newClaimant?->middle_name);
                 $sheet->setCellValue("AY{$row}", $newClaimant?->suffix);
                 $sheet->setCellValue("AZ{$row}", $approvedChange->reason_for_change);
-                $sheet->setCellValue("BA{$row}", getLog($newClaimant, 4)?->date_out ?? '');
-                $sheet->setCellValue("BB{$row}", getLog($newClaimant, 4)?->date_in ?? '');
-                $sheet->setCellValue("BC{$row}", getLog($newClaimant, 4)?->comments ?? '');
-                $sheet->setCellValue("BD{$row}", getLog($newClaimant, 5)?->date_out ?? '');
-                $sheet->setCellValue("BE{$row}", getLog($newClaimant, 5)?->date_in ?? '');
-                $sheet->setCellValue("BF{$row}", getLog($newClaimant, 6)?->date_out ?? '');
-                $sheet->setCellValue("BG{$row}", getLog($newClaimant, 6)?->date_in ?? '');
-                $sheet->setCellValue("BH{$row}", getLog($newClaimant, 7)?->date_out ?? '');
-                $sheet->setCellValue("BI{$row}", getLog($newClaimant, 7)?->date_in ?? '');
+                $sheet->setCellValue("BA{$row}", $processLogService->getLog($newClaimant, 4)?->date_out ?? '');
+                $sheet->setCellValue("BB{$row}", $processLogService->getLog($newClaimant, 4)?->date_in ?? '');
+                $sheet->setCellValue("BC{$row}", $processLogService->getLog($newClaimant, 4)?->comments ?? '');
+                $sheet->setCellValue("BD{$row}", $processLogService->getLog($newClaimant, 5)?->date_out ?? '');
+                $sheet->setCellValue("BE{$row}", $processLogService->getLog($newClaimant, 5)?->date_in ?? '');
+                $sheet->setCellValue("BF{$row}", $processLogService->getLog($newClaimant, 6)?->date_out ?? '');
+                $sheet->setCellValue("BG{$row}", $processLogService->getLog($newClaimant, 6)?->date_in ?? '');
+                $sheet->setCellValue("BH{$row}", $processLogService->getLog($newClaimant, 7)?->date_out ?? '');
+                $sheet->setCellValue("BI{$row}", $processLogService->getLog($newClaimant, 7)?->date_in ?? '');
                 $sheet->setCellValue("BJ{$row}",
-                    (getLog($newClaimant, 8)?->date_in ?? '') . ' / ' .
-                    (getLog($newClaimant, 9)?->date_in ?? '') . ' / ' .
-                    (getLog($newClaimant, 9)?->extra_data['OBR']['obr_number'] ?? '') . ' - ' .
-                    (getLog($newClaimant, 9)?->extra_data['OBR']['date'] ?? '')
+                    ($processLogService->getLog($newClaimant, 8)?->date_in ?? '') . ' / ' .
+                    ($processLogService->getLog($newClaimant, 9)?->date_in ?? '') . ' / ' .
+                    ($processLogService->getLog($newClaimant, 9)?->extra_data['OBR']['obr_number'] ?? '') . ' - ' .
+                    ($processLogService->getLog($newClaimant, 9)?->extra_data['OBR']['date'] ?? '')
                 );
             }
             $sheet->setCellValue("BK{$row}", $ba?->status ?? '');
@@ -139,7 +131,7 @@ class ExportController extends Controller
             $row++;
         };
 
-        $filename = 'burial-assistances-database-export-' . $status . '-' . now()->format('YmdHis') . '.xlsx';
+        $filename = 'burial-assistances-database-export-' . '-' . now()->format('YmdHis') . '.xlsx';
         return response()->streamDownload(function () use ($spreadsheet) {
             $writer = new Xlsx($spreadsheet);
             $writer->save('php://output');

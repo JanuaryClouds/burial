@@ -23,10 +23,10 @@
                 <div class="d-sm-none d-lg-inline-block">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</div>
             </a>
             <div class="dropdown-menu dropdown-menu-right">
-            <form action="{{ route('logout') }}" method="POST" class="block">
+            <form action="{{ route('logout') }}" method="POST" class="block mb-0">
                     @csrf
                     <button type="submit"
-                        class="btn w-100">
+                        class="btn w-100 text-left">
                         <span class="fw-medium">
                             <i class="fa-solid fa-right-from-bracket me-2"></i> Logout
                         </span>

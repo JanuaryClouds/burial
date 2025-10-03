@@ -24,11 +24,12 @@ return new class extends Migration
                 ->constrained('sexes')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
-            // $table->string('address');
-            // $table->foreignId('barangay_id')
-            //     ->constrained('barangays')
-            //     ->onDelete('cascade')
-            //     ->onUpdate('cascade');
+            // TODO: Bring these back
+            $table->string('address');
+            $table->foreignId('barangay_id')
+                ->constrained('barangays')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
             $table->foreignId('religion_id')
                 ->constrained('religions')
                 ->onDelete('cascade')

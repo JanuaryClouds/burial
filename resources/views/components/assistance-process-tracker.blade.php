@@ -3,7 +3,7 @@
     use App\Models\WorkflowStep;
     $latestStep = $processLogs->last();
     $currentStep = $latestStep?->loggable?->order_no;
-    $totalWorkflowSteps = WorkflowStep::all()->count();
+    $totalWorkflowSteps = WorkflowStep::select('id')->get()->count();
     switch ($burialAssistance->status) {
         case 'processing':
             $badgeColor = "primary";
@@ -141,7 +141,7 @@
 
         @if ($updateAverage && $updateAverage != null)
             <div class="col mt-4">
-                <p class="text-muted">Average Processing Time: {{ $updateAverage }} hr per update</p>
+                <p class="text-muted">Average Processing Time: {{ number_format($updateAverage, 2) }} minutes/s per update</p>
             </div>
         @endif        
     </div>

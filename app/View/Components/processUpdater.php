@@ -19,7 +19,7 @@ class processUpdater extends Component
     {
         $this->application = $application;
         $this->processLogs = $application ? $application->processLogs()->latest()->get() : collect();
-        $this->workflowSteps = WorkflowStep::all();
+        $this->workflowSteps = WorkflowStep::select('id', 'order_no', 'description', 'extra_data_schema', 'requires_extra_data')->get();
     }
 
     /**

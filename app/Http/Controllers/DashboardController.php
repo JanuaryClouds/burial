@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\BurialServiceRequest;
+use App\Models\Deceased;
+use App\Services\ProcessLogService;
 use App\Models\Barangay;
 use App\Models\BurialAssistance;
 use App\Models\Claimant;
@@ -18,6 +20,8 @@ use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
+    protected $processLogService;
+
     public function index()
     {
         return view('dashboard');
@@ -62,6 +66,7 @@ class DashboardController extends Controller
             ];
         });
 
+        // TODO: Not working and displays 0
         $updatesPerHour = BurialAssistance::with(['processLogs' => function ($query) {
             $query->where('added_by', auth()->user()->id);
         }])
@@ -136,9 +141,9 @@ class DashboardController extends Controller
 
     public function superadmin()
     {
-       $totalRequestLogs = Activity::where('description', 'like', 'Burial Assistance Request %')->count();
-       $firstRequest = Activity::where('description', 'like', 'Burial Assistance Request %')->oldest()->first();
-       $lastRequest = Activity::where('description', 'like', 'Burial Assistance Request %')->latest()->first();
+       $totalRequestLogs = Activity::where('description', 'like', 'Burial Assistance application %')->count();
+       $firstRequest = Activity::where('description', 'like', 'Burial Assistance application %')->oldest()->first();
+       $lastRequest = Activity::where('description', 'like', 'Burial Assistance application %')->latest()->first();
 
        if ($firstRequest && $lastRequest) {
         $months = Carbon::parse($firstRequest->created_at)->diffInMonths(Carbon::parse($lastRequest->created_at)) + 1;
@@ -147,9 +152,9 @@ class DashboardController extends Controller
             $avgRequestsPerMonth = 0;
         }
 
-        $totalTrackLogs = Activity::where('description', 'like', 'Burial Assistance Request tracked by guest')->count();
-        $firstTrack = Activity::where('description', 'like', 'Burial Assistance Request tracked by guest')->oldest()->first();
-        $lastTrack = Activity::where('description', 'like', 'Burial Assistance Request tracked by guest')->latest()->first();
+        $totalTrackLogs = Activity::where('description', 'like', 'Burial Assistance tracked by guest')->count();
+        $firstTrack = Activity::where('description', 'like', 'Burial Assistance tracked by guest')->oldest()->first();
+        $lastTrack = Activity::where('description', 'like', 'Burial Assistance tracked by guest')->latest()->first();
 
         if ($firstTrack && $lastTrack) {
             $months = Carbon::parse($firstTrack->created_at)->diffInMonths(Carbon::parse($lastTrack->created_at)) + 1;
@@ -168,15 +173,63 @@ class DashboardController extends Controller
                    'count' => $item->total,
                ];
             });
+
+        $applicationsThisYear = Deceased::select('barangay_id', DB::raw('count(*) as total'))
+            ->with('barangay')
+            ->whereYear('date_of_death', now()->year)
+            ->groupBy('barangay_id')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'name' => $item->barangay->name ?? 'Unknown',
+                    'count' => $item->total,
+                ];
+            });
+
+
+        $applicationsThisMonth = Deceased::select('barangay_id', DB::raw('count(*) as total'))
+            ->with('barangay')
+            ->whereBetween('date_of_death', [now()->startOfMonth(), now()->endOfMonth()])
+            ->groupBy('barangay_id')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'name' => $item->barangay->name ?? 'Unknown',
+                    'count' => $item->total,
+                ];
+            });
+
+        $applicationsThisWeek = Deceased::select('barangay_id', DB::raw('count(*) as total'))
+            ->with('barangay')
+            ->whereBetween('date_of_death', [now()->startOfWeek(), now()->endOfWeek()])
+            ->groupBy('barangay_id')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'name' => $item->barangay->name ?? 'Unknown',
+                    'count' => $item->total,
+                ];
+            });
+
+        $applicationsThisDay = Deceased::select('barangay_id', DB::raw('count(*) as total'))
+            ->with('barangay')
+            ->where('date_of_death', now())
+            ->groupBy('barangay_id')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'name' => $item->barangay->name ?? 'Unknown',
+                    'count' => $item->total,
+                ];
+            });
+        // dd($applicationsThisYear, $applicationsThisMonth, $applicationsThisWeek, $applicationsThisDay);
         
         $applicationsByBarangay = BurialAssistance::with(['claimant.barangay'])
-            ->whereYear('created_at', now()->year)
+            ->where(function ($query)  { 
+                $query->where('status', '!=', 'rejected'); })
+                ->whereYear('created_at', now()->year)
             ->get()
             ->groupBy(fn($item) => $item->claimant->barangay->name);
-
-        $applicationsByAdmin = User::whereHas('encoder')
-            ->with('encoder')
-            ->get();
 
         $totalApplications = BurialAssistance::where(function ($query) {
             $query->where('status', '!=', 'rejected');
@@ -199,7 +252,7 @@ class DashboardController extends Controller
                 for ($i = 0; $i < $logs->count() - 1; $i++) {
                     $start = Carbon::parse($logs[$i]->created_at);
                     $end = Carbon::parse($logs[$i + 1]->created_at);
-                    $diffs[] = $start->diffInHours($end);
+                    $diffs[] = $start->diffInRealMinutes($end);
                 }
                 return collect($diffs)->avg();
             })
@@ -210,16 +263,16 @@ class DashboardController extends Controller
 
         $cardData = [
             [
-                'label' => 'Requests/Month',
+                'label' => 'Applications/Month',
                 'bg' => 'bg-primary',
                 'icon' => 'fa-align-left',
-                'count' => number_format($avgRequestsPerMonth, 2) . '%',
+                'count' => number_format($avgRequestsPerMonth, 2) . '/month',
             ],
             [
                 'label' => 'Tracks/Month',
                 'bg' => 'bg-secondary',
                 'icon' => 'fa-list',
-                'count' => number_format($avgTracksPerMonth, 2) . '%',
+                'count' => number_format($avgTracksPerMonth, 2) . '/month',
             ],
             [
                 'label' => 'Total Applications',
@@ -231,15 +284,18 @@ class DashboardController extends Controller
                 'label' => 'Avg. Processing Time per Update',
                 'bg' => 'bg-warning',
                 'icon' => 'fa-clock',
-                'count' => $globalAverageProcessing ? $globalAverageProcessing . ' hr' : '0 hr',
+                'count' => $globalAverageProcessing ? number_format($globalAverageProcessing, 2) . ' m' : '<1 m',
             ],
         ];
 
         return view('superadmin.dashboard', compact(
             'perBarangay',
             'applicationsByBarangay',
+            'applicationsThisYear',
+            'applicationsThisMonth',
+            'applicationsThisWeek',
+            'applicationsThisDay',
             'cardData',
-            'applicationsByAdmin',
             'lastLogs',
             'pendingApplications',
         ));

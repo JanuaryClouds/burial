@@ -23,8 +23,8 @@ class changeClaimantModal extends Component
      */
     public function render(): View|Closure|string
     {
-        $barangays = Barangay::all();
-        $relationships = Relationship::all();
+        $barangays = Barangay::select('id', 'name')->get();
+        $relationships = Relationship::select('id', 'name')->get();
         return view('components.change-claimant-modal', compact(['barangays', 'relationships']));
     }
 }

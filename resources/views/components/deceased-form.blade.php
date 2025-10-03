@@ -65,6 +65,27 @@
             />
         </div>            
     </div>
+    <div class="row justify-content-start align-items-center g-2">
+        <div class="col-12 col-lg-8">
+            <x-form-input
+                name="deceased[address]"
+                label="Address"
+                value="{{ $deceased->address ?? '' }}"
+                disabled="{{ $disabled }}"
+                readonly="{{ $readonly }}"
+            />
+        </div>
+        <div class="col-12 col-lg-4">
+            <x-form-select
+                name="deceased[barangay_id]"
+                label="Barangay"
+                required="true"
+                :options="$barangays->pluck('name', 'id')"
+                :selected="$deceased->barangay_id ?? ''"
+                disabled="{{ $disabled }}"
+            />
+        </div>
+    </div>
     <div
         class="row justify-content-start align-items-center g-2"
     >

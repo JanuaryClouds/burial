@@ -19,7 +19,7 @@
                     </button>
 
                     @if ($burialAssistance->status === 'pending' || $burialAssistance->status === 'processing')
-                        @if ($burialAssistance->claimantChanges->count() == 0 && $burialAssistance->processLogs->last()->loggable->order_no >= 3)
+                        @if ($burialAssistance->claimantChanges->count() == 0 && $burialAssistance->processLogs->last()?->loggable->order_no >= 3)
                             <button class="btn btn-secondary mr-2"
                                     type="button" 
                                     data-toggle="modal" 
@@ -29,10 +29,10 @@
                         @else
                             <div class="btn-group mr-2" role="group" aria-label="Claimant group">
                                 <button 
-                                    class="btn btn-secondary disabled" disabled 
-                                    @if ($burialAssistance->claimantChanges->last()->status == 'pending')
+                                    class="btn btn-secondary disabled" disabled
+                                    @if ($burialAssistance->claimantChanges->last()?->status == 'pending')
                                         title="Request for change of claimant is pending"
-                                    @elseif ($burialAssistance->claimantChanges->last()->status == 'approved')
+                                    @elseif ($burialAssistance->claimantChanges?->last()?->status == 'approved')
                                         title="A change of claimants can only be done once"
                                     @else
                                         title="Request for change of claimant has been denied"

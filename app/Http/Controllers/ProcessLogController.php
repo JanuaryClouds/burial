@@ -15,7 +15,6 @@ class ProcessLogController extends Controller
         try {
             $application = BurialAssistance::findOrFail($id);
             $step = WorkflowStep::findOrFail($stepId);
-            $allSteps = WorkflowStep::all();
             // dd('Function hit!', $request->all());
             $validated = $request->validate([
                 'date_in' => 'required|date',

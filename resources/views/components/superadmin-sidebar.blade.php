@@ -21,6 +21,27 @@
                     <span>Assignments</span>
                 </a>
             </li>
+            <li class="menu-header">Reports</li>
+            <li @class(['active' => Request::is('reports/burial-assistances')])>
+                <a href="{{ route('reports.burial-assistances') }}">
+                    <i class="fas fa-file"></i>
+                    <span>Burial Assistances</span>
+                </a>
+            </li>
+            <li @class(['active' => Request::is('reports/deceased')])>
+                <a href="{{ route('reports.deceased') }}">
+                    <i class="fas fa-image-portrait"></i>
+                    <span>Deceased</span>
+                </a>
+            </li>
+            <li @class(['active' => Request::is('reports/claimants')])>
+                <a href="{{ route('reports.claimants') }}">
+                    <i class="fas fa-user"></i>
+                    <span>Claimants</span>
+                </a>
+            </li>
+            <!-- TODO: cheques -->
+
             <li class="menu-header">CMS</li>
             <li @class(['active' => Request::is('superadmin/cms/barangays')])>
                 <a href="{{ route('superadmin.cms.barangays') }}">

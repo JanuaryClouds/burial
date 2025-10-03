@@ -15,6 +15,6 @@ class BurialAssistanceSeeder extends Seeder
      */
     public function run(): void
     {
-        BurialAssistance::factory()->count(5)->create();
+        BurialAssistance::factory()->count(10)->create();
     }
 }

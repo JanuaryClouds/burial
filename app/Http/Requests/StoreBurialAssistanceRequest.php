@@ -33,6 +33,8 @@ class StoreBurialAssistanceRequest extends FormRequest
             'deceased.last_name' => 'required|string|max:255',
             'deceased.suffix'=> 'nullable|string|max:64',
             'deceased.gender' => 'required|numeric|exists:sexes,id',
+            'deceased.address' => 'required|string|max:255',
+            'deceased.barangay_id' => 'required|numeric|exists:barangays,id',
             'deceased.religion_id' => 'required|numeric|exists:religions,id',
             'deceased.date_of_birth' => 'required|date',
             'deceased.date_of_death' => 'required|date',

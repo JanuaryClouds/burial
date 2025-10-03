@@ -135,8 +135,9 @@ class CmsController extends Controller
     }
 
     public function barangays() {
-        $data = Barangay::all()->sortBy('name');
-        $districts = District::all();
+        $data = Barangay::select('id', 'name', 'district_id', 'remarks')
+            ->get();
+        $districts = District::select('id', 'name')->get();
         $type = 'barangays';
         $fields = [
             'name' => ['label' => 'name', 'type' => 'text'],
@@ -156,7 +157,7 @@ class CmsController extends Controller
     }
 
     public function relationships() {
-        $data = Relationship::all();
+        $data = Relationship::select('id', 'name', 'remarks')->get();
         $type = 'relationships';
         $fields = [
             'name' => ['label' => 'name', 'type' => 'text'],
@@ -166,6 +167,7 @@ class CmsController extends Controller
         return view('superadmin.cms', compact('data', 'type', 'fields'));
     }
 
+    // ! Depracated
     public function burialAssistanceRequests() {
         $data = BurialAssistanceRequest::all();
         $type = 'requests';
@@ -186,6 +188,7 @@ class CmsController extends Controller
         return view('superadmin.cms', compact('data', 'type', 'fields'));
     }
 
+    // ! Depracated
     public function burialServices() {
         $data = BurialService::all();
         $type = 'services';
@@ -196,6 +199,7 @@ class CmsController extends Controller
         return view('superadmin.cms', compact('data', 'type', 'fields'));
     }
     
+    // ! Depracated
     public function burialServiceProviders() {
         $data = BurialServiceProvider::all();
         $type = 'providers';
@@ -213,25 +217,25 @@ class CmsController extends Controller
     }
 
     public function workflow() {
-        $data = WorkflowStep::all();
+        $data = WorkflowStep::select('id', 'order_no', 'description')->get();
         $type = 'workflows';
         return view('superadmin.cms', compact('data', 'type'));
     }
 
     public function handlers() {
-        $data = Handler::all();
+        $data = Handler::select('id', 'name', 'type', 'department')->get();
         $type = 'handlers';
         return view('superadmin.cms', compact('data', 'type'));
     }
 
     public function users() {
-        $data = User::all();
+        $data = User::select('id', 'first_name', 'middle_name', 'last_name', 'email', 'password', 'contact_number', 'is_active')->get();
         $type = 'users';
         return view('superadmin.cms', compact('data', 'type'));
     }
 
     public function religions() {
-        $data = Religion::all();
+        $data = Religion::select('id', 'name', 'remarks')->get();
         $type = 'religions';
         return view('superadmin.cms', compact('data', 'type'));
     }

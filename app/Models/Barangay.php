@@ -47,4 +47,8 @@ class Barangay extends Model
     public function deceased() {
         return $this->hasMany(Deceased::class, 'barangay_id', 'id');
     }
+
+    public function claimant() {
+        return $this->hasMany(Claimant::class, 'barangay_id', 'id');
+    }
 }
