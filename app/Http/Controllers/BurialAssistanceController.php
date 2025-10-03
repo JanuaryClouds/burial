@@ -83,11 +83,20 @@ class BurialAssistanceController extends Controller
         ]);
 
         $burialAssistance = BurialAssistance::where('tracking_code', $request->tracking_code)->first();
+        if ($burialAssistance->claimantChanges()->count() > 0) {
+            if ($burialAssistance->claimantChanges()->latest()->first()->where('status', 'approved')) {
+                $mobileNumber = substr($burialAssistance->claimantChanges()->where('status', 'approved')->latest()->first()->newclaimant->mobile_number, -4);
+            } else {
+                $mobileNumber = substr($burialAssistance->claimant->mobile_number, -4);
+            }
+        } else {
+            $mobileNumber = substr($burialAssistance->claimant->mobile_number, -4);
+        }
         if (!$burialAssistance) {
             return redirect()->back()->with([
                 'error'=> 'Burial Assistance Application not found.'
             ]);
-        } elseif ($request->mobile_number != substr($burialAssistance->claimant->mobile_number, -4)) {
+        } elseif ($request->mobile_number != $mobileNumber) {
             return redirect()->back()->with([
                 'info' => 'Mobile number does not match. Please try again.'
             ]);
