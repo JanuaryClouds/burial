@@ -7,13 +7,10 @@
     <section class="section">
         <div class="section-header d-flex justify-content-between align-items-center">
             <h1>Deceased</h1>
-            <span class="section-header-button">
-                <x-export-to-pdf-button type="deceased" :startDate="$startDate" :endDate="$endDate" />
-            </span>
         </div>
     </section>
     <div>
-        <x-filter-data-form type="deceased" />
+        <x-filter-data-form type="deceased" :startDate="$startDate" :endDate="$endDate" />
         <div class="row">
             <div class="col-12 col-lg-6">
                 <div class="card">
@@ -139,6 +136,9 @@
                     </div>
                 @endif
             </div>
+        </div>
+        <div class="d-flex justify-content-center">
+            <x-export-to-pdf-button :startDate="$startDate" :endDate="$endDate" type="deceased" />
         </div>
     </div>
 </div>
