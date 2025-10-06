@@ -25,6 +25,14 @@
                             <section class="section">
                                 <div class="section-title">
                                     <h6 class="text-muted">Previous Step: {{ $processLogs->last()->loggable?->description ?? 'Submitted at ' . $application->application_date }}</h6>
+                                    <div class="row mt-4">
+                                        <div class="form-group col-lg-6 col-sm-12 mb-0">
+                                            <p class="text-muted">Date Out: {{ $processLogs->last()?->date_out }}</p>
+                                        </div>
+                                        <div class="form-group col-lg-6 col-sm-12 mb-0">
+                                            <p class="text-muted">Date In: {{ $processLogs->last()?->date_in }}</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </section>
                             <section class="section">
@@ -45,19 +53,28 @@
                                 @foreach ($schema as $key => $field)
                                     @if(is_string($field))
                                         <div class="form-group col-12 p-0">
-                                            <label for="">{{ ucfirst(str_replace('_', ' ', $key)) }}</label>
+                                            <label for="extra_data[{{ str_replace('*', '', $key) }}]" >
+                                                {{ ucfirst(str_replace('_', ' ', $key)) }}
+                                            </label>
                                             <input 
                                                 type="{{ $field }}"
                                                 class="form-control"
-                                                name="extra_data[{{ $key }}]"
-                                                required
+                                                name="extra_data[{{ str_replace('*', '', $key) }}]"
+                                                {{ str_contains($field, '*') ? 'required' : '' }}
                                             >
                                         </div>
                                     @elseif (is_array($field))
                                         @foreach ($field as $subkey => $subField)
                                             <div class="form-group col-12 p-0">
-                                                <label for="">{{ ucfirst(str_replace('_', ' ', $subkey)) }}</label>
-                                                <input type="{{ $subField }}" class="form-control" name="extra_data[{{ $key }}][{{ $subkey }}]" required>
+                                                <label for="extra_data[{{ $key }}][{{ str_replace('*', '', $subkey) }}]" >
+                                                    {{ ucfirst(str_replace('_', ' ', $subkey)) }}
+                                                </label>
+                                                <input 
+                                                    type="{{ $subField }}" 
+                                                    class="form-control" 
+                                                    name="extra_data[{{ $key }}][{{ str_replace('*', '', $subkey) }}]" 
+                                                    {{ str_contains($subField, '*') ? 'required' : '' }}
+                                                >
                                             </div>
                                         @endforeach
                                     @endif
