@@ -88,7 +88,7 @@
                                         In: {{ $log->date_in }}
                                         {{ $log->date_out ? '/ Out: ' . $log->date_out : '' }}
                                     </span>
-                                    @if ((auth()->user() && auth()->user()->hasRole('admin')) && $loop->last && ($log->loggable->order_no !== $totalWorkflowSteps))
+                                    @if ((auth()->user() && auth()->user()->hasRole('admin')) && $loop->last)
                                         <!-- An edit function would lose data integrity. To ensure data integrity, CSWDO must delete the log and create a new one -->
                                         <span class="d-flex align-items-center btn-toolbar">
                                             <x-delete-log :id="$burialAssistance->id" :stepId="$log->loggable->order_no" />

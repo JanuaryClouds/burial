@@ -40,7 +40,12 @@
                     <span>Claimants</span>
                 </a>
             </li>
-            <!-- TODO: cheques -->
+            <li @class(['active' => Request::is('reports/cheques')])>
+                <a href="{{ route('reports.cheques') }}">
+                    <i class="fas fa-money-check"></i>
+                    <span>Cheques</span>
+                </a>
+            </li>
 
             <li class="menu-header">CMS</li>
             <li @class(['active' => Request::is('superadmin/cms/barangays')])>

@@ -26,11 +26,48 @@ class ProcessLogController extends Controller
             
             if ($application) {
                 if ($application->status == 'pending') {
-                    $application->status = 'processing';
-                } elseif ($application->status == 'processing' && str_contains($step->description, 'Cheque available for pickup')) {
-                    $application->status = 'approved';
-                } elseif ($application->status == 'approved' && str_contains($step->description, 'Cheque claimed')) {
-                    $application->status = 'released';
+                    $application->update(['status' => 'processing']);
+                }
+
+                if ($step->order_no == 9) {
+                    $chequeValidated = $request->validate([
+                        'extra_data.OBR.oBR_number' => 'required|string',
+                        'extra_data.OBR.date' => 'required|string',
+                    ]);
+
+                    $application->cheque()->create([
+                        'burial_assistance_id' => $application->id,
+                        'claimant_id' => $application->claimantChanges->where('status', 'approved')->first()->newClaimant->id ?? $application->claimant_id,
+                        'obr_number' => $chequeValidated['extra_data']['OBR']['oBR_number'],
+                    ]);
+                }
+
+                if ($step->order_no == 10) {
+                    $application->latestCheque()->update([
+                        'dv_number' => $request['extra_data']['dv_number'] ?? null,
+                    ]);
+                }
+
+                if ($step->order_no == 11) {
+                    $application->latestCheque()->update([
+                        'cheque_number' => $request['extra_data']['cheque_number'],
+                        'amount' => $request['extra_data']['amount'],
+                    ]);
+                }
+                
+                if ($step->order_no == 12) {
+                    $application->latestCheque()->update([
+                        'date_issued' => $request['extra_data']['date_issued'],
+                    ]);
+                    $application->update(['status' => 'approved']);
+                }
+                
+                if ($step->order_no == 13) {
+                    $application->latestCheque()->update([
+                        'status' => 'claimed',
+                        'date_claimed' => $validated['date_in'],
+                    ]);
+                    $application->update(['status' => 'released']);
                 }
 
                 if ($application->initial_checker == null) {
@@ -72,6 +109,33 @@ class ProcessLogController extends Controller
                     ->with('loggable')
                     ->first();
                 if ($log) {
+                    if (class_basename($log->loggable) === 'WorkflowStep' && $log->loggable->order_no == 9) {
+                        $application->lastestCheque()->delete();
+                        $application->update(['status' => 'processing']);
+                    }
+
+                    if (class_basename($log->loggable) === 'WorkflowStep' && $log->loggable->order_no == 10) {
+                        $application->latestCheque()->update(['dv_number' => null]);
+                    }
+
+                    if (class_basename($log->loggable) === 'WorkflowStep' && $log->loggable->order_no == 11) {
+                        $application->latestCheque()->update(['cheque_number' => null]);
+                        $application->latestCheque()->update(['amount' => null]);
+                    }
+
+                    if (class_basename($log->loggable) === 'WorkflowStep' && $log->loggable->order_no == 12) {
+                        $application->latestCheque()->update(['date_issued' => null]);
+                        $application->update(['status' => 'processing']);
+                    }
+
+                    if (class_basename($log->loggable) === 'WorkflowStep' && $log->loggable->order_no == 13) {
+                        $application->latestCheque()->update([
+                            'status' => 'issued',
+                            'date_claimed' => null
+                        ]);
+                        $application->update(['status' => 'approved']);
+                    }
+
                     $log->delete();
                     return redirect()->back()->with('success','Process log deleted successfully.');
                 } else {

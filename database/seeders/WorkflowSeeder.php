@@ -14,7 +14,6 @@ class WorkflowSeeder extends Seeder
      */
     public function run(): void
     {
-        $handlers = Handler::all();
         $workflowData = [
             [
               'order_no' => 1,
@@ -39,7 +38,7 @@ class WorkflowSeeder extends Seeder
               'requires_extra_data' => true,
               'is_optional' => false,
               'extra_data_schema' => json_encode([
-                'compiled_docs' => 'string',
+                'compiled_docs*' => 'string',
               ]),
             ],
             [
@@ -90,8 +89,8 @@ class WorkflowSeeder extends Seeder
                 'is_optional' => false,
                 'extra_data_schema' => json_encode([
                     'OBR' => [
-                        'oBR_number' => 'string',
-                        'date' => 'date',
+                        'oBR_number*' => 'string',
+                        'date*' => 'date',
                     ],
                 ]),
             ],
@@ -101,7 +100,9 @@ class WorkflowSeeder extends Seeder
               'description' => 'Received by Accounting Office',
               'requires_extra_data' => false,
               'is_optional' => false,
-              'extra_data_schema' => null,
+              'extra_data_schema' => json_encode([
+                'dv_number*' => 'string',
+              ]),
             ],
             [
               'order_no' => 11,
@@ -109,7 +110,10 @@ class WorkflowSeeder extends Seeder
               'description' => 'Received by Treasury Office',
               'requires_extra_data' => false,
               'is_optional' => false,
-              'extra_data_schema' => null,
+              'extra_data_schema' => json_encode([
+                'cheque_number*' => 'string',
+                'amount*' => 'string',
+              ]),
             ],
             [
               'order_no' => 12,
@@ -118,8 +122,7 @@ class WorkflowSeeder extends Seeder
               'requires_extra_data' => true,
               'is_optional' => false,
               'extra_data_schema' => json_encode([
-                'cheque_number' => 'string',
-                'date'=> 'date',
+                'date_issued*' => 'date', 
               ])
             ],
             [

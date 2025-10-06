@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cheque;
 use App\Models\Claimant;
 use App\Models\Deceased;
 use Illuminate\Http\Request;
@@ -17,7 +18,7 @@ class ReportController extends Controller
     private $reportTypes = [
         'burial_assistance' => 'Burial Assistance Report',
         'deceased' => 'Deceased Persons Report',
-        // TODO: Cheques Report
+        'cheques' => 'Cheques Report',
     ];
 
     public function burialAssistances(Request $request, ReportService $reportService) {
@@ -146,5 +147,43 @@ class ReportController extends Controller
         } catch (\Exception $e) {
             return back()->with('alertError', 'An error occurred while generating the report: ' . $e->getMessage());
         }
+    }
+
+    public function cheques(Request $request, ReportService $reportService) {
+        if ($request->has('start_date') && $request->start_date != '') {
+            $startDate = Carbon::parse($request->start_date);
+        } else {
+            $startDate = Carbon::now()->startOfYear();
+        }
+        
+        if ($request->has('end_date') && $request->end_date != '') {
+            $endDate = Carbon::parse($request->end_date);
+        } else {
+            $endDate = Carbon::now()->endOfYear();
+        }
+        
+        $cheques = Cheque::select(
+            'id', 
+            'burial_assistance_id', 
+            'claimant_id', 
+            'obr_number', 
+            'cheque_number', 
+            'dv_number', 
+            'amount', 
+            'date_issued', 
+            'date_claimed', 
+            'status', 
+            'created_at'
+        )
+            ->whereBetween('date_issued', [$startDate, $endDate])
+            ->get();
+        $chequesPerStatus = $reportService->chequesPerStatus($startDate, $endDate);
+
+        return view('reports.cheques', compact(
+            'cheques', 
+            'chequesPerStatus',
+            'startDate',
+            'endDate',
+        ));
     }
 }

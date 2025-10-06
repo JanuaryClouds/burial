@@ -34,6 +34,7 @@ class ExportController extends Controller
             'deceased.gender',
             'claimant',
             'processLogs',
+            'cheque',
             'claimantChanges',
             'claimantChanges.oldClaimant',
             'claimantChanges.newClaimant',
@@ -49,8 +50,8 @@ class ExportController extends Controller
             $age = $dob->diffInYears($dod);
             $approvedChange = $ba->claimantChanges->firstwhere('status', 'approved');
             if ($approvedChange) {
-                $newClaimant = $approvedChange?->oldClaimant;
-                $firstClaimant = $approvedChange?->newClaimant;
+                $newClaimant = $approvedChange?->newClaimant;
+                $firstClaimant = $approvedChange?->oldClaimant;
             } else {
                 $firstClaimant = $ba->claimant;
             }
@@ -77,10 +78,10 @@ class ExportController extends Controller
             $sheet->setCellValue("T{$row}", $ba->amount);
             $sheet->setCellValue("U{$row}", $ba->deceased->date_of_death);
             $sheet->setCellValue("V{$row}", $firstClaimant->mobile_number);
-            $sheet->setCellValue("W{$row}", $processLogService->getLog($firstClaimant, 1)?->date_out ?? '');
-            $sheet->setCellValue("X{$row}", $processLogService->getLog($firstClaimant, 1)?->date_in ?? '');
-            $sheet->setCellValue("Y{$row}", $processLogService->getLog($firstClaimant, 1)?->comments ?? '');
-            $sheet->setCellValue("Z{$row}", $processLogService->getLog($firstClaimant, 2)?->date_in ?? '');
+            $sheet->setCellValue("W{$row}", $processLogService->getLog($firstClaimant, 1)?->date_out);
+            $sheet->setCellValue("X{$row}", $processLogService->getLog($firstClaimant, 1)?->date_in);
+            $sheet->setCellValue("Y{$row}", $processLogService->getLog($firstClaimant, 1)?->comments);
+            $sheet->setCellValue("Z{$row}", $processLogService->getLog($firstClaimant, 2)?->date_in);
             $sheet->setCellValue("AA{$row}", $processLogService->getLog($firstClaimant, 3)?->extra_data['compiled_docs'] ?? '');
             $sheet->setCellValue("AB{$row}", $processLogService->getLog($firstClaimant, 3)?->date_out ?? '');
             $sheet->setCellValue("AC{$row}", $processLogService->getLog($firstClaimant, 3)?->date_in ?? '');
@@ -95,11 +96,11 @@ class ExportController extends Controller
             $sheet->setCellValue("AL{$row}", $processLogService->getLog($firstClaimant, 7)?->date_in ?? '');
             $sheet->setCellValue("AM{$row}", $processLogService->getLog($firstClaimant, 8)?->date_in ?? '');
             $sheet->setCellValue("AN{$row}", $processLogService->getLog($firstClaimant, 9)?->date_in ?? '');
-            $sheet->setCellValue("AO{$row}", $processLogService->getLog($firstClaimant, 9)?->extra_data['OBR']['obr_number'] ?? '');
-            $sheet->setCellValue("AP{$row}", $processLogService->getLog($firstClaimant, 9)?->extra_data['OBR']['date'] ?? '');
+            $sheet->setCellValue("AO{$row}", $processLogService->getLog($firstClaimant, 9)?->extra_data['OBR']['oBR_number'] ?? '');
+            $sheet->setCellValue("AP{$row}", $processLogService->getLog($firstClaimant, 12)?->extra_data['date_issued'] ?? '');
             $sheet->setCellValue("AQ{$row}", $processLogService->getLog($firstClaimant, 10)?->date_in ?? '');
             $sheet->setCellValue("AR{$row}", $processLogService->getLog($firstClaimant, 11)?->date_in ?? '');
-            $sheet->setCellValue("AS{$row}", $processLogService->getLog($firstClaimant, 12)?->extra_data['cheque_number'] ?? '');
+            $sheet->setCellValue("AS{$row}", $processLogService->getLog($firstClaimant, 9)?->extra_data['cheque_number'] ?? '');
             $sheet->setCellValue("AT{$row}", $processLogService->getLog($firstClaimant, 12)?->extra_data['date'] ?? '');
             $sheet->setCellValue("AU{$row}", $processLogService->getLog($firstClaimant, 13)?->date_in ?? '');
             // Change of Claimants start here if it exists
@@ -119,10 +120,9 @@ class ExportController extends Controller
                 $sheet->setCellValue("BH{$row}", $processLogService->getLog($newClaimant, 7)?->date_out ?? '');
                 $sheet->setCellValue("BI{$row}", $processLogService->getLog($newClaimant, 7)?->date_in ?? '');
                 $sheet->setCellValue("BJ{$row}",
+                ($processLogService->getLog($newClaimant, 9)?->date_in ?? '') . ' / ' .
                     ($processLogService->getLog($newClaimant, 8)?->date_in ?? '') . ' / ' .
-                    ($processLogService->getLog($newClaimant, 9)?->date_in ?? '') . ' / ' .
-                    ($processLogService->getLog($newClaimant, 9)?->extra_data['OBR']['obr_number'] ?? '') . ' - ' .
-                    ($processLogService->getLog($newClaimant, 9)?->extra_data['OBR']['date'] ?? '')
+                    ($processLogService->getLog($newClaimant, 10)?->date_in ?? '')
                 );
             }
             $sheet->setCellValue("BK{$row}", $ba?->status ?? '');

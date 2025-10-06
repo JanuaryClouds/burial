@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Services;
+use App\Models\Cheque;
 use Carbon\Carbon;
 use App\Models\BurialAssistance;
 use App\Models\Deceased;
@@ -91,10 +92,10 @@ class ReportService
             $sheet->setCellValue("T{$row}", $ba->amount);
             $sheet->setCellValue("U{$row}", $ba->deceased->date_of_death);
             $sheet->setCellValue("V{$row}", $firstClaimant->mobile_number);
-            $sheet->setCellValue("W{$row}", $this->getLog($firstClaimant, 1, $startDate, $endDate)?->date_out ?? '');
-            $sheet->setCellValue("X{$row}", $this->getLog($firstClaimant, 1, $startDate, $endDate)?->date_in ?? '');
-            $sheet->setCellValue("Y{$row}", $this->getLog($firstClaimant, 1, $startDate, $endDate)?->comments ?? '');
-            $sheet->setCellValue("Z{$row}", $this->getLog($firstClaimant, 2, $startDate, $endDate)?->date_in ?? '');
+            $sheet->setCellValue("W{$row}", $this->getLog($firstClaimant, 1, $startDate, $endDate)?->date_out);
+            $sheet->setCellValue("X{$row}", $this->getLog($firstClaimant, 1, $startDate, $endDate)?->date_in);
+            $sheet->setCellValue("Y{$row}", $this->getLog($firstClaimant, 1, $startDate, $endDate)?->comments);
+            $sheet->setCellValue("Z{$row}", $this->getLog($firstClaimant, 2, $startDate, $endDate)?->date_in);
             $sheet->setCellValue("AA{$row}", $this->getLog($firstClaimant, 3, $startDate, $endDate)?->extra_data['compiled_docs'] ?? '');
             $sheet->setCellValue("AB{$row}", $this->getLog($firstClaimant, 3, $startDate, $endDate)?->date_out ?? '');
             $sheet->setCellValue("AC{$row}", $this->getLog($firstClaimant, 3, $startDate, $endDate)?->date_in ?? '');
@@ -109,8 +110,8 @@ class ReportService
             $sheet->setCellValue("AL{$row}", $this->getLog($firstClaimant, 7, $startDate, $endDate)?->date_in ?? '');
             $sheet->setCellValue("AM{$row}", $this->getLog($firstClaimant, 8, $startDate, $endDate)?->date_in ?? '');
             $sheet->setCellValue("AN{$row}", $this->getLog($firstClaimant, 9, $startDate, $endDate)?->date_in ?? '');
-            $sheet->setCellValue("AO{$row}", $this->getLog($firstClaimant, 9, $startDate, $endDate)?->extra_data['OBR']['obr_number'] ?? '');
-            $sheet->setCellValue("AP{$row}", $this->getLog($firstClaimant, 9, $startDate, $endDate)?->extra_data['OBR']['date'] ?? '');
+            $sheet->setCellValue("AO{$row}", $this->getLog($firstClaimant, 9, $startDate, $endDate)?->extra_data['OBR']['oBR_number'] ?? '');
+            $sheet->setCellValue("AP{$row}", $this->getLog($firstClaimant, 12, $startDate, $endDate)?->extra_data['date_issued'] ?? '');
             $sheet->setCellValue("AQ{$row}", $this->getLog($firstClaimant, 10, $startDate, $endDate)?->date_in ?? '');
             $sheet->setCellValue("AR{$row}", $this->getLog($firstClaimant, 11, $startDate, $endDate)?->date_in ?? '');
             $sheet->setCellValue("AS{$row}", $this->getLog($firstClaimant, 12, $startDate, $endDate)?->extra_data['cheque_number'] ?? '');
@@ -133,10 +134,9 @@ class ReportService
                 $sheet->setCellValue("BH{$row}", $this->getLog($newClaimant, 7, $startDate, $endDate)?->date_out ?? '');
                 $sheet->setCellValue("BI{$row}", $this->getLog($newClaimant, 7, $startDate, $endDate)?->date_in ?? '');
                 $sheet->setCellValue("BJ{$row}",
-                    ($this->getLog($newClaimant, 8, $startDate, $endDate)?->date_in ?? '') . ' / ' .
                     ($this->getLog($newClaimant, 9, $startDate, $endDate)?->date_in ?? '') . ' / ' .
-                    ($this->getLog($newClaimant, 9, $startDate, $endDate)?->extra_data['OBR']['obr_number'] ?? '') . ' - ' .
-                    ($this->getLog($newClaimant, 9, $startDate, $endDate)?->extra_data['OBR']['date'] ?? '')
+                    ($this->getLog($newClaimant, 8, $startDate, $endDate)?->date_in ?? '') . ' / ' .
+                    ($this->getLog($newClaimant, 10, $startDate, $endDate)?->date_in ?? '')
                 );
             }
             $sheet->setCellValue("BK{$row}", $ba?->status ?? '');
@@ -304,6 +304,19 @@ class ReportService
             ->map(function ($item) {
                 return [
                     'name'  => $item->relationship->name ?? 'Unknown',
+                    'count' => $item->total,
+                ];
+            });
+    }
+
+    public function chequesPerStatus($startDate, $endDate) {
+        return Cheque::selectRaw('status, COUNT(*) as total')
+            ->groupBy('status')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'name'  => $item->status,
                     'count' => $item->total,
                 ];
             });
