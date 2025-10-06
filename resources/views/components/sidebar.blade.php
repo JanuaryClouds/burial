@@ -31,6 +31,13 @@
                     <span>Claimants</span>
                 </a>
             </li>
+            <li @class(['active' => Request::is('reports/cheques')])>
+                <a href="{{ route('reports.cheques') }}">
+                    <i class="fas fa-money-check"></i>
+                    <span>Cheques</span>
+                </a>
+            </li>
+            
             <li class="menu-header">Applications</li>
             <li @class(['active' => Request::is('admin/applications/pending*')])>
                 <a href="{{ route('admin.applications.pending') }}" class="nav-link"><i class="fas fa-hourglass"></i><span>Pending</span"></a>
