@@ -27,7 +27,7 @@
                     <div class="card-body">
                         @if (!$deceasedPerGender->isEmpty())
                             <canvas 
-                                id="deceased-by-gender"
+                                id="deceased-per-gender"
                                 data-chart-data='@json($deceasedPerGender->pluck('count'))'
                                 data-chart-labels='@json($deceasedPerGender->pluck('name'))'
                                 data-chart-type="bar"
@@ -67,7 +67,7 @@
                     <div class="card-body">
                         @if (!$deceasedThisMonth->isEmpty())
                             <canvas 
-                                id="deceased-by-month"
+                                id="deceased-per-month"
                                 data-chart-data='@json($deceasedThisMonth->pluck('count'))'
                                 data-chart-labels='@json($deceasedThisMonth->pluck('period'))'
                                 data-chart-type="bar"
@@ -87,7 +87,7 @@
                     <div class="card-body">
                         <div>
                             <canvas
-                                id="deceased-Per-barangay"
+                                id="deceased-per-barangay"
                                 data-chart-data='@json($deceasedPerBarangay->pluck('count'))'
                                 data-chart-labels='@json($deceasedPerBarangay->pluck('name'))'
                                 data-chart-type="pie"
