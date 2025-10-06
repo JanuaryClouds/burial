@@ -17,9 +17,16 @@ return new class extends Migration
             $table->foreignId('burial_assistance_id')
                 ->constrained('burial_assistances')
                 ->onDelete('cascade');
-            $table->string('cheque_number')->unique();
-            $table->date('issued_date')->nullable();
+            $table->foreignId('claimant_id')
+                ->constrained('claimants')
+                ->onDelete('cascade');
+            $table->string('obr_number')->unique();
+            $table->string('cheque_number')->unique()->nullable();
+            $table->string('dv_number')->unique()->nullable();
+            $table->decimal('amount')->nullable();
+            $table->date('date_issued')->nullable();
             $table->date('date_claimed')->nullable();
+            $table->enum('status', ['issued', 'claimed', 'cancelled'])->default('issued');
 
             $table->timestamps();
         });

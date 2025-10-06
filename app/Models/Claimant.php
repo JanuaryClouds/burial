@@ -43,4 +43,8 @@ class Claimant extends Model
     public function processLogs() {
         return $this->hasMany(ProcessLog::class, 'claimant_id', 'id');
     }
+
+    public function cheque() {
+        return $this->hasOne(Cheque::class, 'claimant_id', 'id')->latestOfMany();
+    }
 }
