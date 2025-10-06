@@ -9,6 +9,7 @@ use App\Http\Controllers\{
     DeceasedController,
     ClaimantController,
     BurialAssistanceController,
+    ChequeController,
 };
 
 Route::get('/', function () {
@@ -36,6 +37,8 @@ Route::middleware(['auth'])
             ->name('reports.deceased');
         Route::match(['get', 'post'], '/reports/claimants', [ReportController::class, 'claimants'])
             ->name('reports.claimants');
+        Route::match(['get', 'post'], '/reports/cheques', [ReportController::class, 'cheques'])
+            ->name('reports.cheques');
 
         Route::post('/reports/export/burial-assistances/{startDate}/{endDate}', [BurialAssistanceController::class, 'generatePdfReport'])
             ->name('reports.burial-assistances.pdf');
@@ -45,6 +48,9 @@ Route::middleware(['auth'])
 
         Route::post('/reports/export/claimant/{startDate}/{endDate}', [ClaimantController::class, 'generatePdfReport'])
             ->name('reports.claimant.pdf');
+
+        Route::post('/reports/export/cheques/{startDate}/{endDate}', [ChequeController::class, 'generatePdfReport'])
+            ->name('reports.cheques.pdf');
 
         require __DIR__ . '/superadmin.php';
         require __DIR__ . '/admin.php';

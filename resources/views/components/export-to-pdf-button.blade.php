@@ -17,6 +17,7 @@
         'deceased-per-barangay',
         'claimant-per-barangay',
         'claimant-per-relationship',
+        'cheques-per-status',
     ];
 
     function getChartImage(chartId) {
