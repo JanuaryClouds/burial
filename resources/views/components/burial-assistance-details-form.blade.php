@@ -12,7 +12,7 @@
     >
         <div class="col">
             <x-form-input 
-                name="burial_assistance[funeraria]"
+                name="funeraria"
                 label="Funeraria"
                 required="true"
                 value="{{ $burialAssistance->funeraria ?? '' }}"
@@ -22,7 +22,7 @@
         </div>
         <div class="col">
             <x-form-input 
-                name="burial_assistance[amount]"
+                name="amount"
                 label="Amount"
                 type="number"
                 required="true"
@@ -33,7 +33,7 @@
         </div>
         <div class="col">
             <x-form-textarea 
-                name="burial_assistance[remarks]"
+                name="remarks"
                 label="Remarks"
                 value="{{ $burialAssistance->remarks ?? '' }}"
                 readonly="{{ $readonly }}"

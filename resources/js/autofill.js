@@ -42,8 +42,8 @@ document.addEventListener('DOMContentLoaded', () => {
         autofillSelect(form, 'claimant[relationship_to_deceased]');
         autofillSelect(form, 'claimant[barangay_id]');
 
-        form.querySelector('input[name="burial_assistance[funeraria]"]').value = faker.company.name();
-        form.querySelector('input[name="burial_assistance[amount]"]').value = faker.finance.amount({ min: 100, max: 10000, dec: 0 });
-        form.querySelector('textarea[name="burial_assistance[remarks]"]').value = optionalField(faker.lorem.sentence());
+        form.querySelector('input[name="funeraria"]').value = faker.company.name();
+        form.querySelector('input[name="amount"]').value = faker.finance.amount({ min: 100, max: 10000, dec: 0 });
+        form.querySelector('textarea[name="remarks"]').value = optionalField(faker.lorem.sentence());
     })
 })
