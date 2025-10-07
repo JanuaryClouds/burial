@@ -135,36 +135,44 @@ class CmsController extends Controller
     }
 
     public function barangays() {
-        $data = Barangay::select('id', 'name', 'district_id', 'remarks')
-            ->get();
-        $districts = District::select('id', 'name')->get();
-        $type = 'barangays';
-        $fields = [
-            'name' => ['label' => 'name', 'type' => 'text'],
-            'district_id' => [
-                'label' => 'district_id', 
-                'type' => 'select', 
-                'options' => $districts
-            ],
-            'remarks' => ['label' => 'remarks', 'type' => 'text'],
-        ];
-        return view('superadmin.cms', compact(
-            ['data', 
-            'fields', 
-            'districts', 
-            'type', 
-        ]));
+        try {
+            $data = Barangay::select('id', 'name', 'district_id', 'remarks')
+                ->get();
+            $districts = District::select('id', 'name')->get();
+            $type = 'barangays';
+            $fields = [
+                'name' => ['label' => 'name', 'type' => 'text'],
+                'district_id' => [
+                    'label' => 'district_id', 
+                    'type' => 'select', 
+                    'options' => $districts
+                ],
+                'remarks' => ['label' => 'remarks', 'type' => 'text'],
+            ];
+            return view('superadmin.cms', compact(
+                ['data', 
+                'fields', 
+                'districts', 
+                'type', 
+            ]));
+        } catch (Exception $e) {
+            return redirect()->back()->with('alertError', $e->getMessage());
+        }
     }
 
     public function relationships() {
-        $data = Relationship::select('id', 'name', 'remarks')->get();
-        $type = 'relationships';
-        $fields = [
-            'name' => ['label' => 'name', 'type' => 'text'],
-            'remarks' => ['label' => 'name', 'type' => 'text'],
-        ];
-
-        return view('superadmin.cms', compact('data', 'type', 'fields'));
+        try {
+            $data = Relationship::select('id', 'name', 'remarks')->get();
+            $type = 'relationships';
+            $fields = [
+                'name' => ['label' => 'name', 'type' => 'text'],
+                'remarks' => ['label' => 'name', 'type' => 'text'],
+            ];
+    
+            return view('superadmin.cms', compact('data', 'type', 'fields'));
+        } catch (Exception $e) {
+            return redirect()->back()->with('alertError', $e->getMessage());            
+        }
     }
 
     // ! Depracated
