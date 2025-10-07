@@ -48,9 +48,9 @@ class BurialAssistanceController extends Controller
                     'application_date' => now(),
                     'claimant_id' => $claimant->id,
                     'deceased_id' => $deceased->id,
-                    'funeraria' => $validated['burial_assistance']['funeraria'],
-                    'amount' => $validated['burial_assistance']['amount'],
-                    'remarks' => $validated['burial_assistance']['remarks'],
+                    'funeraria' => $validated['funeraria'],
+                    'amount' => $validated['amount'],
+                    'remarks' => $validated['remarks'],
                 ]);
                 foreach ($request->file('images', []) as $fieldName => $uploadedFile) {
                     $extension = $uploadedFile->getClientOriginalExtension();
