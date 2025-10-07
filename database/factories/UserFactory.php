@@ -5,6 +5,7 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
@@ -24,11 +25,14 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
+            'first_name' => $this->faker->firstName(),
+            'middle_name' => $this->faker->optional()->lastName(),
+            'last_name' => $this->faker->lastName(),
             'email' => fake()->unique()->safeEmail(),
-            'email_verified_at' => now(),
+            // 'email_verified_at' => now(),
+            'contact_number' => $this->faker->regexify('09[0-9]{9}'),
             'password' => static::$password ??= Hash::make('password'),
-            'remember_token' => Str::random(10),
+            // 'remember_token' => Str::random(10),
         ];
     }
 
@@ -40,5 +44,19 @@ class UserFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
         ]);
+    }
+
+    public function superadmin() {
+        return $this->afterCreating(function ($user) {
+            $role = Role::firstOrCreate(['name' => 'superadmin']);
+            $user->assignRole($role);
+        });
+    }
+
+    public function admin() {
+        return $this->afterCreating(function ($user) {
+            $role = Role::firstOrCreate(['name' => 'admin']);
+            $user->assignRole($role);
+        });
     }
 }
