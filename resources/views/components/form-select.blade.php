@@ -11,7 +11,7 @@
 
 <div class="mb-3">
     @if ($label)
-        <label for="{{ $name }}" class="form-label">{{ $label }}{{ $required ? '*' : '' }}</label>
+        <label for="{{ $name }}" class="form-label mb-0">{{ $label }}{{ $required ? '*' : '' }}</label>
     @endif
 
     <select

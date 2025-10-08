@@ -1,6 +1,11 @@
 @extends('layouts.metronic.guest')
 <title>CSWDO Burial Assistance</title>
 @section('content')
+<div >
+
+</div>
+
+
     <div class="row d-flex justify-content-center h-100 w-100 mx-0 d-flex flex-column align-items-center">
         <div class="col-lg-5 col-md-8 col-sm-8 col-12">
             <div class="row d-flex flex-column bg-white rounded shadow-sm p-4">

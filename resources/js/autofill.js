@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker";
 document.addEventListener('DOMContentLoaded', () => {
     const autofillBtn = document.getElementById('autofillBtn');
-    const form = document.getElementById('burialAssistanceForm');
+    const form = document.getElementById('kt_create_account_form');
 
     function autofillSelect(form, fieldName) {
         const select = form.querySelector(`select[name="${fieldName}"]`);

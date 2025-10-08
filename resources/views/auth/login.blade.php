@@ -1,5 +1,5 @@
-@extends('layouts.stisla.guest')
-
+@extends('layouts.metronic.guest')
+<title>Login</title>
 @section('content')
 <section class="section d-flex justify-content-center align-items-center p-5 min-vh-100">
     <div class="section-body d-flex align-items-center">

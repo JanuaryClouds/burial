@@ -11,10 +11,9 @@
 ])
 
 <div class="bg-white shadow-sm rounded p-4">
-    <div class="d-flex justify-content-between align-items-center">
-        <h2>Deceased Information</h2>
-    </div>
+    <h2>Deceased Information</h2>
     <p>Please fill out the following information. Fields marked with an asterisk are required. Leave blank if inapplicable.</p>
+    
     <div
         class="row justify-content-center align-items-center g-2"
     >
