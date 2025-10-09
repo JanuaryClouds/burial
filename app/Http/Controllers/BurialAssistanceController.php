@@ -41,9 +41,14 @@ class BurialAssistanceController extends Controller
                 $query->where('suffix', $validated['deceased']['suffix']);
             })->first();
             if (!$existingDeceased) {
+                $validated['deceased']['id'] = Str::uuid();
+                $validated['claimant']['id'] = Str::uuid();
+
+
                 $deceased = Deceased::create($validated['deceased']);
                 $claimant = Claimant::create($validated['claimant']);
                 $burialAssistance = BurialAssistance::create([
+                    'id' => Str::uuid(),
                     'tracking_code' => strtoupper(Str::random(6)),
                     'application_date' => now(),
                     'claimant_id' => $claimant->id,

@@ -8,7 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Claimant extends Model
 {
     use HasFactory;
+
+    protected $primaryKey = 'id';
+    public $incrementing = false;
+    protected $keyType = 'string';
+
     protected $fillable = [
+        'id',
         'first_name',
         'middle_name',
         'last_name',

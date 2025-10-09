@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\ClaimantChange;
 use App\Models\BurialAssistance;
 use App\Models\ProcessLog;
+use Str;
 
 class ClaimantChangeController extends Controller
 {
@@ -21,6 +22,7 @@ class ClaimantChangeController extends Controller
             $validated['old_claimant_id'] = $burialAssistance->claimant_id;
             
             $newClaimant = Claimant::create([
+                "id" => Str::uuid(),
                 "first_name" => $validated['claimant']['first_name'],
                 "middle_name" => $validated['claimant']['middle_name'],
                 "last_name" => $validated['claimant']['last_name'],
@@ -55,6 +57,7 @@ class ClaimantChangeController extends Controller
             ]);
 
             ProcessLog::create([
+                'id' => Str::uuid(),
                 'burial_assistance_id' => $change->burialAssistance->id,
                 'claimant_id' => $change->newClaimant->id,
                 'loggable_id' => $change->id,

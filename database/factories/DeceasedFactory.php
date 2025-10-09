@@ -20,6 +20,7 @@ class DeceasedFactory extends Factory
     public function definition(): array
     {
         return [
+            'id' => $this->faker->uuid(),
             'first_name' => $this->faker->firstName(),
             'middle_name' => $this->faker->optional()->lastName(),
             'last_name'=> $this->faker->lastName(),

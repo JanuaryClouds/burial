@@ -19,6 +19,7 @@ class BurialAssistanceFactory extends Factory
     public function definition(): array
     {
         return [
+            'id' => $this->faker->uuid(),
             'tracking_code' => $this->faker->regexify('[A-Z0-9]{6}'),
             'application_date' => $this->faker->dateTimeBetween('-1 week', now()),
             'amount' => $this->faker->randomFloat(0, 100, 10000),

@@ -12,14 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('process_logs', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
 
-            $table->foreignId('burial_assistance_id')
-                ->constrained('burial_assistances')
+            $table->foreignUuid('burial_assistance_id')
+                ->constrained('burial_assistances', 'id')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
-            $table->foreignId('claimant_id')
-                ->constrained('claimants')
+            $table->foreignUuid('claimant_id')
+                ->constrained('claimants', 'id')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
             $table->nullableMorphs('loggable');

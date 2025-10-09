@@ -12,15 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('claimants', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('first_name');
             $table->string('middle_name')->nullable();
             $table->string('last_name');
             $table->string('suffix')->nullable();
             $table->foreignId('relationship_to_deceased')
-                  ->constrained('relationships')
-                  ->onDelete('cascade')
-                  ->onUpdate('cascade');
+                ->constrained('relationships')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
             $table->string('mobile_number')->nullable();
             $table->string('address');
             $table->foreignId('barangay_id')

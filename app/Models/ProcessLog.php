@@ -8,7 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class ProcessLog extends Model
 {
     use HasFactory;
+    protected $primaryKey = 'id';
+    public $incrementing = false;
+    protected $keyType = 'string';
     protected $fillable = [
+        'id',
         'burial_assistance_id',
         'claimant_id',
         'loggable_id',

@@ -8,6 +8,7 @@ use App\Models\ProcessLog;
 use App\Models\BurialAssistance;
 use App\Models\WorkflowStep;
 use App\Models\Handler;
+use Str;
 
 class ProcessLogController extends Controller
 {
@@ -36,6 +37,7 @@ class ProcessLogController extends Controller
                     ]);
 
                     $application->cheque()->create([
+                        'id' => Str::uuid(),
                         'burial_assistance_id' => $application->id,
                         'claimant_id' => $application->claimantChanges->where('status', 'approved')->first()->newClaimant->id ?? $application->claimant_id,
                         'obr_number' => $chequeValidated['extra_data']['OBR']['oBR_number'],
@@ -81,6 +83,7 @@ class ProcessLogController extends Controller
                     $claimant = $application->claimant;
                 }
                 $application->processLogs()->create([
+                    'id' => Str::uuid(),
                     'loggable_id' => $step->id,
                     'loggable_type' => WorkflowStep::class,
                     'is_progress_step' => true,
