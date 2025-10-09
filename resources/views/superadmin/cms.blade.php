@@ -32,7 +32,14 @@
 				@endif
 			</div>
 			<div class="mt-4">
-				<x-cms-data-table :type="$type" :data="$data" />
+				<div class="card">
+					<div class="card-header">
+						<h4>{{ Str::substr(Str::ucfirst($type), 0, -1) }}</h4>
+					</div>
+					<div class="card-body">
+						<x-cms-data-table :type="$type" :data="$data" />
+					</div>
+				</div>
 			</div>
 		</div>
 	</section>
