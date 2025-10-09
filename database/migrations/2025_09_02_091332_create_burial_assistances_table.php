@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('burial_assistances', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('tracking_no')->unique();
             $table->string('tracking_code')->unique();
             $table->date('application_date');
@@ -23,12 +23,12 @@ return new class extends Migration
                 ->onDelete('set null')
                 ->onUpdate('cascade');
             $table->string('funeraria');
-            $table->foreignId('deceased_id')
-                ->constrained('deceased')
+            $table->foreignUuid('deceased_id')
+                ->constrained('deceased', 'id')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
-            $table->foreignId('claimant_id')
-                ->constrained('claimants')
+            $table->foreignUuid('claimant_id')
+                ->constrained('claimants', 'id')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
             $table->string('amount')->nullable();

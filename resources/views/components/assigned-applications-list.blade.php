@@ -7,7 +7,7 @@
         @if ($applications->isEmpty())
             No assigned applications.
         @else
-        <div class="table-responsive">
+            <div class="table-responsive">
                 <div class="dataTables_wrapper container-fluid">
                     <table id="assigned-applications-table" class="table data-table" style="width:100%">
                         <thead>

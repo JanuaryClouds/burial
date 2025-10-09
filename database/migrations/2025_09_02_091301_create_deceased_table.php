@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('deceased', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
 
             $table->string('first_name');
             $table->string('middle_name')->nullable();
@@ -24,7 +24,6 @@ return new class extends Migration
                 ->constrained('sexes')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
-            // TODO: Bring these back
             $table->string('address');
             $table->foreignId('barangay_id')
                 ->constrained('barangays')

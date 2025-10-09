@@ -8,7 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Cheque extends Model
 {
     use HasFactory;
+
+    protected $table = "cheques";
+    protected $primaryKey = "id";
+    public $incrementing = false;
+    protected $keyType = 'string';
     protected $fillable = [
+        'id',
         'burial_assistance_id',
         'claimant_id',
         'obr_number',
@@ -19,7 +25,6 @@ class Cheque extends Model
         'date_claimed',
         'status'
     ];
-    protected $table = 'cheques';
 
     public function burialAssistance() {
         return $this->belongsTo(BurialAssistance::class, 'burial_assistance_id', 'id');

@@ -8,7 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class BurialAssistance extends Model
 {
     use HasFactory;
+    protected $table = "burial_assistances";
+    protected $primaryKey = 'id';
+    public $incrementing = false;
+    protected $keyType = 'string';
     protected $fillable = [
+        'id',
         'tracking_no',
         'tracking_code',
         'application_date',

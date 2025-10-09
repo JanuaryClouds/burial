@@ -12,13 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('cheques', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
 
-            $table->foreignId('burial_assistance_id')
-                ->constrained('burial_assistances')
+            $table->foreignUuid('burial_assistance_id')
+                ->constrained('burial_assistances', 'id')
                 ->onDelete('cascade');
-            $table->foreignId('claimant_id')
-                ->constrained('claimants')
+            $table->foreignUuid('claimant_id')
+                ->constrained('claimants', 'id')
                 ->onDelete('cascade');
             $table->string('obr_number')->unique();
             $table->string('cheque_number')->unique()->nullable();

@@ -14,17 +14,17 @@ return new class extends Migration
         Schema::create('claimant_changes', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('burial_assistance_id')
-                ->constrained('burial_assistances')
+            $table->foreignUuid('burial_assistance_id')
+                ->constrained('burial_assistances', 'id')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
-            $table->foreignId('old_claimant_id')
+            $table->foreignUuid('old_claimant_id')
                 ->nullable()
-                ->constrained('claimants')
+                ->constrained('claimants', 'id')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
-            $table->foreignId('new_claimant_id')
-                ->constrained('claimants')
+            $table->foreignUuid('new_claimant_id')
+                ->constrained('claimants', 'id')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
             $table->dateTime('changed_at')->nullable();

@@ -40,10 +40,10 @@
                                     <h6>Next Step: {{ $step->description }}</h6>
                                     <div class="row mt-4">
                                         <div class="form-group col-lg-6 col-sm-12 mb-0">
-                                            <x-form-input type="date" name="date_out" id="date_out" label="Date Out" />
+                                            <x-form-input type="date" name="date_out" id="date_out" label="Date Out" min="{{ Carbon\Carbon::parse($processLogs->last()?->date_in)->format('Y-m-d') }}" />
                                         </div>
                                         <div class="form-group col-lg-6 col-sm-12 mb-0">
-                                            <x-form-input type="date" name="date_in" id="date_in" label="Date In" :required="true"/>
+                                            <x-form-input type="date" name="date_in" id="date_in" label="Date In" :required="true" min="{{ Carbon\Carbon::parse($processLogs->last()?->date_out)->format('Y-m-d') }}"/>
                                         </div>
                                     </div>
                                 </div>
