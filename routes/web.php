@@ -12,13 +12,13 @@ use App\Http\Controllers\{
     ChequeController,
 };
 
-Route::get('/', function () {
-    return view('landingpage');
-})->name('landing.page');
-
 // Route::get('/', function () {
-//     return view('metronics.landing');
+//     return view('landingpage');
 // })->name('landing.page');
+
+Route::get('/', function () {
+    return view('metronics.landing');
+})->name('landing.page');
 
 Route::get('/login', [UserController::class, 'loginPage'])
     ->name('login.page');

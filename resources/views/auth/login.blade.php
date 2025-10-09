@@ -4,10 +4,10 @@
 <section class="section d-flex justify-content-center align-items-center p-5 min-vh-100">
     <div class="section-body d-flex align-items-center">
         <div
-            class="row d-flex flex-lg-row flex-column bg-white rounded shadow-sm p-4"
+            class="row d-flex flex-column bg-white rounded shadow-sm py-10 px-4 gap-4"
         >
-            <div class="col d-flex flex-column align-items-center">
-                <img class="" style="width: 100px" src="{{ asset('images/CSWDO.webp') }}" alt="">
+            <div class="col d-flex flex-column flex-center">
+                <img class="mb-4" style="width: 100px" src="{{ asset('images/CSWDO.webp') }}" alt="">
                 <h2 class="text-lg-start text-center">CSWDO Burial
                     Assistance</h2>
                 <p class="text-start text-sm-center">

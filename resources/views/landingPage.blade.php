@@ -3,10 +3,10 @@
 @section('content')
     <div class="row d-flex justify-content-center h-100 w-100 mx-0 d-flex flex-column align-items-center">
         <div class="col-lg-5 col-md-8 col-sm-8 col-12">
-            <div class="row d-flex flex-column bg-white rounded shadow-sm p-4">
+            <div class="row d-flex flex-column bg-white rounded shadow-sm px-4 py-10 gap-8">
                 <div class="col d-flex flex-column justify-content-center align-items-center">
                     <img class="w-25 mx-auto" src="{{ asset('images/CSWDO.webp') }}" alt="">
-                    <h4 class="text-center fw-semibold text-black">CSWDO Burial Assistance</h4>
+                    <h4 class="text-center fw-semibold text-black fs-1">CSWDO Burial Assistance</h4>
                 </div>
                 <div class="col d-flex flex-column mt-4 align-items-center">
                     <button class="btn btn-primary col-6" type="button" data-bs-toggle="modal"
@@ -45,11 +45,11 @@
                         </div>
                     </div>
                 </div>
-                <div class="col">
-                    <p class="text-center">If you have already requested a burial assistance, please use the tracker below</p>
-                </div>
                 <div class="col d-flex flex-column align-items-center">
-                    <button class="btn btn-secondary col-6 btn-sm" type="button" data-bs-toggle="modal"
+                    <div class="col">
+                        <p class="text-center">If you have already requested a burial assistance, please use the tracker below</p>
+                    </div>
+                    <button class="btn btn-secondary col-6" type="button" data-bs-toggle="modal"
                         data-bs-target="#tracker-modal">Track Application</button>
                     <div id="tracker-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -85,11 +85,11 @@
                         </div>
                     </div>
                 </div>
-                <div class="col">
-                    <p class="text-center">For CSWDO Employees, log in</p>
-                </div>
-                <div class="col d-flex flex-column">
-                    <a href="{{ route('login.page') }}" role="button" class="btn btn-link">
+                <div class="col d-flex flex-column align-items-center">
+                    <div class="col">
+                        <p class="text-center">For CSWDO Employees, log in</p>
+                    </div>
+                    <a href="{{ route('login.page') }}" role="button" class="btn col-6 btn-secondary">
                         Manage Burial Assistances
                     </a>
                 </div>
