@@ -102,3 +102,16 @@
         @endif
     @endforeach
 </div>
+<script>
+    const dateIn = document.getElementById('date_in');
+    const dateOut = document.getElementById('date_out');
+    dateOut.addEventListener('change', () => {
+        if (dateOut.value) {
+            dateIn.min = dateOut.value;
+        }
+
+        if (dateIn.value && dateIn.value < dateOut.value) {
+            dateIn.value = '';
+        }
+    })
+</script>

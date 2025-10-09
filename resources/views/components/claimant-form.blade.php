@@ -57,7 +57,7 @@
     <div
         class="row justify-content-start align-items-center"
     >
-        <div class="col-12 col-lg-5">
+        <div class="col-12 col-lg-6">
             <x-form-select
                 name="claimant[relationship_to_deceased]"
                 id="relationship"

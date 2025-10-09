@@ -1,11 +1,13 @@
-@extends('layouts.stisla.guest')
+@extends('layouts.metronic.guest')
 
 @section('content')
 <title>{{ $burialAssistance->deceased->first_name }} {{ $burialAssistance->deceased->last_name }} Burial Assistance</title>
 
-<div class="container min-vh-100 d-flex align-items-center justify-content-center p-4">
-    <div class="row w-100" 
-         x-data="{ showApplication: false, showClaimantChangeRequest: false }">
+<div class="container min-vh-100 mx-auto d-flex align-items-center justify-content-center p-4">
+    <div 
+        class="row w-lg-75 w-100" 
+        x-data="{ showApplication: false, showClaimantChangeRequest: false }"
+    >
         <div class="col-12 col-lg-10 mx-auto mb-4">
             <x-assistance-process-tracker :burialAssistance="$burialAssistance" :updateAverage="$updateAverage"/>
         </div>
@@ -67,10 +69,18 @@
                     </p>
                 </div>
 
-                <x-swa-form :application="$burialAssistance" :disabled="true" :readonly="true" class="mb-4"/>
-                <x-deceased-form :deceased="$burialAssistance->deceased" disabled="true" readonly="true" class="mb-4"/>
-                <x-claimant-form :claimant="$burialAssistance->claimant" disabled="true" readonly="true" class="mb-4"/>
-                <x-burial-assistance-details-form :burialAssistance="$burialAssistance" disabled="true" readonly="true"/>
+                <div class="mb-4">
+                    <x-swa-form :application="$burialAssistance" :disabled="true" :readonly="true"/>
+                </div>
+                <div class="mb-4">
+                    <x-deceased-form :deceased="$burialAssistance->deceased" disabled="true" readonly="true"/>
+                </div>
+                <div class="mb-4">
+                    <x-claimant-form :claimant="$burialAssistance->claimant" disabled="true" readonly="true"/>
+                </div>
+                <div class="mb-4">
+                    <x-burial-assistance-details-form :burialAssistance="$burialAssistance" disabled="true" readonly="true"/>
+                </div>
             </div>
         </template>
         @if ($burialAssistance->claimantChanges->count() > 0)

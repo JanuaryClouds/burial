@@ -11,15 +11,14 @@
 ])
 
 <div class="bg-white shadow-sm rounded p-4">
-    <div class="d-flex justify-content-between align-items-center">
-        <h2>Deceased Information</h2>
-    </div>
+    <h2>Deceased Information</h2>
     <p>Please fill out the following information. Fields marked with an asterisk are required. Leave blank if inapplicable.</p>
+    
     <div
-        class="row justify-content-center align-items-center g-2"
+        class="row justify-content-start align-items-center g-2"
     >
         <div
-            class="col-12 col-md-4 col-lg-6"
+            class="col-12 col-md-6 col-lg-6"
         >
             <x-form-input 
                 name="deceased[first_name]"
