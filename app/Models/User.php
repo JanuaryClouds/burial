@@ -52,4 +52,8 @@ class User extends Authenticatable
     public function assignedTo() {
         return $this->hasMany(BurialAssistance::class, 'assigned_to', 'id');
     }
+
+    public function routeRestrictions() {
+        return $this->hasMany(UserRouteRestriction::class, 'user_id', 'id');
+    }
 }

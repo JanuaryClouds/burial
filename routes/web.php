@@ -29,7 +29,7 @@ Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 require __DIR__ . '/guest.php';
 require __DIR__ . '/api.php';
 
-Route::middleware(['auth'])
+Route::middleware(['auth', 'route.access'])
     ->group(function () {
         Route::get('/client/latest-tracking', [ClientController::class, 'getLatestTracking'])->name('client.latest-tracking');
 
