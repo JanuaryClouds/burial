@@ -23,6 +23,7 @@ use App\Http\Controllers\{
     ReportController,
     DeceasedController,
     ClaimantController,
+    UserRouteRestrictionController,
 };
 
 // super admin role
@@ -73,6 +74,12 @@ Route::middleware('role:superadmin')
 
         Route::post('/cms/{type}/{id}/delete', [CmsController::class, 'deleteContent'])
             ->name('cms.delete');
+            
+        Route::get('/users/{userId}', [UserRouteRestrictionController::class, 'manage'])
+            ->name('user.manage');
+
+        Route::post('/users/{userId}/restrictions/edit', [UserRouteRestrictionController::class, 'update'])
+            ->name('user.restrictions.update');
 
         Route::resource('role', RoleController::class);
         Route::resource('permission', PermissionController::class);

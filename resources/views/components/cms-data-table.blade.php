@@ -39,24 +39,11 @@
                         <td>
                             @if (Request::routeIs('superadmin.cms.users'))
                                 @if (Request::routeIs('superadmin.cms.users') && !$entry?->hasRole('superadmin'))
-                                    <form
-                                        id="update-is-active-{{ $entry->id }}"
-                                        action="{{ route('superadmin.cms.update', ['type' => $type, 'id' => $entry->id]) }}"
-                                        method="post"
-                                    >
-                                        @csrf
-                                        <div class="custom-control custom-switch">
-                                            <input 
-                                                id="is_active-{{ $entry->id }}" 
-                                                class="custom-control-input" 
-                                                type="checkbox" 
-                                                name="is_active" 
-                                                {{ $entry->is_active ? 'checked' : '' }}
-                                                x-on:change="document.getElementById('update-is-active-{{ $entry->id }}').submit()"
-                                            >
-                                            <label for="is_active-{{ $entry->id }}" class="custom-control-label">Active</label>
-                                        </div>
-                                    </form>
+                                    <a href="{{ route('superadmin.user.manage', ['userId' => $entry->id]) }}">
+                                        <button class="btn btn-primary" type="button">
+                                            <i class="fas fa-edit"></i> 
+                                        </button>
+                                    </a>
                                 @endif
                             @else
                                 <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#edit-modal-{{ $entry->id }}">

@@ -20,6 +20,7 @@ DataTable.Buttons.jszip(jszip);
 DataTable.Buttons.pdfMake(pdfmake);
 
 // 3. jQuery plugins (must come AFTER jQuery is set globally)
+import "popper.js";
 import "jquery.nicescroll";   // Stisla requires this
 import "moment";              // Stisla also uses moment
 import { checkAndRenderCharts } from "./charts";

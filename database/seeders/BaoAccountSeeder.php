@@ -27,6 +27,10 @@ class BaoAccountSeeder extends Seeder
                 'password' => bcrypt('bao.password'),
             ]
         );
+        $adminFactories = User::factory()->count(5)->create();
+        foreach ($adminFactories as $admin) {
+            $admin->assignRole($userRole);
+        }
         $baoAccount->assignRole($userRole);
     }
 }

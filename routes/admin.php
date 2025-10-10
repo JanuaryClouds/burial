@@ -20,8 +20,8 @@ Route::middleware('role:admin')
             ->name('logout');
         Route::get('/dashboard', [DashboardController::class, 'admin'])
             ->name('dashboard');
-        Route::get('/admin/search', [SearchController::class, 'admin'])
-            ->name('search');
+        // Route::get('/admin/search', [SearchController::class, 'admin'])
+        //     ->name('search');
 
         // Burial Applications
         Route::get('/applications/pending', [BurialAssistanceController::class, 'pending'])
@@ -53,5 +53,5 @@ Route::middleware('role:admin')
         Route::post('/applications/{id}/swa/save', [BurialAssistanceController::class, 'saveSwa'])
             ->name('applications.swa.save');
 
-        Route::resource('assistance', AssistanceController::class);
+        // Route::resource('assistance', AssistanceController::class);
     });
