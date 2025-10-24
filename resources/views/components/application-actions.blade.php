@@ -21,7 +21,7 @@
             @endif
         @elseif (auth()->user()->hasRole('superadmin') && !Request::is('reports/*'))
             <div class="d-flex">
-                @if ($application->status != "released" || $application->status != "rejected")
+                @if ($application->status != "released" && $application->status != "rejected")
                     @if ($application->assignedTo == null)
                         <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#assign-modal-{{ $application->id }}">
                             <i class="fas fa-user-check"></i>
@@ -33,11 +33,11 @@
                     @endif
                 @endif
                 <span class="mr-2"></span>
-                @if ($application->status != "rejected" || $application->status != "released")
+                @if ($application->status != "rejected" && $application->status != "released")
                     <button class="btn btn-danger" type="button" data-toggle="modal" data-target="#reject-{{ $application->id }}">
                         <i class="fas fa-times-circle"></i>
                     </button>
-                @else
+                @elseif ($application->status == "rejected")
                     <button class="btn btn-warning" type="button" data-toggle="modal" data-target="#reject-{{ $application->id }}">
                         <i class="fas fa-rotate-left"></i>
                     </button>
