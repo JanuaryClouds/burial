@@ -1,5 +1,5 @@
 <div class="main-sidebar sidebar-style-2">
-    <aside class="sidebar-wrapper">
+    <aside id="sidebar-wrapper">
         <div class="sidebar-brand">
             <img alt="image" src="{{ asset('images/CSWDO.webp') }}" class="" style="width: 50px" />
             <a href="{{ route('superadmin.dashboard') }}">Burial Assistance</a>
@@ -21,30 +21,34 @@
                     <span>Assignments</span>
                 </a>
             </li>
-            <li class="menu-header">Reports</li>
-            <li @class(['active' => Request::is('reports/burial-assistances')])>
-                <a href="{{ route('reports.burial-assistances') }}">
-                    <i class="fas fa-file"></i>
-                    <span>Burial Assistances</span>
+
+            <li @class(['nav-item', 'dropdown', 'active' => Request::is('reports/*')])>
+                <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Reports</span>
                 </a>
-            </li>
-            <li @class(['active' => Request::is('reports/deceased')])>
-                <a href="{{ route('reports.deceased') }}">
-                    <i class="fas fa-image-portrait"></i>
-                    <span>Deceased</span>
-                </a>
-            </li>
-            <li @class(['active' => Request::is('reports/claimants')])>
-                <a href="{{ route('reports.claimants') }}">
-                    <i class="fas fa-user"></i>
-                    <span>Claimants</span>
-                </a>
-            </li>
-            <li @class(['active' => Request::is('reports/cheques')])>
-                <a href="{{ route('reports.cheques') }}">
-                    <i class="fas fa-money-check"></i>
-                    <span>Cheques</span>
-                </a>
+                <ul class="dropdown-menu">
+                    <li @class(['active' => Request::is('reports/burial-assistances')])>
+                        <a href="{{ route('reports.burial-assistances') }}" class="nav-link">
+                            <span>Burial Assistances</span>
+                        </a>
+                    </li>
+                    <li @class(['active' => Request::is('reports/deceased')])>
+                        <a href="{{ route('reports.deceased') }}">
+                            <span>Deceased</span>
+                        </a>
+                    </li>
+                    <li @class(['active' => Request::is('reports/claimants')])>
+                        <a href="{{ route('reports.claimants') }}">
+                            <span>Claimants</span>
+                        </a>
+                    </li>
+                    <li @class(['active' => Request::is('reports/cheques')])>
+                        <a href="{{ route('reports.cheques') }}">
+                            <span>Cheques</span>
+                        </a>
+                    </li>
+                </ul>
             </li>
 
             <li class="menu-header">CMS</li>
