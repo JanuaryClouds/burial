@@ -35,7 +35,7 @@ console.log("DataTables is running:", $.fn.dataTable ? true : false);
 $(document).ready(function () {
     $(".nav-link.has-dropdown").each(function () {
         const $this = $(this).parent();
-        if ($this.hasClass("active")) {
+        if ($this.hasClass("active") && $(window).width() > 768) {
             $this.find(".dropdown-menu").slideToggle();
         }
     });

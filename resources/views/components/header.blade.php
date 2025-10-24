@@ -1,7 +1,7 @@
 <div class="navbar-bg"></div>
 <nav class="navbar navbar-expand-lg main-navbar justify-content-between px-4">
     <span class="d-flex align-items-baseline">
-        <ul class="navbar-nav mr-3">
+        <ul class="navbar-nav mr-3" x-show="!screenSmall">
             <li><a href="#"
                     @click.prevent="sidebarMini = !sidebarMini"
                     class="nav-link nav-link-lg"><i class="fas fa-bars"></i></a></li>
