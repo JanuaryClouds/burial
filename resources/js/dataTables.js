@@ -18,7 +18,8 @@ export function checkAndRenderDataTables() {
                 // 'pdf',
                 // 'print'
                 {
-                    className: 'btn btn-success p-0 px-3 fas fa-file-excel',
+                    text: '<i class="mr-2 fas fa-file-excel"></i> Export to Excel',
+                    className: 'btn btn-success py-1 px-3',
                     action: function() {
                         const url = window.location.href;
                         const status = url.substring(url.lastIndexOf('/') + 1);
@@ -47,7 +48,20 @@ export function checkAndRenderDataTables() {
                 // Bottom row: info and pagination
                 "<'row mt-2'<'col-sm-6'i><'col-sm-6 d-flex justify-content-end'p>>",
             buttons:[
-                'copy', 'csv', 'excel', 'pdf', 'print'
+                {
+                    extend: 'excel',
+                    text: '<i class="mr-2 fas fa-file-excel"></i> Export to Excel',
+                    className: 'btn btn-primary py-1 px-3',
+                },
+                {
+                    extend: 'print',
+                    text: '<i class="mr-2 fas fa-print"></i> Print',
+                    className: 'btn btn-secondary py-1 px-3 ml-2',
+                },
+                // 'copy', 
+                // 'csv', 
+                // 'pdf',
+                // 'print'
             ],
             classes: {
                 sortAsc: '',     // override ascending class
@@ -56,6 +70,7 @@ export function checkAndRenderDataTables() {
             }
         })
         
+        // Cannot have export options because of the row grouping
         $('#per-barangay-table').DataTable({
             responsive: true,
             ordering: true,
@@ -80,6 +95,7 @@ export function checkAndRenderDataTables() {
             }
         })
 
+        // ! Unused table
         $('#applications-per-encoder-table').DataTable({
             responsive: true,
             ordering: true,
@@ -91,7 +107,11 @@ export function checkAndRenderDataTables() {
                 // Bottom row: info and pagination
                 "<'row mt-2'<'col-sm-6'i><'col-sm-6 d-flex justify-content-end'p>>",
             buttons:[
-                'copy', 'csv', 'excel', 'pdf', 'print'
+                'copy',
+                'csv', 
+                'excel', 
+                'pdf', 
+                'print'
             ],
             classes: {
                 sortAsc: '',     // override ascending class
@@ -151,7 +171,21 @@ export function checkAndRenderDataTables() {
                 // Bottom row: info and pagination
                 "<'row mt-2'<'col-sm-6'i><'col-sm-6 d-flex justify-content-end'p>>",
             buttons:[
-                'copy', 'csv', 'excel', 'pdf', 'print'
+                {
+                    extend: 'excel',
+                    text: '<i class="mr-2 fa fa-file-excel"></i>Export to Excel',
+                    className: 'btn btn-primary py-1 px-3'
+                },
+                {
+                    extend: 'print',
+                    text: '<i class="mr-2 fa fa-print"></i>Print',
+                    className: 'btn btn-secondary py-1 px-3 ml-2'
+                },
+                // 'copy', 
+                // 'csv', 
+                // 'excel', 
+                // 'pdf', 
+                // 'print'
             ],
             classes: {
                 sortAsc: '',     // override ascending class

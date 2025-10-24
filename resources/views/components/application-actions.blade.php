@@ -19,7 +19,7 @@
                     }
                 </script>
             @endif
-        @elseif (auth()->user()->hasRole('superadmin'))
+        @elseif (auth()->user()->hasRole('superadmin') && !Request::is('reports/*'))
             <div class="d-flex">
                 @if ($application->status != "released" || $application->status != "rejected")
                     @if ($application->assignedTo == null)
