@@ -35,15 +35,23 @@
                                     {{ $pa->deceased?->suffix }}
                                 </h5>
                             @endif
-                            <span class="d-flex align-items-baseline text-muted">
-                                <p>{{ $pa->created_at->diffForHumans() }}</p>
-                                <i class="fas fa-image-portrait ml-4 mr-1"></i>
-                                <p>{{ $pa->claimant->first_name }} {{ $pa->claimant->last_name }}</p>
-                                <i class="fas fa-city ml-4 mr-1"></i>
-                                <p>{{ $pa->claimant->barangay->name }}</p>
-                                <i class="fas fa-money-bill ml-4 mr-1"></i>
-                                <p>{{ $pa->amount }}</p>
-                            </span>
+                            <div class="d-flex flex-column flex-md-row flex-lg-row align-items-baseline text-muted">
+                                <span class="d-flex align-items-baseline mr-lg-5 mr-md-3 mr-sm-0">
+                                    <p>{{ $pa->created_at->diffForHumans() }}</p>
+                                </span>
+                                <span class="d-flex align-items-baseline mr-lg-5 mr-md-3 mr-sm-0">
+                                    <i class="fas fa-image-portrait mr-1"></i>
+                                    <p>{{ $pa->claimant->first_name }} {{ $pa->claimant->last_name }}</p>
+                                </span>
+                                <span class="d-flex align-items-baseline mr-lg-5 mr-md-3 mr-sm-0">
+                                    <i class="fas fa-city mr-1"></i>
+                                    <p>{{ $pa->claimant->barangay->name }}</p>
+                                </span>
+                                <span class="d-flex align-items-baseline">
+                                    <i class="fas fa-money-bill mr-1"></i>
+                                    <p>{{ $pa->amount }}</p>
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </ul>
