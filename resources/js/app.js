@@ -3,8 +3,18 @@ import $ from "jquery";
 window.$ = window.jQuery = $;
 
 // 2. Required dependencies (use Bootstrap bundle so Popper is included)
-import "bootstrap/dist/js/bootstrap.bundle";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
+// 3. jQuery plugins (must come AFTER jQuery is set globally)
+import "popper.js";
+import "jquery.nicescroll";   // Stisla requires this
+import "moment";              // Stisla also uses moment
+import { checkAndRenderCharts } from "./charts";
+import { checkAndRenderDataTables } from "./dataTables";
+document.addEventListener('DOMContentLoaded', () => {
+    checkAndRenderCharts();
+    checkAndRenderDataTables();
+})
 
 // 4. DataTables (depends on jQuery)
 import jszip from 'jszip';
@@ -19,19 +29,25 @@ import 'datatables.net-responsive-bs4';
 DataTable.Buttons.jszip(jszip);
 DataTable.Buttons.pdfMake(pdfmake);
 
-// 3. jQuery plugins (must come AFTER jQuery is set globally)
-import "popper.js";
-import "jquery.nicescroll";   // Stisla requires this
-import "moment";              // Stisla also uses moment
-import { checkAndRenderCharts } from "./charts";
-import { checkAndRenderDataTables } from "./dataTables";
-
-document.addEventListener('DOMContentLoaded', () => {
-    checkAndRenderCharts();
-    checkAndRenderDataTables();
-})
 
 console.log("DataTables is running:", $.fn.dataTable ? true : false);
+
+$(document).ready(function () {
+    $(".nav-link.has-dropdown").each(function () {
+        const $this = $(this).parent();
+        if ($this.hasClass("active")) {
+            $this.find(".dropdown-menu").slideToggle();
+        }
+    });
+
+    $(".nav-link.has-dropdown").on("click", function (e) {
+        const $this = $(this).parent();
+        $this.find(".dropdown-menu").slideToggle(200);
+        e.preventDefault();
+        e.stopPropagation();
+    });
+});
+
 
 // 6. AlpineJS (doesn’t depend on jQuery)
 import Alpine from "alpinejs";

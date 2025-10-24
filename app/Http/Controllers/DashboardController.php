@@ -66,27 +66,17 @@ class DashboardController extends Controller
             ];
         });
 
-        // TODO: Not working and displays 0
-        $updatesPerHour = BurialAssistance::with(['processLogs' => function ($query) {
-            $query->where('added_by', auth()->user()->id);
-        }])
+        $userLogs = ProcessLog::where('added_by', auth()->user()->id)->select('created_at')
             ->get()
-            ->map(function ($application) {
-                $logs = $application->processLogs;
-                if ($logs->count() < 2) {
-                    return 0; 
-                }
-                $diffs = [];
-                for ($i = 0; $i < $logs->count() - 1; $i++) {
-                    $start = Carbon::parse($logs[$i]->created_at);
-                    $end = Carbon::parse($logs[$i + 1]->created_at);
-                    $diffs[] = $start->diffInHours($end);
-                }
-                return collect($diffs)->avg();
-            })
-            ->filter()
-            ->values()
-            ->avg();
+            ->pluck('created_at')
+            ->sort()
+            ->values();
+        $updatesPerMinute = [];
+        for ($i = 0; $i < $userLogs->count() - 1; $i++) {
+            $start = Carbon::parse($userLogs[$i]);
+            $end = Carbon::parse($userLogs[$i + 1]);
+            $updatesPerMinute[] = $end->diffInMinutes($start);
+        }
 
         $swaEncoded = BurialAssistance::where('encoder', auth()->user()->id)->count();
         $logsAdded = ProcessLog::where('added_by', auth()->user()->id)->count();
@@ -110,10 +100,10 @@ class DashboardController extends Controller
                 'count' => $logsAdded,
             ],
             [
-                'label' => 'Avg. Updates/Hour',
+                'label' => 'Avg. Minutes per Update',
                 'bg' => 'bg-success',
                 'icon' => 'fa-bell-concierge',
-                'count' => $updatesPerHour ? number_format($updatesPerHour, 2) . ' hr' : '0 hr',
+                'count' => $updatesPerMinute > 0 ? number_format(collect($updatesPerMinute)->avg(), 2) . ' minutes' : '< 1 minute',
             ],
             [
                 'label' => 'Assigned Applications',

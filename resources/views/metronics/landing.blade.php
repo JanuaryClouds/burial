@@ -26,6 +26,14 @@
             <h2 class="text-white mb-0">Burial Assistance System</h2>
         </div>
         <!-- end::Body -->
+
+        <!-- start::footer -->
+        <div class="d-flex flex-center">
+            <a href="{{ route('login.page') }}" class="btn btn-light">
+                Login as CSWDO
+            </a>
+        </div>
+        <!-- end::footer -->
     </div>
     <!-- end::Aside -->
 
@@ -118,11 +126,6 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col d-flex flex-center">
-                        <a href="{{ route('login.page') }}" class="btn btn-secondary btn-lg w-100">
-                            CSWDO Staff Login
-                        </a>
                     </div>
                 </div>
             </div>

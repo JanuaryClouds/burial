@@ -3,7 +3,7 @@
     @csrf
     <button class="btn btn-primary" type="submit">
         <i class="fas fa-file-pdf"></i>
-        Export to PDF
+        Export all to PDF
     </button>
 </form>
 <script>

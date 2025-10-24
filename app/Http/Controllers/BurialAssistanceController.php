@@ -222,6 +222,18 @@ class BurialAssistanceController extends Controller
         return redirect()->route('admin.applications.manage')->with('success', 'Successfully rejected burial assistance application.');
     }
 
+    public function toggleReject($id) {
+        $application = BurialAssistance::where('id', $id)->first();
+        if (!$application) {
+            return back()->with('error', 'Application not found.');
+        }
+
+        $application->status = $application->status == 'rejected' ? 'pending' : 'rejected';
+        $application->update();
+
+        return redirect()->back()->with('success', 'Successfully updated burial assistance application\'s status.');
+    }
+
     public function assignments() {
         $applications = BurialAssistance::select('id', 'tracking_no', 'deceased_id', 'claimant_id', 'application_date', 'status', 'assigned_to')->get();
         return view('superadmin.assignment', compact('applications'));

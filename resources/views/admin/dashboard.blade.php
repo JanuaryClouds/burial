@@ -7,7 +7,6 @@
             <h1>Dashboard</h1>
         </div>
     </section>
-    <!-- TODO: Add Count cards -->
     <section class="section">
         <div class="section-body">
             <x-admin-dashboard-cards :cardData="$cardData" />
