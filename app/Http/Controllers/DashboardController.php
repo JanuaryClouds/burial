@@ -103,7 +103,7 @@ class DashboardController extends Controller
                 'label' => 'Avg. Minutes per Update',
                 'bg' => 'bg-success',
                 'icon' => 'fa-bell-concierge',
-                'count' => $updatesPerMinute > 0 ? number_format(collect($updatesPerMinute)->avg(), 2) . ' minutes' : '< 1 minute',
+                'count' => $updatesPerMinute > 0 ? number_format(collect($updatesPerMinute)->avg(), 2) . ' m' : '< 1 minute',
             ],
             [
                 'label' => 'Assigned Applications',
