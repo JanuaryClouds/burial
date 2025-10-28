@@ -58,3 +58,7 @@
         </div>
     </div>
 </div>
+@foreach ($latestApplications as $application)
+    <x-process-updater :application="$application" />
+    <x-reject-modal :application="$application" />
+@endforeach

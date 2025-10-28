@@ -94,7 +94,6 @@
                                                         </form>
                                                     </div>
                                                 </div>
-                                                <x-process-updater :application="$application"/>
                                             @endif
                                         </tr>
                                     @endforeach
@@ -106,4 +105,8 @@
             </div>
         </div>
     </div>
+@foreach ($applications as $application)
+    <x-reject-modal :application="$application" />
+    <x-process-updater :application="$application"/>
+@endforeach
 @endsection

@@ -90,7 +90,7 @@
                                 <i class="fas fa-check"></i>
                                 Submit
                             </button>
-                            <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                            <button class="btn btn-secondary" type="button" data-dismiss="modal" aria-label="Close">
                                 <i class="fas fa-times"></i>
                                 Cancel
                             </button>
