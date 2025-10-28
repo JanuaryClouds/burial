@@ -52,15 +52,13 @@
             </div>
         </div>
     </section> -->
-    <section class="section">
-        <div class="section-body">
-            <div class="row">
-                <div class="col-12">
-                    <x-latest-applications-table />
-                </div>
+    <div class="section-body">
+        <div class="row">
+            <div class="col-12">
+                <x-latest-applications-table />
             </div>
         </div>
-    </section>
+    </div>
     <section>
         <div class="section-body">
             <div class="row">
