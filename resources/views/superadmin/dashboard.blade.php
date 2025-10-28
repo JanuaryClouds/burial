@@ -40,6 +40,7 @@
     <div class="section-body">
         <x-admin-dashboard-cards :cardData="$cardData" />
     </div>
+    <!-- DEPRECATED -->
     <!-- <section>
         <div class="section-body">
             <div class="row">

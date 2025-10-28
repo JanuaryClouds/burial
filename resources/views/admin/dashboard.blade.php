@@ -44,6 +44,7 @@
                 <div class="col-12 col-md-12 col-lg-12">
                     <x-assigned-applications-list :applications="$assignedApplications" />
                 </div>
+                <!-- DEPRECATED -->
                 <!-- <div class="col-12 col-md-12 col-lg-4">
                     <x-recent-activity :lastLogs="$lastLogs" />
                 </div> -->
@@ -66,6 +67,7 @@
             </div>
         </div>
     </section>
+    <!-- DEPRECATED -->
     <!-- <section class="section">
         <div class="section-title">
             Tables

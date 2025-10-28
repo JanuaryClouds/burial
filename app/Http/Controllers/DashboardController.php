@@ -29,6 +29,7 @@ class DashboardController extends Controller
 
     public function admin()
     {
+        // ! Deprecated
         $perBarangay = Claimant::select('barangay_id', DB::raw('count(*) as total'))
             ->with('barangay')
             ->groupBy('barangay_id')
@@ -40,13 +41,15 @@ class DashboardController extends Controller
                ];
             });
         
+        // ! Deprecated
         $applicationsByBarangay = BurialAssistance::with(['claimant.barangay'])
             ->whereYear('created_at', now()->year)
             ->get()
             ->groupBy(fn($item) => $item->claimant->barangay->name);
 
         $lastLogs = ProcessLog::with('burialAssistance')->where('added_by', auth()->user()->id)->latest()->limit(2)->get();
-        $pendingApplications = BurialAssistance::where('status', 'pending')->oldest()->limit(5)->get();
+        $pendingApplications = BurialAssistance::where('status', 'pending')->oldest()->limit(5)->get(); // ! Deparcated
+        // ! Deparcated
         $monthlyActivity = ProcessLog::where('added_by', auth()->user()->id)
         ->select(
             DB::raw('YEAR(created_at) as year'),
@@ -66,6 +69,7 @@ class DashboardController extends Controller
             ];
         });
 
+        // ! Deprecated
         $userLogs = ProcessLog::where('added_by', auth()->user()->id)->select('created_at')
             ->get()
             ->pluck('created_at')
@@ -78,8 +82,8 @@ class DashboardController extends Controller
             $updatesPerMinute[] = $end->diffInMinutes($start);
         }
 
-        $swaEncoded = BurialAssistance::where('encoder', auth()->user()->id)->count();
-        $logsAdded = ProcessLog::where('added_by', auth()->user()->id)->count();
+        $swaEncoded = BurialAssistance::where('encoder', auth()->user()->id)->count(); // ! Deprecated
+        $logsAdded = ProcessLog::where('added_by', auth()->user()->id)->count(); // ! Deprecated
         $assignedApplications = BurialASsistance::where(function ($query) {
             $query->where('status', '!=', 'rejected')
                 ->where('status', '!=', 'released')
@@ -94,6 +98,7 @@ class DashboardController extends Controller
         })->count();
 
         $cardData = [
+            // ! Deprecated
             // [
             //     'label' => 'SWAs Encoded',
             //     'bg' => 'bg-primary',
@@ -145,11 +150,11 @@ class DashboardController extends Controller
         ];
 
         return view('admin.dashboard', compact(
-            'perBarangay',
+            'perBarangay', // ! Deprecated
             'lastLogs',
-            'pendingApplications',
-            'monthlyActivity',
-            'applicationsByBarangay',
+            'pendingApplications', // ! Deprecated
+            'monthlyActivity', // ! Deprecated
+            'applicationsByBarangay', // ! Deprecated
             'cardData',
             'assignedApplications',
         ));
@@ -162,17 +167,19 @@ class DashboardController extends Controller
 
     public function superadmin()
     {
-       $totalRequestLogs = Activity::where('description', 'like', 'Burial Assistance application %')->count();
-       $firstRequest = Activity::where('description', 'like', 'Burial Assistance application %')->oldest()->first();
-       $lastRequest = Activity::where('description', 'like', 'Burial Assistance application %')->latest()->first();
+        // ! Deprecated
+        $totalRequestLogs = Activity::where('description', 'like', 'Burial Assistance application %')->count();
+        $firstRequest = Activity::where('description', 'like', 'Burial Assistance application %')->oldest()->first();
+        $lastRequest = Activity::where('description', 'like', 'Burial Assistance application %')->latest()->first();
 
-       if ($firstRequest && $lastRequest) {
-        $months = Carbon::parse($firstRequest->created_at)->diffInMonths(Carbon::parse($lastRequest->created_at)) + 1;
-        $avgRequestsPerMonth = $totalRequestLogs / $months;
+        if ($firstRequest && $lastRequest) {
+            $months = Carbon::parse($firstRequest->created_at)->diffInMonths(Carbon::parse($lastRequest->created_at)) + 1;
+            $avgRequestsPerMonth = $totalRequestLogs / $months;
         } else {
             $avgRequestsPerMonth = 0;
         }
 
+        // ! Deprecated
         $totalTrackLogs = Activity::where('description', 'like', 'Burial Assistance tracked by guest')->count();
         $firstTrack = Activity::where('description', 'like', 'Burial Assistance tracked by guest')->oldest()->first();
         $lastTrack = Activity::where('description', 'like', 'Burial Assistance tracked by guest')->latest()->first();
@@ -184,6 +191,7 @@ class DashboardController extends Controller
             $avgTracksPerMonth = 0;
         }
     
+        // ! Deprecated
         $perBarangay = Claimant::select('barangay_id', DB::raw('count(*) as total'))
             ->with('barangay')
             ->groupBy('barangay_id')
@@ -195,6 +203,7 @@ class DashboardController extends Controller
                ];
             });
 
+        // ! Deprecated
         $applicationsThisYear = Deceased::select('barangay_id', DB::raw('count(*) as total'))
             ->with('barangay')
             ->whereYear('date_of_death', now()->year)
@@ -207,7 +216,7 @@ class DashboardController extends Controller
                 ];
             });
 
-
+        // ! Deprecated
         $applicationsThisMonth = Deceased::select('barangay_id', DB::raw('count(*) as total'))
             ->with('barangay')
             ->whereBetween('date_of_death', [now()->startOfMonth(), now()->endOfMonth()])
@@ -220,6 +229,7 @@ class DashboardController extends Controller
                 ];
             });
 
+        // ! Deprecated
         $applicationsThisWeek = Deceased::select('barangay_id', DB::raw('count(*) as total'))
             ->with('barangay')
             ->whereBetween('date_of_death', [now()->startOfWeek(), now()->endOfWeek()])
@@ -232,6 +242,7 @@ class DashboardController extends Controller
                 ];
             });
 
+        // ! Deprecated
         $applicationsThisDay = Deceased::select('barangay_id', DB::raw('count(*) as total'))
             ->with('barangay')
             ->where('date_of_death', now())
@@ -245,6 +256,7 @@ class DashboardController extends Controller
             });
         // dd($applicationsThisYear, $applicationsThisMonth, $applicationsThisWeek, $applicationsThisDay);
         
+        // ! Deprecated
         $applicationsByBarangay = BurialAssistance::with(['claimant.barangay'])
             ->where(function ($query)  { 
                 $query->where('status', '!=', 'rejected'); })
@@ -256,9 +268,10 @@ class DashboardController extends Controller
             $query->where('status', '!=', 'rejected');
         })->count();
 
-        $lastLogs = ProcessLog::orderBy('created_at', 'desc')->limit(5)->get();
-        $pendingApplications = BurialAssistance::where('status', 'pending')->oldest()->limit(10)->get();
+        $lastLogs = ProcessLog::orderBy('created_at', 'desc')->limit(5)->get(); // ! Deprecated
+        $pendingApplications = BurialAssistance::where('status', 'pending')->oldest()->limit(10)->get(); // ! Deprecated
 
+        // ! Deprecated
         $applicationAverages = BurialAssistance::with(['processLogs' => function ($query) {
             $query->orderBy('created_at', 'asc');
         }])
@@ -287,6 +300,7 @@ class DashboardController extends Controller
         $approvedApplicationsCount = BurialAssistance::where('status', 'approved')->get()->count();
 
         $cardData = [
+            // ! Deprecated
             // [
             //     'label' => 'Applications/Month',
             //     'bg' => 'bg-primary',
@@ -323,6 +337,7 @@ class DashboardController extends Controller
                 'icon' => 'fa-equals',
                 'count' => $totalApplications,
             ],
+            // ! Deprecated
             // [
             //     'label' => 'Avg. Processing Time per Update',
             //     'bg' => 'bg-warning',
@@ -332,15 +347,18 @@ class DashboardController extends Controller
         ];
 
         return view('superadmin.dashboard', compact(
-            'perBarangay',
-            'applicationsByBarangay',
-            'applicationsThisYear',
-            'applicationsThisMonth',
-            'applicationsThisWeek',
-            'applicationsThisDay',
+            'perBarangay', // ! Deprecated
+            'applicationsByBarangay', // ! Deprecated
+            
+            // ! Deprecated
+                'applicationsThisYear',
+                'applicationsThisMonth',
+                'applicationsThisWeek',
+                'applicationsThisDay',
+            // !
             'cardData',
-            'lastLogs',
-            'pendingApplications',
+            'lastLogs', // ! Deprecated
+            'pendingApplications', // ! Deprecated
         ));
     }
 
