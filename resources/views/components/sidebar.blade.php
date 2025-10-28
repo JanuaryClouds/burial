@@ -43,7 +43,7 @@
 
             
             <li class="menu-header">Applications</li>
-            <li @class(['active' => Request::is('admin/applications/pending*')])>
+            <!-- <li @class(['active' => Request::is('admin/applications/pending*')])>
                 <a href="{{ route('admin.applications.pending') }}" class="nav-link"><i class="fas fa-hourglass"></i><span>Pending</span"></a>
             </li>
             <li @class(['active' => Request::is('admin/applications/processing*')])>
@@ -54,9 +54,9 @@
             </li>
             <li @class(['active' => Request::is('admin/applications/released*')])>
                 <a href="{{ route('admin.applications.released') }}" class="nav-link"><i class="fas fa-circle-check"></i><span>Released</span"></a>
-            </li>
-            <li @class(['active' => Request::is('admin/applications/history*')])>
-                <a href="{{ route('admin.applications.history') }}" class="nav-link"><i class="fas fa-history"></i><span>History</span"></a>
+            </li> -->
+            <li @class(['active' => Request::is('admin/applications')])>
+                <a href="{{ route('admin.applications') }}" class="nav-link"><i class="fas fa-file-lines"></i><span>Applications</span"></a>
             </li>
         </ul>
     </aside>

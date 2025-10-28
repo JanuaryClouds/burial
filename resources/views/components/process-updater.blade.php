@@ -103,15 +103,22 @@
     @endforeach
 </div>
 <script>
-    let dateIn{{ Str::replace('-', '_', $application->id) }} = document.getElementById('date_in');
-    let dateOut{{ Str::replace('-', '_', $application->id) }} = document.getElementById('date_out');
-    dateOut{{ Str::replace('-', '_', $application->id) }}.addEventListener('change', () => {
-        if (dateOut{{ Str::replace('-', '_', $application->id) }}.value) {
-            dateIn{{ Str::replace('-', '_', $application->id) }}.min = dateOut{{ Str::replace('-', '_', $application->id) }}.value;
-        }
+    document.addEventListener('DOMContentLoaded', () => {
+        const dateIn = document.getElementById('date_in');
+        const dateOut = document.getElementById('date_out');
 
-        if (dateIn{{ Str::replace('-', '_', $application->id) }}.value && dateIn{{ Str::replace('-', '_', $application->id) }}.value < dateOut{{ Str::replace('-', '_', $application->id) }}.value) {
-            dateIn{{ Str::replace('-', '_', $application->id) }}.value = '';
+        if (dateOut && !dateOut.dataset.listenerAttached) {
+            dateOut.dataset.listenerAttached = 'true';
+
+            dateOut.addEventListener('change', () => {
+                if (dateOut.value) {
+                    dateIn.min = dateOut.value;
+                }
+
+                if (dateIn.value && dateIn.value < dateOut.value) {
+                    dateIn.value = '';
+                }
+            });
         }
-    })
+    });
 </script>
