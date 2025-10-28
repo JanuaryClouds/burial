@@ -8,13 +8,13 @@
                 <table id="latest-applications-table" class="table data-table">
                     <thead>
                         <tr role="row">
-                            <th class="sorting sort-handler">Tracking No.</th>
+                            <th>Tracking No.</th>
                             <th>Deceased</th>
                             <th>Date of Death</th>
                             <th>Claimant</th>
                             <th>Status</th>
                             <th>Amount</th>
-                            <th>Submitted on</th>
+                            <th class="sorting sort-handler">Submitted on</th>
                             <th>Actions</th>
                         </tr>
                     </thead>

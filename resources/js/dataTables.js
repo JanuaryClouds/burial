@@ -163,6 +163,7 @@ export function checkAndRenderDataTables() {
         $('#latest-applications-table').DataTable({
             responsive: true,
             ordering: true,
+            order:[[6, 'desc']], // order by Submitted on column descending
             dom: 
                 // First row: buttons on the left, filter on the right
                 "<'row mb-2'<'col-sm-6 d-flex align-items-center'i<'mr-3'>><'col-sm-6 d-flex justify-content-end'f>>" +
