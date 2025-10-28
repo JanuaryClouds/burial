@@ -76,7 +76,7 @@
                     <span>Handlers</span>
                 </a>
             </li>
-            <li @class(['active' => Request::is('superadmin/cms/users')])>
+            <li @class(['active' => Request::is('superadmin/cms/users') || Request::is('superadmin/users/*')])>
                 <a href="{{ route('superadmin.cms.users') }}">
                     <i class="fas fa-users"></i>
                     <span>Users</span>

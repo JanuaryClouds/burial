@@ -57,6 +57,9 @@ Route::middleware(['auth', 'route.access'])
         Route::post('/reports/export/cheques/{startDate}/{endDate}', [ChequeController::class, 'generatePdfReport'])
             ->name('reports.cheques.pdf');
 
+        Route::post('/assignments/{id}/reject/toggle', [BurialAssistanceController::class, 'toggleReject'])
+            ->name('assignments.reject.toggle');
+
         require __DIR__ . '/superadmin.php';
         require __DIR__ . '/admin.php';
         require __DIR__ . '/user.php';
