@@ -41,7 +41,7 @@ Route::middleware('role:admin')
         Route::get('/applications/{id}', [BurialAssistanceController::class, 'manage'])
             ->name('applications.manage');
         
-        Route::get('/applications/{id}/reject', [BurialAssistanceController::class, 'reject'])
+        Route::match(['get', 'post'], '/applications/{id}/reject', [BurialAssistanceController::class, 'reject'])
             ->name('applications.reject');
             
         Route::post('/applications/{id}/addLog/{stepId}', [ProcessLogController::class, 'add'])

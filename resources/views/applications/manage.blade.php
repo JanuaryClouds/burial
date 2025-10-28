@@ -47,7 +47,7 @@
     </section>
     <div id="confirm-rejection" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <form action="{{ route('admin.applications.reject', ['status' => $application->status, 'id' => $application->id]) }}" method="post">
+            <form action="{{ route('admin.applications.reject', ['id' => $application->id]) }}" method="post">
                 @csrf
                 <div class="modal-content">
                     <div class="modal-body">

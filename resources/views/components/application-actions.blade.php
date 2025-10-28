@@ -5,9 +5,27 @@
     @if (auth()->user())
         @if (auth()->user()->isAdmin())
             @if (!$application->assigned_to || $application->assigned_to == auth()->user()->id)
-                <a name="" id="" class="btn btn-primary" href="{{ route('admin.applications.manage', ['id' => $application->id]) }}" role="button">
-                    <i class="fas fa-external-link-square-alt"></i>  
-                </a>
+                <div class="btn-group dropdown">
+                    <a name="" id="" class="btn btn-primary" href="{{ route('admin.applications.manage', ['id' => $application->id]) }}" role="button">
+                        View 
+                    </a>
+                    <button id="action-options" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="sr-only">
+                            <i class="fas fa-caret-down"></i>
+                        </span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="action-options">
+                        @if ($application->status == "pending" || $application->status == "approved" || $application->status == "processing")
+                            <button class="dropdown-item" type="button" data-toggle="modal" data-target="#add-process-{{ $application->id }}">
+                                Add Progress Update
+                            </button>
+                            <!-- TODO: add undo rejection -->
+                            <button class="dropdown-item" type="button" data-toggle="modal" data-target="#confirm-rejection-{{ $application->id }}">
+                                Reject Application
+                            </button>
+                        @endif
+                    </div>
+                </div>
             @else
                 <button class="btn btn-link" onclick="showAssignModal()">
                     <i class="fas fa-user-lock"></i>
@@ -23,22 +41,21 @@
             <div class="d-flex">
                 @if ($application->status != "released" && $application->status != "rejected")
                     @if ($application->assignedTo == null)
-                        <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#assign-modal-{{ $application->id }}">
+                        <button class="btn btn-primary mr-2" type="button" data-toggle="modal" data-target="#assign-modal-{{ $application->id }}">
                             <i class="fas fa-user-check"></i>
                         </button>
                     @else
-                        <button class="btn btn-light" type="button" data-toggle="modal" data-target="#assign-modal-{{ $application->id }}">
+                        <button class="btn btn-light mr-2" type="button" data-toggle="modal" data-target="#assign-modal-{{ $application->id }}">
                             <i class="fas fa-user-check"></i>
                         </button>
                     @endif
                 @endif
-                <span class="mr-2"></span>
                 @if ($application->status != "rejected" && $application->status != "released")
-                    <button class="btn btn-danger" type="button" data-toggle="modal" data-target="#reject-{{ $application->id }}">
+                    <button class="btn btn-danger mr-2" type="button" data-toggle="modal" data-target="#reject-{{ $application->id }}">
                         <i class="fas fa-times-circle"></i>
                     </button>
                 @elseif ($application->status == "rejected")
-                    <button class="btn btn-warning" type="button" data-toggle="modal" data-target="#reject-{{ $application->id }}">
+                    <button class="btn btn-warning mr-2" type="button" data-toggle="modal" data-target="#reject-{{ $application->id }}">
                         <i class="fas fa-rotate-left"></i>
                     </button>
                 @endif

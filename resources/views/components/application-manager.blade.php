@@ -6,13 +6,21 @@
         <div class="bg-white rounded shadow-sm p-4">
             <div class="d-flex justify-content-end">
                 @if ($application->status != 'rejected')
-                    <button class="btn btn-primary mr-2" type="button" data-toggle="modal" data-target="#add-process">
+                    <button class="btn btn-primary mr-2" type="button" data-toggle="modal" data-target="#add-process-{{ $application->id }}">
                         <i class="fas fa-plus"></i>
                         Add Progress Update
                     </button>
+                    <button class="btn btn-danger" type="button" data-toggle="modal" data-target="#confirm-rejection">
+                        <i class="fas fa-times-circle"></i>
+                        Reject Application
+                    </button>
                 @endif
-                @if ($application->status == 'pending')
-                    <button class="btn btn-danger" type="button" data-toggle="modal" data-target="#confirm-rejection">Reject Application</button>
+                @if ($application->status == 'rejected')
+                    <!-- TODO: Add undo rejection -->
+                    <button class="btn btn-success" type="button" data-toggle="modal" data-target="#toggle-rejection">
+                        <i class="fas fa-rotate-left"></i>
+                        Undo Rejection
+                    </button>
                 @endif
             </div>
         </div>

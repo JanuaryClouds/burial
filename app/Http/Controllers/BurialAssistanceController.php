@@ -167,7 +167,7 @@ class BurialAssistanceController extends Controller
     }
 
     public function history() {
-        $applications = BurialAssistance::select('id', 'deceased_id', 'claimant_id', 'tracking_no', 'application_date', 'status', 'created_at')->get();
+        $applications = BurialAssistance::select('id', 'deceased_id', 'claimant_id', 'tracking_no', 'funeraria', 'amount', 'application_date', 'status', 'created_at')->get();
         $status = 'All';
         return view('applications.list', compact('applications', 'status'));
     }
@@ -210,7 +210,7 @@ class BurialAssistanceController extends Controller
         }
     }
 
-    public function reject($status, $id) {
+    public function reject($id) {
         $application = BurialAssistance::where('id',$id)->first();
         if (!$application) {
             return back()->with('error','Application not found.');
@@ -218,8 +218,7 @@ class BurialAssistanceController extends Controller
 
         $application->status = 'rejected';
         $application->update();
-
-        return redirect()->route('admin.applications.manage')->with('success', 'Successfully rejected burial assistance application.');
+        return redirect()->back()->with('success', 'Successfully rejected burial assistance application.');
     }
 
     public function toggleReject($id) {
