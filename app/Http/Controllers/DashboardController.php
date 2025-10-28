@@ -45,7 +45,7 @@ class DashboardController extends Controller
             ->get()
             ->groupBy(fn($item) => $item->claimant->barangay->name);
 
-        $lastLogs = ProcessLog::with('burialAssistance')->where('added_by', auth()->user()->id)->latest()->limit(4)->get();
+        $lastLogs = ProcessLog::with('burialAssistance')->where('added_by', auth()->user()->id)->latest()->limit(2)->get();
         $pendingApplications = BurialAssistance::where('status', 'pending')->oldest()->limit(5)->get();
         $monthlyActivity = ProcessLog::where('added_by', auth()->user()->id)
         ->select(
@@ -86,31 +86,62 @@ class DashboardController extends Controller
                 ->where('assigned_to', auth()->user()->id);   
         })->get();
 
+        $pendingApplicationsCount = BurialAssistance::where('status', 'pending')->get()->count();
+        $processingApplicationsCount = BurialAssistance::where('status', 'processing')->get()->count();
+        $approvedApplicationsCount = BurialAssistance::where('status', 'approved')->get()->count();
+        $totalApplications = BurialAssistance::where(function ($query) {
+            $query->where('status', '!=', 'rejected');
+        })->count();
+
         $cardData = [
+            // [
+            //     'label' => 'SWAs Encoded',
+            //     'bg' => 'bg-primary',
+            //     'icon' => 'fa-align-left',
+            //     'count' => $swaEncoded,
+            // ],
+            // [
+            //     'label' => 'Updates Added',
+            //     'bg' => 'bg-secondary',
+            //     'icon' => 'fa-list',
+            //     'count' => $logsAdded,
+            // ],
+            // [
+            //     'label' => 'Avg. Minutes per Update',
+            //     'bg' => 'bg-success',
+            //     'icon' => 'fa-bell-concierge',
+            //     'count' => $updatesPerMinute > 0 ? number_format(collect($updatesPerMinute)->avg(), 2) . ' m' : '< 1 minute',
+            // ],
+            // [
+            //     'label' => 'Assigned Applications',
+            //     'bg' => 'bg-info',
+            //     'icon' => 'fa-equals',
+            //     'count' => $assignedApplications->count(),
+            // ],
             [
-                'label' => 'SWAs Encoded',
+                'label' => 'Pending Applications',
                 'bg' => 'bg-primary',
-                'icon' => 'fa-align-left',
-                'count' => $swaEncoded,
+                'icon' => 'fa-hourglass',
+                'count' => $pendingApplicationsCount,
             ],
             [
-                'label' => 'Updates Added',
+                'label' => 'Processing Applications',
                 'bg' => 'bg-secondary',
-                'icon' => 'fa-list',
-                'count' => $logsAdded,
+                'icon' => 'fa-rotate-right',
+                'count' => $processingApplicationsCount,
             ],
             [
-                'label' => 'Avg. Minutes per Update',
+                'label' => 'Approved Applications',
                 'bg' => 'bg-success',
-                'icon' => 'fa-bell-concierge',
-                'count' => $updatesPerMinute > 0 ? number_format(collect($updatesPerMinute)->avg(), 2) . ' m' : '< 1 minute',
+                'icon' => 'fa-circle-check',
+                'count' => $approvedApplicationsCount,
             ],
             [
-                'label' => 'Assigned Applications',
+                'label' => 'Total Applications',
                 'bg' => 'bg-info',
                 'icon' => 'fa-equals',
-                'count' => $assignedApplications->count(),
-            ]
+                'count' => $totalApplications,
+            ],
         ];
 
         return view('admin.dashboard', compact(
@@ -251,31 +282,53 @@ class DashboardController extends Controller
 
         $globalAverageProcessing = $applicationAverages->avg();
 
+        $pendingApplicationsCount = BurialAssistance::where('status', 'pending')->get()->count();
+        $processingApplicationsCount = BurialAssistance::where('status', 'processing')->get()->count();
+        $approvedApplicationsCount = BurialAssistance::where('status', 'approved')->get()->count();
+
         $cardData = [
+            // [
+            //     'label' => 'Applications/Month',
+            //     'bg' => 'bg-primary',
+            //     'icon' => 'fa-align-left',
+            //     'count' => number_format($avgRequestsPerMonth, 2) . '/month',
+            // ],
+            // [
+            //     'label' => 'Tracks/Month',
+            //     'bg' => 'bg-secondary',
+            //     'icon' => 'fa-list',
+            //     'count' => number_format($avgTracksPerMonth, 2) . '/month',
+            // ],
             [
-                'label' => 'Applications/Month',
+                'label' => 'Pending Applications',
                 'bg' => 'bg-primary',
-                'icon' => 'fa-align-left',
-                'count' => number_format($avgRequestsPerMonth, 2) . '/month',
+                'icon' => 'fa-hourglass',
+                'count' => $pendingApplicationsCount,
             ],
             [
-                'label' => 'Tracks/Month',
+                'label' => 'Processing Applications',
                 'bg' => 'bg-secondary',
-                'icon' => 'fa-list',
-                'count' => number_format($avgTracksPerMonth, 2) . '/month',
+                'icon' => 'fa-rotate-right',
+                'count' => $processingApplicationsCount,
+            ],
+            [
+                'label' => 'Approved Applications',
+                'bg' => 'bg-success',
+                'icon' => 'fa-check-circle',
+                'count' => $approvedApplicationsCount,
             ],
             [
                 'label' => 'Total Applications',
-                'bg' => 'bg-success',
-                'icon' => 'fa-bell-concierge',
+                'bg' => 'bg-info',
+                'icon' => 'fa-equals',
                 'count' => $totalApplications,
             ],
-            [
-                'label' => 'Avg. Processing Time per Update',
-                'bg' => 'bg-warning',
-                'icon' => 'fa-clock',
-                'count' => $globalAverageProcessing ? number_format($globalAverageProcessing, 2) . ' m' : '<1 m',
-            ],
+            // [
+            //     'label' => 'Avg. Processing Time per Update',
+            //     'bg' => 'bg-warning',
+            //     'icon' => 'fa-clock',
+            //     'count' => $globalAverageProcessing ? number_format($globalAverageProcessing, 2) . ' m' : '<1 m',
+            // ],
         ];
 
         return view('superadmin.dashboard', compact(

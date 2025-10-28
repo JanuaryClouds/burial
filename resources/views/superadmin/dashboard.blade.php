@@ -3,16 +3,35 @@
 @section('content')
 <div class="main-content">
     <section class="section">
-        <div class="section-header">
-            <h1>Dashboard</h1>
+        <div class="jumbotron p-0"
+            style="background: url('{{ asset('images/cover.webp') }}') no-repeat center center / cover;"
+        >
+            <div style="background-color: rgba(0, 0, 0, 0.75);" class="px-5 py-5 rounded text-white">
+                <h1 class="display-6">Welcome, {{ Auth::user()->first_name }}!</h1>
+                <p class="lead text-muted">Where do you want to go first?</p>
+                <hr class="my-4 bg-white">
+                <a href="{{ route('superadmin.assignments') }}" class="btn btn-outline-light mr-2">
+                    <i class="fas fa-check-to-slot me-2"></i> Manage Assignments
+                </a>
+                <a href="{{ route('reports.burial-assistances') }}" class="btn btn-outline-light mr-2">
+                    <i class="fas fa-chart-line me-2"></i> Report on Assistances
+                </a>
+                <!-- TODO: link to logs -->
+                <a href="#" class="btn btn-outline-light mr-2">
+                    <i class="fas fa-clipboard-list me-2"></i> View Logs
+                </a>
+                <a href="{{ route('superadmin.cms.users') }}" class="btn btn-outline-light">
+                    <i class="fas fa-users me-2"></i> Manage Accounts
+                </a>
+            </div>
         </div>
     </section>
-    <section>
+    <section class="section">
         <div class="section-body">
             <x-admin-dashboard-cards :cardData="$cardData" />
         </div>
     </section>
-    <section>
+    <!-- <section>
         <div class="section-body">
             <div class="row">
                 <div class="col-12 col-md-12 col-lg-4">
@@ -21,6 +40,23 @@
                 <div class="col-12 col-md-12 col-lg-8">
                     <x-pending-applications-list :pendingApplications="$pendingApplications" />
                 </div>
+            </div>
+        </div>
+    </section> -->
+    <section class="section">
+        <div class="section-body">
+            <div class="row">
+                <div class="col-12">
+                    <x-latest-applications-table />
+                </div>
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="section-body">
+            <div class="row">
+                <x-application-status-charts />
+                <x-application-barangay-chart />
             </div>
         </div>
     </section>
