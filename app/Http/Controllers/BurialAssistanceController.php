@@ -227,8 +227,13 @@ class BurialAssistanceController extends Controller
             return back()->with('error', 'Application not found.');
         }
 
-        $application->status = $application->status == 'rejected' ? 'pending' : 'rejected';
-        $application->update();
+        if ($application->processLogs()->count() > 0) {
+            $application->status = $application->status == 'rejected' ? 'processing' : 'rejected';
+            $application->update();
+        } else {
+            $application->status = $application->status == 'rejected' ? 'pending' : 'rejected';
+            $application->update();
+        }
 
         return redirect()->back()->with('success', 'Successfully updated burial assistance application\'s status.');
     }
