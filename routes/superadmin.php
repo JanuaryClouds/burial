@@ -48,9 +48,6 @@ Route::middleware('role:superadmin')
         Route::post('/assignments/{id}/assign', [BurialAssistanceController::class, 'assign'])
             ->name('assignments.assign');
 
-        Route::post('/assignments/{id}/reject/toggle', [BurialAssistanceController::class, 'toggleReject'])
-            ->name('assignments.reject.toggle');
-
         Route::get('/cms/barangays', [CmsController::class, 'barangays'])
             ->name('cms.barangays');
         Route::get('/cms/requests', [CmsController::class, 'burialAssistanceRequests'])

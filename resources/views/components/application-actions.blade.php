@@ -20,8 +20,12 @@
                                 Add Progress Update
                             </button>
                             <!-- TODO: add undo rejection -->
-                            <button class="dropdown-item" type="button" data-toggle="modal" data-target="#confirm-rejection-{{ $application->id }}">
+                            <button class="dropdown-item" type="button" data-toggle="modal" data-target="#reject-{{ $application->id }}">
                                 Reject Application
+                            </button>
+                        @elseif ($application->status == "rejected")
+                            <button class="dropdown-item" type="button" data-toggle="modal" data-target="#reject-{{ $application->id }}">
+                                Unreject Application
                             </button>
                         @endif
                     </div>
@@ -91,32 +95,31 @@
                     </div>
                 </div>
             </div>
-
-            <div id="reject-{{ $application->id }}" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered" role="document">
-                    <div class="modal-content">
-                        <form action="{{ route('superadmin.assignments.reject.toggle', ['id' => $application->id]) }}" method="post">
-                            @csrf
-                            <div class="modal-body">
-                                <p>
-                                    Are you sure you want to {{ $application->status == "rejected" ? "unreject" : "reject" }} this application?
-                                    {{ $application->status == "rejected" ? "This application will return to being processed." : "This application will not receive any further updates." }}
-                                </p>
-                            </div>
-                            <div class="modal-footer">
-                                <button class="btn btn-primary" type="submit">
-                                    <i class="fas fa-floppy-disk"></i>
-                                    {{ $application->status == "rejected" ? "Unreject" : "Reject" }}
-                                </button>
-                                <button class="btn btn-secondary" type="button" data-dismiss="modal">
-                                    <i class="fas fa-times-circle"></i>
-                                    Cancel
-                                </button>
-                            </div>
-                        </form>
-                    </div>
+        @endif
+        <div id="reject-{{ $application->id }}" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <form action="{{ route('assignments.reject.toggle', ['id' => $application->id]) }}" method="post">
+                        @csrf
+                        <div class="modal-body">
+                            <p>
+                                Are you sure you want to {{ $application->status == "rejected" ? "unreject" : "reject" }} this application?
+                                {{ $application->status == "rejected" ? "This application will return to being processed." : "This application will not receive any further updates." }}
+                            </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fas fa-floppy-disk"></i>
+                                {{ $application->status == "rejected" ? "Unreject" : "Reject" }}
+                            </button>
+                            <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                <i class="fas fa-times-circle"></i>
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
-        @endif
+        </div>
     @endif
 </div>
