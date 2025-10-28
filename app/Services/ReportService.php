@@ -111,11 +111,11 @@ class ReportService
             $sheet->setCellValue("AM{$row}", $this->getLog($firstClaimant, 8, $startDate, $endDate)?->date_in ?? '');
             $sheet->setCellValue("AN{$row}", $this->getLog($firstClaimant, 9, $startDate, $endDate)?->date_in ?? '');
             $sheet->setCellValue("AO{$row}", $this->getLog($firstClaimant, 9, $startDate, $endDate)?->extra_data['OBR']['oBR_number'] ?? '');
-            $sheet->setCellValue("AP{$row}", $this->getLog($firstClaimant, 12, $startDate, $endDate)?->extra_data['date_issued'] ?? '');
+            $sheet->setCellValue("AP{$row}", $this->getLog($firstClaimant, 9, $startDate, $endDate)?->extra_data['OBR']['date'] ?? '');
             $sheet->setCellValue("AQ{$row}", $this->getLog($firstClaimant, 10, $startDate, $endDate)?->date_in ?? '');
             $sheet->setCellValue("AR{$row}", $this->getLog($firstClaimant, 11, $startDate, $endDate)?->date_in ?? '');
-            $sheet->setCellValue("AS{$row}", $this->getLog($firstClaimant, 12, $startDate, $endDate)?->extra_data['cheque_number'] ?? '');
-            $sheet->setCellValue("AT{$row}", $this->getLog($firstClaimant, 12, $startDate, $endDate)?->extra_data['date'] ?? '');
+            $sheet->setCellValue("AS{$row}", $this->getLog($firstClaimant, 11, $startDate, $endDate)?->extra_data['cheque_number'] ?? '');
+            $sheet->setCellValue("AT{$row}", $this->getLog($firstClaimant, 12, $startDate, $endDate)?->extra_data['date_issued'] ?? '');
             $sheet->setCellValue("AU{$row}", $this->getLog($firstClaimant, 13, $startDate, $endDate)?->date_in ?? '');
             // Change of Claimants start here if it exists
             if ($approvedChange) {

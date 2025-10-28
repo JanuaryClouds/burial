@@ -97,11 +97,11 @@ class ExportController extends Controller
             $sheet->setCellValue("AM{$row}", $processLogService->getLog($firstClaimant, 8)?->date_in ?? '');
             $sheet->setCellValue("AN{$row}", $processLogService->getLog($firstClaimant, 9)?->date_in ?? '');
             $sheet->setCellValue("AO{$row}", $processLogService->getLog($firstClaimant, 9)?->extra_data['OBR']['oBR_number'] ?? '');
-            $sheet->setCellValue("AP{$row}", $processLogService->getLog($firstClaimant, 12)?->extra_data['date_issued'] ?? '');
+            $sheet->setCellValue("AP{$row}", $processLogService->getLog($firstClaimant, 9)?->extra_data['OBR']['date'] ?? '');
             $sheet->setCellValue("AQ{$row}", $processLogService->getLog($firstClaimant, 10)?->date_in ?? '');
             $sheet->setCellValue("AR{$row}", $processLogService->getLog($firstClaimant, 11)?->date_in ?? '');
-            $sheet->setCellValue("AS{$row}", $processLogService->getLog($firstClaimant, 9)?->extra_data['cheque_number'] ?? '');
-            $sheet->setCellValue("AT{$row}", $processLogService->getLog($firstClaimant, 12)?->extra_data['date'] ?? '');
+            $sheet->setCellValue("AS{$row}", $processLogService->getLog($firstClaimant, 11)?->extra_data['cheque_number'] ?? ''); // does not work
+            $sheet->setCellValue("AT{$row}", $processLogService->getLog($firstClaimant, 12)?->extra_data['date_issued'] ?? '');
             $sheet->setCellValue("AU{$row}", $processLogService->getLog($firstClaimant, 13)?->date_in ?? '');
             // Change of Claimants start here if it exists
             if ($approvedChange) {
