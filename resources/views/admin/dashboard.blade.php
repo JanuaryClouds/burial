@@ -26,6 +26,9 @@
                             <a href="{{ route('reports.cheques') }}" class="dropdown-item">Cheques</a>
                         </div>
                     </div>
+                    <a href="{{ route('admin.applications') }}" class="btn btn-outline-light mr-2">
+                        <i class="fas fa-file-lines me-2"></i> Manage Applications
+                    </a>
                     <!-- TODO: link to logs -->
                     <a href="#" class="btn btn-outline-light mr-2">
                         <i class="fas fa-clipboard-list me-2"></i> View Logs
@@ -39,18 +42,18 @@
     </div>
     <section class="section">
         <div class="section-title">For You</div>
-        <div class="section-body">
-            <div class="row">
-                <div class="col-12 col-md-12 col-lg-12">
-                    <x-assigned-applications-list :applications="$assignedApplications" />
-                </div>
-                <!-- DEPRECATED -->
-                <!-- <div class="col-12 col-md-12 col-lg-4">
-                    <x-recent-activity :lastLogs="$lastLogs" />
-                </div> -->
-            </div>
-        </div>
     </section>
+    <div class="section-body">
+        <div class="row">
+            <div class="col-12 col-md-12 col-lg-12">
+                <x-assigned-applications-list />
+            </div>
+            <!-- DEPRECATED -->
+            <!-- <div class="col-12 col-md-12 col-lg-4">
+                <x-recent-activity :lastLogs="$lastLogs" />
+            </div> -->
+        </div>
+    </div>
     <div class="section-body">
         <div class="row">
             <div class="col-12">
