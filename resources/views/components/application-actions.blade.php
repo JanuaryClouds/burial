@@ -4,18 +4,18 @@
 <div class="d-flex justify-content-start align-items-center">
     @if (auth()->user())
         @if (auth()->user()->isAdmin())
-            @if (!$application->assigned_to || $application->assigned_to == auth()->user()->id)
+            @if ($application->assigned_to == auth()->user()->id || $application->assigned_to == null)
                 <div class="btn-group dropdown">
                     <a name="" id="" class="btn btn-primary" href="{{ route('admin.applications.manage', ['id' => $application->id]) }}" role="button">
                         View 
                     </a>
-                    <button id="action-options" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <span class="sr-only">
-                            <i class="fas fa-caret-down"></i>
-                        </span>
-                    </button>
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="action-options">
-                        @if ($application->status == "pending" || $application->status == "approved" || $application->status == "processing")
+                    @if ($application->status == "pending" || $application->status == "approved" || $application->status == "processing")
+                        <button id="action-options" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="sr-only">
+                                <i class="fas fa-caret-down"></i>
+                            </span>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="action-options">
                             <button class="dropdown-item" type="button" data-toggle="modal" data-target="#add-process-{{ $application->id }}">
                                 Add Progress Update
                             </button>
@@ -23,12 +23,12 @@
                             <button class="dropdown-item" type="button" data-toggle="modal" data-target="#reject-{{ $application->id }}">
                                 Reject Application
                             </button>
-                        @elseif ($application->status == "rejected")
-                            <button class="dropdown-item" type="button" data-toggle="modal" data-target="#reject-{{ $application->id }}">
-                                Unreject Application
-                            </button>
-                        @endif
-                    </div>
+                        </div>
+                    @elseif ($application->status == "rejected")
+                        <button class="btn btn-success" type="button" data-toggle="modal" data-target="#reject-{{ $application->id }}">
+                            <i class="fas fa-rotate-left"></i>
+                        </button>
+                    @endif
                 </div>
             @else
                 <button class="btn btn-link" onclick="showAssignModal()">

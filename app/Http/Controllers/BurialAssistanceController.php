@@ -167,7 +167,7 @@ class BurialAssistanceController extends Controller
     }
 
     public function history() {
-        $applications = BurialAssistance::select('id', 'deceased_id', 'claimant_id', 'tracking_no', 'funeraria', 'amount', 'application_date', 'status', 'created_at')->get();
+        $applications = BurialAssistance::select('id', 'deceased_id', 'claimant_id', 'tracking_no', 'funeraria', 'amount', 'application_date', 'status', 'assigned_to', 'created_at')->get();
         $status = 'All';
         return view('applications.list', compact('applications', 'status'));
     }
