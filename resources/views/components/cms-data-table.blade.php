@@ -25,6 +25,9 @@
                             <th class="sorting sort-handler">{{ Str::replace('_', ' ', Str::title($column)) }}</th>
                         @endif
                     @endforeach
+                    @if (Request::is('superadmin/cms/users'))
+                        <th>Role</th>
+                    @endif
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -36,6 +39,9 @@
                                 <td>{{ $value }}</td>
                             @endif
                         @endforeach
+                        @if (Request::is('superadmin/cms/users'))
+                            <td>{{ Str::title($entry->getRoleNames()[0]) }}</td>
+                        @endif
                         <td>
                             @if (Request::routeIs('superadmin.cms.users'))
                                 @if (Request::routeIs('superadmin.cms.users') && !$entry?->hasRole('superadmin'))
