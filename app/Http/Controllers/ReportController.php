@@ -34,10 +34,11 @@ class ReportController extends Controller
             $endDate = Carbon::now()->endOfYear();
         }
 
-        $burialAssistances = BurialAssistance::select('id', 'tracking_no', 'claimant_id', 'deceased_id', 'application_date', 'status', 'created_at')
+        $burialAssistances = BurialAssistance::select('id', 'tracking_no', 'claimant_id', 'deceased_id', 'application_date', 'funeraria', 'amount', 'status', 'created_at')
+            ->orderBy('tracking_no', 'asc')
             ->whereBetween('application_date', [$startDate, $endDate])
             ->get();
-
+            
         $deceasedPerBarangay = $reportService->deceasedPerBarangay($startDate, $endDate);
         $deceasedPerReligion = $reportService->deceasedPerReligion($startDate, $endDate); 
         $statistics = [

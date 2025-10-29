@@ -40,7 +40,7 @@ class ExportController extends Controller
             'claimantChanges.newClaimant',
         ]);
 
-        $burialAssistances = $query->get();
+        $burialAssistances = $query->orderBy('tracking_no', 'asc')->get();
 
         foreach ($burialAssistances as $ba) {
             $dob = Carbon::parse($ba->deceased->date_of_birth);

@@ -84,7 +84,7 @@ class DashboardController extends Controller
 
         $swaEncoded = BurialAssistance::where('encoder', auth()->user()->id)->count(); // ! Deprecated
         $logsAdded = ProcessLog::where('added_by', auth()->user()->id)->count(); // ! Deprecated
-        $assignedApplications = BurialASsistance::where(function ($query) {
+        $assignedApplications = BurialAssistance::where(function ($query) {
             $query->where('status', '!=', 'rejected')
                 ->where('status', '!=', 'released')
                 ->where('assigned_to', auth()->user()->id);   

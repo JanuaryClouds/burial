@@ -32,8 +32,8 @@ Route::middleware('role:admin')
             ->name('applications.approved');
         Route::get('/applications/released', [BurialAssistanceController::class, 'released'])
             ->name('applications.released');
-        Route::get('/applications/history', [BurialAssistanceController::class, 'history'])
-            ->name('applications.history');
+        Route::get('/applications', [BurialAssistanceController::class, 'applications'])
+            ->name('applications');
 
         Route::post('/applications/{id}/claimant-change/{change}/decision', [ClaimantChangeController::class, 'decide'])
             ->name('application.claimant-change.decision');

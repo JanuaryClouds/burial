@@ -37,7 +37,7 @@
                 <button class="btn btn-secondary mr-2" type="button" id="preset-month-now">This Month</button>
             </span>
             <span class="d-flex align-items-center">
-                <a href="{{ route('reports.deceased') }}" class="btn btn-secondary mr-2">
+                <a href="{{ route('reports.' . $type) }}" class="btn btn-secondary mr-2">
                     <i class="fas fa-sync"></i>
                     Reset
                 </a>

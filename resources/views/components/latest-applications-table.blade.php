@@ -19,7 +19,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($latestApplications as $application)
+                        @foreach ($applications as $application)
                             <tr class="bg-white">
                                 <td>{{ $application->tracking_no }}</td>
                                 <td>
@@ -58,7 +58,3 @@
         </div>
     </div>
 </div>
-@foreach ($latestApplications as $application)
-    <x-process-updater :application="$application" />
-    <x-reject-modal :application="$application" />
-@endforeach

@@ -16,7 +16,7 @@
                             </span>
                         </button>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="action-options">
-                            <button class="dropdown-item" type="button" data-toggle="modal" data-target="#add-process-{{ $application->id }}">
+                            <button class="dropdown-item" type="button" data-toggle="modal" data-target="#addUpdateModal-{{ $application->id }}">
                                 Add Progress Update
                             </button>
                             <!-- TODO: add undo rejection -->

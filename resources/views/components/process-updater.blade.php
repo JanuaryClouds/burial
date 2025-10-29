@@ -8,11 +8,11 @@
         }
     }
 @endphp
-<div id="add-process-{{ $application->id }}" class="modal fade flex justify-content-center" tabindex="-1" role="dialog" aria-labelledby="add-proces" aria-hidden="true">
+<div id="addUpdateModal-{{ $application->id }}" class="modal fade flex justify-content-center" tabindex="-1" role="dialog" aria-labelledby="add-process" aria-hidden="true">
     @foreach ($workflowSteps as $step)
         @if ($processLogs->count() == 0 || ($step?->order_no > $processLogs?->last()->loggable?->order_no))
             <div class="modal-dialog" role="document">
-                <form action="{{ route('admin.application.addLog', ['id' => $application->id, 'stepId' => $step->id]) }}" method="post">
+                <form action="{{ route('admin.application.addLog', ['id' => $application->id, 'stepId' => $step->id]) }}" method="post" id="addLogForm">
                 @csrf
                     <div class="modal-content">
                         <div class="modal-header">
@@ -103,15 +103,22 @@
     @endforeach
 </div>
 <script>
-    let dateIn{{ Str::replace('-', '_', $application->id) }} = document.getElementById('date_in');
-    let dateOut{{ Str::replace('-', '_', $application->id) }} = document.getElementById('date_out');
-    dateOut{{ Str::replace('-', '_', $application->id) }}.addEventListener('change', () => {
-        if (dateOut{{ Str::replace('-', '_', $application->id) }}.value) {
-            dateIn{{ Str::replace('-', '_', $application->id) }}.min = dateOut{{ Str::replace('-', '_', $application->id) }}.value;
-        }
+    document.addEventListener('DOMContentLoaded', () => {
+        const dateIn = document.getElementById('date_in');
+        const dateOut = document.getElementById('date_out');
 
-        if (dateIn{{ Str::replace('-', '_', $application->id) }}.value && dateIn{{ Str::replace('-', '_', $application->id) }}.value < dateOut{{ Str::replace('-', '_', $application->id) }}.value) {
-            dateIn{{ Str::replace('-', '_', $application->id) }}.value = '';
+        if (dateOut && !dateOut.dataset.listenerAttached) {
+            dateOut.dataset.listenerAttached = 'true';
+
+            dateOut.addEventListener('change', () => {
+                if (dateOut.value) {
+                    dateIn.min = dateOut.value;
+                }
+
+                if (dateIn.value && dateIn.value < dateOut.value) {
+                    dateIn.value = '';
+                }
+            });
         }
-    })
+    });
 </script>
