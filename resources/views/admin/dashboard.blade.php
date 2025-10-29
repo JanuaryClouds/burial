@@ -1,5 +1,8 @@
 @extends('layouts.stisla.admin')
 @section('content')
+@php 
+    static $modalsLoaded = false; 
+@endphp
 <title>Dashboard</title>
 <div class="main-content">
     <section class="section">
@@ -11,9 +14,11 @@
                 <p class="lead text-muted">Where do you want to go first?</p>
                 <hr class="my-4 bg-white">
                 <div class="d-flex align-items-center justify-content-start">
-                    <a href="{{ route('admin.applications.manage', ['id' => $lastLogs->last()->burialAssistance->id]) }}" class="btn btn-primary mr-2">
-                        <i class="fas fa-clock-rotate-left me-2"></i> Continue Last Application
-                    </a>
+                    @if ($lastLogs->count() > 0)
+                        <a href="{{ route('admin.applications.manage', ['id' => $lastLogs->last()->burialAssistance->id]) }}" class="btn btn-primary mr-2">
+                            <i class="fas fa-clock-rotate-left me-2"></i> Continue Last Application
+                        </a>
+                    @endif
                     <div class="dropdown">
                         <button id="reports-dropdown" class="btn btn-outline-light dropdown-toggle mr-2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-clipboard-list"></i>
@@ -90,6 +95,7 @@
             </div>
         </div>
     </section> -->
+    <x-applications-modal-loader />
 </div>
 
 @endsection

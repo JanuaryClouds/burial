@@ -1,23 +1,23 @@
 @props([
     'application' => []
 ])
-@if ($processLogs->count() == 0 || ($application->status != 'rejected' && $application->status != 'released'))
+@if ($processLogs->count() == 0 || $application->status != 'released')
     @if ($application->claimantChanges->count() == 0 || $claimantChange->status != 'pending')
-        <div class="bg-white rounded shadow-sm p-4">
+        <div class="bg-white shadow-sm p-4">
             <div class="d-flex justify-content-end">
                 @if ($application->status != 'rejected')
-                    <button class="btn btn-primary mr-2" type="button" data-toggle="modal" data-target="#add-process-{{ $application->id }}">
+                    <button class="btn btn-primary mr-2" type="button" data-toggle="modal" data-target="#addUpdateModal-{{ $application->id }}">
                         <i class="fas fa-plus"></i>
                         Add Progress Update
                     </button>
-                    <button class="btn btn-danger" type="button" data-toggle="modal" data-target="#confirm-rejection">
+                    <button class="btn btn-danger" type="button" data-toggle="modal" data-target="#reject-{{ $application->id }}">
                         <i class="fas fa-times-circle"></i>
                         Reject Application
                     </button>
                 @endif
                 @if ($application->status == 'rejected')
                     <!-- TODO: Add undo rejection -->
-                    <button class="btn btn-success" type="button" data-toggle="modal" data-target="#toggle-rejection">
+                    <button class="btn btn-success" type="button" data-toggle="modal" data-target="#reject-{{ $application->id }}">
                         <i class="fas fa-rotate-left"></i>
                         Undo Rejection
                     </button>

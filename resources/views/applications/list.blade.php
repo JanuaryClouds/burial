@@ -30,11 +30,11 @@
                         <div class="col-12 col-md-8 col-lg-6">
                             <div class="row">
                                 <div class="form-group col">
-                                    <label for="min-date">Start Date</label>
+                                    <label for="min-date">Submitted on/after</label>
                                     <input id="min-date" class="form-control" type="date" name="min-date">
                                 </div>
                                 <div class="form-group col">
-                                    <label for="max-date">End Date</label>
+                                    <label for="max-date">Submitted on/before</label>
                                     <input id="max-date" class="form-control" type="date" name="max-date">
                                 </div>
                             </div>
@@ -105,7 +105,10 @@
                                                 @endif
                                             </td>
                                             <td>{{ $application->application_date }}</td>
-                                            <td>{{ $application->processLogs->last()->date_in ?? "Submitted on: " . $application->application_date }}</td>
+                                            <td>
+                                                {{ $application->processLogs->last()->date_in ?? "Submitted on: " . $application->application_date }}
+                                                <p class="text-muted">{{ $application->processLogs->count() > 1 ? '(' . $application->processLogs->last()->loggable?->description . ')' : '' }}</p>
+                                            </td>
                                             @if (Request::is('admin/applications'))
                                                 <td>
                                                     @if ($application->status === 'pending')
@@ -149,11 +152,19 @@
                 </div>
             </div>
         </div>
+        <section class="section">
+            <div class="section-title">
+                Charts
+            </div>
+            <div class="section-body">
+                <div class="row">
+                    <x-application-barangay-chart />
+                    <x-application-status-charts />
+                </div>
+            </div>
+        </section>
     </div>
-@foreach ($applications as $application)
-    <x-reject-modal :application="$application" />
-    <x-process-updater :application="$application"/>
-@endforeach
+<x-applications-modal-loader />
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const statusSelect = document.getElementById('status');

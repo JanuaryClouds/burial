@@ -61,6 +61,6 @@
             </form>
         </div>
     </div>
-    <x-process-updater :application="$application"/>
+    <x-applications-modal-loader :application_id="$application->id"/>
 </div>
 @endsection
