@@ -259,7 +259,7 @@ class BurialAssistanceController extends Controller
         $application->assigned_to = $request->assigned_to;
         $application->update();
 
-        return redirect()->route('superadmin.assignments')->with('alertSuccess', 'Successfully updated assignment.');
+        return redirect()->back()->with('alertSuccess', 'Successfully updated assignment.');
     }
 
     public function generatePdfReport(Request $request, $startDate, $endDate) {
