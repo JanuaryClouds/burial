@@ -54,7 +54,13 @@
                                         @endif
                                     </td>
                                     <td>{{ $application->application_date }}</td>
-                                    <td>{{ $application->processLogs->last()->date_in ?? "Submitted on: " . $application->application_date }}</td>
+                                    <td>
+                                        {{ $application->processLogs->last()->date_in ?? "Submitted on: " . $application->application_date }}
+                                        @php
+                                            $logs = $application->processLogs->sortBy('created_at');
+                                        @endphp
+                                        <p class="text-muted">({{ $logs->last()->loggable?->description ?? 'Submitted on: ' . $application->application_date }})</p>
+                                    </td>
                                     <td>
                                         @if ($application->status === 'pending')
                                             <span class="badge badge-pill badge-primary">{{ ucfirst($application->status) }}</span>
@@ -77,8 +83,4 @@
             </div>
         @endif
     </div>
-    @foreach ($applications as $application)
-        <x-reject-modal :application="$application" />
-        <x-process-updater :application="$application"/>
-    @endforeach
 </div>
