@@ -96,7 +96,7 @@ class ReportService
             $sheet->setCellValue("X{$row}", $this->getLog($firstClaimant, 1, $startDate, $endDate)?->date_in);
             $sheet->setCellValue("Y{$row}", $this->getLog($firstClaimant, 1, $startDate, $endDate)?->comments);
             $sheet->setCellValue("Z{$row}", $this->getLog($firstClaimant, 2, $startDate, $endDate)?->date_in);
-            $sheet->setCellValue("AA{$row}", $this->getLog($firstClaimant, 3, $startDate, $endDate)?->extra_data['compiled_docs'] ?? '');
+            $sheet->setCellValue("AA{$row}", $this->getLog($firstClaimant, 3, $startDate, $endDate)?->extra_data['compiled_documents'] ?? '');
             $sheet->setCellValue("AB{$row}", $this->getLog($firstClaimant, 3, $startDate, $endDate)?->date_out ?? '');
             $sheet->setCellValue("AC{$row}", $this->getLog($firstClaimant, 3, $startDate, $endDate)?->date_in ?? '');
             $sheet->setCellValue("AD{$row}", $this->getLog($firstClaimant, 4, $startDate, $endDate)?->date_out ?? '');

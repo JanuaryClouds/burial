@@ -38,7 +38,7 @@ class WorkflowSeeder extends Seeder
               'requires_extra_data' => true,
               'is_optional' => false,
               'extra_data_schema' => json_encode([
-                'compiled_docs*' => 'string',
+                'compiled_documents*' => 'string',
               ]),
             ],
             [

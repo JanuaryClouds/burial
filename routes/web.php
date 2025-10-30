@@ -10,6 +10,7 @@ use App\Http\Controllers\{
     ClaimantController,
     BurialAssistanceController,
     ChequeController,
+    ActivityLogController,
 };
 
 // Route::get('/', function () {
@@ -59,6 +60,9 @@ Route::middleware(['auth', 'route.access'])
 
         Route::post('/assignments/{id}/reject/toggle', [BurialAssistanceController::class, 'toggleReject'])
             ->name('assignments.reject.toggle');
+
+        Route::get('/activity-logs', [ActivityLogController::class, 'index'])
+            ->name('activity.logs');
 
         require __DIR__ . '/superadmin.php';
         require __DIR__ . '/admin.php';

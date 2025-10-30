@@ -58,6 +58,11 @@
             <li @class(['active' => Request::is('admin/applications')])>
                 <a href="{{ route('admin.applications') }}" class="nav-link"><i class="fas fa-file-lines"></i><span>Applications</span"></a>
             </li>
+
+            <li class="menu-header">Logs & Activity</li>
+            <li @class(['active' => Request::is('activity-logs')])>
+                <a href="{{ route('activity.logs') }}" class="nav-link"><i class="fas fa-clipboard-list"></i><span>Activity Logs</span></a>
+            </li>
         </ul>
     </aside>
 </div>
