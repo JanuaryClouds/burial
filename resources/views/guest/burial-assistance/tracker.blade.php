@@ -21,7 +21,10 @@
                     </button>
 
                     @if ($burialAssistance->status === 'pending' || $burialAssistance->status === 'processing')
-                        @if ($burialAssistance->claimantChanges->count() == 0 && $burialAssistance->processLogs->last()?->loggable->order_no >= 3)
+                        @php
+                            $logs = $burialAssistance->processLogs->sortBy('created_at');
+                        @endphp
+                        @if ($burialAssistance->claimantChanges->isEmpty() && $logs->last()?->loggable->order_no >= 3)
                             <button class="btn btn-secondary mr-2"
                                     type="button" 
                                     data-toggle="modal" 
