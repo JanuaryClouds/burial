@@ -88,6 +88,11 @@
                     <span>Religions</span>
                 </a>
             </li>
+
+            <li class="menu-header">Logs and Activity</li>
+            <li @class(['active' => Request::is('activity-logs')])>
+                <a href="{{ route('activity.logs') }}" class="nav-link"><i class="fas fa-clipboard-list"></i><span>Activity Logs</span></a>
+            </li>
         </ul>
     </aside>
 </div>
