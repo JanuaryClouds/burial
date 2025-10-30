@@ -1,16 +1,32 @@
 @php
+    $nextStep = null;
+
     if ($processLogs->count() != 0) {
         $processLogs = $processLogs->sortBy(fn($log) => $log->created_at)->values();
         $lastStep = $processLogs->last()?->loggable;
+        $nextStep = $lastStep?->order_no ?? 1;
+
+        $claimantChangeIndex = $processLogs
+            ->keys()
+            ->first(fn($key) => class_basename($processLogs[$key]->loggable) === 'ClaimantChange');
         $schema = $lastStep?->extra_data_schema ? json_decode($lastStep->extra_data_schema, true) : [];
-        if (class_basename($processLogs->last()->loggable) === 'ClaimantChange') {
-            $processLogs->last()->loggable->order_no = 3;
+        if (class_basename($lastStep) === 'ClaimantChange') {
+            $claimantChangeLog = $processLogs[$claimantChangeIndex];
+            $status = $claimantChangeLog->loggable->status ?? null;
+            if ($status === 'approved') {
+                $nextOrderNo = 2; // Reset to 2 on approval
+            } elseif ($status === 'rejected') {
+                $previousLog = $processLogs[$claimantChangeIndex - 1] ?? null;
+                $nextOrderNo = $previousLog?->loggable?->order_no ?? 1;
+            }
+        } else {
+            $nextOrderNo = $lastStep?->order_no ?? 1;
         }
     }
 @endphp
 <div id="addUpdateModal-{{ $application->id }}" class="modal fade flex justify-content-center" tabindex="-1" role="dialog" aria-labelledby="add-process" aria-hidden="true">
     @foreach ($workflowSteps as $step)
-        @if ($processLogs->count() == 0 || ($step?->order_no > $processLogs?->last()->loggable?->order_no))
+        @if ($processLogs->count() == 0 || ($step?->order_no > $nextOrderNo))
             <div class="modal-dialog" role="document">
                 <form action="{{ route('admin.application.addLog', ['id' => $application->id, 'stepId' => $step->id]) }}" method="post" id="addLogForm">
                 @csrf
