@@ -38,7 +38,16 @@ class ClaimantChangeController extends Controller
             $claimantChange = ClaimantChange::create($validated);
             
             if( $claimantChange ) {
-                return redirect()->route('guest.burial-assistance.track-page', ['code' => $burialAssistance->tracking_code]);
+                $ip = request()->ip();
+                $browser = request()->header('User-Agent');
+                activity()
+                ->causedBy(null)
+                ->withProperties(['ip' => $ip, 'browser' => $browser])
+                ->log('Request for claimant change submitted by guest');
+                
+                return redirect()
+                    ->route('guest.burial-assistance.track-page', ['code' => $burialAssistance->tracking_code])
+                    ->with("alertSuccess", "Your request for claimant change has been submitted successfully. Please wait for the approval.");
             } else {
                 return redirect()->back()->with("error","Failed to submit claimant change.");
             }
@@ -79,8 +88,19 @@ class ClaimantChangeController extends Controller
             $change->update([
                 'status' => 'rejected',
             ]);
-        }
 
+            ProcessLog::create([
+                'id' => Str::uuid(),
+                'burial_assistance_id' => $change->burialAssistance->id,
+                'claimant_id' => $change->newClaimant->id,
+                'loggable_id' => $change->id,
+                'loggable_type' => ClaimantChange::class,
+                'date_in' => now(),
+                'comments' => 'Change of claimant has been rejected',
+                'is_progress_step' => false
+            ]);
+        }
+        
         return back()->with('success','Claimant change ' . ($request->decision === 'approve' ? 'approved' : 'rejected') . ' successfully.');
     }
 }
