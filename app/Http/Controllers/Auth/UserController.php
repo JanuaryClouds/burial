@@ -60,6 +60,7 @@ class UserController extends Controller
         activity()
         ->performedOn($user)
         ->causedBy($user)
+        ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
         ->log('Successful logout');
         
         Auth::logout();
