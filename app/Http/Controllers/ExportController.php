@@ -82,7 +82,7 @@ class ExportController extends Controller
             $sheet->setCellValue("X{$row}", $processLogService->getLog($firstClaimant, 1)?->date_in);
             $sheet->setCellValue("Y{$row}", $processLogService->getLog($firstClaimant, 1)?->comments);
             $sheet->setCellValue("Z{$row}", $processLogService->getLog($firstClaimant, 2)?->date_in);
-            $sheet->setCellValue("AA{$row}", $processLogService->getLog($firstClaimant, 3)?->extra_data['compiled_docs'] ?? '');
+            $sheet->setCellValue("AA{$row}", $processLogService->getLog($firstClaimant, 3)?->extra_data['compiled_documents'] ?? '');
             $sheet->setCellValue("AB{$row}", $processLogService->getLog($firstClaimant, 3)?->date_out ?? '');
             $sheet->setCellValue("AC{$row}", $processLogService->getLog($firstClaimant, 3)?->date_in ?? '');
             $sheet->setCellValue("AD{$row}", $processLogService->getLog($firstClaimant, 4)?->date_out ?? '');
