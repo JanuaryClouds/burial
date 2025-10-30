@@ -106,7 +106,7 @@
                 @if(!$deceased->isEmpty())
                     <div class="table-responsive">
                         <div class="dataTables_wrapper container-fluid">
-                            <table id="generic-table" class="table data-table" style="width:100%">
+                            <table id="generic-table" class="table data-table generic-table" style="width:100%">
                                 <thead>
                                     <tr role="row">
                                         @foreach ($deceased->first()->getAttributes() as $column => $value)
