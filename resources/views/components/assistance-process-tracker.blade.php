@@ -165,6 +165,14 @@
                             return $lastLogDate === null || $c->changed_at > $lastLogDate;
                         });
                     @endphp
+                    @if (!empty($burialAssistance->rejection()) && $burialAssistance->rejection()->count() > 0 && $burialAssistance->status == "rejected")
+                        <li
+                            class="list-group-item d-flex justify-content-between align-items-center bg-danger"
+                        >
+                            <p class="mb-0 text-white">Rejected: {{ $burialAssistance->rejection->reason }}</p>
+                            <span class="badge badge-pill p-0 text-white">{{ $burialAssistance->rejection->created_at }}</span>
+                        </li>
+                    @endif
                 @endforeach
             </ul>
         </div>
