@@ -72,4 +72,8 @@ class BurialAssistance extends Model
     public function assignedTo() {
         return $this->belongsTo(User::class, 'assigned_to', 'id');
     }
+
+    public function rejection() {
+        return $this->hasOne(Rejection::class, 'burial_assistance_id', 'id');
+    }
 }

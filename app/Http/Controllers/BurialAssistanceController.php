@@ -241,21 +241,43 @@ class BurialAssistanceController extends Controller
         return redirect()->back()->with('success', 'Successfully rejected burial assistance application.');
     }
 
-    public function toggleReject($id) {
-        $application = BurialAssistance::where('id', $id)->first();
-        if (!$application) {
-            return back()->with('error', 'Application not found.');
-        }
+    public function toggleReject(Request $request, $id) {
+        try {
+            $application = BurialAssistance::where('id', $id)->first();
+            if (!$application) {
+                return back()->with('error', 'Application not found.');
+            }
+            
+            if (!empty($application->rejection)) {
+                $application->rejection()->delete();
+            }
 
-        if ($application->processLogs()->count() > 0) {
-            $application->status = $application->status == 'rejected' ? 'processing' : 'rejected';
-            $application->update();
-        } else {
-            $application->status = $application->status == 'rejected' ? 'pending' : 'rejected';
-            $application->update();
-        }
+            if ($application->status != 'rejected') {
+                $validated = $request->validate([
+                    'reason' => 'required|string|max:255',
+                ]);
+        
+                $application->rejection()->create([
+                    'id' => Str::uuid(),
+                    'reason' => $validated['reason'],
+                    'burial_assistance_id' => $application->id
+                ]);
 
-        return redirect()->back()->with('success', 'Successfully updated burial assistance application\'s status.');
+                // TODO: Send notification via SMS
+            }
+            
+            if ($application->processLogs()->count() > 0) {
+                $application->status = $application->status == 'rejected' ? 'processing' : 'rejected';
+                $application->update();
+            } else {
+                $application->status = $application->status == 'rejected' ? 'pending' : 'rejected';
+                $application->update();
+            }
+    
+            return redirect()->back()->with('alertSuccess', 'Successfully updated burial assistance application status.');
+        } catch (Exception $e) {
+            return redirect()->back()->with('alertError', "Unable to update burial assistance application status. " . $e->getMessage());
+        }
     }
 
     public function assignments() {
