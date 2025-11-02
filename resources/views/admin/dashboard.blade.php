@@ -20,7 +20,7 @@
                         </a>
                     @endif
                     <div class="dropdown">
-                        <button id="reports-dropdown" class="btn btn-outline-light dropdown-toggle mr-2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <button id="reports-dropdown" class="btn btn-light dropdown-toggle mr-2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-clipboard-list"></i>
                             Reports
                         </button>
@@ -31,11 +31,22 @@
                             <a href="{{ route('reports.cheques') }}" class="dropdown-item">Cheques</a>
                         </div>
                     </div>
-                    <a href="{{ route('admin.applications') }}" class="btn btn-outline-light mr-2">
-                        <i class="fas fa-file-lines me-2"></i> Manage Applications
-                    </a>
+                    <div class="dropdown">
+                        <button id="reports-dropdown" class="btn btn-light dropdown-toggle mr-2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-file-lines"></i>
+                            Manage Applications
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="reports-dropdown">
+                            <a href="{{ route('admin.applications', ['status' => 'all']) }}" class="dropdown-item">All</a>
+                            <a href="{{ route('admin.applications', ['status' => 'pending']) }}" class="dropdown-item">Pending</a>
+                            <a href="{{ route('admin.applications', ['status' => 'processing']) }}" class="dropdown-item">Processing</a>
+                            <a href="{{ route('admin.applications', ['status' => 'approved']) }}" class="dropdown-item">Approved</a>
+                            <a href="{{ route('admin.applications', ['status' => 'released']) }}" class="dropdown-item">Released</a>
+                            <a href="{{ route('admin.applications', ['status' => 'rejected']) }}" class="dropdown-item">Rejected</a>
+                        </div>
+                    </div>
                     <!-- TODO: link to logs -->
-                    <a href="#" class="btn btn-outline-light mr-2">
+                    <a href="{{ route('activity.logs') }}" class="btn btn-light mr-2">
                         <i class="fas fa-clipboard-list me-2"></i> View Logs
                     </a>
                 </div>

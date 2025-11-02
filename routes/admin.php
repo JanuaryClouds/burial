@@ -24,22 +24,22 @@ Route::middleware('role:admin')
         //     ->name('search');
 
         // Burial Applications
-        Route::get('/applications/pending', [BurialAssistanceController::class, 'pending'])
-        ->name('applications.pending');
-        Route::get('/applications/processing', [BurialAssistanceController::class, 'processing'])
-            ->name('applications.processing');
-        Route::get('/applications/approved', [BurialAssistanceController::class, 'approved'])
-            ->name('applications.approved');
-        Route::get('/applications/released', [BurialAssistanceController::class, 'released'])
-            ->name('applications.released');
-        Route::get('/applications', [BurialAssistanceController::class, 'applications'])
+        // Route::get('/applications/pending', [BurialAssistanceController::class, 'pending'])
+        // ->name('applications.pending');
+        // Route::get('/applications/processing', [BurialAssistanceController::class, 'processing'])
+        //     ->name('applications.processing');
+        // Route::get('/applications/approved', [BurialAssistanceController::class, 'approved'])
+        //     ->name('applications.approved');
+        // Route::get('/applications/released', [BurialAssistanceController::class, 'released'])
+        //     ->name('applications.released');
+        Route::get('/application/{id}', [BurialAssistanceController::class, 'manage'])
+            ->name('applications.manage');
+        Route::get('/applications/{status}', [BurialAssistanceController::class, 'applications'])
             ->name('applications');
 
-        Route::post('/applications/{id}/claimant-change/{change}/decision', [ClaimantChangeController::class, 'decide'])
+            Route::post('/applications/{id}/claimant-change/{change}/decision', [ClaimantChangeController::class, 'decide'])
             ->name('application.claimant-change.decision');
-
-        Route::get('/applications/{id}', [BurialAssistanceController::class, 'manage'])
-            ->name('applications.manage');
+            
         
         Route::match(['get', 'post'], '/applications/{id}/reject', [BurialAssistanceController::class, 'reject'])
             ->name('applications.reject');

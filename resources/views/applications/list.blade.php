@@ -16,17 +16,17 @@
                 </div> -->
                 <div class="card-body">
                     <div class="row">
-                        <div class="form-group col-12 col-md-4 col-lg-3">
-                            <label for="filter-status">Filter by Status</label>
-                            <select name="status" id="status" class="custom-select w-100">
-                                <option value="all">All</option>
-                                <option value="pending">Pending</option>
-                                <option value="processing">Processing</option>
-                                <option value="approved">Approved</option>
-                                <option value="released">Released</option>
-                                <option value="rejected">Rejected</option>
-                            </select>
-                        </div>
+                        @if (Request::is('admin/applications/all'))
+                            <div class="form-group col-12 col-md-4 col-lg-3">
+                                <label for="filter-status">Filter by Status</label>
+                                <select name="status" id="status" class="custom-select w-100">
+                                    <option value="all">All</option>
+                                    @foreach ($statusOptions as $option)
+                                        <option value="{{ $option }}">{{ Str::title($option) }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        @endif
                         <div class="col-12 col-md-8 col-lg-6">
                             <div class="row">
                                 <div class="form-group col">
@@ -67,7 +67,7 @@
                                         <th class="sorting">Claimant</th>
                                         <th class="sorting sort-handler">Submitted on</th>
                                         <th>Last Update</th>
-                                        @if (Request::is('admin/applications'))
+                                        @if (Request::is('admin/applications/*'))
                                             <th class="sorting">Status</th>
                                         @endif
                                         <th class="">Actions</th>
@@ -94,6 +94,12 @@
                                                             {{ $cc->newClaimant->last_name }} 
                                                             {{ $cc?->newClaimant->suffix }}
                                                             <p class="text-muted">({{ $cc->newClaimant->barangay->name }})</p>
+                                                        @else
+                                                            {{ $application->claimant->first_name }}
+                                                            {{ $application->claimant->middle_name ? Str::limit($application->claimant->middle_name, 1, '.') : ''}}
+                                                            {{ $application->claimant->last_name }}
+                                                            {{ $application->claimant->suffix }}
+                                                            <p class="text-muted">({{ $application->claimant->barangay->name }})</p>
                                                         @endif
                                                     @endforeach
                                                 @else
@@ -109,7 +115,7 @@
                                                 {{ $application->processLogs->last()->date_in ?? "Submitted on: " . $application->application_date }}
                                                 <p class="text-muted">{{ $application->processLogs->count() > 1 ? '(' . $application->processLogs->last()->loggable?->description . ')' : '' }}</p>
                                             </td>
-                                            @if (Request::is('admin/applications'))
+                                            @if (Request::is('admin/applications/*'))
                                                 <td>
                                                     @if ($application->status === 'pending')
                                                         <span class="badge badge-pill badge-primary">{{ ucfirst($application->status) }}</span>
@@ -158,8 +164,10 @@
             </div>
             <div class="section-body">
                 <div class="row">
-                    <x-application-barangay-chart />
-                    <x-application-status-charts />
+                    <x-application-barangay-chart :applications="$applications" />
+                    @if (Request::is('admin/applications/all'))
+                        <x-application-status-charts :applications="$applications" />
+                    @endif
                 </div>
             </div>
         </section>
@@ -211,12 +219,16 @@
 
         maxDate.value = sessionStorage.getItem('maxDate') || '';
         minDate.value = sessionStorage.getItem('minDate') || '';
-        statusSelect.value = sessionStorage.getItem('status') || 'all';
+        if (statusSelect) {
+            statusSelect.value = sessionStorage.getItem('status') || 'all';
+        }
         barangaySelect.value = sessionStorage.getItem('barangay') || 'all';
         filterTable();
 
         resetBtn.addEventListener('click', () => {
-            statusSelect.value = 'all';
+            if (statusSelect) {
+                statusSelect.value = 'all';
+            }
             barangaySelect.value = 'all';
             minDate.value = '';
             maxDate.value = '';
@@ -237,12 +249,14 @@
             filterTable();
         });
 
-        statusSelect.addEventListener('change', () => {
-            filterTable();
-        });
+        if (statusSelect) {
+            statusSelect.addEventListener('change', () => {
+                filterTable();
+            });
+        }
 
         function filterTable() {
-            const status = statusSelect.value;
+            const status = statusSelect ? statusSelect.value : 'all';
             const min = minDate.value;
             const max = maxDate.value;
 

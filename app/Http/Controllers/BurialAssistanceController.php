@@ -166,13 +166,30 @@ class BurialAssistanceController extends Controller
         return view('applications.list', compact('applications', 'status', 'badge'));
     }
 
-    public function applications() {
+    public function applications($status = null) {
         $applications = BurialAssistance::select('id', 'deceased_id', 'claimant_id', 'tracking_no', 'funeraria', 'amount', 'application_date', 'status', 'assigned_to', 'created_at')
-            ->orderBy('application_date', 'desc')
+            ->where(function ($query) use ($status) {
+                try {
+                    if ($status == 'all') {
+                        return $query;
+                    } else {
+                        return $query->where('status', $status);
+                    }
+                } catch (Exception $e) {
+                    return redirect()->back()->with('error', 'Invalid Application Status.');
+                }
+            })
+            ->orderBy('created_at', 'desc')
             ->get();
-        $status = 'All';
+
+        if ($applications->isNotEmpty()) {
+            $statusOptions = array_unique($applications->pluck('status')->toArray());
+        } else {
+            $applications = [];
+            $statusOptions = [];
+        }
         $barangays = Barangay::select('id', 'name')->get();
-        return view('applications.list', compact('applications', 'status', 'barangays'));
+        return view('applications.list', compact('applications', 'status', 'barangays', 'statusOptions'));
     }
 
     public function manage($id, ProcessLogService $processLogService) {
