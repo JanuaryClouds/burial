@@ -6,14 +6,14 @@
                 @csrf
                 <div class="modal-body">
                     <p>
-                        Are you sure you want to {{ $application->status == "rejected" ? "unreject" : "reject" }} this application?
+                        Are you sure you want to {{ $application->status == "rejected" ? "restore" : "reject" }} {{ $application->deceased->first_name }} {{ $application->deceased->last_name }}&apos;s application?
                         {{ $application->status == "rejected" ? "This application will return to being processed." : "This application will not receive any further updates." }}
                     </p>
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-primary" type="submit">
-                        <i class="fas fa-floppy-disk"></i>
-                        {{ $application->status == "rejected" ? "Unreject" : "Reject" }}
+                        <i class="fas fa-rotate-left"></i>
+                        {{ $application->status == "rejected" ? "Restore Application" : "Reject Application" }}
                     </button>
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">
                         <i class="fas fa-times-circle"></i>

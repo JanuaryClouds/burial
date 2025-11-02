@@ -20,12 +20,12 @@
                                 Add Progress Update
                             </button>
                             <!-- TODO: add undo rejection -->
-                            <button class="dropdown-item" type="button" data-toggle="modal" data-target="#reject-{{ $application->id }}">
+                            <button class="dropdown-item" type="button" data-toggle="modal" data-target="#reject-{{ $application->id }}" title="Reject Application">
                                 Reject Application
                             </button>
                         </div>
                     @elseif ($application->status == "rejected")
-                        <button class="btn btn-success" type="button" data-toggle="modal" data-target="#reject-{{ $application->id }}">
+                        <button class="btn btn-success" type="button" data-toggle="modal" data-target="#reject-{{ $application->id }}" title="Restore Application">
                             <i class="fas fa-rotate-left"></i>
                         </button>
                     @endif
@@ -55,11 +55,11 @@
                     @endif
                 @endif
                 @if ($application->status != "rejected" && $application->status != "released")
-                    <button class="btn btn-danger mr-2" type="button" data-toggle="modal" data-target="#reject-{{ $application->id }}">
+                    <button class="btn btn-danger mr-2" type="button" data-toggle="modal" data-target="#reject-{{ $application->id }}" title="Reject Application">
                         <i class="fas fa-times-circle"></i>
                     </button>
                 @elseif ($application->status == "rejected")
-                    <button class="btn btn-warning mr-2" type="button" data-toggle="modal" data-target="#reject-{{ $application->id }}">
+                    <button class="btn btn-warning mr-2" type="button" data-toggle="modal" data-target="#reject-{{ $application->id }}" title="Restore Application">
                         <i class="fas fa-rotate-left"></i>
                     </button>
                 @endif
