@@ -38,7 +38,7 @@
                 @if ($application->status == 'rejected')
                     <button class="btn btn-success" type="button" data-toggle="modal" data-target="#reject-{{ $application->id }}">
                         <i class="fas fa-rotate-left"></i>
-                        Undo Rejection
+                        Restore Application
                     </button>
                 @endif
             </div>
