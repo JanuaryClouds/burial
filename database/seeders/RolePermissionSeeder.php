@@ -15,7 +15,15 @@ class RolePermissionSeeder extends Seeder
             'create',
             'edit',
             'delete',
-            'view'
+            'view',
+            'view-reports',
+            'reject-applications',
+            'add-updates',
+            'view-logs',
+            'write-swas',
+            'manage-claimant-changes',
+            'manage-content',
+            'assign'
         ];
 
         foreach ($permissions as $permission) {
@@ -23,8 +31,17 @@ class RolePermissionSeeder extends Seeder
         }
 
         $role = [
-            'superadmin' => Permission::all(),
-            'admin' => Permission::all(),
+            'superadmin' => Permission::where(function($query) {
+                $query->where('name', '==', 'manage-content');
+            })->get(),
+            'deptAdmin' => Permission::where(function($query) {
+                $query->where('name', '!=', 'manage-content');
+            })->get(),
+            'admin' => Permission::where(function($query) {
+                $query->where('name', '!=', 'manage-content');
+                $query->where('name', '!=', 'manage-claimant-changes');
+                $query->where('name', '!=', 'assign');
+            })->get(),
             'user' => 'view'
         ];
 

@@ -32,9 +32,12 @@ class UserController extends Controller
                         ->causedBy($user)
                         ->withProperties(['ip' => $ip, 'browser' => $browser])
                         ->log("Successful login attempt");
-                        
-                        return redirect()
-                        ->route(Auth::user()->getRoleNames()->first() . '.dashboard')
+                    
+                    if (!$user->hasRole('superadmin')) {
+                        $role = 'admin';
+                    }
+                    return redirect()
+                        ->route($role . '.dashboard')
                         ->with('success', 'You have successfully logged in!');
                 } else {
                     return redirect()->back()->with('alertWarning', 'Your account is inactive. Please contact the superadmin.');

@@ -27,8 +27,10 @@ use App\Http\Controllers\{
 };
 
 // super admin role
-Route::middleware('role:superadmin')
-    ->prefix('superadmin')
+// TODO: use middleware
+// TODO: remove prefixes
+// TODO: use `can` to define user permissions
+Route::prefix('superadmin')
     ->name('superadmin.')
     ->group(function () {
         Route::post('/logout', [UserController::class, 'logout'])
@@ -41,12 +43,6 @@ Route::middleware('role:superadmin')
 
         Route::post('/reports/generate', [ReportController::class, 'generate'])
             ->name('reports.generate');
-
-        Route::get('/assignments', [BurialAssistanceController::class, 'assignments'])
-            ->name('assignments');
-
-        Route::post('/assignments/{id}/assign', [BurialAssistanceController::class, 'assign'])
-            ->name('assignments.assign');
 
         Route::get('/cms/barangays', [CmsController::class, 'barangays'])
             ->name('cms.barangays');
@@ -81,6 +77,18 @@ Route::middleware('role:superadmin')
 
         Route::post('/users/{userId}/restrictions/edit', [UserRouteRestrictionController::class, 'update'])
             ->name('user.restrictions.update');
+
+        Route::get('/permissions', [PermissionController::class, 'index'])
+            ->name('permissions');
+
+        Route::get('/roles', [RoleController::class, 'index'])
+            ->name('roles');
+
+        Route::post('/roles/store', [RoleController::class, 'store'])
+            ->name('roles.store');
+
+        Route::post('/roles/{id}/update', [RoleController::class, 'update'])
+            ->name('roles.update');
 
         Route::resource('role', RoleController::class);
         Route::resource('permission', PermissionController::class);

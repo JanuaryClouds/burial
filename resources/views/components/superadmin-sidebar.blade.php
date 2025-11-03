@@ -51,47 +51,55 @@
                 </ul>
             </li>
 
-            <li class="menu-header">CMS</li>
-            <li @class(['active' => Request::is('superadmin/cms/barangays')])>
-                <a href="{{ route('superadmin.cms.barangays') }}">
-                    <i class="fas fa-city"></i>
-                    <span>Barangays</span>
-                </a>
-            </li>
-            <li @class(['active' => Request::is('superadmin/cms/relationships')])>
-                <a href="{{ route('superadmin.cms.relationships') }}">
-                    <i class="fas fa-people-roof"></i>
-                    <span>Relationships</span>
-                </a>
-            </li>
-            <li @class(['active' => Request::is('superadmin/cms/workflow')])>
-                <a href="{{ route('superadmin.cms.workflow') }}">
-                    <i class="fas fa-diagram-next"></i>
-                    <span>Workflow Steps</span>
-                </a>
-            </li>
-            <li @class(['active' => Request::is('superadmin/cms/handlers')])>
-                <a href="{{ route('superadmin.cms.handlers') }}">
-                    <i class="fas fa-clipboard-user"></i>
-                    <span>Handlers</span>
-                </a>
-            </li>
-            <li @class(['active' => Request::is('superadmin/cms/users') || Request::is('superadmin/users/*')])>
-                <a href="{{ route('superadmin.cms.users') }}">
-                    <i class="fas fa-users"></i>
-                    <span>Users</span>
-                </a>
-            </li>
-            <li @class(['active' => Request::is('superadmin/cms/religions')])>
-                <a href="{{ route('superadmin.cms.religions') }}">
-                    <i class="fas fa-church"></i>
-                    <span>Religions</span>
-                </a>
-            </li>
+            @can('manage-content')
+                <li class="menu-header">CMS</li>
+                <li @class(['active' => Request::is('superadmin/cms/barangays')])>
+                    <a href="{{ route('superadmin.cms.barangays') }}">
+                        <i class="fas fa-city"></i>
+                        <span>Barangays</span>
+                    </a>
+                </li>
+                <li @class(['active' => Request::is('superadmin/cms/relationships')])>
+                    <a href="{{ route('superadmin.cms.relationships') }}">
+                        <i class="fas fa-people-roof"></i>
+                        <span>Relationships</span>
+                    </a>
+                </li>
+                <li @class(['active' => Request::is('superadmin/cms/workflow')])>
+                    <a href="{{ route('superadmin.cms.workflow') }}">
+                        <i class="fas fa-diagram-next"></i>
+                        <span>Workflow Steps</span>
+                    </a>
+                </li>
+                <li @class(['active' => Request::is('superadmin/cms/handlers')])>
+                    <a href="{{ route('superadmin.cms.handlers') }}">
+                        <i class="fas fa-clipboard-user"></i>
+                        <span>Handlers</span>
+                    </a>
+                </li>
+                <li @class(['active' => Request::is('superadmin/cms/users') || Request::is('superadmin/users/*')])>
+                    <a href="{{ route('superadmin.cms.users') }}">
+                        <i class="fas fa-users"></i>
+                        <span>Users</span>
+                    </a>
+                </li>
+                <li @class(['active' => Request::is('superadmin/cms/religions')])>
+                    <a href="{{ route('superadmin.cms.religions') }}">
+                        <i class="fas fa-church"></i>
+                        <span>Religions</span>
+                    </a>
+                </li>
+            @endcan
 
-            <li class="menu-header">Logs and Activity</li>
+            <li class="menu-header">System</li>
             <li @class(['active' => Request::is('activity-logs')])>
                 <a href="{{ route('activity.logs') }}" class="nav-link"><i class="fas fa-clipboard-list"></i><span>Activity Logs</span></a>
+            </li>
+            <li @class(['active' => Request::is('superadmin/permissions')])>
+                <a href="{{ route('superadmin.permissions') }}" class="nav-link"><i class="fas fa-shield"></i><span>Permissions</span></a>
+            </li>
+            <li @class(['active' => Request::is('superadmin/roles')])>
+                <a href="{{ route('superadmin.roles') }}" class="nav-link"><i class="fas fa-id-badge"></i><span>Roles</span></a>
             </li>
         </ul>
     </aside>

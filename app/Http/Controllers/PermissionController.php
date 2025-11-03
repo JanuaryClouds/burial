@@ -17,21 +17,28 @@ class PermissionController extends Controller
         $this->permissionServices = $permissionServices;
     }
 
-    public function index(CmsDataTable $dataTable)
-    {
-        $page_title = 'Permission';
-        $resource = 'permission';
-        $columns = ['id', 'name', 'guard', 'action'];
-        $data = Permission::getAllPermissions();
+    // Boilerplate Code
+    // public function index(CmsDataTable $dataTable)
+    // {
+    //     $page_title = 'Permission';
+    //     $resource = 'permission';
+    //     $columns = ['id', 'name', 'guard', 'action'];
+    //     $data = Permission::getAllPermissions();
         
-        return $dataTable
-            ->render('cms.index', compact(
-                'dataTable',
-                'page_title',
-                'resource',
-                'columns',
-                'data',
-            ));
+    //     return $dataTable
+    //         ->render('cms.index', compact(
+    //             'dataTable',
+    //             'page_title',
+    //             'resource',
+    //             'columns',
+    //             'data',
+    //         ));
+    // }
+
+    public function index(CmsDataTable $dataTable) {
+        $data = Permission::getAllPermissions();
+        $type = 'permissions';
+        return view('superadmin.permissions', compact('data', 'dataTable', 'type'));
     }
 
     public function store(PermissionRequest $request)

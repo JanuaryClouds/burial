@@ -40,19 +40,6 @@
     <div class="section-body">
         <x-admin-dashboard-cards :cardData="$cardData" />
     </div>
-    <!-- DEPRECATED -->
-    <!-- <section>
-        <div class="section-body">
-            <div class="row">
-                <div class="col-12 col-md-12 col-lg-4">
-                    <x-recent-activity :lastLogs="$lastLogs" />
-                </div>
-                <div class="col-12 col-md-12 col-lg-8">
-                    <x-pending-applications-list :pendingApplications="$pendingApplications" />
-                </div>
-            </div>
-        </div>
-    </section> -->
     <div class="section-body">
         <div class="row">
             <div class="col-12">

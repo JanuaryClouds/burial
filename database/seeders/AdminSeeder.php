@@ -12,18 +12,44 @@ class AdminSeeder extends Seeder
     public function run(): void
     {
         $superAdminRole = Role::firstOrCreate(['name' => 'superadmin']);
+        $deptAdminRole = Role::firstOrCreate(['name' => 'deptAdmin']);
+        $adminRole = Role::firstOrCreate(['name' => 'admin']);
 
-        $admin = User::firstOrCreate(
-            ['email' => 'jsanguyo1624@gmail.com'],
+        $superadmin = User::firstOrCreate(
+            ['email' => 'superadmin@email.com'],
             [
-                'first_name'     => 'Jerry',
-                'middle_name'    => 'Gonzaga',
-                'last_name'      => 'Sanguyo',
-                'contact_number' => '09271852710',
+                'first_name'     => 'Super',
+                'middle_name'    => 'System',
+                'last_name'      => 'Admin',
+                'contact_number' => '09123456789',
                 'password'       => bcrypt('password'),
             ]
         );
 
-        $admin->assignRole($superAdminRole);
+        $deptAdmin = User::firstOrCreate(
+            ['email' => 'deptAdmin@email.com'],
+            [
+                'first_name'     => 'Department',
+                'middle_name'    => 'Admin',
+                'last_name'      => 'Admin',
+                'contact_number' => '09987654321',
+                'password'       => bcrypt('password'),
+            ]
+        );
+
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@email.com'],
+            [
+                'first_name'     => 'System',
+                'middle_name'    => 'Admin',
+                'last_name'      => 'Admin',
+                'contact_number' => '09234567891',
+                'password'       => bcrypt('password'),
+            ]
+        );
+
+        $superadmin->assignRole($superAdminRole);
+        $deptAdmin->assignRole($deptAdminRole);
+        $admin->assignRole($adminRole);
     }
 }

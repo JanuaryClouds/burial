@@ -12,8 +12,10 @@ use App\Http\Controllers\{
 };
 
 // admin role
-Route::middleware('role:admin')
-    ->prefix('admin')
+// TODO: use middleware
+// TODO: remove prefixes
+// TODO: use `can` to define user permissions
+Route::prefix('admin')
     ->name('admin.')
     ->group(function () {
         Route::post('/logout', [UserController::class, 'logout'])
@@ -37,9 +39,8 @@ Route::middleware('role:admin')
         Route::get('/applications/{status}', [BurialAssistanceController::class, 'applications'])
             ->name('applications');
 
-            Route::post('/applications/{id}/claimant-change/{change}/decision', [ClaimantChangeController::class, 'decide'])
+        Route::post('/applications/{id}/claimant-change/{change}/decision', [ClaimantChangeController::class, 'decide'])
             ->name('application.claimant-change.decision');
-            
         
         Route::match(['get', 'post'], '/applications/{id}/reject', [BurialAssistanceController::class, 'reject'])
             ->name('applications.reject');
@@ -52,6 +53,12 @@ Route::middleware('role:admin')
 
         Route::post('/applications/{id}/swa/save', [BurialAssistanceController::class, 'saveSwa'])
             ->name('applications.swa.save');
+
+        Route::get('/assignments', [BurialAssistanceController::class, 'assignments'])
+            ->name('assignments');
+
+        Route::post('/assignments/{id}/assign', [BurialAssistanceController::class, 'assign'])
+            ->name('assignments.assign');
 
         // Route::resource('assistance', AssistanceController::class);
     });
