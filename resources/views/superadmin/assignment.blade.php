@@ -71,5 +71,12 @@
                 </div>
             </div>
         </div>
+        <div class="section-body">
+            <div class="row">
+                <x-application-status-charts />
+                <x-application-barangay-chart />
+            </div>
+        </div>
     </div>
+    <x-applications-modal-loader />
 @endsection

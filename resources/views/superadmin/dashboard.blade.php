@@ -68,5 +68,6 @@
             </div>
         </div>
     </section>
+    <x-applications-modal-loader />
 </div>
 @endsection
