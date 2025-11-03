@@ -35,6 +35,8 @@ class UserController extends Controller
                     
                     if (!$user->hasRole('superadmin')) {
                         $role = 'admin';
+                    } else {
+                        $role = 'superadmin';
                     }
                     return redirect()
                         ->route($role . '.dashboard')

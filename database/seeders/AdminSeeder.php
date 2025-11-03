@@ -27,7 +27,7 @@ class AdminSeeder extends Seeder
         );
 
         $deptAdmin = User::firstOrCreate(
-            ['email' => 'deptAdmin@email.com'],
+            ['email' => 'deptadmin@email.com'],
             [
                 'first_name'     => 'Department',
                 'middle_name'    => 'Admin',
@@ -47,6 +47,11 @@ class AdminSeeder extends Seeder
                 'password'       => bcrypt('password'),
             ]
         );
+
+        $adminFactories = User::factory()->count(5)->create();
+        foreach ($adminFactories as $admin) {
+            $admin->assignRole($adminRole);
+        }
 
         $superadmin->assignRole($superAdminRole);
         $deptAdmin->assignRole($deptAdminRole);

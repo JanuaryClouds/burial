@@ -12,35 +12,37 @@
             <li @class(['active' => Request::is('admin/dashboard')])>
                 <a href="{{ route('admin.dashboard') }}" class="nav-link"><i class="fas fa-home"></i><span>Dashboard</span></a>
             </li>
-            <li @class(['nav-item', 'dropdown', 'active' => Request::is('reports/*')])>
-                <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
-                    <i class="fas fa-chart-line"></i>
-                    <span>Reports</span>
-                </a>
-                <ul class="dropdown-menu">
-                    <li @class(['active' => Request::is('reports/burial-assistances')])>
-                        <a href="{{ route('reports.burial-assistances') }}" class="nav-link">
-                            <span>Burial Assistances</span>
-                        </a>
-                    </li>
-                    <li @class(['active' => Request::is('reports/deceased')])>
-                        <a href="{{ route('reports.deceased') }}">
-                            <span>Deceased</span>
-                        </a>
-                    </li>
-                    <li @class(['active' => Request::is('reports/claimants')])>
-                        <a href="{{ route('reports.claimants') }}">
-                            <span>Claimants</span>
-                        </a>
-                    </li>
-                    <li @class(['active' => Request::is('reports/cheques')])>
-                        <a href="{{ route('reports.cheques') }}">
-                            <span>Cheques</span>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            
+            @can('view-reports')
+                <li @class(['nav-item', 'dropdown', 'active' => Request::is('reports/*')])>
+                    <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Reports</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li @class(['active' => Request::is('reports/burial-assistances')])>
+                            <a href="{{ route('reports.burial-assistances') }}" class="nav-link">
+                                <span>Burial Assistances</span>
+                            </a>
+                        </li>
+                        <li @class(['active' => Request::is('reports/deceased')])>
+                            <a href="{{ route('reports.deceased') }}">
+                                <span>Deceased</span>
+                            </a>
+                        </li>
+                        <li @class(['active' => Request::is('reports/claimants')])>
+                            <a href="{{ route('reports.claimants') }}">
+                                <span>Claimants</span>
+                            </a>
+                        </li>
+                        <li @class(['active' => Request::is('reports/cheques')])>
+                            <a href="{{ route('reports.cheques') }}">
+                                <span>Cheques</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            @endcan
+
             <li class="menu-header">Applications</li>
             <li @class(['active' => Request::is('admin/applications/all')])>
                 <a href="{{ route('admin.applications', ['status' => 'all']) }}" class="nav-link">
@@ -90,10 +92,21 @@
                 </ul>
             </li>
 
-            <li class="menu-header">Logs & Activity</li>
-            <li @class(['active' => Request::is('activity-logs')])>
-                <a href="{{ route('activity.logs') }}" class="nav-link"><i class="fas fa-clipboard-list"></i><span>Activity Logs</span></a>
-            </li>
+            <li class="menu-header">System</li>
+            @can('view-logs')
+                <li @class(['active' => Request::is('activity-logs')])>
+                    <a href="{{ route('activity.logs') }}" class="nav-link"><i class="fas fa-clipboard-list"></i><span>Activity Logs</span></a>
+                </li>
+            @endcan
+            @dd(auth()->user()->permissions())
+            @can('manage-roles')
+                <li @class(['active' => Request::is('superadmin/permissions')])>
+                    <a href="{{ route('superadmin.permissions') }}" class="nav-link"><i class="fas fa-shield"></i><span>Permissions</span></a>
+                </li>
+                <li @class(['active' => Request::is('superadmin/roles')])>
+                    <a href="{{ route('superadmin.roles') }}" class="nav-link"><i class="fas fa-id-badge"></i><span>Roles</span></a>
+                </li>
+            @endcan
         </ul>
     </aside>
 </div>

@@ -1,8 +1,8 @@
 @php
-    if (auth()->user()->hasRole('admin')) {
-        $role = 'admin';
-    } else if (auth()->user()->hasRole('superadmin')) {
+    if (auth()->user()->hasRole('superadmin')) {
         $role = 'superadmin';
+    } else {
+        $role = 'admin';
     }
 @endphp
 @extends('layouts.stisla.' . $role)

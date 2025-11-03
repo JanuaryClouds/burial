@@ -52,6 +52,11 @@
                             <i class="fas fa-clipboard-list me-2"></i> View Logs
                         </a>
                     @endcan
+                    @can('manage-accounts')
+                        <a href="{{ route('superadmin.cms.users') }}" class="btn btn-light">
+                            <i class="fas fa-users me-2"></i> Manage Accounts
+                        </a>
+                    @endcan
                 </div>
             </div>
         </div>
@@ -59,22 +64,21 @@
     <div class="section-body">
         <x-admin-dashboard-cards :cardData="$cardData" />
     </div>
-    <section class="section">
-        <div class="section-title">For You</div>
-    </section>
     <div class="section-body">
-        <div class="row">
-            <div class="col-12 col-md-12 col-lg-12">
-                <x-assigned-applications-list />
+        @can('assign')
+            <div class="row">
+                <div class="col-12 col-md-12 col-lg-12">
+                    <x-assigned-applications-list />
+                </div>
             </div>
-        </div>
+        @endcan
         <div class="row">
             <div class="col-12">
                 <x-latest-applications-table />
             </div>
         </div>        
     </div>
-    <section class="section">
+    <!-- <section class="section">
         <div class="section-title">Charts</div>
         <div class="section-body">
             <div class="row">
@@ -82,7 +86,7 @@
                 <x-application-status-charts />
             </div>
         </div>
-    </section>
+    </section> -->
     <x-applications-modal-loader />
 </div>
 

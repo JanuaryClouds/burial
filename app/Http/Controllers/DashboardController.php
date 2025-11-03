@@ -346,7 +346,7 @@ class DashboardController extends Controller
             // ],
         ];
 
-        return view('superadmin.dashboard', compact(
+        return view('admin.dashboard', compact(
             'perBarangay', // ! Deprecated
             'applicationsByBarangay', // ! Deprecated
             
