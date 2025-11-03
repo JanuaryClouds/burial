@@ -166,13 +166,30 @@ class BurialAssistanceController extends Controller
         return view('applications.list', compact('applications', 'status', 'badge'));
     }
 
-    public function applications() {
+    public function applications($status = null) {
         $applications = BurialAssistance::select('id', 'deceased_id', 'claimant_id', 'tracking_no', 'funeraria', 'amount', 'application_date', 'status', 'assigned_to', 'created_at')
-            ->orderBy('application_date', 'desc')
+            ->where(function ($query) use ($status) {
+                try {
+                    if ($status == 'all') {
+                        return $query;
+                    } else {
+                        return $query->where('status', $status);
+                    }
+                } catch (Exception $e) {
+                    return redirect()->back()->with('error', 'Invalid Application Status.');
+                }
+            })
+            ->orderBy('created_at', 'desc')
             ->get();
-        $status = 'All';
+
+        if ($applications->isNotEmpty()) {
+            $statusOptions = array_unique($applications->pluck('status')->toArray());
+        } else {
+            $applications = [];
+            $statusOptions = [];
+        }
         $barangays = Barangay::select('id', 'name')->get();
-        return view('applications.list', compact('applications', 'status', 'barangays'));
+        return view('applications.list', compact('applications', 'status', 'barangays', 'statusOptions'));
     }
 
     public function manage($id, ProcessLogService $processLogService) {
@@ -224,21 +241,43 @@ class BurialAssistanceController extends Controller
         return redirect()->back()->with('success', 'Successfully rejected burial assistance application.');
     }
 
-    public function toggleReject($id) {
-        $application = BurialAssistance::where('id', $id)->first();
-        if (!$application) {
-            return back()->with('error', 'Application not found.');
-        }
+    public function toggleReject(Request $request, $id) {
+        try {
+            $application = BurialAssistance::where('id', $id)->first();
+            if (!$application) {
+                return back()->with('error', 'Application not found.');
+            }
+            
+            if (!empty($application->rejection)) {
+                $application->rejection()->delete();
+            }
 
-        if ($application->processLogs()->count() > 0) {
-            $application->status = $application->status == 'rejected' ? 'processing' : 'rejected';
-            $application->update();
-        } else {
-            $application->status = $application->status == 'rejected' ? 'pending' : 'rejected';
-            $application->update();
-        }
+            if ($application->status != 'rejected') {
+                $validated = $request->validate([
+                    'reason' => 'required|string|max:255',
+                ]);
+        
+                $application->rejection()->create([
+                    'id' => Str::uuid(),
+                    'reason' => $validated['reason'],
+                    'burial_assistance_id' => $application->id
+                ]);
 
-        return redirect()->back()->with('success', 'Successfully updated burial assistance application\'s status.');
+                // TODO: Send notification via SMS
+            }
+            
+            if ($application->processLogs()->count() > 0) {
+                $application->status = $application->status == 'rejected' ? 'processing' : 'rejected';
+                $application->update();
+            } else {
+                $application->status = $application->status == 'rejected' ? 'pending' : 'rejected';
+                $application->update();
+            }
+    
+            return redirect()->back()->with('alertSuccess', 'Successfully updated burial assistance application status.');
+        } catch (Exception $e) {
+            return redirect()->back()->with('alertError', "Unable to update burial assistance application status. " . $e->getMessage());
+        }
     }
 
     public function assignments() {

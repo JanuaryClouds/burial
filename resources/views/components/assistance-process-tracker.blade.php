@@ -81,6 +81,11 @@
                                         <i class="fas fa-circle-info"></i>
                                     </a>
                                 @endif
+                                @if ($burialAssistance->status == "released" && $log?->loggable?->order_no == 13)
+                                    <button class="btn ml-4" type="button" data-toggle="modal" data-target="#show-cheque-proof-{{ $log->id }}">
+                                        <i class="fas fa-image"></i>
+                                    </button>
+                                @endif
                             </p>
                             @if (class_basename($log->loggable) === 'WorkflowStep')
                                 <span class="d-flex justify-content-center align-items-center">
@@ -129,6 +134,29 @@
                                 </li>
                             </div>
                         @endif
+                        @if (class_basename($log->loggable) === 'WorkflowStep' && $log->loggable->order_no == 13 && $burialAssistance->status == "released")
+                        
+                            <div id="show-cheque-proof-{{ $log->id }}" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-body">
+                                            @php
+                                                $encryptedFile = Storage::disk('local')->get("burial-assistance/{$burialAssistance->tracking_no}/{$burialAssistance->latestCheque->id}-cheque-proof.png");
+                                                $file = Crypt::decrypt($encryptedFile);
+                                            @endphp
+                                            <div class="w-auto">
+                                                <input 
+                                                    type="image" 
+                                                    src="{{ 'data:image;base64,' . base64_encode($file) }}" 
+                                                    alt="Proof image of cheque claiming"
+                                                    class="img-fluid rounded"
+                                                >
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
                     @endforeach
 
                     @php
@@ -137,6 +165,14 @@
                             return $lastLogDate === null || $c->changed_at > $lastLogDate;
                         });
                     @endphp
+                    @if (!empty($burialAssistance->rejection()) && $burialAssistance->rejection()->count() > 0 && $burialAssistance->status == "rejected")
+                        <li
+                            class="list-group-item d-flex justify-content-between align-items-center bg-danger"
+                        >
+                            <p class="mb-0 text-white">Rejected: {{ $burialAssistance->rejection->reason }}</p>
+                            <span class="badge badge-pill p-0 text-white">{{ $burialAssistance->rejection->created_at }}</span>
+                        </li>
+                    @endif
                 @endforeach
             </ul>
         </div>

@@ -11,11 +11,11 @@
                 <p class="lead text-muted">Where do you want to go first?</p>
                 <hr class="my-4 bg-white">
                 <div class="d-flex align-items-center justify-content-start">
-                    <a href="{{ route('superadmin.assignments') }}" class="btn btn-outline-light mr-2">
+                    <a href="{{ route('superadmin.assignments') }}" class="btn btn-light mr-2">
                         <i class="fas fa-check-to-slot me-2"></i> Manage Assignments
                     </a>
                     <div class="dropdown">
-                        <button id="reports-dropdown" class="btn btn-outline-light dropdown-toggle mr-2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <button id="reports-dropdown" class="btn btn-light dropdown-toggle mr-2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-clipboard-list"></i>
                             Reports
                         </button>
@@ -27,10 +27,10 @@
                         </div>
                     </div>
                     <!-- TODO: link to logs -->
-                    <a href="#" class="btn btn-outline-light mr-2">
+                    <a href="{{ route('activity.logs') }}" class="btn btn-light mr-2">
                         <i class="fas fa-clipboard-list me-2"></i> View Logs
                     </a>
-                    <a href="{{ route('superadmin.cms.users') }}" class="btn btn-outline-light">
+                    <a href="{{ route('superadmin.cms.users') }}" class="btn btn-light">
                         <i class="fas fa-users me-2"></i> Manage Accounts
                     </a>
                 </div>
@@ -68,5 +68,6 @@
             </div>
         </div>
     </section>
+    <x-applications-modal-loader />
 </div>
 @endsection

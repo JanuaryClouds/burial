@@ -8,6 +8,8 @@ use App\Models\ProcessLog;
 use App\Models\BurialAssistance;
 use App\Models\WorkflowStep;
 use App\Models\Handler;
+use Illuminate\Support\Facades\Crypt;
+use Storage;
 use Str;
 
 class ProcessLogController extends Controller
@@ -16,7 +18,7 @@ class ProcessLogController extends Controller
         try {
             $application = BurialAssistance::findOrFail($id);
             $step = WorkflowStep::findOrFail($stepId);
-            // dd('Function hit!', $request->all());
+            // dd('Function hit!', $request->all(), $request->file());
             $validated = $request->validate([
                 'date_in' => 'required|date',
                 'date_out' => 'nullable|date|before_or_equal:date_in',
@@ -24,7 +26,6 @@ class ProcessLogController extends Controller
                 'extra_data' => 'sometimes|array',
                 'added_by' => 'nullable|exists:users,id',
             ]);
-            
             if ($application) {
                 if ($application->status == 'pending') {
                     $application->update(['status' => 'processing']);
@@ -69,7 +70,15 @@ class ProcessLogController extends Controller
                         'status' => 'claimed',
                         'date_claimed' => $validated['date_in'],
                     ]);
-                    $application->update(['status' => 'released']);
+                    if ($request->file('cheque-image-proof')) {
+                        $extension = $request->file('cheque-image-proof')->getClientOriginalExtension();
+                        $filename = $application->latestCheque->id . '-cheque-proof.' . $extension;
+                        $path = "burial-assistance/{$application->tracking_no}/";
+                        Storage::disk('local')->put($path . $filename, Crypt::encrypt(file_get_contents($request->file('cheque-image-proof'))));
+                        $application->update(['status' => 'released']);
+                    } else {
+                        return redirect()->back()->with('alertInfo', 'Please upload a photo of the cheque.');
+                    }
                 }
 
                 if ($application->initial_checker == null) {

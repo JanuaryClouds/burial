@@ -28,7 +28,7 @@
     @foreach ($workflowSteps as $step)
         @if ($processLogs->count() == 0 || ($step?->order_no > $nextOrderNo))
             <div class="modal-dialog" role="document">
-                <form action="{{ route('admin.application.addLog', ['id' => $application->id, 'stepId' => $step->id]) }}" method="post" id="addLogForm">
+                <form action="{{ route('admin.application.addLog', ['id' => $application->id, 'stepId' => $step->id]) }}" method="post" id="addLogForm" enctype="multipart/form-data">
                 @csrf
                     <div class="modal-content">
                         <div class="modal-header">
@@ -95,6 +95,17 @@
                                         @endforeach
                                     @endif
                                 @endforeach
+                                @if ($step->order_no === 13 && $application->status === 'approved' && $application->cheque)
+                                    <div class="form-group">
+                                        <label for="cheque-image-proof">Proof of Claiming Cheque</label>
+                                        <input 
+                                            type="file"
+                                            name="cheque-image-proof" 
+                                            id="cheque-image-proof"
+                                            class="form-control"
+                                        >
+                                    </div>
+                                @endif
                                 <div class="form-group">
                                     <label for="comments">Comments</label>
                                     <textarea id="comments" class="form-control" name="comments" rows="3"></textarea>

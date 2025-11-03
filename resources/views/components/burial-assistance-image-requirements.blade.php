@@ -14,17 +14,19 @@
     <div class="row flex-column justify-content-center align-items-center g-2">
     @if (count($files) > 0)
         @foreach ($files as $file)
-            <div class="col mb-2">
-                <section class="section">
-                    <div class="section-title">
-                        <h3>{{ Str::replace('_', ' ',Str::title(Str::substr($file['name'], 0, -4))) }}</h3>
-                    </div>
-                    @if(Str::startsWith($file['mime'], 'image/'))
-                        <img src="data:{{ $file['mime'] }};base64,{{ base64_encode($file['content']) }}" 
-                            alt="{{ $file['name'] }}" class="w-100">
-                    @endif
-                </section>
-            </div>
+            @if (!str_contains($file['name'], 'cheque-proof'))
+                <div class="col mb-2">
+                    <section class="section">
+                        <div class="section-title">
+                            <h3>{{ Str::replace('_', ' ',Str::title(Str::substr($file['name'], 0, -4))) }}</h3>
+                        </div>
+                        @if(Str::startsWith($file['mime'], 'image/'))
+                            <img src="data:{{ $file['mime'] }};base64,{{ base64_encode($file['content']) }}" 
+                                alt="{{ $file['name'] }}" class="w-100">
+                        @endif
+                    </section>
+                </div>
+            @endif
         @endforeach
     @elseif (count($files) == 0 && (!auth()->user() || !auth()->user()->isAdmin()))
         <div

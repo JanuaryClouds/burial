@@ -98,7 +98,11 @@ export function checkAndRenderCharts() {
                     labels: chartLabels,
                     datasets: [{
                         data: chartData,
-                        backgroundColor: '#3b82f6',
+                        backgroundColor: 
+                            ['#3b82f6', '#f87171', '#34d399', '#fbbf24', '#a78bfa',
+                             '#f472b6', '#38bdf8', '#4ade80', '#facc15', '#818cf8',
+                             '#e879f9', '#60a5fa', '#faccd2', '#f47236', '#428cf8'],
+                        borderWidth: 1
                     }],
                 },
                 options: {
