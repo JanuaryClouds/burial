@@ -22,7 +22,7 @@ class AdminSeeder extends Seeder
                 'middle_name'    => 'System',
                 'last_name'      => 'Admin',
                 'contact_number' => '09123456789',
-                'password'       => bcrypt('password'),
+                'password'       => bcrypt('funeral.password'),
             ]
         );
 
@@ -33,18 +33,18 @@ class AdminSeeder extends Seeder
                 'middle_name'    => 'Admin',
                 'last_name'      => 'Admin',
                 'contact_number' => '09987654321',
-                'password'       => bcrypt('password'),
+                'password'       => bcrypt('funeral.password'),
             ]
         );
 
         $admin = User::firstOrCreate(
             ['email' => 'admin@email.com'],
             [
-                'first_name'     => 'System',
-                'middle_name'    => 'Admin',
+                'first_name'     => 'Regular',
+                'middle_name'    => null,
                 'last_name'      => 'Admin',
                 'contact_number' => '09234567891',
-                'password'       => bcrypt('password'),
+                'password'       => bcrypt('funeral.password'),
             ]
         );
 

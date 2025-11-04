@@ -20,8 +20,6 @@ class RolePermissionSeeder extends Seeder
             'reject-applications',
             'add-updates',
             'view-logs',
-            'write-swas',
-            'manage-claimant-changes',
             'manage-content',
             'manage-accounts',
             'assign',
@@ -33,16 +31,15 @@ class RolePermissionSeeder extends Seeder
         }
 
         $role = [
-            'superadmin' => Permission::where(function($query) {
-                $query->where('name', '==', 'manage-content');
-                $query->where('name', '==', 'manage-roles');
-            })->get(),
+            'superadmin' => Permission::all(),
             'deptAdmin' => Permission::where(function($query) {
                 $query->where('name', '!=', 'manage-content');
+                $query->where('name', '!=', 'manage-accounts');
+                $query->where('name', '!=', 'manage-roles');
             })->get(),
             'admin' => Permission::where(function($query) {
                 $query->where('name', '!=', 'manage-content');
-                $query->where('name', '!=', 'manage-claimant-changes');
+                $query->where('name', '!=', 'manage-accounts');
                 $query->where('name', '!=', 'assign');
             })->get(),
             'user' => 'view'
