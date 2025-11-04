@@ -5,7 +5,7 @@
     @if (auth()->user())
         @if ($application->assigned_to == auth()->user()->id || $application->assigned_to == null)
             <div class="btn-group dropdown">
-                <a name="" id="" class="btn btn-primary" href="{{ route('admin.applications.manage', ['id' => $application->id]) }}" role="button">
+                <a name="" id="" class="btn btn-primary" href="{{ route('application.manage', ['id' => $application->id]) }}" role="button">
                     View 
                 </a>
                 @if ($application->status == "pending" || $application->status == "approved" || $application->status == "processing")
@@ -64,7 +64,7 @@
                             </button>
                         </div>
                         <div class="modal-body">
-                            <form action="{{ route('admin.assignments.assign', ['id' => $application->id]) }}" method="POST" class="m-0 p-0">
+                            <form action="{{ route('assignments.assign', ['id' => $application->id]) }}" method="POST" class="m-0 p-0">
                                 @csrf
                                 <select name="assigned_to" id="assigned_to" class="form-control" onchange="this.form.submit()">
                                     @if ($application->assigned_to)
@@ -73,7 +73,7 @@
                                     <option value="">No Assignment</option>
                                     @foreach ($admins as $admin)
                                         @if ($admin->id !== $application->assigned_to)
-                                            <option value="{{ $admin->id }}">{{ $admin->first_name }}</option>
+                                            <option value="{{ $admin->id }}">{{ $admin->first_name }} {{ $admin->last_name }}</option>
                                         @endif
                                     @endforeach
                                 </select>

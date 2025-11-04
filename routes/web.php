@@ -11,6 +11,7 @@ use App\Http\Controllers\{
     BurialAssistanceController,
     ChequeController,
     ActivityLogController,
+    DashboardController,
 };
 
 // Route::get('/', function () {
@@ -30,38 +31,49 @@ Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 require __DIR__ . '/guest.php';
 require __DIR__ . '/api.php';
 
-Route::middleware(['auth', 'route.access'])
+Route::middleware(['auth',])
     ->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'index'])
+            ->name('dashboard');
         Route::get('/client/latest-tracking', [ClientController::class, 'getLatestTracking'])->name('client.latest-tracking');
 
         Route::get('/applications/export', [ExportController::class,'applications'])
             ->name('applications.export.all');
 
-        Route::match(['get', 'post'], '/reports/burial-assistances', [ReportController::class, 'burialAssistances'])
-            ->name('reports.burial-assistances');
-        Route::match(['get', 'post'], '/reports/deceased', [ReportController::class, 'deceased'])
-            ->name('reports.deceased');
-        Route::match(['get', 'post'], '/reports/claimants', [ReportController::class, 'claimants'])
-            ->name('reports.claimants');
-        Route::match(['get', 'post'], '/reports/cheques', [ReportController::class, 'cheques'])
-            ->name('reports.cheques');
+        Route::middleware('permission:view-reports')
+            ->name('reports.')
+            ->prefix('reports')
+            ->group(function () {
+                Route::match(['get', 'post'], '/burial-assistances', [ReportController::class, 'burialAssistances'])
+                    ->name('burial-assistances');
+                Route::match(['get', 'post'], '/deceased', [ReportController::class, 'deceased'])
+                    ->name('deceased');
+                Route::match(['get', 'post'], '/claimants', [ReportController::class, 'claimants'])
+                    ->name('claimants');
+                Route::match(['get', 'post'], '/cheques', [ReportController::class, 'cheques'])
+                    ->name('cheques');
+                Route::post('/generate', [ReportController::class, 'generate'])
+                    ->name('reports.generate');
+        
+                Route::post('/export/burial-assistances/{startDate}/{endDate}', [BurialAssistanceController::class, 'generatePdfReport'])
+                    ->name('burial-assistances.pdf');
+        
+                Route::post('/export/deceased/{startDate}/{endDate}', [DeceasedController::class, 'generatePdfReport'])
+                    ->name('deceased.pdf');
+        
+                Route::post('/export/claimant/{startDate}/{endDate}', [ClaimantController::class, 'generatePdfReport'])
+                    ->name('claimant.pdf');
+        
+                Route::post('/export/cheques/{startDate}/{endDate}', [ChequeController::class, 'generatePdfReport'])
+                    ->name('cheques.pdf');
+        });
 
-        Route::post('/reports/export/burial-assistances/{startDate}/{endDate}', [BurialAssistanceController::class, 'generatePdfReport'])
-            ->name('reports.burial-assistances.pdf');
-
-        Route::post('/reports/export/deceased/{startDate}/{endDate}', [DeceasedController::class, 'generatePdfReport'])
-            ->name('reports.deceased.pdf');
-
-        Route::post('/reports/export/claimant/{startDate}/{endDate}', [ClaimantController::class, 'generatePdfReport'])
-            ->name('reports.claimant.pdf');
-
-        Route::post('/reports/export/cheques/{startDate}/{endDate}', [ChequeController::class, 'generatePdfReport'])
-            ->name('reports.cheques.pdf');
-
-        Route::post('/assignments/{id}/reject/toggle', [BurialAssistanceController::class, 'toggleReject'])
-            ->name('assignments.reject.toggle');
+        Route::post('/application/{id}/reject/toggle', [BurialAssistanceController::class, 'toggleReject'])
+            ->middleware('permission:reject-applications')
+            ->name('application.reject.toggle');
 
         Route::get('/activity-logs', [ActivityLogController::class, 'index'])
+            ->middleware('permission:view-logs')
             ->name('activity.logs');
 
         require __DIR__ . '/superadmin.php';

@@ -94,7 +94,7 @@
                                         {{ $log->date_out ? '/ Out: ' . $log->date_out : '' }}
                                     </span>
                                     @if (auth()->user())
-                                        @if (auth()->user()->hasRole('admin') && $loop->last)
+                                        @if (auth()->user()->can('add-updates') && $loop->last)
                                             <!-- An edit function would lose data integrity. To ensure data integrity, CSWDO must delete the log and create a new one -->
                                             <span class="d-flex align-items-center btn-toolbar">
                                                 <x-delete-log :id="$burialAssistance->id" :stepId="$log->loggable->order_no" />

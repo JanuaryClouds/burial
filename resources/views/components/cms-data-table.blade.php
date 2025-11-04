@@ -25,7 +25,7 @@
                             <th class="sorting sort-handler">{{ Str::replace('_', ' ', Str::title($column)) }}</th>
                         @endif
                     @endforeach
-                    @if (Request::is('superadmin/cms/users'))
+                    @if (Request::is('users.manage'))
                         <th>Role</th>
                     @endif
                     <th>Actions</th>
@@ -39,13 +39,13 @@
                                 <td>{{ $value }}</td>
                             @endif
                         @endforeach
-                        @if (Request::is('superadmin/cms/users'))
+                        @if (Request::is('users.manage'))
                             <td>{{ Str::title($entry->getRoleNames()[0]) }}</td>
                         @endif
                         <td>
-                            @if (Request::routeIs('superadmin.cms.users'))
-                                @if (Request::routeIs('superadmin.cms.users') && !$entry?->hasRole('superadmin'))
-                                    <a href="{{ route('superadmin.user.manage', ['userId' => $entry->id]) }}">
+                            @if (Request::routeIs('users.manage') || Request::routeIs('permissions') || Request::routeIs('roles'))
+                                @if (Request::routeIs('users.manage') && !$entry?->hasRole('superadmin'))
+                                    <a href="{{ route('user.manage', ['userId' => $entry->id]) }}">
                                         <button class="btn btn-primary" type="button">
                                             <i class="fas fa-edit"></i> 
                                         </button>
@@ -56,7 +56,7 @@
                                     <i class="fas fa-edit"></i> 
                                 </button>
                             @endif
-                            @if (!Request::routeIs('superadmin.cms.workflow') && !Request::routeIs('superadmin.cms.handlers') && !Request::routeIs('superadmin.cms.users'))
+                            @if (!Request::routeIs('cms.workflow') && !Request::routeIs('cms.handlers') && !Request::routeIs('cms.users') && !Request::routeIs('users.manage') && !Request::routeIs('permissions') && !Request::routeIs('roles'))
                                 <button class="btn btn-danger" type="button" data-toggle="modal" data-target="#delete-modal-{{ $entry->id }}">
                                     <i class="fas fa-trash"></i>
                                 </button>
@@ -67,7 +67,7 @@
                     <!-- Edit content modal -->
                     <div id="edit-modal-{{ $entry->id }}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="edit-modal-{{ $entry->id }}" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered" role="document">
-                            <form action="{{ route('superadmin.cms.update', ['type' => $type, 'id' => $entry->id]) }}" method="post">
+                            <form action="{{ route('cms.update', ['type' => $type, 'id' => $entry->id]) }}" method="post">
                                 @csrf
                                 <div class="modal-content">
                                     <div class="modal-header">
@@ -107,7 +107,7 @@
                     <!-- Delete content modal -->
                     <div id="delete-modal-{{ $entry->id }}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="delete-modal-{{ $entry->id }}" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered" role="document">
-                            <form action="{{ route('superadmin.cms.delete', ['type' => $type, 'id' => $entry->id]) }}" method="post">
+                            <form action="{{ route('cms.delete', ['type' => $type, 'id' => $entry->id]) }}" method="post">
                                 @csrf
                                 <div class="modal-content">
                                     <div class="modal-header">

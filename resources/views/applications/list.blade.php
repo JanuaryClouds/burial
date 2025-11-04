@@ -16,7 +16,7 @@
                 </div> -->
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
-                        @if (Request::is('admin/applications/all'))
+                        @if (Request::is('applications/all'))
                             <div class="form-group w-100 mr-2">
                                 <label for="filter-status">Filter by Status</label>
                                 <select name="status" id="status" class="custom-select w-100">
@@ -63,7 +63,7 @@
                                         <th class="sorting">Claimant</th>
                                         <th class="sorting sort-handler">Submitted on</th>
                                         <th>Last Update</th>
-                                        @if (Request::is('admin/applications/*'))
+                                        @if (Request::is('applications/*'))
                                             <th class="sorting">Status</th>
                                         @endif
                                         <th class="">Actions</th>
@@ -111,7 +111,7 @@
                                                 {{ $application->processLogs->last()->date_in ?? "Submitted on: " . $application->application_date }}
                                                 <p class="text-muted">{{ $application->processLogs->count() > 1 ? '(' . $application->processLogs->last()->loggable?->description . ')' : '' }}</p>
                                             </td>
-                                            @if (Request::is('admin/applications/*'))
+                                            @if (Request::is('applications/*'))
                                                 <td>
                                                     @if ($application->status === 'pending')
                                                         <span class="badge badge-pill badge-warning">{{ ucfirst($application->status) }}</span>
@@ -130,7 +130,7 @@
                                             @if (auth()->user()->isAdmin())
                                                 <div id="confirm-rejection-{{ $application->id }}" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
                                                     <div class="modal-dialog" role="document">
-                                                        <form action="{{ route('admin.applications.reject', ['id' => $application->id]) }}" method="post">
+                                                        <form action="{{ route('applications.reject', ['id' => $application->id]) }}" method="post">
                                                             @csrf
                                                             <div class="modal-content">
                                                                 <div class="modal-body">

@@ -28,7 +28,7 @@
                 </div>
             @endif
         @endforeach
-    @elseif (count($files) == 0 && (!auth()->user() || !auth()->user()->isAdmin()))
+    @elseif (count($files) == 0 && (!auth()->user()))
         <div
             class="col mb-4"
         >

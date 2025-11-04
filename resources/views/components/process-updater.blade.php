@@ -28,7 +28,7 @@
     @foreach ($workflowSteps as $step)
         @if ($processLogs->count() == 0 || ($step?->order_no > $nextOrderNo))
             <div class="modal-dialog" role="document">
-                <form action="{{ route('admin.application.addLog', ['id' => $application->id, 'stepId' => $step->id]) }}" method="post" id="addLogForm" enctype="multipart/form-data">
+                <form action="{{ route('application.addLog', ['id' => $application->id, 'stepId' => $step->id]) }}" method="post" id="addLogForm" enctype="multipart/form-data">
                 @csrf
                     <div class="modal-content">
                         <div class="modal-header">

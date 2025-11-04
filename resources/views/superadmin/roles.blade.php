@@ -22,7 +22,7 @@
         </div>
     </div>
     <div id="new-role-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="new-role-modal" aria-hidden="true">
-		<form action="{{ route('superadmin.roles.store') }}" method="post">
+		<form action="{{ route('roles.store') }}" method="post">
 			@csrf
 			<div class="modal-dialog modal-dialog-centered" role="document">
 				<div class="modal-content">

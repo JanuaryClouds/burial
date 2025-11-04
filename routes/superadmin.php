@@ -27,80 +27,73 @@ use App\Http\Controllers\{
 };
 
 // super admin role
-// TODO: use middleware
-// TODO: remove prefixes
-// TODO: use `can` to define user permissions
-Route::prefix('superadmin')
-    ->name('superadmin.')
+Route::get('/tracking-activity', [DashboardController::class, 'trackerEvents']);
+Route::get('/superadmin/search', [SearchController::class, 'superadmin'])
+    ->name('search');
+
+Route::middleware('permission:manage-content')
+    ->name('cms.')
+    ->prefix('cms')
     ->group(function () {
-        Route::post('/logout', [UserController::class, 'logout'])
-            ->name('logout');
-        Route::get('/dashboard', [DashboardController::class, 'superadmin'])
-            ->name('dashboard');
-        Route::get('/tracking-activity', [DashboardController::class, 'trackerEvents']);
-        Route::get('/superadmin/search', [SearchController::class, 'superadmin'])
-            ->name('search');
-
-        Route::post('/reports/generate', [ReportController::class, 'generate'])
-            ->name('reports.generate');
-
-        Route::get('/cms/barangays', [CmsController::class, 'barangays'])
-            ->name('cms.barangays');
-        Route::get('/cms/requests', [CmsController::class, 'burialAssistanceRequests'])
-            ->name('cms.requests');
-        Route::get('/cms/services', [CmsController::class, 'burialServices'])
-            ->name('cms.services');
-        Route::get('/cms/providers', [CmsController::class, 'burialServiceProviders'])
-            ->name('cms.providers');
-        Route::get('/cms/relationships', [CmsController::class, 'relationships'])
-            ->name('cms.relationships');
-        Route::get('/cms/workflow', [CmsController::class, 'workflow'])
-            ->name('cms.workflow');
-        Route::get('/cms/handlers', [CmsController::class, 'handlers'])
-            ->name('cms.handlers');
-        Route::get('/cms/users', [CmsController::class, 'users'])
-            ->name('cms.users');
-        Route::get('/cms/religions', [CmsController::class, 'religions'])
-            ->name('cms.religions');
-
-        Route::post('/cms/{type}/store', [CmsController::class, 'storeContent'])
-            ->name('cms.store');
+        Route::get('/barangays', [CmsController::class, 'barangays'])
+            ->name('barangays');
+        Route::get('/relationships', [CmsController::class, 'relationships'])
+            ->name('relationships');
+        Route::get('/workflow', [CmsController::class, 'workflow'])
+            ->name('workflow');
+        Route::get('/handlers', [CmsController::class, 'handlers'])
+            ->name('handlers');
+        Route::get('/users', [CmsController::class, 'users'])
+            ->name('users');
+        Route::get('/religions', [CmsController::class, 'religions'])
+            ->name('religions');
+        
+        Route::post('/{type}/store', [CmsController::class, 'storeContent'])
+            ->name('store');
             
-        Route::post('/cms/{type}/{id}/update', [CmsController::class, 'updateContent'])
-            ->name('cms.update');
+        Route::post('/{type}/{id}/update', [CmsController::class, 'updateContent'])
+            ->name('update');
+        
+        Route::post('/{type}/{id}/delete', [CmsController::class, 'deleteContent'])
+            ->name('delete');
+    });
 
-        Route::post('/cms/{type}/{id}/delete', [CmsController::class, 'deleteContent'])
-            ->name('cms.delete');
-            
-        Route::get('/users/{userId}', [UserRouteRestrictionController::class, 'manage'])
-            ->name('user.manage');
+Route::middleware('permission:manage-accounts')
+    ->prefix('users')
+    ->name('users.')
+    ->group(function () {
+        Route::get('/{userId}', [UserRouteRestrictionController::class, 'manage'])
+            ->name('manage');
+        
+        Route::post('/{userId}/restrictions/edit', [UserRouteRestrictionController::class, 'update'])
+            ->name('restrictions.update');
+    });
 
-        Route::post('/users/{userId}/restrictions/edit', [UserRouteRestrictionController::class, 'update'])
-            ->name('user.restrictions.update');
-
+Route::middleware('permission:manage-roles')
+    ->group(function () {
         Route::get('/permissions', [PermissionController::class, 'index'])
             ->name('permissions');
-
+        
         Route::get('/roles', [RoleController::class, 'index'])
             ->name('roles');
-
+        
         Route::post('/roles/store', [RoleController::class, 'store'])
             ->name('roles.store');
-
+        
         Route::post('/roles/{id}/update', [RoleController::class, 'update'])
             ->name('roles.update');
-
-        Route::resource('role', RoleController::class);
-        Route::resource('permission', PermissionController::class);
-        Route::resource('assistance', AssistanceController::class);
-        Route::resource('civil', CivilStatusController::class);
-        Route::resource('education', EducationController::class);
-        Route::resource('nationality', NationalityController::class);
-        Route::resource('relationship', RelationshipController::class);
-        Route::resource('religion', ReligionController::class);
-        Route::resource('sex', SexController::class);
-        Route::resource('district', DistrictController::class);
-        Route::resource('barangay', BarangayController::class);
-        Route::resource('moa', ModeOfAssistanceController::class);
-        Route::resource('client', ClientController::class);
     });
+
+Route::resource('role', RoleController::class);
+Route::resource('permission', PermissionController::class);
+Route::resource('assistance', AssistanceController::class);
+Route::resource('civil', CivilStatusController::class);
+Route::resource('education', EducationController::class);
+Route::resource('nationality', NationalityController::class);
+Route::resource('relationship', RelationshipController::class);
+Route::resource('religion', ReligionController::class);
+Route::resource('sex', SexController::class);
+Route::resource('district', DistrictController::class);
+Route::resource('barangay', BarangayController::class);
+Route::resource('moa', ModeOfAssistanceController::class);
+Route::resource('client', ClientController::class);
