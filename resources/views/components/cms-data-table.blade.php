@@ -3,6 +3,10 @@
     'type',
 ])
 @php
+    use Spatie\Permission\Models\Permission;
+    use Spatie\Permission\Models\Role;
+    $permissions = Permission::all();
+
     $excemptions = [
         'created_at',
         'updated_at',
@@ -43,8 +47,9 @@
                             <td>{{ Str::title($entry->getRoleNames()[0]) }}</td>
                         @endif
                         <td>
-                            @if (Request::routeIs('users.manage') || Request::routeIs('permissions') || Request::routeIs('roles'))
-                                @if (Request::routeIs('users.manage') && !$entry?->hasRole('superadmin'))
+                            @if (Request::routeIs('users.manage'))
+                                <!-- ! UNUSED -->
+                                @if (Request::routeIs('users.manage'))
                                     <a href="{{ route('user.manage', ['userId' => $entry->id]) }}">
                                         <button class="btn btn-primary" type="button">
                                             <i class="fas fa-edit"></i> 
@@ -52,9 +57,17 @@
                                     </a>
                                 @endif
                             @else
-                                <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#edit-modal-{{ $entry->id }}">
-                                    <i class="fas fa-edit"></i> 
-                                </button>
+                                @if (class_basename($entry) == 'User')
+                                    @if (!$entry?->hasRole('superadmin'))
+                                        <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#edit-modal-{{ $entry->id }}">
+                                            <i class="fas fa-edit"></i> 
+                                        </button>
+                                    @endif
+                                @else
+                                    <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#edit-modal-{{ $entry->id }}">
+                                        <i class="fas fa-edit"></i> 
+                                    </button>
+                                @endif
                             @endif
                             @if (!Request::routeIs('cms.workflow') && !Request::routeIs('cms.handlers') && !Request::routeIs('cms.users') && !Request::routeIs('users.manage') && !Request::routeIs('permissions') && !Request::routeIs('roles'))
                                 <button class="btn btn-danger" type="button" data-toggle="modal" data-target="#delete-modal-{{ $entry->id }}">
@@ -87,7 +100,43 @@
                                                     label="{{ Str::replace('_',' ',ucfirst($field)) }}"
                                                 />
                                             @endif
-                                        @endforeach  
+                                        @endforeach
+                                        @if (Request::is('roles'))
+                                            @foreach($permissions as $permission)
+                                                @if (!in_array($permission->name, ['create', 'view', 'delete', 'edit']))
+                                                    @php
+                                                        $role = Role::where('name', $entry->name)->get()->first();
+                                                    @endphp
+                                                    <div>
+                                                        <label>
+                                                            <input 
+                                                                type="checkbox" 
+                                                                name="permissions[]" 
+                                                                value="{{ $permission->name }}"
+                                                                {{ $role->hasPermissionTo($permission->name) ? 'checked' : '' }}
+                                                            >
+                                                            {{ Str::title(str_replace(['_', '-'],' ', $permission->name)) }}
+                                                        </label>
+                                                    </div>
+                                                @endif
+                                            @endforeach
+                                        @endif
+                                        @if (Request::is('cms/users'))
+                                            @php
+                                                $roles = Role::where('name', '!=', 'superadmin')->get();
+                                            @endphp
+                                            <div class="form-group">
+                                                <label for="role">Role</label>
+                                                <select id="role" class="form-control" name="role">
+                                                    <option value="{{ $entry->getRoleNames()->first() }}">{{ $entry->getRoleNames()->first() }}</option>
+                                                    @foreach ($roles as $role)
+                                                        @if ($entry->getRoleNames()->first() != $role->name)
+                                                            <option value="{{ $role->name }}">{{ $role->name }}</option>
+                                                        @endif
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        @endif
                                     </div>
                                     <div class="modal-footer">
                                         <button class="btn btn-primary" type="submit">

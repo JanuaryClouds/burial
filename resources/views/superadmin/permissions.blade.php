@@ -17,7 +17,7 @@
                 </button>
             </div>
             <div class="card-body">
-                <x-cms-data-table :type="$type" :data="$data" />
+                <x-cms-data-table type="permissions" :data="$data" />
             </div>
         </div>
     </div>

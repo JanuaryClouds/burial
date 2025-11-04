@@ -17,7 +17,7 @@
                 </button>
             </div>
             <div class="card-body">
-                <x-cms-data-table :type="$type" :data="$data" />
+                <x-cms-data-table type="roles" :data="$data" />
             </div>
         </div>
     </div>
@@ -44,6 +44,25 @@
 								</div>
 							@endif
 						@endforeach
+						@php
+							use App\Models\Permission;
+							$permissions = Permission::all();
+						@endphp
+						@if (Request::is('roles'))
+							@foreach($permissions as $permission)
+								<div>
+									<label>
+										<input 
+											type="checkbox" 
+											name="permissions[]" 
+											value="{{ $permission->name }}"
+											{{ in_array($permission->name, ['create', 'view', 'delete', 'edit']) ? 'checked disabled' : '' }}
+										>
+										{{ Str::title(str_replace(['_', '-'],' ', $permission->name)) }}
+									</label>
+								</div>
+							@endforeach
+						@endif
 					</div>
 					<div class="modal-footer">
 						<button class="btn btn-primary" type="submit">
