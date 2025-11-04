@@ -48,13 +48,14 @@ class AdminSeeder extends Seeder
             ]
         );
 
-        $adminFactories = User::factory()->count(5)->create();
-        foreach ($adminFactories as $admin) {
-            $admin->assignRole($adminRole);
-        }
-
         $superadmin->assignRole($superAdminRole);
         $deptAdmin->assignRole($deptAdminRole);
         $admin->assignRole($adminRole);
+
+        $adminFactories = User::factory()->count(5)->create();
+        foreach ($adminFactories as $adminFactory) {
+            $adminFactory->assignRole($adminRole);
+        }
+
     }
 }
