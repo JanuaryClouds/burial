@@ -17,7 +17,7 @@
     <body :class="(sidebarMini || screenSmall) ? 'sidebar-mini' : ''">
         <div id="app">
             @include('components.header')
-            @include('components.superadmin-sidebar')
+            @include('components.sidebar')
             <div class="main-wrapper">
                 @yield('content')
                 <script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>

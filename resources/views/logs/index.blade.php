@@ -1,11 +1,4 @@
-@php
-    if (auth()->user()->hasRole('superadmin')) {
-        $role = 'superadmin';
-    } else {
-        $role = 'admin';
-    }
-@endphp
-@extends('layouts.stisla.' . $role)
+@extends('layouts.stisla.admin')
 <title>Activity</title>
 @section('content')
 <div class="main-content">
