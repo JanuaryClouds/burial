@@ -33,13 +33,8 @@ class UserController extends Controller
                         ->withProperties(['ip' => $ip, 'browser' => $browser])
                         ->log("Successful login attempt");
                     
-                    if (!$user->hasRole('superadmin')) {
-                        $role = 'admin';
-                    } else {
-                        $role = 'superadmin';
-                    }
                     return redirect()
-                        ->route($role . '.dashboard')
+                        ->route('dashboard')
                         ->with('success', 'You have successfully logged in!');
                 } else {
                     return redirect()->back()->with('alertWarning', 'Your account is inactive. Please contact the superadmin.');
