@@ -23,8 +23,7 @@ class applicationActions extends Component
     public function render(): View|Closure|string
     {
         $admins = User::where(function ($query) {
-            $query->where('is_active', true)
-                ->role('admin');
+            $query->where('is_active', true);
         })->get();
         return view('components.application-actions', compact('admins'));
     }
