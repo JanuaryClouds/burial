@@ -12,7 +12,7 @@
             <li @class(['active' => Request::is('dashboard')])>
                 <a href="{{ route('dashboard') }}" class="nav-link"><i class="fas fa-home"></i><span>Dashboard</span></a>
             </li>
-            @can('assign')
+            @can('manage-assignments')
                 <li @class(['active' => Request::is('assignments')])>
                     <a href="{{ route('assignments') }}">
                         <i class="fas fa-check-to-slot"></i>
@@ -100,7 +100,7 @@
                 </ul>
             </li>
 
-            @can('manage-content')
+            @can(['manage-content', 'manage-accounts'])
                 <li class="menu-header">CMS</li>
                 <li @class(['active' => Request::is('cms/barangays')])>
                     <a href="{{ route('cms.barangays') }}">

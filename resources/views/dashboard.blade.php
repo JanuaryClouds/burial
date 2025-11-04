@@ -67,7 +67,7 @@
         <x-admin-dashboard-cards :cardData="$cardData" />
     </div>
     <div class="section-body">
-        @can('assign')
+        @can('manage-assignments')
             <div class="row">
                 <div class="col-12 col-md-12 col-lg-12">
                     <x-assigned-applications-list />

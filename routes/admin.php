@@ -53,7 +53,7 @@ Route::name('application.')
             ->name('swa.save');
     });
         
-Route::middleware('permission:assign')
+Route::middleware('permission:manage-assignments')
     ->group(function () {
         Route::get('/assignments', [BurialAssistanceController::class, 'assignments'])
             ->name('assignments');

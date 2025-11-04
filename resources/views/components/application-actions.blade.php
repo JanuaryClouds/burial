@@ -21,7 +21,7 @@
                             </button>
                         @endcan
                         @if (!Request::is('reports/*'))
-                            @can('assign')
+                            @can('manage-assignments')
                                 <button class="dropdown-item" type="button" data-toggle="modal" data-target="#assign-modal-{{ $application->id }}">
                                     Assign Application
                                 </button>
@@ -51,7 +51,7 @@
             </script>
         @endif
 
-        @can('assign')
+        @can('manage-assignments')
             <div id="assign-modal-{{ $application->id }}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="my-modal-title" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
