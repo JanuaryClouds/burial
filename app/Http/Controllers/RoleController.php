@@ -60,6 +60,8 @@ class RoleController extends Controller
     {
         $role = $this->roleServices->updateRole($request->validated(), $role);
 
+        $role->syncPermissions($request->permissions);
+
         activity()
             ->causedBy(Auth::user())
             ->performedOn($role)

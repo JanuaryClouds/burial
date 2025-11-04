@@ -14,6 +14,7 @@ use App\Models\Relationship;
 use App\Models\District;
 use App\Models\User;
 use Exception;
+use Spatie\Permission\Models\Role;
 use Str;
 
 class CmsController extends Controller
@@ -58,6 +59,15 @@ class CmsController extends Controller
                 $religion = Religion::create($data);
                 return redirect()->back()->with('alertSuccess', Str::ucfirst($religion->name) . ' added Successfully');
             }
+            if ($type == 'roles') {
+                $data = $request->validate([
+                    'name' => 'required|string|max:255',
+                ]);
+                $data['guard_name'] = 'web';
+                dd($data);
+                // Role::create($data);
+                return redirect()->back()->with('alertSuccess', Str::ucfirst($request->name) . ' added Successfully');
+            }
         } catch (Exception $e) {
             return redirect()->back()->with('alertError', $e->getMessage());
         }
@@ -82,7 +92,9 @@ class CmsController extends Controller
             }
             if ($type == 'users') {
                 $user = User::find($id);
-                $user->is_active = !$user->is_active;
+                $role = Role::where('name', $request->role)->get()->first();
+                // $user->is_active = !$user->is_active;
+                $user->syncRoles([$role]);
                 $user->save();
                 $tempName = $user->first_name . ' ' . $user->last_name;
             }
@@ -91,6 +103,13 @@ class CmsController extends Controller
                 $religion->name = $request->name;
                 $religion->remarks = $request->remarks;
                 $religion->save();
+                $tempName = $request->name;
+            }
+            if ($type == 'roles') {
+                $role = Role::find($id);
+                $role->name = $request->name;
+                $role->update();
+                $role->syncPermissions($request->permissions);
                 $tempName = $request->name;
             }
             return redirect()->back()->with('alertSuccess', Str::ucfirst($tempName) . ' updated Successfully');

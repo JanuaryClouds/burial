@@ -22,7 +22,7 @@ class RolePermissionSeeder extends Seeder
             'view-logs',
             'manage-content',
             'manage-accounts',
-            'assign',
+            'manage-assignments',
             'manage-roles',
         ];
 
@@ -40,7 +40,8 @@ class RolePermissionSeeder extends Seeder
             'admin' => Permission::where(function($query) {
                 $query->where('name', '!=', 'manage-content');
                 $query->where('name', '!=', 'manage-accounts');
-                $query->where('name', '!=', 'assign');
+                $query->where('name', '!=', 'manage-roles');
+                $query->where('name', '!=', 'manage-assignments');
             })->get(),
             'user' => 'view'
         ];
