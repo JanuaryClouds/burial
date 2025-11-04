@@ -24,7 +24,45 @@ class DashboardController extends Controller
 
     public function index()
     {
-        return view('dashboard');
+        $lastLogs = ProcessLog::with('burialAssistance')->where('added_by', auth()->user()->id)->latest()->limit(2)->get();
+        $pendingApplicationsCount = BurialAssistance::where('status', 'pending')->get()->count();
+        $processingApplicationsCount = BurialAssistance::where('status', 'processing')->get()->count();
+        $approvedApplicationsCount = BurialAssistance::where('status', 'approved')->get()->count();
+        $totalApplications = BurialAssistance::where(function ($query) {
+            $query->where('status', '!=', 'rejected');
+            $query->where('status', '!=', 'released');
+        })->count();
+
+        $cardData = [
+            [
+                'label' => 'Pending Applications',
+                'bg' => 'bg-warning',
+                'icon' => 'fa-hourglass',
+                'count' => $pendingApplicationsCount,
+            ],
+            [
+                'label' => 'Processing Applications',
+                'bg' => 'bg-primary',
+                'icon' => 'fa-rotate-right',
+                'count' => $processingApplicationsCount,
+            ],
+            [
+                'label' => 'Approved Applications',
+                'bg' => 'bg-success',
+                'icon' => 'fa-circle-check',
+                'count' => $approvedApplicationsCount,
+            ],
+            [
+                'label' => 'Total Applications',
+                'bg' => 'bg-info',
+                'icon' => 'fa-equals',
+                'count' => $totalApplications,
+            ],
+        ];
+        return view('dashboard', compact(
+            'cardData',
+            'lastLogs'
+        ));
     }
 
     public function admin()
@@ -125,13 +163,13 @@ class DashboardController extends Controller
             // ],
             [
                 'label' => 'Pending Applications',
-                'bg' => 'bg-primary',
+                'bg' => 'bg-secondary',
                 'icon' => 'fa-hourglass',
                 'count' => $pendingApplicationsCount,
             ],
             [
                 'label' => 'Processing Applications',
-                'bg' => 'bg-secondary',
+                'bg' => 'bg-primary',
                 'icon' => 'fa-rotate-right',
                 'count' => $processingApplicationsCount,
             ],
@@ -315,13 +353,13 @@ class DashboardController extends Controller
             // ],
             [
                 'label' => 'Pending Applications',
-                'bg' => 'bg-primary',
+                'bg' => 'bg-warning',
                 'icon' => 'fa-hourglass',
                 'count' => $pendingApplicationsCount,
             ],
             [
                 'label' => 'Processing Applications',
-                'bg' => 'bg-secondary',
+                'bg' => 'bg-primary',
                 'icon' => 'fa-rotate-right',
                 'count' => $processingApplicationsCount,
             ],

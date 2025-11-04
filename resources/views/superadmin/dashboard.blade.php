@@ -1,4 +1,4 @@
-@extends('layouts.stisla.superadmin')
+@extends('layouts.stisla.admin')
 <title>Dashboard</title>
 @section('content')
 <div class="main-content">
