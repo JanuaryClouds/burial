@@ -2,7 +2,7 @@
 <div id="reject-{{ $application->id }}" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
-            <form action="{{ route('assignments.reject.toggle', ['id' => $application->id]) }}" method="post">
+            <form action="{{ route('application.reject.toggle', ['id' => $application->id]) }}" method="post">
                 @csrf
                 <div class="modal-body">
                     <p>

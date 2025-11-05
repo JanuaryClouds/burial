@@ -15,9 +15,9 @@
                     <h4>{{ Str::ucfirst($status) }} Applications</h4>
                 </div> -->
                 <div class="card-body">
-                    <div class="row">
-                        @if (Request::is('admin/applications/all'))
-                            <div class="form-group col-12 col-md-4 col-lg-3">
+                    <div class="d-flex justify-content-between">
+                        @if (Request::is('applications/all'))
+                            <div class="form-group w-100 mr-2">
                                 <label for="filter-status">Filter by Status</label>
                                 <select name="status" id="status" class="custom-select w-100">
                                     <option value="all">All</option>
@@ -27,19 +27,15 @@
                                 </select>
                             </div>
                         @endif
-                        <div class="col-12 col-md-8 col-lg-6">
-                            <div class="row">
-                                <div class="form-group col">
-                                    <label for="min-date">Submitted on/after</label>
-                                    <input id="min-date" class="form-control" type="date" name="min-date">
-                                </div>
-                                <div class="form-group col">
-                                    <label for="max-date">Submitted on/before</label>
-                                    <input id="max-date" class="form-control" type="date" name="max-date">
-                                </div>
+                            <div class="form-group w-100 mr-2">
+                                <label for="min-date">Submitted on/after</label>
+                                <input id="min-date" class="form-control" type="date" name="min-date">
                             </div>
-                        </div>
-                        <div class="form-group col-12 col-md-4 col-lg-3">
+                            <div class="form-group w-100 mr-2">
+                                <label for="max-date">Submitted on/before</label>
+                                <input id="max-date" class="form-control" type="date" name="max-date">
+                            </div>
+                        <div class="form-group w-100 mr-2">
                             <label for="filter-barangay">Filter by Barangay</label>
                             <select name="filter-barangay" id="filter-barangay" class="custom-select w-100">
                                 <option value="all">All</option>
@@ -67,7 +63,7 @@
                                         <th class="sorting">Claimant</th>
                                         <th class="sorting sort-handler">Submitted on</th>
                                         <th>Last Update</th>
-                                        @if (Request::is('admin/applications/*'))
+                                        @if (Request::is('applications/*'))
                                             <th class="sorting">Status</th>
                                         @endif
                                         <th class="">Actions</th>
@@ -115,12 +111,12 @@
                                                 {{ $application->processLogs->last()->date_in ?? "Submitted on: " . $application->application_date }}
                                                 <p class="text-muted">{{ $application->processLogs->count() > 1 ? '(' . $application->processLogs->last()->loggable?->description . ')' : '' }}</p>
                                             </td>
-                                            @if (Request::is('admin/applications/*'))
+                                            @if (Request::is('applications/*'))
                                                 <td>
                                                     @if ($application->status === 'pending')
-                                                        <span class="badge badge-pill badge-primary">{{ ucfirst($application->status) }}</span>
+                                                        <span class="badge badge-pill badge-warning">{{ ucfirst($application->status) }}</span>
                                                     @elseif ($application->status === 'processing')
-                                                        <span class="badge badge-pill badge-secondary">{{ ucfirst($application->status) }}</span>
+                                                        <span class="badge badge-pill badge-primary">{{ ucfirst($application->status) }}</span>
                                                     @elseif ($application->status === 'approved')
                                                         <span class="badge badge-pill badge-success">{{ ucfirst($application->status) }}</span>
                                                     @elseif ($application->status === 'released')
@@ -131,24 +127,6 @@
                                                 </td>
                                             @endif
                                             <td><x-application-actions :application="$application" /></td>
-                                            @if (auth()->user()->isAdmin())
-                                                <div id="confirm-rejection-{{ $application->id }}" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
-                                                    <div class="modal-dialog" role="document">
-                                                        <form action="{{ route('admin.applications.reject', ['id' => $application->id]) }}" method="post">
-                                                            @csrf
-                                                            <div class="modal-content">
-                                                                <div class="modal-body">
-                                                                    <p>Are you sure you want to reject this application? This will not be undone.</p>
-                                                                </div>
-                                                                <div class="modal-footer">
-                                                                    <button class="btn btn-primary" type="submit">Confirm Rejection</button>
-                                                                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                                                                </div>
-                                                            </div>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            @endif
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -158,19 +136,6 @@
                 </div>
             </div>
         </div>
-        <section class="section">
-            <div class="section-title">
-                Charts
-            </div>
-            <div class="section-body">
-                <div class="row">
-                    <x-application-barangay-chart :applications="$applications" />
-                    @if (Request::is('admin/applications/all'))
-                        <x-application-status-charts :applications="$applications" />
-                    @endif
-                </div>
-            </div>
-        </section>
     </div>
 <x-applications-modal-loader />
 <script>
@@ -198,7 +163,7 @@
                 // 'pdf',
                 // 'print'
                 {
-                    text: '<i class="mr-2 fas fa-file-excel"></i> Export to Excel',
+                    text: 'Excel',
                     className: 'btn btn-success py-1 px-3',
                     action: function() {
                         const url = window.location.href;

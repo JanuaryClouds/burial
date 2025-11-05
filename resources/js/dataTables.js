@@ -86,6 +86,7 @@ export function checkAndRenderDataTables() {
 
         $('#assignments-table').DataTable({
             responsive: true,
+            order: [[3, 'desc']],
             ordering: true,
             dom: 
                 // First row: buttons on the left, filter on the right

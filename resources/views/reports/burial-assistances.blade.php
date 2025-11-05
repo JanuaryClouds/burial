@@ -1,11 +1,4 @@
-@php
-    if (auth()->user()->hasRole('admin')) {
-        $role = 'admin';
-    } else if (auth()->user()->hasRole('superadmin')) {
-        $role = 'superadmin';
-    }
-@endphp
-@extends('layouts.stisla.' . $role)
+@extends('layouts.stisla.admin')
 <title>Burial Assistances</title>
 @section('content')
 <div class="main-content">
@@ -112,9 +105,9 @@
                                             <td>{{ $application->processLogs->last()->date_in ?? "Submitted on: " . $application->application_date }}</td>
                                             <td>
                                                 @if ($application->status === 'pending')
-                                                    <span class="badge badge-pill badge-primary">{{ ucfirst($application->status) }}</span>
+                                                    <span class="badge badge-pill badge-warning">{{ ucfirst($application->status) }}</span>
                                                 @elseif ($application->status === 'processing')
-                                                    <span class="badge badge-pill badge-secondary">{{ ucfirst($application->status) }}</span>
+                                                    <span class="badge badge-pill badge-primary">{{ ucfirst($application->status) }}</span>
                                                 @elseif ($application->status === 'approved')
                                                     <span class="badge badge-pill badge-success">{{ ucfirst($application->status) }}</span>
                                                 @elseif ($application->status === 'released')

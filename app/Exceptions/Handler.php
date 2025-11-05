@@ -23,9 +23,13 @@ class Handler extends ExceptionHandler
     public function render($request, Throwable $exception)
     {
         if ($exception instanceof UnauthorizedException) {
-            return response()->view('errors.main', [], 403);
+            // return response()->view('errors.main', [], 403);
+            return redirect()->to(url()->previous() ?? route('landing.page'))
+                ->with('alertError', 'Seems like you run into a problem. We apologize for the inconvenience. We brought you back from where you were.');
         } else if ($exception instanceof NotFoundHttpException) {
-            return response()->view('errors.main', [], 404);
+            return redirect()->to(url()->previous() ?? route('landing.page'))
+                ->with('alertError', 'Seems like you run into a problem. We apologize for the inconvenience. We brought you back from where you were.');
+            // return response()->view('errors.main', [], 404);
         }
 
         return parent::render($request, $exception);

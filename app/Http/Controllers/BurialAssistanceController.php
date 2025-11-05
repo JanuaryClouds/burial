@@ -137,35 +137,6 @@ class BurialAssistanceController extends Controller
         return view('guest.burial-assistance.tracker', compact('burialAssistance', 'updateAverage'));
     }
 
-    // Admin Side
-    public function pending() {
-        $applications = BurialAssistance::where('status','pending')->get();
-        $status = 'pending';
-        $badge = 'primary';
-        return view('applications.list', compact('applications', 'status', 'badge'));
-    }
-
-    public function processing() {
-        $applications = BurialAssistance::where('status','processing')->get();
-        $status = 'processing';
-        $badge = 'info';
-        return view('applications.list', compact('applications', 'status', 'badge'));
-    }
-    
-    public function approved() {
-        $applications = BurialAssistance::where('status','approved')->get();
-        $status = 'approved';
-        $badge = 'success';
-        return view('applications.list', compact('applications', 'status', 'badge'));
-    }
-
-    public function released() {
-        $applications = BurialAssistance::where('status','released')->get();
-        $status = 'released';
-        $badge = 'success';
-        return view('applications.list', compact('applications', 'status', 'badge'));
-    }
-
     public function applications($status = null) {
         $applications = BurialAssistance::select('id', 'deceased_id', 'claimant_id', 'tracking_no', 'funeraria', 'amount', 'application_date', 'status', 'assigned_to', 'created_at')
             ->where(function ($query) use ($status) {
@@ -228,17 +199,6 @@ class BurialAssistanceController extends Controller
         } else {
             return redirect()->back()->with('alertInfo', 'Application not found.');
         }
-    }
-
-    public function reject($id) {
-        $application = BurialAssistance::where('id',$id)->first();
-        if (!$application) {
-            return back()->with('error','Application not found.');
-        }
-
-        $application->status = 'rejected';
-        $application->update();
-        return redirect()->back()->with('success', 'Successfully rejected burial assistance application.');
     }
 
     public function toggleReject(Request $request, $id) {

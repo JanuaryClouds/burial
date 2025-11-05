@@ -32,9 +32,9 @@ class UserController extends Controller
                         ->causedBy($user)
                         ->withProperties(['ip' => $ip, 'browser' => $browser])
                         ->log("Successful login attempt");
-                        
-                        return redirect()
-                        ->route(Auth::user()->getRoleNames()->first() . '.dashboard')
+                    
+                    return redirect()
+                        ->route('dashboard')
                         ->with('success', 'You have successfully logged in!');
                 } else {
                     return redirect()->back()->with('alertWarning', 'Your account is inactive. Please contact the superadmin.');
@@ -71,6 +71,7 @@ class UserController extends Controller
 
     public function loginPage()
     {
-        return view('auth.login');
+        // return view('auth.login');
+        return view('login');
     }
 }

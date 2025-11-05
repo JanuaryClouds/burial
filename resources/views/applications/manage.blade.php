@@ -43,22 +43,6 @@
             </div>
         </div>
     </div>
-    <div id="confirm-rejection" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <form action="{{ route('admin.applications.reject', ['id' => $application->id]) }}" method="post">
-                @csrf
-                <div class="modal-content">
-                    <div class="modal-body">
-                        <p>Are you sure you want to reject this application? This will not be undone.</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-primary" type="submit">Confirm Rejection</button>
-                        <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
     <x-applications-modal-loader :application_id="$application->id"/>
 </div>
 @endsection

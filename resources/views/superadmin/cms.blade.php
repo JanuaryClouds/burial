@@ -41,7 +41,7 @@
 	</section>
 	<!-- Add content modal -->
 	<div id="newContent" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="newContent" aria-hidden="true">
-		<form action="{{ route('superadmin.cms.store', ['type' => $type]) }}" method="post">
+		<form action="{{ route('cms.store', ['type' => $type]) }}" method="post">
 			@csrf
 			<div class="modal-dialog modal-dialog-centered" role="document">
 				<div class="modal-content">

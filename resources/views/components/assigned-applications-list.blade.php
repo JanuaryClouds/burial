@@ -63,9 +63,9 @@
                                     </td>
                                     <td>
                                         @if ($application->status === 'pending')
-                                            <span class="badge badge-pill badge-primary">{{ ucfirst($application->status) }}</span>
+                                            <span class="badge badge-pill badge-warning">{{ ucfirst($application->status) }}</span>
                                         @elseif ($application->status === 'processing')
-                                            <span class="badge badge-pill badge-secondary">{{ ucfirst($application->status) }}</span>
+                                            <span class="badge badge-pill badge-primary">{{ ucfirst($application->status) }}</span>
                                         @elseif ($application->status === 'approved')
                                             <span class="badge badge-pill badge-success">{{ ucfirst($application->status) }}</span>
                                         @elseif ($application->status === 'released')

@@ -3,6 +3,10 @@
     'type',
 ])
 @php
+    use Spatie\Permission\Models\Permission;
+    use Spatie\Permission\Models\Role;
+    $permissions = Permission::all();
+
     $excemptions = [
         'created_at',
         'updated_at',
@@ -25,7 +29,7 @@
                             <th class="sorting sort-handler">{{ Str::replace('_', ' ', Str::title($column)) }}</th>
                         @endif
                     @endforeach
-                    @if (Request::is('superadmin/cms/users'))
+                    @if (Request::is('users.manage'))
                         <th>Role</th>
                     @endif
                     <th>Actions</th>
@@ -39,24 +43,33 @@
                                 <td>{{ $value }}</td>
                             @endif
                         @endforeach
-                        @if (Request::is('superadmin/cms/users'))
+                        @if (Request::is('users.manage'))
                             <td>{{ Str::title($entry->getRoleNames()[0]) }}</td>
                         @endif
                         <td>
-                            @if (Request::routeIs('superadmin.cms.users'))
-                                @if (Request::routeIs('superadmin.cms.users') && !$entry?->hasRole('superadmin'))
-                                    <a href="{{ route('superadmin.user.manage', ['userId' => $entry->id]) }}">
+                            @if (Request::routeIs('users.manage'))
+                                <!-- ! UNUSED -->
+                                @if (Request::routeIs('users.manage'))
+                                    <a href="{{ route('user.manage', ['userId' => $entry->id]) }}">
                                         <button class="btn btn-primary" type="button">
                                             <i class="fas fa-edit"></i> 
                                         </button>
                                     </a>
                                 @endif
                             @else
-                                <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#edit-modal-{{ $entry->id }}">
-                                    <i class="fas fa-edit"></i> 
-                                </button>
+                                @if (class_basename($entry) == 'User')
+                                    @if (!$entry?->hasRole('superadmin'))
+                                        <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#edit-modal-{{ $entry->id }}">
+                                            <i class="fas fa-edit"></i> 
+                                        </button>
+                                    @endif
+                                @else
+                                    <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#edit-modal-{{ $entry->id }}">
+                                        <i class="fas fa-edit"></i> 
+                                    </button>
+                                @endif
                             @endif
-                            @if (!Request::routeIs('superadmin.cms.workflow') && !Request::routeIs('superadmin.cms.handlers') && !Request::routeIs('superadmin.cms.users'))
+                            @if (!Request::routeIs('cms.workflow') && !Request::routeIs('cms.handlers') && !Request::routeIs('cms.users') && !Request::routeIs('users.manage') && !Request::routeIs('permissions') && !Request::routeIs('roles'))
                                 <button class="btn btn-danger" type="button" data-toggle="modal" data-target="#delete-modal-{{ $entry->id }}">
                                     <i class="fas fa-trash"></i>
                                 </button>
@@ -67,7 +80,7 @@
                     <!-- Edit content modal -->
                     <div id="edit-modal-{{ $entry->id }}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="edit-modal-{{ $entry->id }}" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered" role="document">
-                            <form action="{{ route('superadmin.cms.update', ['type' => $type, 'id' => $entry->id]) }}" method="post">
+                            <form action="{{ route('cms.update', ['type' => $type, 'id' => $entry->id]) }}" method="post">
                                 @csrf
                                 <div class="modal-content">
                                     <div class="modal-header">
@@ -87,7 +100,43 @@
                                                     label="{{ Str::replace('_',' ',ucfirst($field)) }}"
                                                 />
                                             @endif
-                                        @endforeach  
+                                        @endforeach
+                                        @if (Request::is('roles'))
+                                            @foreach($permissions as $permission)
+                                                @if (!in_array($permission->name, ['create', 'view', 'delete', 'edit']))
+                                                    @php
+                                                        $role = Role::where('name', $entry->name)->get()->first();
+                                                    @endphp
+                                                    <div>
+                                                        <label>
+                                                            <input 
+                                                                type="checkbox" 
+                                                                name="permissions[]" 
+                                                                value="{{ $permission->name }}"
+                                                                {{ $role->hasPermissionTo($permission->name) ? 'checked' : '' }}
+                                                            >
+                                                            {{ Str::title(str_replace(['_', '-'],' ', $permission->name)) }}
+                                                        </label>
+                                                    </div>
+                                                @endif
+                                            @endforeach
+                                        @endif
+                                        @if (Request::is('cms/users'))
+                                            @php
+                                                $roles = Role::where('name', '!=', 'superadmin')->get();
+                                            @endphp
+                                            <div class="form-group">
+                                                <label for="role">Role</label>
+                                                <select id="role" class="form-control" name="role">
+                                                    <option value="{{ $entry->getRoleNames()->first() }}">{{ $entry->getRoleNames()->first() }}</option>
+                                                    @foreach ($roles as $role)
+                                                        @if ($entry->getRoleNames()->first() != $role->name)
+                                                            <option value="{{ $role->name }}">{{ $role->name }}</option>
+                                                        @endif
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        @endif
                                     </div>
                                     <div class="modal-footer">
                                         <button class="btn btn-primary" type="submit">
@@ -107,7 +156,7 @@
                     <!-- Delete content modal -->
                     <div id="delete-modal-{{ $entry->id }}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="delete-modal-{{ $entry->id }}" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered" role="document">
-                            <form action="{{ route('superadmin.cms.delete', ['type' => $type, 'id' => $entry->id]) }}" method="post">
+                            <form action="{{ route('cms.delete', ['type' => $type, 'id' => $entry->id]) }}" method="post">
                                 @csrf
                                 <div class="modal-content">
                                     <div class="modal-header">

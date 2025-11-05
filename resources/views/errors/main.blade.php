@@ -8,19 +8,9 @@
             <p class="card-text">Seems like you encountered an error doing your action.</p>
         </div>
         <div class="card-footer">
-            @if (auth()->user() && auth()->user()->hasRole('admin'))
-                <a href="{{ route('admin.dashboard') }}" class="btn btn-primary">
-                    Go Back
-                </a>
-            @elseif (auth()->user() && auth()->user()->hasRole('superadmin'))
-                <a href="{{ route('superadmin.dashboard') }}" class="btn btn-primary">
-                    Go Back
-                </a>
-            @else
-                <a href="{{ route('landing.page') }}" class="btn btn-primary">
-                    Go Back
-                </a>
-            @endif
+            <a href="{{ url()->previous() }}" class="btn btn-primary">
+                Go Back
+            </a>
         </div>
     </div>
 </div>

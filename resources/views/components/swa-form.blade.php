@@ -5,7 +5,7 @@
 ])
 <div class="bg-white shadow-sm rounded p-4">
     <h2>Social Worker's Assessment</h2>
-    <form action="{{ route('admin.applications.swa.save', ['id' => $application->id]) }}" method="post">
+    <form action="{{ route('application.swa.save', ['id' => $application->id]) }}" method="post">
         @csrf
         <x-form-textarea 
             name="swa"

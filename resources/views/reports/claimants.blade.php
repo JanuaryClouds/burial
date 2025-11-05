@@ -1,12 +1,5 @@
 @props(['deceased'])
-@php
-    if (auth()->user()->hasRole('admin')) {
-        $role = 'admin';
-    } else if (auth()->user()->hasRole('superadmin')) {
-        $role = 'superadmin';
-    }
-@endphp
-@extends('layouts.stisla.' . $role)
+@extends('layouts.stisla.admin')
 <title>Claimants</title>
 @section('content')
 <div class="main-content">

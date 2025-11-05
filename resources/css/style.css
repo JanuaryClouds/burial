@@ -1877,7 +1877,7 @@ h6 .badge {
   background-color: transparent;
 }
 .navbar.active {
-  background-color: #dc3545ff;
+  background-color: #800000ff;
   box-shadow: rgba(103, 119, 239, 0.2) rgba(0, 0, 0, 0.03);
 }
 
@@ -1888,7 +1888,7 @@ h6 .badge {
   left: 0;
   width: 100%;
   height: 115px;
-  background-color: #dc3545ff;
+  background-color: #800000ff;
   z-index: -1;
 }
 

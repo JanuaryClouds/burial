@@ -25,22 +25,24 @@
                         <x-change-claimant-modal :burialAssistance="$application" />
                     @endif
                 @endif
-                @if ($application->status != 'rejected')
-                    <button class="btn btn-primary mr-2" type="button" data-toggle="modal" data-target="#addUpdateModal-{{ $application->id }}">
-                        <i class="fas fa-plus"></i>
-                        Add Progress Update
-                    </button>
-                    <button class="btn btn-danger" type="button" data-toggle="modal" data-target="#reject-{{ $application->id }}">
-                        <i class="fas fa-times-circle"></i>
-                        Reject Application
-                    </button>
-                @endif
-                @if ($application->status == 'rejected')
-                    <button class="btn btn-success" type="button" data-toggle="modal" data-target="#reject-{{ $application->id }}">
-                        <i class="fas fa-rotate-left"></i>
-                        Restore Application
-                    </button>
-                @endif
+                @can('reject-applications')
+                    @if ($application->status != 'rejected')
+                        <button class="btn btn-primary mr-2" type="button" data-toggle="modal" data-target="#addUpdateModal-{{ $application->id }}">
+                            <i class="fas fa-plus"></i>
+                            Add Progress Update
+                        </button>
+                        <button class="btn btn-danger" type="button" data-toggle="modal" data-target="#reject-{{ $application->id }}">
+                            <i class="fas fa-times-circle"></i>
+                            Reject Application
+                        </button>
+                    @endif
+                    @if ($application->status == 'rejected')
+                        <button class="btn btn-success" type="button" data-toggle="modal" data-target="#reject-{{ $application->id }}">
+                            <i class="fas fa-rotate-left"></i>
+                            Restore Application
+                        </button>
+                    @endif
+                @endcan
             </div>
         </div>
     @elseif ($application->claimantChanges->count() > 0 && $claimantChange->status == 'pending')

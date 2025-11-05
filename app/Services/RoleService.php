@@ -8,6 +8,9 @@ class RoleService
 {
     public function storeRole(array $data): Role
     {
+        if (empty($data['guard_name'])) {
+            $data['guard_name'] = 'web';
+        }
         return Role::create($data);
     }
 

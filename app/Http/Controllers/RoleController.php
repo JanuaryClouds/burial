@@ -16,22 +16,29 @@ class RoleController extends Controller
     {
         $this->roleServices = $roleServices;
     }
-    
-    public function index(CmsDataTable $dataTable)
-    {
-        $page_title = 'Role';
-        $resource = 'role';
-        $columns = ['id', 'name', 'guard', 'action'];
-        $data = Role::getAllRoles();
+
+    // boilerplate code
+    // public function index(CmsDataTable $dataTable)
+    // {
+    //     $page_title = 'Role';
+    //     $resource = 'role';
+    //     $columns = ['id', 'name', 'guard', 'action'];
+    //     $data = Role::getAllRoles();
         
-        return $dataTable
-            ->render('cms.index', compact(
-                'dataTable',
-                'page_title',
-                'resource',
-                'columns',
-                'data',
-            ));
+    //     return $dataTable
+    //         ->render('cms.index', compact(
+    //             'dataTable',
+    //             'page_title',
+    //             'resource',
+    //             'columns',
+    //             'data',
+    //         ));
+    // }
+
+    public function index() {
+        $data = Role::getAllRoles();
+        $type = 'roles';
+        return view('superadmin.roles', compact('data', 'type'));
     }
     
     public function store(RoleRequest $request)
@@ -52,6 +59,8 @@ class RoleController extends Controller
     public function update(RoleRequest $request, Role $role)
     {
         $role = $this->roleServices->updateRole($request->validated(), $role);
+
+        $role->syncPermissions($request->permissions);
 
         activity()
             ->causedBy(Auth::user())
