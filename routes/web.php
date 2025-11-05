@@ -22,6 +22,16 @@ Route::get('/', function () {
     return view('landing');
 })->name('landing.page');
 
+Route::get('/test/component', function () {
+    return view('test.component');
+});
+
+Route::post('/test/component/post', function () {
+    if (request()) {
+        return dd(request()->all());
+    }
+})->name('test.component.post');
+
 Route::get('/login', [UserController::class, 'loginPage'])
     ->name('login.page');
 Route::post('/login/check', [UserController::class, 'login'])
