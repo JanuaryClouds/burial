@@ -71,6 +71,7 @@ class UserController extends Controller
 
     public function loginPage()
     {
-        return view('auth.login');
+        // return view('auth.login');
+        return view('login');
     }
 }

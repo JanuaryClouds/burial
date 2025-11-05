@@ -19,7 +19,7 @@ use App\Http\Controllers\{
 // })->name('landing.page');
 
 Route::get('/', function () {
-    return view('metronics.landing');
+    return view('landing');
 })->name('landing.page');
 
 Route::get('/login', [UserController::class, 'loginPage'])
