@@ -7,7 +7,7 @@
         <!-- begin::header -->
         <div class="d-flex flex-center">
             <a href="{{ route('landing.page') }}">
-                <img src="{{ asset('images/CSWDO.PNG') }}" alt="" class="h-lg-250px h-20px">
+                <img src="{{ asset('images/CSWDO.webp') }}" alt="" class="h-lg-250px h-20px">
             </a>
         </div>
         <!-- end::header -->
