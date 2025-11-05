@@ -19,7 +19,7 @@ class RelationshipSeeder extends Seeder
             'Grandfather',
             'Cousin',
             'Uncle',
-            'Auntie',
+            'Aunt',
             'Sibling',
         ];
 
