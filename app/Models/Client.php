@@ -9,7 +9,12 @@ class Client extends Model
 {
     use HasFactory;
     protected $table = 'clients';
+
+    protected $primaryKey = 'id';
+    public $incrementing = false;
+    protected $keyType = 'string';
     protected $fillable = [
+        'id',
         'tracking_no',
         'first_name',
         'middle_name',
@@ -23,6 +28,15 @@ class Client extends Model
         'city',
         'contact_no'
     ];
+
+    protected static function booted() {
+        static::creating(function ($client) {
+            $year = now()->format('Y');
+            $count = self::whereYear('created_at', $year)->count() + 1;
+    
+            $client->tracking_no = sprintf('%s-%04d', $year, $count);
+        });
+    }
 
     public static function getAllClients()
     {
@@ -71,6 +85,11 @@ class Client extends Model
 
     public function barangay()
     {
-        return $this->belongsTo(Barangay::class, 'barangay_id');
+        return $this->belongsTo(Barangay::class, 'barangay_id', 'id');
+    }
+
+    public function interviews()
+    {
+        return $this->hasMany(Interview::class);
     }
 }

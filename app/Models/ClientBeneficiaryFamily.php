@@ -9,7 +9,12 @@ class ClientBeneficiaryFamily extends Model
 {
     use HasFactory;
     protected $table = 'client_beneficiary_families';
+
+    protected $primaryKey = 'id';
+    public $incrementing = false;
+    protected $keyType = 'string';
     protected $fillable = [
+        'id',
         'client_id',
         'name',
         'sex_id',

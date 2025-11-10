@@ -9,7 +9,12 @@ class ClientRecommendation extends Model
 {
     use HasFactory;
     protected $table = 'client_recommendations';
+
+    protected $primaryKey = 'id';
+    public $incrementing = false;
+    protected $keyType = 'string';
     protected $fillable = [
+        'id',
         'client_id',
         'assistance_id',
         'referral',

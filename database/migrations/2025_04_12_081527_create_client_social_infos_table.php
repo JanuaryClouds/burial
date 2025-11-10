@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('client_social_infos', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('client_id')->constrained('clients')->onDelete('CASCADE');
+            $table->uuid('id')->primary();
+            $table->foreignUuid('client_id')->constrained('clients')->onDelete('CASCADE');
             $table->foreignId('relationship_id')->constrained('relationships');
             $table->foreignId('civil_id')->constrained('civil_statuses');
             $table->foreignId('education_id')->constrained('educations');

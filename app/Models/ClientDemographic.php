@@ -9,7 +9,12 @@ class ClientDemographic extends Model
 {
     use HasFactory;
     protected $table = 'client_demographics';
+
+    protected $primaryKey = 'id';
+    public $incrementing = false;
+    protected $keyType = 'string';
     protected $fillable = [
+        'id',
         'client_id',
         'sex_id', 
         'religion_id', 
