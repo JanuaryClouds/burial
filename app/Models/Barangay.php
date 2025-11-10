@@ -22,7 +22,7 @@ class Barangay extends Model
     
     public function client()
     {
-        return $this->hasMany(Client::class);
+        return $this->hasMany(Client::class, 'barangay_id', 'id');
     }
 
     public function district() {

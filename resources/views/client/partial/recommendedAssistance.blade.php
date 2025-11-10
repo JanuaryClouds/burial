@@ -1,16 +1,22 @@
 <h5 class="card-title">V. RECOMMENDED SERVICES AND ASSISTANCE</h5>
+<h6 class="mb-2">Nature of Services/Assistance</h6>
 <div class="row">
-    <h6 class="mb-2">Nature of Services/Assistance</h6>
-    <div class="col">
-        @foreach ($assistances as $id => $name)
+    @foreach ($assistances as $id => $name)
+        <div class="col-6">
             <label class="form-check form-check-custom form-check-solid mb-4">
-                <input class="form-check-input" type="checkbox" name="assistances[]" value="{{ $id }}"/>
+                <input 
+                    class="form-check-input" 
+                    type="checkbox" 
+                    name="assistances[]" 
+                    value="{{ $id }}" 
+                    {{ in_array($name, ['Burial']) ? 'checked disabled' : 'disabled' }} 
+                />
                 <span class="form-check-label">
                     {{ Str::title($name) }}
                 </span>
             </label>
-        @endforeach
-    </div>
+        </div>
+    @endforeach
     <div class="col">
         <x-form-input
             name="referral"

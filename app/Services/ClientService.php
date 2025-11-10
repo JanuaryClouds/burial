@@ -9,6 +9,7 @@ use App\Models\ClientRecommendation;
 use App\Models\ClientSocialInfo;
 use App\Models\ClientAssessment;
 use App\Models\ClientBeneficiaryFamily;
+use Str;
 
 class ClientService
 {
@@ -28,7 +29,7 @@ class ClientService
             $newNumber = 1;
         }
         
-        return $year . '-' . str_pad($newNumber, 5, '0', STR_PAD_LEFT);
+        return $year . '-' . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
     }
 
     public function storeClient(array $data): ?Client
@@ -36,6 +37,7 @@ class ClientService
         $tracking_no = $this->generateTrackingNo();
         
         $client = Client::create([
+            'id' => Str::uuid(),
             'tracking_no' => $tracking_no,
             'first_name' => $data['first_name'],
             'middle_name' => $data['middle_name'],
@@ -52,6 +54,7 @@ class ClientService
     
         if ($client) {
             $demographic = ClientDemographic::create([
+                'id' => Str::uuid(),
                 'client_id' => $client->id,
                 'sex_id' => $data['sex_id'],
                 'religion_id' => $data['religion_id'],
@@ -59,6 +62,7 @@ class ClientService
             ]);
     
             $social = ClientSocialInfo::create([
+                'id' => Str::uuid(),
                 'client_id' => $client->id,
                 'relationship_id' => $data['relationship_id'],
                 'civil_id' => $data['civil_id'],
@@ -69,6 +73,7 @@ class ClientService
             ]);
 
             $beneficiary = ClientBeneficiary::create([
+                'id' => Str::uuid(),
                 'client_id' => $client->id,
                 'first_name' => $data['ben_first_name'],
                 'middle_name' => $data['ben_middle_name'],
@@ -79,63 +84,72 @@ class ClientService
             ]);
 
             $familyRows = [];
-            foreach ($data['fam_name'] as $index => $name) 
+            if (count($data['fam_name']) > 1)
             {
-                $familyRows[] = ClientBeneficiaryFamily::create([
-                    'client_id' => $client->id,
-                    'name' => $name,
-                    'sex_id' => $data['fam_sex_id'][$index],
-                    'age' => $data['fam_age'][$index],
-                    'civil_id' => $data['fam_civil_id'][$index],
-                    'relationship_id' => $data['fam_relationship_id'][$index],
-                    'occupation' => $data['fam_occupation'][$index],
-                    'income' => $data['fam_income'][$index],
-                ]);
-            }
-
-            $assessmentRows = [];
-            foreach($data['ass_problem_presented'] as $index => $problem) 
-            {
-                $assessmentRows[] = ClientAssessment::create([
-                    'client_id' => $client->id,
-                    'problem_presented' => $problem,
-                    'assessment' => $data['ass_assessment'][$index],
-                ]);
-            }
-
-            $assistanceIds = $data['rec_assistance_id'] ?? [];
-            foreach ($assistanceIds as $assistanceId) {
-                if ($assistanceId == 8) { 
-                    ClientRecommendation::create([
-                        'client_id'     => $client->id,
-                        'assistance_id' => 8,
-                        'referral'      => $data['rec_burial_referral'][0] ?? null,
-                        'moa_id'        => $data['rec_moa'][0] ?? null,
-                        'amount'        => $data['rec_amount'][0] ?? null,
-                        'others'        => null,
-                    ]);
-                } elseif ($assistanceId == 14) { 
-                    ClientRecommendation::create([
-                        'client_id'     => $client->id,
-                        'assistance_id' => 14,
-                        'referral'      => null,
-                        'moa_id'        => null,
-                        'amount'        => null,
-                        'others'        => $data['rec_assistance_other'][0] ?? null,
-                    ]);
-                } else {
-                    ClientRecommendation::create([
-                        'client_id'     => $client->id,
-                        'assistance_id' => $assistanceId,
-                        'referral'      => null,
-                        'moa_id'        => null,
-                        'amount'        => null,
-                        'others'        => null,
+                foreach ($data['fam_name'] as $index => $name) 
+                {
+                    $familyRows[] = ClientBeneficiaryFamily::create([
+                        'id' => Str::uuid(),
+                        'client_id' => $client->id,
+                        'name' => $name,
+                        'sex_id' => $data['fam_sex_id'][$index],
+                        'age' => $data['fam_age'][$index],
+                        'civil_id' => $data['fam_civil_id'][$index],
+                        'relationship_id' => $data['fam_relationship_id'][$index],
+                        'occupation' => $data['fam_occupation'][$index],
+                        'income' => $data['fam_income'][$index],
                     ]);
                 }
             }
+            
+
+            // $assessmentRows = [];
+            // foreach($data['ass_problem_presented'] as $index => $problem) 
+            // {
+            //     $assessmentRows[] = ClientAssessment::create([
+                    // 'id' => Str::uuid(),
+            //         'client_id' => $client->id,
+            //         'problem_presented' => $problem,
+            //         'assessment' => $data['ass_assessment'][$index],
+            //     ]);
+            // }
+
+            // $assistanceIds = $data['rec_assistance_id'] ?? [];
+            // foreach ($assistanceIds as $assistanceId) {
+            //     if ($assistanceId == 8) { 
+            //         ClientRecommendation::create([
+                        // 'id' => Str::uuid(),
+            //             'client_id'     => $client->id,
+            //             'assistance_id' => 8,
+            //             'referral'      => $data['rec_burial_referral'][0] ?? null,
+            //             'moa_id'        => $data['rec_moa'][0] ?? null,
+            //             'amount'        => $data['rec_amount'][0] ?? null,
+            //             'others'        => null,
+            //         ]);
+            //     } elseif ($assistanceId == 14) { 
+            //         ClientRecommendation::create([
+                            // 'id' => Str::uuid(),
+            //             'client_id'     => $client->id,
+            //             'assistance_id' => 14,
+            //             'referral'      => null,
+            //             'moa_id'        => null,
+            //             'amount'        => null,
+            //             'others'        => $data['rec_assistance_other'][0] ?? null,
+            //         ]);
+            //     } else {
+            //         ClientRecommendation::create([
+                            // 'id' => Str::uuid(),
+            //             'client_id'     => $client->id,
+            //             'assistance_id' => $assistanceId,
+            //             'referral'      => null,
+            //             'moa_id'        => null,
+            //             'amount'        => null,
+            //             'others'        => null,
+            //         ]);
+            //     }
+            // }
     
-            if ($demographic && $social && $beneficiary && count($familyRows) && count($assessmentRows) && count($assistanceIds)) {
+            if ($demographic && $social && $beneficiary) {
                 return $client;
             } else {
                 $client->delete();
