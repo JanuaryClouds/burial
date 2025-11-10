@@ -64,7 +64,6 @@ class CmsController extends Controller
                     'name' => 'required|string|max:255',
                 ]);
                 $data['guard_name'] = 'web';
-                dd($data);
                 // Role::create($data);
                 return redirect()->back()->with('alertSuccess', Str::ucfirst($request->name) . ' added Successfully');
             }
