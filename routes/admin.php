@@ -8,7 +8,9 @@ use App\Http\Controllers\{
     SearchController,
     BurialAssistanceController,
     ProcessLogController,
+    ClientController,
     ClaimantChangeController,
+    InterviewController,
 };
 
 // admin role
@@ -33,6 +35,21 @@ Route::prefix('admin')
 
 Route::get('applications/{status}', [BurialAssistanceController::class, 'applications'])
     ->name('applications');
+
+Route::get('/clients', [ClientController::class, 'index'])
+    ->name('clients');
+
+Route::get('/clients/{id}', [ClientController::class, 'view'])
+    ->name('clients.view');
+
+Route::post('/clients/{id}/schedule', [InterviewController::class, 'store'])
+    ->name('clients.interview.schedule.store');
+
+Route::post('/clients/{id}/schedule/done', [InterviewController::class, 'done'])
+    ->name('clients.interview.schedule.done');
+
+Route::post('/cleints/{id}/assessment', [ClientController::class, 'assessment'])
+    ->name('clients.assessment.store');
     
 Route::name('application.')
     ->prefix('application')

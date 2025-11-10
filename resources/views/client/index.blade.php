@@ -1,111 +1,66 @@
-@extends('layouts.dashboard')
+@extends('layouts.stisla.admin')
+<title>{{ $page_title }}</title>
 @section('content')
-
-@section('breadcrumb')
-<x-breadcrumb :items="[
-        ['label' => $page_title, 'url' => route(Auth::user()->getRoleNames()->first() . '.' . $resource . '.index')],
-    ]" />
-@endsection
-
-<div class="flex justify-between mb-5 overflow-auto">
-    <h1 class="text-3xl font-bold mb-2 text-center text-gray-800">{{ $page_title }} records</h1>
-    <a href="{{ route(Auth::user()->getRoleNames()->first() . '.client.create') }}">
-        <button @click="showModal = true"
-            class="px-5 py-2 text-white bg-[#1A4798] rounded-lg hover:bg-[#F4C027] hover:text-black hover:border border-[#F4C027] transition-colors">
-            <i class="fa-solid fa-plus"></i> Add {{ $resource }}
-        </button>
-    </a>
-</div>
-@include('components.alert')
-<div class="w-full bg-white p-8 rounded-lg shadow-lg border border-gray-200 overflow-auto max-h-[75vh]">
-    <table class="min-w-full border border-gray-200 shadow-lg" id="{{ $resource }}-table">
-        <thead class="bg-[#1A4798]">
-            <tr class="text-white uppercase text-md leading-normal">
-                @foreach ($columns as $column)
-                <th class="py-3 px-4 cursor-pointer">
-                    {{ $column }}
-                </th>
-                @endforeach
-            </tr>
-        </thead>
-        <tbody class="text-gray-600 text-sm font-normal text-center">
-            @foreach ($data as $record)
-            <tr class="border border-gray-200 hover:bg-gray-100 transition-colors">
-                <td class="py-1 px-4">{{ $record->tracking_no }}</td>
-                <td class="py-1 px-4">{{ $record->first_name }} {{ $record->middle_name }} {{ $record->last }}</td>
-                <td class="py-1 px-4"> {{ $record->house_no }} {{ $record->street }}
-                    {{ $record->barangay->name }} {{ $record->city }}</td>
-                <td class="py-1 px-4">{{ $record->date_of_birth }}</td>
-                <td class="py-1 px-4">{{ $record->contact_no }}</td>
-                <td class="py-1 px-4">
-                    <div class="inline-flex items-center space-x-2">
-                        <div x-data="{ showEditModal: false }">
-                            <button @click="showEditModal = true"
-                                class="inline-block p-2 bg-blue-100 text-blue-500 hover:bg-blue-200 hover:text-blue-700 rounded transition-colors"
-                                title="Edit">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </button>
-                            @include('cms.edit')
-                        </div>
-                        <div x-data="{ showDeleteModal: false }">
-                            <button @click="showDeleteModal = true"
-                                class="inline-block p-2 bg-red-100 text-red-500 hover:bg-red-200 hover:text-red-700 rounded transition-colors"
-                                title="Delete">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                            @include('client.delete')
-                        </div>
+<div class="main-content">
+    <section class="section">
+        <div class="section-header">
+            <h1>{{ $page_title }}</h1>
+        </div>
+    </section>
+    <div class="section-body">
+        <div class="card">
+            <div class="card-header">
+                <h4>Manage {{ $resource }}</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <div class="dataTables_wrapper container-fluid">
+                        <table id="{{ $resource }}-table" class="table data-table" style="width:100%">
+                            <thead>
+                                <tr role="row">
+                                    @foreach ($data->first()->getAttributes() as $column => $value)
+                                        @if (in_array($column, $renderColumns))
+                                            @if (($column == 'first_name'))
+                                                <th class="sorting sort-handler">Name</th>
+                                            @else
+                                                <th class="sorting sort-handler">{{ str_replace('Id', '', str_replace('_', ' ', Str::title($column))) }}</th>
+                                            @endif
+                                        @endif
+                                    @endforeach
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($data as $entry)
+                                    <tr class="bg-white">
+                                        @foreach ($entry->getAttributes() as $key =>$value)
+                                            @if (in_array($key, $renderColumns))
+                                                @if (($key == 'first_name'))
+                                                    <td>
+                                                        {{ $entry->first_name }} 
+                                                        {{ Str::limit($entry->middle_name, '1', '.') }} 
+                                                        {{ $entry->last_name }}
+                                                    </td>
+                                                @elseif (($key == 'barangay_id'))
+                                                    <td>{{ $entry->barangay->name }}</td>
+                                                @else
+                                                    <td>{{ $value }}</td>
+                                                @endif
+                                            @endif
+                                        @endforeach
+                                        <td>
+                                            <a href="{{ route('clients.view', ['id' => $entry->id]) }}" class="btn btn-primary">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-
-<script>
-$(document).ready(function() {
-    $('#{{ $resource }}-table').DataTable({
-        processing: true,
-        serverSide: false,
-        pageLength: 10,
-        order: [
-            [0, 'desc']
-        ],
-
-        dom: '<"flex justify-between items-center mb-4"lf>rt<"flex justify-between items-center mt-4"ip>',
-
-        initComplete: function() {
-            const table = this.api();
-
-            const $searchInput = $('div.dataTables_filter input');
-            $searchInput.addClass(
-                'ml-2 px-4 py-1 border border-gray-300 rounded focus:outline-none ' +
-                'focus:ring focus:ring-[#1A4798] focus:ring-opacity-50'
-            );
-
-            const $lengthSelect = $('div.dataTables_length select');
-            $lengthSelect.addClass(
-                'px-4 py-1 my-2 border border-gray-300 rounded focus:outline-none ' +
-                'focus:ring focus:ring-[#1A4798] focus:ring-opacity-50'
-            );
-        },
-
-        drawCallback: function(settings) {
-            const $paginateButtons = $('div.dataTables_paginate .paginate_button');
-            $paginateButtons.addClass(
-                'px-4 py-2 text-black rounded-lg hover:bg-[#1A4798]/20 disabled:opacity-50 ' +
-                'disabled:cursor-not-allowed transition-colors'
-            );
-
-            const $currentPage = $('div.dataTables_paginate .paginate_button.current');
-            $currentPage.removeClass('bg-gray-700 text-white');
-            $currentPage.addClass(
-                'bg-[#1A4798] text-white px-4 m-2 py-2 rounded-lg transition-colors hover:bg-[#1A4798]/90'
-            );
-        }
-    });
-});
-</script>
-
 @endsection
