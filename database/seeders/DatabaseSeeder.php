@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             HandlerSeeder::class,
             WorkflowSeeder::class,
             BurialAssistanceSeeder::class,
+            ClientSeeder::class,
         ]);
     }
 }
