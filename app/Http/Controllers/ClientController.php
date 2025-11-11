@@ -315,4 +315,62 @@ class ClientController extends Controller
             return redirect()->back()->with('alertInfo', $e->getMessage());
         }
     }
+
+    public function recommendedService(Request $request, $id) 
+    {
+        try {
+            $client = Client::find($id);
+            if ($request['type'] == 'burial') {
+                $request->validate([
+                    'referral' => 'nullable|string|max:255',
+                    'amount' => 'nullable|string|max:255',
+                    'moa_id' => 'exists:mode_of_assistances,id',
+                    'type' => 'string|required',
+                ]);
+                $burialAssistance = Assistance::where('name', 'Burial')->first();
+                $client->recommendation()->create([
+                    'id' => Str::uuid(),
+                    'client_id' => $client->id,
+                    'assistance_id' => $burialAssistance->id,
+                    'referral' => $request['referral'],
+                    'amount' => $request['amount'],
+                    'type' => $request['type'],
+                    'remarks' => $request['remarks'],
+                    'moa_id' => $request['moa_id'],
+                ]);
+    
+                $application = $this->clientServices->transferClient($client->id);
+                activity()
+                    ->log('Burial Assistance Application created');
+    
+                return redirect()->back()->with('alertSuccess', 'Successfuly created burial assistance application for the client!');
+            } elseif ($request['type'] == 'funeral') {
+                $request->validate([
+                    'referral' => 'nullable|string|max:255',
+                    'type' => 'string|required',
+                ]);
+
+                $funeralAssistance = Assistance::where('name', 'Burial')->first();
+                $client->recommendation()->create([
+                    'id' => Str::uuid(),
+                    'client_id' => $client->id,
+                    'assistance_id' => $funeralAssistance->id,
+                    'referral' => $request['referral'],
+                    'type' => $request['type'],
+                    'remarks' => $request['remarks'],
+                ]);
+    
+                $application = $this->clientServices->transferClient($client->id);
+                activity()
+                    ->log('Funeral Assistance Application created');
+    
+                return redirect()->back()->with('alertSuccess', 'Successfuly created funeral assistance application for the client!');
+            } else {
+                return redirect()->back()->with('alertInfo', 'Invalid request.');
+            }
+        } catch (Exception $e) {
+            $client->recommendation()->delete();
+            return redirect()->back()->with('alertInfo', $e->getMessage());
+        }
+    }
 }

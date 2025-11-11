@@ -11,6 +11,7 @@ use App\Http\Controllers\{
     ClientController,
     ClaimantChangeController,
     InterviewController,
+    FuneralAssistanceController,
 };
 
 // admin role
@@ -50,6 +51,9 @@ Route::post('/clients/{id}/schedule/done', [InterviewController::class, 'done'])
 
 Route::post('/cleints/{id}/assessment', [ClientController::class, 'assessment'])
     ->name('clients.assessment.store');
+
+Route::post('/clients/{id}/recommendation', [ClientController::class, 'recommendedService'])
+    ->name('clients.recommendation.store');
     
 Route::name('application.')
     ->prefix('application')
@@ -69,7 +73,10 @@ Route::name('application.')
         Route::post('/{id}/swa/save', [BurialAssistanceController::class, 'saveSwa'])
             ->name('swa.save');
     });
-        
+
+Route::get('/funeral-assistances', [FuneralAssistanceController::class, 'index'])
+    ->name('funeral-assistances');
+
 Route::middleware('permission:manage-assignments')
     ->group(function () {
         Route::get('/assignments', [BurialAssistanceController::class, 'assignments'])
