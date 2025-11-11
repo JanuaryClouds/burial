@@ -12,6 +12,7 @@ use App\Http\Controllers\{
     ChequeController,
     ActivityLogController,
     DashboardController,
+    TestController,
 };
 
 // Route::get('/', function () {
@@ -26,11 +27,8 @@ Route::get('/test/component', function () {
     return view('test.component');
 });
 
-Route::post('/test/component/post', function () {
-    if (request()) {
-        return dd(request()->all());
-    }
-})->name('test.component.post');
+Route::post('/test/component/post', [TestController::class, 'post'])
+    ->name('test.component.post');
 
 Route::get('/login', [UserController::class, 'loginPage'])
     ->name('login.page');
