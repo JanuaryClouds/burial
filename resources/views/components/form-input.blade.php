@@ -13,7 +13,7 @@
 ])
 <div class="mb-3">
     @if ($label)
-        <label for="{{ $name }}">{{ $label }}{{ $required ? '*' : '' }}</label>
+        <label for="{{ $name }}" class="form-label">{{ $label }}{{ $required ? '*' : '' }}</label>
     @endif
     <input
         type="{{ $type }}"
@@ -26,7 +26,7 @@
         {{ $required ? 'required' : '' }}
         {{ $disabled ? 'disabled' : '' }}
         {{ $readonly ? 'readonly' : '' }}
-        {{ $min ? 'min="' . $min . '"' : '' }}
+        {{ $min ? 'min=' . $min : '' }}
     />
 
     @if ($helpText)
