@@ -77,6 +77,15 @@ Route::name('application.')
 Route::get('/funeral-assistances', [FuneralAssistanceController::class, 'index'])
     ->name('funeral-assistances');
 
+Route::get('/funeral-assistances/{id}', [FuneralAssistanceController::class, 'view'])
+    ->name('funeral-assistances.view');
+
+Route::get('/funeral-assistances/{id}/approved', [FuneralAssistanceController::class, 'approve'])
+    ->name('funeral-assistances.view.approved');
+
+Route::get('/funeral-assistances/{id}/forwarded', [FuneralAssistanceController::class, 'forward'])
+    ->name('funeral-assistances.view.forwarded');
+
 Route::middleware('permission:manage-assignments')
     ->group(function () {
         Route::get('/assignments', [BurialAssistanceController::class, 'assignments'])

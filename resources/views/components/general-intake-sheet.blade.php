@@ -123,7 +123,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const submitFormBtn = document.getElementById('submitGISForm');
     const navLinks = document.querySelectorAll('.nav-link[data-bs-toggle="tab"]');
     const religionField = document.querySelector('select[name="religion_id"]');
-
     
     const observer = new MutationObserver(() => {
         const religion = religionField.value;

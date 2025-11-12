@@ -45,7 +45,7 @@
                                             @endif
                                         @endforeach
                                         <td>
-                                            <a href="{{ route('clients.view', ['id' => $entry->id]) }}" class="btn btn-primary">
+                                            <a href="{{ route('funeral-assistances.view', ['id' => $entry->id]) }}" class="btn btn-primary">
                                                 <i class="fas fa-eye"></i>
                                             </a>
                                         </td>
