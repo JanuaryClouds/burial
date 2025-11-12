@@ -15,14 +15,14 @@
             ];
         })->values();
     } else {
-        collect([]);
+        $familiesData = [];
     }
 @endphp
 @if (Request::routeIs('general.intake.form') || $familiesData->count() > 0)
 <h5 class="card-title">III. BENEFICIARY'S FAMILY COMPOSITION</h5>
     <div 
         x-data="{
-            families: {{ $familiesData->toJson() ?: '[{}]' }},  // Start with 1 row
+            families: {{ $familiesData ? $familiesData->toJson() : '[{}]' }},  // Start with 1 row
             maxRows: 5,
             addFamily() {
                 if (this.families.length < this.maxRows) {
@@ -56,6 +56,7 @@
                             label="Sex"
                             :options="$genders"
                             x-model="family.sex_id"
+                            x-bind:required="index === 0"
                             :disabled="$readonly"
                         />
                     </div>
@@ -65,6 +66,7 @@
                             label="Age"
                             type="number"
                             x-model="family.age"
+                            x-bind:required="index === 0"
                             :readonly="$readonly"
                         />
                     </div>
@@ -76,6 +78,7 @@
                             label="Civil Status"
                             :options="$civilStatus"
                             x-model="family.civil_id"
+                            x-bind:required="index === 0"
                             :disabled="$readonly"
                         />
                     </div>
@@ -85,6 +88,7 @@
                             label="Relationship"
                             :options="$relationships"
                             x-model="family.relationship_id"
+                            x-bind:required="index === 0"
                             :disabled="$readonly"
                         />
                     </div>

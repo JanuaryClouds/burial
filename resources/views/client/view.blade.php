@@ -11,11 +11,9 @@
                             Schedule an Interview
                         </button>
                     @endif
-                    @if ($client->interviews->first()->status == 'done' && $client->assessment->count() == 0)
-                        <button class="btn btn-secondary" type="button" data-toggle="modal" data-target="#assessment-modal">
+                        <button class="btn btn-secondary mr-2" type="button" data-toggle="modal" data-target="#assessment-modal">
                             Assessment
                         </button>
-                    @endif
                     @if ($client->assessment->count() > 0)
                         <button class="btn btn-success" type="button" data-toggle="modal" data-target="#services-modal">
                             Services
@@ -58,13 +56,23 @@
                     @include('client.partial.documents')
                 </div>
             </div>
-            @if ($client->assessment)
+            @if ($client->assessment->count() > 0)
                 <div class="card">
                     <div class="card-header">
                         <h4>Assessment</h4>
                     </div>
                     <div class="card-body">
                         @include('client.partial.beneficiaryAssessment')
+                    </div>
+                </div>
+            @endif
+            @if ($client->recommendation->count() > 0)
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Recommendation</h4>
+                    </div>
+                    <div class="card-body">
+                        @include('client.partial.recommendedAssistance')
                     </div>
                 </div>
             @endif

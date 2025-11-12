@@ -17,7 +17,7 @@
     @vite(['resources/js/metronic-app.js', 'public/metronic/css/style.bundle.css', 'public/metronic/plugins/global/plugins.bundle.css'])
 </head>
 <body id="kt_body" class="app-blank"
-	style="background: url('{{ asset('images/white_bg_city.png') }}') no-repeat center center / cover; overflow-x: hidden;">
+	style="background: url('{{ asset('images/white_bg_city.png') }}') no-repeat center center / cover; overflow-x: hidden; background-attachment: fixed;">
     
     <div class="d-flex flex-column flex-root" id="kt_app_root">
         @yield('content')
