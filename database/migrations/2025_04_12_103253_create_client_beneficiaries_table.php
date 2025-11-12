@@ -14,9 +14,13 @@ return new class extends Migration
             $table->string('first_name');
             $table->string('middle_name')->nullable();
             $table->string('last_name');
+            $table->string('suffix')->nullable();
             $table->foreignId('sex_id')->constrained('sexes');
-            $table->string('date_of_birth');
+            $table->foreignId('religion_id')->constrained('religions')->onDelete('cascade')->onUpdate('cascade');
+            $table->date('date_of_birth');
+            $table->date('date_of_death')->nullable();
             $table->string('place_of_birth');
+            $table->foreignId('barangay_id')->constrained('barangays')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });
     }

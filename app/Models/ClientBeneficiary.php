@@ -19,9 +19,13 @@ class ClientBeneficiary extends Model
         'first_name',
         'middle_name',
         'last_name',
+        'suffix',
         'sex_id',
+        'religion_id',
         'date_of_birth',
+        'date_of_death',
         'place_of_birth',
+        'barangay_id',
     ];
 
     public static function getClientBeneficiary($client)
@@ -37,5 +41,15 @@ class ClientBeneficiary extends Model
     public function client()
     {
         return $this->belongsTo(Client::class, 'client_id');
+    }
+
+    public function religion()
+    {
+        return $this->belongsTo(Religion::class, 'religion_id');
+    }
+
+    public function barangay()
+    {
+        return $this->belongsTo(Barangay::class, 'barangay_id');
     }
 }

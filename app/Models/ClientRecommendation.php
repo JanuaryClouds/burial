@@ -20,7 +20,9 @@ class ClientRecommendation extends Model
         'referral',
         'amount',
         'moa_id',
-        'others'
+        'type',
+        'remarks',
+        'others',
     ];
 
     public static function getClientRecommendations($client)

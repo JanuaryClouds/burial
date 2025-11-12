@@ -17,7 +17,9 @@ return new class extends Migration
             $table->foreignId('assistance_id')->constrained('assistances');
             $table->string('referral')->nullable();
             $table->string('amount')->nullable();
-            $table->foreignId('moa_id')->constrained('mode_of_assistances')->nullable();
+            $table->foreignId('moa_id')->nullable()->constrained('mode_of_assistances');
+            $table->enum('type', ['burial', 'funeral'])->nullable();
+            $table->string('remarks')->nullable()->max(255);
             $table->string('others')->nullable();
             $table->timestamps();
         });

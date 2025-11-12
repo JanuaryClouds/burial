@@ -58,6 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 gisForm.querySelector('input[name="first_name"]').value = faker.person.firstName();
                 gisForm.querySelector('input[name="middle_name"]').value = optionalField(faker.person.middleName(), 0.8);
                 gisForm.querySelector('input[name="last_name"]').value = faker.person.lastName();
+                gisForm.querySelector('input[name="suffix"]').value = optionalField(faker.person.suffix(), 0.3);
                 gisForm.querySelector('input[name="age"]').value = faker.number.int({ min: 1, max: 100 });
                 autofillSelect(gisForm, 'sex_id');
                 gisForm.querySelector('input[name="date_of_birth"]').value = faker.date.birthdate().toISOString().split('T')[0];
@@ -77,10 +78,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 gisForm.querySelector('input[name="ben_first_name"]').value = faker.person.firstName();
                 gisForm.querySelector('input[name="ben_middle_name"]').value = optionalField(faker.person.middleName(), 0.8);
                 gisForm.querySelector('input[name="ben_last_name"]').value = faker.person.lastName();
+                gisForm.querySelector('input[name="ben_suffix"]').value = optionalField(faker.person.suffix(), 0.3);
                 autofillSelect(gisForm, 'ben_sex_id');
                 gisForm.querySelector('input[name="ben_date_of_birth"]').value = faker.date.birthdate().toISOString().split('T')[0];
+                gisForm.querySelector('input[name="ben_date_of_death"]').value = faker.date.recent().toISOString().split('T')[0];
+                autofillSelect(gisForm, 'ben_religion_id');
                 gisForm.querySelector('input[name="ben_place_of_birth"]').value = faker.location.streetAddress();
-                // autofillSelect(gisForm, 'beneficiary[barangay_id]');
+                autofillSelect(gisForm, 'ben_barangay_id');
 
                 if (gisForm.querySelector('textarea[name="problem"]')) {
                     gisForm.querySelector('textarea[name="problem"]').value = faker.lorem.sentence();

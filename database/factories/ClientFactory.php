@@ -32,6 +32,7 @@ class ClientFactory extends Factory
             'first_name' => $this->faker->firstName(),
             'middle_name' => $this->faker->optional()->lastName(),
             'last_name' => $this->faker->lastName(),
+            'suffix' => $this->faker->optional()->randomElement(['Jr.', 'Sr.', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X']),
             'age' => $this->faker->numberBetween(1, 100),
             'date_of_birth' => $this->faker->date('Y-m-d'),
             'house_no' => $this->faker->buildingNumber(),

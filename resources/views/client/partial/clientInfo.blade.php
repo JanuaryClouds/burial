@@ -21,7 +21,7 @@
                     :readonly="$readonly"
                 />
             </div>
-            <div class="col-12 col-md-12 col-lg-4">
+            <div class="col-12 col-md-12 col-lg-3">
                 <x-form-input 
                     name="middle_name"
                     label="1.2 Client's Middle Name"
@@ -29,12 +29,20 @@
                     :readonly="$readonly"
                 />
             </div>
-            <div class="col-12 col-md-12 col-lg-4">
+            <div class="col-12 col-md-12 col-lg-3">
                 <x-form-input 
                     name="last_name"
                     label="1.3 Client's Last Name"
                     required="true"
                     value="{{ $client->last_name ?? null }}"
+                    :readonly="$readonly"
+                />
+            </div>
+            <div class="col-12 col-md-12 col-lg-2">
+                <x-form-input 
+                    name="suffix"
+                    label="1.4 Client's Suffix"
+                    value="{{ $client->suffix ?? null }}"
                     :readonly="$readonly"
                 />
             </div>

@@ -19,6 +19,7 @@ class Client extends Model
         'first_name',
         'middle_name',
         'last_name',
+        'suffix',
         'age',
         'date_of_birth',
         'house_no',
