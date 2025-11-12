@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 <html 
     lang="{{ str_replace('_', '-', app()->getLocale()) }}" 
-    x-data="{ sidebarMini: $persist(true), screenSmall: window.innerWidth < 1400}" 
-    x-init="window.addEventListener('resize', () => {screenSmall = window.innerWidth < 1400;})"
+    x-data="{ sidebarMini: $persist(true), screenSmall: window.innerWidth < 1400, loading: true}" 
+    x-init="
+        window.addEventListener('resize', () => {screenSmall = window.innerWidth < 1400;});
+        window.addEventListener('beforeunload', () => loading = true); 
+        window.addEventListener('load', () => loading = false);
+    "
 >
 <head>
     <meta charset="UTF-8">
@@ -14,7 +18,9 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body :class="(sidebarMini || screenSmall) ? 'sidebar-mini' : ''">
+<body 
+    :class="(sidebarMini || screenSmall) ? 'sidebar-mini' : ''"
+>
 	<div id="app">
         @include('components.header')
         @include('components.sidebar')
