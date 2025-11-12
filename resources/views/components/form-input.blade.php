@@ -19,10 +19,10 @@
         type="{{ $type }}"
         {{ $attributes->merge(['class' => 'form-control'])}}
         name="{{ $name }}"
-        {{ $id ? 'id="' . $id . '"' : '' }}
+        {{ $id ? 'id=' . $id : '' }}
         value="{{ old($name, $value) }}"
         aria-describedby="helpId"
-        {{ $placeholder ? 'placeholder="' . $placeholder . '"' : '' }}
+        {{ $placeholder ? 'placeholder=' . $placeholder : '' }}
         {{ $required ? 'required' : '' }}
         {{ $disabled ? 'disabled' : '' }}
         {{ $readonly ? 'readonly' : '' }}
