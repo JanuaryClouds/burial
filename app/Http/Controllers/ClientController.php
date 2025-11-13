@@ -338,7 +338,7 @@ class ClientController extends Controller
                     'remarks' => $request['remarks'],
                     'moa_id' => $request['moa_id'],
                 ]);
-    
+
                 $application = $this->clientServices->transferClient($client->id);
                 activity()
                     ->log('Burial Assistance Application created');
@@ -372,5 +372,10 @@ class ClientController extends Controller
             $client->recommendation()->delete();
             return redirect()->back()->with('alertInfo', $e->getMessage());
         }
+    }
+
+    public function generateGISForm($id) {
+        $client = Client::find($id);
+        return $this->clientServices->exportGIS($client);
     }
 }

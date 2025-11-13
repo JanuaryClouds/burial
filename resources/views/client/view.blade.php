@@ -6,6 +6,9 @@
             <div class="section-header d-flex justify-content-between">
                 <h1>{{ $client->first_name }} {{ $client->last_name }}'s application</h1>
                 <div class="d-flex justify-content-center">
+                    <a href="{{ route('clients.gis-form', ['id' => $client->id]) }}" class="btn btn-info mr-2">
+                        Generate GIS Form
+                    </a>
                     @if ($client->interviews->count() == 0)
                         <button class="btn btn-primary mr-2" type="button" data-toggle="modal" data-target="#set-schedule-modal">
                             Schedule an Interview

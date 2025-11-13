@@ -23,9 +23,8 @@ Route::get('/', function () {
     return view('landing');
 })->name('landing.page');
 
-Route::get('/test/component', function () {
-    return view('test.component');
-});
+Route::get('/test/component/{id}', [TestController::class, 'get'])
+    ->name('test.component');
 
 Route::post('/test/component/post', [TestController::class, 'post'])
     ->name('test.component.post');

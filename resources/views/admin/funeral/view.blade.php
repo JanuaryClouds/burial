@@ -7,6 +7,9 @@
             <div class="d-flex w-100 justify-content-between align-itemsp-center">
                 <h1>{{ $page_title }}</h1>
                 <span>
+                    <a href="{{ route('clients.gis-form', ['id' => $data->client_id]) }}" class="btn btn-secondary mr-2">
+                        Generate GIS Form
+                    </a>
                     @if ($data->approved_at == null)
                         <a href="{{ route('funeral-assistances.view.approved', ['id' => $data->id]) }}" class="btn btn-success mr-2">
                             <i class="fas fa-check-circle"></i>

@@ -93,4 +93,8 @@ class Client extends Model
     {
         return $this->hasMany(Interview::class);
     }
+
+    public function claimant() {
+        return $this->hasOne(Claimant::class, 'client_id', 'id');
+    }
 }

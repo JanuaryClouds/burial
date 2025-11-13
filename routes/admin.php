@@ -43,6 +43,9 @@ Route::get('/clients', [ClientController::class, 'index'])
 Route::get('/clients/{id}', [ClientController::class, 'view'])
     ->name('clients.view');
 
+Route::get('/clients/{id}/gis-form', [ClientController::class, 'generateGISForm'])
+    ->name('clients.gis-form');
+
 Route::post('/clients/{id}/schedule', [InterviewController::class, 'store'])
     ->name('clients.interview.schedule.store');
 
@@ -72,6 +75,9 @@ Route::name('application.')
 
         Route::post('/{id}/swa/save', [BurialAssistanceController::class, 'saveSwa'])
             ->name('swa.save');
+            
+        Route::get('/{id}/certificate', [BurialAssistanceController::class, 'certificate'])
+            ->name('certificate');
     });
 
 Route::get('/funeral-assistances', [FuneralAssistanceController::class, 'index'])
@@ -85,6 +91,9 @@ Route::get('/funeral-assistances/{id}/approved', [FuneralAssistanceController::c
 
 Route::get('/funeral-assistances/{id}/forwarded', [FuneralAssistanceController::class, 'forward'])
     ->name('funeral-assistances.view.forwarded');
+    
+Route::get('/funeral-assistances/{id}/certificate', [FuneralAssistanceController::class, 'certificate'])
+    ->name('funeral-assistances.view.certificate');
 
 Route::middleware('permission:manage-assignments')
     ->group(function () {

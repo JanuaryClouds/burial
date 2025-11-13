@@ -15,6 +15,7 @@ class Claimant extends Model
 
     protected $fillable = [
         'id',
+        'client_id',
         'first_name',
         'middle_name',
         'last_name',
@@ -25,6 +26,10 @@ class Claimant extends Model
         'barangay_id',
     ];
     protected $table = "claimants";
+
+    public function client() {
+        return $this->belongsTo(Client::class, 'client_id', 'id');
+    }
 
     public function burialAssistance() {
         return $this->hasMany(BurialAssistance::class, 'claimant_id', 'id');

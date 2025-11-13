@@ -5,6 +5,9 @@
     @if ($application->claimantChanges->count() == 0 || $claimantChange->status != 'pending')
         <div class="bg-white shadow-sm p-4">
             <div class="d-flex justify-content-end">
+                <a href="{{ route('clients.gis-form', ['id' => $application->claimant->client_id]) }}" class="btn btn-secondary mr-2">
+                    Generate GIS Form
+                </a>
                 @if (app()->isLocal())
                     <a href="{{ route('guest.burial-assistance.track-page', ['code' => $application->tracking_code]) }}" class="btn btn-info mr-2" target="_blank">
                         <i class="fas fa-eye"></i>

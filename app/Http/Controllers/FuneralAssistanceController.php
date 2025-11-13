@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Barryvdh\DomPDF\Facade\Pdf;
 use Exception;
 use Illuminate\Http\Request;
 use App\Models\FuneralAssistance;
@@ -107,5 +108,17 @@ class FuneralAssistanceController extends Controller
         } catch (Exception $e) {
             return redirect()->back()->with('alertError', $e->getMessage());
         }
+    }
+
+    public function certificate($id) {
+        $funeralAssistance = FuneralAssistance::find($id);
+        $client = $funeralAssistance->client;
+        $title = Str::title($client->first_name) . ' ' . Str::title($client->last_name) . '\'s Certification';
+    
+        $pdf = Pdf::loadView('pdf.certification', 
+        compact('client', 'title'))
+        ->setPaper('letter', 'portrait');
+    
+        return $pdf->stream("certification-{$client->id}.pdf");
     }
 }
