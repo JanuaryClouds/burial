@@ -11,7 +11,7 @@ class MoaSeeder extends Seeder
     public function run(): void
     {
         $moas = [
-            'cash',
+            'Cash',
             'Check',
             'Guarantee Letter'
         ];
