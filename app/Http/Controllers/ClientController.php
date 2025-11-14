@@ -294,7 +294,7 @@ class ClientController extends Controller
         activity()
             ->performedOn($client)
             ->causedBy(Auth::user())
-            ->log('Updated the client details: ', $client->id);
+            ->log('Updated the client details: '. $client->id);
 
         return redirect()
             ->route(Auth::user()->getRoleNames()->first() . '.client.edit', $client->id)
@@ -308,7 +308,7 @@ class ClientController extends Controller
         activity()
             ->performedOn($client)
             ->causedBy(Auth::user())
-            ->log('Deleted a client details: ', $client->id);
+            ->log('Deleted a client details: '. $client->id);
         
         return redirect()
             ->route(Auth::user()->getRoleNames()->first() . '.client.index')
