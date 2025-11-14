@@ -17,7 +17,7 @@
         <div class="d-flex flex-row flex-lg-column flex-center gap-2">
 
             <h1 class=" mb-8 fs-2hx d-none d-lg-block text-uppercase">City Social Welfare & Development Office</h1>
-            <h2 class=" mb-0 fs-2hx">Burial Assistance System</h2>
+            <h2 class=" mb-0 fs-2hx">Funeral Assistance System</h2>
         </div>
         <!-- end::Body -->
     </div>
@@ -35,7 +35,7 @@
                         <p class="text-muted">How would you want to use the system?</p>
                     </div>
                     <div class="col d-flex flex-center w-100">
-                        <button class="btn btn-primary w-100 btn-lg" type="button" data-bs-toggle="modal"
+                        <!-- <button class="btn btn-primary w-100 btn-lg" type="button" data-bs-toggle="modal"
                             data-bs-target="#request-modal">
                             Request Burial Assistance
                         </button>
@@ -71,7 +71,8 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
+                        <a href="{{ route('general.intake.form') }}" class="btn btn-primary w-100 btn-lg">Fill out Assistance Form</a>
                     </div>
                     <div class="col d-flex flex-center">
                         <button class="btn btn-secondary w-100 btn-lg" type="button" data-bs-toggle="modal"
@@ -112,14 +113,14 @@
                             </div>
                         </div>
                     </div>
-                    <div style="opacity: 0.4;">
-                        <hr>
-					</div>
-                    <div class="col d-flex flex-center" type="button" >
-                         <a name="" id="" class="btn btn-secondary w-100 fs-4"
-                                            href="{{ route('login.page') }}" role="button">
-                                Sign In
-                        <a>
+                    <div class="d-flex align-items-center my-5">
+                        <div class="border-bottom border-gray-300 mw-50 w-75"></div>
+                        <span class="text-gray-400 fs-7 mx-2" style="white-space: nowrap;">
+                            <a href="{{ route('login.page') }}">
+                                Sign in
+                            </a>
+                        </span>
+                        <div class="border-bottom border-gray-300 mw-50 w-75"></div>
                     </div>
             </div>
             <!-- end::Wrapper -->

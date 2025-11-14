@@ -1,65 +1,114 @@
-<div class="flex items-center gap-4 mb-5 mt-7">
-    <h1 class="text-lg font-semibold text-gray-800">II. Beneficiary Identifying Information</h1>
-    <hr class="flex-grow border-t border-gray-300 mt-1">
-</div>
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-2">
-    <div>
-        <label for="ben_first_name" class="block font-medium text-gray-700">First name</label>
-        <input type="text" name="ben_first_name" id="ben_first_name" value="{{ old('ben_first_name') }}"
-            class="mt-1 w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-        @error('ben_first_name')
-        <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-        @enderror
+@props([
+    'readonly' => false,
+    'client',
+])
+@php
+    if (isset($client)) {
+        $beneficiary = $client->beneficiary;
+    }
+@endphp
+<h5 class="card-title">II. BENEFICIARY'S IDENTIFYING INFORMATION</h5>
+    <div class="row">
+        <div class="col-12 col-md-8 col-lg-3">
+            <x-form-input 
+                name="ben_first_name"
+                label="1.1. Beneficiary's First Name"
+                required="true"
+                type="text"
+                value="{{ $beneficiary->first_name ?? null }}"
+                :readonly="$readonly"
+            />
+        </div>
+        <div class="col-12 col-md-8 col-lg-3">
+            <x-form-input 
+                name="ben_middle_name"
+                label="1.2. Beneficiary's Middle Name"
+                type="text"
+                value="{{ $beneficiary->middle_name ?? null }}"
+                :readonly="$readonly"
+            />
+        </div>
+        <div class="col-12 col-md-8 col-lg-3">
+            <x-form-input 
+                name="ben_last_name"
+                label="1.3. Beneficiary's Last Name"
+                required="true"
+                type="text"
+                value="{{ $beneficiary->last_name ?? null }}"
+                :readonly="$readonly"
+            />
+        </div>
+        <div class="col-12 col-md-8 col-lg-3">
+            <x-form-input 
+                name="ben_suffix"
+                label="1.4. Beneficiary's Suffix"
+                type="text"
+                value="{{ $beneficiary->suffix ?? null }}"
+                :readonly="$readonly"
+            />
+        </div>
     </div>
-    <div>
-        <label for="ben_middle_name" class="block font-medium text-gray-700">Middle name</label>
-        <input type="text" name="ben_middle_name" id="ben_middle_name" value="{{ old('ben_middle_name') }}"
-            class="mt-1 w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-        @error('ben_middle_name')
-        <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-        @enderror
+    <div class="row">
+        <div class="col-12 col-md-4 col-lg-2">
+            <x-form-select
+                name="ben_sex_id"
+                label="2. Sex"
+                required="true"
+                :options="$genders"
+                :selected="$beneficiary->sex->id ?? ''"
+                :disabled="$readonly"
+            />
+        </div>
+        <div class="col-12 col-md-6 col-lg-2">
+            <x-form-input
+                name="ben_date_of_birth"
+                label="3. Date of Birth"
+                required="true"
+                type="date"
+                value="{{ $beneficiary->date_of_birth ?? null }}"
+                :readonly="$readonly"
+            />
+        </div>
+        <div class="col-12 col-md-6 col-lg-2">
+            <x-form-input
+                name="ben_date_of_death"
+                label="Date of Death"
+                required="true"
+                type="date"
+                value="{{ $beneficiary->date_of_death ?? null }}"
+                :readonly="$readonly"
+            />
+        </div>
+        <div class="col-12 col-md-4 col-lg-4">
+            <x-form-select
+                name="ben_religion_id"
+                label="Religion"
+                required="true"
+                :options="$religions"
+                :selected="$beneficiary->religion->id ?? ''"
+                :disabled="$readonly"
+                />
+            </div>
+        </div>
+    <div class="row">
+        <div class="col-12 col-md-6 col-lg-4">
+            <x-form-input
+                name="ben_place_of_birth"
+                label="4.1. Place of Birth"
+                required="true"
+                type="text"
+                value="{{ $beneficiary->place_of_birth ?? null }}"
+                :readonly="$readonly"
+            />
+        </div>
+        <div class="col-12 col-md-6 col-lg-4">
+            <x-form-select
+                name="ben_barangay_id"
+                label="4.2. Barangay"
+                required="true"
+                :options="$barangays"
+                :selected="$beneficiary->barangay->id ?? ''"
+                :disabled="$readonly"
+            />
+        </div>
     </div>
-    <div>
-        <label for="ben_last_name" class="block font-medium text-gray-700">Last name</label>
-        <input type="text" name="ben_last_name" id="ben_last_name" value="{{ old('ben_last_name') }}"
-            class="mt-1 w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-        @error('ben_last_name')
-        <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-        @enderror
-    </div>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-2">
-    <div>
-        <label class="block font-medium text-gray-700">Gender</label>
-        <select name="ben_sex_id"
-            class="mt-1 w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-            <option value="">-- Select gender --</option>
-            @foreach($sexes as $gender)
-            <option value="{{ $gender->id }}" {{ old('ben_sex_id') == $gender->id ? 'selected' : '' }}>
-                {{ $gender->name }}</option>
-            @endforeach
-        </select>
-        @error('ben_sex_id')
-        <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-        @enderror
-    </div>
-    <div>
-        <label class="block font-medium text-gray-700">Date of Birth</label>
-        <input type="date" name="ben_date_of_birth" id="ben_date_of_birth" value="{{ old('ben_date_of_birth') }}"
-            class="mt-1 w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-        @error('ben_date_of_birth')
-        <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-        @enderror
-    </div>
-    <div>
-        <label class="block font-medium text-gray-700">Place of Birth</label>
-        <input type="text" name="ben_place_of_birth" id="ben_place_of_birth" value="{{ old('ben_place_of_birth') }}"
-            class="mt-1 w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-        @error('ben_place_of_birth')
-        <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-        @enderror
-    </div>
-</div>

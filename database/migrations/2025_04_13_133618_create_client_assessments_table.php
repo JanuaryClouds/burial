@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('client_assessments', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('client_id')->constrained('clients')->onDelete('CASCADE');
+            $table->uuid('id')->primary();
+            $table->foreignUuid('client_id')->constrained('clients')->onDelete('CASCADE');
             $table->longText('problem_presented');
             $table->longText('assessment');
             $table->timestamps();

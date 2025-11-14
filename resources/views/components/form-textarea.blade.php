@@ -11,7 +11,7 @@
 <div class="mb-3">
     <label for="{{ $name }}" class="form-label">{{ $label }}</label>
     <textarea 
-        class="form-control" 
+        {{ $attributes->merge(['class' => 'form-control'])}}
         name="{{ $name }}" 
         id="{{ $id }}" 
         value="" 

@@ -29,9 +29,6 @@ import 'datatables.net-responsive-bs4';
 DataTable.Buttons.jszip(jszip);
 DataTable.Buttons.pdfMake(pdfmake);
 
-
-console.log("DataTables is running:", $.fn.dataTable ? true : false);
-
 $(document).ready(function () {
     $(".nav-link.has-dropdown").each(function () {
         const $this = $(this).parent();

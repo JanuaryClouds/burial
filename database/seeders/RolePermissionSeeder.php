@@ -24,6 +24,10 @@ class RolePermissionSeeder extends Seeder
             'manage-accounts',
             'manage-assignments',
             'manage-roles',
+            'write-assessments',
+            'add-family-members',
+            'submit-images',
+            // TODO: Add more GIS-related permissions
         ];
 
         foreach ($permissions as $permission) {

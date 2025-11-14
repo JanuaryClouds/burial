@@ -8,7 +8,10 @@ use App\Http\Controllers\{
     SearchController,
     BurialAssistanceController,
     ProcessLogController,
+    ClientController,
     ClaimantChangeController,
+    InterviewController,
+    FuneralAssistanceController,
 };
 
 // admin role
@@ -33,6 +36,27 @@ Route::prefix('admin')
 
 Route::get('applications/{status}', [BurialAssistanceController::class, 'applications'])
     ->name('applications');
+
+Route::get('/clients', [ClientController::class, 'index'])
+    ->name('clients');
+
+Route::get('/clients/{id}', [ClientController::class, 'view'])
+    ->name('clients.view');
+
+Route::get('/clients/{id}/gis-form', [ClientController::class, 'generateGISForm'])
+    ->name('clients.gis-form');
+
+Route::post('/clients/{id}/schedule', [InterviewController::class, 'store'])
+    ->name('clients.interview.schedule.store');
+
+Route::post('/clients/{id}/schedule/done', [InterviewController::class, 'done'])
+    ->name('clients.interview.schedule.done');
+
+Route::post('/cleints/{id}/assessment', [ClientController::class, 'assessment'])
+    ->name('clients.assessment.store');
+
+Route::post('/clients/{id}/recommendation', [ClientController::class, 'recommendedService'])
+    ->name('clients.recommendation.store');
     
 Route::name('application.')
     ->prefix('application')
@@ -51,8 +75,26 @@ Route::name('application.')
 
         Route::post('/{id}/swa/save', [BurialAssistanceController::class, 'saveSwa'])
             ->name('swa.save');
+            
+        Route::get('/{id}/certificate', [BurialAssistanceController::class, 'certificate'])
+            ->name('certificate');
     });
-        
+
+Route::get('/funeral-assistances', [FuneralAssistanceController::class, 'index'])
+    ->name('funeral-assistances');
+
+Route::get('/funeral-assistances/{id}', [FuneralAssistanceController::class, 'view'])
+    ->name('funeral-assistances.view');
+
+Route::get('/funeral-assistances/{id}/approved', [FuneralAssistanceController::class, 'approve'])
+    ->name('funeral-assistances.view.approved');
+
+Route::get('/funeral-assistances/{id}/forwarded', [FuneralAssistanceController::class, 'forward'])
+    ->name('funeral-assistances.view.forwarded');
+    
+Route::get('/funeral-assistances/{id}/certificate', [FuneralAssistanceController::class, 'certificate'])
+    ->name('funeral-assistances.view.certificate');
+
 Route::middleware('permission:manage-assignments')
     ->group(function () {
         Route::get('/assignments', [BurialAssistanceController::class, 'assignments'])

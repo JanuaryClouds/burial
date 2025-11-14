@@ -9,11 +9,17 @@ class Client extends Model
 {
     use HasFactory;
     protected $table = 'clients';
+
+    protected $primaryKey = 'id';
+    public $incrementing = false;
+    protected $keyType = 'string';
     protected $fillable = [
+        'id',
         'tracking_no',
         'first_name',
         'middle_name',
         'last_name',
+        'suffix',
         'age',
         'date_of_birth',
         'house_no',
@@ -23,6 +29,15 @@ class Client extends Model
         'city',
         'contact_no'
     ];
+
+    protected static function booted() {
+        static::creating(function ($client) {
+            $year = now()->format('Y');
+            $count = self::whereYear('created_at', $year)->count() + 1;
+    
+            $client->tracking_no = sprintf('%s-%04d', $year, $count);
+        });
+    }
 
     public static function getAllClients()
     {
@@ -71,6 +86,23 @@ class Client extends Model
 
     public function barangay()
     {
-        return $this->belongsTo(Barangay::class, 'barangay_id');
+        return $this->belongsTo(Barangay::class, 'barangay_id', 'id');
+    }
+
+    public function interviews()
+    {
+        return $this->hasMany(Interview::class);
+    }
+
+    public function claimant() {
+        return $this->hasOne(Claimant::class, 'client_id', 'id');
+    }
+
+    public function funeralAssistance() {
+        return $this->hasOne(FuneralAssistance::class, 'client_id', 'id');
+    }
+
+    public function hasApplication() {
+        return $this->claimant()->exists() || $this->funeralAssistance()->exists();
     }
 }

@@ -23,7 +23,7 @@
         <div class="col">
             <x-form-input 
                 name="amount"
-                label="Amount"
+                label="Amount to be Extended"
                 type="number"
                 required="true"
                 value="{{ $burialAssistance->amount ?? '' }}"

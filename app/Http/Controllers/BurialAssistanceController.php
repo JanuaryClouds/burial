@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreBurialAssistanceRequest;
+use App\Models\Client;
 use App\Models\Religion;
 use App\Services\ProcessLogService;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -186,6 +187,7 @@ class BurialAssistanceController extends Controller
         return view('applications.manage', compact('application', 'files', 'updateAverage'));
     }
 
+    // ! Deprecated
     public function saveSwa(Request $request, $id) {
         $request->validate([
             'swa' => 'required|string|max:255',
@@ -262,7 +264,7 @@ class BurialAssistanceController extends Controller
     }
 
     public function generatePdfReport(Request $request, $startDate, $endDate) {
-        // try {
+        try {
             $burialAssistance = BurialAssistance::select(
                 'id',
                 'tracking_no',
@@ -312,8 +314,20 @@ class BurialAssistanceController extends Controller
             ->setPaper('letter', 'portrait');
 
             return $pdf->stream("burial-assistance-report-{$startDate}-to-{$endDate}.pdf");
-        // } catch (Exception $e) {
-        //     return back()->with('alertError', 'Error generating report: ' . $e->getMessage());
-        // }
+        } catch (Exception $e) {
+            return back()->with('alertError', 'Error generating report: ' . $e->getMessage());
+        }
+    }
+
+    public function certificate($id) {
+        $assistance = BurialAssistance::find($id);
+        $claimant = $assistance->claimant;
+        $title = Str::title($claimant->first_name) . ' ' . Str::title($claimant->last_name) . '\'s Certificate of Eligibility';
+    
+        $pdf = Pdf::loadView('pdf.certificate-of-eligibility', 
+        compact('claimant', 'title'))
+        ->setPaper('letter', 'portrait');
+    
+        return $pdf->stream("certificate-of-eligibility-{$claimant->first_name}-{$claimant->last_name}.pdf");
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Claimant;
 use App\Models\Client;
 use App\Models\District;
 use App\Models\Barangay;
@@ -16,8 +17,13 @@ use App\Models\Assistance;
 use App\Services\ClientService;
 use App\DataTables\CmsDataTable;
 use App\Http\Requests\ClientRequest;
+use Crypt;
+use Exception;
+use Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
+use Illuminate\Http\Request;
+use Storage;
 
 class ClientController extends Controller
 {
@@ -32,17 +38,83 @@ class ClientController extends Controller
     {
         $page_title = 'Client';
         $resource = 'client';
-        $columns = ['Tracking no', 'Full name', 'Address', 'Date of birth', 'Contact number', 'Action'];
-        $data = Client::getAllClients();
-
+        $renderColumns = ['tracking_no', 'first_name', 'house_no', 'street', 'barangay_id', 'contact_no'];
+        $data = Client::select(
+                'id',
+                'tracking_no',
+                'first_name',
+                'middle_name',
+                'last_name',
+                'house_no',
+                'street',
+                'barangay_id',
+                'contact_no',
+            )->get();
         return $dataTable
             ->render('client.index', compact(
                 'dataTable',
                 'page_title',
                 'resource',
-                'columns',
+                'renderColumns',
                 'data'
             ));
+    }
+
+    public function view($id) {
+        $page_title = 'Client information';
+        $resource = 'client';
+        $client = Client::find($id);
+        $readonly = true;
+
+        if ($client) {
+            $genders = Sex::select('id', 'name')->get()->pluck('name', 'id');
+            $relationships = Relationship::select('id', 'name')->get()->pluck('name', 'id');
+            $civilStatus = CivilStatus::select('id', 'name')->get()->pluck('name', 'id');
+            $religions = Religion::select('id', 'name')->get()->pluck('name', 'id');
+            $nationalities = Nationality::select('id', 'name')->get()->pluck('name', 'id');
+            $educations = Education::select('id', 'name')->get()->pluck('name', 'id');
+            $assistances = Assistance::select('id', 'name')->get()->pluck('name', 'id');
+            $modes = ModeOfAssistance::select('id', 'name')->get()->pluck('name', 'id');
+            $barangays = Barangay::select('id', 'name')->get()->pluck('name', 'id');
+            $districts = District::select('id', 'name')->get()->pluck('name', 'id');
+            $path = "clients/{$client->tracking_no}";
+            $storedFiles = Storage::disk('local')->files($path);
+            $files = [];
+
+            foreach ($storedFiles as $storedFile) {
+                // TODO: Use API to store images
+                $encryptedFile = Storage::disk('local')->get($storedFile);
+                $decryptedFile = Crypt::decrypt($encryptedFile);
+                $finfo = new \finfo(FILEINFO_MIME_TYPE);
+                $mime = $finfo->buffer($decryptedFile);
+                $files[] = [
+                    'name' => basename($storedFile, '.enc'),
+                    'path' => $storedFile,
+                    'content' => $decryptedFile,
+                    'mime' => $mime,
+                ];
+            }
+
+            return view('client.view', compact(
+                'genders',
+                'relationships',
+                'civilStatus',
+                'religions',
+                'nationalities',
+                'educations',
+                'assistances',
+                'modes',
+                'barangays', 
+                'districts',
+                'page_title',
+                'resource',
+                'client',
+                'files',
+                'readonly',
+            ));
+        } else {
+            return redirect()->back()->with('alertInfo', 'Client not found!');
+        }
     }
 
     public function create()
@@ -138,16 +210,28 @@ class ClientController extends Controller
     
     public function store(ClientRequest $request)
     {
-        $client = $this->clientServices->storeClient($request->validated());
+        try {
+            $client = $this->clientServices->storeClient($request->validated());
+            
+            foreach ($request->file('images', []) as $fieldName => $uploadedFile) {
+                $extension = $uploadedFile->getClientOriginalExtension();
+                $filename = $fieldName . '.' . $extension . '.enc';
+                $path = "clients/{$client->tracking_no}/";
+                Storage::disk('local')->put($path . $filename, Crypt::encrypt(file_get_contents($uploadedFile)));
+            }
 
-        activity()
-            ->performedOn($client)
-            ->causedBy(Auth::user())
-            ->log('Added the client details: ', $client->id);
-
-        return redirect()
-            ->route(Auth::user()->getRoleNames()->first() . '.client.index')
-            ->with('success', 'Client information added successfully!');
+            $ip = request()->ip();
+            $browser = request()->header('User-Agent');
+            activity()
+                ->withProperties(['ip' => $ip, 'browser' => $browser])
+                ->log('Added the client details: '. $client?->id);
+    
+            return redirect()
+                ->route('landing.page')
+                ->with('alertSuccess', 'Client information added successfully!');
+        } catch (Exception $e) {
+            return redirect()->back()->with('alertInfo', $e->getMessage());
+        }
     }
 
     public function edit(Client $client)
@@ -203,5 +287,95 @@ class ClientController extends Controller
         return redirect()
             ->route(Auth::user()->getRoleNames()->first() . '.client.index')
             ->with('success', 'Client information deleted successfully!');
+    }
+
+    public function assessment(Request $request, $id)
+    {
+        try {
+            $request->validate([
+                'problem_presented' => 'required|string|max:255',
+                'assessment' => 'required|string|max:255',
+            ]);
+
+            $client = Client::find($id);
+
+            if ($client) {
+                $client->assessment()->create([
+                    'id' => Str::uuid(),
+                    'client_id' => $client->id,
+                    'problem_presented' => $request['problem_presented'],
+                    'assessment' => $request['assessment']
+                ]);
+
+                return redirect()->back()->with('alertSuccess', 'Assessment submitted successfully!');
+            } else {
+                return redirect()->back()->with('alertInfo', 'Client not found.');
+            }
+        } catch (Exception $e) {
+            return redirect()->back()->with('alertInfo', $e->getMessage());
+        }
+    }
+
+    public function recommendedService(Request $request, $id) 
+    {
+        try {
+            $client = Client::find($id);
+            if ($request['type'] == 'burial') {
+                $request->validate([
+                    'referral' => 'nullable|string|max:255',
+                    'amount' => 'nullable|string|max:255',
+                    'moa_id' => 'exists:mode_of_assistances,id',
+                    'type' => 'string|required',
+                ]);
+                $burialAssistance = Assistance::where('name', 'Burial')->first();
+                $client->recommendation()->create([
+                    'id' => Str::uuid(),
+                    'client_id' => $client->id,
+                    'assistance_id' => $burialAssistance->id,
+                    'referral' => $request['referral'],
+                    'amount' => $request['amount'],
+                    'type' => $request['type'],
+                    'remarks' => $request['remarks'],
+                    'moa_id' => $request['moa_id'],
+                ]);
+
+                $application = $this->clientServices->transferClient($client->id);
+                activity()
+                    ->log('Burial Assistance Application created');
+    
+                return redirect()->back()->with('alertSuccess', 'Successfuly created burial assistance application for the client!');
+            } elseif ($request['type'] == 'funeral') {
+                $request->validate([
+                    'referral' => 'nullable|string|max:255',
+                    'type' => 'string|required',
+                ]);
+
+                $funeralAssistance = Assistance::where('name', 'Burial')->first();
+                $client->recommendation()->create([
+                    'id' => Str::uuid(),
+                    'client_id' => $client->id,
+                    'assistance_id' => $funeralAssistance->id,
+                    'referral' => $request['referral'],
+                    'type' => $request['type'],
+                    'remarks' => $request['remarks'],
+                ]);
+    
+                $application = $this->clientServices->transferClient($client->id);
+                activity()
+                    ->log('Funeral Assistance Application created');
+    
+                return redirect()->back()->with('alertSuccess', 'Successfuly created funeral assistance application for the client!');
+            } else {
+                return redirect()->back()->with('alertInfo', 'Invalid request.');
+            }
+        } catch (Exception $e) {
+            $client->recommendation()->delete();
+            return redirect()->back()->with('alertInfo', $e->getMessage());
+        }
+    }
+
+    public function generateGISForm($id) {
+        $client = Client::find($id);
+        return $this->clientServices->exportGIS($client);
     }
 }

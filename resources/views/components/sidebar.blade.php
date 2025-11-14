@@ -51,7 +51,18 @@
                 </li>
             @endcan
 
+            <li class="menu-header">Clients</li>
+            <li @class(['active' => Request::is('client*')])>
+                <a href="{{ route('clients') }}" class="nav-link"><i class="fas fa-users"></i><span>Clients</span></a>
+            </li>
+
             <li class="menu-header">Applications</li>
+            <li @class(['active' => Request::is('funeral-assistances*')])>
+                <a href="{{ route('funeral-assistances') }}" class="nav-link">
+                    <i class="fas fa-file-lines"></i>
+                    <span>Funeral Assistances</span>
+                </a>
+            </li>
             <li @class(['active' => Request::is('applications/all')])>
                 <a href="{{ route('applications', ['status' => 'all']) }}" class="nav-link">
                     <i class="fas fa-file-lines"></i>
