@@ -1,96 +1,111 @@
-@extends('layouts.dashboard')
+@extends('layouts.metronic.guest')
+<title>General Intake Form</title>
 @section('content')
-
-@section('breadcrumb')
-<x-breadcrumb :items="[
-        ['label' => 'Client', 'url' => route(Auth::user()->getRoleNames()->first() . '.' . $resource . '.index')],
-        ['label' => $page_title],
-    ]" />
-@endsection
-
-<div class="flex justify-between mb-3 overflow-auto">
-    <h1 class="text-3xl font-bold mb-2 text-center text-gray-800">{{ $page_title }}</h1>
-</div>
-
-@include('components.alert')
-<div class="w-full bg-white p-8 rounded-lg shadow-lg border border-gray-200 overflow-auto max-h-[75vh]">
-    <p class="text-sm text-red-600 mb-3"><i class="fa-solid fa-asterisk"></i> Put N/A if not applicable</p>
-    <form method="POST" action="{{ route(Auth::user()->getRoleNames()->first() . '.client.store') }}">
-        @csrf
-        @include('client.partial.clientInfo')
-        @include('client.partial.beneficiaryInfo')
-        @include('client.partial.beneficiaryFam')
-        @include('client.partial.beneficiaryAssessment')
-        @include('client.partial.recommendedAssistance')
-
-        <div class="mt-6 text-right mb-6">
-            <button type="submit"
-                class="px-5 py-2 text-white bg-[#1A4798] rounded-lg hover:bg-[#F4C027] hover:text-black hover:border border-[#F4C027] transition-colors">
-                Submit
-            </button>
+    <div class="container min-vh-100 d-flex justify-content-center align-items-center">
+        <div class="row my-10">
+            <div class="col">
+                @include('client.partial.create-form-header')
+                @include('client.partial.create-form-body')
+            </div>
         </div>
-    </form>
-</div>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const dobInput = document.getElementById('date_of_birth');
-    const ageInput = document.getElementById('age');
+    </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const gisForm = document.getElementById('gisForm');
+        const documentsTab = gisForm.querySelector('#documents_tab');
+        const submitFormBtn = document.getElementById('submitGISForm');
+        const navLinks = document.querySelectorAll('.nav-link[data-bs-toggle="tab"]');
+        const religionField = document.querySelector('select[name="religion_id"]');
+        
+        const observer = new MutationObserver(() => {
+            const religion = religionField.value;
+            if (documentsTab.classList.contains('active') || documentsTab.classList.contains('show')) {
+                if (religion == 2) {
+                    documentsTab.querySelector('#muslim-requirements').classList.remove('d-none');
+                } else {
+                    documentsTab.querySelector('#muslim-requirements').classList.add('d-none');
+                }
+            }
+        });
 
-    dobInput.addEventListener('change', function() {
-        const dob = new Date(this.value);
-        const today = new Date();
-        let age = today.getFullYear() - dob.getFullYear();
-        const m = today.getMonth() - dob.getMonth();
+        observer.observe(documentsTab, { attributes: true, attributeFilter: ['class'] });
 
-        if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
-            age--;
+        // Create or reuse an alert element
+        const alertBox = document.createElement('div');
+        alertBox.className = 'alert alert-danger d-none mt-3';
+        gisForm.prepend(alertBox);
+
+        // Function to check required inputs in a given tab pane
+        function validateTab(tabPane) {
+            const requiredFields = tabPane.querySelectorAll('[required]');
+            const missingFields = [];
+
+            requiredFields.forEach(field => {
+                // Trim string values to detect empty text inputs
+                const value = field.value?.trim();
+                if (!value) {
+                    const label = field.closest('div')?.querySelector('label')?.innerText || field.name;
+                    missingFields.push(label.replace('*', '').trim());
+                }
+            });
+
+            return missingFields;
         }
 
-        ageInput.value = isNaN(age) ? '' : age;
+        // Handle tab switching
+        navLinks.forEach(link => {
+            link.addEventListener('show.bs.tab', e => {
+                const currentTab = document.querySelector('.tab-pane.active.show');
+                const missing = validateTab(currentTab);
+
+                if (missing.length > 0) {
+                    e.preventDefault(); // stop switching
+                    alertBox.innerHTML = `
+                        <strong>Missing required fields:</strong>
+                        <br>
+                        • ${missing.join('<br>• ')}
+                    `;
+                    alertBox.classList.add('bg-danger', 'text-white');
+                    alertBox.classList.remove('d-none');
+                    alertBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } else {
+                    alertBox.classList.add('d-none');
+                }
+            });
+        });
+
+        // Handle form submission manually
+        submitFormBtn.addEventListener('click', e => {
+            e.preventDefault();
+
+            const allTabs = document.querySelectorAll('.tab-pane');
+            let allMissing = [];
+
+            function formatTabId(tabId) {
+                return tabId
+                    .replace(/_/g, ' ')
+                    .replace('tab', '')
+                    .replace(/\b\w/g, c => c.toUpperCase());
+            }
+
+            allTabs.forEach(tab => {
+                const missing = validateTab(tab);
+                if (missing.length > 0) {
+                    const tabName = formatTabId(tab.id);
+                    allMissing.push(...missing.map(field => `${tabName}: ${field}`));
+                }
+            });
+
+            if (allMissing.length > 0) {
+                alertBox.innerHTML = `<strong>Cannot submit form.</strong><br>Missing fields:<br>• ${allMissing.join('<br>• ')}`;
+                alertBox.classList.add('bg-danger', 'text-white');
+                alertBox.classList.remove('d-none');
+                alertBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                alertBox.classList.add('d-none');
+                gisForm.submit(); // proceed if all required fields are filled
+            }
+        });
     });
-});
-
-function assessmentForm() {
-    return {
-        assessments: @json($oldAssessmentRows),
-        errors: {},
-        initErrors(serverErrors) {
-            this.errors = serverErrors || {};
-        },
-        addAssessment() {
-            this.assessments.push({
-                problem_presented: '',
-                assessment: ''
-            });
-        },
-        removeAssessment(index) {
-            this.assessments.splice(index, 1);
-        }
-    }
-}
-
-function familyForm() {
-    return {
-        rows: @json($oldFamilyRows),
-        errors: {},
-        initErrors(serverErrors) {
-            this.errors = serverErrors || {};
-        },
-        addRow() {
-            this.rows.push({
-                name: '',
-                sex_id: '',
-                age: '',
-                civil_id: '',
-                relationship_id: '',
-                occupation: '',
-                income: ''
-            });
-        },
-        removeRow(index) {
-            this.rows.splice(index, 1);
-        }
-    }
-}
-</script>
+    </script>
 @endsection
