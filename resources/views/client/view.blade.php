@@ -32,7 +32,7 @@
                     <h4>Client Information</h4>
                 </div>
                 <div class="card-body">
-                    @include('client.partial.clientInfo')
+                    @include('client.partial.client-info')
                 </div>
             </div>
             <div class="card">
@@ -40,7 +40,7 @@
                     <h4>Beneficiary Information</h4>
                 </div>
                 <div class="card-body">
-                    @include('client.partial.beneficiaryInfo')
+                    @include('client.partial.beneficiary-info')
                 </div>
             </div>
             <div class="card">
@@ -48,7 +48,7 @@
                     <h4>Beneficiary Family Composition</h4>
                 </div>
                 <div class="card-body">
-                    @include('client.partial.beneficiaryFam')
+                    @include('client.partial.beneficiary-fam')
                 </div>
             </div>
             <div class="card">
@@ -65,7 +65,7 @@
                         <h4>Assessment</h4>
                     </div>
                     <div class="card-body">
-                        @include('client.partial.beneficiaryAssessment')
+                        @include('client.partial.beneficiary-assessment')
                     </div>
                 </div>
             @endif
@@ -75,7 +75,7 @@
                         <h4>Recommendation</h4>
                     </div>
                     <div class="card-body">
-                        @include('client.partial.recommendedAssistance')
+                        @include('client.partial.recommended-assistance')
                     </div>
                 </div>
             @endif

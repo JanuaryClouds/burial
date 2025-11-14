@@ -9,7 +9,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    @include('client.partial.recommendedAssistance')
+                    @include('client.partial.recommended-assistance')
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-success">Save</button>

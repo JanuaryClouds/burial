@@ -64,7 +64,7 @@
         </div>
     </section>
     <div class="section-body">
-        <x-admin-dashboard-cards :cardData="$cardData" />
+        @include('admin.partial.admin-dashboard-cards')
     </div>
     <div class="section-body">
         @can('manage-assignments')

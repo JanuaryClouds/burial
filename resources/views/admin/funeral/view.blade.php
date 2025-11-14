@@ -39,17 +39,17 @@
         @endif
         <div class="card">
             <div class="card-body">
-                @include('client.partial.clientInfo', ['readonly' => true])
+                @include('client.partial.client-info', ['readonly' => true])
             </div>
         </div>
         <div class="card">
             <div class="card-body">
-                @include('client.partial.beneficiaryInfo', ['readonly' => true])
+                @include('client.partial.beneficiary-info', ['readonly' => true])
             </div>
         </div>
         <div class="card">
             <div class="card-body">
-                @include('client.partial.beneficiaryFam', ['readonly' => true])
+                @include('client.partial.beneficiary-fam', ['readonly' => true])
             </div>
         </div>
         <div class="card">
@@ -59,12 +59,12 @@
         </div>
         <div class="card">
             <div class="card-body">
-                @include('client.partial.beneficiaryAssessment', ['readonly' => true])
+                @include('client.partial.beneficiary-assessment', ['readonly' => true])
             </div>
         </div>
         <div class="card">
             <div class="card-body">
-                @include('client.partial.recommendedAssistance', ['readonly' => true])
+                @include('client.partial.recommended-assistance', ['readonly' => true])
             </div>
         </div>
     </div>

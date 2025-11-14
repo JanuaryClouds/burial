@@ -117,76 +117,102 @@ class ClientController extends Controller
         }
     }
 
-    public function create()
-    {
-        $page_title = 'Client information';
-        $resource = 'client';
-        $sexes = Sex::getAllSexes();
-        $religions = Religion::getAllReligions();
-        $nationalities = Nationality::getAllNationalities();
-        $civils = CivilStatus::getAllCivilStatuses();  
-        $relationships = Relationship::getAllRelationships();
-        $educations = Education::getAllEducations();
-        $districts = District::getAllDistricts();
-        $barangays = Barangay::getAllBarangays();
-        $assistances = Assistance::getAllAssistances();
-        $moas = ModeOfAssistance::getAllMoas();
-        $burial = Assistance::getBurial();
+    // public function create()
+    // {
+    //     $page_title = 'Client information';
+    //     $resource = 'client';
+    //     $sexes = Sex::getAllSexes();
+    //     $religions = Religion::getAllReligions();
+    //     $nationalities = Nationality::getAllNationalities();
+    //     $civils = CivilStatus::getAllCivilStatuses();  
+    //     $relationships = Relationship::getAllRelationships();
+    //     $educations = Education::getAllEducations();
+    //     $districts = District::getAllDistricts();
+    //     $barangays = Barangay::getAllBarangays();
+    //     $assistances = Assistance::getAllAssistances();
+    //     $moas = ModeOfAssistance::getAllMoas();
+    //     $burial = Assistance::getBurial();
 
-        $oldFamilyRows = collect(old('fam_name', []))->map(function ($_, $i) {
-            return [
-                'name' => old("fam_name.$i"),
-                'sex_id' => old("fam_sex_id.$i"),
-                'age' => old("fam_age.$i"),
-                'civil_id' => old("fam_civil_id.$i"),
-                'relationship_id' => old("fam_relationship_id.$i"),
-                'occupation' => old("fam_occupation.$i"),
-                'income' => old("fam_income.$i"),
-            ];
-        })->values();
+    //     $oldFamilyRows = collect(old('fam_name', []))->map(function ($_, $i) {
+    //         return [
+    //             'name' => old("fam_name.$i"),
+    //             'sex_id' => old("fam_sex_id.$i"),
+    //             'age' => old("fam_age.$i"),
+    //             'civil_id' => old("fam_civil_id.$i"),
+    //             'relationship_id' => old("fam_relationship_id.$i"),
+    //             'occupation' => old("fam_occupation.$i"),
+    //             'income' => old("fam_income.$i"),
+    //         ];
+    //     })->values();
         
-        if ($oldFamilyRows->isEmpty()) {
-            $oldFamilyRows = collect([[
-                'name' => '',
-                'sex_id' => '',
-                'age' => '',
-                'civil_id' => '',
-                'relationship_id' => '',
-                'occupation' => '',
-                'income' => ''
-            ]]);
-        }
+    //     if ($oldFamilyRows->isEmpty()) {
+    //         $oldFamilyRows = collect([[
+    //             'name' => '',
+    //             'sex_id' => '',
+    //             'age' => '',
+    //             'civil_id' => '',
+    //             'relationship_id' => '',
+    //             'occupation' => '',
+    //             'income' => ''
+    //         ]]);
+    //     }
 
-        $oldAssessmentRows = collect(old('ass_problem_presented', []))->map(function ($_, $i) {
-            return [
-                'problem_presented' => old("ass_problem_presented.$i"),
-                'assessment' => old("ass_assessment.$i"),
-            ];
-        })->values();
+    //     $oldAssessmentRows = collect(old('ass_problem_presented', []))->map(function ($_, $i) {
+    //         return [
+    //             'problem_presented' => old("ass_problem_presented.$i"),
+    //             'assessment' => old("ass_assessment.$i"),
+    //         ];
+    //     })->values();
         
-        if ($oldAssessmentRows->isEmpty()) {
-            $oldAssessmentRows = collect([[
-                'problem_presented' => '',
-                'assessment' => '',
-            ]]);
-        }
+    //     if ($oldAssessmentRows->isEmpty()) {
+    //         $oldAssessmentRows = collect([[
+    //             'problem_presented' => '',
+    //             'assessment' => '',
+    //         ]]);
+    //     }
 
+    //     return view('client.create', compact(
+    //         'page_title',
+    //         'resource',
+    //         'sexes',
+    //         'religions',
+    //         'nationalities',
+    //         'civils', 
+    //         'relationships',
+    //         'educations',
+    //         'districts',
+    //         'barangays',
+    //         'assistances',
+    //         'moas',
+    //         'burial',
+    //         'oldFamilyRows',
+    //         'oldAssessmentRows'
+    //     ));
+    // }
+
+    
+    public function create() {
+        $genders = Sex::select('id', 'name')->get()->pluck('name', 'id');
+        $relationships = Relationship::select('id', 'name')->get()->pluck('name', 'id');
+        $civilStatus = CivilStatus::select('id', 'name')->get()->pluck('name', 'id');
+        $religions = Religion::select('id', 'name')->get()->pluck('name', 'id');
+        $nationalities = Nationality::select('id', 'name')->get()->pluck('name', 'id');
+        $educations = Education::select('id', 'name')->get()->pluck('name', 'id');
+        $assistances = Assistance::select('id', 'name')->get()->pluck('name', 'id');
+        $modes = ModeOfAssistance::select('id', 'name')->get()->pluck('name', 'id');
+        $barangays = Barangay::select('id', 'name')->get()->pluck('name', 'id');
+        $districts = District::select('id', 'name')->get()->pluck('name', 'id');
         return view('client.create', compact(
-            'page_title',
-            'resource',
-            'sexes',
+            'genders',
+            'relationships',
+            'civilStatus',
             'religions',
             'nationalities',
-            'civils', 
-            'relationships',
             'educations',
-            'districts',
-            'barangays',
             'assistances',
-            'moas',
-            'burial',
-            'oldFamilyRows',
-            'oldAssessmentRows'
+            'modes',
+            'barangays', 
+            'districts'
         ));
     }
 

@@ -7,9 +7,8 @@ use App\Http\Controllers\{
     ClientController,
 };
 
-Route::get('/general-intake-form', function () {
-    return view('client.generalIntakeSheet');
-})->name('general.intake.form');
+Route::get('/general-intake-form', [ClientController::class, 'create'])
+    ->name('general.intake.form');
 
 Route::post('/general-intake-form/store', [ClientController::class, 'store'])
     ->name('general.intake.form.store');
