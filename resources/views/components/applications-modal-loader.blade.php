@@ -7,9 +7,6 @@
     @if ($application_id)
         @foreach ($applications as $application)
             @if ($application->id == $application_id)
-                <script>
-                    console.log('Loading modals for application ID: {{ $application->id }}');
-                </script>
                 <x-reject-modal :application="$application" />
                 <x-process-updater :application="$application"/>
                 @break
