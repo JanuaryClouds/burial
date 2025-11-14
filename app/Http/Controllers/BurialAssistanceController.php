@@ -161,7 +161,7 @@ class BurialAssistanceController extends Controller
             $statusOptions = [];
         }
         $barangays = Barangay::select('id', 'name')->get();
-        return view('applications.list', compact('applications', 'status', 'barangays', 'statusOptions'));
+        return view('admin.burial.index', compact('applications', 'status', 'barangays', 'statusOptions'));
     }
 
     public function manage($id, ProcessLogService $processLogService) {
@@ -184,23 +184,7 @@ class BurialAssistanceController extends Controller
                 'mime' => $mime,
             ];
         }
-        return view('applications.manage', compact('application', 'files', 'updateAverage'));
-    }
-
-    // ! Deprecated
-    public function saveSwa(Request $request, $id) {
-        $request->validate([
-            'swa' => 'required|string|max:255',
-        ]);
-        $application = BurialAssistance::findOrFail($id);
-        if ($application) {
-            $application->swa = $request->swa;
-            $application->encoder = auth()->user()->id;
-            $application->update();
-            return redirect()->back()->with('alertSuccess', 'Successfully updated SWA.');
-        } else {
-            return redirect()->back()->with('alertInfo', 'Application not found.');
-        }
+        return view('admin.burial.manage', compact('application', 'files', 'updateAverage'));
     }
 
     public function toggleReject(Request $request, $id) {

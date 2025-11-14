@@ -10,7 +10,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    @include('client.partial.beneficiaryAssessment')
+                    @include('client.partial.beneficiary-assessment')
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-success" type="submit">
