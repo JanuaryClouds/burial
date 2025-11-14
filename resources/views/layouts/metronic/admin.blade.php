@@ -18,8 +18,18 @@
 </head>
 <body id="kt_body" class="app-blank"
 	style="background: url('{{ asset('images/white_bg_city.png') }}') no-repeat center center / cover; overflow-x: hidden;">
-    
+    <div 
+        id="splashScreen"
+        style="
+            position: fixed; inset: 0; z-index: -1; display: flex; opacity: 0; align-items: center; justify-content: center; overflow: hidden;
+            background: url('{{ asset('images/splash_screen.png') }}') no-repeat center center / cover;
+        "
+    >
+    </div>
+
     <div class="d-flex flex-column flex-root" id="kt_app_root">
+        @include('components.header')
+        @include('components.sidebar')
         @yield('content')
     </div>
     <script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
@@ -37,6 +47,44 @@
             if (element) {
                 new KTStepper(element); // Manually initialize
             }
+
+            const splash = document.getElementById('splashScreen');
+            
+            function triggerLoading() {
+                splash.style.zIndex = "9999";
+                splash.style.opacity = "1";
+                splash.style.transition = "opacity 0.3s ease";
+                return;
+            }
+
+            document.querySelectorAll('form').forEach(defaultForm => {
+                defaultForm.addEventListener("submit", function (e) {
+                    e.preventDefault();
+                    triggerLoading();
+                    setTimeout(() => {
+                        this.submit();
+                    }, 1000)
+                }) 
+            });
+
+            document.querySelectorAll('a[href]').forEach(link => {
+                link.addEventListener("click", function (e) {
+                    link.target === '_blank' ? null : e.preventDefault();
+                    const url = link.getAttribute('href');
+                    if (
+                        !url ||
+                        url.startsWith('#') ||
+                        url.startsWith('javascript:') ||
+                        link.target === '_blank' ||
+                        url.includes('://') && !url.includes(window.location.host)
+                    ) return;
+                    triggerLoading();
+                    
+                    setTimeout(() => {
+                        window.location.href = url;
+                    }, 1000)
+                });
+            });
         });
     </script>
 

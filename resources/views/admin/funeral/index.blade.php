@@ -33,24 +33,26 @@
                                 </thead>
                                 <tbody>
                                     @foreach ($data as $entry)
-                                        <tr class="bg-white">
-                                            @foreach ($entry->getAttributes() as $key =>$value)
-                                                @if (in_array($key, $renderColumns))
-                                                    @if ($key == 'client_id')
-                                                        <td>
-                                                            {{ $entry->client->first_name }} 
-                                                            {{ Str::limit($entry->client->middle_name, '1', '.') }} 
-                                                            {{ $entry->client->last_name }}
-                                                        </td>
+                                        @if ($entry->approved_at == null || $entry->submitted_at == null)
+                                            <tr class="bg-white">
+                                                @foreach ($entry->getAttributes() as $key =>$value)
+                                                    @if (in_array($key, $renderColumns))
+                                                        @if ($key == 'client_id')
+                                                            <td>
+                                                                {{ $entry->client->first_name }} 
+                                                                {{ Str::limit($entry->client->middle_name, '1', '.') }} 
+                                                                {{ $entry->client->last_name }}
+                                                            </td>
+                                                        @endif
                                                     @endif
-                                                @endif
-                                            @endforeach
-                                            <td>
-                                                <a href="{{ route('funeral-assistances.view', ['id' => $entry->id]) }}" class="btn btn-primary">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
+                                                @endforeach
+                                                <td>
+                                                    <a href="{{ route('funeral-assistances.view', ['id' => $entry->id]) }}" class="btn btn-primary">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        @endif
                                     @endforeach
                                 </tbody>
                             </table>

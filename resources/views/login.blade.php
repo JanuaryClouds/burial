@@ -14,7 +14,7 @@
         <!-- begin::Body -->
         <div class="d-flex flex-row flex-lg-column flex-center gap-1">
             <h1 class=" mb-9 fs-2hx d-none d-lg-block text-uppercase">City Social Welfare & Development Office</h1>
-            <h2 class=" mb-0 fs-2hx">Burial Assistance System</h2>
+            <h2 class=" mb-0 fs-2hx">Funeral Assistance System</h2>
         </div>
         <!-- end::Body -->
     </div>

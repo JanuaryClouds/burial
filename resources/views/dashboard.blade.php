@@ -16,7 +16,7 @@
                 <div class="d-flex align-items-center justify-content-start">
                     @can('add-updates')
                         @if ($lastLogs?->count() > 0)
-                            <a href="{{ route('applications.manage', ['id' => $lastLogs->last()->burialAssistance->id]) }}" class="btn btn-primary mr-2">
+                            <a href="{{ route('application.manage', ['id' => $lastLogs->last()->burialAssistance->id]) }}" class="btn btn-primary mr-2">
                                 <i class="fas fa-clock-rotate-left me-2"></i> Continue Last Application
                             </a>
                         @endif
