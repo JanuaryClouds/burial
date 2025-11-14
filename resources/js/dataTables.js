@@ -1,6 +1,5 @@
 export function checkAndRenderDataTables() {
     $(document).ready(function () {
-        console.log("Initializing DataTable...");
         $('#client-table').DataTable({
             responsive: true,
             ordering: true,

@@ -3,8 +3,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const autofillBtn = document.getElementById('autofillBtn');
     const burialForm = document.getElementById('kt_create_account_form');
     const gisForm = document.getElementById('gisForm');
-    autofillBtn ? console.log('autofillBtn found') : console.log('autofillBtn not found');
-    gisForm || burialForm ? console.log('form found') : console.log('form not found');
 
     function autofillSelect(form, fieldName) {
         const select = form.querySelector(`select[name="${fieldName}"]`);
@@ -26,7 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (autofillBtn) {
         autofillBtn.addEventListener('click', function (event) {
             event.preventDefault();
-            console.log('autofill');
     
             if (burialForm) {
                 burialForm.querySelector('input[name="deceased[first_name]"]').value = faker.person.firstName();
