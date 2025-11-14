@@ -97,4 +97,12 @@ class Client extends Model
     public function claimant() {
         return $this->hasOne(Claimant::class, 'client_id', 'id');
     }
+
+    public function funeralAssistance() {
+        return $this->hasOne(FuneralAssistance::class, 'client_id', 'id');
+    }
+
+    public function hasApplication() {
+        return $this->claimant()->exists() || $this->funeralAssistance()->exists();
+    }
 }

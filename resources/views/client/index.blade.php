@@ -32,28 +32,30 @@
                             </thead>
                             <tbody>
                                 @foreach ($data as $entry)
-                                    <tr class="bg-white">
-                                        @foreach ($entry->getAttributes() as $key =>$value)
-                                            @if (in_array($key, $renderColumns))
-                                                @if (($key == 'first_name'))
-                                                    <td>
-                                                        {{ $entry->first_name }} 
-                                                        {{ Str::limit($entry->middle_name, '1', '.') }} 
-                                                        {{ $entry->last_name }}
-                                                    </td>
-                                                @elseif (($key == 'barangay_id'))
-                                                    <td>{{ $entry->barangay->name }}</td>
-                                                @else
-                                                    <td>{{ $value }}</td>
+                                    @if (!$entry->hasApplication())
+                                        <tr class="bg-white">
+                                            @foreach ($entry->getAttributes() as $key =>$value)
+                                                @if (in_array($key, $renderColumns))
+                                                    @if (($key == 'first_name'))
+                                                        <td>
+                                                            {{ $entry->first_name }} 
+                                                            {{ Str::limit($entry->middle_name, '1', '.') }} 
+                                                            {{ $entry->last_name }}
+                                                        </td>
+                                                    @elseif (($key == 'barangay_id'))
+                                                        <td>{{ $entry->barangay->name }}</td>
+                                                    @else
+                                                        <td>{{ $value }}</td>
+                                                    @endif
                                                 @endif
-                                            @endif
-                                        @endforeach
-                                        <td>
-                                            <a href="{{ route('clients.view', ['id' => $entry->id]) }}" class="btn btn-primary">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
+                                            @endforeach
+                                            <td>
+                                                <a href="{{ route('clients.view', ['id' => $entry->id]) }}" class="btn btn-primary">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @endif
                                 @endforeach
                             </tbody>
                         </table>

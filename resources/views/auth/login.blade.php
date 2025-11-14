@@ -8,7 +8,7 @@
         >
             <div class="col d-flex flex-column flex-center">
                 <img class="mb-4" style="width: 100px" src="{{ asset('images/CSWDO.webp') }}" alt="">
-                <h2 class="text-lg-start text-center">CSWDO Burial
+                <h2 class="text-lg-start text-center">CSWDO Funeral
                     Assistance</h2>
                 <p class="text-start text-sm-center">
                     Please enter your credentials to access the dashboard. If you need assistance, contact your

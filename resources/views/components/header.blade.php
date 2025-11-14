@@ -18,7 +18,7 @@
     </span>
     <ul class="navbar-nav">
         <li class="dropdown">
-            <a href="" data-toggle="dropdown" class="nav-link dropdown-toggle nav-link-lg nav-link-user">
+            <a href="#" data-toggle="dropdown" class="nav-link dropdown-toggle nav-link-lg nav-link-user">
                 <img alt="image" src="{{ asset('images/avatar/avatar-1.png') }}" class="rounded-circle mr-1">
                 <div class="d-sm-none d-lg-inline-block">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</div>
             </a>
