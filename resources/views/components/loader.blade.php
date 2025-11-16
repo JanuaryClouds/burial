@@ -1,63 +1,105 @@
-<svg
-  class="container"
-  viewBox="0 0 40 40"
-  height="100"
-  width="100"
+<div 
+    id="splashScreen"
+    style="
+        position: fixed; inset: 0; z-index: -1; display: flex; opacity: 0; align-items: center; justify-content: center; overflow: hidden;
+        background: url('{{ asset('images/splash_screen.png') }}') no-repeat center center / cover;
+    "
 >
-  <circle 
-    class="track"
-    cx="20" 
-    cy="20" 
-    r="17.5" 
-    pathlength="100" 
-    stroke-width="5px" 
-    fill="none" 
-  />
-  <circle 
-    class="car"
-    cx="20" 
-    cy="20" 
-    r="17.5" 
-    pathlength="100" 
-    stroke-width="5px" 
-    fill="none" 
-  />
-</svg>
+<div class="container"></div>
 
 <style>
   .container {
-    --uib-size: 100px;
+    --uib-size: 80px;
     --uib-color: black;
-    --uib-speed: .8s;
-    --uib-bg-opacity: 0.1;
-    height: var(--uib-size);
+    --uib-speed: 1.4s;
+    --uib-stroke: 5px;
+    --uib-bg-opacity: .1;
+    margin-top: 10rem;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: var(--uib-stroke);
     width: var(--uib-size);
-    transform-origin: center;
-    animation: rotate var(--uib-speed) linear infinite;
-    will-change: transform;
-    overflow: visible;
+    border-radius: calc(var(--uib-stroke) / 2);
+    overflow: hidden;
+    transform: translate3d(0, 0, 0);
   }
 
-  .car {
-    fill: none;
-    stroke: var(--uib-color);
-    stroke-dasharray: 25, 75;
-    stroke-dashoffset: 0;
-    stroke-linecap: round;
-    transition: stroke 0.5s ease;
-  }
-
-  .track {
-    fill: none;
-    stroke: var(--uib-color);
+  .container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: var(--uib-color);
     opacity: var(--uib-bg-opacity);
-    transition: stroke 0.5s ease;
+    transition: background-color 0.3s ease;
   }
 
-  @keyframes rotate {
+  .container::after {
+    content: '';
+    height: 100%;
+    width: 100%;
+    border-radius: calc(var(--uib-stroke) / 2);
+    animation: zoom var(--uib-speed) ease-in-out infinite;
+    transform: translateX(-100%);
+    background-color: var(--uib-color);
+    transition: background-color 0.3s ease;
+  }
+
+  @keyframes zoom {
+    0% {
+      transform: translateX(-100%);
+    }
     100% {
-      transform: rotate(360deg);
+      transform: translateX(100%);
     }
   }
 </style>
 
+
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+      const splash = document.getElementById('splashScreen');
+      
+      function triggerLoading() {
+          splash.style.zIndex = "9999";
+          splash.style.opacity = "1";
+          splash.style.transition = "opacity 0.3s ease";
+          return;
+      }
+
+      document.querySelectorAll('form').forEach(defaultForm => {
+          defaultForm.addEventListener("submit", function (e) {
+              e.preventDefault();
+              triggerLoading();
+              setTimeout(() => {
+                  this.submit();
+              }, 1000)
+          }) 
+      });
+
+      document.querySelectorAll('a[href]').forEach(link => {
+          link.addEventListener("click", function (e) {
+              const url = link.getAttribute('href');
+              link.target === '_blank' || link.hasAttribute('data-no-loader') ? null : e.preventDefault();
+              if (
+                  !url ||
+                  url.startsWith('#') ||
+                  url.startsWith('javascript:') ||
+                  link.target === '_blank' ||
+                  url.includes('://') && !url.includes(window.location.host) ||
+                  link.hasAttribute('data-no-loader')
+              ) return;
+              triggerLoading();
+              
+              setTimeout(() => {
+                  window.location.href = url;
+              }, 1000)
+          });
+      });
+  });
+</script>
