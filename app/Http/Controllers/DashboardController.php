@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\BurialServiceRequest;
 use App\Models\Deceased;
 use App\Services\ProcessLogService;
+use App\Models\Client;
 use App\Models\Barangay;
 use App\Models\BurialAssistance;
+use App\Models\FuneralAssistance;
 use App\Models\Claimant;
 use App\Models\ProcessLog;
 use Illuminate\Http\Request;
@@ -25,7 +27,15 @@ class DashboardController extends Controller
     public function index()
     {
         $lastLogs = ProcessLog::with('burialAssistance')->where('added_by', auth()->user()->id)->latest()->limit(2)->get();
-        $pendingApplicationsCount = BurialAssistance::where('status', 'pending')->get()->count();
+        $pendingBurialAssistance = BurialAssistance::where(function ($query) {
+            $query
+                ->orWhere('status', 'pending')
+                ->orWhere('status', 'processing');
+        })->count();
+        $pendingFuneralAssistance = FuneralAssistance::where(function ($query) {
+            $query->where('approved_at', null);
+            $query->where('submitted_at', null);
+        })->count();
         $processingApplicationsCount = BurialAssistance::where('status', 'processing')->get()->count();
         $approvedApplicationsCount = BurialAssistance::where('status', 'approved')->get()->count();
         $totalApplications = BurialAssistance::where(function ($query) {
@@ -33,30 +43,31 @@ class DashboardController extends Controller
             $query->where('status', '!=', 'released');
         })->count();
 
+        $pendingClients = Client::where(function ($query) {
+            $query->where('created_at', '>=', Carbon::now()->subDays(7));
+        })->count();
+
         $cardData = [
             [
-                'label' => 'Pending Applications',
-                'bg' => 'bg-warning',
-                'icon' => 'fa-hourglass',
-                'count' => $pendingApplicationsCount,
+                'label' => 'Clients this week',
+                'icon' => 'ki-chart-line',
+                'pathsCount' => 2,
+                'link' => route('clients'),
+                'count' => $pendingClients,
             ],
             [
-                'label' => 'Processing Applications',
-                'bg' => 'bg-primary',
-                'icon' => 'fa-rotate-right',
-                'count' => $processingApplicationsCount,
+                'label' => 'Pending Burial Assistance',
+                'icon' => 'ki-timer',
+                'pathsCount' => 2,
+                'link' => route('applications', ['status' => 'pending']),
+                'count' => $pendingBurialAssistance,
             ],
             [
-                'label' => 'Approved Applications',
-                'bg' => 'bg-success',
-                'icon' => 'fa-circle-check',
-                'count' => $approvedApplicationsCount,
-            ],
-            [
-                'label' => 'Total Applications',
-                'bg' => 'bg-info',
-                'icon' => 'fa-equals',
-                'count' => $totalApplications,
+                'label' => 'Pending Funeral Assistance',
+                'icon' => 'ki-watch',
+                'pathsCount' => 2,
+                'link' => route('funeral-assistances'),
+                'count' => $pendingFuneralAssistance,
             ],
         ];
         return view('dashboard', compact(
