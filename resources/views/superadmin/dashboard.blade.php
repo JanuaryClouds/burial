@@ -1,3 +1,4 @@
+<!-- TODO: Use Stisla Layout -->
 @extends('layouts.stisla.admin')
 <title>Dashboard</title>
 @section('content')
@@ -37,6 +38,7 @@
             </div>
         </div>
     </section>
+    <!-- TODO: Remove and use superadmin only version -->
     <div class="section-body">
         <x-admin-dashboard-cards :cardData="$cardData" />
     </div>
