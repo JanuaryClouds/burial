@@ -6,3 +6,11 @@
  */
 
 /*# sourceMappingURL=custom.css.map */
+@font-face {
+    font-family: Helvetica;
+    src: url(../fonts/Helvetica.ttf);
+}
+
+body {
+    font-family: Helvetica;
+}
