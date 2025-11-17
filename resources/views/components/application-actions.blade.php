@@ -4,41 +4,40 @@
 <div class="d-flex justify-content-start align-items-center">
     @if (auth()->user())
         @if ($application->assigned_to == auth()->user()->id || $application->assigned_to == null)
-            <div class="btn-group dropdown">
-                <a name="" id="" class="btn btn-primary" href="{{ route('application.manage', ['id' => $application->id]) }}" role="button">
-                    View 
-                </a>
-                @if ($application->status == "pending" || $application->status == "approved" || $application->status == "processing")
-                    <button id="action-options" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <span class="sr-only">
-                            <i class="fas fa-caret-down"></i>
-                        </span>
-                    </button>
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="action-options">
-                        @can('add-updates')
-                            <button class="dropdown-item" type="button" data-toggle="modal" data-target="#addUpdateModal-{{ $application->id }}">
-                                Add Progress Update
+            @if ($application->status == "pending" || $application->status == "approved" || $application->status == "processing")
+                <button id="action-options" class="btn btn-light btn-sm dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Actions
+                    <span class="sr-only">
+                        <i class="fas fa-caret-down"></i>
+                    </span>
+                </button>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="action-options">
+                    <a name="" id="" class="dropdown-item" href="{{ route('application.manage', ['id' => $application->id]) }}" role="button">
+                        View 
+                    </a>
+                    @can('add-updates')
+                        <button class="dropdown-item" type="button" data-toggle="modal" data-target="#addUpdateModal-{{ $application->id }}">
+                            Add Progress Update
+                        </button>
+                    @endcan
+                    @if (!Request::is('reports/*'))
+                        @can('manage-assignments')
+                            <button class="dropdown-item" type="button" data-toggle="modal" data-target="#assign-modal-{{ $application->id }}">
+                                Assign Application
                             </button>
                         @endcan
-                        @if (!Request::is('reports/*'))
-                            @can('manage-assignments')
-                                <button class="dropdown-item" type="button" data-toggle="modal" data-target="#assign-modal-{{ $application->id }}">
-                                    Assign Application
-                                </button>
-                            @endcan
-                        @endif
-                        @can('reject-applications')
-                            <button class="dropdown-item" type="button" data-toggle="modal" data-target="#reject-{{ $application->id }}" title="Reject Application">
-                                Reject Application
-                            </button>
-                        @endcan
-                    </div>
-                @elseif ($application->status == "rejected" && auth()->user()->can('reject-applications'))
-                    <button class="btn btn-success" type="button" data-toggle="modal" data-target="#reject-{{ $application->id }}" title="Restore Application">
-                        <i class="fas fa-rotate-left"></i>
-                    </button>
-                @endif
-            </div>
+                    @endif
+                    @can('reject-applications')
+                        <button class="dropdown-item" type="button" data-toggle="modal" data-target="#reject-{{ $application->id }}" title="Reject Application">
+                            Reject Application
+                        </button>
+                    @endcan
+                </div>
+            @elseif ($application->status == "rejected" && auth()->user()->can('reject-applications'))
+                <button class="btn btn-success" type="button" data-toggle="modal" data-target="#reject-{{ $application->id }}" title="Restore Application">
+                    <i class="fas fa-rotate-left"></i>
+                </button>
+            @endif
         @else
             <button class="btn btn-link" onclick="showAssignModal()">
                 <i class="fas fa-user-lock"></i>
