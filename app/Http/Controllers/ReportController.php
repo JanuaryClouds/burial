@@ -7,7 +7,9 @@ use App\Models\Claimant;
 use App\Models\Deceased;
 use Illuminate\Http\Request;
 use App\Services\ReportService;
+use App\Models\Client;
 use App\Models\BurialAssistance;
+use App\Models\FuneralAssistance;
 use Carbon\Carbon;
 use Storage;
 
@@ -21,7 +23,49 @@ class ReportController extends Controller
         'cheques' => 'Cheques Report',
     ];
 
+    public function clients(Request $request, ReportService $reportService) {
+        $model = 'clients';
+        if ($request->has('start_date') && $request->start_date != '') {
+            $startDate = Carbon::parse($request->start_date);
+        } else {
+            $startDate = Carbon::now()->startOfYear();
+        }
+        
+        if ($request->has('end_date') && $request->end_date != '') {
+            $endDate = Carbon::parse($request->end_date);
+        } else {
+            $endDate = Carbon::now()->endOfYear();
+        }
+
+        $clients = Client::select(
+                'id', 
+                'tracking_no', 
+                'first_name', 
+                'middle_name', 
+                'last_name', 
+                'suffix', 
+                'contact_no', 
+                'house_no', 
+                'street', 
+                'barangay_id'
+            )
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->get();
+
+        $clientsPerBarangay = $reportService->clientsPerBarangay($startDate, $endDate);
+        $clientsPerAssistance = $reportService->clientsPerAssistance($startDate, $endDate);
+        return view('reports.index', compact(
+            'clients',
+            'model',
+            'clientsPerBarangay',
+            'clientsPerAssistance',
+            'startDate',
+            'endDate'
+        ));
+    }
+
     public function burialAssistances(Request $request, ReportService $reportService) {
+        $model = 'burial-assistances';
         if ($request->has('start_date') && $request->start_date != '') {
             $startDate = Carbon::parse($request->start_date);
         } else {
@@ -58,17 +102,53 @@ class ReportController extends Controller
             ],
         ];
 
-        return view('reports.burial-assistances', compact(
+        $cardData = [
+            [
+                'label' => 'Pending',
+                'icon' => 'ki-file',
+                'pathsCount' => 2,
+                'count' => $burialAssistances->where('status', 'pending')->count(),
+            ],
+            [
+                'label' => 'Processing',
+                'icon' => 'ki-file-right',
+                'pathsCount' => 2,
+                'count' => $burialAssistances->where('status', 'processing')->count(),
+            ],
+            [
+                'label' => 'Approved',
+                'icon' => 'ki-file-added',
+                'pathsCount' => 2,
+                'count' => $burialAssistances->where('status', 'approved')->count(),
+            ],
+            [
+                'label' => 'Approved',
+                'icon' => 'ki-folder-added',
+                'pathsCount' => 2,
+                'count' => $burialAssistances->where('status', 'released')->count(),
+            ],
+            [
+                'label' => 'Rejected',
+                'icon' => 'ki-delete-folder',
+                'pathsCount' => 2,
+                'count' => $burialAssistances->where('status', 'rejected')->count(),
+            ],
+        ];
+
+        return view('reports.index', compact(
             'burialAssistances', 
+            'model',
             'statistics',
             'deceasedPerBarangay',
             'deceasedPerReligion',
             'startDate',
             'endDate',
+            'cardData',
         ));
     }
 
     public function deceased(Request $request, ReportService $reportService) {
+        $model = 'deceased';
         if ($request->has('start_date') && $request->start_date != '') {
             $startDate = Carbon::parse($request->start_date);
         } else {
@@ -89,8 +169,9 @@ class ReportController extends Controller
         $deceasedPerBarangay = $reportService->deceasedPerBarangay($startDate, $endDate);
         $deceasedPerReligion = $reportService->deceasedPerReligion($startDate, $endDate);
         $deceasedPerGender = $reportService->deceasedPerGender($startDate, $endDate);
-        return view('reports.deceased', compact(
+        return view('reports.index', compact(
             'deceased',
+            'model',
             'deceasedThisMonth',
             'deceasedPerBarangay',
             'deceasedPerReligion',
@@ -101,6 +182,7 @@ class ReportController extends Controller
     }
 
     public function claimants(Request $request, ReportService $reportService) {
+        $model = 'claimants';
         if ($request->has('start_date') && $request->start_date != '') {
             $startDate = Carbon::parse($request->start_date);
         } else {
@@ -117,8 +199,9 @@ class ReportController extends Controller
         $claimantsPerBarangay = $reportService->claimantPerBarangay($startDate, $endDate);
         $claimantsPerRelationship = $reportService->claimantPerRelationship($startDate, $endDate);
 
-        return view('reports.claimants', compact(
-            'claimants', 
+        return view('reports.index', compact(
+            'claimants',
+            'model', 
             'claimantsPerBarangay',
             'claimantsPerRelationship',
             'startDate',
@@ -151,6 +234,7 @@ class ReportController extends Controller
     }
 
     public function cheques(Request $request, ReportService $reportService) {
+        $model = 'cheques';
         if ($request->has('start_date') && $request->start_date != '') {
             $startDate = Carbon::parse($request->start_date);
         } else {
@@ -180,11 +264,44 @@ class ReportController extends Controller
             ->get();
         $chequesPerStatus = $reportService->chequesPerStatus($startDate, $endDate);
 
-        return view('reports.cheques', compact(
-            'cheques', 
+        return view('reports.index', compact(
+            'cheques',
+            'model', 
             'chequesPerStatus',
             'startDate',
             'endDate',
+        ));
+    }
+
+    public function funerals(Request $request, ReportService $reportService) {
+        $model = 'funerals';
+        if ($request->has('start_date') && $request->start_date != '') {
+            $startDate = Carbon::parse($request->start_date);
+        } else {
+            $startDate = Carbon::now()->startOfYear();
+        }
+        
+        if ($request->has('end_date') && $request->end_date != '') {
+            $endDate = Carbon::parse($request->end_date);
+        } else {
+            $endDate = Carbon::now()->endOfYear();
+        }
+
+        $funerals = FuneralAssistance::select(
+            'id',
+            'client_id',
+            'approved_at',
+            'forwarded_at',
+        )
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->get();
+        $funeralsPerStatus = $reportService->funeralsPerStatus($startDate, $endDate);
+        return view('reports.index', compact(
+            'funerals',
+            'model',
+            'funeralsPerStatus',
+            'startDate',
+            'endDate', 
         ));
     }
 }
