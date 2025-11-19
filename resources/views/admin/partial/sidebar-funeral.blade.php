@@ -1,5 +1,12 @@
 <!--begin:funeral assistance-->
-<div id="sidebarFuneral" data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
+<a
+    href="{{ route('funeral-assistances') }}"
+    id="sidebarFuneral" data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start"
+    @class([
+        'menu-item',
+        'here' => Route::is('funeral-assistances*'),
+    ])
+>
     <!--begin:Menu link-->
     <span class="menu-link menu-center d-flex flex-column">
         <span class="menu-icon me-0">
@@ -20,13 +27,5 @@
         </div>
     </div>
     <!--end:Menu sub-->
-</div>
+</a>
 <!--end:funeral assistance-->
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const sidebarFuneral = document.querySelector('#sidebarFuneral');
-        sidebarFuneral.addEventListener('click', function() {
-            window.location.href = '{{ route('funeral-assistances') }}';
-        });
-    });
-</script>

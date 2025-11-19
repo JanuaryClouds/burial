@@ -1,5 +1,14 @@
 <!--begin:Common Pages-->
-<div id="sidebarDashboard" data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item here show py-2 ">
+<a 
+    href="{{ route('dashboard') }}"
+    id="sidebarDashboard" 
+    data-kt-menu-trigger="{default: 'click', lg: 'hover'}" 
+    data-kt-menu-placement="right-start"
+    @class([
+        'menu-item',
+        'here' => Route::is('dashboard'),
+    ])
+>
     <!--begin:Menu link-->
     <span class="menu-link menu-center d-flex flex-column">
         <span class="menu-icon me-0">
@@ -15,18 +24,10 @@
     <div class="menu-sub menu-sub-dropdown px-2 py-4 w-250px mh-75 overflow-auto">
         <div class="menu-item">
             <div class="menu-content ">
-                <span class="menu-section fs-5 fw-bolder ps-1 py-1">Home</span>
+                <span class="menu-section fs-5 fw-bolder ps-1 py-1">Dashboard</span>
             </div>
         </div>
     </div>
     <!--end:Menu sub-->
-</div>
+</a>
 <!--end:Common Pages-->
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const sidebarDashboard = document.querySelector('#sidebarDashboard');
-        sidebarDashboard.addEventListener('click', function() {
-            window.location.href = '{{ route('dashboard') }}';
-        });
-    });
-</script>

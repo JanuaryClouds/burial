@@ -1,5 +1,10 @@
 <!--begin:client-->
-<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
+<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start"
+    @class([
+        'menu-item',
+        'here' => Route::is('burial-assistances*') || Route::is('assignments*'),  
+    ])
+>
     <!--begin:Menu link-->
     <span class="menu-link menu-center d-flex flex-column">
         <span class="menu-icon me-0">
@@ -16,12 +21,29 @@
         <div class="menu-item">
             <div class="menu-content">
                 <span class="menu-section fs-5 fw-bolder ps-1 py-1">
+                    Management
+                </span>
+            </div>
+        </div>
+        @can('manage-assignments')
+            <div class="menu-item">
+                <a href="{{ route('assignments') }}" @class(['active' => Request::is('assignments*'), 'menu-link'])>
+                    <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                    </span>
+                    <span class="menu-title">Assignments</span>
+                </a>
+            </div>
+        @endcan
+        <div class="menu-item">
+            <div class="menu-content">
+                <span class="menu-section fs-5 fw-bolder ps-1 py-1">
                     On-Going
                 </span>
             </div>
         </div>
         <div class="menu-item">
-            <a href="{{ route('applications', ['status' => 'pending']) }}" @class(['active' => Request::is('applications/pending'), 'menu-link'])>
+            <a href="{{ route('burial-assistances', ['status' => 'pending']) }}" @class(['active' => Request::is('burial-assistances/pending'), 'menu-link'])>
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                 </span>
@@ -29,7 +51,7 @@
             </a>
         </div>
         <div class="menu-item">
-            <a href="{{ route('applications', ['status' => 'processing']) }}" @class(['active' => Request::is('applications/processing'), 'menu-link'])>
+            <a href="{{ route('burial-assistances', ['status' => 'processing']) }}" @class(['active' => Request::is('burial-assistances/processing'), 'menu-link'])>
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                 </span>
@@ -37,7 +59,7 @@
             </a>
         </div>
         <div class="menu-item">
-            <a href="{{ route('applications', ['status' => 'approved']) }}" @class(['active' => Request::is('applications/approved'), 'menu-link'])>
+            <a href="{{ route('burial-assistances', ['status' => 'approved']) }}" @class(['active' => Request::is('burial-assistances/approved'), 'menu-link'])>
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                 </span>
@@ -52,7 +74,7 @@
             </div>
         </div>
         <div class="menu-item">
-            <a href="{{ route('applications', ['status' => 'released']) }}" @class(['active' => Request::is('applications/released'), 'menu-link'])>
+            <a href="{{ route('burial-assistances', ['status' => 'released']) }}" @class(['active' => Request::is('burial-assistances/released'), 'menu-link'])>
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                 </span>
@@ -60,7 +82,7 @@
             </a>
         </div>
         <div class="menu-item">
-            <a href="{{ route('applications', ['status' => 'rejected']) }}" @class(['active' => Request::is('applications/rejected'), 'menu-link'])>
+            <a href="{{ route('burial-assistances', ['status' => 'rejected']) }}" @class(['active' => Request::is('burial-assistances.rejected'), 'menu-link'])>
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                 </span>

@@ -1,5 +1,10 @@
 <!-- begin:Reports -->
-<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
+<div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start"
+    @class([
+        'menu-item',
+        'here' => Route::is('reports*'),
+    ])
+>
     <span class="menu-link menu-center d-flex flex-column">
         <span class="menu-icon me-0">
             <i class="ki-duotone ki-file-sheet fs-2x">
@@ -19,6 +24,22 @@
         </div>
         <!-- TODO: Update Routes to be dynamic for reports -->
         <!-- TODO: Include clients and funeral assistances -->
+        <div class="menu-item">
+            <a href="{{ route('reports.clients') }}" @class(['active' => Request::is('reports/clients'), 'menu-link'])>
+                <span class="menu-bullet">
+                    <span class="bullet bullet-dot"></span>
+                </span>
+                <span class="menu-title">Clients</span>
+            </a>
+        </div>
+        <div class="menu-item">
+            <a href="{{ route('reports.funerals') }}" @class(['active' => Request::is('reports/funerals'), 'menu-link'])>
+                <span class="menu-bullet">
+                    <span class="bullet bullet-dot"></span>
+                </span>
+                <span class="menu-title">Funeral Assistances</span>
+            </a>
+        </div>
         <div class="menu-item">
             <a href="{{ route('reports.burial-assistances') }}" @class(['active' => Request::is('reports/burial-assistances'), 'menu-link'])>
                 <span class="menu-bullet">

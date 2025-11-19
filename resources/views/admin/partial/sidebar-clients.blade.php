@@ -1,11 +1,23 @@
 <!--begin:client-->
-<div id="sidebarClientsLink" data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
+<a 
+    href="{{ route('clients') }}"
+    id="sidebarClientsLink" 
+    data-kt-menu-trigger="{default: 'click', lg: 'hover'}" 
+    data-kt-menu-placement="right-start"
+    @class([
+        'menu-item',
+        'here' => Route::is('clients*'),
+    ])
+>
     <!--begin:Menu link-->
     <span class="menu-link menu-center d-flex flex-column">
         <span class="menu-icon me-0">
             <i class="ki-duotone ki-people fs-2x">
                 <span class="path1"></span>
                 <span class="path2"></span>
+                <span class="path3"></span>
+                <span class="path4"></span>
+                <span class="path5"></span>
             </i>
         </span>
         <small class="text-center text-gray-400 fw-semibold mt-1">Clients</small>
@@ -20,13 +32,5 @@
         </div>
     </div>
     <!--end:Menu sub-->
-</div>
+</a>
 <!--end:client-->
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const sidebarClientsLink = document.getElementById('sidebarClientsLink');
-        sidebarClientsLink.addEventListener('click', function() {
-            window.location.href = '{{ route('clients') }}';
-        });
-    });
-</script>

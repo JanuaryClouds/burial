@@ -1,5 +1,14 @@
 <!--begin:logs-->
-<div id="sidebarLogsLink" data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start" class="menu-item py-2">
+<a
+    href="{{ route('activity.logs') }}"
+    id="sidebarLogsLink" 
+    data-kt-menu-trigger="{default: 'click', lg: 'hover'}" 
+    data-kt-menu-placement="right-start" 
+    @class([
+        'menu-item',
+        'here' => Route::is('activity-logs'),
+    ])
+>
     <!--begin:Menu link-->
     <span class="menu-link menu-center d-flex flex-column">
         <span class="menu-icon me-0">
@@ -21,13 +30,5 @@
         </div>
     </div>
     <!--end:Menu sub-->
-</div>
+</a>
 <!--end:logs-->
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const sidebarLogsLink = document.getElementById('sidebarLogsLink');
-        sidebarLogsLink.addEventListener('click', function() {
-            window.location.href = '{{ route('activity.logs') }}';
-        });
-    });
-</script>
