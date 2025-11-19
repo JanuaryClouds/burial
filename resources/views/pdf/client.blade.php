@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Claimants Report</title>
+    <title>Clients Report</title>
     <style>
         body {font-size: 12px;}
         table {width: 100%; border-collapse: collapse; margin-top: 20px;}
@@ -25,7 +25,7 @@
             <td class="no-border">
                 <h1 class="title text-center">Taguig City CSWDO</h1>
                 <p class="subtitle text-center" style="font-weight: bold;">Funeral Assistance</p>
-                <h2 class="text-center" style="font-family: serif; text-transform: uppercase;">Assistance Claimants Report</h2>
+                <h2 class="text-center" style="font-family: serif; text-transform: uppercase;">Clients Report</h2>
                 <p class="text-center" style="font-family: serif;">{{ \Carbon\Carbon::parse($startDate)->format('F d, Y') }} to {{ \Carbon\Carbon::parse($endDate)->format('F d, Y') }}</p>
             </td>
             <td style="width: 30%; text-align: center;" class="no-border">
@@ -57,85 +57,38 @@
     <table>
         <thead>
             <tr>
+                <th>Tracking Number</th>
                 <th>Full Name (First Name MI. Last Name, Suffix)</th>
-                <th>Burial Assistance Tracking Number</th>
-                <th>Relationship of Deceased to Claimant</th>
                 <th>Address</th>
+                <th>Contact Number</th>
+                <th>Beneficiary</th>
+                <th>Relationship of Client to Beneficiary</th>
             </tr>
         </thead>
         <tbody>
-            @foreach ($claimants as $c)
+            @foreach ($clients as $c)
                 <tr>
+                    <td>{{ $c->tracking_no }}</td>
                     <td>
                         {{ $c->first_name }} 
                         {{ $c->middle_name == null ? '' : Str::limit($c?->middle_name, 1, '.') }} 
                         {{ $c->last_name }} 
                         {{ $c?->suffix }} 
                     </td>
+                    <td>{{ $c->house_no }}, {{ $c->street }}, {{ $c->barangay->name }}</td>
+                    <td>{{ $c->contact_no }}</td>
                     <td>
-                        @if ($c->oldClaimantChanges->isNotEmpty() || $c->newClaimantChanges->isNotEmpty())
-                            @foreach ($c->newClaimantChanges as $ncc)
-                                @if ($ncc->status === 'approved')
-                                    @if ($ncc->newClaimant->id == $c->id)
-                                        New claimant of {{ $ncc->burialAssistance?->tracking_no }}
-                                    @endif
-                                @endif
-                            @endforeach
-                            @foreach ($c->oldClaimantChanges as $occ)
-                                @if ($occ->status === 'approved')
-                                    @if ($occ->oldClaimant->id == $c->id)
-                                        Old claimant of {{ $occ->burialAssistance?->tracking_no }}
-                                    @endif
-                                @endif
-                            @endforeach
-                        @else
-                            @foreach ($c->burialAssistance as $ba)
-                                {{ $ba->tracking_no }}
-                            @endforeach
-                        @endif
-
+                        {{ $c->beneficiary->first_name }}
+                        {{ $c->beneficiary->middle_name == null ? '' : Str::limit($c->beneficiary?->middle_name, 1, '.') }}
+                        {{ $c->beneficiary->last_name }}
+                        {{ $c->beneficiary?->suffix }}
                     </td>
-                    <td>{{ $c->relationship->name }}</td>
-                    <td>{{ $c->address }}, {{ $c->barangay->name }}</td>
+                    <td>{{ $c->socialInfo->relationship->name }}</td>
                 </tr>
             @endforeach
         </tbody>
     </table>
-    <strong>Total: </strong>{{ $claimants->count() }}
-    <table style="margin-top: 20px;">
-        <thead>
-            <tr>
-                <th>Barangay</th>
-                <th>Count of Assistance Claimants</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($barangays as $b)
-                <tr>
-                    <td>{{ $b->name }}</td>
-                    <td>{{ $b->claimant->count() }}</td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
-    <strong>Total: </strong> {{ $barangays->count() }}
-    <table style="margin-top: 20px;">
-        <thead>
-            <tr>
-                <th>Relationship</th>
-                <th>Count</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($relationships as $r)
-                <tr>
-                    <td>{{ $r->name }}</td>
-                    <td>{{ $r->claimant->count() }}</td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
-    <strong>Total: </strong>{{ $relationships->count() }}
+    <strong>Total: </strong>{{ $clients->count() }}
     <table>
         <tbody>
             <tr>
