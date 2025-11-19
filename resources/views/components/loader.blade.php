@@ -75,6 +75,7 @@
       document.querySelectorAll('form').forEach(defaultForm => {
           defaultForm.addEventListener("submit", function (e) {
               e.preventDefault();
+              if (defaultForm.hasAttribute('data-no-loader')) return;
               triggerLoading();
               setTimeout(() => {
                   this.submit();
