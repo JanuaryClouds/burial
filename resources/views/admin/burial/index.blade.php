@@ -1,16 +1,7 @@
-@extends('layouts.stisla.admin')
-<title>Burial Assistance Applications</title>
+@extends('layouts.metronic.admin')
+<title>{{ $page_title }}</title>
 @section('content')
-    <div class="main-content">
-        <section class="section">
-            <div class="section-header">
-                <h1>Burial Assistance Applications</h1>
-            </div>
-            <div class="section-header-button">
-            </div>
-        </section>
-        @include('admin.burial.partial.datatable')        
-    </div>
+@include('admin.burial.partial.datatable')        
 <x-applications-modal-loader />
 
 @endsection

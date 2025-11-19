@@ -1,4 +1,4 @@
-@extends('layouts.stisla.admin')
+@extends('layouts.metronic.admin')
 <title>Manage {{ $application->tracking_no }}</title>
 @section('content')
 <div class="main-content">
