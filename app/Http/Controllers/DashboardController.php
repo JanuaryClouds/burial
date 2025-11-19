@@ -26,6 +26,7 @@ class DashboardController extends Controller
 
     public function index()
     {
+        $page_title = 'Dashboard';
         $lastLogs = ProcessLog::with('burialAssistance')->where('added_by', auth()->user()->id)->latest()->limit(2)->get();
         $pendingBurialAssistance = BurialAssistance::where(function ($query) {
             $query
@@ -34,7 +35,7 @@ class DashboardController extends Controller
         })->count();
         $pendingFuneralAssistance = FuneralAssistance::where(function ($query) {
             $query->where('approved_at', null);
-            $query->where('submitted_at', null);
+            $query->where('forwarded_at', null);
         })->count();
         $processingApplicationsCount = BurialAssistance::where('status', 'processing')->get()->count();
         $approvedApplicationsCount = BurialAssistance::where('status', 'approved')->get()->count();
@@ -59,7 +60,7 @@ class DashboardController extends Controller
                 'label' => 'Pending Burial Assistance',
                 'icon' => 'ki-timer',
                 'pathsCount' => 2,
-                'link' => route('applications', ['status' => 'pending']),
+                'link' => route('burial-assistances', ['status' => 'pending']),
                 'count' => $pendingBurialAssistance,
             ],
             [
@@ -72,7 +73,8 @@ class DashboardController extends Controller
         ];
         return view('dashboard', compact(
             'cardData',
-            'lastLogs'
+            'lastLogs',
+            'page_title'
         ));
     }
 

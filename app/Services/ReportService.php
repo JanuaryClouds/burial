@@ -2,8 +2,11 @@
 
 namespace App\Services;
 use App\Models\Cheque;
+use App\Models\ClientRecommendation;
 use Carbon\Carbon;
 use App\Models\BurialAssistance;
+use App\Models\FuneralAssistance;
+use App\Models\Client;
 use App\Models\Deceased;
 use App\Models\Claimant;
 use App\Models\ProcessLog;
@@ -32,6 +35,33 @@ class ReportService
             )
             ->with('loggable')
             ->first();
+    }
+
+    public function clientsPerBarangay($startDate, $endDate) {
+        return Client::selectRaw('barangay_id, COUNT(*) as total')
+            ->with('barangay')
+            ->groupBy('barangay_id')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'name'  => $item->barangay->name ?? 'Unknown',
+                    'count' => $item->total,
+                ];
+            });
+    }
+
+    public function clientsPerAssistance($startDate, $endDate) {
+        return ClientRecommendation::selectRaw('type, COUNT(*) as total')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->groupBy('type')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'name'  => $item->type,
+                    'count' => $item->total,
+                ];
+            });
     }
 
     public function burialAssistanceReport($startDate, $endDate) {
@@ -317,6 +347,26 @@ class ReportService
             ->map(function ($item) {
                 return [
                     'name'  => $item->status,
+                    'count' => $item->total,
+                ];
+            });
+    }
+
+    public function funeralsPerStatus($startDate, $endDate) {
+        return FuneralAssistance::selectRaw("
+            CASE
+                WHEN approved_at IS NOT NULL THEN 'Approved'
+                WHEN forwarded_at IS NOT NULL THEN 'Forwarded'
+                ELSE 'Pending'
+            END AS status_group,
+            COUNT(*) as total
+        ")
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->groupBy('status_group')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'name'  => $item->status_group,
                     'count' => $item->total,
                 ];
             });
