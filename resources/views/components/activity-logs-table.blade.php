@@ -1,6 +1,6 @@
 @if ($logs->count() > 0)
-    <div class="table-responsive">
-        <div class="dataTables_wrapper container-fluid">
+    <div class="table-responsive overflow-x-hidden">
+        <div class="dataTables_wrapper">
             <table id="activity-logs-table" class="table data-table" style="width:100%">
                 <thead>
                     <tr role="row">
@@ -27,6 +27,14 @@
                                 @if (!in_array($key, $excemptions))
                                     @if (auth()->user()->hasRole('superadmin') && $key == 'causer_id')
                                         <td>{{ auth()->user()->where('id', $value)->first()->first_name ?? '' }}</td>
+                                    @elseif ($key == 'properties')
+                                        @php
+                                            $props = json_decode($value)
+                                        @endphp
+                                        <td>
+                                            {{ $props->ip }}
+                                            <p class="text-muted fs-5">{{ $props->browser }}</p>
+                                        </td>
                                     @else
                                         <td>{{ $value }}</td>
                                     @endif
@@ -49,7 +57,7 @@
             order: [[-1, 'desc']],
             dom: 
                 // First row: buttons on the left, filter on the right
-                "<'row mb-2'<'col-sm-6 d-flex align-items-center'l<'mr-3'>B><'col-sm-6 d-flex justify-content-end'f>>" +
+                "<'row mb-2'<'col-sm-6 d-flex align-items-center'l<'me-3'>B><'col-sm-6 d-flex justify-content-end'f>>" +
                 // Table
                 "<'row'<'col-12'tr>>" +
                 // Bottom row: info and pagination
@@ -57,12 +65,12 @@
             buttons:[
                 {
                     extend: 'excel',
-                    text: '<i class="mr-2 fa fa-file-excel"></i>Export to Excel',
+                    text: '<i class="me-2 fa fa-file-excel"></i>Export to Excel',
                     className: 'btn btn-primary py-1 px-3'
                 },
                 {
                     extend: 'print',
-                    text: '<i class="mr-2 fa fa-print"></i>Print',
+                    text: '<i class="me-2 fa fa-print"></i>Print',
                     className: 'btn btn-secondary py-1 px-3 ml-2'
                 },
                 // 'copy', 

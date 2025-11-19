@@ -5,21 +5,21 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="assessment-modal">{{ $client->first_name . ' ' . $client->last_name }}'s Assessment</h5>
-                    <button class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
+                    <button class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="ki-duotone ki-cross fs-1">
+                            <span class="path1"></span><span class="path2"></span>
+                        </i>
                     </button>
                 </div>
                 <div class="modal-body">
                     @include('client.partial.beneficiary-assessment')
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-success" type="submit">
-                        <i class="fas fa-check-circle"></i>
-                        Submit
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                        Cancel
                     </button>
-                    <button type="button" class="btn btn-warning" data-dismiss="modal">
-                        <i class="fas fa-times-circle"></i>
-                        Close
+                    <button class="btn btn-success" type="submit">
+                        Submit
                     </button>
                 </div>
             </div>

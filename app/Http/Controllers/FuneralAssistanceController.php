@@ -27,11 +27,35 @@ class FuneralAssistanceController extends Controller
         $page_title = 'Funeral Assistances';
         $resource = 'funeral-assistances';
         $renderColumns = ['client_id', 'action'];
-        $data = FuneralAssistance::select('id', 'client_id')
+        $data = FuneralAssistance::select('id', 'client_id', 'approved_at', 'forwarded_at')
             ->with('client')
             ->get();
+        
+        $approvedApplications = FuneralAssistance::where('approved_at', '!=', null)->count();
+        $forwardedApplications = FuneralAssistance::where('forwarded_at', '!=', null)->count();
+        
+        $cardData = [
+            [
+                'label' => 'Total Applications',
+                'icon' => 'ki-document',
+                'pathsCount' => 2,
+                'count' => $data->count(),
+            ],
+            [
+                'label' => 'Approved Applications',
+                'icon' => 'ki-file-added',
+                'pathsCount' => 2,
+                'count' => $approvedApplications,
+            ],
+            [
+                'label' => 'Forwarded Applications',
+                'icon' => 'ki-file-right',
+                'pathsCount' => 2,
+                'count' => $forwardedApplications,
+            ],
+        ];
 
-        return view('admin.funeral.index', compact('data', 'page_title', 'resource', 'renderColumns'));
+        return view('admin.funeral.index', compact('data', 'page_title', 'resource', 'renderColumns', 'cardData'));
     }
 
     public function view($id) {
@@ -39,6 +63,7 @@ class FuneralAssistanceController extends Controller
             $data = FuneralAssistance::find($id);
             $client = $data->client;
             $page_title = Str::title($client->first_name) . ' ' . Str::title($client->last_name);
+            $page_subtitle = $client->tracking_no . ' - ' . $client->id;
             $genders = Sex::select('id', 'name')->get()->pluck('name', 'id');
             $relationships = Relationship::select('id', 'name')->get()->pluck('name', 'id');
             $civilStatus = CivilStatus::select('id', 'name')->get()->pluck('name', 'id');
@@ -102,7 +127,7 @@ class FuneralAssistanceController extends Controller
     public function forward($id) {
         try {
             $data = FuneralAssistance::find($id);
-            $data->submitted_at = now();
+            $data->forwarded_at = now();
             $data->save();
             return redirect()->back()->with('alertSuccess', 'Application for Funeral Assistance has been forwarded to Cemetery Staff.');
         } catch (Exception $e) {
@@ -120,5 +145,32 @@ class FuneralAssistanceController extends Controller
         ->setPaper('letter', 'portrait');
     
         return $pdf->stream("certification-{$client->id}.pdf");
+    }
+
+    public function generatePdfReport(Request $request, $startDate, $endDate) {
+        try {
+            $funeralAssistances = FuneralAssistance::select(
+                'id',
+                'client_id',
+                'approved_at',
+                'forwarded_at',
+            )
+            ->with('client')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->get();
+
+            $charts = $request->input('charts', []);
+            $pdf = Pdf::loadView('pdf.funeral-assistance', compact(
+                'funeralAssistances',
+                'startDate',
+                'endDate',
+                'charts',
+            ))
+            ->setPaper('letter', 'portrait');
+
+            return $pdf->stream("funeral-assistance-report-{$startDate}-{$endDate}.pdf");
+        } catch (Exception $e) {
+            return redirect()->back()->with('alertError', $e->getMessage());
+        }
     }
 }

@@ -18,7 +18,7 @@ class FuneralAssistance extends Model
         'id',
         'client_id',
         'approved_at',
-        'submitted_at',
+        'forwarded_at',
         'remarks'
     ];
 

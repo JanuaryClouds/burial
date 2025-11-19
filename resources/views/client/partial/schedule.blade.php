@@ -5,8 +5,10 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="set-schedule-modal">Schedule for an interview</h5>
-                    <button class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
+                    <button class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="ki-duotone ki-cross fs-1">
+                            <span class="path1"></span><span class="path2"></span>
+                        </i>
                     </button>
                 </div>
                 <div class="modal-body">
@@ -23,13 +25,11 @@
                     />
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-check"></i>
-                        Set Schedule
-                    </button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                        <i class="fas fa-times-circle"></i>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">
                         Close
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        Set Schedule
                     </button>
                 </div>
             </div>

@@ -1,6 +1,6 @@
 @if ($processLogs->count() > 0)
-    <div class="table-responsive">
-        <div class="dataTables_wrapper container-fluid">
+    <div class="table-responsive overflow-x-hidden">
+        <div class="dataTables_wrapper">
             <table id="generic-table" class="table data-table generic-table" style="width:100%">
                 <thead>
                     <tr role="row">

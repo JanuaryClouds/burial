@@ -13,36 +13,36 @@
         <x-filter-data-form type="cheques" :startDate="$startDate" :endDate="$endDate" />
         <div class="row">
             <div class="col-12 col-lg-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h4>Cheques Per Status</h4>
+                @if (!$chequesPerStatus->isEmpty())
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>Cheques Per Status</h4>
+                        </div>
+                        <div class="card-body">
+                                <canvas 
+                                    id="cheques-per-status"
+                                    data-chart-data='@json($chequesPerStatus->pluck('count'))'
+                                    data-chart-labels='@json($chequesPerStatus->pluck('name'))'
+                                    data-chart-type="bar"
+                                    data-empty="{{ $chequesPerStatus->isEmpty() ? 'true' : 'false' }}"
+                                ></canvas>
+                            @else
+                                <p class="text-muted">No Data</p>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        @if (!$chequesPerStatus->isEmpty())
-                            <canvas 
-                                id="cheques-per-status"
-                                data-chart-data='@json($chequesPerStatus->pluck('count'))'
-                                data-chart-labels='@json($chequesPerStatus->pluck('name'))'
-                                data-chart-type="bar"
-                                data-empty="{{ $chequesPerStatus->isEmpty() ? 'true' : 'false' }}"
-                            ></canvas>
-                        @else
-                            <p class="text-muted">No Data</p>
-                        @endif
-                    </div>
-                </div>
+                @endif
             </div>
         </div>
-        <div class="card">
-            <div class="card-header">
-                <h4>Details</h4>
-            </div>
-            <div class="card-body">
-                @if(!$cheques->isEmpty())
-                    <div class="table-responsive">
-                        <div class="dataTables_wrapper container-fluid">
+        @if(!$cheques->isEmpty())
+            <div class="card">
+                <div class="card-header">
+                    <h4>Details</h4>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive overflow-x-hidden">
+                        <div class="dataTables_wrapper">
                             <table id="generic-table" class="table data-table generic-table" style="width:100%">
-                                <thead>
+                                <thead class="border-bottom border-bottom-1 border-gray-200 fw-bold">
                                     <tr role="row">
                                         @foreach ($cheques->first()->getAttributes() as $column => $value)
                                             @php
@@ -56,7 +56,7 @@
                                 </thead>
                                 <tbody>
                                     @foreach ($cheques as $entry)
-                                        <tr class="bg-white">
+                                        <tr class="">
                                             @foreach ($entry->getAttributes() as $key => $value)
                                                 @if (!in_array($key, $excemptions))
                                                     @if ($key == 'gender')
@@ -76,9 +76,9 @@
                             </table>
                         </div>
                     </div>
-                @endif
+                </div>
             </div>
-        </div>
+        @endif
         <div class="d-flex justify-content-center">
             <x-export-to-pdf-button :startDate="$startDate" :endDate="$endDate" type="cheques" />
         </div>

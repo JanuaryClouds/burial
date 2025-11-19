@@ -24,7 +24,7 @@
             </td>
             <td class="no-border">
                 <h1 class="title text-center">Taguig City CSWDO</h1>
-                <p class="subtitle text-center" style="font-weight: bold;">Burial Assistance</p>
+                <p class="subtitle text-center" style="font-weight: bold;">Funeral Assistance</p>
                 <h2 class="text-center" style="font-family: serif; text-transform: uppercase;">Cheques Report</h2>
                 <p class="text-center" style="font-family: serif;">{{ \Carbon\Carbon::parse($startDate)->format('F d, Y') }} to {{ \Carbon\Carbon::parse($endDate)->format('F d, Y') }}</p>
             </td>

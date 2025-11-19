@@ -1,5 +1,5 @@
 @props(['type', 'startDate', 'endDate'])
-<form action="{{ route('reports.' . $type . '.pdf', ['startDate' => $startDate, 'endDate' => $endDate]) }}" method="post" id="export-to-pdf-form" target="_blank">
+<form action="{{ route('reports.' . $type . '.pdf', ['startDate' => $startDate, 'endDate' => $endDate]) }}" method="post" id="export-to-pdf-form" target="_blank" data-no-loader>
     @csrf
     <button class="btn btn-primary" type="submit">
         <i class="fas fa-file-pdf"></i>
@@ -18,6 +18,9 @@
         'claimant-per-barangay',
         'claimant-per-relationship',
         'cheques-per-status',
+        'funerals-per-status',
+        'clients-per-barangay',
+        'clients-per-assistance',
     ];
 
     function getChartImage(chartId) {

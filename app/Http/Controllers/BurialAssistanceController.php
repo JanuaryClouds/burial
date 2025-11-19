@@ -139,6 +139,7 @@ class BurialAssistanceController extends Controller
     }
 
     public function applications($status = null) {
+        $page_title = "Burial Assistance Applications";
         $applications = BurialAssistance::select('id', 'deceased_id', 'claimant_id', 'tracking_no', 'funeraria', 'amount', 'application_date', 'status', 'assigned_to', 'created_at')
             ->where(function ($query) use ($status) {
                 try {
@@ -161,11 +162,13 @@ class BurialAssistanceController extends Controller
             $statusOptions = [];
         }
         $barangays = Barangay::select('id', 'name')->get();
-        return view('admin.burial.index', compact('applications', 'status', 'barangays', 'statusOptions'));
+        return view('admin.burial.index', compact('applications', 'status', 'barangays', 'statusOptions', 'page_title'));
     }
 
     public function manage($id, ProcessLogService $processLogService) {
         $application = BurialAssistance::findOrFail($id);
+        $client = $application->claimant->client;
+        $page_title = $client->first_name . ' ' . $client->last_name . '\'s Burial Assistance Application';
         $path = "burial-assistance/{$application->tracking_no}";
         $storedFiles = Storage::disk('local')->files($path);
         $files = [];
@@ -184,7 +187,7 @@ class BurialAssistanceController extends Controller
                 'mime' => $mime,
             ];
         }
-        return view('admin.burial.manage', compact('application', 'files', 'updateAverage'));
+        return view('admin.burial.manage', compact('application', 'files', 'updateAverage', 'page_title'));
     }
 
     public function toggleReject(Request $request, $id) {

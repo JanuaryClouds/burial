@@ -23,6 +23,7 @@ use Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Storage;
 
 class ClientController extends Controller
@@ -36,7 +37,7 @@ class ClientController extends Controller
 
     public function index(CmsDataTable $dataTable)
     {
-        $page_title = 'Client';
+        $page_title = 'Clients';
         $resource = 'client';
         $renderColumns = ['tracking_no', 'first_name', 'house_no', 'street', 'barangay_id', 'contact_no'];
         $data = Client::select(
@@ -50,10 +51,43 @@ class ClientController extends Controller
                 'barangay_id',
                 'contact_no',
             )->get();
+
+        $clientsWithInterview = Client::whereHas('interviews')->get()->count();
+        $clientsWithAssessments = Client::whereHas('assessment')->get()->count();
+        $clientsWithRecommendation = Client::whereHas('recommendation')->get()->count();
+
+        $cardData = [
+            [
+                'label' => 'Total Clients',
+                'icon' => 'ki-people',
+                'pathsCount' => 5,
+                'count' => Client::select('id')->get()->count(),
+            ],
+            [
+                'label' => 'Clients with Interviews',
+                'icon' => 'ki-note-2',
+                'pathsCount' => 4,
+                'count' => $clientsWithInterview,
+            ],
+            [
+                'label' => 'Clients with Assessments',
+                'icon' => 'ki-brifecase-tick',
+                'pathsCount' => 3,
+                'count' => $clientsWithAssessments,
+            ],
+            [
+                'label' => 'Clients With Recommendation',
+                'icon' => 'ki-file-added',
+                'pathsCount' => 2,
+                'count' => $clientsWithRecommendation,
+            ],
+        ];
+
         return $dataTable
             ->render('client.index', compact(
                 'dataTable',
                 'page_title',
+                'cardData',
                 'resource',
                 'renderColumns',
                 'data'
@@ -61,9 +95,10 @@ class ClientController extends Controller
     }
 
     public function view($id) {
-        $page_title = 'Client information';
         $resource = 'client';
         $client = Client::find($id);
+        $page_title = $client->first_name . ' ' . $client->last_name . "'s Application";
+        $page_subtitle = $client->tracking_no . ' - ' . $client->id;
         $readonly = true;
 
         if ($client) {
@@ -107,6 +142,7 @@ class ClientController extends Controller
                 'barangays', 
                 'districts',
                 'page_title',
+                'page_subtitle',
                 'resource',
                 'client',
                 'files',
@@ -403,5 +439,39 @@ class ClientController extends Controller
     public function generateGISForm($id) {
         $client = Client::find($id);
         return $this->clientServices->exportGIS($client);
+    }
+
+    public function generatePdfReport(Request $request, $startDate, $endDate) {
+        try {
+            $clients = Client::select(
+                'id',
+                'tracking_no',
+                'first_name',
+                'middle_name',
+                'last_name',
+                'suffix',
+                'house_no',
+                'street',
+                'barangay_id',
+                'contact_no',
+            )
+            ->with('beneficiary')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->get();
+
+            $charts = $request->input('charts', []);
+
+            $pdf = Pdf::loadView('pdf.client', compact(
+                'clients',
+                'startDate',
+                'endDate',
+                'charts',
+            ))
+            ->setPaper('letter', 'portrait');
+
+            return $pdf->stream("client-report-{$startDate}-{$endDate}.pdf");
+        } catch (Exception $e) {
+            return redirect()->back()->with('alertInfo', $e->getMessage());
+        }
     }
 }

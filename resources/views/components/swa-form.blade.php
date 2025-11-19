@@ -5,7 +5,7 @@
 ])
 <div class="bg-white shadow-sm rounded p-4">
     <h2>Social Worker's Assessment</h2>
-    <form action="{{ route('application.swa.save', ['id' => $application->id]) }}" method="post">
+    <form action="{{ route('burial-assistances.swa.save', ['id' => $application->id]) }}" method="post">
         @csrf
         @include('components.form-textarea', [
             'name' => 'swa',

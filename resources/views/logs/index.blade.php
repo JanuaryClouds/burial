@@ -1,33 +1,24 @@
-@extends('layouts.stisla.admin')
+@extends('layouts.metronic.admin')
 <title>Activity</title>
 @section('content')
-<div class="main-content">
-    <div class="section">
-        <div class="section-header">
-            <h1>Activity</h1>
+<div class="row">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title fs-2">Activity</h2>
+        </div>
+        <div class="card-body">
+            <x-activity-logs-table />
         </div>
     </div>
-    <div>
-        <div class="section-body">
-            <div class="card">
-                <div class="card-header">
-                    <h4>Activity</h4>
-                </div>
-                <div class="card-body">
-                    <x-activity-logs-table />
-                </div>
+    @if (auth()->user()->hasRole('superadmin'))
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title fs-2">Process Logs</h2>
             </div>
-            @if (auth()->user()->hasRole('superadmin'))
-                <div class="card">
-                    <div class="card-header">
-                        <h4>Process Logs</h4>
-                    </div>
-                    <div class="card-body">
-                        <x-process-logs-table />
-                    </div>
-                </div>
-            @endif
+            <div class="card-body">
+                <x-process-logs-table />
+            </div>
         </div>
-    </div>
+    @endif
 </div>
 @endsection

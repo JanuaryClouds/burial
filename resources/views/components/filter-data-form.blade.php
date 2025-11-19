@@ -30,13 +30,13 @@
             </div>
         </div>
         <div class="card-footer d-flex justify-content-between align-items-center">
-            <span class="d-flex align-items-baseline">
+            <span class="d-flex align-items-baseline gap-3">
                 <p class="text-muted mr-2 mb-0">Presets:</p>
                 <button class="btn btn-secondary mr-2" type="button" id="preset-year">This Year</button>
                 <button class="btn btn-secondary mr-2" type="button" id="preset-month-prev">Last Month</button>
                 <button class="btn btn-secondary mr-2" type="button" id="preset-month-now">This Month</button>
             </span>
-            <span class="d-flex align-items-center">
+            <span class="d-flex align-items-center gap-3">
                 <a href="{{ route('reports.' . $type) }}" class="btn btn-secondary mr-2">
                     <i class="fas fa-sync"></i>
                     Reset

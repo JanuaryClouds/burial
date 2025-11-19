@@ -12,43 +12,41 @@
 <h5 class="card-title">I. CLIENT'S IDENTIFYING INFORMATION</h5>
     <div class="d-flex flex-column gap-4">
         <div class="row">
-            <div class="col-12 col-md-12 col-lg-4">
+            <div class="col-6 col-md-6 col-lg-3">
                 <x-form-input 
                     name="first_name"
-                    label="1.1 Client's First Name"
+                    label="1.1 First Name"
                     required="true"
                     value="{{ $client->first_name ?? null }}"
                     :readonly="$readonly"
                 />
             </div>
-            <div class="col-12 col-md-12 col-lg-3">
+            <div class="col-6 col-md-6 col-lg-2">
                 <x-form-input 
                     name="middle_name"
-                    label="1.2 Client's Middle Name"
+                    label="1.2 Middle Name"
                     value="{{ $client->middle_name ?? null }}"
                     :readonly="$readonly"
                 />
             </div>
-            <div class="col-12 col-md-12 col-lg-3">
+            <div class="col-8 col-md-8 col-lg-2">
                 <x-form-input 
                     name="last_name"
-                    label="1.3 Client's Last Name"
+                    label="1.3 Last Name"
                     required="true"
                     value="{{ $client->last_name ?? null }}"
                     :readonly="$readonly"
                 />
             </div>
-            <div class="col-12 col-md-12 col-lg-2">
+            <div class="col-4 col-md-4 col-lg-1">
                 <x-form-input 
                     name="suffix"
-                    label="1.4 Client's Suffix"
+                    label="1.4 Suffix"
                     value="{{ $client->suffix ?? null }}"
                     :readonly="$readonly"
                 />
             </div>
-        </div>
-        <div class="row">
-            <div class="col-6 col-md-6 col-lg-2">
+            <div class="col-4 col-md-4 col-lg-1">
                 <x-form-input 
                     name="age"
                     label="2. Age"
@@ -58,7 +56,7 @@
                     :readonly="$readonly"
                 />
             </div>
-            <div class="col-6 col-md-6 col-lg-2">
+            <div class="col-4 col-md-4 col-lg-1">
                 <x-form-select 
                     name="sex_id"
                     label="3. Sex"
@@ -68,7 +66,7 @@
                     disabled="{{ $readonly }}"
                 />
             </div>
-            <div class="col-12 col-md-3 col-lg-2">
+            <div class="col-4 col-md-4 col-lg-2">
                 <x-form-input
                     name="date_of_birth"
                     label="4. Date of Birth"
@@ -78,10 +76,7 @@
                     :readonly="$readonly"
                 />
             </div>
-        </div>
-        <hr>
-        <div class="row">
-            <div class="col-12 col-md-12 col-lg-2">
+            <div class="col-4 col-md-4 col-lg-2">
                 <x-form-input
                     name="house_no"
                     label="5.1. House Number"
@@ -91,7 +86,7 @@
                     :readonly="$readonly"
                 />
             </div>
-            <div class="col-12 col-md-12 col-lg-4">
+            <div class="col-8 col-md-8 col-lg-4">
                 <x-form-input
                     name="street"
                     label="5.2. Street"
@@ -101,7 +96,7 @@
                     :readonly="$readonly"
                 />
             </div>
-            <div class="col-12 col-md-12 col-lg-3">
+            <div class="col-6 col-md-6 col-lg-2">
                 <x-form-select
                     name="barangay_id"
                     label="5.3 Barangay"
@@ -111,7 +106,7 @@
                     :disabled="$readonly"
                 />
             </div>
-            <div class="col-12 col-md-12 col-lg-2">
+            <div class="col-6 col-md-6 col-lg-1">
                 <x-form-select
                     name="district_id"
                     label="5.4. District"
@@ -121,9 +116,7 @@
                     :disabled="$readonly"
                 />
             </div>
-        </div>
-        <div class="row">
-            <div class="col-12 col-md-12 col-lg-4">
+            <div class="col-12 col-md-12 col-lg-2">
                 <x-form-input
                     name="city"
                     label="5.5. City"
@@ -189,7 +182,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-12 col-md-6 col-lg-6">
+            <div class="col-12 col-md-6 col-lg-3">
                 <x-form-input 
                     name="skill"
                     label="11. Skills/Occupation"
@@ -198,7 +191,7 @@
                     :readonly="$readonly"
                 />
             </div>
-            <div class="col-12 col-md-6 col-lg-6">
+            <div class="col-12 col-md-6 col-lg-3">
                 <x-form-input 
                     name="income"
                     label="12. Estimated Monthly Income"
@@ -207,9 +200,7 @@
                     :readonly="$readonly"
                 />
             </div>
-        </div>
-        <div class="row">
-            <div class="col-12 col-md-8 col-lg-6">
+            <div class="col-12 col-md-6 col-lg-3">
                 <x-form-input
                     name="philhealth"
                     label="13. PhilHealth Number"
@@ -218,7 +209,7 @@
                     :readonly="$readonly"
                 />
             </div>
-            <div class="col-12 col-md-8 col-lg-6">
+            <div class="col-12 col-md-6 col-lg-3">
                 <x-form-input
                     name="contact_no"
                     label="14. Contact Number"

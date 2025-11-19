@@ -1,17 +1,17 @@
 @props(['applications'])
 <div class="card">
     <div class="card-header">
-        <h4>Assigned Burial Assistance Applications</h4>
+        <h2 class="card-title fw-medium fs-2">Assigned Burial Assistance Applications</h4>
     </div>
     <div class="card-body">
         @if ($applications->isEmpty())
             No assigned applications.
         @else
-            <div class="table-responsive">
-                <div class="dataTables_wrapper container-fluid">
+            <div class="table-responsive overflow-x-hidden">
+                <div class="dataTables_wrapper">
                     <table id="assigned-applications-table" class="table data-table" style="width:100%">
-                        <thead>
-                            <tr role="row">
+                        <thead class="border-bottom border-bottom-1 border-gray-200 fs-7 fw-bold">
+                            <tr role="row" class="text-uppercase">
                                 <th class="sorting">Tracking No.</th>
                                 <th class="sorting">Deceased</th>
                                 <th class="sorting">Date of Death</th>
@@ -24,7 +24,7 @@
                         </thead>
                         <tbody>
                             @foreach ($applications as $application)
-                                <tr class="bg-white">
+                                <tr class="border-bottom border-bottom-1 border-gray-200">
                                     <td>{{ $application->tracking_no }}</td>
                                     <td>
                                         {{ $application->deceased->first_name }}
@@ -55,7 +55,7 @@
                                     </td>
                                     <td>{{ $application->application_date }}</td>
                                     <td>
-                                        {{ $application->processLogs->last()->date_in ?? "Submitted on: " . $application->application_date }}
+                                        {{ $application->processLogs->last()->date_in ?? "" }}
                                         @php
                                             $logs = $application->processLogs->sortBy('created_at');
                                         @endphp
