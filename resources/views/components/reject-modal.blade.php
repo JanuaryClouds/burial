@@ -17,13 +17,11 @@
                     @endif
                 </div>
                 <div class="modal-footer">
-                    <button class="btn {{ $application->status != "rejected" ? 'bg-danger text-white' : 'bg-success' }}" type="submit">
-                        <i class="fas {{ $application->status != "rejected" ? 'fa-times-circle' : 'fa-rotate-left' }}"></i>
-                        {{ $application->status == "rejected" ? "Restore Application" : "Reject Application" }}
-                    </button>
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">
-                        <i class="fas fa-times-circle"></i>
+                    <button class="btn btn-light" type="button" data-dismiss="modal">
                         Cancel
+                    </button>
+                    <button class="btn {{ $application->status != "rejected" ? 'bg-danger text-white' : 'bg-success' }}" type="submit">
+                        {{ $application->status == "rejected" ? "Restore Application" : "Reject Application" }}
                     </button>
                 </div>
             </form>

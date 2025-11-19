@@ -1,10 +1,7 @@
 <div class="section-body">
     <div class="card">
-        <!-- <div class="card-header">
-            <h4>{{ Str::ucfirst($status) }} Applications</h4>
-        </div> -->
         <div class="card-body">
-            <div class="d-flex justify-content-between">
+            <div class="d-flex justify-content-between gap-3">
                 @if (Request::is('applications/all'))
                     <div class="form-group w-100 mr-2">
                         <label for="filter-status">Filter by Status</label>
@@ -26,7 +23,7 @@
                     </div>
                 <div class="form-group w-100 mr-2">
                     <label for="filter-barangay">Filter by Barangay</label>
-                    <select name="filter-barangay" id="filter-barangay" class="custom-select w-100">
+                    <select name="filter-barangay" id="filter-barangay" class="form-control w-100">
                         <option value="all">All</option>
                         @foreach ($barangays as $b)
                             <option value="{{ $b->name }}">{{ $b->name }}</option>
@@ -42,9 +39,9 @@
             </div>
 
             <div class="table-responsive mt-4">
-                <div class="dataTables_wrapper container-fluid">
+                <div class="dataTables_wrapper">
                     <table id="applications-table" class="table data-table" style="width:100%">
-                        <thead>
+                        <thead class="border-bottom border-bottom-1 border-gray-200 fw-bold">
                             <tr role="row">
                                 <th class="sorting">Tracking No.</th>
                                 <th class="sorting">Deceased</th>
@@ -52,7 +49,7 @@
                                 <th class="sorting">Claimant</th>
                                 <th class="sorting sort-handler">Submitted on</th>
                                 <th>Last Update</th>
-                                @if (Request::is('applications/*'))
+                                @if (Route::is('burial-assistances*'))
                                     <th class="sorting">Status</th>
                                 @endif
                                 <th class="">Actions</th>
@@ -60,7 +57,7 @@
                         </thead>
                         <tbody>
                             @foreach ($applications as $application)
-                                <tr class="bg-white">
+                                <tr class="">
                                     <td>{{ $application->tracking_no }}</td>
                                     <td>
                                         {{ $application->deceased->first_name }}
@@ -100,7 +97,7 @@
                                         {{ $application->processLogs->last()->date_in ?? "Submitted on: " . $application->application_date }}
                                         <p class="text-muted">{{ $application->processLogs->count() > 1 ? '(' . $application->processLogs->last()->loggable?->description . ')' : '' }}</p>
                                     </td>
-                                    @if (Request::is('applications/*'))
+                                    @if (Route::is('burial-assistances*'))
                                         <td>
                                             @if ($application->status === 'pending')
                                                 <span class="badge badge-pill badge-warning">{{ ucfirst($application->status) }}</span>
@@ -138,7 +135,7 @@
             order: [[4, 'asc']],
             dom:
                 // First row: buttons on the left, filter on the right
-                "<'row mb-2'<'col-sm-6 d-flex align-items-center'l<'mr-3'>><'col-sm-6 d-flex justify-content-end align-items-center'f<'ml-3'>B>>" +
+                "<'row mb-2'<'col-sm-6 d-flex align-items-center'l<'mr-3'>><'col-sm-6 d-flex justify-content-end align-items-center'f<'me-3'>B>>" +
                 // Table
                 "<'row'<'col-12'tr>>" +
                 // Bottom row: info and pagination

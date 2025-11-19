@@ -46,10 +46,10 @@
                 <h4>Details</h4>
             </div>
             <div class="card-body">
-                <div class="table-responsive">
-                    <div class="dataTables_wrapper container-fluid">
+                <div class="table-responsive overflow-x-hidden">
+                    <div class="dataTables_wrapper">
                         <table id="generic-table" class="table data-table generic-table" style="width:100%">
-                            <thead>
+                            <thead class="border-bottom border-bottom-1 border-gray-200 fw-bold">
                                 <tr role="row">
                                     @foreach ($claimants->first()->getAttributes() as $column => $value)
                                         @php
@@ -63,7 +63,7 @@
                             </thead>
                             <tbody>
                                 @foreach ($claimants as $entry)
-                                    <tr class="bg-white">
+                                    <tr class="">
                                         @foreach ($entry->getAttributes() as $key => $value)
                                             @if (!in_array($key, $excemptions))
                                                 @if ($key == 'barangay_id')

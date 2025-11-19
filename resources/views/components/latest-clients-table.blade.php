@@ -64,7 +64,11 @@
                                 <td>
                                     {{ Carbon\Carbon::parse($entry->created_at)->format('M d, Y') }}
                                 </td>
-                                <td></td>
+                                <td>
+                                    <a href="{{ route('clients.view', $entry->id) }}" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-eye pe-0"></i>
+                                    </a>
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>
