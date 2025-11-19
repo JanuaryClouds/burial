@@ -11,6 +11,11 @@
     src: url(../fonts/Helvetica.ttf);
 }
 
+@font-face {
+    font-family: Inter;
+    src: url(../fonts/Futura.ttf);
+}
+
 body {
     font-family: Helvetica;
 }
