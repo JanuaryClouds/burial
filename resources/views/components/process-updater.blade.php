@@ -28,13 +28,15 @@
     @foreach ($workflowSteps as $step)
         @if ($processLogs->count() == 0 || ($step?->order_no > $nextOrderNo))
             <div class="modal-dialog" role="document">
-                <form action="{{ route('application.addLog', ['id' => $application->id, 'stepId' => $step->id]) }}" method="post" id="addLogForm" enctype="multipart/form-data">
+                <form action="{{ route('burial-assistances.addLog', ['id' => $application->id, 'stepId' => $step->id]) }}" method="post" id="addLogForm" enctype="multipart/form-data">
                 @csrf
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="add-proces">Add Process Update</h5>
-                            <button class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
+                            <button class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal" aria-label="Close">
+                                <i class="ki-duotone ki-cross fs-1">
+                                    <span class="path1"></span><span class="path2"></span>
+                                </i>
                             </button>
                         </div>
                         <div class="modal-body">
@@ -113,13 +115,11 @@
                             </section>
                         </div>
                         <div class="modal-footer">
-                            <button class="btn btn-primary" type="submit">
-                                <i class="fas fa-check"></i>
-                                Submit
-                            </button>
-                            <button class="btn btn-secondary" type="button" data-dismiss="modal" aria-label="Close">
-                                <i class="fas fa-times"></i>
+                            <button class="btn btn-light" type="button" data-dismiss="modal" aria-label="Close">
                                 Cancel
+                            </button>
+                            <button class="btn btn-success" type="submit">
+                                Submit
                             </button>
                         </div>
                     </div>

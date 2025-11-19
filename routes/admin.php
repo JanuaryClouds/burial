@@ -34,8 +34,8 @@ Route::prefix('admin')
         // Route::resource('assistance', AssistanceController::class);
     });
 
-Route::get('applications/{status}', [BurialAssistanceController::class, 'applications'])
-    ->name('applications');
+Route::get('burial-assistances/{status}', [BurialAssistanceController::class, 'applications'])
+    ->name('burial-assistances');
 
 Route::get('/clients', [ClientController::class, 'index'])
     ->name('clients');
@@ -58,13 +58,13 @@ Route::post('/cleints/{id}/assessment', [ClientController::class, 'assessment'])
 Route::post('/clients/{id}/recommendation', [ClientController::class, 'recommendedService'])
     ->name('clients.recommendation.store');
     
-Route::name('application.')
-    ->prefix('application')
+Route::name('burial-assistances.')
+    ->prefix('burial-assistances/view')
     ->group(function () {
         Route::get('/{id}', [BurialAssistanceController::class, 'manage'])
             ->name('manage');
         
-        Route::post('{id}/claimant-change/{change}/decision', [ClaimantChangeController::class, 'decide'])
+        Route::post('/{id}/claimant-change/{change}/decision', [ClaimantChangeController::class, 'decide'])
             ->name('claimant-change.decision');
             
         Route::post('/{id}/addLog/{stepId}', [ProcessLogController::class, 'add'])

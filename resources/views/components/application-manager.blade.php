@@ -4,16 +4,16 @@
 @if ($processLogs->count() == 0 || $application->status != 'released')
     @if ($application->claimantChanges->count() == 0 || $claimantChange->status != 'pending')
         <div class="bg-white shadow-sm p-4">
-            <div class="d-flex justify-content-end">
+            <div class="d-flex justify-content-end gap-3">
                 <!-- TODO: Make these two links admin-only -->
-                <a href="{{ route('clients.gis-form', ['id' => $application->claimant->client_id]) }}" class="btn btn-secondary mr-2" data-no-loader>
+                <a href="{{ route('clients.gis-form', ['id' => $application->claimant->client_id]) }}" class="btn btn-light mr-2" data-no-loader>
                     Generate GIS Form
                 </a>
-                <a href="{{ route('application.certificate', ['id' => $application->id]) }}" class="btn btn-secondary mr-2" target="_blank">
+                <a href="{{ route('burial-assistances.certificate', ['id' => $application->id]) }}" class="btn btn-light mr-2" target="_blank">
                     Download Certificate
                 </a>
                 @if (app()->isLocal())
-                    <a href="{{ route('guest.burial-assistance.track-page', ['code' => $application->tracking_code]) }}" class="btn btn-info mr-2" target="_blank">
+                    <a href="{{ route('guest.burial-assistance.track-page', ['code' => $application->tracking_code]) }}" class="btn btn-light mr-2" target="_blank">
                         <i class="fas fa-eye"></i>
                         View as Guest
                     </a>
@@ -64,7 +64,7 @@
             </section>
             <x-form-input name="reason_for_change" id="reason_for_change" label="Reason for Change" placeholder="" value="{{ $claimantChange->reason_for_change }}" readonly="true" disabled="true" />
             <x-claimant-form :claimant="$claimantChange->newClaimant" :readonly="true" :disabled="true" />
-            <form action="{{ route('admin.application.claimant-change.decision', [
+            <form action="{{ route('burial-assistance.claimant-change.decision', [
                 'id' => $application->id,
                 'change' => $claimantChange->id
             ]) }}" method="post">

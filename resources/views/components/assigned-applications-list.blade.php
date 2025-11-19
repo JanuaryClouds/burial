@@ -55,7 +55,7 @@
                                     </td>
                                     <td>{{ $application->application_date }}</td>
                                     <td>
-                                        {{ $application->processLogs->last()->date_in ?? "Submitted on: " . $application->application_date }}
+                                        {{ $application->processLogs->last()->date_in ?? "" }}
                                         @php
                                             $logs = $application->processLogs->sortBy('created_at');
                                         @endphp
