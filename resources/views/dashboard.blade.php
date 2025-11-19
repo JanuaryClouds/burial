@@ -4,19 +4,15 @@
     static $modalsLoaded = false; 
 @endphp
 <title>Dashboard</title>
-@include('admin.partial.dashboard-cards')
-@can('manage-assignments')
-    <div class="row">
-        <div class="col-12 col-md-12 col-lg-12">
+@include('admin.partial.cards')
+<!-- TODO: Add assignment -->
+@cannot('manage-assignments')
+    <div class="row mt-5 mt-xl-8">
+        <div class="col-12">
             <x-assigned-applications-list />
         </div>
     </div>
 @endcan
-<div class="row mt-5 mt-xl-8">
-    <div class="col-12">
-        <x-assigned-applications-list />
-    </div>
-</div>
 <div class="row mt-5 mt-xl-8">
     <div class="col-12">
         <x-latest-clients-table />
