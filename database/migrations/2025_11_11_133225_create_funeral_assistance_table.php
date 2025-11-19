@@ -19,7 +19,7 @@ return new class extends Migration
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
             $table->dateTime('approved_at')->nullable();
-            $table->dateTime('submitted_at')->nullable();
+            $table->dateTime('forwarded_at')->nullable();
             $table->string('remarks')->nullable();
 
             $table->timestamps();
