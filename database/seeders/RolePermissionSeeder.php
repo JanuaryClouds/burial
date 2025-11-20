@@ -16,9 +16,9 @@ class RolePermissionSeeder extends Seeder
             'edit',
             'delete',
             'view',
-            'view-reports',
+            'view-reports', 
             'reject-applications',
-            'add-updates',
+            'add-updates', // IDEA: for models, specify the CRUD actions
             'view-logs',
             'manage-content',
             'manage-accounts',
