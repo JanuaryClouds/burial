@@ -1,4 +1,4 @@
-@extends('layouts.stisla.superadmin')
+@extends('layouts.metronic.admin')
 <title>Roles</title>
 @section('content')
 <div class="main-content">
@@ -10,11 +10,7 @@
     <div class="section-body">
         <div class="card">
             <div class="card-header d-flex justify-content-between">
-                <h4>Roles</h4>
-                <button class="btn btn-primary rounded py-1" type="button" data-toggle="modal" data-target="#new-role-modal">
-                    <i class="fas fa-plus"></i>
-                    Add New Roles
-                </button>
+                <h4 class="card-title">Roles</h4>
             </div>
             <div class="card-body">
                 <x-cms-data-table type="roles" :data="$data" />
@@ -28,13 +24,15 @@
 				<div class="modal-content">
 					<div class="modal-header">
 						<h5 class="modal-title" id="newContent">Add New {{ Str::substr(Str::ucfirst($type), 0, -1) }}</h5>
-						<button class="close" data-dismiss="modal" aria-label="Close">
-							<span aria-hidden="true">&times;</span>
+						<button class="btn btn-icon btn-sm btn-active-icon-primary" type="button" data-bs-dismiss="modal" aria-label="Close">
+							<i class="ki-duotone ki-cross fs-1">
+								<span class="path1"></span><span class="path2"></span>
+							</i>
 						</button>
 					</div>
 					<div class="modal-body">
 						@foreach ($data->last()->getAttributes() as $field => $value)
-							@if(!in_array($field, ['id','created_at','updated_at', 'email_verified_at', 'remember_token', 'is_active'])) 
+							@if(!in_array($field, ['id','created_at','updated_at', 'email_verified_at', 'guard_name', 'remember_token', 'is_active'])) 
 								<div class="form-group">
 									<label for="{{ $field }}">{{ ucfirst(str_replace('_',' ', $field)) }}</label>
 									<input type="text" 
@@ -65,13 +63,11 @@
 						@endif
 					</div>
 					<div class="modal-footer">
-						<button class="btn btn-primary" type="submit">
-							<i class="fas fa-save"></i>
-							Save
-						</button>
-						<button class="btn btn-secondary" type="button" data-dismiss="modal">
-							<i class="fas fa-times"></i>
+						<button class="btn btn-light" type="button" data-dismiss="modal">
 							Cancel
+						</button>
+						<button class="btn btn-primary" type="submit">
+							Save
 						</button>
 					</div>
 				</div>
