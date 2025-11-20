@@ -21,6 +21,8 @@
             <!-- begin::Menu wrapper -->
                 @includeWhen(Route::is('funeral-assistances.*'), 'admin.funeral.partial.action-buttons')
                 @includeWhen(Route::is('clients.*'), 'client.partial.action-buttons')
+                @includeWhen(Route::is('cms*') && auth()->user()->can('manage-content'), 'superadmin.partial.new-content')
+                @includeWhen(Route::is('role*') && auth()->user()->can('manage-roles'), 'superadmin.partial.new-role-btn')
             <!-- end::Menu wrapper -->
 
             <!-- begin::Theme mode -->
