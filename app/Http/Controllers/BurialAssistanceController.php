@@ -230,8 +230,9 @@ class BurialAssistanceController extends Controller
     }
 
     public function assignments() {
+        $page_title = "Burial Assistance Assignments";
         $applications = BurialAssistance::select('id', 'tracking_no', 'deceased_id', 'claimant_id', 'application_date', 'status', 'assigned_to')->get();
-        return view('superadmin.assignment', compact('applications'));
+        return view('superadmin.assignment', compact('applications', 'page_title'));
     }
 
     public function assign(Request $request, $id) {
