@@ -25,15 +25,18 @@
                         <tr class="bg-white">
                             @foreach ($log->getAttributes() as $key => $value)
                                 @if (!in_array($key, $excemptions))
+                                    <!-- TODO: remove hasRole -->
                                     @if (auth()->user()->hasRole('superadmin') && $key == 'causer_id')
                                         <td>{{ auth()->user()->where('id', $value)->first()->first_name ?? '' }}</td>
                                     @elseif ($key == 'properties')
                                         @php
-                                            $props = json_decode($value)
+                                            $props = $log->properties->toArray();
                                         @endphp
                                         <td>
-                                            {{ $props->ip }}
-                                            <p class="text-muted fs-5">{{ $props->browser }}</p>
+                                            {{ $props['ip'] ?? 'N/A' }}
+                                            <p class="text-muted">
+                                                ({{ $props['browser'] ?? 'N/A' }})
+                                            </p>
                                         </td>
                                     @else
                                         <td>{{ $value }}</td>
