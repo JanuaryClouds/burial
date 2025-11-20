@@ -2,7 +2,17 @@
 
 namespace App\Providers;
 
-// use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Gate;
+use App\Models\Role;
+use App\Models\Permission;
+use App\Models\Handler;
+use App\Models\WorkflowStep;
+use App\Models\User;
+use App\Models\BurialAssistance;
+use App\Models\FuneralAssistance;
+use App\Models\Client;
+use App\Models\ClientBeneficiary;
+use App\Policies\RolePolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
@@ -13,7 +23,7 @@ class AuthServiceProvider extends ServiceProvider
      * @var array<class-string, class-string>
      */
     protected $policies = [
-        //
+        // Role::class => RolePolicy::class
     ];
 
     /**
@@ -21,6 +31,53 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Gate::define('delete-resource', function ($user, $resource) {
+            $globalDeleteExceptions = [
+                BurialAssistance::class,
+                FuneralAssistance::class,
+                Client::class,
+                ClientBeneficiary::class,
+                Permission::class,
+                WorkflowStep::class,
+                Handler::class,
+                User::class,
+            ];
+
+            if (in_array(get_class($resource), $globalDeleteExceptions)) {
+                return false;
+            }
+
+            if ($resource instanceof Role && in_array($resource->id, [1,2,3,4])) {
+                return false;
+            }
+
+            return true;
+        });
+
+        Gate::define('update-resource', function ($user, $resource) {
+            $globalUpdateExceptions = [
+                BurialAssistance::class,
+                FuneralAssistance::class,
+                Client::class,
+                ClientBeneficiary::class,
+                Permission::class,
+                WorkflowStep::class,
+                Handler::class,
+            ];
+
+            if (in_array(get_class($resource), $globalUpdateExceptions)) {
+                return false;
+            }
+
+            if ($resource instanceof Role && in_array($resource->id, [1,2,3,4])) {
+                return false;
+            }
+
+            if ($resource instanceof User && in_array($resource->id, [1,2,3])) {
+                return false;
+            }
+
+            return true;
+        });
     }
 }
