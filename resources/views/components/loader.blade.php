@@ -2,7 +2,9 @@
     id="splashScreen"
     style="
         position: fixed; inset: 0; z-index: -1; display: flex; opacity: 0; align-items: center; justify-content: center; overflow: hidden;
-        background: url('{{ asset('images/splash_screen.png') }}') no-repeat center center / cover;
+        background: url('{{ asset('images/splash-screen-transparent.png') }}') no-repeat center center / cover;
+        background-color: #00000077;
+        backdrop-filter: blur(2px);
     "
 >
 <div class="container"></div>
@@ -10,7 +12,7 @@
 <style>
   .container {
     --uib-size: 80px;
-    --uib-color: black;
+    --uib-color: white;
     --uib-speed: 1.4s;
     --uib-stroke: 5px;
     --uib-bg-opacity: .1;
