@@ -2,7 +2,9 @@
     id="splashScreen"
     style="
         position: fixed; inset: 0; z-index: -1; display: flex; opacity: 0; align-items: center; justify-content: center; overflow: hidden;
-        background: url('{{ asset('images/splash_screen.png') }}') no-repeat center center / cover;
+        background: url('{{ asset('images/splash-screen-transparent.png') }}') no-repeat center center / cover;
+        background-color: #00000077;
+        backdrop-filter: blur(2px);
     "
 >
 <div class="container"></div>
@@ -10,7 +12,7 @@
 <style>
   .container {
     --uib-size: 80px;
-    --uib-color: black;
+    --uib-color: white;
     --uib-speed: 1.4s;
     --uib-stroke: 5px;
     --uib-bg-opacity: .1;
@@ -72,6 +74,13 @@
           return;
       }
 
+      function hideLoading() {
+          splash.style.zIndex = "-1";
+          splash.style.opacity = "0";
+          splash.style.transition = "opacity 0.3s ease";
+          return;
+      }
+
       document.querySelectorAll('form').forEach(defaultForm => {
           defaultForm.addEventListener("submit", function (e) {
               e.preventDefault();
@@ -86,20 +95,20 @@
       document.querySelectorAll('a[href]').forEach(link => {
           link.addEventListener("click", function (e) {
               const url = link.getAttribute('href');
-              link.target === '_blank' || link.hasAttribute('data-no-loader') ? null : e.preventDefault();
               if (
                   !url ||
                   url.startsWith('#') ||
                   url.startsWith('javascript:') ||
                   link.target === '_blank' ||
-                  url.includes('://') && !url.includes(window.location.host) ||
+                  (url.includes('://') && !url.includes(window.location.host)) ||
                   link.hasAttribute('data-no-loader')
               ) return;
+              e.preventDefault();
               triggerLoading();
               
               setTimeout(() => {
                   window.location.href = url;
-              }, 1000)
+              }, 500)
           });
       });
   });

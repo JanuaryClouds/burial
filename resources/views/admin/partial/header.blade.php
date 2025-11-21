@@ -21,6 +21,8 @@
             <!-- begin::Menu wrapper -->
                 @includeWhen(Route::is('funeral-assistances.*'), 'admin.funeral.partial.action-buttons')
                 @includeWhen(Route::is('clients.*'), 'client.partial.action-buttons')
+                @includeWhen(Route::is('cms*') && auth()->user()->can('manage-content'), 'superadmin.partial.new-content')
+                @includeWhen(Route::is('role*') && auth()->user()->can('manage-roles'), 'superadmin.partial.new-role-btn')
             <!-- end::Menu wrapper -->
 
             <!-- begin::Theme mode -->
@@ -51,7 +53,7 @@
                     data-kt-menu="true" data-kt-element="theme-mode-menu" style="">
                     <!--begin::Menu item-->
                     <div class="menu-item px-3 my-0">
-                        <a href="#" class="menu-link px-3 py-2 active" data-kt-element="mode" data-kt-value="light">
+                        <a id="theme-toggle" href="#" class="menu-link px-3 py-2 active" data-kt-element="mode" data-kt-value="light">
                             <span class="menu-icon" data-kt-element="icon">
                                 <i class="ki-duotone ki-night-day fs-2"><span class="path1"></span><span
                                         class="path2"></span><span class="path3"></span><span class="path4"></span><span
@@ -67,7 +69,7 @@
 
                     <!--begin::Menu item-->
                     <div class="menu-item px-3 my-0">
-                        <a href="#" class="menu-link px-3 py-2" data-kt-element="mode" data-kt-value="dark">
+                        <a id="theme-toggle" href="#" class="menu-link px-3 py-2" data-kt-element="mode" data-kt-value="dark">
                             <span class="menu-icon" data-kt-element="icon">
                                 <i class="ki-duotone ki-moon fs-2"><span class="path1"></span><span
                                         class="path2"></span></i> </span>
@@ -80,7 +82,7 @@
 
                     <!--begin::Menu item-->
                     <div class="menu-item px-3 my-0">
-                        <a href="#" class="menu-link px-3 py-2" data-kt-element="mode" data-kt-value="system">
+                        <a id="theme-toggle" href="#" class="menu-link px-3 py-2" data-kt-element="mode" data-kt-value="system">
                             <span class="menu-icon" data-kt-element="icon">
                                 <i class="ki-duotone ki-screen fs-2"><span class="path1"></span><span
                                         class="path2"></span><span class="path3"></span><span class="path4"></span></i>
@@ -158,5 +160,31 @@
 </div>
 
 <script>
+    const header = document.getElementById('main-header-web')
+    const darkBanner = "{{ asset('images/banner-dark.svg') }}";
+    const lightBanner = "{{ asset('images/banner-light.svg') }}";
+
+    document.querySelectorAll('[data-kt-element="mode"]').forEach(mode => {
+        mode.addEventListener('click', () => {
+            if (mode.getAttribute('data-kt-value') === 'light') {
+                header.style.background = `url('${lightBanner}') no-repeat center center / cover`;
+                header.style.backgroundColor = '#071437';
+            } else if (mode.getAttribute('data-kt-value') === 'dark') {
+                header.style.background = `url('${darkBanner}') no-repeat center center / cover`;
+                header.style.backgroundColor = '#071437';
+            } else if (mode.getAttribute('data-kt-value') === 'system') {
+                if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+                    header.style.background = `url('${lightBanner}') no-repeat center center / cover`;
+                    header.style.backgroundColor = '#071437';
+                } else {
+                    header.style.background = `url('${darkBanner}') no-repeat center center / cover`;
+                    header.style.backgroundColor = '#071437';
+                }
+            } else {
+                header.style.background = `url('${lightBanner}') no-repeat center center / cover`;
+                header.style.backgroundColor = '#071437';
+            }
+        })
+    })
 
 </script>

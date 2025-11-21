@@ -6,7 +6,7 @@
     data-kt-menu-placement="right-start" 
     @class([
         'menu-item',
-        'here' => Route::is('activity-logs'),
+        'here' => Route::is('activity*'),
     ])
 >
     <!--begin:Menu link-->

@@ -25,6 +25,7 @@
                         <tr class="bg-white">
                             @foreach ($log->getAttributes() as $key => $value)
                                 @if (!in_array($key, $excemptions))
+                                    <!-- TODO: remove hasRole -->
                                     @if (auth()->user()->hasRole('superadmin') && $key == 'added_by')
                                         <td>{{ auth()->user()->where('id', $value)->first()->first_name ?? '' }}</td>
                                     @elseif ($key == 'burial_assistance_id')

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Role;
+use Spatie\Permission\Models\Role;
 use App\DataTables\CmsDataTable;
 use App\Services\RoleService;
 use App\Http\Requests\RoleRequest;
@@ -36,7 +36,7 @@ class RoleController extends Controller
     // }
 
     public function index() {
-        $data = Role::getAllRoles();
+        $data = Role::select('id', 'name', 'guard_name')->get();
         $type = 'roles';
         return view('superadmin.roles', compact('data', 'type'));
     }
@@ -46,14 +46,22 @@ class RoleController extends Controller
         $request['guard_name'] = 'web';
         $role = $this->roleServices->storeRole($request->validated());
 
+        if (!$role) {
+            return redirect()
+                ->back()
+                ->with('error', 'Role creation failed.');
+        }
+
+        $role->syncPermissions($request->permissions);
+
         activity()
             ->causedBy(Auth::user())
             ->performedOn($role)
             ->log('Created a new role: ' . $role->name);
 
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first() . '.role.index')
-            ->with('success', 'Role created successfully.');
+            ->back()
+            ->with('alertSuccess', 'Role created successfully.');
     }
     
     public function update(RoleRequest $request, Role $role)
@@ -68,8 +76,8 @@ class RoleController extends Controller
             ->log('Updated the role: ' . $role->name);
             
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first() . '.role.index')
-            ->with('success', 'Role updated successfully.');
+            ->back()
+            ->with('alertSuccess', 'Role updated successfully.');
     }
     
     public function destroy(Role $role)
@@ -82,7 +90,7 @@ class RoleController extends Controller
             ->log('Deleted the role: ' . $role->name);
             
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first() . '.role.index')
-            ->with('success', 'Role deleted successfully.');
+            ->back()
+            ->with('alertSuccess', 'Role deleted successfully.');
     }
 }

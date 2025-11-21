@@ -54,7 +54,7 @@
                 name="ben_sex_id"
                 label="2. Sex"
                 required="true"
-                :options="$genders"
+                :options="$beneficiary->sex ?? $genders"
                 :selected="$beneficiary->sex->id ?? ''"
                 :disabled="$readonly"
             />
@@ -84,7 +84,7 @@
                 name="ben_religion_id"
                 label="Religion"
                 required="true"
-                :options="$religions"
+                :options="$beneficiary->religion ?? $religions"
                 :selected="$beneficiary->religion->id ?? ''"
                 :disabled="$readonly"
                 />
@@ -106,7 +106,7 @@
                 name="ben_barangay_id"
                 label="4.2. Barangay"
                 required="true"
-                :options="$barangays"
+                :options="$beneficiary->barangay ?? $barangays"
                 :selected="$beneficiary->barangay->id ?? ''"
                 :disabled="$readonly"
             />

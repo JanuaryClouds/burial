@@ -39,7 +39,7 @@ Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 require __DIR__ . '/guest.php';
 require __DIR__ . '/api.php';
 
-Route::middleware(['auth',])
+Route::middleware(['auth'])
     ->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])
             ->name('dashboard');

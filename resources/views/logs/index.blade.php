@@ -10,8 +10,9 @@
             <x-activity-logs-table />
         </div>
     </div>
+    <!-- TODO: remove hasRole -->
     @if (auth()->user()->hasRole('superadmin'))
-        <div class="card">
+        <div class="card mt-8">
             <div class="card-header">
                 <h2 class="card-title fs-2">Process Logs</h2>
             </div>

@@ -60,6 +60,7 @@ class CmsController extends Controller
                 return redirect()->back()->with('alertSuccess', Str::ucfirst($religion->name) . ' added Successfully');
             }
             if ($type == 'roles') {
+                dd($request->all());
                 $data = $request->validate([
                     'name' => 'required|string|max:255',
                 ]);
@@ -146,6 +147,15 @@ class CmsController extends Controller
                     return redirect()->back()->with('alertError', Str::ucfirst($tempName) . ' not found');
                 }
             }
+            if ($type == 'roles') {
+                $role = Role::find($id);
+                $tempName = $role->name;
+                if ($role) {
+                    $role->delete();
+                } else {
+                    return redirect()->back()->with('alertError', Str::ucfirst($tempName) . ' not found');
+                }
+            }
             return redirect()->back()->with('alertSuccess', Str::ucfirst($tempName) . ' deleted Successfully');
         } catch (Exception $e) {
             return redirect()->back()->with('alertError', $e->getMessage());
@@ -153,6 +163,7 @@ class CmsController extends Controller
     }
 
     public function barangays() {
+        $page_title = 'CMS - Barangays';
         try {
             $data = Barangay::select('id', 'name', 'district_id', 'remarks')
                 ->get();
@@ -167,8 +178,9 @@ class CmsController extends Controller
                 ],
                 'remarks' => ['label' => 'remarks', 'type' => 'text'],
             ];
-            return view('superadmin.cms', compact(
-                ['data', 
+            return view('superadmin.cms', compact([
+                'data',
+                'page_title', 
                 'fields', 
                 'districts', 
                 'type', 
@@ -179,6 +191,7 @@ class CmsController extends Controller
     }
 
     public function relationships() {
+        $page_title = 'CMS - Relationships';
         try {
             $data = Relationship::select('id', 'name', 'remarks')->get();
             $type = 'relationships';
@@ -187,82 +200,37 @@ class CmsController extends Controller
                 'remarks' => ['label' => 'name', 'type' => 'text'],
             ];
     
-            return view('superadmin.cms', compact('data', 'type', 'fields'));
+            return view('superadmin.cms', compact('data', 'page_title', 'type', 'fields'));
         } catch (Exception $e) {
             return redirect()->back()->with('alertError', $e->getMessage());            
         }
     }
 
-    // ! Depracated
-    public function burialAssistanceRequests() {
-        $data = BurialAssistanceRequest::all();
-        $type = 'requests';
-        $fields = [
-            'uuid' => ['label' => 'uuid', 'type' => 'text'],
-            'deceased_lastname' => ['label' => 'deceased_lastname', 'type' => 'text'],
-            'deceased_firstname' => ['label' => 'deceased_firstname', 'type' => 'text'],
-            'status' => [
-                'label' => 'status',
-                'type' => 'select',
-                'options' => [
-                    'pending' => 'Pending',
-                    'approved' => 'Approved',
-                    'declined' => 'Declined',
-                ]
-            ],
-        ];
-        return view('superadmin.cms', compact('data', 'type', 'fields'));
-    }
-
-    // ! Depracated
-    public function burialServices() {
-        $data = BurialService::all();
-        $type = 'services';
-        $fields = [
-            'deceased_lastname' => ['label' => 'deceased_lastname', 'type' => 'text'],
-            'deceased_firstname' => ['label' => 'deceased_firstname', 'type' => 'text'],
-        ];
-        return view('superadmin.cms', compact('data', 'type', 'fields'));
-    }
-    
-    // ! Depracated
-    public function burialServiceProviders() {
-        $data = BurialServiceProvider::all();
-        $type = 'providers';
-        $barangays = Barangay::all();
-        $fields = [
-            'name' => ['label' => 'name', 'type' => 'text'],
-            'address' => ['label' => 'address', 'type' => 'text'],
-            'barangay_id' => [
-                'label' => 'barangay_id',
-                'type' => 'select',
-                'options' => $barangays
-            ],
-        ];
-        return view('superadmin.cms', compact('data', 'type', 'fields', 'barangays'));
-    }
-
     public function workflow() {
+        $page_title = 'CMS - Workflow';
         $data = WorkflowStep::select('id', 'order_no', 'description')->get();
         $type = 'workflows';
-        return view('superadmin.cms', compact('data', 'type'));
+        return view('superadmin.cms', compact('data', 'page_title', 'type'));
     }
 
     public function handlers() {
+        $page_title = 'CMS - Handlers';
         $data = Handler::select('id', 'name', 'type', 'department')->get();
         $type = 'handlers';
-        return view('superadmin.cms', compact('data', 'type'));
+        return view('superadmin.cms', compact('data', 'page_title', 'type'));
     }
 
     public function users() {
+        $page_title = 'CMS - Users';
         $data = User::select('id', 'first_name', 'middle_name', 'last_name', 'email', 'password', 'contact_number', 'is_active')->get();
         $type = 'users';
-        return view('superadmin.cms', compact('data', 'type'));
+        return view('superadmin.cms', compact('data', 'page_title', 'type'));
     }
 
     public function religions() {
+        $page_title = 'CMS - Relitions';
         $data = Religion::select('id', 'name', 'remarks')->get();
         $type = 'religions';
-        return view('superadmin.cms', compact('data', 'type'));
+        return view('superadmin.cms', compact('data', 'page_title', 'type'));
     }
 }

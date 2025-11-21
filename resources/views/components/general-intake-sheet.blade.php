@@ -78,10 +78,12 @@
                     <li class="nav-item">
                         <a class="nav-link" data-bs-toggle="tab" href="#documents_tab">Documents</a>
                     </li>
-                    @can('write-assessments')
+                    @can('assess-applications')
                         <li class="nav-item">
                             <a class="nav-link" data-bs-toggle="tab" href="#assessment_tab">Assessment</a>
                         </li>
+                    @endcan
+                    @can('recommend-services')
                         <li class="nav-item">
                             <a class="nav-link" data-bs-toggle="tab" href="#service_tab">Service</a>
                         </li>
@@ -103,11 +105,12 @@
                 <div class="tab-pane fade" id="documents_tab" role="tabpanel">
                     @include('client.partial.documents')
                 </div>
-
-                @can('write-assessments')
+                @can('assess-applications')
                     <div class="tab-pane fade" id="assessment_tab" role="tabpanel">
                         @include('client.partial.beneficiaryAssessment')
                     </div>
+                @endcan
+                @can('recommend-services')
                     <div class="tab-pane fade" id="service_tab" role="tabpanel">
                         @include('client.partial.recommendedAssistance')
                     </div>

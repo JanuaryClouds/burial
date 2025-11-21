@@ -13,12 +13,12 @@
 		<!--begin::Aside menu-->
         <div class="w-100 hover-scroll-y scroll-lg-ms d-flex ps-lg-3" data-kt-scroll="true" data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-height="auto" data-kt-scroll-dependencies="#kt_aside_logo, #kt_aside_footer" data-kt-scroll-wrappers="#kt_aside, #kt_aside_menu" data-kt-scroll-offset="0">
             <div id="kt_aside_menu" class="menu menu-column menu-title-gray-600 menu-state-primary menu-state-icon-primary menu-state-bullet-primary menu-icon-gray-500 menu-arrow-gray-500 fw-semibold fs-6 my-auto" data-kt-menu="true">
-                @include('admin.partial.sidebar-common')
+				@include('admin.partial.sidebar-common')
+                @includeIf('admin.partial.sidebar-records')
+				@includeWhen(auth()->user()->can('manage-content'), 'superadmin.partial.sidebar-cms')
                 @includeWhen(auth()->user()->can('view-reports'), 'admin.partial.sidebar-reports')
-                @include('admin.partial.sidebar-clients')
-                @include('admin.partial.sidebar-funeral')
-                @include('admin.partial.sidebar-burial')
 				@includeWhen(auth()->user()->can('view-logs'), 'admin.partial.sidebar-logs')
+				@includeWhen(auth()->user()->can('manage-roles'),'admin.partial.sidebar-system')
             </div>
         </div>
     </div>

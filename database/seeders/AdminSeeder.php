@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use Hash;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\User;
@@ -22,7 +23,7 @@ class AdminSeeder extends Seeder
                 'middle_name'    => 'System',
                 'last_name'      => 'Admin',
                 'contact_number' => '09123456789',
-                'password'       => bcrypt('funeral.password'),
+                'password'       => 'funeral.password',
             ]
         );
 
@@ -33,7 +34,7 @@ class AdminSeeder extends Seeder
                 'middle_name'    => 'Admin',
                 'last_name'      => 'Admin',
                 'contact_number' => '09987654321',
-                'password'       => bcrypt('funeral.password'),
+                'password'       => 'funeral.password',
             ]
         );
 
@@ -44,7 +45,7 @@ class AdminSeeder extends Seeder
                 'middle_name'    => null,
                 'last_name'      => 'Admin',
                 'contact_number' => '09234567891',
-                'password'       => bcrypt('funeral.password'),
+                'password'       => 'funeral.password',
             ]
         );
 
@@ -52,7 +53,9 @@ class AdminSeeder extends Seeder
         $deptAdmin->assignRole($deptAdminRole);
         $admin->assignRole($adminRole);
 
-        $adminFactories = User::factory()->count(5)->create();
+        $adminFactories = User::factory()->count(5)->create([
+            'password' => 'funeral.password',
+        ]);
         foreach ($adminFactories as $adminFactory) {
             $adminFactory->assignRole($adminRole);
         }

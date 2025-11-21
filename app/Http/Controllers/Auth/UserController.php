@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Services\Auth\UserService;
 use App\Http\Requests\Auth\LoginRequest;
 use Exception;
+use Hash;
 use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
@@ -23,7 +24,7 @@ class UserController extends Controller
         try {
             $ip = request()->ip();
             $browser = request()->header('User-Agent');
-    
+
             if (Auth::attempt($request->validated())) {
                 $user = Auth::user();
                 if ($user->is_active) {
@@ -40,16 +41,13 @@ class UserController extends Controller
                     return redirect()->back()->with('alertWarning', 'Your account is inactive. Please contact the superadmin.');
                 }
             } else {
-                activity()
-                    ->causedBy(null)
-                    ->withProperties(['ip' => $ip, 'browser' => $browser])
-                    ->log("Unsuccessful login attempt");
-                    
-                return redirect()
-                    ->back()
-                    ->with('error', 'Invalid login credentials.');
-            }   
+                return redirect()->back()->with('alertError', 'Invalid username or password.');
+            }
         } catch (Exception $e) {
+            activity()
+                ->causedBy(null)
+                ->withProperties(['ip' => $ip, 'browser' => $browser])
+                ->log("Unsuccessful login attempt");
             return redirect()->back()->with('alertError', $e->getMessage());
         }
     }
