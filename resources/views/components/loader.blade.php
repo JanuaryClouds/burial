@@ -74,6 +74,13 @@
           return;
       }
 
+      function hideLoading() {
+          splash.style.zIndex = "-1";
+          splash.style.opacity = "0";
+          splash.style.transition = "opacity 0.3s ease";
+          return;
+      }
+
       document.querySelectorAll('form').forEach(defaultForm => {
           defaultForm.addEventListener("submit", function (e) {
               e.preventDefault();
@@ -88,20 +95,20 @@
       document.querySelectorAll('a[href]').forEach(link => {
           link.addEventListener("click", function (e) {
               const url = link.getAttribute('href');
-              link.target === '_blank' || link.hasAttribute('data-no-loader') ? null : e.preventDefault();
               if (
                   !url ||
                   url.startsWith('#') ||
                   url.startsWith('javascript:') ||
                   link.target === '_blank' ||
-                  url.includes('://') && !url.includes(window.location.host) ||
+                  (url.includes('://') && !url.includes(window.location.host)) ||
                   link.hasAttribute('data-no-loader')
               ) return;
+              e.preventDefault();
               triggerLoading();
               
               setTimeout(() => {
                   window.location.href = url;
-              }, 1000)
+              }, 500)
           });
       });
   });
