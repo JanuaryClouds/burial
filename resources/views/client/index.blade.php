@@ -26,7 +26,7 @@
                     </thead>
                     <tbody>
                         @foreach ($data as $entry)
-                            @if (!$entry->hasApplication())
+                            @if (!$entry->claimant && !$entry->funeralAssistance)
                                 <tr class="">
                                     @foreach ($entry->getAttributes() as $key =>$value)
                                         @if (in_array($key, $renderColumns))
