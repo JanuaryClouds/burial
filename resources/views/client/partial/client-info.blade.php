@@ -62,7 +62,7 @@
                     label="3. Sex"
                     required="true"
                     :selected="$demographic->sex->id ?? ''"
-                    :options="$genders"
+                    :options="$demographic->sex ?? $genders"
                     disabled="{{ $readonly }}"
                 />
             </div>
@@ -101,7 +101,7 @@
                     name="barangay_id"
                     label="5.3 Barangay"
                     required="true"
-                    :options="$barangays"
+                    :options="$client->barangay ?? $barangays"
                     :selected="$client->barangay->id ?? ''"
                     :disabled="$readonly"
                 />
@@ -111,7 +111,7 @@
                     name="district_id"
                     label="5.4. District"
                     required="true"
-                    :options="$districts"
+                    :options="$client->district ?? $districts"
                     :selected="$client->district->id ?? ''"
                     :disabled="$readonly"
                 />
@@ -133,7 +133,7 @@
                     name="relationship_id"
                     label="6. Relationship to Beneficiary"
                     required="true"
-                    :options="$relationships"
+                    :options="$socialInfo->relationship ?? $relationships"
                     :selected="$socialInfo->relationship->id ?? ''"
                     :disabled="$readonly"
                 />
@@ -143,7 +143,7 @@
                     name="civil_id"
                     label="7. Civil Status"
                     required="true"
-                    :options="$civilStatus"
+                    :options="$socialInfo->civil ?? $civilStatus"
                     :selected="$socialInfo->civil->id ?? ''"
                     :disabled="$readonly"
                 />
@@ -156,7 +156,7 @@
                     name="religion_id"
                     label="8. Religion"
                     required="true"
-                    :options="$religions"
+                    :options="$demographic->religion ?? $religions"
                     :selected="$demographic->religion->id ?? ''"
                     :disabled="$readonly"
                 />
@@ -166,7 +166,7 @@
                     name="nationality_id"
                     label="9. Nationality"
                     required="true"
-                    :options="$nationalities"
+                    :options="$demographic->nationality ?? $nationalities"
                     :selected="$demographic->nationality->id ?? ''"
                     :disabled="$readonly"
                 />
@@ -175,7 +175,7 @@
                 <x-form-select 
                     name="education_id"
                     label="10. Educational Attainment"
-                    :options="$educations"
+                    :options="$socialInfo->education ?? $educations"
                     :selected="$socialInfo->education->id ?? ''"
                     :disabled="$readonly"
                 />

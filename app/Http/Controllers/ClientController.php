@@ -40,7 +40,12 @@ class ClientController extends Controller
         $page_title = 'Clients';
         $resource = 'client';
         $renderColumns = ['tracking_no', 'first_name', 'house_no', 'street', 'barangay_id', 'contact_no'];
-        $data = Client::select(
+        $data = Client::with([
+            'barangay', 
+            'claimant',
+            'funeralAssistance',
+        ])
+            ->select(
                 'id',
                 'tracking_no',
                 'first_name',
@@ -50,11 +55,14 @@ class ClientController extends Controller
                 'street',
                 'barangay_id',
                 'contact_no',
-            )->get();
+                'created_at'
+            )
+            ->orderBy('created_at', 'desc')
+            ->get();
 
-        $clientsWithInterview = Client::whereHas('interviews')->get()->count();
-        $clientsWithAssessments = Client::whereHas('assessment')->get()->count();
-        $clientsWithRecommendation = Client::whereHas('recommendation')->get()->count();
+        $clientsWithInterview = Client::with('interviews')->whereHas('interviews')->get()->count();
+        $clientsWithAssessments = Client::with('assessment')->whereHas('assessment')->get()->count();
+        $clientsWithRecommendation = Client::with('recommendation')->whereHas('recommendation')->get()->count();
 
         $cardData = [
             [
@@ -96,22 +104,40 @@ class ClientController extends Controller
 
     public function view($id) {
         $resource = 'client';
-        $client = Client::find($id);
+        $client = Client::with([
+            'barangay',
+            'district',
+            'socialInfo',
+            'socialInfo.relationship',
+            'socialInfo.education',
+            'socialInfo.civil',
+            'demographic',
+            'demographic.sex',
+            'demographic.religion',
+            'demographic.nationality',
+            'assessment',
+            'recommendation',
+            'beneficiary',
+            'beneficiary.sex',
+            'beneficiary.barangay',
+            'beneficiary.religion',
+        ])  
+            ->find($id);
         $page_title = $client->first_name . ' ' . $client->last_name . "'s Application";
         $page_subtitle = $client->tracking_no . ' - ' . $client->id;
         $readonly = true;
 
         if ($client) {
-            $genders = Sex::select('id', 'name')->get()->pluck('name', 'id');
-            $relationships = Relationship::select('id', 'name')->get()->pluck('name', 'id');
-            $civilStatus = CivilStatus::select('id', 'name')->get()->pluck('name', 'id');
-            $religions = Religion::select('id', 'name')->get()->pluck('name', 'id');
-            $nationalities = Nationality::select('id', 'name')->get()->pluck('name', 'id');
-            $educations = Education::select('id', 'name')->get()->pluck('name', 'id');
-            $assistances = Assistance::select('id', 'name')->get()->pluck('name', 'id');
+            // $genders = Sex::select('id', 'name')->get()->pluck('name', 'id');
+            // $relationships = Relationship::select('id', 'name')->get()->pluck('name', 'id');
+            // $civilStatus = CivilStatus::select('id', 'name')->get()->pluck('name', 'id');
+            // $religions = Religion::select('id', 'name')->get()->pluck('name', 'id');
+            // $nationalities = Nationality::select('id', 'name')->get()->pluck('name', 'id');
+            // $educations = Education::select('id', 'name')->get()->pluck('name', 'id');
+            // $barangays = Barangay::select('id', 'name')->get()->pluck('name', 'id');
+            // $districts = District::select('id', 'name')->get()->pluck('name', 'id');
             $modes = ModeOfAssistance::select('id', 'name')->get()->pluck('name', 'id');
-            $barangays = Barangay::select('id', 'name')->get()->pluck('name', 'id');
-            $districts = District::select('id', 'name')->get()->pluck('name', 'id');
+            $assistances = Assistance::select('id', 'name')->get()->pluck('name', 'id');
             $path = "clients/{$client->tracking_no}";
             $storedFiles = Storage::disk('local')->files($path);
             $files = [];
@@ -131,16 +157,16 @@ class ClientController extends Controller
             }
 
             return view('client.view', compact(
-                'genders',
-                'relationships',
-                'civilStatus',
-                'religions',
-                'nationalities',
-                'educations',
+                // 'genders',
+                // 'relationships',
+                // 'civilStatus',
+                // 'religions',
+                // 'nationalities',
+                // 'educations',
+                // 'barangays', 
+                // 'districts',
                 'assistances',
                 'modes',
-                'barangays', 
-                'districts',
                 'page_title',
                 'page_subtitle',
                 'resource',

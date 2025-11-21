@@ -22,7 +22,15 @@ class latestClientsTable extends Component
      */
     public function render(): View|Closure|string
     {
-        $data = Client::select(
+        $data = Client::with([
+            'claimant',
+            'barangay',
+            'funeralAssistance',
+            'interviews',
+            'interviews.schedule',
+            'assessment'
+        ])
+        ->select(
             'id',
             'tracking_no',
             'first_name',

@@ -2,6 +2,10 @@
     'readonly' => false,
     ])
 @php
+    $genders = \App\Models\Sex::select('id', 'name')->get();
+    $relationships = \App\Models\Relationship::select('id', 'name')->get();
+    $civilStatus = \App\Models\CivilStatus::select('id', 'name')->get();
+
     if (isset($client)) {
         $familiesData = $client->family->map(function ($family) {
             return [

@@ -29,36 +29,33 @@
                                 </td>
                                 <td>{{ $entry->contact_no }}</td>
                                 <td>
-                                    @if ($entry->hasApplication())
-                                        @if($entry->claimant)
-                                            <span class="badge badge-pill badge-info">
-                                                Burial
+                                    @if($entry->claimant)
+                                        <span class="badge badge-pill badge-info">
+                                            Burial
+                                        </span>
+                                    @elseif ($entry->funeralAssistance)
+                                        <span class="badge badge-pill badge-info">
+                                            Funeral
+                                        </span>
+                                    @endif
+                                    @if (!$entry->interviews->isEmpty())
+                                        @if (Carbon\Carbon::parse($entry->interviews->first()->schedule)->diffInHours(Carbon\Carbon::now()) >= 1)
+                                            <span class="badge badge-pill badge-danger">
+                                                Interview
                                             </span>
-                                        @elseif ($entry->funeralAssistance->count() > 0)
-                                            <span class="badge badge-pill badge-info">
-                                                Funeral
-                                            </span>
-                                        @endif
-                                    @else
-                                        @if ($entry->interviews->count() > 0)
-                                            @if (Carbon\Carbon::parse($entry->interviews->first()->schedule)->diffInHours(Carbon\Carbon::now()) >= 1)
-                                                <span class="badge badge-pill badge-danger">
-                                                    Interview
-                                                </span>
-                                            @elseif (Carbon\Carbon::parse($entry->interviews->first()->schedule)->diffInHours(Carbon\Carbon::now()) < 1)
-                                                <span class="badge badge-pill badge-warning">
-                                                    Interview
-                                                </span>
-                                            @endif
-                                        @elseif ($entry->assessment->count() > 0)
-                                            <span class="badge badge-pill badge-info">
-                                                Assessed
-                                            </span>
-                                        @else
+                                        @elseif (Carbon\Carbon::parse($entry->interviews->first()->schedule)->diffInHours(Carbon\Carbon::now()) < 1)
                                             <span class="badge badge-pill badge-warning">
-                                                Pending
+                                                Interview
                                             </span>
                                         @endif
+                                    @elseif (!$entry->assessment->isEmpty())
+                                        <span class="badge badge-pill badge-info">
+                                            Assessed
+                                        </span>
+                                    @else
+                                        <span class="badge badge-pill badge-warning">
+                                            Pending
+                                        </span>
                                     @endif
                                 </td>
                                 <td>

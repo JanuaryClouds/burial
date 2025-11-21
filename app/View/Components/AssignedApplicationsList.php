@@ -22,7 +22,18 @@ class AssignedApplicationsList extends Component
      */
     public function render(): View|Closure|string
     {
-        $applications = BurialAssistance::where(function ($query) {
+        $applications = BurialAssistance::with([
+            'deceased',
+            'deceased.barangay',
+            'claimant',
+            'claimant.barangay',
+            'claimantChanges',
+            'claimantChanges.newClaimant',
+            'claimantChanges.newClaimant.barangay',
+            'processLogs',
+            'user',
+        ])
+        ->where(function ($query) {
             $query->where('status', '!=', 'rejected')
                 ->where('status', '!=', 'released')
                 ->where('assigned_to', auth()->user()->id);   
