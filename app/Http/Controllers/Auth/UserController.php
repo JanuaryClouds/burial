@@ -13,12 +13,12 @@ use Illuminate\Support\Facades\Auth;
 class UserController extends Controller
 {
     protected $userServices;
-    
+
     public function __construct(UserService $userServices)
     {
         $this->userServices = $userServices;
     }
-    
+
     public function login(LoginRequest $request)
     {
         try {
@@ -33,7 +33,7 @@ class UserController extends Controller
                         ->causedBy($user)
                         ->withProperties(['ip' => $ip, 'browser' => $browser])
                         ->log("Successful login attempt");
-                    
+
                     return redirect()
                         ->route('dashboard')
                         ->with('success', 'You have successfully logged in!');
@@ -56,15 +56,15 @@ class UserController extends Controller
     {
         $user = Auth::user();
         activity()
-        ->performedOn($user)
-        ->causedBy($user)
-        ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
-        ->log('Successful logout');
-        
+            ->performedOn($user)
+            ->causedBy($user)
+            ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
+            ->log('Successful logout');
+
         Auth::logout();
         return redirect()
             ->route('landing.page')
-            ->with('success','You have successfully logged out!');
+            ->with('success', 'You have successfully logged out!');
     }
 
     public function loginPage()
