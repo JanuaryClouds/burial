@@ -217,7 +217,7 @@
                 label="14. Contact Number"
                 required="true"
                 type="text"
-                value="{{ $client->contact_no ?? null }}"
+                value="{{ $client->contact_no ?? (session('citizen')['contact_number'] ?? null) }}"
                 :readonly="$readonly"
             />
         </div>
