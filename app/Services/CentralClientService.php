@@ -9,15 +9,15 @@ use function PHPUnit\Framework\isInstanceOf;
 
 class CentralClientService
 {
-    public $client;
-
     /**
      * Fetch client details by UUID from the central database.
      *
-     * @param string $uuid
+     * @param string $key array key to filter from
+     * @param string $value array value to match
+     * @param bool $family get family members
      * @return array|null
      */
-    public function fetchByUuid(string $uuid)
+    public function fetchByClient(string $key, string $value)
     {
         $apiKey = env('API_KEY_CITIZENS_USERS');
         $api = env('API_CITIZEN_USERS');
@@ -28,24 +28,35 @@ class CentralClientService
         if (env('APP_DEBUG')) {
             // Temporary: Load from local file
             $path = storage_path('app/clients.json');
+            if (file_exists($path)) {
+                $response = json_decode(file_get_contents($path), true);
+                $citizens = $response['data'];
+                $citizen = collect($citizens)->firstWhere($key, $value);
+                return $citizen;
+            }
         } else {
             $response = Http::withHeader('X-Secret-Key', $apiKey)->get($api); // Temporarily disable to prevent repeated requests
             $decodedResponse = json_decode($response, true);
-            $clients = $decodedResponse['data'];
-        }
-
-        if (file_exists($path)) {
-            $response = json_decode(file_get_contents($path), true);
-            $clients = $response['data'];
-            $this->client = collect($clients)->firstWhere('user_id', $uuid);
-            return $this->client;
+            $citizen = collect($decodedResponse['data'])->firstWhere($key, $value);
+            return $citizen;
         }
 
         return null;
     }
 
-    public function fetchFamily()
+    /**
+     * Fetch Citizen
+     * @param string $uuid
+     * @return array
+     */
+    public function fetchCitizen(string $uuid)
     {
-
+        $client = $this->fetchByClient('user_id', $uuid);
+        if ($client) {
+            return $client;
+        }
+        return [];
     }
+
+
 }
