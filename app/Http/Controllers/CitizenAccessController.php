@@ -18,10 +18,11 @@ class CitizenAccessController extends Controller
     public function index(Request $request)
     {
         $uuid = $request->query('uuid');
+        $citizen = session('citizen');
+
         if (session()->has('citizen')) {
             // Change session citizen if the uuid is different
-            if (session('citizen')['user_id'] != $uuid) {
-                session(['citizen' => null]);
+            if ($uuid && session('citizen')['user_id'] != $uuid) {
                 $citizen = null;
             }
         }
@@ -33,17 +34,12 @@ class CitizenAccessController extends Controller
                 if ($citizen) {
                     // Store citizen data in session to keep them "logged in"
                     session(['citizen' => $citizen]);
-
                 } else {
                     return back()->with('alertInfo', "No citizen found.");
                 }
             } catch (Exception $e) {
                 return back()->with('alertInfo', $e->getMessage());
             }
-        } else {
-            // Check if already in session
-            $citizen = session('citizen');
-
         }
 
         return view('landing', compact('citizen'));
