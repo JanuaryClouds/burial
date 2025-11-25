@@ -17,9 +17,9 @@ return new class extends Migration
             $table->foreignId('relationship_id')->constrained('relationships');
             $table->foreignId('civil_id')->constrained('civil_statuses');
             $table->foreignId('education_id')->constrained('educations');
-            $table->string('income');
-            $table->string('philhealth');
-            $table->string('skill');
+            $table->string('income')->nullable();
+            $table->string('philhealth')->nullable();
+            $table->string('skill')->nullable();
             $table->timestamps();
         });
     }

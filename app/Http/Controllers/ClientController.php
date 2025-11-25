@@ -15,6 +15,7 @@ use App\Models\Relationship;
 use App\Models\Education;
 use App\Models\Assistance;
 use App\Services\ClientService;
+use App\Services\CentralClientService;
 use App\DataTables\CmsDataTable;
 use App\Http\Requests\ClientRequest;
 use Crypt;
@@ -29,10 +30,12 @@ use Storage;
 class ClientController extends Controller
 {
     protected $clientServices;
+    protected $citizenServices;
 
-    public function __construct(ClientService $clientService)
+    public function __construct(ClientService $clientService, CentralClientService $citizenService)
     {
         $this->clientServices = $clientService;
+        $this->citizenServices = $citizenService;
     }
 
     public function index(CmsDataTable $dataTable)
@@ -41,7 +44,7 @@ class ClientController extends Controller
         $resource = 'client';
         $renderColumns = ['tracking_no', 'first_name', 'house_no', 'street', 'barangay_id', 'contact_no'];
         $data = Client::with([
-            'barangay', 
+            'barangay',
             'claimant',
             'funeralAssistance',
         ])
@@ -102,7 +105,8 @@ class ClientController extends Controller
             ));
     }
 
-    public function view($id) {
+    public function view($id)
+    {
         $resource = 'client';
         $client = Client::with([
             'barangay',
@@ -121,21 +125,21 @@ class ClientController extends Controller
             'beneficiary.sex',
             'beneficiary.barangay',
             'beneficiary.religion',
-        ])  
+        ])
             ->find($id);
-        $page_title = $client->first_name . ' ' . $client->last_name . "'s Application";
-        $page_subtitle = $client->tracking_no . ' - ' . $client->id;
+        $page_title = $client->first_name.' '.$client->last_name."'s Application";
+        $page_subtitle = $client->tracking_no.' - '.$client->id;
         $readonly = true;
 
         if ($client) {
-            // $genders = Sex::select('id', 'name')->get()->pluck('name', 'id');
-            // $relationships = Relationship::select('id', 'name')->get()->pluck('name', 'id');
-            // $civilStatus = CivilStatus::select('id', 'name')->get()->pluck('name', 'id');
-            // $religions = Religion::select('id', 'name')->get()->pluck('name', 'id');
-            // $nationalities = Nationality::select('id', 'name')->get()->pluck('name', 'id');
-            // $educations = Education::select('id', 'name')->get()->pluck('name', 'id');
-            // $barangays = Barangay::select('id', 'name')->get()->pluck('name', 'id');
-            // $districts = District::select('id', 'name')->get()->pluck('name', 'id');
+            $genders = Sex::select('id', 'name')->get()->pluck('name', 'id');
+            $relationships = Relationship::select('id', 'name')->get()->pluck('name', 'id');
+            $civilStatus = CivilStatus::select('id', 'name')->get()->pluck('name', 'id');
+            $religions = Religion::select('id', 'name')->get()->pluck('name', 'id');
+            $nationalities = Nationality::select('id', 'name')->get()->pluck('name', 'id');
+            $educations = Education::select('id', 'name')->get()->pluck('name', 'id');
+            $barangays = Barangay::select('id', 'name')->get()->pluck('name', 'id');
+            $districts = District::select('id', 'name')->get()->pluck('name', 'id');
             $modes = ModeOfAssistance::select('id', 'name')->get()->pluck('name', 'id');
             $assistances = Assistance::select('id', 'name')->get()->pluck('name', 'id');
             $path = "clients/{$client->tracking_no}";
@@ -157,14 +161,14 @@ class ClientController extends Controller
             }
 
             return view('client.view', compact(
-                // 'genders',
-                // 'relationships',
-                // 'civilStatus',
-                // 'religions',
-                // 'nationalities',
-                // 'educations',
-                // 'barangays', 
-                // 'districts',
+                'genders',
+                'relationships',
+                'civilStatus',
+                'religions',
+                'nationalities',
+                'educations',
+                'barangays', 
+                'districts',
                 'assistances',
                 'modes',
                 'page_title',
@@ -206,7 +210,7 @@ class ClientController extends Controller
     //             'income' => old("fam_income.$i"),
     //         ];
     //     })->values();
-        
+
     //     if ($oldFamilyRows->isEmpty()) {
     //         $oldFamilyRows = collect([[
     //             'name' => '',
@@ -225,7 +229,7 @@ class ClientController extends Controller
     //             'assessment' => old("ass_assessment.$i"),
     //         ];
     //     })->values();
-        
+
     //     if ($oldAssessmentRows->isEmpty()) {
     //         $oldAssessmentRows = collect([[
     //             'problem_presented' => '',
@@ -252,8 +256,9 @@ class ClientController extends Controller
     //     ));
     // }
 
-    
-    public function create() {
+
+    public function create()
+    {
         $genders = Sex::select('id', 'name')->get()->pluck('name', 'id');
         $relationships = Relationship::select('id', 'name')->get()->pluck('name', 'id');
         $civilStatus = CivilStatus::select('id', 'name')->get()->pluck('name', 'id');
@@ -264,7 +269,47 @@ class ClientController extends Controller
         $modes = ModeOfAssistance::select('id', 'name')->get()->pluck('name', 'id');
         $barangays = Barangay::select('id', 'name')->get()->pluck('name', 'id');
         $districts = District::select('id', 'name')->get()->pluck('name', 'id');
+
+        $client = session('client'); // Keep existing if used elsewhere
+        $citizen = session('citizen');
+        $matched = [];
+
+        if ($citizen) {
+            // Helper for fuzzy matching
+            $findMatch = function ($value, $options) {
+                if (! $value)
+                    return null;
+                $normalizedValue = strtolower(preg_replace('/[^a-z0-9]/i', '', $value));
+
+                foreach ($options as $id => $name) {
+                    $normalizedOption = strtolower(preg_replace('/[^a-z0-9]/i', '', $name));
+                    if ($normalizedValue === $normalizedOption) {
+                        return $id;
+                    }
+                    // Check for contains if exact match fails (e.g. "Calzada-tipas" vs "Calzada Tipas")
+                    if (str_contains($normalizedOption, $normalizedValue) || str_contains($normalizedValue, $normalizedOption)) {
+                        return $id;
+                    }
+                }
+                return null;
+            };
+
+            if (isset($citizen['latest_address']['barangay'])) {
+                $matched['barangay_id'] = $findMatch($citizen['latest_address']['barangay'], $barangays);
+            }
+
+            if (isset($citizen['gender'])) {
+                $matched['sex_id'] = $findMatch($citizen['gender'], $genders);
+            }
+
+            if (isset($citizen['civil_status'])) {
+                $matched['civil_id'] = $findMatch($citizen['civil_status'], $civilStatus);
+            }
+        }
+
         return view('client.create', compact(
+            'client',
+            'matched',
             'genders',
             'relationships',
             'civilStatus',
@@ -273,7 +318,7 @@ class ClientController extends Controller
             'educations',
             'assistances',
             'modes',
-            'barangays', 
+            'barangays',
             'districts'
         ));
     }
@@ -281,39 +326,39 @@ class ClientController extends Controller
     public function getLatestTracking()
     {
         $year = Carbon::now()->format('Y');
-    
+
         $latest = Client::where('tracking_no', 'like', "{$year}_%")
             ->latest('created_at')
             ->first();
-    
-        if ($latest && preg_match('/^' . $year . '_(\d{4})$/', $latest->tracking_no, $matches)) {
+
+        if ($latest && preg_match('/^'.$year.'_(\d{4})$/', $latest->tracking_no, $matches)) {
             $number = (int) $matches[1] + 1;
-            $tracking_no = $year . '_' . str_pad($number, 4, '0', STR_PAD_LEFT);
+            $tracking_no = $year.'_'.str_pad($number, 4, '0', STR_PAD_LEFT);
         } else {
-            $tracking_no = $year . '_0001';
+            $tracking_no = $year.'_0001';
         }
-    
+
         return response()->json(['tracking_no' => $tracking_no]);
     }
-    
+
     public function store(ClientRequest $request)
     {
         try {
             $client = $this->clientServices->storeClient($request->validated());
-            
+
             foreach ($request->file('images', []) as $fieldName => $uploadedFile) {
                 $extension = $uploadedFile->getClientOriginalExtension();
-                $filename = $fieldName . '.' . $extension . '.enc';
+                $filename = $fieldName.'.'.$extension.'.enc';
                 $path = "clients/{$client->tracking_no}/";
-                Storage::disk('local')->put($path . $filename, Crypt::encrypt(file_get_contents($uploadedFile)));
+                Storage::disk('local')->put($path.$filename, Crypt::encrypt(file_get_contents($uploadedFile)));
             }
 
             $ip = request()->ip();
             $browser = request()->header('User-Agent');
             activity()
                 ->withProperties(['ip' => $ip, 'browser' => $browser])
-                ->log('Added the client details: '. $client?->id);
-    
+                ->log('Added the client details: '.$client?->id);
+
             return redirect()
                 ->route('landing.page')
                 ->with('alertSuccess', 'Client information added successfully!');
@@ -331,7 +376,7 @@ class ClientController extends Controller
         $districts = District::getAllDistricts();
         $religions = Religion::getAllReligions();
         $nationalities = Nationality::getAllNationalities();
-        $civils = CivilStatus::getAllCivilStatuses();  
+        $civils = CivilStatus::getAllCivilStatuses();
         $relationships = Relationship::getAllRelationships();
         $educations = Education::getAllEducations();
 
@@ -342,13 +387,13 @@ class ClientController extends Controller
             'sexes',
             'religions',
             'nationalities',
-            'civils', 
+            'civils',
             'relationships',
             'educations',
             'districts',
         ));
     }
-    
+
     public function update(ClientRequest $request, Client $client)
     {
         $client = $this->clientServices->updateClient($request->validated(), $client);
@@ -356,13 +401,13 @@ class ClientController extends Controller
         activity()
             ->performedOn($client)
             ->causedBy(Auth::user())
-            ->log('Updated the client details: '. $client->id);
+            ->log('Updated the client details: '.$client->id);
 
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first() . '.client.edit', $client->id)
+            ->route(Auth::user()->getRoleNames()->first().'.client.edit', $client->id)
             ->with('success', 'Client information updated successfully!');
     }
-    
+
     public function destroy(Client $client)
     {
         $client = $this->clientServices->deleteClient($client);
@@ -370,10 +415,10 @@ class ClientController extends Controller
         activity()
             ->performedOn($client)
             ->causedBy(Auth::user())
-            ->log('Deleted a client details: '. $client->id);
-        
+            ->log('Deleted a client details: '.$client->id);
+
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first() . '.client.index')
+            ->route(Auth::user()->getRoleNames()->first().'.client.index')
             ->with('success', 'Client information deleted successfully!');
     }
 
@@ -404,7 +449,7 @@ class ClientController extends Controller
         }
     }
 
-    public function recommendedService(Request $request, $id) 
+    public function recommendedService(Request $request, $id)
     {
         try {
             $client = Client::find($id);
@@ -430,7 +475,7 @@ class ClientController extends Controller
                 $application = $this->clientServices->transferClient($client->id);
                 activity()
                     ->log('Burial Assistance Application created');
-    
+
                 return redirect()->back()->with('alertSuccess', 'Successfuly created burial assistance application for the client!');
             } elseif ($request['type'] == 'funeral') {
                 $request->validate([
@@ -447,11 +492,11 @@ class ClientController extends Controller
                     'type' => $request['type'],
                     'remarks' => $request['remarks'],
                 ]);
-    
+
                 $application = $this->clientServices->transferClient($client->id);
                 activity()
                     ->log('Funeral Assistance Application created');
-    
+
                 return redirect()->back()->with('alertSuccess', 'Successfuly created funeral assistance application for the client!');
             } else {
                 return redirect()->back()->with('alertInfo', 'Invalid request.');
@@ -462,12 +507,14 @@ class ClientController extends Controller
         }
     }
 
-    public function generateGISForm($id) {
+    public function generateGISForm($id)
+    {
         $client = Client::find($id);
         return $this->clientServices->exportGIS($client);
     }
 
-    public function generatePdfReport(Request $request, $startDate, $endDate) {
+    public function generatePdfReport(Request $request, $startDate, $endDate)
+    {
         try {
             $clients = Client::select(
                 'id',
@@ -481,9 +528,9 @@ class ClientController extends Controller
                 'barangay_id',
                 'contact_no',
             )
-            ->with('beneficiary')
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->get();
+                ->with('beneficiary')
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->get();
 
             $charts = $request->input('charts', []);
 
@@ -493,7 +540,7 @@ class ClientController extends Controller
                 'endDate',
                 'charts',
             ))
-            ->setPaper('letter', 'portrait');
+                ->setPaper('letter', 'portrait');
 
             return $pdf->stream("client-report-{$startDate}-{$endDate}.pdf");
         } catch (Exception $e) {

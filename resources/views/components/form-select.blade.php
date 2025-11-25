@@ -19,6 +19,7 @@
         name="{{ $name }}"
         id="{{ $id }}"
         {{ $disabled ? 'disabled' : '' }}
+        {{ $required == true ? 'required' : '' }}
     >
         <option value="">Select one</option>
         @foreach ($options as $key => $value )
