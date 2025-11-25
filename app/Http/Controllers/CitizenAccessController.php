@@ -17,6 +17,7 @@ class CitizenAccessController extends Controller
 
     public function index(Request $request)
     {
+        $page_title = 'Funeral Assistance System - Taguig CSWDO';
         $uuid = $request->query('uuid');
         $citizen = session('citizen');
 
@@ -42,6 +43,6 @@ class CitizenAccessController extends Controller
             }
         }
 
-        return view('landing', compact('citizen'));
+        return view('landing', compact('citizen', 'page_title'));
     }
 }
