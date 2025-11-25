@@ -132,14 +132,14 @@ class ClientController extends Controller
         $readonly = true;
 
         if ($client) {
-            // $genders = Sex::select('id', 'name')->get()->pluck('name', 'id');
-            // $relationships = Relationship::select('id', 'name')->get()->pluck('name', 'id');
-            // $civilStatus = CivilStatus::select('id', 'name')->get()->pluck('name', 'id');
-            // $religions = Religion::select('id', 'name')->get()->pluck('name', 'id');
-            // $nationalities = Nationality::select('id', 'name')->get()->pluck('name', 'id');
-            // $educations = Education::select('id', 'name')->get()->pluck('name', 'id');
-            // $barangays = Barangay::select('id', 'name')->get()->pluck('name', 'id');
-            // $districts = District::select('id', 'name')->get()->pluck('name', 'id');
+            $genders = Sex::select('id', 'name')->get()->pluck('name', 'id');
+            $relationships = Relationship::select('id', 'name')->get()->pluck('name', 'id');
+            $civilStatus = CivilStatus::select('id', 'name')->get()->pluck('name', 'id');
+            $religions = Religion::select('id', 'name')->get()->pluck('name', 'id');
+            $nationalities = Nationality::select('id', 'name')->get()->pluck('name', 'id');
+            $educations = Education::select('id', 'name')->get()->pluck('name', 'id');
+            $barangays = Barangay::select('id', 'name')->get()->pluck('name', 'id');
+            $districts = District::select('id', 'name')->get()->pluck('name', 'id');
             $modes = ModeOfAssistance::select('id', 'name')->get()->pluck('name', 'id');
             $assistances = Assistance::select('id', 'name')->get()->pluck('name', 'id');
             $path = "clients/{$client->tracking_no}";
@@ -161,14 +161,14 @@ class ClientController extends Controller
             }
 
             return view('client.view', compact(
-                // 'genders',
-                // 'relationships',
-                // 'civilStatus',
-                // 'religions',
-                // 'nationalities',
-                // 'educations',
-                // 'barangays', 
-                // 'districts',
+                'genders',
+                'relationships',
+                'civilStatus',
+                'religions',
+                'nationalities',
+                'educations',
+                'barangays', 
+                'districts',
                 'assistances',
                 'modes',
                 'page_title',
