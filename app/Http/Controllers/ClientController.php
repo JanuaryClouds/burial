@@ -2,34 +2,34 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Claimant;
-use App\Models\Client;
-use App\Models\District;
-use App\Models\Barangay;
-use App\Models\ModeOfAssistance;
-use App\Models\Sex;
-use App\Models\Religion;
-use App\Models\Nationality;
-use App\Models\CivilStatus;
-use App\Models\Relationship;
-use App\Models\Education;
-use App\Models\Assistance;
-use App\Services\ClientService;
-use App\Services\CentralClientService;
 use App\DataTables\CmsDataTable;
 use App\Http\Requests\ClientRequest;
+use App\Models\Assistance;
+use App\Models\Barangay;
+use App\Models\CivilStatus;
+use App\Models\Client;
+use App\Models\District;
+use App\Models\Education;
+use App\Models\ModeOfAssistance;
+use App\Models\Nationality;
+use App\Models\Relationship;
+use App\Models\Religion;
+use App\Models\Sex;
+use App\Services\CentralClientService;
+use App\Services\ClientService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Crypt;
 use Exception;
-use Str;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
-use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Storage;
+use Str;
 
 class ClientController extends Controller
 {
     protected $clientServices;
+
     protected $citizenServices;
 
     public function __construct(ClientService $clientService, CentralClientService $citizenService)
@@ -167,7 +167,7 @@ class ClientController extends Controller
                 'religions',
                 'nationalities',
                 'educations',
-                'barangays', 
+                'barangays',
                 'districts',
                 'assistances',
                 'modes',
@@ -190,7 +190,7 @@ class ClientController extends Controller
     //     $sexes = Sex::getAllSexes();
     //     $religions = Religion::getAllReligions();
     //     $nationalities = Nationality::getAllNationalities();
-    //     $civils = CivilStatus::getAllCivilStatuses();  
+    //     $civils = CivilStatus::getAllCivilStatuses();
     //     $relationships = Relationship::getAllRelationships();
     //     $educations = Education::getAllEducations();
     //     $districts = District::getAllDistricts();
@@ -243,7 +243,7 @@ class ClientController extends Controller
     //         'sexes',
     //         'religions',
     //         'nationalities',
-    //         'civils', 
+    //         'civils',
     //         'relationships',
     //         'educations',
     //         'districts',
@@ -255,7 +255,6 @@ class ClientController extends Controller
     //         'oldAssessmentRows'
     //     ));
     // }
-
 
     public function create()
     {
@@ -277,8 +276,9 @@ class ClientController extends Controller
         if ($citizen) {
             // Helper for fuzzy matching
             $findMatch = function ($value, $options) {
-                if (! $value)
+                if (! $value) {
                     return null;
+                }
                 $normalizedValue = strtolower(preg_replace('/[^a-z0-9]/i', '', $value));
 
                 foreach ($options as $id => $name) {
@@ -291,6 +291,7 @@ class ClientController extends Controller
                         return $id;
                     }
                 }
+
                 return null;
             };
 
@@ -437,7 +438,7 @@ class ClientController extends Controller
                     'id' => Str::uuid(),
                     'client_id' => $client->id,
                     'problem_presented' => $request['problem_presented'],
-                    'assessment' => $request['assessment']
+                    'assessment' => $request['assessment'],
                 ]);
 
                 return redirect()->back()->with('alertSuccess', 'Assessment submitted successfully!');
@@ -503,6 +504,7 @@ class ClientController extends Controller
             }
         } catch (Exception $e) {
             $client->recommendation()->delete();
+
             return redirect()->back()->with('alertInfo', $e->getMessage());
         }
     }
@@ -510,6 +512,7 @@ class ClientController extends Controller
     public function generateGISForm($id)
     {
         $client = Client::find($id);
+
         return $this->clientServices->exportGIS($client);
     }
 
