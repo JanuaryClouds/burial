@@ -2,9 +2,9 @@
     'readonly' => false,
     ])
 @php
-    $genders = \App\Models\Sex::select('id', 'name')->get();
-    $relationships = \App\Models\Relationship::select('id', 'name')->get();
-    $civilStatus = \App\Models\CivilStatus::select('id', 'name')->get();
+    $genders = \App\Models\Sex::pluck('name', 'id');
+    $relationships = \App\Models\Relationship::pluck('name', 'id');
+    $civilStatus = \App\Models\CivilStatus::pluck('name', 'id');
 
     if (isset($client)) {
         $familiesData = $client->family->map(function ($family) {

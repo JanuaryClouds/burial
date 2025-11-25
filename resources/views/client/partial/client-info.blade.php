@@ -4,11 +4,9 @@
 ])
 @php
     $header = 'Client Information';
-    if (!session('citizen')) {
-        if (isset($client)) {
-            $socialInfo = $client?->socialInfo;
-            $demographic = $client?->demographic;
-        }
+    if (isset($client)) {
+        $socialInfo = $client?->socialInfo;
+        $demographic = $client?->demographic;
     }
 @endphp
 <h5 class="card-title">I. CLIENT'S IDENTIFYING INFORMATION</h5>
@@ -63,8 +61,8 @@
                 name="sex_id"
                 label="3. Sex"
                 required="true"
-                :selected="$demographic->sex->id ?? ($matched['sex_id'] ?? '')"
-                :options="$demographic->sex ?? $genders"
+                :selected="$demographic->sex_id ?? ''"
+                :options="$genders ?? []"
                 disabled="{{ $readonly }}"
             />
         </div>
@@ -103,8 +101,8 @@
                 name="barangay_id"
                 label="5.3 Barangay"
                 required="true"
-                :options="$client->barangay ?? $barangays"
-                :selected="$client->barangay->id ?? ($matched['barangay_id'] ?? '')"
+                :options="$barangays ?? []"
+                :selected="$client->barangay_id ?? ($matched['barangay_id'] ?? '')"
                 :disabled="$readonly"
             />
         </div>
@@ -113,8 +111,8 @@
                 name="district_id"
                 label="5.4. District"
                 required="true"
-                :options="$client->district ?? $districts"
-                :selected="$client->district->id ?? ''"
+                :options="$districts ?? []"
+                :selected="$client->district_id ?? ''"
                 :disabled="$readonly"
             />
         </div>
@@ -135,8 +133,8 @@
                 name="relationship_id"
                 label="6. Relationship to Beneficiary"
                 required="true"
-                :options="$socialInfo->relationship ?? $relationships"
-                :selected="$socialInfo->relationship->id ?? ''"
+                :options="$relationships ?? []"
+                :selected="$socialInfo->relationship_id ?? ''"
                 :disabled="$readonly"
             />
         </div>
@@ -145,8 +143,8 @@
                 name="civil_id"
                 label="7. Civil Status"
                 required="true"
-                :options="$socialInfo->civil ?? $civilStatus"
-                :selected="$socialInfo->civil->id ?? ($matched['civil_id'] ?? 1)"
+                :options="$civilStatus ?? []"
+                :selected="$socialInfo->civil_id ?? ($matched['civil_id'] ?? 1)"
                 :disabled="$readonly"
             />
         </div>
@@ -158,8 +156,8 @@
                 name="religion_id"
                 label="8. Religion"
                 required="true"
-                :options="$demographic->religion ?? $religions"
-                :selected="$demographic->religion->id ?? ''"
+                :options="$religions ?? []"
+                :selected="$demographic->religion_id ?? ''"
                 :disabled="$readonly"
             />
         </div>
@@ -168,8 +166,8 @@
                 name="nationality_id"
                 label="9. Nationality"
                 required="true"
-                :options="$demographic->nationality ?? $nationalities"
-                :selected="$demographic->nationality->id ?? ''"
+                :options="$nationalities ?? []"
+                :selected="$demographic->nationality_id ?? ''"
                 :disabled="$readonly"
             />
         </div>
@@ -177,8 +175,8 @@
             <x-form-select 
                 name="education_id"
                 label="10. Educational Attainment"
-                :options="$socialInfo->education ?? $educations"
-                :selected="$socialInfo->education->id ?? ''"
+                :options="$educations ?? []"
+                :selected="$socialInfo->education_id ?? ''"
                 :disabled="$readonly"
             />
         </div>
