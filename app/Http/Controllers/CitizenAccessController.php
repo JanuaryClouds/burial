@@ -2,8 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BurialAssistance;
+use App\Models\DocumentRequirement;
+use App\Models\FuneralAssistance;
 use App\Services\CentralClientService;
+use App\Models\Client;
+use App\Models\ApplicationStep;
 use Exception;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class CitizenAccessController extends Controller
@@ -17,14 +23,31 @@ class CitizenAccessController extends Controller
 
     public function index(Request $request)
     {
+        $page_title = 'Funeral Assistance System - Taguig CSWDO';
         $uuid = $request->query('uuid');
+        // Clear citizen session if no uuid is provided, or if it's a debug/logout request.
+        if ($uuid === 'debug') {
+            session(['citizen' => null]);
+            $uuid = null; // Ensure uuid is null for the rest of the logic.
+        }
+
         $citizen = session('citizen');
 
-        if (session()->has('citizen')) {
-            // Change session citizen if the uuid is different
-            if ($uuid && session('citizen')['user_id'] != $uuid) {
-                $citizen = null;
-            }
+        $finishedBurialAssistances = BurialAssistance::where('status', 'released')->count();
+        $finishedFuneralAssistances = FuneralAssistance::whereNotNull('forwarded_at')->count();
+        $totalClients = $finishedBurialAssistances + $finishedFuneralAssistances;
+        $steps = ApplicationStep::steps();
+        $burialDocuments = DocumentRequirement::burial();
+        $funeralDocuments = DocumentRequirement::funeral();
+
+        $recentClients = Client::where(function ($query) {
+            $query->where('created_at', '>=', Carbon::now()->subDays(7));
+        })->count();
+
+        // If a new UUID is provided that is different from the one in the session,
+        // clear the old citizen data to force a re-fetch.
+        if ($uuid && session()->has('citizen') && session('citizen')['user_id'] != $uuid) {
+            session(['citizen' => null]);
         }
 
         if (is_null(session('citizen')) && $uuid) {
@@ -42,6 +65,40 @@ class CitizenAccessController extends Controller
             }
         }
 
-        return view('landing', compact('citizen'));
+        $cardData = [
+            [
+                'label' => 'Recent Clients',
+                'icon' => 'ki-support-24',
+                'pathsCount' => 3,
+                'count' => $recentClients,
+            ],
+            [
+                'label' => 'Burial Assistances Provided',
+                'icon' => 'ki-document',
+                'pathsCount' => 2,
+                'count' => $finishedBurialAssistances,
+            ],
+            [
+                'label' => 'Funeral Assistances Provided',
+                'icon' => 'ki-file-up',
+                'pathsCount' => 2,
+                'count' => $finishedFuneralAssistances,
+            ],
+            [
+                'label' => 'Total Clients Served',
+                'icon' => 'ki-people',
+                'pathsCount' => 5,
+                'count' => $totalClients,
+            ],
+        ];
+
+        return view('landing', compact(
+            'citizen',
+            'steps',
+            'burialDocuments',
+            'funeralDocuments',
+            'page_title',
+            'cardData'
+        ));
     }
 }

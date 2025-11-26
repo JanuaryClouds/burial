@@ -13,211 +13,97 @@
 <div class="d-flex flex-column gap-4">
     <div class="row">
         <div class="col-6 col-md-6 col-lg-3">
-            <x-form-input 
-                name="first_name"
-                label="1.1 First Name"
-                required="true"
-                value="{{ $client->first_name ?? (session('citizen')['firstname'] ?? null) }}"
-                :readonly="$readonly"
-            />
+            <x-form-input name="first_name" label="1.1 First Name" required="true"
+                value="{{ $client->first_name ?? (session('citizen')['firstname'] ?? null) }}" :readonly="$readonly" />
         </div>
         <div class="col-6 col-md-6 col-lg-2">
-            <x-form-input 
-                name="middle_name"
-                label="1.2 Middle Name"
-                value="{{ $client->middle_name ?? (session('citizen')['middlename'] ?? null) }}"
-                :readonly="$readonly"
-            />
+            <x-form-input name="middle_name" label="1.2 Middle Name"
+                value="{{ $client->middle_name ?? (session('citizen')['middlename'] ?? null) }}" :readonly="$readonly" />
         </div>
         <div class="col-8 col-md-8 col-lg-2">
-            <x-form-input 
-                name="last_name"
-                label="1.3 Last Name"
-                required="true"
-                value="{{ $client->last_name ?? (session('citizen')['lastname'] ?? null) }}"
-                :readonly="$readonly"
-            />
+            <x-form-input name="last_name" label="1.3 Last Name" required="true"
+                value="{{ $client->last_name ?? (session('citizen')['lastname'] ?? null) }}" :readonly="$readonly" />
         </div>
         <div class="col-4 col-md-4 col-lg-1">
-            <x-form-input 
-                name="suffix"
-                label="1.4 Suffix"
-                value="{{ $client->suffix ?? (session('citizen')['suffix'] ?? null) }}"
-                :readonly="$readonly"
-            />
+            <x-form-input name="suffix" label="1.4 Suffix"
+                value="{{ $client->suffix ?? (session('citizen')['suffix'] ?? null) }}" :readonly="$readonly" />
         </div>
         <div class="col-4 col-md-4 col-lg-1">
-            <x-form-input 
-                name="age"
-                label="2. Age"
-                required="true"
-                type="number"
-                value="{{ $client->age ?? (session('citizen')['age'] ?? null) }}"
-                :readonly="$readonly"
-            />
+            <x-form-input name="age" label="2. Age" required="true" type="number"
+                value="{{ $client->age ?? (session('citizen')['age'] ?? null) }}" :readonly="$readonly" />
         </div>
         <div class="col-4 col-md-4 col-lg-1">
-            <x-form-select 
-                name="sex_id"
-                label="3. Sex"
-                required="true"
-                :selected="$demographic->sex_id ?? ''"
-                :options="$genders ?? []"
-                disabled="{{ $readonly }}"
-            />
+            <x-form-select name="sex_id" label="3. Sex" required="true" :selected="$demographic->sex_id ?? ''" :options="$genders ?? []"
+                disabled="{{ $readonly }}" />
         </div>
         <div class="col-4 col-md-4 col-lg-2">
-            <x-form-input
-                name="date_of_birth"
-                label="4. Date of Birth"
-                required="true"
-                type="date"
-                value="{{ $client->date_of_birth ?? (session('citizen')['birthday'] ?? null) }}"
-                :readonly="$readonly"
-            />
+            <x-form-input name="date_of_birth" label="4. Date of Birth" required="true" type="date"
+                value="{{ $client->date_of_birth ?? (session('citizen')['birthday'] ?? null) }}" :readonly="$readonly" />
         </div>
         <div class="col-4 col-md-4 col-lg-2">
-            <x-form-input
-                name="house_no"
-                label="5.1. House Number"
-                required="true"
-                type="text"
-                value="{{ $client->house_no ?? null }}"
-                :readonly="$readonly"
-            />
+            <x-form-input name="house_no" label="5.1. House Number" required="true" type="text"
+                value="{{ $client->house_no ?? null }}" :readonly="$readonly" />
         </div>
         <div class="col-8 col-md-8 col-lg-4">
-            <x-form-input
-                name="street"
-                label="5.2. Street"
-                required="true"
-                type="text"
+            <x-form-input name="street" label="5.2. Street" required="true" type="text"
                 value="{{ $client->street ?? (session('citizen')['latest_address']['street'] ?? null) }}"
-                :readonly="$readonly"
-            />
+                :readonly="$readonly" />
         </div>
         <div class="col-6 col-md-6 col-lg-2">
-            <x-form-select
-                name="barangay_id"
-                label="5.3 Barangay"
-                required="true"
-                :options="$barangays ?? []"
-                :selected="$client->barangay_id ?? ($matched['barangay_id'] ?? '')"
-                :disabled="$readonly"
-            />
+            <x-form-select name="barangay_id" label="5.3 Barangay" required="true" :options="$barangays ?? []" :selected="$client->barangay_id ?? ($matched['barangay_id'] ?? '')"
+                :disabled="$readonly" />
         </div>
-        <div class="col-6 col-md-6 col-lg-1">
-            <x-form-select
-                name="district_id"
-                label="5.4. District"
-                required="true"
-                :options="$districts ?? []"
-                :selected="$client->district_id ?? ''"
-                :disabled="$readonly"
-            />
+        <div class="col-6 col-md-6 col-lg-2">
+            <x-form-select name="district_id" label="5.4. District" required="true" :options="$districts ?? []"
+                :selected="$client->district_id ?? ''" :disabled="$readonly" />
         </div>
         <div class="col-12 col-md-12 col-lg-2">
-            <x-form-input
-                name="city"
-                label="5.5. City"
-                type="text"
-                value="Taguig City"
-                readonly="true"
-            />
+            <x-form-input name="city" label="5.5. City" type="text" value="Taguig City" readonly="true" />
         </div>
     </div>
     <hr>
     <div class="row">
         <div class="col-12 col-md-6 col-lg-6">
-            <x-form-select
-                name="relationship_id"
-                label="6. Relationship to Beneficiary"
-                required="true"
-                :options="$relationships ?? []"
-                :selected="$socialInfo->relationship_id ?? ''"
-                :disabled="$readonly"
-            />
+            <x-form-select name="relationship_id" label="6. Relationship to Beneficiary" required="true"
+                :options="$relationships ?? []" :selected="$socialInfo->relationship_id ?? ''" :disabled="$readonly" />
         </div>
         <div class="col-12 col-md-6 col-lg-6">
-            <x-form-select
-                name="civil_id"
-                label="7. Civil Status"
-                required="true"
-                :options="$civilStatus ?? []"
-                :selected="$socialInfo->civil_id ?? ($matched['civil_id'] ?? 1)"
-                :disabled="$readonly"
-            />
+            <x-form-select name="civil_id" label="7. Civil Status" required="true" :options="$civilStatus ?? []" :selected="$socialInfo->civil_id ?? ($matched['civil_id'] ?? 1)"
+                :disabled="$readonly" />
         </div>
     </div>
     <hr>
     <div class="row">
         <div class="col-12 col-md-12 col-lg-4">
-            <x-form-select 
-                name="religion_id"
-                label="8. Religion"
-                required="true"
-                :options="$religions ?? []"
-                :selected="$demographic->religion_id ?? ''"
-                :disabled="$readonly"
-            />
+            <x-form-select name="religion_id" label="8. Religion" required="true" :options="$religions ?? []" :selected="$demographic->religion_id ?? ''"
+                :disabled="$readonly" />
         </div>
         <div class="col-12 col-md-12 col-lg-4">
-            <x-form-select 
-                name="nationality_id"
-                label="9. Nationality"
-                required="true"
-                :options="$nationalities ?? []"
-                :selected="$demographic->nationality_id ?? ''"
-                :disabled="$readonly"
-            />
+            <x-form-select name="nationality_id" label="9. Nationality" required="true" :options="$nationalities ?? []"
+                :selected="$demographic->nationality_id ?? ''" :disabled="$readonly" />
         </div>
         <div class="col-12 col-md-12 col-lg-4">
-            <x-form-select 
-                name="education_id"
-                label="10. Educational Attainment"
-                :options="$educations ?? []"
-                :selected="$socialInfo->education_id ?? ''"
-                :disabled="$readonly"
-            />
+            <x-form-select name="education_id" label="10. Educational Attainment" :options="$educations ?? []" :selected="$socialInfo->education_id ?? ''"
+                :disabled="$readonly" />
         </div>
     </div>
     <div class="row">
         <div class="col-12 col-md-6 col-lg-3">
-            <x-form-input 
-                name="skill"
-                label="11. Skills/Occupation"
-                type="text"
-                value="{{ $socialInfo->skill ?? null }}"
-                :readonly="$readonly"
-            />
+            <x-form-input name="skill" label="11. Skills/Occupation" type="text"
+                value="{{ $socialInfo->skill ?? null }}" :readonly="$readonly" />
         </div>
         <div class="col-12 col-md-6 col-lg-3">
-            <x-form-input 
-                name="income"
-                label="12. Estimated Monthly Income"
-                type="text"
-                value="{{ $socialInfo->income ?? null }}"
-                :readonly="$readonly"
-            />
+            <x-form-input name="income" label="12. Estimated Monthly Income" type="text"
+                value="{{ $socialInfo->income ?? null }}" :readonly="$readonly" />
         </div>
         <div class="col-12 col-md-6 col-lg-3">
-            <x-form-input
-                name="philhealth"
-                label="13. PhilHealth Number"
-                type="text"
-                value="{{ $socialInfo->philhealth ?? null }}"
-                :readonly="$readonly"
-            />
+            <x-form-input name="philhealth" label="13. PhilHealth Number" type="text"
+                value="{{ $socialInfo->philhealth ?? null }}" :readonly="$readonly" />
         </div>
         <div class="col-12 col-md-6 col-lg-3">
-            <x-form-input
-                name="contact_no"
-                label="14. Contact Number"
-                required="true"
-                type="text"
+            <x-form-input name="contact_no" label="14. Contact Number" required="true" type="text"
                 value="{{ $client->contact_no ?? (session('citizen')['contact_number'] ?? null) }}"
-                :readonly="$readonly"
-            />
+                :readonly="$readonly" />
         </div>
     </div>
 </div>
