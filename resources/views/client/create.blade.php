@@ -1,19 +1,23 @@
 @extends('layouts.metronic.guest')
 <title>General Intake Form</title>
 @section('content')
-    <div class="min-vh-100 d-flex justify-content-center align-items-center">
+    <div class="h-100 d-flex flex-column justify-content-center align-items-center w-75 px-5 mx-auto my-0">
+        <!--div class="container min-vh-100 d-flex justify-content-center align-items-center"-->
         <div class="row my-10">
-            <div class="col">
-                @include('client.partial.create-form-header')
-                @include('client.partial.create-form-body')
-            </div>
+            <!--div class="col"-->
+            @include('client.partial.create-form-header')
+            @include('client.partial.create-form-body')
+            <!--/div-->
         </div>
+        <!--/div-->
+    </div>
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const gisForm = document.getElementById('gisForm');
             const documentsTab = gisForm.querySelector('#documents_tab');
             const submitFormBtn = document.getElementById('submitGISForm');
+            const submitModal = document.getElementById('confirmSubmitModal');
             const navLinks = document.querySelectorAll('.nav-link[data-bs-toggle="tab"]');
             const religionField = document.querySelector('select[name="religion_id"]');
 
@@ -28,7 +32,10 @@
                 }
             });
 
-            observer.observe(documentsTab, { attributes: true, attributeFilter: ['class'] });
+            observer.observe(documentsTab, {
+                attributes: true,
+                attributeFilter: ['class']
+            });
 
             // Create or reuse an alert element
             const alertBox = document.createElement('div');
@@ -61,13 +68,16 @@
                     if (missing.length > 0) {
                         e.preventDefault(); // stop switching
                         alertBox.innerHTML = `
-                            <strong>Missing required fields:</strong>
-                            <br>
-                            • ${missing.join('<br>• ')}
-                        `;
+                        <strong>Missing required fields:</strong>
+                        <br>
+                        • ${missing.join('<br>• ')}
+                    `;
                         alertBox.classList.add('bg-danger', 'text-white');
                         alertBox.classList.remove('d-none');
-                        alertBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        alertBox.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
                     } else {
                         alertBox.classList.add('d-none');
                     }
@@ -97,13 +107,22 @@
                 });
 
                 if (allMissing.length > 0) {
-                    alertBox.innerHTML = `<strong>Cannot submit form.</strong><br>Missing fields:<br>• ${allMissing.join('<br>• ')}`;
+                    alertBox.innerHTML =
+                        `<strong>Cannot submit form.</strong><br>Missing fields:<br>• ${allMissing.join('<br>• ')}`;
                     alertBox.classList.add('bg-danger', 'text-white');
                     alertBox.classList.remove('d-none');
-                    alertBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    alertBox.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
                 } else {
                     alertBox.classList.add('d-none');
-                    gisForm.submit(); // proceed if all required fields are filled
+                    const modal = new bootstrap.Modal(submitModal);
+                    modal.show();
+                    const confirmButton = submitModal.querySelector('#confirmSubmit');
+                    confirmButton.addEventListener('click', () => {
+                        gisForm.submit();
+                    });
                 }
             });
         });

@@ -10,7 +10,8 @@
         <img src="{{ asset('images/CSWDO.webp') }}" alt="CSWDO Logo" style="width: 150px;">
     </div>
     <div class="card-body">
-        <p>Please fill out all required forms marked by (*). These information are necessary for evaluating your application and to determine the type of assistance.</p>
+        <p>Please fill out all required forms marked by (*). These information are necessary for evaluating your
+            application and to determine the type of assistance.</p>
         <div class="d-flex justify-content-between align-items-center">
             @if (app()->isLocal())
                 <button class="btn btn-outline-primary" id="autofillBtn">
@@ -25,29 +26,6 @@
                     </i>
                     Cancel
                 </button>
-                <div id="confirm-exit-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered" role="document">
-                        <div class="modal-content">
-                            <div class="modal-body">
-                                <p>Are you sure you want to cancel the application? You will have to fill up the form again if you leave this page.</p>
-                            </div>
-                            <div class="modal-footer">
-                                <a href="{{ route('landing.page') }}" class="btn btn-secondary hover-scale">
-                                    <i class="ki-duotone ki-exit-left">
-                                        <span class="path1"></span>
-                                        <span class="path2"></span>
-                                    </i> Cancel and Exit
-                                </a>
-                                <button type="button" class="btn btn-danger hover-scale" data-dismiss="modal">
-                                    <i class="ki-duotone ki-exit-right">
-                                        <span class="path1"></span>
-                                        <span class="path2"></span>
-                                    </i> Continue Application
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
                 <button class="btn btn-primary hover-scale" id="submitGISForm">
                     <i class="ki-duotone ki-exit-up">
                         <span class="path1"></span>
@@ -94,25 +72,25 @@
         <div class="card-body">
             <div class="tab-content" id="gisTabContent">
                 <div class="tab-pane fade show active" id="client_info_tab" role="tabpanel">
-                    @include('client.partial.clientInfo')
+                    @include('client.partial.client-info')
                 </div>
                 <div class="tab-pane fade" id="beneficiary_info_tab" role="tabpanel">
-                    @include('client.partial.beneficiaryInfo')
+                    @include('client.partial.beneficiary-info')
                 </div>
                 <div class="tab-pane fade" id="beneficiary_fam_tab" role="tabpanel">
-                    @include('client.partial.beneficiaryFam')
+                    @include('client.partial.beneficiary-fam')
                 </div>
                 <div class="tab-pane fade" id="documents_tab" role="tabpanel">
                     @include('client.partial.documents')
                 </div>
                 @can('assess-applications')
                     <div class="tab-pane fade" id="assessment_tab" role="tabpanel">
-                        @include('client.partial.beneficiaryAssessment')
+                        @include('client.partial.beneficiary-assessment')
                     </div>
                 @endcan
                 @can('recommend-services')
                     <div class="tab-pane fade" id="service_tab" role="tabpanel">
-                        @include('client.partial.recommendedAssistance')
+                        @include('client.partial.recommended-assistance')
                     </div>
                 @endcan
             </div>
@@ -120,101 +98,118 @@
     </form>
 </div>
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    const gisForm = document.getElementById('gisForm');
-    const documentsTab = gisForm.querySelector('#documents_tab');
-    const submitFormBtn = document.getElementById('submitGISForm');
-    const navLinks = document.querySelectorAll('.nav-link[data-bs-toggle="tab"]');
-    const religionField = document.querySelector('select[name="religion_id"]');
-    
-    const observer = new MutationObserver(() => {
-        const religion = religionField.value;
-        if (documentsTab.classList.contains('active') || documentsTab.classList.contains('show')) {
-            if (religion == 2) {
-                documentsTab.querySelector('#muslim-requirements').classList.remove('d-none');
-            } else {
-                documentsTab.querySelector('#muslim-requirements').classList.add('d-none');
-            }
-        }
-    });
+    document.addEventListener('DOMContentLoaded', () => {
+        const gisForm = document.getElementById('gisForm');
+        const documentsTab = gisForm.querySelector('#documents_tab');
+        const submitFormBtn = document.getElementById('submitGISForm');
+        const submitModal = document.getElementById('confirmSubmitModal');
+        const navLinks = document.querySelectorAll('.nav-link[data-bs-toggle="tab"]');
+        const religionField = document.querySelector('select[name="religion_id"]');
 
-    observer.observe(documentsTab, { attributes: true, attributeFilter: ['class'] });
-
-    // Create or reuse an alert element
-    const alertBox = document.createElement('div');
-    alertBox.className = 'alert alert-danger d-none mt-3';
-    gisForm.prepend(alertBox);
-
-    // Function to check required inputs in a given tab pane
-    function validateTab(tabPane) {
-        const requiredFields = tabPane.querySelectorAll('[required]');
-        const missingFields = [];
-
-        requiredFields.forEach(field => {
-            // Trim string values to detect empty text inputs
-            const value = field.value?.trim();
-            if (!value) {
-                const label = field.closest('div')?.querySelector('label')?.innerText || field.name;
-                missingFields.push(label.replace('*', '').trim());
+        const observer = new MutationObserver(() => {
+            const religion = religionField.value;
+            if (documentsTab.classList.contains('active') || documentsTab.classList.contains('show')) {
+                if (religion == 2) {
+                    documentsTab.querySelector('#muslim-requirements').classList.remove('d-none');
+                } else {
+                    documentsTab.querySelector('#muslim-requirements').classList.add('d-none');
+                }
             }
         });
 
-        return missingFields;
-    }
+        observer.observe(documentsTab, {
+            attributes: true,
+            attributeFilter: ['class']
+        });
 
-    // Handle tab switching
-    navLinks.forEach(link => {
-        link.addEventListener('show.bs.tab', e => {
-            const currentTab = document.querySelector('.tab-pane.active.show');
-            const missing = validateTab(currentTab);
+        // Create or reuse an alert element
+        const alertBox = document.createElement('div');
+        alertBox.className = 'alert alert-danger d-none mt-3';
+        gisForm.prepend(alertBox);
 
-            if (missing.length > 0) {
-                e.preventDefault(); // stop switching
-                alertBox.innerHTML = `
+        // Function to check required inputs in a given tab pane
+        function validateTab(tabPane) {
+            const requiredFields = tabPane.querySelectorAll('[required]');
+            const missingFields = [];
+
+            requiredFields.forEach(field => {
+                // Trim string values to detect empty text inputs
+                const value = field.value?.trim();
+                if (!value) {
+                    const label = field.closest('div')?.querySelector('label')?.innerText || field.name;
+                    missingFields.push(label.replace('*', '').trim());
+                }
+            });
+
+            return missingFields;
+        }
+
+        // Handle tab switching
+        navLinks.forEach(link => {
+            link.addEventListener('show.bs.tab', e => {
+                const currentTab = document.querySelector('.tab-pane.active.show');
+                const missing = validateTab(currentTab);
+
+                if (missing.length > 0) {
+                    e.preventDefault(); // stop switching
+                    alertBox.innerHTML = `
                     <strong>Missing required fields:</strong>
                     <br>
                     • ${missing.join('<br>• ')}
                 `;
+                    alertBox.classList.add('bg-danger', 'text-white');
+                    alertBox.classList.remove('d-none');
+                    alertBox.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                } else {
+                    alertBox.classList.add('d-none');
+                }
+            });
+        });
+
+        // Handle form submission manually
+        submitFormBtn.addEventListener('click', e => {
+            e.preventDefault();
+
+            const allTabs = document.querySelectorAll('.tab-pane');
+            let allMissing = [];
+
+            function formatTabId(tabId) {
+                return tabId
+                    .replace(/_/g, ' ')
+                    .replace('tab', '')
+                    .replace(/\b\w/g, c => c.toUpperCase());
+            }
+
+            allTabs.forEach(tab => {
+                const missing = validateTab(tab);
+                if (missing.length > 0) {
+                    const tabName = formatTabId(tab.id);
+                    allMissing.push(...missing.map(field => `${tabName}: ${field}`));
+                }
+            });
+
+            if (allMissing.length > 0) {
+                alertBox.innerHTML =
+                    `<strong>Cannot submit form.</strong><br>Missing fields:<br>• ${allMissing.join('<br>• ')}`;
                 alertBox.classList.add('bg-danger', 'text-white');
                 alertBox.classList.remove('d-none');
-                alertBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                alertBox.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
             } else {
                 alertBox.classList.add('d-none');
+                const modal = new bootstrap.Modal(submitModal);
+                modal.show();
+                const confirmButton = submitModal.querySelector('#confirmSubmit');
+                confirmButton.addEventListener('click', () => {
+                    // gisForm.submit();
+                    console.log('Form submitted'); // For testing purposes
+                });
             }
         });
     });
-
-    // Handle form submission manually
-    submitFormBtn.addEventListener('click', e => {
-        e.preventDefault();
-
-        const allTabs = document.querySelectorAll('.tab-pane');
-        let allMissing = [];
-
-        function formatTabId(tabId) {
-            return tabId
-                .replace(/_/g, ' ')
-                .replace('tab', '')
-                .replace(/\b\w/g, c => c.toUpperCase());
-        }
-
-        allTabs.forEach(tab => {
-            const missing = validateTab(tab);
-            if (missing.length > 0) {
-                const tabName = formatTabId(tab.id);
-                allMissing.push(...missing.map(field => `${tabName}: ${field}`));
-            }
-        });
-
-        if (allMissing.length > 0) {
-            alertBox.innerHTML = `<strong>Cannot submit form.</strong><br>Missing fields:<br>• ${allMissing.join('<br>• ')}`;
-            alertBox.classList.add('bg-danger', 'text-white');
-            alertBox.classList.remove('d-none');
-            alertBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        } else {
-            alertBox.classList.add('d-none');
-            gisForm.submit(); // proceed if all required fields are filled
-        }
-    });
-});
 </script>
