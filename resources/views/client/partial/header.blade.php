@@ -12,7 +12,7 @@
 
                 <div class="col d-flex align-items-center justify-content-end gap-4">
                     @if (Route::is('landing.page'))
-                        @if (env('APP_DEBUG'))
+                        @if (env('APP_DEBUG') && session()->has('citizen'))
                             <a href="{{ route('landing.page', ['uuid', 'debug']) }}"
                                 class="btn btn-danger fw-bold hover-scale">
                                 Clear Session
