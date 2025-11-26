@@ -44,6 +44,7 @@
         <x-loader />
         @include('client.partial.header')
         @yield('content')
+        @include('components.footer')
     </div>
     <script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
