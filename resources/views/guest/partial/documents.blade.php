@@ -14,11 +14,18 @@
                                 from {{ $document['source'] }}
                             </p>
                         </span>
-                        @if ($document['is_mandatory'])
-                            <div>
-                                <span class="badge bg-danger text-white">Required</span>
-                            </div>
-                        @endif
+                        <span class="d-flex gap-1">
+                            @if ($document['is_mandatory'])
+                                <div>
+                                    <span class="badge bg-danger text-white">Required</span>
+                                </div>
+                            @endif
+                            @if ($document['is_muslim'])
+                                <div>
+                                    <span class="badge bg-warning text-white">For Muslim</span>
+                                </div>
+                            @endif
+                        </span>
                     </div>
                 </li>
             @endforeach

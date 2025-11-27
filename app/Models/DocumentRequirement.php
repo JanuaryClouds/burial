@@ -24,36 +24,42 @@ class DocumentRequirement extends Model
                 'description' => null,
                 'source' => 'Local Civil Registry',
                 'is_mandatory' => true,
+                'is_muslim' => false,
             ],
             [
                 'name' => 'Original Copy of Funeral Contract',
                 'description' => null,
                 'source' => 'Funeral Establishment',
-                'is_mandatory' => false,
+                'is_mandatory' => true,
+                'is_muslim' => false,
             ],
             [
                 'name' => 'Photocopy of Valid Identification Card of Deceased and Claimant',
                 'description' => null,
                 'source' => 'Local Civil Registry',
                 'is_mandatory' => true,
+                'is_muslim' => false,
             ],
             [
                 'name' => 'Proof of Relationship',
                 'description' => "Examples include Marriage Contract, Birth Certificate, Baptismal Certificate.",
                 'source' => 'Local Civil Registry',
                 'is_mandatory' => true,
+                'is_muslim' => false,
             ],
             [
                 'name' => 'Certificate of Burial Rites (signed by IMAM)',
                 'description' => "For Muslim burials only",
                 'source' => 'Muslim/Islam Religious Community',
-                'is_mandatory' => false,
+                'is_mandatory' => true,
+                'is_muslim' => true,
             ],
             [
                 'name' => 'Certificate of Internment issued by Muslim Cemetery',
                 'description' => 'For Muslim burials only',
                 'source' => 'Muslim/Islam Religious Community',
                 'is_mandatory' => true,
+                'is_muslim' => true,
             ],
         ];
     }
@@ -62,7 +68,7 @@ class DocumentRequirement extends Model
     {
         return [
             [
-                'name' => 'Certified True Copy of Registerd Death Certificate',
+                'name' => 'Certified True Copy of Registered Death Certificate',
                 'description' => null,
                 'source' => 'Local Civil Registry',
                 'is_mandatory' => true,
