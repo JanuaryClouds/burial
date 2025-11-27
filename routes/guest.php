@@ -13,6 +13,9 @@ Route::get('/general-intake-form', [ClientController::class, 'create'])
 Route::post('/general-intake-form/store', [ClientController::class, 'store'])
     ->name('general.intake.form.store');
 
+Route::get('/history', [ClientController::class, 'history'])
+    ->name('client.history');
+
 // guest routes
 Route::name('guest.')
     ->group(function () {

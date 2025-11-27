@@ -65,6 +65,8 @@ class CitizenAccessController extends Controller
             }
         }
 
+        $existingClient = Client::where('citizen_id', session('citizen')['user_id'])->exists() ?? false;
+
         $cardData = [
             [
                 'label' => 'Recent Clients',
@@ -94,6 +96,7 @@ class CitizenAccessController extends Controller
 
         return view('landing', compact(
             'citizen',
+            'existingClient',
             'steps',
             'burialDocuments',
             'funeralDocuments',

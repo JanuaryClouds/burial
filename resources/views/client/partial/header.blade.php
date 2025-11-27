@@ -22,6 +22,11 @@
                             <a href="{{ route('general.intake.form') }}" class="btn btn-primary fw-bold hover-scale">
                                 Apply
                             </a>
+                            @if ($existingClient)
+                                <a href="{{ route('client.history') }}" class="btn btn-secondary hover-scale">
+                                    History
+                                </a>
+                            @endif
                         @else
                             <a href="https://tlcportal.taguig.gov.ph/login" class="btn btn-primary fw-bold hover-scale">
                                 Register
