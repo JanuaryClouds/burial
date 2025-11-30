@@ -96,10 +96,10 @@ class Client extends Model
     }
 
     public function claimant() {
-        return $this->hasMany(Claimant::class, 'client_id', 'id');
+        return $this->hasOne(Claimant::class, 'client_id', 'id');
     }
 
     public function funeralAssistance() {
-        return $this->hasMany(FuneralAssistance::class, 'client_id', 'id');
+        return $this->hasOne(FuneralAssistance::class, 'client_id', 'id');
     }
 }
