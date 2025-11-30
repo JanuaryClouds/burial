@@ -6,12 +6,15 @@ use App\DataTables\CmsDataTable;
 use App\Http\Requests\ClientRequest;
 use App\Models\Assistance;
 use App\Models\Barangay;
+use App\Models\Citizen;
 use App\Models\CivilStatus;
 use App\Models\Client;
+use App\Models\Interview;
 use App\Models\Sex;
 use App\Services\CentralClientService;
 use App\Services\ClientService;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Cache;
 use Crypt;
 use Exception;
 use Illuminate\Http\Request;
@@ -102,25 +105,7 @@ class ClientController extends Controller
     public function view($id)
     {
         $resource = 'client';
-        $client = Client::with([
-            'barangay',
-            'district',
-            'socialInfo',
-            'socialInfo.relationship',
-            'socialInfo.education',
-            'socialInfo.civil',
-            'demographic',
-            'demographic.sex',
-            'demographic.religion',
-            'demographic.nationality',
-            'assessment',
-            'recommendation',
-            'beneficiary',
-            'beneficiary.sex',
-            'beneficiary.barangay',
-            'beneficiary.religion',
-        ])
-            ->find($id);
+        $client = Client::find($id);
         $page_title = $client->first_name.' '.$client->last_name."'s Application";
         $page_subtitle = $client->tracking_no.' - '.$client->id;
         $readonly = true;
@@ -507,23 +492,18 @@ class ClientController extends Controller
 
     public function history() {
         // ! This does prevent unregistered users from the TLC Portal from tracking clients
-        $client = Client::where('citizen_id', session('citizen')['user_id'] ?? null)->first();
-        if (!$client) {
+        $records = Citizen::records();
+        if (!$records) {
             return redirect()->route('landing.page')->with('alertInfo', 'No client application found to track. Please apply first.');
         }
-        $page_title = $client->tracking_no . ' - Status Tracking';
+        $client = Client::where('citizen_id', session('citizen')['user_id'])->first();
+
+        $page_title = session('citizen')['firstname'] . ' ' . session('citizen')['lastname'] . ' | Client History';
         $readonly = true;
         $disabled = true;
-        
-        $interviews = $client->interviews;
-        $burialAssistances = $client->claimant;
-        $funeralAssistances = $client->funeralAssistance;
-
         return view('client.history', compact(
+            'records',
             'client',
-            'interviews',
-            'burialAssistances',
-            'funeralAssistances',
             'page_title',
             'readonly',
             'disabled',
