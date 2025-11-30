@@ -65,7 +65,10 @@ class CitizenAccessController extends Controller
             }
         }
 
-        $existingClient = Client::where('citizen_id', session('citizen')['user_id'])->exists() ?? false;
+        if ($citizen) 
+            $existingClient = Client::where('citizen_id', session('citizen')['user_id'])->exists();
+        else 
+            $existingClient = false;
 
         $cardData = [
             [
