@@ -4,10 +4,13 @@
     <div class="d-flex flex-center w-100 px-6 py-4">
         <div class="container-xxl">
             <div class="row">
-                <div class="col d-flex gap-2 p-2">
-                    <img src="{{ asset('images/CSWDO.webp') }}" alt="CSWDO Logo" class="landing-logo w-75px h-75px" />
+                <div class="col d-flex align-items-center gap-2">
+                    <img src="{{ asset('images/CSWDO.webp') }}" alt="CSWDO Logo" class="landing-logo w-50px h-50px" />
                     <img src="{{ asset('images/city_logo.webp') }}" alt="Taguig City Logo"
-                        class="landing-logo w-75px h-75px" />
+                        class="landing-logo w-50px h-50px" />
+                    <h1 class="fw-semibold ms-4 mb-0">
+                        {{ session()->has('citizen') ? 'Welcome, ' . session('citizen')['firstname'] : '' }}
+                    </h1>
                 </div>
 
                 <div class="col d-flex align-items-center justify-content-end gap-4">
@@ -23,7 +26,7 @@
                                 Apply
                             </a>
                             @if ($existingClient)
-                                <a href="{{ route('client.history') }}" class="btn btn-secondary hover-scale">
+                                <a href="{{ route('client.history') }}" class="btn btn-light hover-scale">
                                     History
                                 </a>
                             @endif
