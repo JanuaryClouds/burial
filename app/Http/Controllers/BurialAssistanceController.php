@@ -169,7 +169,7 @@ class BurialAssistanceController extends Controller
         $application = BurialAssistance::findOrFail($id);
         $client = $application->claimant->client;
         $page_title = $client->first_name . ' ' . $client->last_name . '\'s Burial Assistance Application';
-        $path = "burial-assistance/{$application->tracking_no}";
+        $path = "clients/{$application->claimant->client->tracking_no}";
         $storedFiles = Storage::disk('local')->files($path);
         $files = [];
         $updateAverage = $processLogService->getAvgProcessingTime($application)->avg();
