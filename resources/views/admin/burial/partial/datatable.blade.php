@@ -13,20 +13,20 @@
                         </select>
                     </div>
                 @endif
-                    <div class="form-group w-100 mr-2">
-                        <label for="min-date">Submitted on/after</label>
-                        <input id="min-date" class="form-control" type="date" name="min-date">
-                    </div>
-                    <div class="form-group w-100 mr-2">
-                        <label for="max-date">Submitted on/before</label>
-                        <input id="max-date" class="form-control" type="date" name="max-date">
-                    </div>
+                <div class="form-group w-100 mr-2">
+                    <label for="min-date">Submitted on/after</label>
+                    <input id="min-date" class="form-control" type="date" name="min-date">
+                </div>
+                <div class="form-group w-100 mr-2">
+                    <label for="max-date">Submitted on/before</label>
+                    <input id="max-date" class="form-control" type="date" name="max-date">
+                </div>
                 <div class="form-group w-100 mr-2">
                     <label for="filter-barangay">Filter by Barangay</label>
                     <select name="filter-barangay" id="filter-barangay" class="form-control w-100">
                         <option value="all">All</option>
-                        @foreach ($barangays as $b)
-                            <option value="{{ $b->name }}">{{ $b->name }}</option>
+                        @foreach ($barangays as $key => $barangay)
+                            <option value="{{ $barangay }}">{{ $barangay }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -61,7 +61,7 @@
                                     <td>{{ $application->tracking_no }}</td>
                                     <td>
                                         {{ $application->deceased->first_name }}
-                                        {{ $application->deceased->middle_name ? Str::charAt($application->deceased->middle_name, 0).'.' : '' }}
+                                        {{ $application->deceased->middle_name ? Str::charAt($application->deceased->middle_name, 0) . '.' : '' }}
                                         {{ $application->deceased->last_name }}
                                         {{ $application->deceased->suffix }}
                                         <p class="text-muted">({{ $application->deceased->barangay->name }})</p>
@@ -71,22 +71,24 @@
                                         @if ($application?->claimantChanges->isNotEmpty())
                                             @foreach ($application->claimantChanges as $cc)
                                                 @if ($cc->status === 'approved')
-                                                    {{ $cc->newClaimant->first_name }} 
-                                                    {{ Str::limit($cc->newClaimant->middle_name, 1, '.') }} 
-                                                    {{ $cc->newClaimant->last_name }} 
+                                                    {{ $cc->newClaimant->first_name }}
+                                                    {{ Str::limit($cc->newClaimant->middle_name, 1, '.') }}
+                                                    {{ $cc->newClaimant->last_name }}
                                                     {{ $cc?->newClaimant->suffix }}
                                                     <p class="text-muted">({{ $cc->newClaimant->barangay->name }})</p>
                                                 @else
                                                     {{ $application->claimant->first_name }}
-                                                    {{ $application->claimant->middle_name ? Str::limit($application->claimant->middle_name, 1, '.') : ''}}
+                                                    {{ $application->claimant->middle_name ? Str::limit($application->claimant->middle_name, 1, '.') : '' }}
                                                     {{ $application->claimant->last_name }}
                                                     {{ $application->claimant->suffix }}
-                                                    <p class="text-muted">({{ $application->claimant->barangay->name }})</p>
+                                                    <p class="text-muted">
+                                                        ({{ $application->claimant->barangay->name }})
+                                                    </p>
                                                 @endif
                                             @endforeach
                                         @else
                                             {{ $application->claimant->first_name }}
-                                            {{ $application->claimant->middle_name ? Str::limit($application->claimant->middle_name, 1, '.') : ''}}
+                                            {{ $application->claimant->middle_name ? Str::limit($application->claimant->middle_name, 1, '.') : '' }}
                                             {{ $application->claimant->last_name }}
                                             {{ $application->claimant->suffix }}
                                             <p class="text-muted">({{ $application->claimant->barangay->name }})</p>
@@ -94,21 +96,28 @@
                                     </td>
                                     <td>{{ $application->application_date }}</td>
                                     <td>
-                                        {{ $application->processLogs->last()->date_in ?? "Submitted on: " . $application->application_date }}
-                                        <p class="text-muted">{{ $application->processLogs->count() > 1 ? '(' . $application->processLogs->last()->loggable?->description . ')' : '' }}</p>
+                                        {{ $application->processLogs->last()->date_in ?? 'Submitted on: ' . $application->application_date }}
+                                        <p class="text-muted">
+                                            {{ $application->processLogs->count() > 1 ? '(' . $application->processLogs->last()->loggable?->description . ')' : '' }}
+                                        </p>
                                     </td>
                                     @if (Route::is('burial-assistances*'))
                                         <td>
                                             @if ($application->status === 'pending')
-                                                <span class="badge badge-pill badge-warning">{{ ucfirst($application->status) }}</span>
+                                                <span
+                                                    class="badge badge-pill badge-warning">{{ ucfirst($application->status) }}</span>
                                             @elseif ($application->status === 'processing')
-                                                <span class="badge badge-pill badge-primary">{{ ucfirst($application->status) }}</span>
+                                                <span
+                                                    class="badge badge-pill badge-primary">{{ ucfirst($application->status) }}</span>
                                             @elseif ($application->status === 'approved')
-                                                <span class="badge badge-pill badge-success">{{ ucfirst($application->status) }}</span>
+                                                <span
+                                                    class="badge badge-pill badge-success">{{ ucfirst($application->status) }}</span>
                                             @elseif ($application->status === 'released')
-                                                <span class="badge badge-pill badge-success">{{ ucfirst($application->status) }}</span>
+                                                <span
+                                                    class="badge badge-pill badge-success">{{ ucfirst($application->status) }}</span>
                                             @elseif ($application->status === 'rejected')
-                                                <span class="badge badge-pill badge-danger">{{ ucfirst($application->status) }}</span>
+                                                <span
+                                                    class="badge badge-pill badge-danger">{{ ucfirst($application->status) }}</span>
                                             @endif
                                         </td>
                                     @endif
@@ -132,7 +141,9 @@
         const table = $('#applications-table').DataTable({
             responsive: true,
             ordering: true, // keep ordering functional
-            order: [[4, 'asc']],
+            order: [
+                [4, 'asc']
+            ],
             dom:
                 // First row: buttons on the left, filter on the right
                 "<'row mb-2'<'col-sm-6 d-flex align-items-center'l<'mr-3'>><'col-sm-6 d-flex justify-content-end align-items-center'f<'me-3'>B>>" +
@@ -156,13 +167,15 @@
                     }
                 }
             ],
-            columnDefs: [
-                { orderable: false, targets: [7] } // disable sorting on the Actions column
+            columnDefs: [{
+                    orderable: false,
+                    targets: [7]
+                } // disable sorting on the Actions column
             ],
             classes: {
-                sortAsc: '',     // override ascending class
-                sortDesc: '',    // override descending class
-                sortable: ''     // override neutral sortable class
+                sortAsc: '', // override ascending class
+                sortDesc: '', // override descending class
+                sortable: '' // override neutral sortable class
             }
         });;
 
@@ -183,7 +196,7 @@
             maxDate.value = '';
             filterTable();
         });
-        
+
         minDate.addEventListener('change', () => {
             maxDate.min = minDate.value;
             filterTable();
@@ -217,9 +230,9 @@
             table.rows().every(function() {
                 const data = this.data();
                 const dateText = data[table.column(':contains("Submitted on")').index()];
-                const statusText = table.column(':contains("Status")').index() !== undefined 
-                    ? data[table.column(':contains("Status")').index()].toLowerCase()
-                    : '';
+                const statusText = table.column(':contains("Status")').index() !== undefined ?
+                    data[table.column(':contains("Status")').index()].toLowerCase() :
+                    '';
                 const deceasedBarangay = data[table.column(':contains("Deceased")').index()];
                 const claimantBarangay = data[table.column(':contains("Claimant")').index()];
 
@@ -227,7 +240,8 @@
 
                 const dateOk = (!min || date >= min) && (!max || date <= max);
                 const statusOk = (status === 'all') || statusText.includes(status.toLowerCase());
-                const barangayOk = (barangaySelect.value === 'all') || deceasedBarangay.includes(barangaySelect.value) || claimantBarangay.includes(barangaySelect.value);
+                const barangayOk = (barangaySelect.value === 'all') || deceasedBarangay.includes(
+                    barangaySelect.value) || claimantBarangay.includes(barangaySelect.value);
 
                 // Show/hide row manually
                 if (dateOk && statusOk && barangayOk) {
