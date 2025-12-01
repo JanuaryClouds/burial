@@ -14,7 +14,7 @@
             $claimantChangeLog = $processLogs[$claimantChangeIndex];
             $status = $claimantChangeLog->loggable->status ?? null;
             if ($status === 'approved') {
-                $nextOrderNo = 2; // Reset to 2 on approval
+                $nextOrderNo = 1; // Reset to 1 on approval
             } elseif ($status === 'rejected') {
                 $previousLog = $processLogs[$claimantChangeIndex - 1] ?? null;
                 $nextOrderNo = $previousLog?->loggable?->order_no ?? 1;
@@ -24,16 +24,20 @@
         }
     }
 @endphp
-<div id="addUpdateModal-{{ $application->id }}" class="modal fade flex justify-content-center" tabindex="-1" role="dialog" aria-labelledby="add-process" aria-hidden="true">
+<div id="addUpdateModal-{{ $application->id }}" class="modal fade flex justify-content-center" tabindex="-1" role="dialog"
+    aria-labelledby="add-process" aria-hidden="true">
     @foreach ($workflowSteps as $step)
-        @if ($processLogs->count() == 0 || ($step?->order_no > $nextOrderNo))
+        @if ($processLogs->count() == 0 || $step?->order_no > $nextOrderNo)
             <div class="modal-dialog" role="document">
-                <form action="{{ route('burial-assistances.addLog', ['id' => $application->id, 'stepId' => $step->id]) }}" method="post" id="addLogForm" enctype="multipart/form-data">
-                @csrf
+                <form
+                    action="{{ route('burial-assistances.addLog', ['id' => $application->id, 'stepId' => $step->id]) }}"
+                    method="post" id="addLogForm" enctype="multipart/form-data">
+                    @csrf
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="add-proces">Add Process Update</h5>
-                            <button class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal" aria-label="Close">
+                            <button class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal"
+                                aria-label="Close">
                                 <i class="ki-duotone ki-cross fs-1">
                                     <span class="path1"></span><span class="path2"></span>
                                 </i>
@@ -42,7 +46,9 @@
                         <div class="modal-body">
                             <section class="section">
                                 <div class="section-title">
-                                    <h6 class="text-muted">Previous Step: {{ $processLogs->last()->loggable?->description ?? 'Submitted at ' . $application->application_date }}</h6>
+                                    <h6 class="text-muted">Previous Step:
+                                        {{ $processLogs->last()->loggable?->description ?? 'Submitted at ' . $application->application_date }}
+                                    </h6>
                                     <div class="row mt-4">
                                         <div class="form-group col-lg-6 col-sm-12 mb-0">
                                             <p class="text-muted">Date Out: {{ $processLogs->last()?->date_out }}</p>
@@ -58,41 +64,41 @@
                                     <h6>Next Step: {{ $step->description }}</h6>
                                     <div class="row mt-4">
                                         <div class="form-group col-lg-6 col-sm-12 mb-0">
-                                            <x-form-input type="date" name="date_out" id="date_out" label="Date Out" min="{{ Carbon\Carbon::parse($processLogs->last()?->date_in)->format('Y-m-d') ?? Carbon\Carbon::parse($application->application_date)->format('Y-m-d') }}" />
+                                            <x-form-input type="date" name="date_out" id="date_out" label="Date Out"
+                                                min="{{ Carbon\Carbon::parse($processLogs->last()?->date_in)->format('Y-m-d') ?? Carbon\Carbon::parse($application->application_date)->format('Y-m-d') }}" />
                                         </div>
                                         <div class="form-group col-lg-6 col-sm-12 mb-0">
-                                            <x-form-input type="date" name="date_in" id="date_in" label="Date In" required="true" min="{{ Carbon\Carbon::parse($processLogs->last()?->date_out)->format('Y-m-d') ?? Carbon\Carbon::parse($application->application_date)->format('Y-m-d') }}"/>
+                                            <x-form-input type="date" name="date_in" id="date_in" label="Date In"
+                                                required="true"
+                                                min="{{ Carbon\Carbon::parse($processLogs->last()?->date_out)->format('Y-m-d') ?? Carbon\Carbon::parse($application->application_date)->format('Y-m-d') }}" />
                                         </div>
                                     </div>
                                 </div>
                                 @php
-                                    $schema = $step->extra_data_schema ? json_decode($step->extra_data_schema, true) : [];
+                                    $schema = $step->extra_data_schema
+                                        ? json_decode($step->extra_data_schema, true)
+                                        : [];
                                 @endphp
                                 @foreach ($schema as $key => $field)
-                                    @if(is_string($field))
+                                    @if (is_string($field))
                                         <div class="form-group col-12 p-0">
-                                            <label for="extra_data[{{ str_replace('*', '', $key) }}]" >
+                                            <label for="extra_data[{{ str_replace('*', '', $key) }}]">
                                                 {{ ucfirst(str_replace('_', ' ', $key)) }}
                                             </label>
-                                            <input 
-                                                type="{{ $field }}"
-                                                class="form-control"
+                                            <input type="{{ $field }}" class="form-control"
                                                 name="extra_data[{{ str_replace('*', '', $key) }}]"
-                                                {{ str_contains($field, '*') ? 'required' : '' }}
-                                            >
+                                                {{ str_contains($field, '*') ? 'required' : '' }}>
                                         </div>
                                     @elseif (is_array($field))
                                         @foreach ($field as $subkey => $subField)
                                             <div class="form-group col-12 p-0">
-                                                <label for="extra_data[{{ $key }}][{{ str_replace('*', '', $subkey) }}]" >
+                                                <label
+                                                    for="extra_data[{{ $key }}][{{ str_replace('*', '', $subkey) }}]">
                                                     {{ ucfirst(str_replace('_', ' ', $subkey)) }}
                                                 </label>
-                                                <input 
-                                                    type="{{ $subField }}" 
-                                                    class="form-control" 
-                                                    name="extra_data[{{ $key }}][{{ str_replace('*', '', $subkey) }}]" 
-                                                    {{ str_contains($subField, '*') ? 'required' : '' }}
-                                                >
+                                                <input type="{{ $subField }}" class="form-control"
+                                                    name="extra_data[{{ $key }}][{{ str_replace('*', '', $subkey) }}]"
+                                                    {{ str_contains($subField, '*') ? 'required' : '' }}>
                                             </div>
                                         @endforeach
                                     @endif
@@ -100,12 +106,8 @@
                                 @if ($step->order_no === 13 && $application->status === 'approved' && $application->cheque)
                                     <div class="form-group">
                                         <label for="cheque-image-proof">Proof of Claiming Cheque</label>
-                                        <input 
-                                            type="file"
-                                            name="cheque-image-proof" 
-                                            id="cheque-image-proof"
-                                            class="form-control"
-                                        >
+                                        <input type="file" name="cheque-image-proof" id="cheque-image-proof"
+                                            class="form-control">
                                     </div>
                                 @endif
                                 <div class="form-group">
