@@ -23,11 +23,6 @@ class claimantForm extends Component
      */
     public function render(): View|Closure|string
     {
-        $relationships = Relationship::select('id', 'name')->get();
-        $barangays = Barangay::select('id', 'name')->get();
-        return view('components.claimant-form', compact(
-            'relationships',
-            'barangays'
-        ));
+        return view('components.claimant-form');
     }
 }
