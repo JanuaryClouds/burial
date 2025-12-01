@@ -1,4 +1,4 @@
-<div class="landing-header bg-white" data-kt-sticky="true" data-kt-sticky-name="landing-header"
+<div class="landing-header bg-body" data-kt-sticky="true" data-kt-sticky-name="landing-header"
     data-kt-sticky-offset="{default: '200px', lg: '200px'}" style="animation-duration: 0.3s;">
     {{-- begin:wrapper --}}
     <div class="d-flex flex-center w-100 px-6 py-4">
@@ -14,6 +14,7 @@
                 </div>
 
                 <div class="col d-flex align-items-center justify-content-end gap-4">
+                    @include('components.theme-toggle')
                     @if (Route::is('landing.page'))
                         @if (env('APP_DEBUG') && session()->has('citizen'))
                             <a href="{{ route('landing.page', ['uuid' => 'debug']) }}"
@@ -41,7 +42,7 @@
                             @endif
                         @endif
                     @elseif (!Route::is('general.intake.form'))
-                        <a href="{{ route('landing.page') }}" class="btn btn-light">
+                        <a href="{{ back()->getTargetUrl() }}" class="btn btn-light">
                             Back
                         </a>
                     @endif
