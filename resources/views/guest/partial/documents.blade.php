@@ -5,7 +5,7 @@
         <h5>For Burial Assistance</h5>
         <ul class="list-group list-group-flush">
             @foreach ($burialDocuments as $document)
-                <li class="list-group-item my-4">
+                <li class="list-group-item my-4 bg-body">
                     <div class="d-flex justify-content-between">
                         <span class="d-flex flex-column fs-4">
                             <p class="fw-bold">{{ $document['name'] }}</p>
@@ -33,7 +33,7 @@
         <h5>For Funeral Assistance</h5>
         <ul class="list-group list-group-flush">
             @foreach ($funeralDocuments as $document)
-                <li class="list-group-item">
+                <li class="list-group-item bg-body">
                     <div class="d-flex justify-content-between">
                         <span class="d-flex flex-column fs-4">
                             <p class="fw-bold">{{ $document['name'] }}</p>

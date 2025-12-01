@@ -7,7 +7,7 @@
         <h3>Taguig City</h3>
     </div>
 
-    <div class="bg-white py-10">
+    <div class="bg-body py-10">
         <div class="container-xxl gap-20">
             <div class="d-flex flex-column gap-20">
                 @include('guest.partial.services')

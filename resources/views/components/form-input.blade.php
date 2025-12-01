@@ -13,7 +13,7 @@
 ])
 
 @php
-    $isInactive = $disabled ? ' bg-white text-gray-700' : '';
+    $isInactive = $disabled ? ' bg-body text-gray-700' : '';
 @endphp
 
 <div class="mb-3">
