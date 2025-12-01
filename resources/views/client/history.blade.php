@@ -21,34 +21,34 @@
                         @include('client.partial.client-info')
                     </div>
                 </div>
+                <div class="card-footer pb-0 pt-4">
+                    <ul class="nav nav-tabs nav-line-tabs nav-stretch fs-4 border-bottom-0">
+                        <li class="nav-item">
+                            <a href="#interviews_tab" class="nav-link active text-gray-700 pb-6" data-bs-toggle="tab">
+                                Interviews
+                                <span
+                                    class="badge rounded-pill text-bg-light ms-2">{{ $records->first()->interviews ? $records->sum(fn($c) => $c->interviews->count()) : 0 }}</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#burials_tab" class="nav-link text-gray-700 pb-6" data-bs-toggle="tab">
+                                Burial Assistances
+                                <span
+                                    class="badge rounded-pill text-bg-light ms-2">{{ $records->first()->claimant ? $records->sum(fn($c) => $c->claimant->count()) : 0 }}</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#funerals_tab" class="nav-link text-gray-700 pb-6" data-bs-toggle="tab">
+                                Funeral Assistances
+                                <span
+                                    class="badge rounded-pill text-bg-light ms-2">{{ $records->first()->funeralAssistance ? $records->sum(fn($c) => $c->funeralAssistance->count()) : 0 }}</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </div>
 
             <div class="card">
-                <div class="card-header">
-                    <div class="card-toolbar">
-                        <ul class="nav nav-tabs nav-line-tabs nav-stretch fs-4 text-black">
-                            <li class="nav-item">
-                                <a href="#interviews_tab" class="nav-link active" data-bs-toggle="tab">
-                                    Interviews
-                                    <span
-                                        class="badge rounded-pill text-bg-light ms-2">{{ $records->sum(fn($c) => $c->interviews->count()) }}</span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="#burials_tab" class="nav-link" data-bs-toggle="tab">
-                                    Burial Assistances
-                                    <span
-                                        class="badge rounded-pill text-bg-light ms-2">{{ $records->sum(fn($c) => $c->claimant->count()) }}</span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="#funerals_tab" class="nav-link" data-bs-toggle="tab">
-                                    Funeral Assistances
-                                    <span {{-- class="badge rounded-pill text-bg-light ms-2">{{ $records->sum(fn($c) => $c->funeralAssistance->count()) }}</span> --}} </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
                 <div class="card-body">
                     <div class="tab-content" id="tabContent">
                         <div id="interviews_tab" class="tab-pane fade show active" role="tabpanel">

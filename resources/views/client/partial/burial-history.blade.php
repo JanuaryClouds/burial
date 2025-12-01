@@ -5,6 +5,8 @@
         @foreach ($records as $client)
             @php
                 $burial = $client->claimant->burialAssistance;
+                $deceased = $burial->deceased;
+                $claimant = $burial->claimant;
 
                 if ($burial->status == 'released') {
                     $statusClass = 'list-group-item-success';
@@ -15,8 +17,17 @@
                 }
             @endphp
             <li class="list-group-item {{ $statusClass }}">
-                <strong>{{ $burial->created_at->format('F j, Y g:i A') }}</strong> -
-                Status: {{ ucfirst($burial->status) }}
+                <a href="{{ route('burial.tracker', ['uuid' => $burial->id]) }}" class="d-flex justify-content-between">
+                    <span class="d-flex gap-3 fw-bold">
+                        Burial for {{ $deceased->first_name }} {{ Str::charAt($deceased->middle_name, 0) }}.
+                        {{ $deceased->last_name }} {{ $deceased?->suffix }}
+                        <span class="badge rounded-pill text-bg-info">{{ ucfirst($burial->status) }}</span>
+                    </span>
+                    <span class="d-flex gap-2">
+                        {{ $burial->created_at->format('F j, Y g:i A') }}
+                    </span>
+
+                </a>
             </li>
         @endforeach
     @endif
