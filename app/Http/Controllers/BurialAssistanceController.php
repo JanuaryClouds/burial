@@ -84,47 +84,47 @@ class BurialAssistanceController extends Controller
         }
     }
 
-    public function track(Request $request) {
-        $request->validate([
-            'tracking_code' => 'required|string|exists:burial_assistances,tracking_code',
-            'mobile_number' => 'required|string',
-        ]);
+    // public function track(Request $request) {
+    //     $request->validate([
+    //         'tracking_code' => 'required|string|exists:burial_assistances,tracking_code',
+    //         'mobile_number' => 'required|string',
+    //     ]);
 
-        $burialAssistance = BurialAssistance::where('tracking_code', $request->tracking_code)->first();
-        if ($burialAssistance->claimantChanges()->count() > 0) {
-            if ($burialAssistance->claimantChanges()->latest()->first()->where('status', 'approved')) {
-                $mobileNumber = substr($burialAssistance->claimantChanges()->where('status', 'approved')->latest()->first()->newclaimant->mobile_number, -4);
-            } else {
-                $mobileNumber = substr($burialAssistance->claimant->mobile_number, -4);
-            }
-        } else {
-            $mobileNumber = substr($burialAssistance->claimant->mobile_number, -4);
-        }
-        if (!$burialAssistance) {
-            return redirect()->back()->with([
-                'error'=> 'Burial Assistance Application not found.'
-            ]);
-        } elseif ($request->mobile_number != $mobileNumber) {
-            return redirect()->back()->with([
-                'info' => 'Mobile number does not match. Please try again.'
-            ]);
-        }
+    //     $burialAssistance = BurialAssistance::where('tracking_code', $request->tracking_code)->first();
+    //     if ($burialAssistance->claimantChanges()->count() > 0) {
+    //         if ($burialAssistance->claimantChanges()->latest()->first()->where('status', 'approved')) {
+    //             $mobileNumber = substr($burialAssistance->claimantChanges()->where('status', 'approved')->latest()->first()->newclaimant->mobile_number, -4);
+    //         } else {
+    //             $mobileNumber = substr($burialAssistance->claimant->mobile_number, -4);
+    //         }
+    //     } else {
+    //         $mobileNumber = substr($burialAssistance->claimant->mobile_number, -4);
+    //     }
+    //     if (!$burialAssistance) {
+    //         return redirect()->back()->with([
+    //             'error'=> 'Burial Assistance Application not found.'
+    //         ]);
+    //     } elseif ($request->mobile_number != $mobileNumber) {
+    //         return redirect()->back()->with([
+    //             'info' => 'Mobile number does not match. Please try again.'
+    //         ]);
+    //     }
 
-        // dd($burialAssistance);
+    //     // dd($burialAssistance);
 
-        $ip = request()->ip();
-        $browser = request()->header('User-Agent');
-        activity()
-            ->causedBy(null)
-            ->withProperties(['ip' => $ip, 'browser' => $browser])
-            ->log('Burial Assistance tracked by guest');
+    //     $ip = request()->ip();
+    //     $browser = request()->header('User-Agent');
+    //     activity()
+    //         ->causedBy(null)
+    //         ->withProperties(['ip' => $ip, 'browser' => $browser])
+    //         ->log('Burial Assistance tracked by guest');
 
-        // return view('guest.burial-assistance.tracker', compact('burialAssistance'));
-        return redirect()->route('guest.burial-assistance.track-page', ['code' => $request->tracking_code]);
-    }
+    //     // return view('guest.burial-assistance.tracker', compact('burialAssistance'));
+    //     return redirect()->route('guest.burial-assistance.track-page', ['code' => $request->tracking_code]);
+    // }
 
-    public function trackPage($code, ProcessLogService $processLogService) {
-        $burialAssistance = BurialAssistance::where('tracking_code', $code)->first();
+    public function tracker($uuid, ProcessLogService $processLogService) {
+        $burialAssistance = BurialAssistance::where('id', $uuid)->first();
 
         $updateAverage = $processLogService->getAvgProcessingTime($burialAssistance)->avg();
 
@@ -135,7 +135,7 @@ class BurialAssistanceController extends Controller
             $burialAssistance->claimant->mobile_number = Str::mask($burialAssistance->claimant->mobile_number, '*', 4, 3);
             $burialAssistance->claimant->address = Str::mask($burialAssistance->claimant->address, '*', 3);
         }
-        return view('guest.burial-assistance.tracker', compact('burialAssistance', 'updateAverage'));
+        return view('burial.tracker', compact('burialAssistance', 'updateAverage'));
     }
 
     public function applications($status = null) {

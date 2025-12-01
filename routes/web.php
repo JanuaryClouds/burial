@@ -37,6 +37,7 @@ Route::post('/login/check', [UserController::class, 'login'])
 Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
 require __DIR__.'/guest.php';
+require __DIR__.'/burial.php';
 require __DIR__.'/api.php';
 
 Route::middleware(['auth'])
