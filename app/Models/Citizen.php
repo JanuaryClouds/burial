@@ -45,6 +45,10 @@ class Citizen extends Model
 
     public static function records()
     {
+        if (!session('citizen')) {
+            return false;
+        }
+
         return Client::where('citizen_id', session('citizen')['user_id'])
             ->with(['interviews', 'claimant', 'funeralAssistance'])
             ->orderBy('created_at', 'desc')
