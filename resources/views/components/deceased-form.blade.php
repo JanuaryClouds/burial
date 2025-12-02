@@ -34,7 +34,7 @@
             disabled="{{ $disabled }}" readonly="{{ $readonly }}" />
     </div>
     <div class="col-12 col-lg-4">
-        <x-form-select name="deceased[barangay_id]" label="Barangay" required="true" :options="$barangays->pluck('name', 'id')" :selected="$deceased->barangay_id ?? ''"
+        <x-form-select name="deceased[barangay_id]" label="Barangay" required="true" :options="$barangays" :selected="$deceased->barangay_id ?? ''"
             disabled="{{ $disabled }}" />
     </div>
 </div>

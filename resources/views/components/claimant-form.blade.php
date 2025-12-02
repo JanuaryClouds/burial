@@ -25,7 +25,7 @@
 <div class="row justify-content-start align-items-center">
     <div class="col-12 col-lg-6">
         <x-form-select name="claimant[relationship_to_deceased]" id="relationship"
-            label="Relationship of the Deceased to the Claimant" required="true" :options="$relationships->pluck('name', 'id')" :selected="$claimant->relationship_to_deceased ?? ''"
+            label="Relationship of the Deceased to the Claimant" required="true" :options="$relationships" :selected="$claimant->relationship_to_deceased ?? ''"
             disabled="{{ $disabled }}" />
     </div>
     <div class="col-12 col-lg-3">
@@ -40,7 +40,7 @@
             value="{{ $claimant->address ?? '' }}" readonly="{{ $readonly }}" disabled="{{ $disabled }}" />
     </div>
     <div class="col-12 col-lg-4">
-        <x-form-select name="claimant[barangay_id]" id="barangay_id" label="Barangay" required="true" :options="$barangays->pluck('name', 'id')"
+        <x-form-select name="claimant[barangay_id]" id="barangay_id" label="Barangay" required="true" :options="$barangays"
             :selected="$claimant->barangay_id ?? ''" disabled="{{ $disabled }}" />
     </div>
 </div>
