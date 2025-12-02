@@ -1,4 +1,4 @@
-<ul class="list-group list-group-flush">
+<ul class="list-group list-group-flush fs-4">
     @if (!$records->first()->claimant)
         <li class="list-group-item">No Requested Burial Assistances</li>
     @else
@@ -26,7 +26,6 @@
                     <span class="d-flex gap-2">
                         {{ $burial->created_at->format('F j, Y g:i A') }}
                     </span>
-
                 </a>
             </li>
         @endforeach
