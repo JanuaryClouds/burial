@@ -6,7 +6,6 @@ use App\Http\Controllers\{
     ClaimantChangeController,
 };
 
-// guest routes
 // TODO: Update routes
 Route::name('burial.')
     ->prefix('burial')
@@ -20,7 +19,12 @@ Route::name('burial.')
         Route::get('/tracker/{uuid}', [BurialAssistanceController::class, 'tracker'])
             ->name('tracker');
         
-        Route::post('/{id}/claimant-change', [ClaimantChangeController::class, 'store'])
-            ->name('burial-assistance.claimant-change');
-        
+        Route::get('/{uuid}/claimant-change', [ClaimantChangeController::class, 'form'])
+            ->name('claimant-change');
+
+        Route::post('/{uuid}/claimant-change/store', [ClaimantChangeController::class, 'store'])
+            ->name('claimant-change.store');
+
+        Route::post('/{uuid}/claimant-change/{change}/decision', [ClaimantChangeController::class, 'decide'])
+            ->name('claimant-change.decision');
     });
