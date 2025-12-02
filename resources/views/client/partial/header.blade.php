@@ -30,6 +30,9 @@
                                 <a href="{{ route('client.history') }}" class="btn btn-light hover-scale">
                                     History
                                 </a>
+                                <a href="{{ route('landing.page', ['uuid' => 'logout']) }}" class="btn btn-danger">
+                                    <i class="fa-solid fa-right-from-bracket pe-0"></i>
+                                </a>
                             @endif
                         @else
                             <a href="https://tlcportal.taguig.gov.ph/login" class="btn btn-primary  hover-scale">
@@ -42,9 +45,24 @@
                             @endif
                         @endif
                     @elseif (!Route::is('general.intake.form'))
-                        <a href="{{ back()->getTargetUrl() }}" class="btn btn-light">
+                        <a href="{{ url()->previous() }}" class="btn btn-light">
                             Back
                         </a>
+                        <div class="dropdown">
+                            <button class="btn btn-light dropdown-toggle" type="button" id="menu"
+                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Menu
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="menu">
+                                <a class="dropdown-item" href="{{ route('landing.page') }}">Home</a>
+                                <a class="dropdown-item" href="{{ route('client.create') }}">Apply</a>
+                                <a class="dropdown-item" href="{{ route('client.history') }}">History</a>
+                                <div class="dropdown-divider"></div>
+                                <a href="{{ route('landing.page', ['uuid' => 'logout']) }}"
+                                    class="dropdown-item">Logout</a>
+                            </div>
+                        </div>
+
                     @endif
                     @includeWhen(Route::is('general.intake.form'), 'client.partial.create-form-buttons')
                 </div>

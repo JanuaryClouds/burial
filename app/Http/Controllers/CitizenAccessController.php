@@ -26,7 +26,7 @@ class CitizenAccessController extends Controller
         $page_title = 'Funeral Assistance System - Taguig CSWDO';
         $uuid = $request->query('uuid');
         // Clear citizen session if no uuid is provided, or if it's a debug/logout request.
-        if ($uuid === 'debug') {
+        if ($uuid === 'debug' || $uuid === 'logout') {
             session(['citizen' => null]);
             $uuid = null; // Ensure uuid is null for the rest of the logic.
         }
