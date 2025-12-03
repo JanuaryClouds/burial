@@ -5,7 +5,7 @@
 <div class="row g-5 g-xl-8">
     @foreach ($cardData as $statistic)
         <div class="col">
-            <a href="{{ $statistic['link'] ?? null }}"
+            <a href="{{ $statistic['link'] ?? '#' }}"
                 class="card flex-column justify-content-start align-items-start text-start w-100 p-10 hover-elevate-up parent-hover">
                 <i
                     class="ki-duotone {{ $statistic['icon'] }} fs-2tx mb-5 ms-n1 text-gray-500 parent-hover-primary parent-hover-rotate-start">

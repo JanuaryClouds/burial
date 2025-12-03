@@ -27,7 +27,6 @@ class latestClientsTable extends Component
             'barangay',
             'funeralAssistance',
             'interviews',
-            'interviews.schedule',
             'assessment'
         ])
         ->select(

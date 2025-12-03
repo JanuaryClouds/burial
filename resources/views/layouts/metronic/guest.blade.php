@@ -42,7 +42,7 @@
     </script>
     <div class="d-flex flex-column flex-root" id="kt_app_root">
         <x-loader />
-        @include('client.partial.header')
+        @includeWhen(!Route::is('login.page'), 'client.partial.header')
         @yield('content')
         @include('components.footer')
     </div>

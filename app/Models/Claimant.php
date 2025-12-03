@@ -32,7 +32,7 @@ class Claimant extends Model
     }
 
     public function burialAssistance() {
-        return $this->hasMany(BurialAssistance::class, 'claimant_id', 'id');
+        return $this->hasOne(BurialAssistance::class, 'claimant_id', 'id');
     }
 
     public function relationship() {

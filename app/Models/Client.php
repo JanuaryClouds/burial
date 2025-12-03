@@ -15,6 +15,7 @@ class Client extends Model
     protected $keyType = 'string';
     protected $fillable = [
         'id',
+        'citizen_id',
         'tracking_no',
         'first_name',
         'middle_name',
@@ -100,9 +101,5 @@ class Client extends Model
 
     public function funeralAssistance() {
         return $this->hasOne(FuneralAssistance::class, 'client_id', 'id');
-    }
-
-    public function hasApplication() {
-        return $this->claimant()->exists() || $this->funeralAssistance()->exists();
     }
 }

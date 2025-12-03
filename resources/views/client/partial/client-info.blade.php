@@ -33,7 +33,7 @@
                 value="{{ $client->age ?? (session('citizen')['age'] ?? null) }}" :readonly="$readonly" />
         </div>
         <div class="col-4 col-md-4 col-lg-1">
-            <x-form-select name="sex_id" label="3. Sex" required="true" :selected="$demographic->sex_id ?? ''" :options="$genders ?? []"
+            <x-form-select name="sex_id" label="3. Sex" required="true" :selected="$demographic->sex_id ?? ($matched['sex_id'] ?? '')" :options="$genders ?? []"
                 disabled="{{ $readonly }}" />
         </div>
         <div class="col-4 col-md-4 col-lg-2">

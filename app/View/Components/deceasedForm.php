@@ -24,13 +24,6 @@ class deceasedForm extends Component
      */
     public function render(): View|Closure|string
     {
-        $barangays = Barangay::select('id', 'name')->get();
-        $sexes = Sex::select('id', 'name')->get();
-        $religions = Religion::select('id', 'name')->get();
-        return view('components.deceased-form', compact(
-            'barangays',
-            'sexes',
-            'religions',
-        ));
+        return view('components.deceased-form');
     }
 }

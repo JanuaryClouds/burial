@@ -11,7 +11,6 @@
         </div>
         <!--/div-->
     </div>
-    </div>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const gisForm = document.getElementById('gisForm');
@@ -53,6 +52,7 @@
                     if (!value) {
                         const label = field.closest('div')?.querySelector('label')?.innerText || field.name;
                         missingFields.push(label.replace('*', '').trim());
+                        field.classList.add('is-invalid');
                     }
                 });
 
