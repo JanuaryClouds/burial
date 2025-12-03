@@ -23,14 +23,6 @@
                     @php
                         $logs = $application->processLogs->sortBy('created_at');
                     @endphp
-                    @if ($application->claimantChanges->isEmpty())
-                        <button class="btn btn-secondary mr-2" type="button" data-toggle="modal"
-                            data-target="#changeClaimantModal">
-                            <i class="fas fa-helmet-safety"></i>
-                            Change Claimant
-                        </button>
-                        <x-change-claimant-modal :burialAssistance="$application" />
-                    @endif
                 @endif
                 @can('reject-applications')
                     @if ($application->status != 'rejected')
