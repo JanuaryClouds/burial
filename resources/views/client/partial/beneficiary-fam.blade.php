@@ -86,7 +86,7 @@
             </div>
         </template>
 
-        @if (Route::is('client.create'))
+        @if (Route::is('general.intake.form'))
             <div class="mt-3" x-show="families.length < maxRows">
                 <button type="button" class="btn btn-sm btn-primary" @click="addFamily">
                     <i class="fa fa-plus"></i> Add Family Member
