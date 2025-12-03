@@ -9,7 +9,11 @@
                     <img src="{{ asset('images/city_logo.webp') }}" alt="Taguig City Logo"
                         class="landing-logo w-50px h-50px" />
                     <h1 class="ms-4 mb-0">
-                        {{ session()->has('citizen') ? 'Welcome, ' . session('citizen')['firstname'] : '' }}
+                        @if (Route::is('landing.page'))
+                            {{ session()->has('citizen') ? 'Welcome, ' . session('citizen')['firstname'] : '' }}
+                        @else
+                            {{ $page_title ?? 'CSWDO Funeral Assistance System' }}
+                        @endif
                     </h1>
                 </div>
 
