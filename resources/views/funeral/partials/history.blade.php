@@ -1,5 +1,5 @@
 <ul class="list-group list-group-flush fs-4">
-    @if (!$records->first()->funeralAssistance)
+    @if ($records->sum(fn($c) => $c->funeralAssistance?->count()) == 0)
         <li class="list-group-item">No Requested Funeral Assistances</li>
     @else
         @foreach ($records as $client)
@@ -7,10 +7,13 @@
                 $funeral = $client->funeralAssistance;
                 $beneficiary = $client->beneficiary;
 
+                if ($funeral == null) {
+                    continue;
+                }
                 if ($funeral->forwarded_at != null) {
                     $statusClass = 'list-group-item-success';
                 } else {
-                    $statusClass = 'list-group-item-primary';
+                    $statusClass = 'list-group-item-light';
                 }
             @endphp
             <li class="list-group-item rounded-pill {{ $statusClass }}">
