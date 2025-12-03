@@ -25,10 +25,18 @@ class Handler extends ExceptionHandler
         if ($exception instanceof UnauthorizedException) {
             // return response()->view('errors.main', [], 403);
             return redirect()->to(url()->previous() ?? route('landing.page'))
-                ->with('alertError', 'Seems like you run into a problem. We apologize for the inconvenience. We brought you back from where you were.');
-        } else if ($exception instanceof NotFoundHttpException) {
+                ->with('alert', [
+                    'title' => 'Access Denied',
+                    'type' => 'error',
+                    'message' => 'You do not have permission to access this page.',
+                ]);
+            } else if ($exception instanceof NotFoundHttpException) {
             return redirect()->to(url()->previous() ?? route('landing.page'))
-                ->with('alertError', 'Seems like you run into a problem. We apologize for the inconvenience. We brought you back from where you were.');
+            ->with('alert', [
+                'title' => 'Access Denied',
+                'type' => 'error',
+                'message' => 'You do not have permission to access this page.',
+            ]);
             // return response()->view('errors.main', [], 404);
         }
 

@@ -138,7 +138,11 @@ class ClientController extends Controller
                 'readonly',
             ));
         } else {
-            return redirect()->back()->with('alertInfo', 'Client not found!');
+            return redirect()->back()->with('alert', [
+                'title' => 'Error',
+                'icon' => 'error',
+                'message' => 'Client not found',
+            ]);
         }
     }
 
@@ -308,7 +312,12 @@ class ClientController extends Controller
 
             return redirect()
                 ->route('landing.page')
-                ->with('alertSuccess', 'Client information added successfully!');
+                ->with('alert', [
+                    'title' => 'Recorded Application', 
+                    'icon' => 'success',
+                    'message' => 'Your application has been added successfully!'
+                ]);
+                // ->with('alertSuccess', 'Client information added successfully!');
         } catch (Exception $e) {
             return redirect()->back()->with('alertInfo', $e->getMessage());
         }
@@ -359,7 +368,11 @@ class ClientController extends Controller
 
         return redirect()
             ->route(Auth::user()->getRoleNames()->first().'.client.index')
-            ->with('success', 'Client information deleted successfully!');
+            ->with('alert', [
+                'title' => 'Success',
+                'icon' => 'success',
+                'message' => 'Client information deleted successfully!'
+            ]);
     }
 
     public function assessment(Request $request, $id)
@@ -380,12 +393,20 @@ class ClientController extends Controller
                     'assessment' => $request['assessment'],
                 ]);
 
-                return redirect()->back()->with('alertSuccess', 'Assessment submitted successfully!');
+                return redirect()->back()->with('alert', [
+                    'title' => 'Success',
+                    'icon' => 'success',
+                    'message' => 'Assessment added successfully!'
+                ]);
             } else {
                 return redirect()->back()->with('alertInfo', 'Client not found.');
             }
         } catch (Exception $e) {
-            return redirect()->back()->with('alertInfo', $e->getMessage());
+            return redirect()->back()->with('alert', [
+                'title' => 'Error',
+                'icon' => 'error',
+                'message' => $e->getMessage()
+            ]);
         }
     }
 
@@ -416,7 +437,11 @@ class ClientController extends Controller
                 activity()
                     ->log('Burial Assistance Application created');
 
-                return redirect()->back()->with('alertSuccess', 'Successfuly created burial assistance application for the client!');
+                return redirect()->back()->with('alert', [
+                    'title' => 'Successfuly created burial assistance application for the client!',
+                    'icon' => 'success',
+                    'message' => 'Successfuly created burial assistance application for the client!'
+                ]);
             } elseif ($request['type'] == 'funeral') {
                 $request->validate([
                     'referral' => 'nullable|string|max:255',
@@ -437,14 +462,22 @@ class ClientController extends Controller
                 activity()
                     ->log('Funeral Assistance Application created');
 
-                return redirect()->back()->with('alertSuccess', 'Successfuly created funeral assistance application for the client!');
+                return redirect()->back()->with('alert', [
+                    'title' => 'Successfuly created funeral assistance application for the client!',
+                    'icon' => 'success',
+                    'message' => 'Successfuly created funeral assistance application for the client!'
+                ]);
             } else {
                 return redirect()->back()->with('alertInfo', 'Invalid request.');
             }
         } catch (Exception $e) {
             $client->recommendation()->delete();
 
-            return redirect()->back()->with('alertInfo', $e->getMessage());
+            return redirect()->back()->with('alert', [
+                'title' => 'Failed to create recommendation for the client!',
+                'icon' => 'warning',
+                'message' => $e->getMessage()
+            ]);
         }
     }
 
@@ -486,7 +519,11 @@ class ClientController extends Controller
 
             return $pdf->stream("client-report-{$startDate}-{$endDate}.pdf");
         } catch (Exception $e) {
-            return redirect()->back()->with('alertInfo', $e->getMessage());
+            return redirect()->back()->with('alert', [
+                'title' => 'Error',
+                'icon' => 'error',
+                'message' => $e->getMessage()
+            ]);
         }
     }
 
@@ -494,7 +531,11 @@ class ClientController extends Controller
         // ! This does prevent unregistered users from the TLC Portal from tracking clients
         $records = Citizen::records();
         if (!$records) {
-            return redirect()->route('landing.page')->with('alertInfo', 'No client application found to track. Please apply first.');
+            return redirect()->route('landing.page')->with('alert', [
+                'title' => 'Unauthorized Access',
+                'icon' => 'error',
+                'message' => 'You are not authorized to access this page.'
+            ]);
         }
         $client = Client::where('citizen_id', session('citizen')['user_id'])->latest()->get()->first();
         

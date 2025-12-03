@@ -1,17 +1,24 @@
-@if (session('alertSuccess'))
+@if (session('alert'))
     <script>
-        swal("Success", "{{ session('alertSuccess') }}", "success");
-    </script>
-@elseif (session('alertError'))
-    <script>
-        swal("Error", "{{ session('alertError') }}", "error");
-    </script>
-@elseif (session('alertWarning'))
-    <script>
-        swal("Warning", "{{ session('alertWarning') }}", "warning");
-    </script>
-@elseif (session('alertInfo'))
-    <script>
-        swal("Notice", "{{ session('alertInfo') }}", "info");
+        salert(
+            '{{ session('alert')['title'] ?? 'Notice' }}',
+            '{{ session('alert')['icon'] ?? 'info' }}',
+            '{{ session('alert')['message'] ?? '' }}',
+            '{{ session('alert')['confirm'] ?? true }}',
+            '{{ session('alert')['cancel'] ?? false }}'
+        )
     </script>
 @endif
+
+<script>
+    window.swalert = function(title, icon, message, confirm, cancel, ) {
+        Swal.fire({
+            title: title,
+            icon: icon,
+            text: message,
+            showConfirmButton: confirm ?? true,
+            showCancelButton: cancel ?? false,
+            timerProgressBar: true,
+        })
+    }
+</script>

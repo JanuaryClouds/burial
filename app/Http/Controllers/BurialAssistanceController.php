@@ -26,7 +26,7 @@ class BurialAssistanceController extends Controller
     public function view() {
         $barangays = Barangay::select('id', 'name')->get();
         $relationships = Relationship::select('id', 'name')->get();
-        return view('guest.burial-assistance.view', compact(
+        return view('burial.view', compact(
             'barangays',
             'relationships',
         ));
@@ -44,7 +44,6 @@ class BurialAssistanceController extends Controller
             if (!$existingDeceased) {
                 $validated['deceased']['id'] = Str::uuid();
                 $validated['claimant']['id'] = Str::uuid();
-
 
                 $deceased = Deceased::create($validated['deceased']);
                 $claimant = Claimant::create($validated['claimant']);
@@ -149,7 +148,11 @@ class BurialAssistanceController extends Controller
                         return $query->where('status', $status);
                     }
                 } catch (Exception $e) {
-                    return redirect()->back()->with('error', 'Invalid Application Status.');
+                    return redirect()->back()->with('alert', [
+                        'title' => 'Error',
+                        'message' => $e->getMessage(),
+                        'type' => 'error'
+                    ]);
                 }
             })
             ->orderBy('created_at', 'desc')
@@ -162,7 +165,7 @@ class BurialAssistanceController extends Controller
             $statusOptions = [];
         }
         $barangays = Barangay::select('id', 'name')->get();
-        return view('admin.burial.index', compact('applications', 'status', 'barangays', 'statusOptions', 'page_title'));
+        return view('burial.index', compact('applications', 'status', 'barangays', 'statusOptions', 'page_title'));
     }
 
     public function manage($id, ProcessLogService $processLogService) {
