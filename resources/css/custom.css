@@ -16,6 +16,23 @@
     src: url(../fonts/Futura.ttf);
 }
 
+@font-face {
+    font-family: Poppins;
+    src: url(../fonts/poppins.ttf);
+}
+
 body {
-    font-family: Helvetica;
+    font-family: Poppins;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+}
+
+:root, [data-theme="light"] {   
+    --bs-blue: #1A4798;
+    --bs-red: #ed1c24;
+    --bs-yellow: #f4c027;
+    --bs-primary: var(--bs-blue);
 }
