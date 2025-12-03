@@ -8,7 +8,7 @@
                     <img src="{{ asset('images/CSWDO.webp') }}" alt="CSWDO Logo" class="landing-logo w-50px h-50px" />
                     <img src="{{ asset('images/city_logo.webp') }}" alt="Taguig City Logo"
                         class="landing-logo w-50px h-50px" />
-                    <h1 class="fw-semibold ms-4 mb-0">
+                    <h1 class="ms-4 mb-0">
                         {{ session()->has('citizen') ? 'Welcome, ' . session('citizen')['firstname'] : '' }}
                     </h1>
                 </div>
@@ -16,14 +16,8 @@
                 <div class="col d-flex align-items-center justify-content-end gap-4">
                     @include('components.theme-toggle')
                     @if (Route::is('landing.page'))
-                        @if (env('APP_DEBUG') && session()->has('citizen'))
-                            <a href="{{ route('landing.page', ['uuid' => 'debug']) }}"
-                                class="btn btn-danger  hover-scale">
-                                Clear Session
-                            </a>
-                        @endif
                         @if (session('citizen') && session('citizen')['user_id'])
-                            <a href="{{ route('general.intake.form') }}" class="btn btn-primary  hover-scale">
+                            <a href="{{ route('general.intake.form') }}" class="btn btn-primary hover-scale">
                                 Apply
                             </a>
                             @if ($existingClient)
@@ -35,11 +29,11 @@
                                 </a>
                             @endif
                         @else
-                            <a href="https://tlcportal.taguig.gov.ph/login" class="btn btn-primary  hover-scale">
+                            <a href="https://tlcportal.taguig.gov.ph/login" class="btn btn-primary hover-scale">
                                 Register
                             </a>
                             @if (Route::is('landing.page'))
-                                <a href="{{ route('login.page') }}" class="btn btn-light  hover-scale">
+                                <a href="{{ route('login.page') }}" class="btn btn-light hover-scale">
                                     Sign In
                                 </a>
                             @endif
@@ -55,7 +49,7 @@
                             </button>
                             <div class="dropdown-menu" aria-labelledby="menu">
                                 <a class="dropdown-item" href="{{ route('landing.page') }}">Home</a>
-                                <a class="dropdown-item" href="{{ route('client.create') }}">Apply</a>
+                                <a class="dropdown-item" href="{{ route('general.intake.form') }}">Apply</a>
                                 <a class="dropdown-item" href="{{ route('client.history') }}">History</a>
                                 <div class="dropdown-divider"></div>
                                 <a href="{{ route('landing.page', ['uuid' => 'logout']) }}"
