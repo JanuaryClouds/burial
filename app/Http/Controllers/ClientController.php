@@ -496,8 +496,8 @@ class ClientController extends Controller
         if (!$records) {
             return redirect()->route('landing.page')->with('alertInfo', 'No client application found to track. Please apply first.');
         }
-        $client = Client::where('citizen_id', session('citizen')['user_id'])->first();
-
+        $client = Client::where('citizen_id', session('citizen')['user_id'])->latest()->get()->first();
+        
         $page_title = session('citizen')['firstname'] . ' ' . session('citizen')['lastname'] . ' | Client History';
         $readonly = true;
         $disabled = true;
