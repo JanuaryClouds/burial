@@ -6,20 +6,12 @@ use App\Http\Controllers\{
     Auth\UserController,
     ClientController,
     ExportController,
-    ReportController,
-    DeceasedController,
-    ClaimantController,
     BurialAssistanceController,
-    ChequeController,
     ActivityLogController,
     DashboardController,
     TestController,
     CitizenAccessController,
 };
-
-// Route::get('/', function () {
-//     return view('landingpage');
-// })->name('landing.page');
 
 Route::get('/', [CitizenAccessController::class, 'index'])
     ->name('landing.page');
@@ -37,7 +29,9 @@ Route::post('/login/check', [UserController::class, 'login'])
 Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
 require __DIR__.'/guest.php';
+require __DIR__.'/client.php';
 require __DIR__.'/burial.php';
+require __DIR__.'/funeral.php';
 require __DIR__.'/api.php';
 
 Route::middleware(['auth'])
@@ -49,44 +43,6 @@ Route::middleware(['auth'])
         Route::get('/applications/export', [ExportController::class, 'applications'])
             ->name('applications.export.all');
 
-        Route::middleware('permission:view-reports')
-            ->name('reports.')
-            ->prefix('reports')
-            ->group(function () {
-                Route::match(['get', 'post'], '/burial-assistances', [ReportController::class, 'burialAssistances'])
-                    ->name('burial-assistances');
-                Route::match(['get', 'post'], '/deceased', [ReportController::class, 'deceased'])
-                    ->name('deceased');
-                Route::match(['get', 'post'], '/claimants', [ReportController::class, 'claimants'])
-                    ->name('claimants');
-                Route::match(['get', 'post'], '/cheques', [ReportController::class, 'cheques'])
-                    ->name('cheques');
-                Route::match(['get', 'post'], '/funerals', [ReportController::class, 'funerals'])
-                    ->name('funerals');
-                Route::match(['get', 'post'], '/clients', [ReportController::class, 'clients'])
-                    ->name('clients');
-                Route::post('/generate', [ReportController::class, 'generate'])
-                    ->name('reports.generate');
-
-                Route::post('/export/clients/{startDate}/{endDate}', [ClientController::class, 'generatePdfReport'])
-                    ->name('clients.pdf');
-
-                Route::post('/export/funeral-assistances/{startDate}/{endDate}', [FuneralAssistanceController::class, 'generatePdfReport'])
-                    ->name('funerals.pdf');
-
-                Route::post('/export/burial-assistances/{startDate}/{endDate}', [BurialAssistanceController::class, 'generatePdfReport'])
-                    ->name('burial-assistances.pdf');
-
-                Route::post('/export/deceased/{startDate}/{endDate}', [DeceasedController::class, 'generatePdfReport'])
-                    ->name('deceased.pdf');
-
-                Route::post('/export/claimant/{startDate}/{endDate}', [ClaimantController::class, 'generatePdfReport'])
-                    ->name('claimants.pdf');
-
-                Route::post('/export/cheques/{startDate}/{endDate}', [ChequeController::class, 'generatePdfReport'])
-                    ->name('cheques.pdf');
-            });
-
         Route::post('/application/{id}/reject/toggle', [BurialAssistanceController::class, 'toggleReject'])
             ->middleware('permission:reject-applications')
             ->name('application.reject.toggle');
@@ -95,6 +51,7 @@ Route::middleware(['auth'])
             ->middleware('permission:view-logs')
             ->name('activity.logs');
 
+        require __DIR__.'/reports.php';
         require __DIR__.'/superadmin.php';
         require __DIR__.'/admin.php';
         require __DIR__.'/user.php';

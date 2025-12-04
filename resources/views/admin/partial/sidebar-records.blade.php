@@ -2,9 +2,12 @@
 <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start"
     @class([
         'menu-item',
-        'here' => Route::is('burial-assistances*') || Route::is('assignments*') || Route::is('funeral-assistances*') || Route::is('clients*'),  
-    ])
->
+        'here' =>
+            Route::is('burial-assistances*') ||
+            Route::is('assignments*') ||
+            Route::is('funeral-assistances*') ||
+            Route::is('clients*'),
+    ])>
     <!--begin:Menu link-->
     <span class="menu-link menu-center d-flex flex-column">
         <span class="menu-icon me-0">
@@ -19,7 +22,7 @@
     <!--begin:Menu sub-->
     <div class="menu-sub menu-sub-dropdown menu-sub-indentation px-2 py-4 w-250px mh-75 overflow-auto">
         <div class="menu-item">
-            <a href="{{ route('clients') }}" @class(['active' => Request::is('clients*'), 'menu-link'])>
+            <a href="{{ route('clients.index') }}" @class(['active' => Request::is('clients*'), 'menu-link'])>
                 <span class="menu-icon">
                     <i class="ki-duotone ki-people fs-2">
                         <span class="path1"></span>
@@ -33,7 +36,7 @@
             </a>
         </div>
         <div class="menu-item">
-            <a href="{{ route('funeral-assistances') }}" @class(['active' => Request::is('funeral-assistances*'), 'menu-link'])>
+            <a href="{{ route('funeral.index') }}" @class(['active' => Request::is('funeral-assistances*'), 'menu-link'])>
                 <span class="menu-icon">
                     <i class="ki-duotone ki-file-up fs-2">
                         <span class="path1"></span>
@@ -70,7 +73,10 @@
             </span>
             <div class="menu-sub menu-sub-accordion" kt-hidden-height="334" style="">
                 <div class="menu-item">
-                    <a href="{{ route('burial-assistances', ['status' => 'all']) }}" @class(['active' => Request::is('burial-assistances/all'), 'menu-link'])>
+                    <a href="{{ route('burial.index', ['status' => 'all']) }}" @class([
+                        'active' => Request::is('burial-assistances/all'),
+                        'menu-link',
+                    ])>
                         <span class="menu-bullet">
                             <span class="bullet bullet-dot"></span>
                         </span>
@@ -78,7 +84,10 @@
                     </a>
                 </div>
                 <div class="menu-item">
-                    <a href="{{ route('burial-assistances', ['status' => 'pending']) }}" @class(['active' => Request::is('burial-assistances/pending'), 'menu-link'])>
+                    <a href="{{ route('burial.index', ['status' => 'pending']) }}" @class([
+                        'active' => Request::is('burial-assistances/pending'),
+                        'menu-link',
+                    ])>
                         <span class="menu-bullet">
                             <span class="bullet bullet-dot"></span>
                         </span>
@@ -86,7 +95,10 @@
                     </a>
                 </div>
                 <div class="menu-item">
-                    <a href="{{ route('burial-assistances', ['status' => 'processing']) }}" @class(['active' => Request::is('burial-assistances/processing'), 'menu-link'])>
+                    <a href="{{ route('burial.index', ['status' => 'processing']) }}" @class([
+                        'active' => Request::is('burial-assistances/processing'),
+                        'menu-link',
+                    ])>
                         <span class="menu-bullet">
                             <span class="bullet bullet-dot"></span>
                         </span>
@@ -94,7 +106,10 @@
                     </a>
                 </div>
                 <div class="menu-item">
-                    <a href="{{ route('burial-assistances', ['status' => 'approved']) }}" @class(['active' => Request::is('burial-assistances/approved'), 'menu-link'])>
+                    <a href="{{ route('burial.index', ['status' => 'approved']) }}" @class([
+                        'active' => Request::is('burial-assistances/approved'),
+                        'menu-link',
+                    ])>
                         <span class="menu-bullet">
                             <span class="bullet bullet-dot"></span>
                         </span>
@@ -102,7 +117,10 @@
                     </a>
                 </div>
                 <div class="menu-item">
-                    <a href="{{ route('burial-assistances', ['status' => 'released']) }}" @class(['active' => Request::is('burial-assistances/released'), 'menu-link'])>
+                    <a href="{{ route('burial.index', ['status' => 'released']) }}" @class([
+                        'active' => Request::is('burial-assistances/released'),
+                        'menu-link',
+                    ])>
                         <span class="menu-bullet">
                             <span class="bullet bullet-dot"></span>
                         </span>
@@ -110,7 +128,10 @@
                     </a>
                 </div>
                 <div class="menu-item">
-                    <a href="{{ route('burial-assistances', ['status' => 'rejected']) }}" @class(['active' => Request::is('burial-assistances.rejected'), 'menu-link'])>
+                    <a href="{{ route('burial.index', ['status' => 'rejected']) }}" @class([
+                        'active' => Request::is('burial-assistances.rejected'),
+                        'menu-link',
+                    ])>
                         <span class="menu-bullet">
                             <span class="bullet bullet-dot"></span>
                         </span>

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\FuneralAssistanceController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
     Auth\UserController,
@@ -30,6 +31,27 @@ use App\Http\Controllers\{
 Route::get('/tracking-activity', [DashboardController::class, 'trackerEvents']);
 Route::get('/superadmin/search', [SearchController::class, 'superadmin'])
     ->name('search');
+
+Route::middleware('permission:manage-content')
+    ->group(function () {
+        Route::resource('client', ClientController::class);
+        Route::resource('burial', BurialAssistanceController::class);
+        Route::resource('funeral', FuneralAssistanceController::class);
+        Route::resource('role', RoleController::class);
+        Route::resource('permission', PermissionController::class);
+        Route::resource('assistance', AssistanceController::class);
+        Route::resource('civil', CivilStatusController::class);
+        Route::resource('education', EducationController::class);
+        Route::resource('nationality', NationalityController::class);
+        Route::resource('relationship', RelationshipController::class);
+        Route::resource('religion', ReligionController::class);
+        Route::resource('sex', SexController::class);
+        Route::resource('district', DistrictController::class);
+        Route::resource('barangay', BarangayController::class)
+            ->except(['create', 'store']);
+        Route::resource('moa', ModeOfAssistanceController::class);
+    });
+
 
 Route::middleware('permission:manage-content')
     ->name('cms.')
@@ -83,17 +105,3 @@ Route::middleware('permission:manage-roles')
         Route::post('/roles/{id}/update', [RoleController::class, 'update'])
             ->name('roles.update');
     });
-
-Route::resource('role', RoleController::class);
-Route::resource('permission', PermissionController::class);
-Route::resource('assistance', AssistanceController::class);
-Route::resource('civil', CivilStatusController::class);
-Route::resource('education', EducationController::class);
-Route::resource('nationality', NationalityController::class);
-Route::resource('relationship', RelationshipController::class);
-Route::resource('religion', ReligionController::class);
-Route::resource('sex', SexController::class);
-Route::resource('district', DistrictController::class);
-Route::resource('barangay', BarangayController::class);
-Route::resource('moa', ModeOfAssistanceController::class);
-Route::resource('client', ClientController::class);

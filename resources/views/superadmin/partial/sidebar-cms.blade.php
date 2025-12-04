@@ -2,9 +2,8 @@
 <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start"
     @class([
         'menu-item',
-        'here' => Route::is('cms*') || Route::is('cms*'),  
-    ])
->
+        'here' => Route::is('*.index') || Route::is('*.edit'),
+    ])>
     <!--begin:Menu link-->
     <span class="menu-link menu-center d-flex flex-column">
         <span class="menu-icon me-0">
@@ -29,13 +28,14 @@
             </div>
         </div>
         <div class="menu-item">
-            <a href="{{ route('cms.barangays') }}" @class(['active' => Request::is('cms/barangays'), 'menu-link'])>
+            <a href="{{ route('barangay.index') }}" @class(['active' => Route::is('barangay.index'), 'menu-link'])>
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                 </span>
                 <span class="menu-title">Barangays</span>
             </a>
         </div>
+        {{-- TODO: update to use resource --}}
         <div class="menu-item">
             <a href="{{ route('cms.relationships') }}" @class(['active' => Request::is('cms/relationships'), 'menu-link'])>
                 <span class="menu-bullet">
