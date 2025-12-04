@@ -23,6 +23,7 @@ class BurialAssistanceController extends Controller
 {
     protected $processLogService;
 
+    // ! Unused
     public function view() {
         $barangays = Barangay::select('id', 'name')->get();
         $relationships = Relationship::select('id', 'name')->get();
@@ -71,15 +72,15 @@ class BurialAssistanceController extends Controller
         
                 return redirect()->route('landing.page')
                     ->with(
-                        'alertSuccess', 
+                        'success', 
                         "Successfully submitted burial assistance application. Please check your SMS messages for the assistance tracking code. You can use the given code to track the progress of the assistance application."
                     );
             } else {
                 return redirect()->back()
-                ->with('alertInfo', 'A burial assistance has already been submitted for this deceased person.');
+                ->with('info', 'A burial assistance has already been submitted for this deceased person.');
             }
         } catch (Exception $e) {
-            return redirect()->back()->with('alertError', 'Something went wrong. Please try again.' . $e->getMessage());
+            return redirect()->back()->with('error', 'Something went wrong. Please try again.' . $e->getMessage());
         }
     }
 
@@ -148,11 +149,7 @@ class BurialAssistanceController extends Controller
                         return $query->where('status', $status);
                     }
                 } catch (Exception $e) {
-                    return redirect()->back()->with('alert', [
-                        'title' => 'Error',
-                        'message' => $e->getMessage(),
-                        'type' => 'error'
-                    ]);
+                    return redirect()->back()->with('error', $e->getMessage());
                 }
             })
             ->orderBy('created_at', 'desc')
@@ -190,7 +187,7 @@ class BurialAssistanceController extends Controller
                 'mime' => $mime,
             ];
         }
-        return view('admin.burial.manage', compact('application', 'files', 'updateAverage', 'page_title'));
+        return view('burial.manage', compact('application', 'files', 'updateAverage', 'page_title'));
     }
 
     public function toggleReject(Request $request, $id) {
@@ -226,9 +223,9 @@ class BurialAssistanceController extends Controller
                 $application->update();
             }
     
-            return redirect()->back()->with('alertSuccess', 'Successfully updated burial assistance application status.');
+            return redirect()->back()->with('success', 'Successfully updated burial assistance application status.');
         } catch (Exception $e) {
-            return redirect()->back()->with('alertError', "Unable to update burial assistance application status. " . $e->getMessage());
+            return redirect()->back()->with('error', "Unable to update burial assistance application status. " . $e->getMessage());
         }
     }
 
@@ -245,13 +242,13 @@ class BurialAssistanceController extends Controller
 
         $application = BurialAssistance::where('id', $id)->first();
         if (!$application) {
-            return back()->with('alertError', 'Application not found.');
+            return back()->with('error', 'Application not found.');
         }
 
         $application->assigned_to = $request->assigned_to;
         $application->update();
 
-        return redirect()->back()->with('alertSuccess', 'Successfully updated assignment.');
+        return redirect()->back()->with('success', 'Successfully updated assignment.');
     }
 
     public function generatePdfReport(Request $request, $startDate, $endDate) {
@@ -306,7 +303,7 @@ class BurialAssistanceController extends Controller
 
             return $pdf->stream("burial-assistance-report-{$startDate}-to-{$endDate}.pdf");
         } catch (Exception $e) {
-            return back()->with('alertError', 'Error generating report: ' . $e->getMessage());
+            return back()->with('error', 'Error generating report: ' . $e->getMessage());
         }
     }
 

@@ -44,7 +44,7 @@ class ChequeController extends Controller
 
             return $pdf->stream("cheques-{$startDate}-to-{$endDate}.pdf");
         } catch (\Exception $e) {
-            return back()->with('alertError', 'An error occurred: ' . $e->getMessage());
+            return back()->with('error', 'An error occurred: ' . $e->getMessage());
         }
     }
 }

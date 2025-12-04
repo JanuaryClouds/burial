@@ -1,24 +1,51 @@
-@if (session('alert'))
+<script>
+    window.sweetalert = function(title, icon, message, confirm = true, cancel = false) {
+        Swal.fire({
+            title,
+            icon,
+            text: message,
+            showConfirmButton: confirm,
+            showCancelButton: cancel,
+            timerProgressBar: true,
+            buttonsStyling: true,
+        });
+    };
+</script>
+@if (session('success'))
     <script>
-        salert(
-            '{{ session('alert')['title'] ?? 'Notice' }}',
-            '{{ session('alert')['icon'] ?? 'info' }}',
-            '{{ session('alert')['message'] ?? '' }}',
-            '{{ session('alert')['confirm'] ?? true }}',
-            '{{ session('alert')['cancel'] ?? false }}'
+        console.log(sweetalert);
+        sweetalert(
+            '',
+            'success',
+            '{{ session('success') }}',
+            true
+        )
+    </script>
+@elseif (session('warning'))
+    <script>
+        sweetalert(
+            '',
+            'warning',
+            '{{ session('warning') }}',
+            true
+        )
+    </script>
+@elseif (session('error'))
+    <script>
+        sweetalert(
+            '',
+            'error',
+            '{{ session('error') }}',
+            true
+        )
+    </script>
+@elseif (session('info'))
+    <script>
+        sweetalert(
+            '',
+            'info',
+            '{{ session('info') }}',
+            true
         )
     </script>
 @endif
-
-<script>
-    window.swalert = function(title, icon, message, confirm, cancel, ) {
-        Swal.fire({
-            title: title,
-            icon: icon,
-            text: message,
-            showConfirmButton: confirm ?? true,
-            showCancelButton: cancel ?? false,
-            timerProgressBar: true,
-        })
-    }
-</script>

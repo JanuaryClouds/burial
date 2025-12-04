@@ -58,10 +58,10 @@ class CitizenAccessController extends Controller
                     // Store citizen data in session to keep them "logged in"
                     session(['citizen' => $citizen]);
                 } else {
-                    return back()->with('alertInfo', "No citizen found.");
+                    return back()->with('info', "No citizen found.");
                 }
             } catch (Exception $e) {
-                return back()->with('alertInfo', $e->getMessage());
+                return back()->with('error', $e->getMessage());
             }
         }
 
@@ -96,7 +96,7 @@ class CitizenAccessController extends Controller
                 'count' => $totalClients,
             ],
         ];
-
+        
         return view('landing', compact(
             'citizen',
             'existingClient',

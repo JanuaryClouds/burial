@@ -49,14 +49,14 @@ class DocumentRequirement extends Model
             ],
             [
                 'name' => 'Certificate of Burial Rites (signed by IMAM)',
-                'description' => "For Muslim burials only",
+                'description' => "",
                 'source' => 'Muslim/Islam Religious Community',
                 'is_mandatory' => true,
                 'is_muslim' => true,
             ],
             [
                 'name' => 'Certificate of Internment issued by Muslim Cemetery',
-                'description' => 'For Muslim burials only',
+                'description' => '',
                 'source' => 'Muslim/Islam Religious Community',
                 'is_mandatory' => true,
                 'is_muslim' => true,

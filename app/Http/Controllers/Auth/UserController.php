@@ -38,17 +38,17 @@ class UserController extends Controller
                         ->route('dashboard')
                         ->with('success', 'You have successfully logged in!');
                 } else {
-                    return redirect()->back()->with('alertWarning', 'Your account is inactive. Please contact the superadmin.');
+                    return redirect()->back()->with('warning', 'Your account is inactive. Please contact the superadmin.');
                 }
             } else {
-                return redirect()->back()->with('alertError', 'Invalid username or password.');
+                return redirect()->back()->with('error', 'Invalid username or password.');
             }
         } catch (Exception $e) {
             activity()
                 ->causedBy(null)
                 ->withProperties(['ip' => $ip, 'browser' => $browser])
                 ->log("Unsuccessful login attempt");
-            return redirect()->back()->with('alertError', $e->getMessage());
+            return redirect()->back()->with('error', $e->getMessage());
         }
     }
 

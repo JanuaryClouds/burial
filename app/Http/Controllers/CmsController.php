@@ -19,6 +19,7 @@ use Str;
 
 class CmsController extends Controller
 {
+    // TODO: use resource
     public function storeContent(Request $request, $type) {
         try {
             if ($type == 'barangays') {
@@ -28,7 +29,7 @@ class CmsController extends Controller
                     'remarks' => 'nullable',
                 ]);
                 Barangay::create($data);
-                return redirect()->back()->with('alertSuccess', Str::ucfirst($request->name) . ' added Successfully');
+                return redirect()->back()->with('success', Str::ucfirst($request->name) . ' added Successfully');
             }
             if ($type == 'relationships') {
                 $data = $request->validate([
@@ -36,7 +37,7 @@ class CmsController extends Controller
                     'remarks' => 'nullable',
                 ]);
                 Relationship::create($data);
-                return redirect()->back()->with('alertSuccess', Str::ucfirst($request->name) . ' added Successfully');
+                return redirect()->back()->with('success', Str::ucfirst($request->name) . ' added Successfully');
             }
             if ($type == 'users') {
                 $data = $request->validate([
@@ -49,7 +50,7 @@ class CmsController extends Controller
                 ]);
                 $user = User::create($data);
                 $user->assignRole('admin');
-                return redirect()->back()->with('alertSuccess', Str::ucfirst($type) . ' added Successfully');
+                return redirect()->back()->with('success', Str::ucfirst($type) . ' added Successfully');
             }
             if ($type == 'religions') {
                 $data = $request->validate([
@@ -57,7 +58,7 @@ class CmsController extends Controller
                     'remarks' => 'nullable|string|max:255',
                 ]);
                 $religion = Religion::create($data);
-                return redirect()->back()->with('alertSuccess', Str::ucfirst($religion->name) . ' added Successfully');
+                return redirect()->back()->with('success', Str::ucfirst($religion->name) . ' added Successfully');
             }
             if ($type == 'roles') {
                 dd($request->all());
@@ -66,10 +67,10 @@ class CmsController extends Controller
                 ]);
                 $data['guard_name'] = 'web';
                 // Role::create($data);
-                return redirect()->back()->with('alertSuccess', Str::ucfirst($request->name) . ' added Successfully');
+                return redirect()->back()->with('success', Str::ucfirst($request->name) . ' added Successfully');
             }
         } catch (Exception $e) {
-            return redirect()->back()->with('alertError', $e->getMessage());
+            return redirect()->back()->with('error', $e->getMessage());
         }
     }
 
@@ -112,9 +113,9 @@ class CmsController extends Controller
                 $role->syncPermissions($request->permissions);
                 $tempName = $request->name;
             }
-            return redirect()->back()->with('alertSuccess', Str::ucfirst($tempName) . ' updated Successfully');
+            return redirect()->back()->with('success', Str::ucfirst($tempName) . ' updated Successfully');
         } catch (Exception $e) {
-            return redirect()->back()->with('alertError', $e->getMessage());
+            return redirect()->back()->with('error', $e->getMessage());
         }
     }
 
@@ -126,7 +127,7 @@ class CmsController extends Controller
                 if ($barangay) {
                     $barangay->delete();                
                 } else {
-                    return redirect()->back()->with('alertError', Str::ucfirst($tempName) . ' not found');
+                    return redirect()->back()->with('error', Str::ucfirst($tempName) . ' not found');
                 }
             }
             if ($type == 'relationships') {
@@ -135,7 +136,7 @@ class CmsController extends Controller
                 if ($relationship) {
                     $relationship->delete();
                 } else {
-                    return redirect()->back()->with('alertError', Str::ucfirst($tempName) . ' not found');
+                    return redirect()->back()->with('error', Str::ucfirst($tempName) . ' not found');
                 }
             }
             if ($type == 'religions') {
@@ -144,7 +145,7 @@ class CmsController extends Controller
                 if ($religion) {
                     $religion->delete();
                 } else {
-                    return redirect()->back()->with('alertError', Str::ucfirst($tempName) . ' not found');
+                    return redirect()->back()->with('error', Str::ucfirst($tempName) . ' not found');
                 }
             }
             if ($type == 'roles') {
@@ -153,12 +154,12 @@ class CmsController extends Controller
                 if ($role) {
                     $role->delete();
                 } else {
-                    return redirect()->back()->with('alertError', Str::ucfirst($tempName) . ' not found');
+                    return redirect()->back()->with('error', Str::ucfirst($tempName) . ' not found');
                 }
             }
-            return redirect()->back()->with('alertSuccess', Str::ucfirst($tempName) . ' deleted Successfully');
+            return redirect()->back()->with('success', Str::ucfirst($tempName) . ' deleted Successfully');
         } catch (Exception $e) {
-            return redirect()->back()->with('alertError', $e->getMessage());
+            return redirect()->back()->with('success', $e->getMessage());
         }
     }
 
@@ -186,7 +187,7 @@ class CmsController extends Controller
                 'type', 
             ]));
         } catch (Exception $e) {
-            return redirect()->back()->with('alertError', $e->getMessage());
+            return redirect()->back()->with('success', $e->getMessage());
         }
     }
 
@@ -202,7 +203,7 @@ class CmsController extends Controller
     
             return view('superadmin.cms', compact('data', 'page_title', 'type', 'fields'));
         } catch (Exception $e) {
-            return redirect()->back()->with('alertError', $e->getMessage());            
+            return redirect()->back()->with('error', $e->getMessage());            
         }
     }
 

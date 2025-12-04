@@ -64,7 +64,7 @@ class DeceasedController extends Controller
 
             return $pdf->stream("deceased-{$startDate}-to-{$endDate}.pdf");
         } catch (\Exception $e) {
-            return back()->with('alertError', 'An error occurred: ' . $e->getMessage());
+            return back()->with('error', 'An error occurred: ' . $e->getMessage());
         }
     }
 }

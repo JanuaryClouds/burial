@@ -226,10 +226,10 @@ class ReportController extends Controller
                 // Implement deceased report generation
                 return $reportService->deceasedReport($startDate, $endDate);
             } else {
-                return back()->with('alertError', 'Invalid report type selected.');
+                return back()->with('error', 'Invalid report type selected.');
             }
         } catch (\Exception $e) {
-            return back()->with('alertError', 'An error occurred while generating the report: ' . $e->getMessage());
+            return back()->with('error', 'An error occurred while generating the report: ' . $e->getMessage());
         }
     }
 

@@ -30,9 +30,6 @@ document.addEventListener('DOMContentLoaded', () => {
     checkAndRenderDataTables();
 })
 
-import Swal from "sweetalert2";
-window.Swal = Swal;
-
 console.log("DataTables is running:", $.fn.dataTable ? true : false);
 
 // 6. AlpineJS (doesn’t depend on jQuery)

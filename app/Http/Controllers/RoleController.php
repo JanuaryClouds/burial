@@ -61,7 +61,7 @@ class RoleController extends Controller
 
         return redirect()
             ->back()
-            ->with('alertSuccess', 'Role created successfully.');
+            ->with('success', 'Role created successfully.');
     }
     
     public function update(RoleRequest $request, Role $role)
@@ -77,7 +77,7 @@ class RoleController extends Controller
             
         return redirect()
             ->back()
-            ->with('alertSuccess', 'Role updated successfully.');
+            ->with('success', 'Role updated successfully.');
     }
     
     public function destroy(Role $role)
@@ -91,6 +91,6 @@ class RoleController extends Controller
             
         return redirect()
             ->back()
-            ->with('alertSuccess', 'Role deleted successfully.');
+            ->with('success', 'Role deleted successfully.');
     }
 }

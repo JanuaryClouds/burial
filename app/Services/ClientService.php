@@ -252,7 +252,7 @@ class ClientService
         $sheet->setCellValue('J7', $client->age);
         $sheet->setCellValue(
             'L7',
-            $client->gender == 1 ? 'Male' : 'Female'
+            $client->gender == 2 ? 'Male' : 'Female'
         );
         $sheet->setCellValue('E8', Carbon::parse($client->date_of_birth)->format('F j, Y'));
         $sheet->setCellValue(
@@ -272,7 +272,7 @@ class ClientService
             'E16', 
             $client->beneficiary->first_name . ' ' . Str::limit($client->beneficiary->middle_name, 1, '.') . ' ' . $client->beneficiary->last_name . ($client->beneficiary->suffix ? ' ' . $client->beneficiary->suffix : '')
         );
-        $sheet->setCellValue('J16', $client->beneficiary->gender == 1 ? 'Male' : 'Female');
+        $sheet->setCellValue('J16', $client->beneficiary->gender == 2 ? 'Male' : 'Female');
         $sheet->setCellValue('E17', Carbon::parse($client->beneficiary->date_of_birth)->format('F j, Y'));
         $sheet->setCellValue('I17', $client->beneficiary->place_of_birth . ' ' . $client->beneficiary->barangay->name . ' ,Taguig City');
 

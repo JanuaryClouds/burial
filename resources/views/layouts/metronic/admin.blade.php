@@ -7,7 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- <script src="https://kit.fontawesome.com/4f2d7302b1.js" crossorigin="anonymous"></script> -->
     <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet"> -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast/dist/css/iziToast.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <link rel="icon" type="image/x-icon" href="{{ asset('images/favicon.ico') }}">
 
     <link rel="stylesheet" href="{{ asset('metronic/plugins/global/plugins.bundle.css') }}">
@@ -54,9 +55,7 @@
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
-    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     @include('components.alert')
-    @include('components.toast-notification')
     <script src="{{ asset('metronic/plugins/global/plugins.bundle.js') }}"></script>
     <script src="{{ asset('metronic/js/scripts.bundle.js') }}"></script>
 </body>

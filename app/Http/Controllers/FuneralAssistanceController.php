@@ -109,11 +109,7 @@ class FuneralAssistanceController extends Controller
                 'files'
             ));
         } catch (Exception $e) {
-            return redirect()->back()->with('alert', [
-                'title' => 'Error',
-                'icon' => 'error',
-                'message' => $e->getMessage()
-            ]);
+            return redirect()->back()->with('error', $e->getMessage());
         }
     }
 
@@ -122,17 +118,9 @@ class FuneralAssistanceController extends Controller
             $data = FuneralAssistance::find($id);
             $data->approved_at = now();
             $data->save();
-            return redirect()->back()->with('alert', [
-                'title' => 'Success', 
-                'icon' => 'success', 
-                'message' => 'Successfully approved Funeral Assistance.'
-            ]);
+            return redirect()->back()->with('success', 'Successfully approved Funeral Assistance.');
         } catch (Exception $e) {
-            return redirect()->back()->with('alert', [
-                'title' => 'Error', 
-                'icon' => 'error', 
-                'message' => $e->getMessage()
-            ]);
+            return redirect()->back()->with('error', $e->getMessage());
         }
     }
 
@@ -141,17 +129,9 @@ class FuneralAssistanceController extends Controller
             $data = FuneralAssistance::find($id);
             $data->forwarded_at = now();
             $data->save();
-            return redirect()->back()->with('alert', [
-                'title' => 'Success', 
-                'icon' => 'success',
-                'message' => 'Application for Funeral Assistance has been forwarded to Cemetery Staff.'
-            ]);
+            return redirect()->back()->with('success', 'Application for Funeral Assistance has been forwarded to Cemetery Staff.');
         } catch (Exception $e) {
-            return redirect()->back()->with('alert', [
-                'title' => 'Error',
-                'icon' => 'error',
-                'messsage' => $e->getMessage()
-            ]);
+            return redirect()->back()->with('error', $e->getMessage());
         }
     }
 
@@ -190,11 +170,7 @@ class FuneralAssistanceController extends Controller
 
             return $pdf->stream("funeral-assistance-report-{$startDate}-{$endDate}.pdf");
         } catch (Exception $e) {
-            return redirect()->back()->with('alert', [
-                'title' => 'Error',
-                'icon' => 'error',
-                'message' =>$e->getMessage()
-            ]);
+            return redirect()->back()->with('error', $e->getMessage());
         }
     }
 }

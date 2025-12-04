@@ -36,6 +36,22 @@ class BarangayController extends Controller
                 'subRecords'
             ));
     }
+
+    public function show(Barangay $barangay) 
+    {
+        $page_title = 'Barangay';
+        $type = 'barangay';
+        $data = $barangay;
+        // return view('cms.show', compact('page_title', 'data', 'type'));
+    }
+
+    public function edit(Barangay $barangay) 
+    {
+        $page_title = 'Barangay';
+        $resource = 'barangay';
+        $data = $barangay;
+        return view('cms.edit', compact('page_title', 'data', 'resource'));
+    }
     
     public function store(BarangayRequest $request)
     {
@@ -61,7 +77,7 @@ class BarangayController extends Controller
             ->log('Updated the barangay: ' . $barangay->name);
 
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first() . '.barangay.index')
+            ->route('barangay.index')
             ->with('success', 'Barangay Updated Successfully');
     }
     
