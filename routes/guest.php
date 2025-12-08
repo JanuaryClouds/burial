@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ImageController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
     ClientController,
@@ -14,3 +15,5 @@ Route::post('/general-intake-form/store', [ClientController::class, 'store'])
 Route::get('/history', [ClientController::class, 'history'])
     ->name('client.history');
 
+Route::get('/{id}/documents/{filename}', [ImageController::class, 'stream'])
+    ->name('clients.documents');

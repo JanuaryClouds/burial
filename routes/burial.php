@@ -30,11 +30,9 @@ Route::name('burial.')
 
         Route::middleware(['auth'])
             ->group(function () {
-                Route::get('/{status}', [BurialAssistanceController::class, 'applications'])
-                    ->name('index');
-
-                Route::get('/{id}', [BurialAssistanceController::class, 'manage'])
-                    ->name('manage');
+                
+                Route::get('/{id}', [BurialAssistanceController::class, 'show'])
+                    ->name('show');
                 
                 Route::post('/{id}/claimant-change/{change}/decision', [ClaimantChangeController::class, 'decide'])
                     ->name('claimant-change.decision');
@@ -51,6 +49,9 @@ Route::name('burial.')
                     ->name('swa.save');
                     
                 Route::get('/{id}/certificate', [BurialAssistanceController::class, 'certificate'])
-                    ->name('certificate');
+                ->name('certificate');
+
+                Route::get('/list/{status}', [BurialAssistanceController::class, 'index'])
+                    ->name('index');
             });
     });

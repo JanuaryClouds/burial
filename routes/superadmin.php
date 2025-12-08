@@ -34,8 +34,10 @@ Route::get('/superadmin/search', [SearchController::class, 'superadmin'])
 
 Route::middleware('permission:manage-content')
     ->group(function () {
-        Route::resource('client', ClientController::class);
-        Route::resource('burial', BurialAssistanceController::class);
+        Route::resource('client', ClientController::class)
+            ->only(['update']);
+        Route::resource('burial', BurialAssistanceController::class)
+            ->only(['update']);
         Route::resource('funeral', FuneralAssistanceController::class);
         Route::resource('role', RoleController::class);
         Route::resource('permission', PermissionController::class);

@@ -1,24 +1,22 @@
 <?php
 
+use App\Http\Controllers\ImageController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
     ClientController,
     InterviewController,
 };
 
+Route::resource('client', ClientController::class)
+    ->only(['index', 'show']);
 
 Route::prefix('clients')
     ->name('clients.')
     ->group(function () {
-        Route::get('', [ClientController::class, 'index'])
-            ->name('index');
-        
-        Route::get('/{id}', [ClientController::class, 'view'])
-            ->name('view');
-        
+
         Route::get('/{id}/gis-form', [ClientController::class, 'generateGISForm'])
             ->name('gis-form');
-        
+
         Route::post('/{id}/schedule', [InterviewController::class, 'store'])
             ->name('interview.schedule.store');
         
