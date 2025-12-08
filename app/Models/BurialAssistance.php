@@ -20,8 +20,6 @@ class BurialAssistance extends Model
         'swa',
         'encoder',
         'funeraria',
-        'deceased_id',
-        'claimant_id',
         'amount',
         'status',
         'remarks',
@@ -38,11 +36,11 @@ class BurialAssistance extends Model
     }
 
     public function deceased() {
-        return $this->belongsTo(Deceased::class, 'deceased_id', 'id');
+        return $this->hasOne(Deceased::class, 'burial_assistance_id', 'id');
     }
 
     public function claimant() {
-        return $this->belongsTo(Claimant::class, 'claimant_id', 'id');
+        return $this->hasOne(Claimant::class, 'burial_assistance_id', 'id');
     }
 
     public function claimantChanges() {

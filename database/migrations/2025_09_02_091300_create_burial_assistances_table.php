@@ -23,14 +23,6 @@ return new class extends Migration
                 ->onDelete('set null')
                 ->onUpdate('cascade');
             $table->string('funeraria');
-            $table->foreignUuid('deceased_id')
-                ->constrained('deceased', 'id')
-                ->onDelete('cascade')
-                ->onUpdate('cascade');
-            $table->foreignUuid('claimant_id')
-                ->constrained('claimants', 'id')
-                ->onDelete('cascade')
-                ->onUpdate('cascade');
             $table->string('amount')->nullable();
             $table->enum('status', [
                 'pending', 

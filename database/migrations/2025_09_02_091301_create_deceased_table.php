@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('deceased', function (Blueprint $table) {
             $table->uuid('id')->primary();
+            $table->foreignUuid('burial_assistance_id')
+                ->nullable()
+                ->constrained('burial_assistances')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
 
             $table->string('first_name');
             $table->string('middle_name')->nullable();
