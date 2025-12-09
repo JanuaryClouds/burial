@@ -38,7 +38,8 @@ Route::middleware('permission:manage-content')
             ->only(['update']);
         Route::resource('burial', BurialAssistanceController::class)
             ->only(['update']);
-        Route::resource('funeral', FuneralAssistanceController::class);
+        Route::resource('funeral', FuneralAssistanceController::class)
+            ->only(['update']);
         Route::resource('role', RoleController::class);
         Route::resource('permission', PermissionController::class);
         Route::resource('assistance', AssistanceController::class);

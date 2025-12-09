@@ -1,28 +1,21 @@
 <?php
 
 namespace App\Services;
+use App\Models\FuneralAssistance;
 
-use App\Models\BurialAssistance;
-use App\Models\Claimant;
-use App\Models\Deceased;
-
-class BurialAssistanceService
+class FuneralAssistanceService
 {
-	public function store (array $data) {
-		return BurialAssistance::create($data);
-	}
-
-	/**
-	* @param array $data data to update
-	* @param BurialAssistance $application original application
-	 */
-	public function update(array $data, $application)
-	{
-		$application->update($data);
-		$application->claimant->update($data['claimant']);
-		$application->deceased->update($data['deceased']);
-		$client = $application->claimant->client;
-		$client->demographic->update([
+    /**
+     * @param array $data Data passed from request
+     * @param FuneralAssistance $funeralAssistance Original application
+     * @return FuneralAssistance returns the updated funeral assistance and client
+     */
+    public function update(array $data, $funeralAssistance)
+    {
+        $funeralAssistance->update($data);
+        $client = $funeralAssistance->client;
+        
+        $client->demographic->update([
             'sex_id' => $data['sex_id'],
             'religion_id' => $data['religion_id'],
             'nationality_id' => $data['nationality_id'],
@@ -63,17 +56,6 @@ class BurialAssistanceService
                 'income'          => $data['fam_income'][$index],
             ]);
         }
-
-		return $application;
-	}
-
-
-	public function delete (int $id) {
-		$assistance = BurialAssistance::find($id);
-		if ($assistance && $assistance->delete()) {
-			return true;
-		}
-		return false;
-	}
-
+        return $funeralAssistance;
+    }
 }

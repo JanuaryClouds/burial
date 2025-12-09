@@ -23,8 +23,8 @@ Route::prefix('funeral')
         Route::get('', [FuneralAssistanceController::class, 'index'])
             ->name('index');
         
-        Route::get('/{id}', [FuneralAssistanceController::class, 'view'])
-            ->name('view');
+        Route::get('/{id}', [FuneralAssistanceController::class, 'show'])
+            ->name('show');
         
         Route::get('/{id}/approved', [FuneralAssistanceController::class, 'approve'])
             ->name('approved');
