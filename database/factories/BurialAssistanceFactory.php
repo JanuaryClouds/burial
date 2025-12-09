@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class BurialAssistanceFactory extends Factory
 {
+    // ! Unused
     /**
      * Define the model's default state.
      *
