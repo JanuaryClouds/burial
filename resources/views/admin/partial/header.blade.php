@@ -17,20 +17,22 @@
         </div>
         <!--end::Page title--->
         <!--begin::Wrapper-->
-        <div class="d-flex align-items-center flex-wrap">
+        <div class="d-flex align-items-center flex-wrap gap-3">
             <!-- begin::Menu wrapper -->
             @includeWhen(Route::is('funeral-assistances.*'), 'admin.funeral.partial.action-buttons')
-            @includeWhen(Route::is('clients.*'), 'client.partial.action-buttons')
+            @includeWhen(isset($client), 'client.partial.action-buttons')
             @includeWhen(Route::is('cms*') && auth()->user()->can('manage-content'),
                 'superadmin.partial.new-content')
             @includeWhen(Route::is('role*') && auth()->user()->can('manage-roles'),
                 'superadmin.partial.new-role-btn')
+            @includeWhen(auth()->user()->can('manage-content') && !Route::is('cms.users'),
+                'cms.partials.content-form-buttons')
             <!-- end::Menu wrapper -->
 
             <!-- begin::Theme mode -->
             @include('components.theme-toggle')
             <!-- end::Theme mode -->
-            <div class="ms-3">
+            <div class="">
                 <!-- begin::User -->
                 <a href="#" class="btn btn-icon btn-custom btn-active-color-primary menu-dropdown"
                     data-kt-menu-trigger="click" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
