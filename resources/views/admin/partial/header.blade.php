@@ -19,8 +19,8 @@
         <!--begin::Wrapper-->
         <div class="d-flex align-items-center flex-wrap gap-3">
             <!-- begin::Menu wrapper -->
-            @includeWhen(Route::is('funeral-assistances.*'), 'admin.funeral.partial.action-buttons')
-            @includeWhen(isset($client), 'client.partial.action-buttons')
+            @includeWhen(Route::is('funeral.show'), 'funeral.partials.action-buttons')
+            @includeWhen(Route::is('clients.*'), 'client.partial.action-buttons')
             @includeWhen(Route::is('cms*') && auth()->user()->can('manage-content'),
                 'superadmin.partial.new-content')
             @includeWhen(Route::is('role*') && auth()->user()->can('manage-roles'),

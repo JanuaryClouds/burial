@@ -2,7 +2,12 @@
 <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start"
     @class([
         'menu-item',
-        'here' => Route::is('*.index') || Route::is('*.edit'),
+        'here' =>
+            (Route::is('*.index') || Route::is('*.edit')) &&
+            !Route::is('funeral.*') &&
+            !Route::is('burial.*') &&
+            !Route::is('client.*') &&
+            !Route::is('assignments.*'),
     ])>
     <!--begin:Menu link-->
     <span class="menu-link menu-center d-flex flex-column">
