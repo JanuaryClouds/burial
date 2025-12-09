@@ -3,10 +3,10 @@
     @class([
         'menu-item',
         'here' =>
-            Route::is('burial-assistances*') ||
+            Route::is('burial*') ||
             Route::is('assignments*') ||
-            Route::is('funeral-assistances*') ||
-            Route::is('clients*'),
+            Route::is('funeral*') ||
+            Route::is('client*'),
     ])>
     <!--begin:Menu link-->
     <span class="menu-link menu-center d-flex flex-column">
@@ -22,7 +22,7 @@
     <!--begin:Menu sub-->
     <div class="menu-sub menu-sub-dropdown menu-sub-indentation px-2 py-4 w-250px mh-75 overflow-auto">
         <div class="menu-item">
-            <a href="{{ route('clients.index') }}" @class(['active' => Request::is('clients*'), 'menu-link'])>
+            <a href="{{ route('client.index') }}" @class(['active' => Request::is('client*'), 'menu-link'])>
                 <span class="menu-icon">
                     <i class="ki-duotone ki-people fs-2">
                         <span class="path1"></span>
@@ -36,7 +36,7 @@
             </a>
         </div>
         <div class="menu-item">
-            <a href="{{ route('funeral.index') }}" @class(['active' => Request::is('funeral-assistances*'), 'menu-link'])>
+            <a href="{{ route('funeral.index') }}" @class(['active' => Request::is('funeral*'), 'menu-link'])>
                 <span class="menu-icon">
                     <i class="ki-duotone ki-file-up fs-2">
                         <span class="path1"></span>
@@ -74,7 +74,7 @@
             <div class="menu-sub menu-sub-accordion" kt-hidden-height="334" style="">
                 <div class="menu-item">
                     <a href="{{ route('burial.index', ['status' => 'all']) }}" @class([
-                        'active' => Request::is('burial-assistances/all'),
+                        'active' => Request::is('burial.all'),
                         'menu-link',
                     ])>
                         <span class="menu-bullet">
@@ -85,7 +85,7 @@
                 </div>
                 <div class="menu-item">
                     <a href="{{ route('burial.index', ['status' => 'pending']) }}" @class([
-                        'active' => Request::is('burial-assistances/pending'),
+                        'active' => Request::is('burial.pending'),
                         'menu-link',
                     ])>
                         <span class="menu-bullet">
@@ -96,7 +96,7 @@
                 </div>
                 <div class="menu-item">
                     <a href="{{ route('burial.index', ['status' => 'processing']) }}" @class([
-                        'active' => Request::is('burial-assistances/processing'),
+                        'active' => Request::is('burial.processing'),
                         'menu-link',
                     ])>
                         <span class="menu-bullet">
@@ -107,7 +107,7 @@
                 </div>
                 <div class="menu-item">
                     <a href="{{ route('burial.index', ['status' => 'approved']) }}" @class([
-                        'active' => Request::is('burial-assistances/approved'),
+                        'active' => Request::is('burial.approved'),
                         'menu-link',
                     ])>
                         <span class="menu-bullet">
@@ -118,7 +118,7 @@
                 </div>
                 <div class="menu-item">
                     <a href="{{ route('burial.index', ['status' => 'released']) }}" @class([
-                        'active' => Request::is('burial-assistances/released'),
+                        'active' => Request::is('burial.released'),
                         'menu-link',
                     ])>
                         <span class="menu-bullet">
@@ -129,7 +129,7 @@
                 </div>
                 <div class="menu-item">
                     <a href="{{ route('burial.index', ['status' => 'rejected']) }}" @class([
-                        'active' => Request::is('burial-assistances.rejected'),
+                        'active' => Request::is('burial.rejected'),
                         'menu-link',
                     ])>
                         <span class="menu-bullet">
