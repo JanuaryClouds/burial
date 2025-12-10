@@ -15,7 +15,7 @@
                 </button>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="action-options">
                     <a name="" id="" class="dropdown-item"
-                        href="{{ route('burial-assistances.manage', ['id' => $application->id]) }}" role="button">
+                        href="{{ route('burial.show', ['id' => $application->id]) }}" role="button">
                         View
                     </a>
                     @can('add-updates')

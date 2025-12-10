@@ -102,32 +102,23 @@ class ClientController extends Controller
             ));
     }
 
-    public function view($id)
+    public function show(Client $client)
     {
         $resource = 'client';
-        $client = Client::find($id);
+        $client = Client::find($client->id);
         $page_title = $client->first_name.' '.$client->last_name."'s Application";
         $page_subtitle = $client->tracking_no.' - '.$client->id;
-        $readonly = true;
+        $readonly = !auth()->user()->can('manage-content');
 
         if ($client) {
             $path = "clients/{$client->tracking_no}";
             $storedFiles = Storage::disk('local')->files($path);
-            $files = [];
-
-            foreach ($storedFiles as $storedFile) {
-                // TODO: Use API to store images
-                $encryptedFile = Storage::disk('local')->get($storedFile);
-                $decryptedFile = Crypt::decrypt($encryptedFile);
-                $finfo = new \finfo(FILEINFO_MIME_TYPE);
-                $mime = $finfo->buffer($decryptedFile);
-                $files[] = [
-                    'name' => basename($storedFile, '.enc'),
-                    'path' => $storedFile,
-                    'content' => $decryptedFile,
-                    'mime' => $mime,
+            $files = collect($storedFiles)->map(function ($file) {
+                return [
+                    'name' => basename($file),
+                    'path' => $file,
                 ];
-            }
+            });
 
             return view('client.view', compact(
                 'page_title',
@@ -138,7 +129,7 @@ class ClientController extends Controller
                 'readonly',
             ));
         } else {
-            return redirect()->back()->with('alertInfo', 'Client not found!');
+            return redirect()->back()->with('error', 'Client not found.');
         }
     }
 
@@ -308,9 +299,9 @@ class ClientController extends Controller
 
             return redirect()
                 ->route('landing.page')
-                ->with('alertSuccess', 'Client information added successfully!');
+                ->with('success', 'Client information added successfully!');
         } catch (Exception $e) {
-            return redirect()->back()->with('alertInfo', $e->getMessage());
+            return redirect()->back()->with('error', 'Client information added failed! ' . $e->getMessage());
         }
     }
 
@@ -320,31 +311,23 @@ class ClientController extends Controller
         $resource = 'client';
         $data = Client::getClientInfo($client);
 
-        return view('client.edit', compact(
+        return view('client.view', compact(
             'page_title',
             'resource',
             'data',
-            'sexes',
-            'religions',
-            'nationalities',
-            'civils',
-            'relationships',
-            'educations',
-            'districts',
         ));
     }
 
     public function update(ClientRequest $request, Client $client)
     {
         $client = $this->clientServices->updateClient($request->validated(), $client);
-
+        dd($client);
         activity()
             ->performedOn($client)
-            ->causedBy(Auth::user())
-            ->log('Updated the client details: '.$client->id);
+            ->causedBy(Auth::user());
 
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first().'.client.edit', $client->id)
+            ->route('client.show', $client)
             ->with('success', 'Client information updated successfully!');
     }
 
@@ -380,12 +363,12 @@ class ClientController extends Controller
                     'assessment' => $request['assessment'],
                 ]);
 
-                return redirect()->back()->with('alertSuccess', 'Assessment submitted successfully!');
+                return redirect()->back()->with('success', 'Assessment created successfully.');
             } else {
-                return redirect()->back()->with('alertInfo', 'Client not found.');
+                return redirect()->back()->with('error', 'Client not found.');
             }
         } catch (Exception $e) {
-            return redirect()->back()->with('alertInfo', $e->getMessage());
+            return redirect()->back()->with('error', $e->getMessage());
         }
     }
 
@@ -416,7 +399,7 @@ class ClientController extends Controller
                 activity()
                     ->log('Burial Assistance Application created');
 
-                return redirect()->back()->with('alertSuccess', 'Successfuly created burial assistance application for the client!');
+                return redirect()->back()->with('success', 'Successfuly created burial assistance application for the client!');
             } elseif ($request['type'] == 'funeral') {
                 $request->validate([
                     'referral' => 'nullable|string|max:255',
@@ -437,14 +420,14 @@ class ClientController extends Controller
                 activity()
                     ->log('Funeral Assistance Application created');
 
-                return redirect()->back()->with('alertSuccess', 'Successfuly created funeral assistance application for the client!');
+                return redirect()->back()->with('success', 'Successfuly created funeral assistance application for the client!');
             } else {
-                return redirect()->back()->with('alertInfo', 'Invalid request.');
+                return redirect()->back()->with('error', 'Invalid request.');
             }
         } catch (Exception $e) {
             $client->recommendation()->delete();
 
-            return redirect()->back()->with('alertInfo', $e->getMessage());
+            return redirect()->back()->with('error', $e->getMessage());
         }
     }
 
@@ -486,7 +469,7 @@ class ClientController extends Controller
 
             return $pdf->stream("client-report-{$startDate}-{$endDate}.pdf");
         } catch (Exception $e) {
-            return redirect()->back()->with('alertInfo', $e->getMessage());
+            return redirect()->back()->with('error', $e->getMessage());
         }
     }
 
@@ -494,7 +477,7 @@ class ClientController extends Controller
         // ! This does prevent unregistered users from the TLC Portal from tracking clients
         $records = Citizen::records();
         if (!$records) {
-            return redirect()->route('landing.page')->with('alertInfo', 'No client application found to track. Please apply first.');
+            return redirect()->route('landing.page')->with('error', 'You do not have permission to access this page.');
         }
         $client = Client::where('citizen_id', session('citizen')['user_id'])->latest()->get()->first();
         

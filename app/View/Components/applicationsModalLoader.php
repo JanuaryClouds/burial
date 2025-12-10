@@ -26,8 +26,6 @@ class applicationsModalLoader extends Component
             'id',
             'tracking_no',
             'application_date',
-            'deceased_id',
-            'claimant_id',
             'amount',
             'funeraria',
             'status',

@@ -1,3 +1,4 @@
+{{-- ! DEPRACATED --}}
 <div class="card shadow mb-4">
     <div class="card-header mt-4 mx-4 d-flex justify-content-between align-items-center">
         <img src="{{ asset('images/city_logo.webp') }}" alt="Taguig City Logo" style="width: 150px;">

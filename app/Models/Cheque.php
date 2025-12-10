@@ -26,6 +26,10 @@ class Cheque extends Model
         'status'
     ];
 
+    // TODO Soon to send to disbursement system
+    // TODO Deletion is not allowed, but should be stored as request for editing and deleting
+    // TODO Head can see those request
+
     public function burialAssistance() {
         return $this->belongsTo(BurialAssistance::class, 'burial_assistance_id', 'id');
     }

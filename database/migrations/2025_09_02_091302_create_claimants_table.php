@@ -18,6 +18,11 @@ return new class extends Migration
                 ->constrained('clients')
                 ->onDelete('CASCADE')
                 ->onUpdate('cascade');
+            $table->foreignUuid('burial_assistance_id')
+                ->nullable()
+                ->constrained('burial_assistances')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
             $table->string('first_name');
             $table->string('middle_name')->nullable();
             $table->string('last_name');

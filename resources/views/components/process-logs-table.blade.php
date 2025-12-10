@@ -9,12 +9,13 @@
                                 $excemptions = ['id', 'updated_at', 'loggable_type'];
                             @endphp
                             @if (!in_array($column, $excemptions))
-                                @if ($column == "burial_assistance_id")
+                                @if ($column == 'burial_assistance_id')
                                     <th class="sorting sort-handler">Burial Assistance of</th>
-                                @elseif ($column == "loggable_id")
+                                @elseif ($column == 'loggable_id')
                                     <th class="sorting sort-handler">Process</th>
                                 @else
-                                    <th class="sorting sort-handler">{{ Str::title(Str::replace('_', ' ', $column)) }}</th>     
+                                    <th class="sorting sort-handler">{{ Str::title(Str::replace('_', ' ', $column)) }}
+                                    </th>
                                 @endif
                             @endif
                         @endforeach
@@ -25,13 +26,19 @@
                         <tr class="bg-white">
                             @foreach ($log->getAttributes() as $key => $value)
                                 @if (!in_array($key, $excemptions))
-                                    <!-- TODO: remove hasRole -->
                                     @if (auth()->user()->hasRole('superadmin') && $key == 'added_by')
                                         <td>{{ auth()->user()->where('id', $value)->first()->first_name ?? '' }}</td>
                                     @elseif ($key == 'burial_assistance_id')
                                         @php
-                                            $deceased = \App\Models\BurialAssistance::where('id', $value)->first()->deceased;
-                                            $fullName = $deceased ? $deceased->first_name . ' ' . Str::limit($deceased->middle_name, 1, '.') . ' ' . $deceased->last_name : ' ' . $deceased?->suffix;
+                                            $deceased = \App\Models\BurialAssistance::where('id', $value)->first()
+                                                ->deceased;
+                                            $fullName = $deceased
+                                                ? $deceased->first_name .
+                                                    ' ' .
+                                                    Str::limit($deceased->middle_name, 1, '.') .
+                                                    ' ' .
+                                                    $deceased->last_name
+                                                : ' ' . $deceased?->suffix;
                                         @endphp
                                         <td>{{ $fullName }}</td>
                                     @elseif ($key == 'loggable_id')

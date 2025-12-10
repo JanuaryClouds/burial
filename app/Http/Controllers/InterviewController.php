@@ -24,10 +24,10 @@ class InterviewController extends Controller
             if ($interview) {
                 // TODO: send SMS message
 
-                return redirect()->back()->with('alertSuccess', 'Interview created successfully.');
+                return redirect()->back()->with('success', 'Interview created successfully.');
             }
         } catch (Exception $e) {
-            return redirect()->back()->with('alertInfo', $e->getMessage());
+            return redirect()->back()->with('info', $e->getMessage());
         }
     }
 
@@ -39,10 +39,10 @@ class InterviewController extends Controller
 
             $interview = $this->interviewService->done($interview->id);
             if ($interview) {
-                return redirect()->back()->with('alertSuccess', 'Interview marked as done.');
+                return redirect()->back()->with('success', 'Interview marked as done.');
             }
         } catch (Exception $e) {
-            return redirect()->back()->with('alertInfo', $e->getMessage());
+            return redirect()->back()->with('info', $e->getMessage());
         }
     }
 }

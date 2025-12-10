@@ -10,7 +10,7 @@
     <div class="col d-flex justify-content-center align-items-center pe-10 text-white">
         <span class="d-flex flex-column justify-content-center align-items-center">
             <p class="fs-4 fw-bold">Contact Us</p>
-            <p class="mb-0">Email: {{ $email ?? 'sample@email.com' }}</p>
+            <p class="mb-0">Email: {{ $email ?? env('MAIL_FROM_ADDRESS') }}</p>
         </span>
     </div>
 </div>

@@ -56,7 +56,7 @@ class ClaimantController extends Controller
             ));
             return $pdf->stream('claimant-report.pdf');
         } catch (\Exception $e) {
-            return back()->with('alertError', 'An error occurred while generating the report: ' . $e->getMessage());
+            return back()->with('error', 'An error occurred while generating the report: ' . $e->getMessage());
         }
     }
 }

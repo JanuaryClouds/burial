@@ -1,9 +1,9 @@
 <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start"
     @class([
         'menu-item',
-        'here' => Route::is('permissions*') || Route::is('roles*'),
-    ])
->
+        'here' =>
+            Route::is('permission*') || Route::is('role*') || Route::is('user*'),
+    ])>
     <span class="menu-link menu-center d-flex flex-column">
         <span class="menu-icon me-0">
             <i class="ki-duotone ki-setting-2 fs-2x">
@@ -22,7 +22,7 @@
             </div>
         </div>
         <div class="menu-item">
-            <a href="{{ route('cms.users') }}" @class(['active' => Request::is('cms/users'), 'menu-link'])>
+            <a href="{{ route('user.index') }}" @class(['active' => Route::is('user.*'), 'menu-link'])>
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                 </span>
@@ -30,7 +30,7 @@
             </a>
         </div>
         <div class="menu-item">
-            <a href="{{ route('permissions') }}" @class(['active' => Request::is('permissions*'), 'menu-link'])>
+            <a href="{{ route('permission.index') }}" @class(['active' => Request::is('permission.index'), 'menu-link'])>
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                 </span>
@@ -38,7 +38,7 @@
             </a>
         </div>
         <div class="menu-item">
-            <a href="{{ route('roles') }}" @class(['active' => Request::is('roles'), 'menu-link'])>
+            <a href="{{ route('role.index') }}" @class(['active' => Request::is('role.index'), 'menu-link'])>
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                 </span>

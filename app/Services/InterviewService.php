@@ -28,7 +28,7 @@ class InterviewService
             $interview->update(['status' => 'done']);
             return $interview;
         } catch (Exception $e) {
-            return redirect()->back()->with('alertInfo', $e->getMessage());
+            return redirect()->back()->with('info', $e->getMessage());
         }
     }
 }

@@ -1,4 +1,4 @@
-<div class="card shadow mb-4">
+<div class="card mb-4">
     <div class="card-header mt-4 mx-4 d-flex justify-content-between align-items-center">
         <img src="{{ asset('images/city_logo.webp') }}" alt="Taguig City Logo" style="width: 150px;">
         <div class="d-flex flex-column align-items-center text-center text-uppercase">
@@ -13,7 +13,7 @@
         <p>Please fill out all required forms marked by (*). These information are necessary for evaluating your
             application and to determine the type of assistance.</p>
         <div class="d-flex justify-content-between align-items-center">
-            @if (app()->isLocal())
+            @if (env('APP_DEBUG'))
                 <button class="btn btn-outline-primary" id="autofillBtn">
                     <i class="fas fa-wand-magic-sparkles"></i>
                 </button>

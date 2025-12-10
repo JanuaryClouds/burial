@@ -9,12 +9,12 @@
                                 $excemptions = ['id', 'updated_at', 'causer_type'];
                             @endphp
                             @if (!in_array($column, $excemptions))
-                                @if ($column == "causer_id")
+                                @if ($column == 'causer_id')
                                     <th class="sorting sort-handler">Caused By</th>
-                                @elseif ($column == "created_at")
+                                @elseif ($column == 'created_at')
                                     <th class="sorting sort-handler">Date & Time</th>
                                 @else
-                                    <th class="">{{ Str::title(Str::replace('_', ' ', $column)) }}</th>     
+                                    <th class="">{{ Str::title(Str::replace('_', ' ', $column)) }}</th>
                                 @endif
                             @endif
                         @endforeach
@@ -25,7 +25,7 @@
                         <tr class="bg-white">
                             @foreach ($log->getAttributes() as $key => $value)
                                 @if (!in_array($key, $excemptions))
-                                    <!-- TODO: remove hasRole -->
+                                    {{-- Since the permission to view logs can be assigned to more than just a superadmin, it is best to make it exclusive to the superadmin --}}
                                     @if (auth()->user()->hasRole('superadmin') && $key == 'causer_id')
                                         <td>{{ auth()->user()->where('id', $value)->first()->first_name ?? '' }}</td>
                                     @elseif ($key == 'properties')
@@ -49,7 +49,7 @@
             </table>
         </div>
     </div>
-@else 
+@else
     <div class="alert alert-info">No activity logs found.</div>
 @endif
 <script>
@@ -57,16 +57,17 @@
         $('#activity-logs-table').DataTable({
             responsive: true,
             ordering: true,
-            order: [[-1, 'desc']],
-            dom: 
+            order: [
+                [-1, 'desc']
+            ],
+            dom:
                 // First row: buttons on the left, filter on the right
                 "<'row mb-2'<'col-sm-6 d-flex align-items-center'l<'me-3'>B><'col-sm-6 d-flex justify-content-end'f>>" +
                 // Table
                 "<'row'<'col-12'tr>>" +
                 // Bottom row: info and pagination
                 "<'row mt-2'<'col-sm-6'i><'col-sm-6 d-flex justify-content-end'p>>",
-            buttons:[
-                {
+            buttons: [{
                     extend: 'excel',
                     text: '<i class="me-2 fa fa-file-excel"></i>Export to Excel',
                     className: 'btn btn-primary py-1 px-3'
@@ -83,9 +84,9 @@
                 // 'print'
             ],
             classes: {
-                sortAsc: '',     // override ascending class
-                sortDesc: '',    // override descending class
-                sortable: ''     // override neutral sortable class 
+                sortAsc: '', // override ascending class
+                sortDesc: '', // override descending class
+                sortable: '' // override neutral sortable class 
             }
         });
     })

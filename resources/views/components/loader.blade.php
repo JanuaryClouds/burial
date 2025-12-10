@@ -73,7 +73,7 @@
             return;
         }
 
-        window.hideLoading = function(duration = '1s') {
+        window.hideLoading = function(duration = 1) {
             splash.style.zIndex = "-1";
             splash.style.opacity = "0";
             splash.style.transition = `opacity ${duration} ease`;
@@ -100,7 +100,8 @@
                     url.startsWith('javascript:') ||
                     link.target === '_blank' ||
                     (url.includes('://') && !url.includes(window.location.host)) ||
-                    link.hasAttribute('data-no-loader')
+                    link.hasAttribute('data-no-loader') ||
+                    link.hasAttribute('data-bs-dismiss="modal"')
                 ) return;
                 e.preventDefault();
                 triggerLoading(0.3);

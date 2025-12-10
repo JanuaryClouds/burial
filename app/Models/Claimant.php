@@ -15,6 +15,7 @@ class Claimant extends Model
 
     protected $fillable = [
         'id',
+        'burial_assistance_id',
         'client_id',
         'first_name',
         'middle_name',
@@ -32,7 +33,7 @@ class Claimant extends Model
     }
 
     public function burialAssistance() {
-        return $this->hasOne(BurialAssistance::class, 'claimant_id', 'id');
+        return $this->belongsTo(BurialAssistance::class, 'burial_assistance_id', 'id');
     }
 
     public function relationship() {

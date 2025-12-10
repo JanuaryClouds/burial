@@ -15,6 +15,7 @@ class Deceased extends Model
     protected $keyType = 'string';
     protected $fillable = [
         'id',
+        'burial_assistance_id',
         'first_name',
         'middle_name',
         'last_name',
@@ -29,7 +30,7 @@ class Deceased extends Model
     protected $table = "deceased";
 
     public function burialAssistance() {
-        return $this->hasOne(BurialAssistance::class, 'deceased_id', 'id');
+        return $this->belongsTo(BurialAssistance::class, 'burial_assistance_id', 'id');
     }
 
     public function gender() {

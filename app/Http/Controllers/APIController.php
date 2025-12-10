@@ -18,8 +18,6 @@ class APIController extends Controller
             'application_date',
             'swa',
             'funeraria',
-            'claimant_id',
-            'deceased_id',
             'amount',
             'remarks',
         )

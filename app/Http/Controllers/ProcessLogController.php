@@ -77,7 +77,7 @@ class ProcessLogController extends Controller
                         Storage::disk('local')->put($path . $filename, Crypt::encrypt(file_get_contents($request->file('cheque-image-proof'))));
                         $application->update(['status' => 'released']);
                     } else {
-                        return redirect()->back()->with('alertInfo', 'Please upload a photo of the cheque.');
+                        return redirect()->back()->with('info', 'Please upload a photo of the cheque.');
                     }
                 }
 
@@ -105,10 +105,10 @@ class ProcessLogController extends Controller
                     'added_by' => auth()->user()->id,
                 ]);
     
-                return back()->with('alertSuccess','Process log added successfully.');
+                return back()->with('success','Process log added successfully.');
             }
         } catch (Exception $e) {
-            return redirect()->back()->with('alertError', $e->getMessage());
+            return redirect()->back()->with('error', $e->getMessage());
         }
     }
 
@@ -157,7 +157,7 @@ class ProcessLogController extends Controller
                 return redirect()->back()->with('error','Unable to find application.');
             }
         } catch (Exception $e) {
-            return redirect()->back()->with('alertError', $e->getMessage());
+            return redirect()->back()->with('error', $e->getMessage());
         }
     }
 }

@@ -65,7 +65,7 @@
                                             @endif
                                         </td>
                                         <td>
-                                            <a href="{{ route('funeral-assistances.view', ['id' => $entry->id]) }}" class="btn btn-primary">
+                                            <a href="{{ route('funeral.show', ['id' => $entry->id]) }}" class="btn btn-primary">
                                                 <i class="fas fa-eye"></i>
                                             </a>
                                         </td>

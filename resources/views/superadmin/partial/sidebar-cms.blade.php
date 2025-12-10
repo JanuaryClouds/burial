@@ -2,9 +2,16 @@
 <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start"
     @class([
         'menu-item',
-        'here' => Route::is('cms*') || Route::is('cms*'),  
-    ])
->
+        'here' =>
+            (Route::is('*.index') || Route::is('*.edit')) &&
+            !Route::is('funeral.*') &&
+            !Route::is('burial.*') &&
+            !Route::is('client.*') &&
+            !Route::is('user.*') &&
+            !Route::is('role.*') &&
+            !Route::is('permission.*') &&
+            !Route::is('assignments.*'),
+    ])>
     <!--begin:Menu link-->
     <span class="menu-link menu-center d-flex flex-column">
         <span class="menu-icon me-0">
@@ -29,15 +36,16 @@
             </div>
         </div>
         <div class="menu-item">
-            <a href="{{ route('cms.barangays') }}" @class(['active' => Request::is('cms/barangays'), 'menu-link'])>
+            <a href="{{ route('barangay.index') }}" @class(['active' => Route::is('barangay.*'), 'menu-link'])>
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                 </span>
                 <span class="menu-title">Barangays</span>
             </a>
         </div>
+        {{-- TODO: update to use resource --}}
         <div class="menu-item">
-            <a href="{{ route('cms.relationships') }}" @class(['active' => Request::is('cms/relationships'), 'menu-link'])>
+            <a href="{{ route('relationship.index') }}" @class(['active' => Route::is('relationship.*'), 'menu-link'])>
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                 </span>
@@ -45,7 +53,7 @@
             </a>
         </div>
         <div class="menu-item">
-            <a href="{{ route('cms.workflow') }}" @class(['active' => Request::is('cms/workflow'), 'menu-link'])>
+            <a href="{{ route('workflow.index') }}" @class(['active' => Route::is('workflow.*'), 'menu-link'])>
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                 </span>
@@ -53,7 +61,7 @@
             </a>
         </div>
         <div class="menu-item">
-            <a href="{{ route('cms.handlers') }}" @class(['active' => Request::is('cms/handlers'), 'menu-link'])>
+            <a href="{{ route('handler.index') }}" @class(['active' => Route::is('handler.*'), 'menu-link'])>
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                 </span>
@@ -61,7 +69,7 @@
             </a>
         </div>
         <div class="menu-item">
-            <a href="{{ route('cms.religions') }}" @class(['active' => Request::is('cms/religions'), 'menu-link'])>
+            <a href="{{ route('religion.index') }}" @class(['active' => Route::is('religion.*'), 'menu-link'])>
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                 </span>

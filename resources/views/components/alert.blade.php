@@ -1,17 +1,51 @@
-@if (session('alertSuccess'))
+<script>
+    window.sweetalert = function(title, icon, message, confirm = true, cancel = false) {
+        Swal.fire({
+            title,
+            icon,
+            text: message,
+            showConfirmButton: confirm,
+            showCancelButton: cancel,
+            timerProgressBar: true,
+            buttonsStyling: true,
+        });
+    };
+</script>
+@if (session('success'))
     <script>
-        swal("Success", "{{ session('alertSuccess') }}", "success");
+        console.log(sweetalert);
+        sweetalert(
+            '',
+            'success',
+            '{{ session('success') }}',
+            true
+        )
     </script>
-@elseif (session('alertError'))
+@elseif (session('warning'))
     <script>
-        swal("Error", "{{ session('alertError') }}", "error");
+        sweetalert(
+            '',
+            'warning',
+            '{{ session('warning') }}',
+            true
+        )
     </script>
-@elseif (session('alertWarning'))
+@elseif (session('error'))
     <script>
-        swal("Warning", "{{ session('alertWarning') }}", "warning");
+        sweetalert(
+            '',
+            'error',
+            '{{ session('error') }}',
+            true
+        )
     </script>
-@elseif (session('alertInfo'))
+@elseif (session('info'))
     <script>
-        swal("Notice", "{{ session('alertInfo') }}", "info");
+        sweetalert(
+            '',
+            'info',
+            '{{ session('info') }}',
+            true
+        )
     </script>
 @endif

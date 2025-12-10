@@ -22,14 +22,16 @@
                             <tr class="border-bottom border-bottom-1 border-gray-200">
                                 <td>{{ $entry->tracking_no }}</td>
                                 <td>
-                                    {{ $entry->first_name }} {{ $entry->middle_name ? Str::charAt($entry->middle_name, 0).'.' : '' }} {{ $entry->last_name }} {{ $entry->suffix }}
+                                    {{ $entry->first_name }}
+                                    {{ $entry->middle_name ? Str::charAt($entry->middle_name, 0) . '.' : '' }}
+                                    {{ $entry->last_name }} {{ $entry->suffix }}
                                 </td>
                                 <td>
                                     {{ $entry->house_no . ' ' . $entry->street . ', ' . $entry->barangay->name }}
                                 </td>
                                 <td>{{ $entry->contact_no }}</td>
                                 <td>
-                                    @if($entry->claimant)
+                                    @if ($entry->claimant)
                                         <span class="badge badge-pill badge-info">
                                             Burial
                                         </span>
@@ -62,7 +64,7 @@
                                     {{ Carbon\Carbon::parse($entry->created_at)->format('M d, Y') }}
                                 </td>
                                 <td>
-                                    <a href="{{ route('clients.view', $entry->id) }}" class="btn btn-sm btn-primary">
+                                    <a href="{{ route('client.show', $entry) }}" class="btn btn-sm btn-primary">
                                         <i class="fas fa-eye pe-0"></i>
                                     </a>
                                 </td>
@@ -76,39 +78,40 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    $('#latest-clients-table').DataTable({
-        responsive: true,
-        ordering: true,
-        order:[[5, 'desc']], // order by Submitted on column descending
-        dom: 
-            // First row: buttons on the left, filter on the right
-            "<'row mb-2'<'col-sm-6 d-flex align-items-center'i<'mr-3'>><'col-sm-6 d-flex justify-content-end'f>>" +
-            // Table
-            "<'row'<'col-12'tr>>",
+    document.addEventListener('DOMContentLoaded', function() {
+        $('#latest-clients-table').DataTable({
+            responsive: true,
+            ordering: true,
+            order: [
+                [5, 'desc']
+            ], // order by Submitted on column descending
+            dom:
+                // First row: buttons on the left, filter on the right
+                "<'row mb-2'<'col-sm-6 d-flex align-items-center'i<'mr-3'>><'col-sm-6 d-flex justify-content-end'f>>" +
+                // Table
+                "<'row'<'col-12'tr>>",
             // Bottom row: info
             // "<'row mt-2'<'col-sm-6'i>>"
-        buttons:[
-            {
-                extend: 'excel',
-                text: '<i class="mr-2 fas fa-file-excel"></i> Export to Excel',
-                className: 'btn btn-primary py-1 px-3',
-            },
-            {
-                extend: 'print',
-                text: '<i class="mr-2 fas fa-print"></i> Print',
-                className: 'btn btn-secondary py-1 px-3 ml-2',
-            },
-            // 'copy', 
-            // 'csv', 
-            // 'pdf',
-            // 'print'
-        ],
-        classes: {
-            sortAsc: '',     // override ascending class
-            sortDesc: '',    // override descending class
-            sortable: ''     // override neutral sortable class 
-        }
+            buttons: [{
+                    extend: 'excel',
+                    text: '<i class="mr-2 fas fa-file-excel"></i> Export to Excel',
+                    className: 'btn btn-primary py-1 px-3',
+                },
+                {
+                    extend: 'print',
+                    text: '<i class="mr-2 fas fa-print"></i> Print',
+                    className: 'btn btn-secondary py-1 px-3 ml-2',
+                },
+                // 'copy', 
+                // 'csv', 
+                // 'pdf',
+                // 'print'
+            ],
+            classes: {
+                sortAsc: '', // override ascending class
+                sortDesc: '', // override descending class
+                sortable: '' // override neutral sortable class 
+            }
+        });
     });
-});
 </script>

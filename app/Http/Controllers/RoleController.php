@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use App\DataTables\CmsDataTable;
 use App\Services\RoleService;
@@ -35,10 +36,22 @@ class RoleController extends Controller
     //         ));
     // }
 
-    public function index() {
-        $data = Role::select('id', 'name', 'guard_name')->get();
-        $type = 'roles';
-        return view('superadmin.roles', compact('data', 'type'));
+    public function index() 
+    {
+        $data = Role::select('id', 'name')->get();
+        $page_title = 'Role';
+        $resource = 'role';
+        $permissions = Permission::select('id', 'name')->get();
+        return view('cms.index', compact('data', 'page_title', 'resource', 'permissions'));
+    }
+    
+    public function edit(Role $role)
+    {
+        $data = Role::where('id', $role->id)->select('id', 'name')->first();
+        $page_title = 'Edit Role';
+        $resource = 'role';
+        $permissions = Permission::select('id', 'name')->get();
+        return view('cms.edit', compact('data', 'page_title', 'resource', 'permissions'));
     }
     
     public function store(RoleRequest $request)
@@ -61,7 +74,7 @@ class RoleController extends Controller
 
         return redirect()
             ->back()
-            ->with('alertSuccess', 'Role created successfully.');
+            ->with('success', 'Role created successfully.');
     }
     
     public function update(RoleRequest $request, Role $role)
@@ -77,7 +90,7 @@ class RoleController extends Controller
             
         return redirect()
             ->back()
-            ->with('alertSuccess', 'Role updated successfully.');
+            ->with('success', 'Role updated successfully.');
     }
     
     public function destroy(Role $role)
@@ -91,6 +104,6 @@ class RoleController extends Controller
             
         return redirect()
             ->back()
-            ->with('alertSuccess', 'Role deleted successfully.');
+            ->with('success', 'Role deleted successfully.');
     }
 }

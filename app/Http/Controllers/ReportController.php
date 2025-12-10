@@ -78,7 +78,7 @@ class ReportController extends Controller
             $endDate = Carbon::now()->endOfYear();
         }
 
-        $burialAssistances = BurialAssistance::select('id', 'tracking_no', 'claimant_id', 'deceased_id', 'application_date', 'funeraria', 'amount', 'status', 'created_at')
+        $burialAssistances = BurialAssistance::select('id', 'tracking_no', 'application_date', 'funeraria', 'amount', 'status', 'created_at')
             ->orderBy('tracking_no', 'asc')
             ->whereBetween('application_date', [$startDate, $endDate])
             ->get();
@@ -226,10 +226,10 @@ class ReportController extends Controller
                 // Implement deceased report generation
                 return $reportService->deceasedReport($startDate, $endDate);
             } else {
-                return back()->with('alertError', 'Invalid report type selected.');
+                return back()->with('error', 'Invalid report type selected.');
             }
         } catch (\Exception $e) {
-            return back()->with('alertError', 'An error occurred while generating the report: ' . $e->getMessage());
+            return back()->with('error', 'An error occurred while generating the report: ' . $e->getMessage());
         }
     }
 

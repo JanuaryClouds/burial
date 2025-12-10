@@ -52,11 +52,21 @@
                     if (!value) {
                         const label = field.closest('div')?.querySelector('label')?.innerText || field.name;
                         missingFields.push(label.replace('*', '').trim());
-                        field.classList.add('is-invalid');
                     }
                 });
 
                 return missingFields;
+            }
+
+            function validateInputs(tabPane) {
+                const requiredFields = tabPane.querySelectorAll('[required]');
+                requiredFields.forEach(field => {
+                    if (field.value.trim() === '') {
+                        field.classList.add('is-invalid');
+                    } else {
+                        field.classList.remove('is-invalid');
+                    }
+                });
             }
 
             // Handle tab switching
@@ -64,6 +74,8 @@
                 link.addEventListener('show.bs.tab', e => {
                     const currentTab = document.querySelector('.tab-pane.active.show');
                     const missing = validateTab(currentTab);
+
+                    validateInputs(currentTab);
 
                     if (missing.length > 0) {
                         e.preventDefault(); // stop switching

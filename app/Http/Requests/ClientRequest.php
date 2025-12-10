@@ -30,7 +30,7 @@ class ClientRequest extends FormRequest
             'religion_id' => 'required|numeric|exists:religions,id',
             'nationality_id' => 'required|numeric|exists:nationalities,id',
             'relationship_id' => 'required|numeric|exists:relationships,id',
-            'education_id' => 'required|numeric|exists:educations,id',
+            'education_id' => 'nullable|numeric|exists:educations,id',
             'civil_id' => 'required|numeric|exists:civil_statuses,id',
             'income' => 'nullable|string|max:255',
             'philhealth' => 'nullable|string|max:255',

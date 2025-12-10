@@ -49,7 +49,7 @@
                                 <th class="sorting">Claimant</th>
                                 <th class="sorting sort-handler">Submitted on</th>
                                 <th>Last Update</th>
-                                @if (Route::is('burial-assistances*'))
+                                @if (Route::is('burial.index'))
                                     <th class="sorting">Status</th>
                                 @endif
                                 <th class="">Actions</th>
@@ -101,7 +101,7 @@
                                             {{ $application->processLogs->count() > 1 ? '(' . $application->processLogs->last()->loggable?->description . ')' : '' }}
                                         </p>
                                     </td>
-                                    @if (Route::is('burial-assistances*'))
+                                    @if (Route::is('burial.index'))
                                         <td>
                                             @if ($application->status === 'pending')
                                                 <span
