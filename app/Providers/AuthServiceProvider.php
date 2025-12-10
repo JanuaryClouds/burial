@@ -2,8 +2,11 @@
 
 namespace App\Providers;
 
+use App\Models\Barangay;
+use App\Models\Relationship;
+use App\Models\Religion;
 use Illuminate\Support\Facades\Gate;
-use App\Models\Role;
+use Spatie\Permission\Models\Role;
 use App\Models\Permission;
 use App\Models\Handler;
 use App\Models\WorkflowStep;
@@ -31,15 +34,31 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Gate::define('delete-resource', function ($user, $resource) {
+        Gate::define('create', function ($user, $resource) {
+            $allowedCreateExceptions = [
+                User::class,
+                Role::class,
+                Barangay::class,
+                Relationship::class,
+                Religion::class,
+            ];
+
+            if (in_array(get_class($resource), $allowedCreateExceptions)) {
+                return true;
+            }
+
+            return false;
+        });
+
+        Gate::define('delete', function ($user, $resource) {
             $globalDeleteExceptions = [
-                BurialAssistance::class,
-                FuneralAssistance::class,
-                Client::class,
-                ClientBeneficiary::class,
+                // BurialAssistance::class,
+                // FuneralAssistance::class,
+                // Client::class,
+                // ClientBeneficiary::class,
                 Permission::class,
-                WorkflowStep::class,
-                Handler::class,
+                // WorkflowStep::class,
+                // Handler::class,
                 User::class,
             ];
 
@@ -54,22 +73,23 @@ class AuthServiceProvider extends ServiceProvider
             return true;
         });
 
-        Gate::define('update-resource', function ($user, $resource) {
+        Gate::define('update', function ($user, $resource) {
             $globalUpdateExceptions = [
-                BurialAssistance::class,
-                FuneralAssistance::class,
-                Client::class,
-                ClientBeneficiary::class,
+                // BurialAssistance::class,
+                // FuneralAssistance::class,
+                // Client::class,
+                // ClientBeneficiary::class,
                 Permission::class,
-                WorkflowStep::class,
-                Handler::class,
+                // Role::class,
+                // WorkflowStep::class,
+                // Handler::class,
             ];
 
             if (in_array(get_class($resource), $globalUpdateExceptions)) {
                 return false;
             }
 
-            if ($resource instanceof Role && in_array($resource->id, [1,2,3,4])) {
+            if ($resource instanceof Role && in_array($resource->id, [1,2,3])) {
                 return false;
             }
 

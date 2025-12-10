@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use App\DataTables\CmsDataTable;
 use App\Services\RoleService;
@@ -35,10 +36,22 @@ class RoleController extends Controller
     //         ));
     // }
 
-    public function index() {
-        $data = Role::select('id', 'name', 'guard_name')->get();
-        $type = 'roles';
-        return view('superadmin.roles', compact('data', 'type'));
+    public function index() 
+    {
+        $data = Role::select('id', 'name')->get();
+        $page_title = 'Role';
+        $resource = 'role';
+        $permissions = Permission::select('id', 'name')->get();
+        return view('cms.index', compact('data', 'page_title', 'resource', 'permissions'));
+    }
+    
+    public function edit(Role $role)
+    {
+        $data = Role::where('id', $role->id)->select('id', 'name')->first();
+        $page_title = 'Edit Role';
+        $resource = 'role';
+        $permissions = Permission::select('id', 'name')->get();
+        return view('cms.edit', compact('data', 'page_title', 'resource', 'permissions'));
     }
     
     public function store(RoleRequest $request)

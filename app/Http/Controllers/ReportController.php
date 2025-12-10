@@ -78,7 +78,7 @@ class ReportController extends Controller
             $endDate = Carbon::now()->endOfYear();
         }
 
-        $burialAssistances = BurialAssistance::select('id', 'tracking_no', 'claimant_id', 'deceased_id', 'application_date', 'funeraria', 'amount', 'status', 'created_at')
+        $burialAssistances = BurialAssistance::select('id', 'tracking_no', 'application_date', 'funeraria', 'amount', 'status', 'created_at')
             ->orderBy('tracking_no', 'asc')
             ->whereBetween('application_date', [$startDate, $endDate])
             ->get();

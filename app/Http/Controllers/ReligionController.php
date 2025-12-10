@@ -44,8 +44,16 @@ class ReligionController extends Controller
             ->log('Created a new religion: ' . $religion->name);
 
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first() . '.religion.index')
+            ->route('religion.index')
             ->with('success', 'You have successfully created a religion!');
+    }
+
+    public function edit(Religion $religion)
+    {
+        $page_title = 'Religion';
+        $resource = 'religion';
+        $data = $religion;
+        return view('cms.edit', compact('page_title', 'data', 'resource'));
     }
     
     public function update(ReligionRequest $request, Religion $religion)
@@ -58,7 +66,7 @@ class ReligionController extends Controller
             ->log('Created the religion: ' . $religion->name);
         
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first() . '.religion.index')
+            ->route('religion.index')
             ->with('sucess', 'You have successfully updated a religion!');
     }
     
@@ -72,7 +80,7 @@ class ReligionController extends Controller
             ->log('Created the religion: ' . $religion->name);
 
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first() . '.religion.index')
+            ->route('religion.index')
             ->with('success', 'You have successfully deleted a religion!');
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Services\Auth;
 
+use Spatie\Permission\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
@@ -24,5 +25,27 @@ class UserService
         Auth::logout();
         request()->session()->invalidate();
         request()->session()->regenerate();
+    }
+
+    public function storeUser(array $data)
+    {
+        $user = User::create($data);
+        $user->assignRole('admin');
+        return $user;
+    }
+
+    public function update(array $data, $user)
+    {
+        $user->update($data);
+        if (isset($data['is_active'])) {
+            $user->is_active = 1;
+            $user->save();
+        } else {
+            $user->is_active = 0;
+            $user->save();
+        }
+        $role = Role::firstOrCreate(['name' => $data['role']]);
+        $user->syncRoles($role);
+        return $user;
     }
 }

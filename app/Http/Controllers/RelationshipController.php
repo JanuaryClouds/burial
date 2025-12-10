@@ -44,8 +44,16 @@ class RelationshipController extends Controller
             ->log('Created a new relationship: ' . $relationship->name);
 
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first() . '.relationship.index')
+            ->back()
             ->with('success', 'Relationship created successfully.');
+    }
+
+    public function edit(Relationship $relationship)
+    {
+        $page_title = 'Relationship';
+        $resource = 'relationship';
+        $data = $relationship;
+        return view('cms.edit', compact('data', 'page_title', 'resource'));
     }
 
     public function update(RelationshipRequest $request, Relationship $relationship)
@@ -58,7 +66,7 @@ class RelationshipController extends Controller
             ->log('Updated the relationship: ' . $relationship->name);
             
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first() . '.relationship.index')
+            ->back()
             ->with('success', 'Relationship updated successfully.');
     }
     
@@ -70,7 +78,7 @@ class RelationshipController extends Controller
             ->performedOn($relationship)
             ->log('Deleted the relationship: ' . $relationship->name);
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first() . '.relationship.index')
+            ->route('relationship.index')
             ->with('success', 'Relationship deleted successfully.');
     }
 }
