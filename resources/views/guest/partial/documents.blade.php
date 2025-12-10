@@ -37,11 +37,6 @@
                                 from {{ $document['source'] }}
                             </p>
                         </span>
-                        @if ($document['is_mandatory'])
-                            <div>
-                                <span class="badge bg-danger text-white">Required</span>
-                            </div>
-                        @endif
                     </div>
                 </li>
             @endforeach
