@@ -100,7 +100,8 @@
                     url.startsWith('javascript:') ||
                     link.target === '_blank' ||
                     (url.includes('://') && !url.includes(window.location.host)) ||
-                    link.hasAttribute('data-no-loader')
+                    link.hasAttribute('data-no-loader') ||
+                    link.hasAttribute('data-bs-dismiss="modal"')
                 ) return;
                 e.preventDefault();
                 triggerLoading(0.3);
