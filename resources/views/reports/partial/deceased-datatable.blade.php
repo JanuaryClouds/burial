@@ -6,18 +6,21 @@
                     <table id="generic-table" class="table data-table generic-table" style="width:100%">
                         <thead>
                             <tr role="row">
-                                @foreach ($deceased->first()->getAttributes() as $column => $value)
+                                @forelse ($deceased->first()->getAttributes() as $column => $value)
                                     @php
                                         $excemptions = ['id', 'created_at', 'updated_at'];
                                     @endphp
                                     @if (!in_array($column, $excemptions))
-                                        <th class="sorting sort-handler">{{ Str::title(Str::replace('_', ' ', $column)) }}</th>     
+                                        <th class="sorting sort-handler">
+                                            {{ Str::title(Str::replace('_', ' ', $column)) }}</th>
                                     @endif
-                                @endforeach
+                                @empty
+                                    <th>No Deceased</th>
+                                @endforelse
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($deceased as $entry)
+                            @forelse ($deceased as $entry)
                                 <tr class="bg-white">
                                     @foreach ($entry->getAttributes() as $key => $value)
                                         @if (!in_array($key, $excemptions))
@@ -33,7 +36,11 @@
                                         @endif
                                     @endforeach
                                 </tr>
-                            @endforeach
+                            @empty
+                                <tr>
+                                    <td>No Deceased</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>

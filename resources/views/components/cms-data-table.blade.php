@@ -1,7 +1,4 @@
-@props([
-    'data',
-    'type',
-])
+@props(['data', 'type'])
 @php
     use Spatie\Permission\Models\Permission;
     $permissions = Permission::all();
@@ -16,7 +13,7 @@
         'password',
         'remember_token',
         'is_active',
-        'guard_name'
+        'guard_name',
     ];
 @endphp
 <div class="table-responsive overflow-x-hidden">
@@ -24,11 +21,13 @@
         <table id="cms-table" class="table data-table" style="width:100%">
             <thead class="border-bottom border-bottom-1 border-gray-200 fw-bold">
                 <tr role="row">
-                    @foreach ($data->first()->getAttributes() as $column => $value)
+                    @forelse ($data->first()->getAttributes() as $column => $value)
                         @if (!in_array($column, $excemptions))
                             <th class="sorting sort-handler">{{ Str::replace('_', ' ', Str::title($column)) }}</th>
                         @endif
-                    @endforeach
+                    @empty
+                        <th>No {{ $type }}</th>
+                    @endforelse
                     @if (Request::is('users.manage'))
                         <th>Role</th>
                     @endif
@@ -38,25 +37,29 @@
             <tbody>
                 @foreach ($data as $entry)
                     <tr class="">
-                        @foreach ($entry->getAttributes() as $key =>$value)
-                            @if(!in_array($key, $excemptions))
+                        @forelse ($entry->getAttributes() as $key => $value)
+                            @if (!in_array($key, $excemptions))
                                 <td>{{ $value }}</td>
                             @endif
-                        @endforeach
+                        @empty
+                            <td>No {{ $type }}</td>
+                        @endforelse
                         <td>
                             @can('update-resource', $entry)
-                                <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#edit-modal-{{ $entry->id }}">
-                                    <i class="fas fa-edit pe-0"></i> 
+                                <button class="btn btn-primary" type="button" data-toggle="modal"
+                                    data-target="#edit-modal-{{ $entry->id }}">
+                                    <i class="fas fa-edit pe-0"></i>
                                 </button>
                             @endcan
                             @can('delete-resource', $entry)
-                                <button class="btn btn-danger" type="button" data-toggle="modal" data-target="#delete-modal-{{ $entry->id }}">
+                                <button class="btn btn-danger" type="button" data-toggle="modal"
+                                    data-target="#delete-modal-{{ $entry->id }}">
                                     <i class="fas fa-trash pe-0"></i>
                                 </button>
                             @endcan
                         </td>
                     </tr>
-                    
+
                     @include('superadmin.partial.edit-content-modal')
                     @include('superadmin.partial.delete-content-modal')
                 @endforeach

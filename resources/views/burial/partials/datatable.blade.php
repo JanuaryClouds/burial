@@ -56,7 +56,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($applications as $application)
+                            @forelse ($applications as $application)
                                 <tr class="">
                                     <td>{{ $application->tracking_no }}</td>
                                     <td>
@@ -123,7 +123,11 @@
                                     @endif
                                     <td><x-application-actions :application="$application" /></td>
                                 </tr>
-                            @endforeach
+                            @empty
+                                <tr>
+                                    <td>No Applications</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
