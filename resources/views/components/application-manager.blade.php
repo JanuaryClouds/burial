@@ -5,7 +5,6 @@
     @if ($application->claimantChanges->count() == 0 || $claimantChange->status != 'pending')
         <div class="bg-body shadow-xs p-4 rounded">
             <div class="d-flex justify-content-end gap-3">
-                <!-- TODO: Make these two links admin-only -->
                 <a href="{{ route('clients.gis-form', ['id' => $application->claimant->client_id]) }}"
                     class="btn btn-light mr-2" data-no-loader>
                     Generate GIS Form

@@ -19,7 +19,6 @@ use Str;
 
 class CmsController extends Controller
 {
-    // TODO: use resource
     public function storeContent(Request $request, $type) {
         try {
             if ($type == 'barangays') {

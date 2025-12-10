@@ -25,8 +25,6 @@ class BurialAssistanceController extends Controller
     protected $processLogService;
     protected $burialAssistanceService;
 
-    // TODO use services
-
     public function __construct(ProcessLogService $processLogService, BurialAssistanceService $burialAssistanceService) {
         $this->processLogService = $processLogService;
         $this->burialAssistanceService = $burialAssistanceService;
