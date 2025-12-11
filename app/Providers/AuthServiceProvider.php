@@ -36,14 +36,16 @@ class AuthServiceProvider extends ServiceProvider
     {
         Gate::define('create', function ($user, $resource) {
             $allowedCreateExceptions = [
-                User::class,
-                Role::class,
-                Barangay::class,
-                Relationship::class,
-                Religion::class,
+                'user',
+                'role', 
+                'barangay',
+                'relationship',
+                'religion',
+                'education',
+                'nationality',
             ];
 
-            if (in_array(get_class($resource), $allowedCreateExceptions)) {
+            if (in_array($resource, $allowedCreateExceptions)) {
                 return true;
             }
 
