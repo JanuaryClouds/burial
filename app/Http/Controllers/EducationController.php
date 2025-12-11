@@ -44,7 +44,7 @@ class EducationController extends Controller
             ->log('Created a new education: ' . $education->name);
 
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first() . '.education.index')
+            ->route('education.index')
             ->with('success', 'Education created successfully.');
     }
     
@@ -58,7 +58,7 @@ class EducationController extends Controller
             ->log('Updated the education: ' . $education->name);
             
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first() . '.education.index')
+            ->route('education.index')
             ->with('success', 'Education updated successfully.');
     }
     
@@ -72,7 +72,7 @@ class EducationController extends Controller
             ->log('Deleted the education: ' . $education->name);
             
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first() . '.education.index')
+            ->route('education.index')
             ->with('success', 'Education deleted successfully.');
     }
 }

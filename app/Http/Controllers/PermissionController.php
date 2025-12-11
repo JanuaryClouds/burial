@@ -37,8 +37,9 @@ class PermissionController extends Controller
 
     public function index(CmsDataTable $dataTable) {
         $data = Permission::getAllPermissions();
-        $type = 'permissions';
-        return view('superadmin.permissions', compact('data', 'dataTable', 'type'));
+        $resource = 'permission';
+        $page_title = 'Permission';
+        return view('cms.index', compact('data', 'dataTable', 'resource', 'page_title'));
     }
 
     public function store(PermissionRequest $request)

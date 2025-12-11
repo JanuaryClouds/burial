@@ -76,6 +76,22 @@
                 <span class="menu-title">Religions</span>
             </a>
         </div>
+        <div class="menu-item">
+            <a href="{{ route('education.index') }}" @class(['active' => Route::is('religion.*'), 'menu-link'])>
+                <span class="menu-bullet">
+                    <span class="bullet bullet-dot"></span>
+                </span>
+                <span class="menu-title">Education</span>
+            </a>
+        </div>
+        <div class="menu-item">
+            <a href="{{ route('nationality.index') }}" @class(['active' => Route::is('religion.*'), 'menu-link'])>
+                <span class="menu-bullet">
+                    <span class="bullet bullet-dot"></span>
+                </span>
+                <span class="menu-title">Nationality</span>
+            </a>
+        </div>
     </div>
     <!--end:Menu sub-->
 </div>

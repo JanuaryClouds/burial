@@ -44,7 +44,7 @@ class NationalityController extends Controller
             ->log('Created a new nationality: ' . $nationality->name);
 
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first() . '.nationality.index')
+            ->route('nationality.index')
             ->with('success', 'You have successfully create a nationality!');
     }
     
@@ -55,10 +55,10 @@ class NationalityController extends Controller
         activity()
             ->causedBy(Auth::user())
             ->performedOn($nationality)
-            ->log('Updatred the nationality: ' . $nationality->name);
+            ->log('Updated the nationality: ' . $nationality->name);
 
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first() . '.nationality.index')
+            ->route('nationality.index')
             ->with('success', 'You have successfully updated a nationality!');
     }
     
@@ -72,7 +72,7 @@ class NationalityController extends Controller
             ->log('Deleted the nationality: ' . $nationality->name);
 
         return redirect()
-            ->route(Auth::user()->gettRoleNames()->first() . '.nationality.index')
+            ->route('nationality.index')
             ->with('success', 'You have successfully deleted a nationality!');
     }
 }
