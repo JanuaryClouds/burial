@@ -6,33 +6,20 @@
     @foreach ($cardData as $statistic)
         <div class="col">
             <a href="{{ $statistic['link'] ?? '#' }}"
-                class="card flex-column justify-content-start align-items-start text-start w-100 p-10 hover-elevate-up parent-hover">
-                <i
-                    class="ki-duotone {{ $statistic['icon'] }} fs-2tx mb-5 ms-n1 text-gray-500 parent-hover-primary parent-hover-rotate-start">
+                class="card w-100 p-10 hover-elevate-up parent-hover overflow-hidden position-relative">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="parent-hover-primary">
+                        <p class="fw-bold fs-1">{{ $statistic['count'] }}</p>
+                        <p class="fs-5 mb-0">{{ $statistic['label'] }}</p>
+                    </span>
+                </div>
+                <i class="ki-duotone {{ $statistic['icon'] }} position-absolute top-50 end-0 translate-middle-y opacity-25 parent-hover-primary"
+                    style="z-index: 0; right: 10rem; font-size: 15rem; rotate: 15deg">
                     @for ($index = 0; $index < $statistic['pathsCount']; $index++)
                         <span class="path{{ $index + 1 }}"></span>
                     @endfor
                 </i>
-                <span class="fs-5 parent-hover-primary">{{ $statistic['count'] }} {{ $statistic['label'] }}</span>
             </a>
         </div>
     @endforeach
-    @if (auth()->user())
-        @if (count($cardData) < 4)
-            @can('add-updates')
-                @if ($lastLogs?->count() > 0)
-                    <div class="col">
-                        <a href="{{ route('burial-assistances.manage', ['id' => $lastLogs->last()->burialAssistance->id]) }}"
-                            class="card bg-success flex-column justify-content-start align-items-start text-start w-100 p-10 hover-elevate-up">
-                            <i class="ki-duotone ki-entrance-left fs-2tx mb-5 ms-n1 text-white">
-                                <path class="path1"></path>
-                                <path class="path2"></path>
-                            </i>
-                            <span class="fs-5 text-white">Continue Last Application</span>
-                        </a>
-                    </div>
-                @endif
-            @endcan
-        @endif
-    @endif
 </div>
