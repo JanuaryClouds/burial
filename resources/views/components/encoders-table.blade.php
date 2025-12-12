@@ -17,7 +17,9 @@
                         <span class="badge badge-pill badge-primary ml-2">{{ $encodedApplications->count() }}</span>
                     </h5>
                 </span>
-                <button class="btn btn-primary" data-target="#encoder-{{ $encoder->id }}-applications" data-toggle="collapse" aria-expanded="false" aria-controls="encoder-{{ $encoder->id }}-applications">Show Encoded Applications</button>
+                <button class="btn btn-primary" data-target="#encoder-{{ $encoder->id }}-applications"
+                    data-bs-toggle="collapse" aria-expanded="false"
+                    aria-controls="encoder-{{ $encoder->id }}-applications">Show Encoded Applications</button>
             </div>
             <div id="encoder-{{ $encoder->id }}-applications" class="collapse">
                 <div class="table-responsive">
@@ -41,13 +43,13 @@
                                         <td>{{ $application->tracking_no }}</td>
                                         <td>
                                             {{ $application->deceased->first_name }}
-                                            {{ $application->deceased->middle_name ? Str::charAt($application->deceased->middle_name, 0).'.' : '' }}
+                                            {{ $application->deceased->middle_name ? Str::charAt($application->deceased->middle_name, 0) . '.' : '' }}
                                             {{ $application->deceased->last_name }}
                                             {{ $application->deceased->suffix }}
                                         </td>
                                         <td>
                                             {{ $application->claimant->first_name }}
-                                            {{ $application->claimant->middle_name ? Str::charAt($application->claimant->middle_name, 0).'.' : '' }}
+                                            {{ $application->claimant->middle_name ? Str::charAt($application->claimant->middle_name, 0) . '.' : '' }}
                                             {{ $application->claimant->last_name }}
                                             {{ $application->claimant->suffix }}
                                         </td>
@@ -55,15 +57,20 @@
                                         @if (Request::is('admin/applications/history'))
                                             <td>
                                                 @if ($application->status === 'pending')
-                                                    <span class="badge badge-pill badge-primary">{{ ucfirst($application->status) }}</span>
+                                                    <span
+                                                        class="badge badge-pill badge-primary">{{ ucfirst($application->status) }}</span>
                                                 @elseif ($application->status === 'processing')
-                                                    <span class="badge badge-pill badge-secondary">{{ ucfirst($application->status) }}</span>
+                                                    <span
+                                                        class="badge badge-pill badge-secondary">{{ ucfirst($application->status) }}</span>
                                                 @elseif ($application->status === 'approved')
-                                                    <span class="badge badge-pill badge-success">{{ ucfirst($application->status) }}</span>
+                                                    <span
+                                                        class="badge badge-pill badge-success">{{ ucfirst($application->status) }}</span>
                                                 @elseif ($application->status === 'released')
-                                                    <span class="badge badge-pill badge-success">{{ ucfirst($application->status) }}</span>
+                                                    <span
+                                                        class="badge badge-pill badge-success">{{ ucfirst($application->status) }}</span>
                                                 @elseif ($application->status === 'rejected')
-                                                    <span class="badge badge-pill badge-danger">{{ ucfirst($application->status) }}</span>
+                                                    <span
+                                                        class="badge badge-pill badge-danger">{{ ucfirst($application->status) }}</span>
                                                 @endif
                                             </td>
                                         @endif

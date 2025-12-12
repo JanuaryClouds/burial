@@ -25,7 +25,7 @@
     }
 @endphp
 <div id="addUpdateModal-{{ $application->id }}" class="modal fade flex justify-content-center" tabindex="-1" role="dialog"
-    aria-labelledby="add-process" aria-hidden="true">
+    data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="add-process" aria-hidden="true">
     @foreach ($workflowSteps as $step)
         @if ($processLogs->count() == 0 || $step?->order_no > $nextOrderNo)
             <div class="modal-dialog" role="document">
@@ -42,7 +42,7 @@
                                 </i>
                             </button>
                         </div>
-                        <div class="modal-body">
+                        <div class="modal-body d-flex flex-column gap-4">
                             <section class="section">
                                 <div class="section-title">
                                     <h6 class="text-muted">Previous Step:
@@ -58,7 +58,7 @@
                                     </div>
                                 </div>
                             </section>
-                            <section class="section">
+                            <section class="section d-flex flex-column gap-3">
                                 <div class="section-title">
                                     <h6>Next Step: {{ $step->description }}</h6>
                                     <div class="row mt-4">
@@ -73,50 +73,57 @@
                                         </div>
                                     </div>
                                 </div>
-                                @php
-                                    $schema = $step->extra_data_schema
-                                        ? json_decode($step->extra_data_schema, true)
-                                        : [];
-                                @endphp
-                                @foreach ($schema as $key => $field)
-                                    @if (is_string($field))
-                                        <div class="form-group col-12 p-0">
-                                            <label for="extra_data[{{ str_replace('*', '', $key) }}]">
-                                                {{ ucfirst(str_replace('_', ' ', $key)) }}
-                                            </label>
-                                            <input type="{{ $field }}" class="form-control"
-                                                name="extra_data[{{ str_replace('*', '', $key) }}]"
-                                                {{ str_contains($field, '*') ? 'required' : '' }}>
-                                        </div>
-                                    @elseif (is_array($field))
-                                        @foreach ($field as $subkey => $subField)
+                                <div class="d-flex flex-column gap-2">
+                                    @php
+                                        $schema = $step->extra_data_schema
+                                            ? json_decode($step->extra_data_schema, true)
+                                            : [];
+                                    @endphp
+                                    @foreach ($schema as $key => $field)
+                                        @if (is_string($field))
                                             <div class="form-group col-12 p-0">
-                                                <label
-                                                    for="extra_data[{{ $key }}][{{ str_replace('*', '', $subkey) }}]">
-                                                    {{ ucfirst(str_replace('_', ' ', $subkey)) }}
+                                                <label for="extra_data[{{ str_replace('*', '', $key) }}]">
+                                                    {{ ucfirst(str_replace('_', ' ', $key)) }}
                                                 </label>
-                                                <input type="{{ $subField }}" class="form-control"
-                                                    name="extra_data[{{ $key }}][{{ str_replace('*', '', $subkey) }}]"
-                                                    {{ str_contains($subField, '*') ? 'required' : '' }}>
+                                                <input type="{{ $field }}" class="form-control"
+                                                    name="extra_data[{{ str_replace('*', '', $key) }}]"
+                                                    {{ str_contains($field, '*') ? 'required' : '' }}>
                                             </div>
-                                        @endforeach
+                                        @elseif (is_array($field))
+                                            @foreach ($field as $subkey => $subField)
+                                                <div class="form-group col-12 p-0">
+                                                    <label
+                                                        for="extra_data[{{ $key }}][{{ str_replace('*', '', $subkey) }}]">
+                                                        {{ ucfirst(str_replace('_', ' ', $subkey)) }}
+                                                    </label>
+                                                    <input type="{{ $subField }}" class="form-control"
+                                                        name="extra_data[{{ $key }}][{{ str_replace('*', '', $subkey) }}]"
+                                                        {{ str_contains($subField, '*') ? 'required' : '' }}>
+                                                </div>
+                                            @endforeach
+                                        @endif
+                                    @endforeach
+                                    @if ($step->order_no === 13 && $application->status === 'approved' && $application->cheque)
+                                        @include('components.form-image-submission', [
+                                            'id' => 'cheque-image-proof',
+                                            'name' => 'cheque-image-proof',
+                                            'required' => true,
+                                            'label' => 'Proof of Claiming Cheque',
+                                        ])
                                     @endif
-                                @endforeach
-                                @if ($step->order_no === 13 && $application->status === 'approved' && $application->cheque)
                                     <div class="form-group">
-                                        <label for="cheque-image-proof">Proof of Claiming Cheque</label>
-                                        <input type="file" name="cheque-image-proof" id="cheque-image-proof"
-                                            class="form-control">
+                                        <label for="comments">Comments</label>
+                                        @include('components.form-textarea', [
+                                            'id' => 'comments',
+                                            'name' => 'comments',
+                                            'required' => false,
+                                        ])
                                     </div>
-                                @endif
-                                <div class="form-group">
-                                    <label for="comments">Comments</label>
-                                    <textarea id="comments" class="form-control" name="comments" rows="3"></textarea>
                                 </div>
                             </section>
                         </div>
                         <div class="modal-footer">
-                            <button class="btn btn-light" type="button" data-dismiss="modal" aria-label="Close">
+                            <button class="btn btn-light" type="button" data-bs-dismiss="modal" aria-label="Close">
                                 Cancel
                             </button>
                             <button class="btn btn-success" type="submit">

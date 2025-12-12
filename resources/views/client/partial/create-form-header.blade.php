@@ -29,7 +29,7 @@
                             leave this page.</p>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-light" data-dismiss="modal">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">
                             Continue Application
                         </button>
                         <a href="{{ route('landing.page') }}" class="btn btn-danger">

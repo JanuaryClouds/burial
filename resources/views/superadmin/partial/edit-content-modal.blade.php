@@ -61,7 +61,7 @@
                         @endif
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-light" type="button" data-dismiss="modal">
+                        <button class="btn btn-light" type="button" data-bs-dismiss="modal">
                             Cancel
                         </button>
                         <button class="btn btn-primary" type="submit">

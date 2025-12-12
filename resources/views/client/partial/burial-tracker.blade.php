@@ -14,8 +14,8 @@
                         $logs = $burialAssistance->processLogs->sortBy('created_at');
                     @endphp
                     @if ($burialAssistance->claimantChanges->isEmpty() && $logs->last()?->loggable->order_no >= 3)
-                        <button class="btn btn-secondary mr-2" type="button" data-toggle="modal"
-                            data-target="#changeClaimantModal">
+                        <button class="btn btn-secondary mr-2" type="button" data-bs-toggle="modal"
+                            data-bs-target="#changeClaimantModal">
                             Change Claimant
                         </button>
                     @else

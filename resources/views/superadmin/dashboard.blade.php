@@ -15,8 +15,8 @@
                             <i class="fas fa-check-to-slot me-2"></i> Manage Assignments
                         </a>
                         <div class="dropdown">
-                            <button id="reports-dropdown" class="btn btn-light dropdown-toggle mr-2" data-toggle="dropdown"
-                                aria-haspopup="true" aria-expanded="false">
+                            <button id="reports-dropdown" class="btn btn-light dropdown-toggle mr-2"
+                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-clipboard-list"></i>
                                 Reports
                             </button>

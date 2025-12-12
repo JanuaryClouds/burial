@@ -23,7 +23,7 @@
             </li>
 
             <li @class(['nav-item', 'dropdown', 'active' => Request::is('reports/*')])>
-                <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
+                <a href="#" class="nav-link has-dropdown" data-bs-toggle="dropdown">
                     <i class="fas fa-chart-line"></i>
                     <span>Reports</span>
                 </a>
@@ -77,7 +77,11 @@
                         <span>Handlers</span>
                     </a>
                 </li>
-                <li @class(['active' => Request::is('superadmin/cms/users') || Request::is('superadmin/users/*')])>
+                <li @class([
+                    'active' =>
+                        Request::is('superadmin/cms/users') ||
+                        Request::is('superadmin/users/*'),
+                ])>
                     <a href="{{ route('superadmin.cms.users') }}">
                         <i class="fas fa-users"></i>
                         <span>Users</span>
@@ -93,13 +97,16 @@
 
             <li class="menu-header">System</li>
             <li @class(['active' => Request::is('activity-logs')])>
-                <a href="{{ route('activity.logs') }}" class="nav-link"><i class="fas fa-clipboard-list"></i><span>Activity Logs</span></a>
+                <a href="{{ route('activity.logs') }}" class="nav-link"><i
+                        class="fas fa-clipboard-list"></i><span>Activity Logs</span></a>
             </li>
             <li @class(['active' => Request::is('superadmin/permissions')])>
-                <a href="{{ route('superadmin.permissions') }}" class="nav-link"><i class="fas fa-shield"></i><span>Permissions</span></a>
+                <a href="{{ route('superadmin.permissions') }}" class="nav-link"><i
+                        class="fas fa-shield"></i><span>Permissions</span></a>
             </li>
             <li @class(['active' => Request::is('superadmin/roles')])>
-                <a href="{{ route('superadmin.roles') }}" class="nav-link"><i class="fas fa-id-badge"></i><span>Roles</span></a>
+                <a href="{{ route('superadmin.roles') }}" class="nav-link"><i
+                        class="fas fa-id-badge"></i><span>Roles</span></a>
             </li>
         </ul>
     </aside>

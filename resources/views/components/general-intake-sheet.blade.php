@@ -20,7 +20,8 @@
                 </button>
             @endif
             <span class="d-flex justify-content-between align-items-center gap-6">
-                <button class="btn btn-secondary" type="button" data-toggle="modal" data-target="#confirm-exit-modal">
+                <button class="btn btn-secondary" type="button" data-bs-toggle="modal"
+                    data-bs-target="#confirm-exit-modal">
                     <i class="ki-duotone ki-cross-circle">
                         <span class="path1"></span>
                         <span class="path2"></span>

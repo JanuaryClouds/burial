@@ -6,8 +6,10 @@
                 @csrf
                 <div class="modal-body">
                     <p>
-                        Are you sure you want to {{ $application->status == "rejected" ? "restore" : "reject" }} {{ $application->deceased->first_name }} {{ $application->deceased->last_name }}&apos;s application?
-                        {{ $application->status == "rejected" ? "This application will return to being processed." : "This application will not receive any further updates. The claimant will be notified via SMS about the rejection and reason" }}
+                        Are you sure you want to {{ $application->status == 'rejected' ? 'restore' : 'reject' }}
+                        {{ $application->deceased->first_name }} {{ $application->deceased->last_name }}&apos;s
+                        application?
+                        {{ $application->status == 'rejected' ? 'This application will return to being processed.' : 'This application will not receive any further updates. The claimant will be notified via SMS about the rejection and reason' }}
                     </p>
                     @if ($application->status != 'rejected')
                         <div class="form-group">
@@ -17,11 +19,12 @@
                     @endif
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-light" type="button" data-dismiss="modal">
+                    <button class="btn btn-light" type="button" data-bs-dismiss="modal">
                         Cancel
                     </button>
-                    <button class="btn {{ $application->status != "rejected" ? 'bg-danger text-white' : 'bg-success' }}" type="submit">
-                        {{ $application->status == "rejected" ? "Restore Application" : "Reject Application" }}
+                    <button class="btn {{ $application->status != 'rejected' ? 'bg-danger text-white' : 'bg-success' }}"
+                        type="submit">
+                        {{ $application->status == 'rejected' ? 'Restore Application' : 'Reject Application' }}
                     </button>
                 </div>
             </form>

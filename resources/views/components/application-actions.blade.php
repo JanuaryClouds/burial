@@ -19,29 +19,29 @@
                         View
                     </a>
                     @can('add-updates')
-                        <button class="dropdown-item" type="button" data-toggle="modal"
-                            data-target="#addUpdateModal-{{ $application->id }}">
+                        <button class="dropdown-item" type="button" data-bs-toggle="modal"
+                            data-bs-target="#addUpdateModal-{{ $application->id }}">
                             Add Progress Update
                         </button>
                     @endcan
                     @if (!Request::is('reports/*'))
                         @can('manage-assignments')
-                            <button class="dropdown-item" type="button" data-toggle="modal"
-                                data-target="#assign-modal-{{ $application->id }}">
+                            <button class="dropdown-item" type="button" data-bs-toggle="modal"
+                                data-bs-target="#assign-modal-{{ $application->id }}">
                                 Assign Application
                             </button>
                         @endcan
                     @endif
                     @can('reject-applications')
-                        <button class="dropdown-item" type="button" data-toggle="modal"
-                            data-target="#reject-{{ $application->id }}" title="Reject Application">
+                        <button class="dropdown-item" type="button" data-bs-toggle="modal"
+                            data-bs-target="#reject-{{ $application->id }}" title="Reject Application">
                             Reject Application
                         </button>
                     @endcan
                 </div>
             @elseif ($application->status == 'rejected' && auth()->user()->can('reject-applications'))
-                <button class="btn btn-success" type="button" data-toggle="modal"
-                    data-target="#reject-{{ $application->id }}" title="Restore Application">
+                <button class="btn btn-success" type="button" data-bs-toggle="modal"
+                    data-bs-target="#reject-{{ $application->id }}" title="Restore Application">
                     <i class="fas fa-rotate-left"></i>
                 </button>
             @endif
@@ -66,7 +66,7 @@
                             <h5 class="modal-title" id="my-modal-title">
                                 Assign Application to
                             </h5>
-                            <button class="close" data-dismiss="modal" aria-label="Close">
+                            <button class="close" data-bs-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>

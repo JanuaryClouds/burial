@@ -46,14 +46,14 @@
                         @endforelse
                         <td>
                             @can('update-resource', $entry)
-                                <button class="btn btn-primary" type="button" data-toggle="modal"
-                                    data-target="#edit-modal-{{ $entry->id }}">
+                                <button class="btn btn-primary" type="button" data-bs-toggle="modal"
+                                    data-bs-target="#edit-modal-{{ $entry->id }}">
                                     <i class="fas fa-edit pe-0"></i>
                                 </button>
                             @endcan
                             @can('delete-resource', $entry)
-                                <button class="btn btn-danger" type="button" data-toggle="modal"
-                                    data-target="#delete-modal-{{ $entry->id }}">
+                                <button class="btn btn-danger" type="button" data-bs-toggle="modal"
+                                    data-bs-target="#delete-modal-{{ $entry->id }}">
                                     <i class="fas fa-trash pe-0"></i>
                                 </button>
                             @endcan

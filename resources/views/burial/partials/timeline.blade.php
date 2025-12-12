@@ -6,8 +6,9 @@
     @foreach ($claimants as $claimant)
         @foreach ($processLogs as $log)
             <li
-                class="list-group-item d-flex justify-content-between align-items-center {{ $loop->last ? 'bg-primary text-white' : '' }}">
-                <p class="mb-0 {{ $loop->last ? 'fw-bold text-white' : 'text-black' }} d-flex align-items-baseline">
+                class="list-group-item d-flex justify-content-between align-items-center {{ $loop->last ? 'bg-primary text-white' : 'bg-body-secondary' }}">
+                <p
+                    class="mb-0 {{ $loop->last ? 'fw-bold text-white' : 'text-black' }} d-flex align-items-baseline gap-3">
                     <b>{{ class_basename($log->loggable) === 'WorkflowStep' ? $log->loggable?->description : $log->comments }}</b>
                     @if (class_basename($log->loggable) === 'WorkflowStep' && $log->comments)
                         <a class="ml-4 {{ $loop->last ? 'text-white' : '' }}"
@@ -24,14 +25,14 @@
                         </a>
                     @endif
                     @if ($burialAssistance->status == 'released' && $log?->loggable?->order_no == 13)
-                        <button class="btn ml-4" type="button" data-toggle="modal"
-                            data-target="#show-cheque-proof-{{ $log->id }}">
+                        <button class="btn ml-4" type="button" data-bs-toggle="modal"
+                            data-bs-target="#show-cheque-proof-{{ $log->id }}">
                             <i class="fas fa-image"></i>
                         </button>
                     @endif
                 </p>
                 @if (class_basename($log->loggable) === 'WorkflowStep')
-                    <span class="d-flex justify-content-center align-items-center">
+                    <span class="d-flex justify-content-center align-items-center gap-3">
                         <span
                             class="badge badge-pill p-0 m-0 d-flex align-items-center {{ $loop->last ? 'text-white fw-bold' : 'text-black' }}">
                             In: {{ $log->date_in }}
