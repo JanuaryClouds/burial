@@ -18,7 +18,7 @@ class processUpdater extends Component
     public function __construct($application)
     {
         $this->application = $application;
-        $this->processLogs = $application ? $application->processLogs()->latest()->get() : collect();
+        $this->processLogs = $application ? $application->processLogs()->with('loggable')->latest()->get() : collect();
         $this->workflowSteps = WorkflowStep::select('id', 'order_no', 'description', 'extra_data_schema', 'requires_extra_data')->get();
     }
 

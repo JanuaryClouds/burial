@@ -40,7 +40,7 @@ class ProcessLogController extends Controller
                     $application->cheque()->create([
                         'id' => Str::uuid(),
                         'burial_assistance_id' => $application->id,
-                        'claimant_id' => $application->claimantChanges->where('status', 'approved')->first()->newClaimant->id ?? $application->claimant_id,
+                        'claimant_id' => $application->claimantChanges->where('status', 'approved')->first()->newClaimant->id ?? $application->claimant->id,
                         'obr_number' => $chequeValidated['extra_data']['OBR']['oBR_number'],
                     ]);
                 }

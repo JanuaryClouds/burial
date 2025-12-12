@@ -1,6 +1,6 @@
 @php
     $interview = $client->interviews->first();
-    $schedule = Carbon\Carbon::parse($interview->schedule);
+    $schedule = Carbon\Carbon::parse($interview?->schedule);
     $now = Carbon\Carbon::now();
 @endphp
 {{-- FIXME : incorrect if-else conditions --}}
