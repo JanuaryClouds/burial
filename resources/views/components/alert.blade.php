@@ -13,7 +13,6 @@
 </script>
 @if (session('success'))
     <script>
-        console.log(sweetalert);
         sweetalert(
             '',
             'success',

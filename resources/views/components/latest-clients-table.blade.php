@@ -33,11 +33,17 @@
                                 <td>
                                     @if ($entry->claimant)
                                         <span class="badge badge-pill badge-info">
-                                            Burial
+                                            <a href="{{ route('burial.show', $entry->claimant->burialAssistance->id) }}"
+                                                class="text-white">
+                                                Burial
+                                            </a>
                                         </span>
                                     @elseif ($entry->funeralAssistance)
                                         <span class="badge badge-pill badge-info">
-                                            Funeral
+                                            <a href="{{ route('funeral.show', $entry->funeralAssistance->id) }}"
+                                                class="text-white">
+                                                Funeral
+                                            </a>
                                         </span>
                                     @endif
                                     @if (!$entry->interviews->isEmpty())
