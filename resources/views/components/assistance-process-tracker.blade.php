@@ -6,16 +6,16 @@
     $totalWorkflowSteps = WorkflowStep::select('id')->get()->count();
     switch ($burialAssistance->status) {
         case 'processing':
-            $badgeColor = 'primary';
+            $badgeColor = 'primary text-white';
             break;
         case 'approved':
-            $badgeColor = 'success';
+            $badgeColor = 'success text-white';
             break;
         case 'released':
-            $badgeColor = 'success';
+            $badgeColor = 'success text-white';
             break;
         case 'rejected':
-            $badgeColor = 'danger';
+            $badgeColor = 'danger text-white';
             break;
         default:
             $badgeColor = 'secondary';

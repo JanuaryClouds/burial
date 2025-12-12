@@ -10,7 +10,8 @@
         <ul class="sidebar-menu">
             <li class="menu-header">Main</li>
             <li @class(['active' => Request::is('dashboard')])>
-                <a href="{{ route('dashboard') }}" class="nav-link"><i class="fas fa-home"></i><span>Dashboard</span></a>
+                <a href="{{ route('dashboard') }}" class="nav-link"><i
+                        class="fas fa-home"></i><span>Dashboard</span></a>
             </li>
             @can('manage-assignments')
                 <li @class(['active' => Request::is('assignments')])>
@@ -22,7 +23,7 @@
             @endcan
             @can('view-reports')
                 <li @class(['nav-item', 'dropdown', 'active' => Request::is('reports/*')])>
-                    <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
+                    <a href="#" class="nav-link has-dropdown" data-bs-toggle="dropdown">
                         <i class="fas fa-chart-line"></i>
                         <span>Reports</span>
                     </a>
@@ -69,8 +70,15 @@
                     <span>All</span>
                 </a>
             </li>
-            <li @class(['nav-item', 'dropdown', 'active' => Request::is('applications/pending', 'applications/processing', 'applications/approved')])>
-                <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
+            <li @class([
+                'nav-item',
+                'dropdown',
+                'active' => Request::is(
+                    'applications/pending',
+                    'applications/processing',
+                    'applications/approved'),
+            ])>
+                <a href="#" class="nav-link has-dropdown" data-bs-toggle="dropdown">
                     <i class="fas fa-file-contract"></i>
                     <span>On-Going</span>
                 </a>
@@ -92,8 +100,12 @@
                     </li>
                 </ul>
             </li>
-            <li @class(['nav-item', 'dropdown', 'active' => Request::is('applications/released', 'applications/rejected')])>
-            <a href="#" class="nav-link has-dropdown" data-toggle="dropdown">
+            <li @class([
+                'nav-item',
+                'dropdown',
+                'active' => Request::is('applications/released', 'applications/rejected'),
+            ])>
+                <a href="#" class="nav-link has-dropdown" data-bs-toggle="dropdown">
                     <i class="fas fa-box-archive"></i>
                     <span>Closed</span>
                 </a>
@@ -137,7 +149,9 @@
                         <span>Handlers</span>
                     </a>
                 </li>
-                <li @class(['active' => Request::is('cms/users') || Request::is('users/*')])>
+                <li @class([
+                    'active' => Request::is('cms/users') || Request::is('users/*'),
+                ])>
                     <a href="{{ route('cms.users') }}">
                         <i class="fas fa-users"></i>
                         <span>Users</span>
@@ -156,12 +170,14 @@
             @endif
             @can('view-logs')
                 <li @class(['active' => Request::is('activity-logs')])>
-                    <a href="{{ route('activity.logs') }}" class="nav-link"><i class="fas fa-clipboard-list"></i><span>Activity Logs</span></a>
+                    <a href="{{ route('activity.logs') }}" class="nav-link"><i
+                            class="fas fa-clipboard-list"></i><span>Activity Logs</span></a>
                 </li>
             @endcan
             @can('manage-roles')
                 <li @class(['active' => Request::is('permissions')])>
-                    <a href="{{ route('permissions') }}" class="nav-link"><i class="fas fa-shield"></i><span>Permissions</span></a>
+                    <a href="{{ route('permissions') }}" class="nav-link"><i
+                            class="fas fa-shield"></i><span>Permissions</span></a>
                 </li>
                 <li @class(['active' => Request::is('roles')])>
                     <a href="{{ route('roles') }}" class="nav-link"><i class="fas fa-id-badge"></i><span>Roles</span></a>

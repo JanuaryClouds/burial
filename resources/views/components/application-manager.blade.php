@@ -4,46 +4,48 @@
 @if ($processLogs->count() == 0 || $application->status != 'released')
     @if ($application->claimantChanges->count() == 0 || $claimantChange->status != 'pending')
         <div class="bg-body shadow-xs p-4 rounded">
-            <div class="d-flex justify-content-end gap-3">
-                <a href="{{ route('clients.gis-form', ['id' => $application->claimant->client_id]) }}"
-                    class="btn btn-light mr-2" data-no-loader>
-                    Generate GIS Form
-                </a>
-                <a href="{{ route('burial.certificate', ['id' => $application->id]) }}" class="btn btn-light mr-2"
-                    target="_blank">
-                    Download Certificate
-                </a>
-                @if (app()->isLocal())
-                    <a href="{{ route('burial.tracker', ['uuid' => $application->id]) }}" class="btn btn-light mr-2"
-                        target="_blank">
-                        <i class="fas fa-eye"></i>
-                        View as Guest
+            <div class="d-flex justify-content-between gap-3">
+                <span class="d-flex align-items-center gap-2">
+
+                    <a href="{{ route('clients.gis-form', ['id' => $application->claimant->client_id]) }}"
+                        class="btn btn-light mr-2" data-no-loader>
+                        Generate GIS Form
                     </a>
-                    @php
-                        $logs = $application->processLogs->sortBy('created_at');
-                    @endphp
-                @endif
-                @can('reject-applications')
+                    <a href="{{ route('burial.certificate', ['id' => $application->id]) }}" class="btn btn-light mr-2"
+                        target="_blank">
+                        Download Certificate
+                    </a>
+                    @if (app()->isLocal())
+                        <a href="{{ route('burial.tracker', ['uuid' => $application->id]) }}" class="btn btn-light mr-2"
+                            target="_blank">
+                            <i class="fas fa-eye"></i>
+                            View as Guest
+                        </a>
+                        @php
+                            $logs = $application->processLogs->sortBy('created_at');
+                        @endphp
+                    @endif
+                </span>
+                <span class="d-flex gap-3 align-items-center">
                     @if ($application->status != 'rejected')
-                        <button class="btn btn-primary mr-2" type="button" data-toggle="modal"
-                            data-target="#addUpdateModal-{{ $application->id }}">
-                            <i class="fas fa-plus"></i>
+                        <button class="btn btn-primary mr-2" type="button" data-bs-toggle="modal"
+                            data-bs-target="#addUpdateModal-{{ $application->id }}">
                             Add Progress Update
                         </button>
-                        <button class="btn btn-danger" type="button" data-toggle="modal"
-                            data-target="#reject-{{ $application->id }}">
-                            <i class="fas fa-times-circle"></i>
-                            Reject Application
-                        </button>
-                    @endif
-                    @if ($application->status == 'rejected')
-                        <button class="btn btn-success" type="button" data-toggle="modal"
-                            data-target="#reject-{{ $application->id }}">
-                            <i class="fas fa-rotate-left"></i>
-                            Restore Application
-                        </button>
-                    @endif
-                @endcan
+                        @can('reject-applications')
+                            <button class="btn btn-danger" type="button" data-bs-toggle="modal"
+                                data-bs-target="#reject-{{ $application->id }}">
+                                Reject Application
+                            </button>
+                        @endif
+                        @if ($application->status == 'rejected')
+                            <button class="btn btn-success" type="button" data-bs-toggle="modal"
+                                data-bs-target="#reject-{{ $application->id }}">
+                                Restore Application
+                            </button>
+                        @endif
+                    @endcan
+                </span>
             </div>
         </div>
     @elseif ($application->claimantChanges->count() > 0 && $claimantChange->status == 'pending')

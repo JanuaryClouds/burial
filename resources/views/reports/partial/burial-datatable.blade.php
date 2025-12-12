@@ -1,7 +1,7 @@
 @if (!$burialAssistances->isEmpty())
     <div class="card">
         <div class="card-body">
-            <div class="table-responsive overflow-x-hidden">
+            <div class="table-responsive overflow-x-visible overflow-y-visible">
                 <div class="dataTables_wrapper">
                     <table id="reports-applications-table" class="table data-table" style="width:100%">
                         <thead class="border-bottom border-bottom-1 border-gray-200 fw-bold">
