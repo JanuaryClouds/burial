@@ -21,7 +21,7 @@ class assistanceProcessTracker extends Component
     {
         $this->burialAssistance = $burialAssistance;
         $this->processLogs = $burialAssistance
-            ? $burialAssistance->processLogs()->oldest()->get()
+            ? ProcessLog::where('burial_assistance_id', $burialAssistance->id)->with('loggable')->oldest()->get()
             : collect();
         $this->claimantChanges = $burialAssistance ? $burialAssistance->claimantChanges()->latest()->get() : collect();
         $this->claimants = $burialAssistance ? $burialAssistance->claimant()->get() : collect();
