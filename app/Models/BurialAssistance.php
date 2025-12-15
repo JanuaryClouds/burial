@@ -56,7 +56,7 @@ class BurialAssistance extends Model
     }
 
     public function latestCheque() {
-        return $this->hasOne(Cheque::class, 'burial_assistance_id', 'id')->latestOfMany();
+        return $this->hasOne(Cheque::class, 'burial_assistance_id', 'id')->latestOfMany()->first();
     }
 
     public function encoder() {
