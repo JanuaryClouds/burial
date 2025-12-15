@@ -10,8 +10,11 @@ use Illuminate\View\Component;
 class applicationManager extends Component
 {
     public $processLogs;
+
     public $application;
+
     public $claimantChange;
+
     /**
      * Create a new component instance.
      */

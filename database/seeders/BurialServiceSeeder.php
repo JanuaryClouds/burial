@@ -2,11 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\Relationship;
 use App\Models\Barangay;
 use App\Models\BurialService;
 use App\Models\BurialServiceProvider;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Relationship;
 use Illuminate\Database\Seeder;
 
 class BurialServiceSeeder extends Seeder
@@ -20,7 +19,7 @@ class BurialServiceSeeder extends Seeder
         $relationships = Relationship::pluck('id');
         $providers = BurialServiceProvider::pluck('id');
         $sampleBurialServices = [
-          [
+            [
                 'deceased_lastname' => 'Dela Cruz',
                 'deceased_firstname' => 'Juan',
                 'representative' => 'Representative Name',
@@ -34,8 +33,8 @@ class BurialServiceSeeder extends Seeder
                 'burial_service_provider' => $providers->random(),
                 'collected_funds' => '1000',
                 'remarks' => 'Seeder Generated',
-          ], 
-          [
+            ],
+            [
                 'deceased_lastname' => 'Dela Rosa',
                 'deceased_firstname' => 'Maria',
                 'representative' => 'Representative Name',
@@ -49,8 +48,8 @@ class BurialServiceSeeder extends Seeder
                 'burial_service_provider' => $providers->random(),
                 'collected_funds' => '1125',
                 'remarks' => 'Seeder Generated',
-          ], 
-          [
+            ],
+            [
                 'deceased_lastname' => 'Santos',
                 'deceased_firstname' => 'Brie',
                 'representative' => 'Representative Name',
@@ -64,7 +63,7 @@ class BurialServiceSeeder extends Seeder
                 'burial_service_provider' => $providers->random(),
                 'collected_funds' => '1500',
                 'remarks' => 'Seeder Generated',
-          ], 
+            ],
         ];
 
         foreach ($sampleBurialServices as $service) {

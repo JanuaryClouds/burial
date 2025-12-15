@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\APIController;
-use App\Http\Controllers\BurialAssistanceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -29,5 +28,4 @@ Route::middleware('api.check')
         Route::get('/deceased', [APIController::class, 'deceased']);
         Route::get('/cheques', [APIController::class, 'cheques']);
         Route::get('/process-logs', [APIController::class, 'processLogs']);
-});
-
+    });

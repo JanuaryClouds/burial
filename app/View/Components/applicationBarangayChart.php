@@ -2,7 +2,6 @@
 
 namespace App\View\Components;
 
-use App\Models\BurialAssistance;
 use App\Models\Claimant;
 use Closure;
 use Illuminate\Contracts\View\View;
@@ -10,7 +9,6 @@ use Illuminate\View\Component;
 
 class applicationBarangayChart extends Component
 {
-
     public $applications;
 
     /**
@@ -30,6 +28,7 @@ class applicationBarangayChart extends Component
                         'count' => $item->total,
                     ];
                 });
+
             return;
         } else {
             $claimants = collect();

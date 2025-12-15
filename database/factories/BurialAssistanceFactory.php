@@ -27,7 +27,7 @@ class BurialAssistanceFactory extends Factory
             'funeraria' => $this->faker->company(),
             'claimant_id' => Claimant::factory(),
             'deceased_id' => Deceased::factory(),
-            'status' => $this->faker->randomelement( ['pending']),
+            'status' => $this->faker->randomelement(['pending']),
             'remarks' => $this->faker->sentence(8),
         ];
     }

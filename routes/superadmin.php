@@ -1,33 +1,28 @@
 <?php
 
+use App\Http\Controllers\AssistanceController;
+use App\Http\Controllers\Auth\UserController;
+use App\Http\Controllers\BarangayController;
+use App\Http\Controllers\BurialAssistanceController;
+use App\Http\Controllers\CivilStatusController;
+use App\Http\Controllers\ClientController;
+use App\Http\Controllers\CmsController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DistrictController;
+use App\Http\Controllers\EducationController;
 use App\Http\Controllers\FuneralAssistanceController;
 use App\Http\Controllers\HandlerController;
+use App\Http\Controllers\ModeOfAssistanceController;
+use App\Http\Controllers\NationalityController;
+use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\RelationshipController;
+use App\Http\Controllers\ReligionController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SearchController;
+use App\Http\Controllers\SexController;
+use App\Http\Controllers\UserRouteRestrictionController;
 use App\Http\Controllers\WorkflowController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\{
-    Auth\UserController,
-    DashboardController,
-    RoleController,
-    PermissionController,
-    AssistanceController,
-    CivilStatusController,
-    EducationController,
-    NationalityController,
-    RelationshipController,
-    ReligionController,
-    SexController,
-    DistrictController,
-    BarangayController,
-    ModeOfAssistanceController,
-    ClientController,
-    CmsController,
-    SearchController,
-    BurialAssistanceController,
-    ReportController,
-    DeceasedController,
-    ClaimantController,
-    UserRouteRestrictionController,
-};
 
 // super admin role
 Route::get('/tracking-activity', [DashboardController::class, 'trackerEvents']);
@@ -64,7 +59,6 @@ Route::middleware('permission:manage-content')
         Route::resource('moa', ModeOfAssistanceController::class);
     });
 
-
 Route::middleware('permission:manage-content')
     ->name('cms.')
     ->prefix('cms')
@@ -81,13 +75,13 @@ Route::middleware('permission:manage-content')
         //     ->name('users');
         // Route::get('/religions', [CmsController::class, 'religions'])
         //     ->name('religions');
-        
+
         // Route::post('/{type}/store', [CmsController::class, 'storeContent'])
         //     ->name('store');
-            
+
         // Route::post('/{type}/{id}/update', [CmsController::class, 'updateContent'])
         //     ->name('update');
-        
+
         // Route::post('/{type}/{id}/delete', [CmsController::class, 'deleteContent'])
         //     ->name('delete');
     });
@@ -98,7 +92,7 @@ Route::middleware('permission:manage-accounts')
     ->group(function () {
         Route::get('/{userId}', [UserRouteRestrictionController::class, 'manage'])
             ->name('manage');
-        
+
         Route::post('/{userId}/restrictions/edit', [UserRouteRestrictionController::class, 'update'])
             ->name('restrictions.update');
     });
@@ -107,13 +101,13 @@ Route::middleware('permission:manage-accounts')
 //     ->group(function () {
 //         Route::get('/permissions', [PermissionController::class, 'index'])
 //             ->name('permissions');
-        
+
 //         Route::get('/roles', [RoleController::class, 'index'])
 //             ->name('roles');
-        
+
 //         Route::post('/roles/store', [RoleController::class, 'store'])
 //             ->name('roles.store');
-        
+
 //         Route::post('/roles/{id}/update', [RoleController::class, 'update'])
 //             ->name('roles.update');
 //     });

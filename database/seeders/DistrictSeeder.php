@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 use App\Models\District;
+use Illuminate\Database\Seeder;
 
 class DistrictSeeder extends Seeder
 {
@@ -18,7 +17,7 @@ class DistrictSeeder extends Seeder
         foreach ($District as $district) {
             District::firstOrCreate([
                 'name' => $district,
-                'remarks'   => 'seeder generated',
+                'remarks' => 'seeder generated',
             ]);
         }
     }

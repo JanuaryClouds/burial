@@ -2,10 +2,6 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\View;
-use Illuminate\Support\Facades\Cache;
-
 use App\Models\Assistance;
 use App\Models\Barangay;
 use App\Models\CivilStatus;
@@ -16,6 +12,9 @@ use App\Models\Nationality;
 use App\Models\Relationship;
 use App\Models\Religion;
 use App\Models\Sex;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\ServiceProvider;
 
 class ViewServiceProvider extends ServiceProvider
 {

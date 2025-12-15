@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Permission;
 use App\DataTables\CmsDataTable;
-use App\Services\PermissionService;
 use App\Http\Requests\PermissionRequest;
+use App\Models\Permission;
+use App\Services\PermissionService;
 use Illuminate\Support\Facades\Auth;
 
 class PermissionController extends Controller
@@ -24,7 +24,7 @@ class PermissionController extends Controller
     //     $resource = 'permission';
     //     $columns = ['id', 'name', 'guard', 'action'];
     //     $data = Permission::getAllPermissions();
-        
+
     //     return $dataTable
     //         ->render('cms.index', compact(
     //             'dataTable',
@@ -35,10 +35,12 @@ class PermissionController extends Controller
     //         ));
     // }
 
-    public function index(CmsDataTable $dataTable) {
+    public function index(CmsDataTable $dataTable)
+    {
         $data = Permission::getAllPermissions();
         $resource = 'permission';
         $page_title = 'Permission';
+
         return view('cms.index', compact('data', 'dataTable', 'resource', 'page_title'));
     }
 
@@ -50,13 +52,13 @@ class PermissionController extends Controller
         activity()
             ->causedBy(Auth::user())
             ->performedOn($permission)
-            ->log('Created a new permission: ' . $permission->name);
-            
+            ->log('Created a new permission: '.$permission->name);
+
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first() . '.permission.index')
+            ->route(Auth::user()->getRoleNames()->first().'.permission.index')
             ->with('success', 'Permission created successfully.');
     }
-    
+
     public function update(PermissionRequest $request, Permission $permission)
     {
         $permission = $this->permissionServices->updatePermission($request->validated(), $permission);
@@ -64,13 +66,13 @@ class PermissionController extends Controller
         activity()
             ->causedBy(Auth::user())
             ->performedOn($permission)
-            ->log('Updated the permission: ' . $permission->name);
+            ->log('Updated the permission: '.$permission->name);
 
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first() . '.permission.index')
+            ->route(Auth::user()->getRoleNames()->first().'.permission.index')
             ->with('success', 'Permission updated successfully.');
     }
-    
+
     public function destroy(Permission $permission)
     {
         $permission = $this->permissionServices->deletePermission($permission);
@@ -78,10 +80,10 @@ class PermissionController extends Controller
         activity()
             ->causedBy(Auth::user())
             ->performedOn($permission)
-            ->log('Deleted the permission: ' . $permission->name);
+            ->log('Deleted the permission: '.$permission->name);
 
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first() . '.permission.index')
+            ->route(Auth::user()->getRoleNames()->first().'.permission.index')
             ->with('success', 'Permission deleted successfully.');
     }
 }

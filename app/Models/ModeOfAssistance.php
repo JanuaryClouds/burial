@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class ModeOfAssistance extends Model
 {
     use HasFactory;
-    protected $table = "mode_of_assistances";
+
+    protected $table = 'mode_of_assistances';
+
     protected $fillable = [
         'name',
         'remarks',

@@ -23,6 +23,7 @@ class ProcessLogsTable extends Component
     public function render(): View|Closure|string
     {
         $processLogs = ProcessLog::select('id', 'burial_assistance_id', 'loggable_id', 'loggable_type', 'date_in', 'date_out', 'added_by')->get();
+
         return view('components.process-logs-table', compact('processLogs'));
     }
 }

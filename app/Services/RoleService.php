@@ -12,24 +12,25 @@ class RoleService
         if (empty($data['guard_name'])) {
             $data['guard_name'] = 'web';
         }
+
         return Role::create($data);
     }
 
     public function updateRole(array $data, $role): Role
     {
-        if($role->update($data))
-        {
+        if ($role->update($data)) {
             return $role;
         }
+
         return null;
     }
 
     public function destroyRole($role): Role
     {
-        if($role->delete()) 
-        {
+        if ($role->delete()) {
             return $role;
         }
+
         return null;
     }
 }

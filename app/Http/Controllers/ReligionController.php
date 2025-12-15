@@ -3,27 +3,27 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\CmsDataTable;
-use App\Models\Religion;
 use App\Http\Requests\ReligionRequest;
+use App\Models\Religion;
 use App\Services\ReligionService;
 use Illuminate\Support\Facades\Auth;
 
 class ReligionController extends Controller
 {
     protected $religionServices;
-    
+
     public function __construct(ReligionService $religionServices)
     {
         $this->religionServices = $religionServices;
     }
-    
+
     public function index(CmsDataTable $dataTable)
     {
         $page_title = 'Religion';
         $resource = 'religion';
         $columns = ['id', 'name', 'remarks', 'action'];
         $data = Religion::getAllReligions();
-        
+
         return $dataTable
             ->render('cms.index', compact(
                 'dataTable',
@@ -33,7 +33,7 @@ class ReligionController extends Controller
                 'data',
             ));
     }
-    
+
     public function store(ReligionRequest $request)
     {
         $religion = $this->religionServices->storeReligion($request->validated());
@@ -41,7 +41,7 @@ class ReligionController extends Controller
         activity()
             ->causedBy(Auth::user())
             ->performedOn($religion)
-            ->log('Created a new religion: ' . $religion->name);
+            ->log('Created a new religion: '.$religion->name);
 
         return redirect()
             ->route('religion.index')
@@ -53,9 +53,10 @@ class ReligionController extends Controller
         $page_title = 'Religion';
         $resource = 'religion';
         $data = $religion;
+
         return view('cms.edit', compact('page_title', 'data', 'resource'));
     }
-    
+
     public function update(ReligionRequest $request, Religion $religion)
     {
         $religion = $this->religionServices->updateReligion($request->validated(), $religion);
@@ -63,13 +64,13 @@ class ReligionController extends Controller
         activity()
             ->causedBy(Auth::user())
             ->performedOn($religion)
-            ->log('Created the religion: ' . $religion->name);
-        
+            ->log('Created the religion: '.$religion->name);
+
         return redirect()
             ->route('religion.index')
             ->with('sucess', 'You have successfully updated a religion!');
     }
-    
+
     public function destroy(Religion $religion)
     {
         $religion = $this->religionServices->deleteReligion($religion);
@@ -77,7 +78,7 @@ class ReligionController extends Controller
         activity()
             ->causedBy(Auth::user())
             ->performedOn($religion)
-            ->log('Created the religion: ' . $religion->name);
+            ->log('Created the religion: '.$religion->name);
 
         return redirect()
             ->route('religion.index')

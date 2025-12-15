@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Relationship extends Model
 {
     use HasFactory;
+
     protected $table = 'relationships';
+
     protected $fillable = [
         'name',
         'remarks',
@@ -18,7 +20,7 @@ class Relationship extends Model
     {
         return self::all();
     }
-    
+
     public function clientSocialInfo()
     {
         return $this->hasMany(ClientSocialInfo::class);
@@ -29,11 +31,13 @@ class Relationship extends Model
         return $this->belongsTo(ClientBeneficiaryFamily::class);
     }
 
-    public function burialServices() {
+    public function burialServices()
+    {
         return $this->hasMany(BurialService::class);
     }
 
-    public function claimant() {
+    public function claimant()
+    {
         return $this->hasMany(Claimant::class, 'relationship_to_deceased', 'id');
     }
 }

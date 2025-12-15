@@ -6,16 +6,12 @@ use App\Models\BurialAssistance;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Events\BeforeExport;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use Maatwebsite\Excel\Sheet;
-use Carbon\Carbon;
 
 class BurialAssistancesExportTemplate implements WithEvents
 {
     /**
-    * @return \Illuminate\Support\Collection
-    */
+     * @return \Illuminate\Support\Collection
+     */
     public function registerEvents(): array
     {
         return [
@@ -49,7 +45,7 @@ class BurialAssistancesExportTemplate implements WithEvents
                     $sheet->setCellValue("J{$row}", $ba->deceased->first_name);
                     $sheet->setCellValue("K{$row}", $ba->deceased?->middle_name);
                     $sheet->setCellValue("L{$row}", $ba->deceased?->suffix);
-                };
+                }
 
             },
         ];

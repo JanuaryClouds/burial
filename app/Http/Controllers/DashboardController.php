@@ -2,23 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\BurialServiceRequest;
-use App\Models\Deceased;
-use App\Services\ProcessLogService;
-use App\Models\Client;
-use App\Models\Barangay;
 use App\Models\BurialAssistance;
+use App\Models\Client;
 use App\Models\FuneralAssistance;
-use App\Models\Claimant;
 use App\Models\ProcessLog;
-use Illuminate\Http\Request;
-use App\Models\BurialAssistanceRequest;
-use App\Models\BurialServiceProvider;
-use App\Models\BurialService;
-use App\Models\User;
-use Illuminate\Support\Facades\DB;
-use Spatie\Activitylog\Models\Activity;
 use Carbon\Carbon;
+use Spatie\Activitylog\Models\Activity;
 
 class DashboardController extends Controller
 {
@@ -71,6 +60,7 @@ class DashboardController extends Controller
                 'count' => $pendingFuneralAssistance,
             ],
         ];
+
         return view('dashboard', compact(
             'cardData',
             'lastLogs',
@@ -83,14 +73,15 @@ class DashboardController extends Controller
         return view('user.dashboard');
     }
 
-    public function trackerEvents() {
+    public function trackerEvents()
+    {
         $logs = Activity::where('description', 'like', 'Burial Assistance Request tracked by guest')->get();
 
         $events = $logs->map(function ($log) {
             return [
                 'title' => $log->properties,
-                'date' => $log->created_at->toDateString()
-            ];         
+                'date' => $log->created_at->toDateString(),
+            ];
         });
 
         return response()->json($events);

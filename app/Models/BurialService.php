@@ -5,28 +5,30 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Scout\Searchable;
-use App\Models\Relationship;
 
 class BurialService extends Model
 {
     use HasFactory;
     use Searchable;
-    protected $table = "burial_services";
+
+    protected $table = 'burial_services';
+
     protected $BurialServiceService;
+
     protected $fillable = [
-        "deceased_firstname",
-        "deceased_lastname",
-        "representative",
-        "representative_email",
-        "representative_phone",
-        "representative_relationship",
-        "burial_address",
-        "barangay_id",
-        "start_of_burial",
-        "end_of_burial",
-        "burial_service_provider",
-        "collected_funds",
-        "remarks",
+        'deceased_firstname',
+        'deceased_lastname',
+        'representative',
+        'representative_email',
+        'representative_phone',
+        'representative_relationship',
+        'burial_address',
+        'barangay_id',
+        'start_of_burial',
+        'end_of_burial',
+        'burial_service_provider',
+        'collected_funds',
+        'remarks',
     ];
 
     public function barangay()
@@ -34,15 +36,18 @@ class BurialService extends Model
         return $this->belongsTo(Barangay::class);
     }
 
-    public function provider() {
+    public function provider()
+    {
         return $this->hasOne(BurialServiceProvider::class, 'id', 'burial_service_provider');
     }
 
-    public function relationship() {
-        return $this->belongsTo(Relationship::class, "representative_relationship", 'id');
+    public function relationship()
+    {
+        return $this->belongsTo(Relationship::class, 'representative_relationship', 'id');
     }
-    
-    public function request() {
+
+    public function request()
+    {
         return $this->hasOne(BurialAssistanceRequest::class);
     }
 
@@ -51,8 +56,8 @@ class BurialService extends Model
         return self::query()->simplePaginate(10);
     }
 
-
-    public function toSearchableArray() {
+    public function toSearchableArray()
+    {
         return [
             'id' => $this->id,
             'deceased_firstname' => $this->deceased_firstname,

@@ -3,31 +3,35 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreClaimantChangeRequest;
-use App\Models\Claimant;
-use Illuminate\Http\Request;
-use App\Models\ClaimantChange;
 use App\Models\BurialAssistance;
+use App\Models\Claimant;
+use App\Models\ClaimantChange;
 use App\Models\ProcessLog;
+use App\Services\CentralClientService;
 use App\Services\ClaimantChangeService;
 use App\Services\ClaimantService;
-use App\Services\ClientService;
-use App\Services\CentralClientService;
+use Illuminate\Http\Request;
 use Str;
 
 class ClaimantChangeController extends Controller
 {
     protected $claimantChangeService;
+
     protected $claimantService;
+
     protected $clientService;
+
     protected $centralClientService;
 
-    public function __construct(ClaimantChangeService $claimantChangeService, ClaimantService $claimantService, CentralClientService $centralClientService) {
+    public function __construct(ClaimantChangeService $claimantChangeService, ClaimantService $claimantService, CentralClientService $centralClientService)
+    {
         $this->claimantChangeService = $claimantChangeService;
         $this->claimantService = $claimantService;
         $this->clientService = $centralClientService;
     }
 
-    public function store(StoreClaimantChangeRequest $request, $id) {
+    public function store(StoreClaimantChangeRequest $request, $id)
+    {
         // dd($request->all(), $id);
         $validated = $request->validated();
 
@@ -50,37 +54,38 @@ class ClaimantChangeController extends Controller
             // ]);
 
             $validated['relationship_to_deceased'] = $validated['relationship_id'];
-            $validated['address'] = $validated['house_no'] . ' ' . $validated['street'];
+            $validated['address'] = $validated['house_no'].' '.$validated['street'];
             $validated['mobile_number'] = $validated['contact_no'];
             if (env('APP_DEBUG')) {
-                $validated['client_id'] = '62c2569a-5951-40b7-8d99-ac50d19e5896';                
+                $validated['client_id'] = '62c2569a-5951-40b7-8d99-ac50d19e5896';
             } else {
                 $validated['client_id'] = session('citizen')['user_id'];
             }
 
             $newClaimant = $this->claimantService->store($validated);
-            
+
             $validated['new_claimant_id'] = $newClaimant->id;
             $claimantChange = $this->claimantChangeService->store($validated);
-            
-            if( $claimantChange ) {
+
+            if ($claimantChange) {
                 $ip = request()->ip();
                 $browser = request()->header('User-Agent');
                 activity()
-                ->causedBy(null)
-                ->withProperties(['ip' => $ip, 'browser' => $browser])
-                ->log('Request for claimant change submitted by guest');
-                
+                    ->causedBy(null)
+                    ->withProperties(['ip' => $ip, 'browser' => $browser])
+                    ->log('Request for claimant change submitted by guest');
+
                 return redirect()
                     ->route('landing.page')
-                    ->with("alertSuccess", "Your request for claimant change has been submitted successfully. Please wait for the approval.");
+                    ->with('alertSuccess', 'Your request for claimant change has been submitted successfully. Please wait for the approval.');
             } else {
-                return redirect()->back()->with("error","Failed to submit claimant change.");
+                return redirect()->back()->with('error', 'Failed to submit claimant change.');
             }
         }
     }
 
-    public function form(Request $request, $uuid) {
+    public function form(Request $request, $uuid)
+    {
         $burialAssistance = BurialAssistance::findOrFail($uuid);
         $uuid = $request->query('uuid') ?? false;
 
@@ -93,11 +98,12 @@ class ClaimantChangeController extends Controller
         return view('burial.change-claimant', compact('burialAssistance'));
     }
 
-    public function decide(Request $request, $uuid, $change) {
+    public function decide(Request $request, $uuid, $change)
+    {
         $change = ClaimantChange::where('burial_assistance_id', $uuid)
             ->where('id', $change)
             ->firstOrFail();
-        if (!$change) {
+        if (! $change) {
             return redirect()->back()->withErrors(['error' => 'Claimant Change not found.']);
         }
 
@@ -116,7 +122,7 @@ class ClaimantChangeController extends Controller
                 'loggable_type' => ClaimantChange::class,
                 'date_in' => now(),
                 'comments' => 'Change of claimant has been approved',
-                'is_progress_step' => false
+                'is_progress_step' => false,
             ]);
 
             // $change->burialAssistace->processLogs::create([
@@ -140,10 +146,10 @@ class ClaimantChangeController extends Controller
                 'loggable_type' => ClaimantChange::class,
                 'date_in' => now(),
                 'comments' => 'Change of claimant has been rejected',
-                'is_progress_step' => false
+                'is_progress_step' => false,
             ]);
         }
-        
-        return back()->with('success','Claimant change ' . ($request->decision === 'approve' ? 'approved' : 'rejected') . ' successfully.');
+
+        return back()->with('success', 'Claimant change '.($request->decision === 'approve' ? 'approved' : 'rejected').' successfully.');
     }
 }

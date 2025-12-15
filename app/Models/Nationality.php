@@ -10,9 +10,10 @@ class Nationality extends Model
     use HasFactory;
 
     protected $table = 'nationalities';
+
     protected $fillable = [
-        'name', 
-        'remarks'
+        'name',
+        'remarks',
     ];
 
     public static function getAllNationalities()

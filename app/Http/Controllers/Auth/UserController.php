@@ -3,15 +3,13 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use App\Services\Auth\UserService;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Models\User;
+use App\Services\Auth\UserService;
 use Exception;
-use Hash;
 use Illuminate\Support\Facades\Auth;
-use Request;
 use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
@@ -36,7 +34,7 @@ class UserController extends Controller
                     activity()
                         ->causedBy($user)
                         ->withProperties(['ip' => $ip, 'browser' => $browser])
-                        ->log("Successful login attempt");
+                        ->log('Successful login attempt');
 
                     return redirect()
                         ->route('dashboard');
@@ -50,7 +48,8 @@ class UserController extends Controller
             activity()
                 ->causedBy(null)
                 ->withProperties(['ip' => $ip, 'browser' => $browser])
-                ->log("Unsuccessful login attempt");
+                ->log('Unsuccessful login attempt');
+
             return redirect()->back()->with('error', $e->getMessage());
         }
     }
@@ -65,6 +64,7 @@ class UserController extends Controller
             ->log('Successful logout');
 
         Auth::logout();
+
         return redirect()
             ->route('landing.page');
     }
@@ -80,10 +80,12 @@ class UserController extends Controller
         $page_title = 'Users';
         $resource = 'user';
         $data = User::select('id', 'first_name', 'middle_name', 'last_name', 'email', 'password', 'contact_number', 'is_active')->get();
+
         return view('cms.index', compact('data', 'page_title', 'resource'));
     }
 
-    public function edit(User $user) {
+    public function edit(User $user)
+    {
         $page_title = 'Edit User';
         $resource = 'user';
         $roles = Role::all();
@@ -91,23 +93,27 @@ class UserController extends Controller
         if (in_array($data->id, [1, 2, 3])) {
             return redirect()->route('user.index')->with('warning', 'You cannot edit this user.');
         }
+
         return view('cms.edit', compact('data', 'page_title', 'resource', 'roles'));
     }
 
-    public function update(UpdateUserRequest $request, User $user) {
+    public function update(UpdateUserRequest $request, User $user)
+    {
         try {
             $user = User::find($user->id);
             $user = $this->userServices->update($request->validated(), $user);
+
             return redirect()->route('user.edit', $user)->with('success', 'User updated successfully.');
         } catch (Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
     }
 
-    public function store(CreateUserRequest $request) 
+    public function store(CreateUserRequest $request)
     {
         try {
             $user = $this->userServices->storeUser($request->validated());
+
             return redirect()->route('user.edit', $user)->with('success', 'User created successfully.');
         } catch (Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());

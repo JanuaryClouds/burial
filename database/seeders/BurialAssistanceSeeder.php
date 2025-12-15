@@ -2,11 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
-use App\Models\Deceased;
-use App\Models\Claimant;
 use App\Models\BurialAssistance;
+use Illuminate\Database\Seeder;
 
 class BurialAssistanceSeeder extends Seeder
 {

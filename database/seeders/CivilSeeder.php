@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 use App\Models\CivilStatus;
+use Illuminate\Database\Seeder;
 
 class CivilSeeder extends Seeder
 {
@@ -14,13 +13,13 @@ class CivilSeeder extends Seeder
             'Single',
             'Married',
             'Widowed',
-            'Separated'
+            'Separated',
         ];
 
         foreach ($civils as $civil) {
             CivilStatus::firstOrCreate([
                 'name' => $civil,
-                'remarks'   => 'seeder generated',
+                'remarks' => 'seeder generated',
             ]);
         }
     }

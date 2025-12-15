@@ -42,14 +42,14 @@ class DocumentRequirement extends Model
             ],
             [
                 'name' => 'Proof of Relationship',
-                'description' => "Examples include Marriage Contract, Birth Certificate, Baptismal Certificate.",
+                'description' => 'Examples include Marriage Contract, Birth Certificate, Baptismal Certificate.',
                 'source' => 'Local Civil Registry',
                 'is_mandatory' => true,
                 'is_muslim' => false,
             ],
             [
                 'name' => 'Certificate of Burial Rites (signed by IMAM)',
-                'description' => "",
+                'description' => '',
                 'source' => 'Muslim/Islam Religious Community',
                 'is_mandatory' => true,
                 'is_muslim' => true,

@@ -9,12 +9,10 @@ use App\Models\Barangay;
 use App\Models\Citizen;
 use App\Models\CivilStatus;
 use App\Models\Client;
-use App\Models\Interview;
 use App\Models\Sex;
 use App\Services\CentralClientService;
 use App\Services\ClientService;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Cache;
 use Crypt;
 use Exception;
 use Illuminate\Http\Request;
@@ -28,7 +26,7 @@ class ClientController extends Controller
     protected $clientServices;
 
     protected $citizenServices;
-    
+
     public function __construct(ClientService $clientService, CentralClientService $citizenService)
     {
         $this->clientServices = $clientService;
@@ -108,7 +106,7 @@ class ClientController extends Controller
         $client = Client::find($client->id);
         $page_title = $client->first_name.' '.$client->last_name."'s Application";
         $page_subtitle = $client->tracking_no.' - '.$client->id;
-        $readonly = !auth()->user()->can('manage-content');
+        $readonly = ! auth()->user()->can('manage-content');
 
         if ($client) {
             $path = "clients/{$client->tracking_no}";
@@ -218,14 +216,18 @@ class ClientController extends Controller
                     return null;
                 }
                 $normalizedValue = strtolower(preg_replace('/[^a-z0-9]/i', '', $value));
-                
+
                 foreach ($options as $id => $name) {
                     $normalizedOption = strtolower(preg_replace('/[^a-z0-9]/i', '', $name));
                     if ($normalizedValue === $normalizedOption) {
                         return $id;
                     }
-                    if ($normalizedValue == 'female') return 1; 
-                    if ($normalizedValue == 'male') return 2;
+                    if ($normalizedValue == 'female') {
+                        return 1;
+                    }
+                    if ($normalizedValue == 'male') {
+                        return 2;
+                    }
 
                     if ($strict) {
                         // Check for contains if exact match fails (e.g. "Calzada-tipas" vs "Calzada Tipas")
@@ -241,7 +243,7 @@ class ClientController extends Controller
             $barangays = Barangay::pluck('name', 'id');
             $genders = Sex::pluck('name', 'id');
             $civilStatus = CivilStatus::pluck('name', 'id');
-            
+
             if (isset($citizen['gender'])) {
                 $matched['sex_id'] = $findMatch($citizen['gender'], $genders, true);
             }
@@ -301,7 +303,7 @@ class ClientController extends Controller
                 ->route('landing.page')
                 ->with('success', 'Client information added successfully!');
         } catch (Exception $e) {
-            return redirect()->back()->with('error', 'Client information added failed! ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Client information added failed! '.$e->getMessage());
         }
     }
 
@@ -473,17 +475,19 @@ class ClientController extends Controller
         }
     }
 
-    public function history() {
+    public function history()
+    {
         // ! This does prevent unregistered users from the TLC Portal from tracking clients
         $records = Citizen::records();
-        if (!$records) {
+        if (! $records) {
             return redirect()->route('landing.page')->with('error', 'You do not have permission to access this page.');
         }
         $client = Client::where('citizen_id', session('citizen')['user_id'])->latest()->get()->first();
-        
-        $page_title = session('citizen')['firstname'] . ' ' . session('citizen')['lastname'] . ' | Client History';
+
+        $page_title = session('citizen')['firstname'].' '.session('citizen')['lastname'].' | Client History';
         $readonly = true;
         $disabled = true;
+
         return view('client.history', compact(
             'records',
             'client',

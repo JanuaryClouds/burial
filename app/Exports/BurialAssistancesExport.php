@@ -3,22 +3,18 @@
 namespace App\Exports;
 
 use App\Models\BurialAssistance;
-use App\Models\Claimants;
-use Maatwebsite\Excel\Concerns\WithHeadings;
-use Maatwebsite\Excel\Concerns\WithMapping;
-use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
-use Str;
-use Maatwebsite\Excel\Facades\Excel;
-use Maatwebsite\Excel\Concerns\WithStyles;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use Maatwebsite\Excel\Concerns\FromCollection;
 use Carbon\Carbon;
+use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithStyles;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class BurialAssistancesExport implements FromCollection, WithStyles, WithHeadings
+class BurialAssistancesExport implements FromCollection, WithHeadings, WithStyles
 {
     /**
-    * @return \Illuminate\Support\Collection
-    */
+     * @return \Illuminate\Support\Collection
+     */
     public function collection()
     {
         return BurialAssistance::with([
@@ -31,11 +27,12 @@ class BurialAssistancesExport implements FromCollection, WithStyles, WithHeading
             'claimantChanges',
         ])
             ->get()
-            ->map(function($app){
+            ->map(function ($app) {
                 $dob = Carbon::parse($app->deceased->date_of_birth);
                 $dod = Carbon::parse($app->deceased->date_of_death);
 
                 $age = $dob->diffInYears($dod);
+
                 return [
                     $app->tracking_no,
                     $app->application_date,
@@ -63,7 +60,8 @@ class BurialAssistancesExport implements FromCollection, WithStyles, WithHeading
             });
     }
 
-    public function headings(): array {
+    public function headings(): array
+    {
         return [
             array_merge(
                 [
@@ -89,23 +87,23 @@ class BurialAssistancesExport implements FromCollection, WithStyles, WithHeading
                     'MOBILE NUMBER',
                     'Ms. Maricar',
                 ],
-                array_fill(0, 3,''),
+                array_fill(0, 3, ''),
                 [
                     'Admin Staff',
                     'Out of Worker (Compliance)',
                 ],
-                array_fill(0, 3,''),
+                array_fill(0, 3, ''),
                 ['Ms, Maricar'],
-                array_fill(0,4,''),
+                array_fill(0, 4, ''),
                 [
-                    'Ms. Emma', 
+                    'Ms. Emma',
                     '',
                     'Ms. Nikki',
                     '',
                     'Date forwarded to BAO',
                     'BUDGET',
                 ],
-                array_fill(0,3,''),
+                array_fill(0, 3, ''),
                 [
                     'Accounting',
                     'Treasury',
@@ -114,16 +112,16 @@ class BurialAssistancesExport implements FromCollection, WithStyles, WithHeading
                     'Date Claimed',
                     'Change Claimant',
                 ],
-                array_fill(0,24,''),
+                array_fill(0, 24, ''),
                 [
                     'STATUS',
                     'Remarks',
-                    'INITIAL CHECKING BY'
+                    'INITIAL CHECKING BY',
                 ],
             ),
             [
                 '',
-                'Date Out'
+                'Date Out',
             ],
             [
                 '',
@@ -138,15 +136,16 @@ class BurialAssistancesExport implements FromCollection, WithStyles, WithHeading
                 'GIVEN NAME',
                 'MIDDLE NAME',
                 'EXT',
-            ]
+            ],
         ];
     }
 
-    public function styles(Worksheet $sheet) {
+    public function styles(Worksheet $sheet)
+    {
         $sheet->getStyle('A:BM')
             ->getFont()
             ->setName('Book Antiqua');
-        
+
         $sheet->getStyle('A1:BM3')
             ->getFill()
             ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
@@ -216,6 +215,6 @@ class BurialAssistancesExport implements FromCollection, WithStyles, WithHeading
         $sheet->mergeCells('AK1:AL1');
         $sheet->mergeCells('AM1:AM3');
         $sheet->mergeCells('AM1:AM3');
-        
+
     }
 }

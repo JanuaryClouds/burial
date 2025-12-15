@@ -23,8 +23,9 @@ class EncodersTable extends Component
     public function render(): View|Closure|string
     {
         $encoders = User::whereHas('encoder')
-        ->with('encoder')
-        ->get();
+            ->with('encoder')
+            ->get();
+
         return view('components.encoders-table', compact('encoders'));
     }
 }

@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 use App\Models\Assistance;
+use Illuminate\Database\Seeder;
 
 class AssistanceSeeder extends Seeder
 {
@@ -12,7 +11,7 @@ class AssistanceSeeder extends Seeder
     {
         $assistances = [
             'Counseling',
-            'Financial Assistance', 
+            'Financial Assistance',
             'Legal Assitance',
             'Food Subsidy',
             'Livelihood',
@@ -27,8 +26,7 @@ class AssistanceSeeder extends Seeder
             'Other',
         ];
 
-        foreach($assistances as $assistance)
-        {
+        foreach ($assistances as $assistance) {
             Assistance::firstOrCreate(['name' => $assistance]);
         }
     }

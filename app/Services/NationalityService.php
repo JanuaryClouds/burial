@@ -13,8 +13,7 @@ class NationalityService
 
     public function updateNationality(array $data, $nationality): Nationality
     {
-        if($nationality->update($data))
-        {
+        if ($nationality->update($data)) {
             return $nationality;
         }
 
@@ -23,10 +22,10 @@ class NationalityService
 
     public function deleteNationality($nationality): Nationality
     {
-        if($nationality->delete())
-        {
+        if ($nationality->delete()) {
             return $nationality;
         }
+
         return null;
     }
 }

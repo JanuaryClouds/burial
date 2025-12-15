@@ -27,6 +27,7 @@ class latestApplicationsTable extends Component
             ->orderBy('application_date', 'asc')
             ->take(10)
             ->get();
+
         return view('components.latest-applications-table', compact(
             'applications'
         ));

@@ -10,11 +10,11 @@ class CivilStatusRequest extends FormRequest
     {
         return true;
     }
-    
+
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255|unique:civil_statuses,name,' . $this->route('civil')?->id,
+            'name' => 'required|string|max:255|unique:civil_statuses,name,'.$this->route('civil')?->id,
             'remarks' => 'nullable|string|max:255',
         ];
     }

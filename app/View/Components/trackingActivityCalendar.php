@@ -23,14 +23,13 @@ class trackingActivityCalendar extends Component
     public function render(): View|Closure|string
     {
 
-
         $logs = Activity::where('description', 'like', 'Burial Assistance Request tracked by guest')->get();
 
         $schedule = $logs->map(function ($log) {
             return [
                 'title' => json_encode($log->properties),
-                'date' => $log->created_at->toDateString()
-            ];         
+                'date' => $log->created_at->toDateString(),
+            ];
         });
 
         return view('components.tracking-activity-calendar', compact(

@@ -24,7 +24,8 @@ class PerBarangayTable extends Component
     {
         $deceasedPerBarangay = Deceased::with('barangay')
             ->get()
-            ->groupBy(fn($item) => $item->barangay->name);
+            ->groupBy(fn ($item) => $item->barangay->name);
+
         return view('components.per-barangay-table', compact('deceasedPerBarangay'));
     }
 }

@@ -2,21 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Relationship;
-use App\Http\Requests\RelationshipRequest;
 use App\DataTables\CmsDataTable;
+use App\Http\Requests\RelationshipRequest;
+use App\Models\Relationship;
 use App\Services\RelationshipService;
 use Illuminate\Support\Facades\Auth;
 
 class RelationshipController extends Controller
 {
     protected $relationshipServices;
-    
+
     public function __construct(RelationshipService $relationshipServices)
     {
         $this->relationshipServices = $relationshipServices;
     }
-    
+
     public function index(CmsDataTable $dataTable)
     {
         $page_title = 'Relationship';
@@ -33,7 +33,7 @@ class RelationshipController extends Controller
                 'data'
             ));
     }
-    
+
     public function store(RelationshipRequest $request)
     {
         $relationship = $this->relationshipServices->storeRelationship($request->validated());
@@ -41,7 +41,7 @@ class RelationshipController extends Controller
         activity()
             ->causedBy(Auth::user())
             ->performedOn($relationship)
-            ->log('Created a new relationship: ' . $relationship->name);
+            ->log('Created a new relationship: '.$relationship->name);
 
         return redirect()
             ->back()
@@ -53,6 +53,7 @@ class RelationshipController extends Controller
         $page_title = 'Relationship';
         $resource = 'relationship';
         $data = $relationship;
+
         return view('cms.edit', compact('data', 'page_title', 'resource'));
     }
 
@@ -63,20 +64,21 @@ class RelationshipController extends Controller
         activity()
             ->causedBy(Auth::user())
             ->performedOn($relationship)
-            ->log('Updated the relationship: ' . $relationship->name);
-            
+            ->log('Updated the relationship: '.$relationship->name);
+
         return redirect()
             ->back()
             ->with('success', 'Relationship updated successfully.');
     }
-    
+
     public function destroy(Relationship $relationship)
     {
         $relationship = $this->relationshipServices->deleteRelationship($relationship);
         activity()
             ->causedBy(Auth::user())
             ->performedOn($relationship)
-            ->log('Deleted the relationship: ' . $relationship->name);
+            ->log('Deleted the relationship: '.$relationship->name);
+
         return redirect()
             ->route('relationship.index')
             ->with('success', 'Relationship deleted successfully.');

@@ -2,8 +2,6 @@
 
 namespace App\View\Components;
 
-use App\Models\Barangay;
-use App\Models\Relationship;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;

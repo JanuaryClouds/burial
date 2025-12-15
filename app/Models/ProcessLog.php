@@ -8,9 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class ProcessLog extends Model
 {
     use HasFactory;
+
     protected $primaryKey = 'id';
+
     public $incrementing = false;
+
     protected $keyType = 'string';
+
     protected $fillable = [
         'id',
         'burial_assistance_id',
@@ -31,24 +35,29 @@ class ProcessLog extends Model
 
     protected $table = 'process_logs';
 
-    public function burialAssistance() {
+    public function burialAssistance()
+    {
         return $this->belongsTo(BurialAssistance::class, 'burial_assistance_id', 'id');
     }
 
     // ! No longer used in replacement of Loggable
-    public function workflowStep() {
+    public function workflowStep()
+    {
         return $this->belongsTo(WorkflowStep::class);
     }
 
-    public function claimant() {
+    public function claimant()
+    {
         return $this->belongsTo(Claimant::class, 'claimant_id', 'id');
     }
 
-    public function addedBy() {
+    public function addedBy()
+    {
         return $this->belongsTo(User::class, 'added_by', 'id');
     }
 
-    public function loggable() {
+    public function loggable()
+    {
         return $this->morphTo();
     }
 }

@@ -10,7 +10,9 @@ class Claimant extends Model
     use HasFactory;
 
     protected $primaryKey = 'id';
+
     public $incrementing = false;
+
     protected $keyType = 'string';
 
     protected $fillable = [
@@ -26,37 +28,46 @@ class Claimant extends Model
         'address',
         'barangay_id',
     ];
-    protected $table = "claimants";
 
-    public function client() {
+    protected $table = 'claimants';
+
+    public function client()
+    {
         return $this->belongsTo(Client::class, 'client_id', 'id');
     }
 
-    public function burialAssistance() {
+    public function burialAssistance()
+    {
         return $this->belongsTo(BurialAssistance::class, 'burial_assistance_id', 'id');
     }
 
-    public function relationship() {
+    public function relationship()
+    {
         return $this->belongsTo(Relationship::class, 'relationship_to_deceased', 'id');
     }
 
-    public function oldClaimantChanges() {
-        return $this->hasMany(ClaimantChange::class, 'old_claimant_id','id');
+    public function oldClaimantChanges()
+    {
+        return $this->hasMany(ClaimantChange::class, 'old_claimant_id', 'id');
     }
 
-    public function newClaimantChanges() {
-        return $this->hasMany(ClaimantChange::class, 'new_claimant_id','id');
+    public function newClaimantChanges()
+    {
+        return $this->hasMany(ClaimantChange::class, 'new_claimant_id', 'id');
     }
 
-    public function barangay() {
+    public function barangay()
+    {
         return $this->belongsTo(Barangay::class, 'barangay_id', 'id');
     }
 
-    public function processLogs() {
+    public function processLogs()
+    {
         return $this->hasMany(ProcessLog::class, 'claimant_id', 'id');
     }
 
-    public function cheque() {
+    public function cheque()
+    {
         return $this->hasOne(Cheque::class, 'claimant_id', 'id')->latestOfMany();
     }
 }

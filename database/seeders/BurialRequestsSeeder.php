@@ -3,11 +3,10 @@
 namespace Database\Seeders;
 
 use App\Models\Barangay;
-use App\Models\Relationship;
 use App\Models\BurialAssistanceRequest;
-use Str;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Relationship;
 use Illuminate\Database\Seeder;
+use Str;
 
 class BurialRequestsSeeder extends Seeder
 {

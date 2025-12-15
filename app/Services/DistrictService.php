@@ -13,19 +13,19 @@ class DistrictService
 
     public function updateDistrict(array $data, $district): District
     {
-        if($district->update($data))
-        {
+        if ($district->update($data)) {
             return $district;
         }
+
         return null;
     }
 
     public function deleteDistrict($district): District
     {
-        if($district->delete())
-        {
+        if ($district->delete()) {
             return $district;
         }
+
         return null;
     }
 }

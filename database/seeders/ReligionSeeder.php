@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 use App\Models\Religion;
+use Illuminate\Database\Seeder;
 
 class ReligionSeeder extends Seeder
 {
@@ -27,7 +26,7 @@ class ReligionSeeder extends Seeder
         foreach ($Religions as $Religion) {
             Religion::firstOrCreate([
                 'name' => $Religion,
-                'remarks'   => 'seeder generated',
+                'remarks' => 'seeder generated',
             ]);
         }
     }

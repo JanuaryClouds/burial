@@ -2,11 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\Nationality;
+use App\Models\Religion;
+use App\Models\Sex;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Str;
-use App\Models\Sex;
-use App\Models\Religion;
-use App\Models\Nationality;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ClientDemographic>
@@ -24,7 +24,7 @@ class ClientDemographicFactory extends Factory
             'id' => Str::uuid(),
             'sex_id' => Sex::inRandomOrder()->first()->id,
             'religion_id' => Religion::inRandomOrder()->first()->id,
-            'nationality_id' => Nationality::inRandomOrder()->first()->id
+            'nationality_id' => Nationality::inRandomOrder()->first()->id,
         ];
     }
 }

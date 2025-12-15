@@ -10,12 +10,12 @@ class BarangayRequest extends FormRequest
     {
         return true;
     }
-    
+
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255|unique:barangays,name,' . $this->route('barangay')?->id,
-            'district_id'   => 'required|numeric|exists:districts,id',
+            'name' => 'required|string|max:255|unique:barangays,name,'.$this->route('barangay')?->id,
+            'district_id' => 'required|numeric|exists:districts,id',
             'remarks' => 'nullable|string|max:255',
         ];
     }

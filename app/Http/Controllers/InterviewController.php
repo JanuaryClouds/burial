@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\InterviewRequest;
 use App\Models\Client;
+use App\Services\InterviewService;
 use Exception;
 use Illuminate\Http\Request;
-use App\Http\Requests\InterviewRequest;
-use App\Services\InterviewService;
 
 class InterviewController extends Controller
 {

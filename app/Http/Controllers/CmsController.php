@@ -2,24 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Handler;
-use App\Models\Religion;
-use App\Models\WorkflowStep;
-use Illuminate\Http\Request;
 use App\Models\Barangay;
-use App\Models\BurialAssistanceRequest;
-use App\Models\BurialService;
-use App\Models\BurialServiceProvider;
-use App\Models\Relationship;
 use App\Models\District;
+use App\Models\Handler;
+use App\Models\Relationship;
+use App\Models\Religion;
 use App\Models\User;
+use App\Models\WorkflowStep;
 use Exception;
+use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Str;
 
 class CmsController extends Controller
 {
-    public function storeContent(Request $request, $type) {
+    public function storeContent(Request $request, $type)
+    {
         try {
             if ($type == 'barangays') {
                 $data = $request->validate([
@@ -28,7 +26,8 @@ class CmsController extends Controller
                     'remarks' => 'nullable',
                 ]);
                 Barangay::create($data);
-                return redirect()->back()->with('success', Str::ucfirst($request->name) . ' added Successfully');
+
+                return redirect()->back()->with('success', Str::ucfirst($request->name).' added Successfully');
             }
             if ($type == 'relationships') {
                 $data = $request->validate([
@@ -36,7 +35,8 @@ class CmsController extends Controller
                     'remarks' => 'nullable',
                 ]);
                 Relationship::create($data);
-                return redirect()->back()->with('success', Str::ucfirst($request->name) . ' added Successfully');
+
+                return redirect()->back()->with('success', Str::ucfirst($request->name).' added Successfully');
             }
             if ($type == 'users') {
                 $data = $request->validate([
@@ -49,7 +49,8 @@ class CmsController extends Controller
                 ]);
                 $user = User::create($data);
                 $user->assignRole('admin');
-                return redirect()->back()->with('success', Str::ucfirst($type) . ' added Successfully');
+
+                return redirect()->back()->with('success', Str::ucfirst($type).' added Successfully');
             }
             if ($type == 'religions') {
                 $data = $request->validate([
@@ -57,7 +58,8 @@ class CmsController extends Controller
                     'remarks' => 'nullable|string|max:255',
                 ]);
                 $religion = Religion::create($data);
-                return redirect()->back()->with('success', Str::ucfirst($religion->name) . ' added Successfully');
+
+                return redirect()->back()->with('success', Str::ucfirst($religion->name).' added Successfully');
             }
             if ($type == 'roles') {
                 dd($request->all());
@@ -65,15 +67,17 @@ class CmsController extends Controller
                     'name' => 'required|string|max:255',
                 ]);
                 $data['guard_name'] = 'web';
+
                 // Role::create($data);
-                return redirect()->back()->with('success', Str::ucfirst($request->name) . ' added Successfully');
+                return redirect()->back()->with('success', Str::ucfirst($request->name).' added Successfully');
             }
         } catch (Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
     }
 
-    public function updateContent(Request $request, $type, $id) {
+    public function updateContent(Request $request, $type, $id)
+    {
         try {
             if ($type == 'barangays') {
                 $barangay = Barangay::find($id);
@@ -96,7 +100,7 @@ class CmsController extends Controller
                 // $user->is_active = !$user->is_active;
                 $user->syncRoles([$role]);
                 $user->save();
-                $tempName = $user->first_name . ' ' . $user->last_name;
+                $tempName = $user->first_name.' '.$user->last_name;
             }
             if ($type == 'religions') {
                 $religion = Religion::find($id);
@@ -112,21 +116,23 @@ class CmsController extends Controller
                 $role->syncPermissions($request->permissions);
                 $tempName = $request->name;
             }
-            return redirect()->back()->with('success', Str::ucfirst($tempName) . ' updated Successfully');
+
+            return redirect()->back()->with('success', Str::ucfirst($tempName).' updated Successfully');
         } catch (Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
     }
 
-    public function deleteContent(Request $request, $type, $id) {
+    public function deleteContent(Request $request, $type, $id)
+    {
         try {
             if ($type == 'barangays') {
                 $barangay = Barangay::findOrFail($id);
                 $tempName = $barangay->name;
                 if ($barangay) {
-                    $barangay->delete();                
+                    $barangay->delete();
                 } else {
-                    return redirect()->back()->with('error', Str::ucfirst($tempName) . ' not found');
+                    return redirect()->back()->with('error', Str::ucfirst($tempName).' not found');
                 }
             }
             if ($type == 'relationships') {
@@ -135,7 +141,7 @@ class CmsController extends Controller
                 if ($relationship) {
                     $relationship->delete();
                 } else {
-                    return redirect()->back()->with('error', Str::ucfirst($tempName) . ' not found');
+                    return redirect()->back()->with('error', Str::ucfirst($tempName).' not found');
                 }
             }
             if ($type == 'religions') {
@@ -144,7 +150,7 @@ class CmsController extends Controller
                 if ($religion) {
                     $religion->delete();
                 } else {
-                    return redirect()->back()->with('error', Str::ucfirst($tempName) . ' not found');
+                    return redirect()->back()->with('error', Str::ucfirst($tempName).' not found');
                 }
             }
             if ($type == 'roles') {
@@ -153,16 +159,18 @@ class CmsController extends Controller
                 if ($role) {
                     $role->delete();
                 } else {
-                    return redirect()->back()->with('error', Str::ucfirst($tempName) . ' not found');
+                    return redirect()->back()->with('error', Str::ucfirst($tempName).' not found');
                 }
             }
-            return redirect()->back()->with('success', Str::ucfirst($tempName) . ' deleted Successfully');
+
+            return redirect()->back()->with('success', Str::ucfirst($tempName).' deleted Successfully');
         } catch (Exception $e) {
             return redirect()->back()->with('success', $e->getMessage());
         }
     }
 
-    public function barangays() {
+    public function barangays()
+    {
         $page_title = 'CMS - Barangays';
         try {
             $data = Barangay::select('id', 'name', 'district_id', 'remarks')
@@ -172,25 +180,27 @@ class CmsController extends Controller
             $fields = [
                 'name' => ['label' => 'name', 'type' => 'text'],
                 'district_id' => [
-                    'label' => 'district_id', 
-                    'type' => 'select', 
-                    'options' => $districts
+                    'label' => 'district_id',
+                    'type' => 'select',
+                    'options' => $districts,
                 ],
                 'remarks' => ['label' => 'remarks', 'type' => 'text'],
             ];
+
             return view('superadmin.cms', compact([
                 'data',
-                'page_title', 
-                'fields', 
-                'districts', 
-                'type', 
+                'page_title',
+                'fields',
+                'districts',
+                'type',
             ]));
         } catch (Exception $e) {
             return redirect()->back()->with('success', $e->getMessage());
         }
     }
 
-    public function relationships() {
+    public function relationships()
+    {
         $page_title = 'CMS - Relationships';
         try {
             $data = Relationship::select('id', 'name', 'remarks')->get();
@@ -199,38 +209,46 @@ class CmsController extends Controller
                 'name' => ['label' => 'name', 'type' => 'text'],
                 'remarks' => ['label' => 'name', 'type' => 'text'],
             ];
-    
+
             return view('superadmin.cms', compact('data', 'page_title', 'type', 'fields'));
         } catch (Exception $e) {
-            return redirect()->back()->with('error', $e->getMessage());            
+            return redirect()->back()->with('error', $e->getMessage());
         }
     }
 
-    public function workflow() {
+    public function workflow()
+    {
         $page_title = 'CMS - Workflow';
         $data = WorkflowStep::select('id', 'order_no', 'description')->get();
         $type = 'workflows';
+
         return view('superadmin.cms', compact('data', 'page_title', 'type'));
     }
 
-    public function handlers() {
+    public function handlers()
+    {
         $page_title = 'CMS - Handlers';
         $data = Handler::select('id', 'name', 'type', 'department')->get();
         $type = 'handlers';
+
         return view('superadmin.cms', compact('data', 'page_title', 'type'));
     }
 
-    public function users() {
+    public function users()
+    {
         $page_title = 'CMS - Users';
         $data = User::select('id', 'first_name', 'middle_name', 'last_name', 'email', 'password', 'contact_number', 'is_active')->get();
         $type = 'users';
+
         return view('superadmin.cms', compact('data', 'page_title', 'type'));
     }
 
-    public function religions() {
+    public function religions()
+    {
         $page_title = 'CMS - Relitions';
         $data = Religion::select('id', 'name', 'remarks')->get();
         $type = 'religions';
+
         return view('superadmin.cms', compact('data', 'page_title', 'type'));
     }
 }

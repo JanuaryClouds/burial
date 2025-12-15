@@ -2,21 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Sex;
-use App\Http\Requests\SexRequest;
-use App\Services\SexService;
 use App\DataTables\CmsDataTable;
+use App\Http\Requests\SexRequest;
+use App\Models\Sex;
+use App\Services\SexService;
 use Illuminate\Support\Facades\Auth;
 
 class SexController extends Controller
 {
     protected $sexServices;
-    
+
     public function __construct(SexService $sexServices)
     {
         $this->sexServices = $sexServices;
     }
-    
+
     public function index(CmsDataTable $dataTable)
     {
         $page_title = 'Sex';
@@ -33,17 +33,17 @@ class SexController extends Controller
                 'data'
             ));
     }
-    
+
     public function store(SexRequest $request)
     {
         $gender = $this->sexServices->storeSex($request->validated());
         activity()
             ->causedBy(Auth::user())
             ->performedOn($gender)
-            ->log('Created a new gender: ' . $gender->name);
+            ->log('Created a new gender: '.$gender->name);
 
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first() . '.sex.index')
+            ->route(Auth::user()->getRoleNames()->first().'.sex.index')
             ->with('success', 'You have successfully created a gender!');
     }
 
@@ -54,13 +54,13 @@ class SexController extends Controller
         activity()
             ->causedBy(Auth::user())
             ->performedOn($gender)
-            ->log('Updated the gender: ' . $gender->name);
+            ->log('Updated the gender: '.$gender->name);
 
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first() . '.sex.index')
+            ->route(Auth::user()->getRoleNames()->first().'.sex.index')
             ->with('success', 'You have successfully updated a gender!');
     }
-    
+
     public function destroy(Sex $sex)
     {
         $gender = $this->sexServices->deleteSex($sex);
@@ -68,10 +68,10 @@ class SexController extends Controller
         activity()
             ->causedBy(Auth::user())
             ->performedOn($gender)
-            ->log('Delted the gender: ' . $gender->name);
+            ->log('Delted the gender: '.$gender->name);
 
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first() . '.sex.index')
-            ->with('success','You have successfully deleted a gender!');
+            ->route(Auth::user()->getRoleNames()->first().'.sex.index')
+            ->with('success', 'You have successfully deleted a gender!');
     }
 }

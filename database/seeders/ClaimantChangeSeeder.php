@@ -2,11 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 use App\Models\BurialAssistance;
 use App\Models\Claimant;
 use App\Models\ClaimantChange;
+use Illuminate\Database\Seeder;
 
 class ClaimantChangeSeeder extends Seeder
 {
@@ -20,21 +19,21 @@ class ClaimantChangeSeeder extends Seeder
 
         $claimantChanges = [
             [
-                'burial_assistance_id'=> $burialAssistances->random(),
+                'burial_assistance_id' => $burialAssistances->random(),
                 'old_claimant_id' => $claimants->random(),
                 'new_claimant_id' => $claimants->random(),
                 'changed_at' => '2023-09-01 00:00:00',
                 'reason_for_change' => 'Seeder Generated',
             ],
             [
-                'burial_assistance_id'=> $burialAssistances->random(),
+                'burial_assistance_id' => $burialAssistances->random(),
                 'old_claimant_id' => $claimants->random(),
                 'new_claimant_id' => $claimants->random(),
                 'changed_at' => '2023-09-04 00:00:00',
                 'reason_for_change' => 'Seeder Generated',
             ],
             [
-                'burial_assistance_id'=> $burialAssistances->random(),
+                'burial_assistance_id' => $burialAssistances->random(),
                 'old_claimant_id' => $claimants->random(),
                 'new_claimant_id' => $claimants->random(),
                 'changed_at' => '2023-09-03 00:00:00',

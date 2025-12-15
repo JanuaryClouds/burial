@@ -3,26 +3,25 @@
 namespace App\Services;
 
 use App\Models\BurialAssistance;
-use App\Models\Claimant;
-use App\Models\Deceased;
 
 class BurialAssistanceService
 {
-	public function store (array $data) {
-		return BurialAssistance::create($data);
-	}
+    public function store(array $data)
+    {
+        return BurialAssistance::create($data);
+    }
 
-	/**
-	* @param array $data data to update
-	* @param BurialAssistance $application original application
-	 */
-	public function update(array $data, $application)
-	{
-		$application->update($data);
-		$application->claimant->update($data['claimant']);
-		$application->deceased->update($data['deceased']);
-		$client = $application->claimant->client;
-		$client->demographic->update([
+    /**
+     * @param  array  $data  data to update
+     * @param  BurialAssistance  $application  original application
+     */
+    public function update(array $data, $application)
+    {
+        $application->update($data);
+        $application->claimant->update($data['claimant']);
+        $application->deceased->update($data['deceased']);
+        $client = $application->claimant->client;
+        $client->demographic->update([
             'sex_id' => $data['sex_id'],
             'religion_id' => $data['religion_id'],
             'nationality_id' => $data['nationality_id'],
@@ -54,26 +53,26 @@ class BurialAssistanceService
 
         foreach ($families as $index => $family) {
             $family->update([
-                'name'            => $data['fam_name'][$index],
-                'sex_id'          => $data['fam_sex_id'][$index],
-                'age'             => $data['fam_age'][$index],
-                'civil_id'        => $data['fam_civil_id'][$index],
+                'name' => $data['fam_name'][$index],
+                'sex_id' => $data['fam_sex_id'][$index],
+                'age' => $data['fam_age'][$index],
+                'civil_id' => $data['fam_civil_id'][$index],
                 'relationship_id' => $data['fam_relationship_id'][$index],
-                'occupation'      => $data['fam_occupation'][$index],
-                'income'          => $data['fam_income'][$index],
+                'occupation' => $data['fam_occupation'][$index],
+                'income' => $data['fam_income'][$index],
             ]);
         }
 
-		return $application;
-	}
+        return $application;
+    }
 
+    public function delete(int $id)
+    {
+        $assistance = BurialAssistance::find($id);
+        if ($assistance && $assistance->delete()) {
+            return true;
+        }
 
-	public function delete (int $id) {
-		$assistance = BurialAssistance::find($id);
-		if ($assistance && $assistance->delete()) {
-			return true;
-		}
-		return false;
-	}
-
+        return false;
+    }
 }

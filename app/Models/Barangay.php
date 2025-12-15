@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Barangay extends Model
 {
     use HasFactory;
-    protected $table = "barangays";
+
+    protected $table = 'barangays';
+
     protected $fillable = [
         'name',
         'district_id',
@@ -19,13 +21,14 @@ class Barangay extends Model
     {
         return self::all();
     }
-    
+
     public function client()
     {
         return $this->hasMany(Client::class, 'barangay_id', 'id');
     }
 
-    public function district() {
+    public function district()
+    {
         return $this->belongsTo(District::class);
     }
 
@@ -44,11 +47,13 @@ class Barangay extends Model
         return $this->hasMany(BurialAssistanceRequest::class);
     }
 
-    public function deceased() {
+    public function deceased()
+    {
         return $this->hasMany(Deceased::class, 'barangay_id', 'id');
     }
 
-    public function claimant() {
+    public function claimant()
+    {
         return $this->hasMany(Claimant::class, 'barangay_id', 'id');
     }
 }

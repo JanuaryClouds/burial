@@ -8,11 +8,15 @@ use Illuminate\Database\Eloquent\Model;
 class ClientBeneficiaryFamily extends Model
 {
     use HasFactory;
+
     protected $table = 'client_beneficiary_families';
 
     protected $primaryKey = 'id';
+
     public $incrementing = false;
+
     protected $keyType = 'string';
+
     protected $fillable = [
         'id',
         'client_id',
@@ -21,8 +25,8 @@ class ClientBeneficiaryFamily extends Model
         'age',
         'civil_id',
         'relationship_id',
-        'occupation', 
-        'income'
+        'occupation',
+        'income',
     ];
 
     public static function getClientBeneficiaryFamilies($client)

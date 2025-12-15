@@ -2,52 +2,55 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\BurialServiceRequest;
-use App\Services\BurialAssistanceRequestService;
-use Illuminate\Http\Request;
-use Validator;
-use Illuminate\Support\Facades\Storage;
-use Barryvdh\DomPDF\Facade\Pdf;
-use App\Services\BurialServiceService;
 use App\Exports\BurialServicesExport;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Models\BurialService;
-use App\Models\Relationship;
+use App\Http\Requests\BurialServiceRequest;
 use App\Models\Barangay;
-use App\Models\BurialServiceProvider;
 use App\Models\BurialAssistanceRequest;
+use App\Models\BurialService;
+use App\Models\BurialServiceProvider;
+use App\Models\Relationship;
+use App\Services\BurialServiceService;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
+use Validator;
 
 class BurialServiceController extends Controller
 {
     protected $BurialServiceService;
 
-    public function __construct(BurialServiceService $burialServiceService) {
+    public function __construct(BurialServiceService $burialServiceService)
+    {
         $this->BurialServiceService = $burialServiceService;
     }
 
-    public function new() {
-        return view("admin.newBurialService");
+    public function new()
+    {
+        return view('admin.newBurialService');
     }
 
-    public function view($id) {
-        $service = BurialService::where("id", $id)->first();
+    public function view($id)
+    {
+        $service = BurialService::where('id', $id)->first();
         $relationships = Relationship::getAllRelationships();
         $barangays = Barangay::getAllBarangays();
         $providers = BurialServiceProvider::getAllProviders();
 
         $disk = 'public';
         $folder = 'burial_images';
-        $prefix = 'burial-service-' . $id . '-';
+        $prefix = 'burial-service-'.$id.'-';
 
-        $serviceImages = collect(Storage::disk($disk) ->files($folder))
-        ->filter(function ($filePath) use ($prefix) {
-            return str_starts_with(basename($filePath), $prefix);
-        });
+        $serviceImages = collect(Storage::disk($disk)->files($folder))
+            ->filter(function ($filePath) use ($prefix) {
+                return str_starts_with(basename($filePath), $prefix);
+            });
 
         return view('admin.view-service', compact('service', 'relationships', 'barangays', 'providers', 'serviceImages'));
     }
 
-    public function store(BurialServiceRequest $request) {
+    public function store(BurialServiceRequest $request)
+    {
         $data = $request->validated();
         $validator = Validator::make($request->all(), [
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
@@ -57,42 +60,47 @@ class BurialServiceController extends Controller
             // Return the validation errors
             return response()->json(['errors' => $validator->messages()], 422);
         }
-        
+
         $service = $this->BurialServiceService->store($data);
         $filename = "burial-service-{$service->id}";
-        
+
         if ($service && $request->hasFile('images')) {
             foreach ($request->file('images') as $index => $file) {
-            $filenameWithIndex = "{$filename}-{$index}." . $file->getClientOriginalExtension();
-            $file->storeAs('burial_images', $filenameWithIndex, 'public');
+                $filenameWithIndex = "{$filename}-{$index}.".$file->getClientOriginalExtension();
+                $file->storeAs('burial_images', $filenameWithIndex, 'public');
+            }
+
+            return redirect()->route('admin.burial.history')->with('success', 'Burial service created successfully.');
         }
 
-        return redirect()->route('admin.burial.history')->with('success', 'Burial service created successfully.');
-    }
         return redirect()->back()->withErrors(['error' => 'Failed to create burial service.']);
     }
 
-    public function history() {
-        return view("admin.burialServiceHistory");
+    public function history()
+    {
+        return view('admin.burialServiceHistory');
     }
 
-    public function providers() {
-        return view("admin.burialServiceProviders");
+    public function providers()
+    {
+        return view('admin.burialServiceProviders');
     }
 
-    public function requestToService($uuid) {
+    public function requestToService($uuid)
+    {
         $approvedAssistanceRequest = BurialAssistanceRequest::where('uuid', $uuid)->first();
         $providers = BurialServiceProvider::getAllProviders();
         $barangays = Barangay::getAllBarangays();
 
-        if (!$approvedAssistanceRequest) {
-            return redirect()->route('admin.dashboard')->with('error','Unable to find burial assistance request.');
+        if (! $approvedAssistanceRequest) {
+            return redirect()->route('admin.dashboard')->with('error', 'Unable to find burial assistance request.');
         }
 
         return view('admin.request-to-service', compact('approvedAssistanceRequest', 'providers', 'barangays'));
     }
 
-    public function saveRequestAsServiced(Request $request, $uuid) {
+    public function saveRequestAsServiced(Request $request, $uuid)
+    {
         $approvedAssistanceRequest = BurialAssistanceRequest::where('uuid', $uuid)
             ->where('status', 'approved')
             ->firstOrFail();
@@ -110,7 +118,7 @@ class BurialServiceController extends Controller
             'end_of_burial' => $approvedAssistanceRequest->end_of_burial,
             'burial_service_provider' => $request->burial_service_provider,
             'collected_funds' => $request->collected_funds,
-            'remarks' => $request->remarks
+            'remarks' => $request->remarks,
         ];
 
         $validator = Validator::make($request->all(), [
@@ -121,36 +129,38 @@ class BurialServiceController extends Controller
             // Return the validation errors
             return response()->json(['errors' => $validator->messages()], 422);
         }
-        
+
         $service = $this->BurialServiceService->store($data);
         $approvedAssistanceRequest->update(['service_id' => $service->id]);
         $filename = "burial-service-{$service->id}";
-        
+
         if ($service && $request->hasFile('images')) {
             foreach ($request->file('images') as $index => $file) {
-            $filenameWithIndex = "{$filename}-{$index}." . $file->getClientOriginalExtension();
-            $file->storeAs('burial_images', $filenameWithIndex, 'public');
+                $filenameWithIndex = "{$filename}-{$index}.".$file->getClientOriginalExtension();
+                $file->storeAs('burial_images', $filenameWithIndex, 'public');
+            }
+
+            return redirect()->route('admin.burial.history')->with('success', 'Burial service created successfully.');
         }
 
-        return redirect()->route('admin.burial.history')->with('success', 'Burial service created successfully.');
-    }
         return redirect()->back()->withErrors(['error' => 'Failed to create burial service.']);
     }
 
-    public function exportPDF($id) {
-        $service = BurialService::findOrFail( $id );
+    public function exportPDF($id)
+    {
+        $service = BurialService::findOrFail($id);
         $relationships = Relationship::getAllRelationships();
         $barangays = Barangay::getAllBarangays();
         $providers = BurialServiceProvider::getAllProviders();
 
         $disk = 'public';
         $folder = 'burial_images';
-        $prefix = 'burial-service-' . $id . '-';
+        $prefix = 'burial-service-'.$id.'-';
 
-        $serviceImages = collect(Storage::disk($disk) ->files($folder))
-        ->filter(function ($filePath) use ($prefix) {
-            return str_starts_with(basename($filePath), $prefix);
-        });
+        $serviceImages = collect(Storage::disk($disk)->files($folder))
+            ->filter(function ($filePath) use ($prefix) {
+                return str_starts_with(basename($filePath), $prefix);
+            });
 
         $pdf = Pdf::loadView('admin.printable-service-form', compact('service', 'relationships', 'barangays', 'providers', 'serviceImages'))
             ->setPaper('letter', 'portrait');
@@ -162,7 +172,8 @@ class BurialServiceController extends Controller
         // return view('admin.printable-service-form', compact('service', 'relationships', 'barangays', 'providers', 'serviceImages'));
     }
 
-    public function exportXlsx() {
-        return Excel::download(new BurialServicesExport(), 'burial_services.xlsx');
+    public function exportXlsx()
+    {
+        return Excel::download(new BurialServicesExport, 'burial_services.xlsx');
     }
 }

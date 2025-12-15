@@ -19,7 +19,6 @@ class BurialAssistanceReqRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-
     protected function prepareForValidation(): void
     {
         $this->merge([
@@ -31,18 +30,18 @@ class BurialAssistanceReqRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "deceased_firstname" => "string|required|max:255",
-            "deceased_lastname" => "string|required|max:255",
-            "representative" => "string|required|max:255",
-            "representative_phone" => "string|required|max:255",
-            "representative_email" => "string|nullable|max:255",
-            "representative_relationship" => "required|numeric|exists:relationships,id",
-            "burial_address" => "string|required|max:255",
-            "barangay_id" => "required|numeric|exists:barangays,id",
-            "start_of_burial" => "required|date",
-            "end_of_burial" => "required|date|after:start_of_burial",
-            "service_id" => "nullable|numeric|exists:burial_services,id",
-            "remarks" => "string|nullable|max:255",
+            'deceased_firstname' => 'string|required|max:255',
+            'deceased_lastname' => 'string|required|max:255',
+            'representative' => 'string|required|max:255',
+            'representative_phone' => 'string|required|max:255',
+            'representative_email' => 'string|nullable|max:255',
+            'representative_relationship' => 'required|numeric|exists:relationships,id',
+            'burial_address' => 'string|required|max:255',
+            'barangay_id' => 'required|numeric|exists:barangays,id',
+            'start_of_burial' => 'required|date',
+            'end_of_burial' => 'required|date|after:start_of_burial',
+            'service_id' => 'nullable|numeric|exists:burial_services,id',
+            'remarks' => 'string|nullable|max:255',
         ];
     }
 }

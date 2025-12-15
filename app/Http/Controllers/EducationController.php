@@ -2,21 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Education;
 use App\DataTables\CmsDataTable;
-use App\Services\EducationService;
 use App\Http\Requests\EducationRequest;
+use App\Models\Education;
+use App\Services\EducationService;
 use Illuminate\Support\Facades\Auth;
 
 class EducationController extends Controller
 {
     protected $educationServices;
-    
+
     public function __construct(EducationService $educationServices)
     {
         $this->educationServices = $educationServices;
     }
-    
+
     public function index(CmsDataTable $dataTable)
     {
         $page_title = 'Education';
@@ -33,7 +33,7 @@ class EducationController extends Controller
                 'data'
             ));
     }
-    
+
     public function store(EducationRequest $request)
     {
         $education = $this->educationServices->storeEducation($request->validated());
@@ -41,13 +41,13 @@ class EducationController extends Controller
         activity()
             ->performedOn($education)
             ->causedBy(Auth::user())
-            ->log('Created a new education: ' . $education->name);
+            ->log('Created a new education: '.$education->name);
 
         return redirect()
             ->route('education.index')
             ->with('success', 'Education created successfully.');
     }
-    
+
     public function update(EducationRequest $request, Education $education)
     {
         $education = $this->educationServices->updateEducation($request->validated(), $education);
@@ -55,13 +55,13 @@ class EducationController extends Controller
         activity()
             ->performedOn($education)
             ->causedBy(Auth::user())
-            ->log('Updated the education: ' . $education->name);
-            
+            ->log('Updated the education: '.$education->name);
+
         return redirect()
             ->route('education.index')
             ->with('success', 'Education updated successfully.');
     }
-    
+
     public function destroy(Education $education)
     {
         $education = $this->educationServices->deleteEducation($education);
@@ -69,8 +69,8 @@ class EducationController extends Controller
         activity()
             ->performedOn($education)
             ->causedBy(Auth::user())
-            ->log('Deleted the education: ' . $education->name);
-            
+            ->log('Deleted the education: '.$education->name);
+
         return redirect()
             ->route('education.index')
             ->with('success', 'Education deleted successfully.');

@@ -12,7 +12,8 @@ use Illuminate\Support\Facades\Mail;
 
 class MailController extends Controller
 {
-    public function service(Request $request, $id) {
+    public function service(Request $request, $id)
+    {
         $request->validate([
             'subject' => 'required|string|max:64',
             'message' => 'required|string',
@@ -33,13 +34,14 @@ class MailController extends Controller
         }
     }
 
-    public function request(Request $request, $uuid) {
+    public function request(Request $request, $uuid)
+    {
         $request->validate([
             'subject' => 'required|string|max:64',
             'message' => 'required|string',
         ]);
 
-        $assistanceRequest = BurialAssistanceRequest::where("uuid", $uuid)->first();
+        $assistanceRequest = BurialAssistanceRequest::where('uuid', $uuid)->first();
 
         if ($assistanceRequest) {
             Mail::to($assistanceRequest->representative_email)->send(new MailRepresentative(
@@ -54,7 +56,8 @@ class MailController extends Controller
         }
     }
 
-    public function provider(Request $request, $id) {
+    public function provider(Request $request, $id)
+    {
         $request->validate([
             'subject' => 'required|string|max:64',
             'message' => 'required|string',
@@ -71,5 +74,5 @@ class MailController extends Controller
         } else {
             return redirect()->back()->with('error', 'Service provider not found.');
         }
-    }    
+    }
 }

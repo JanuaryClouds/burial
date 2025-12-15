@@ -10,11 +10,11 @@ class NationalityRequest extends FormRequest
     {
         return true;
     }
-    
+
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255|unique:nationalities,name,' . $this->route('nationality')?->id,
+            'name' => 'required|string|max:255|unique:nationalities,name,'.$this->route('nationality')?->id,
             'remarks' => 'nullable|string|max:255',
         ];
     }

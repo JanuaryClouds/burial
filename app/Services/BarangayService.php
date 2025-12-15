@@ -13,19 +13,19 @@ class BarangayService
 
     public function updateBarangay(array $data, $barangay): Barangay
     {
-        if($barangay->update($data))
-        {
+        if ($barangay->update($data)) {
             return $barangay;
         }
+
         return null;
     }
 
     public function deleteBarangay($barangay): Barangay
     {
-        if($barangay->delete())
-        {
+        if ($barangay->delete()) {
             return $barangay;
         }
+
         return null;
     }
 }

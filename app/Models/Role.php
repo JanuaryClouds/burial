@@ -9,10 +9,11 @@ class Role extends Model
 {
     use HasFactory;
 
-    protected $table = "roles";
+    protected $table = 'roles';
+
     protected $fillable = [
         'name',
-        'guard_name'
+        'guard_name',
     ];
 
     public static function getAllRoles()

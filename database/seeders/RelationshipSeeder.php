@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 use App\Models\Relationship;
+use Illuminate\Database\Seeder;
 
 class RelationshipSeeder extends Seeder
 {
@@ -26,7 +25,7 @@ class RelationshipSeeder extends Seeder
         foreach ($Relationships as $Relationship) {
             Relationship::firstOrCreate([
                 'name' => $Relationship,
-                'remarks'   => 'seeder generated',
+                'remarks' => 'seeder generated',
             ]);
         }
     }

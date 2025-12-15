@@ -21,7 +21,7 @@ return new class extends Migration
         //         ->nullable()
         //         ->constrained('barangays')
         //         ->nullOnDelete()
-        //         ->after('address');  
+        //         ->after('address');
         // });
     }
 

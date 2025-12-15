@@ -2,10 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 use App\Models\Claimant;
 use App\Models\Relationship;
+use Illuminate\Database\Seeder;
 
 class ClaimantSeeder extends Seeder
 {
@@ -15,7 +14,7 @@ class ClaimantSeeder extends Seeder
     public function run(): void
     {
         $relationships = Relationship::pluck('id');
-        
+
         $claimantSamples = [
             [
                 'given_name' => 'Pedro',

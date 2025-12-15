@@ -4,14 +4,14 @@ namespace App\Exports;
 
 use App\Models\BurialAssistanceRequest;
 use Carbon\Carbon;
-use PhpOffice\PhpSpreadsheet\Shared\Date as ExcelDate;
-use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
-use Maatwebsite\Excel\Concerns\WithColumnFormatting;
+use PhpOffice\PhpSpreadsheet\Shared\Date as ExcelDate;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
-class BurialAssistanceRequestsExport implements FromCollection, WithMapping, WithHeadings, WithColumnFormatting
+class BurialAssistanceRequestsExport implements FromCollection, WithColumnFormatting, WithHeadings, WithMapping
 {
     public function collection()
     {
@@ -32,7 +32,7 @@ class BurialAssistanceRequestsExport implements FromCollection, WithMapping, Wit
             $request->representative_phone,
             $request?->representative_email ?? '',
             $request->relationship?->name ?? 'Unknown',
-            ($request->burial_address ?? '') . ' ' . ($request->barangay?->name ?? 'Unknown'),
+            ($request->burial_address ?? '').' '.($request->barangay?->name ?? 'Unknown'),
             $request->start_of_burial ? ExcelDate::dateTimeToExcel(Carbon::parse($request->start_of_burial)) : null,
             $request->end_of_burial ? ExcelDate::dateTimeToExcel(Carbon::parse($request->end_of_burial)) : null,
             $request->status,

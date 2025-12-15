@@ -10,11 +10,11 @@ class SexRequest extends FormRequest
     {
         return true;
     }
-    
+
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255|unique:sexes,name,' . $this->route('sex')?->id,
+            'name' => 'required|string|max:255|unique:sexes,name,'.$this->route('sex')?->id,
             'remarks' => 'nullable|string|max:255',
         ];
     }

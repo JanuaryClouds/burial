@@ -19,30 +19,31 @@ class StoreBurialAssistanceRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-
-    protected function prepareForValidation(): void {
+    protected function prepareForValidation(): void
+    {
         $this->merge([
             'status' => 'pending', // Default status
         ]);
     }
+
     public function rules(): array
     {
         return [
             'deceased.first_name' => 'required|string|max:255',
             'deceased.middle_name' => 'nullable|string|max:255',
             'deceased.last_name' => 'required|string|max:255',
-            'deceased.suffix'=> 'nullable|string|max:64',
+            'deceased.suffix' => 'nullable|string|max:64',
             'deceased.gender' => 'required|numeric|exists:sexes,id',
             'deceased.address' => 'required|string|max:255',
             'deceased.barangay_id' => 'required|numeric|exists:barangays,id',
             'deceased.religion_id' => 'required|numeric|exists:religions,id',
             'deceased.date_of_birth' => 'required|date',
             'deceased.date_of_death' => 'required|date',
-            
+
             'claimant.first_name' => 'required|string|max:255',
             'claimant.middle_name' => 'nullable|string|max:255',
             'claimant.last_name' => 'required|string|max:255',
-            'claimant.suffix'=> 'nullable|string|max:64',
+            'claimant.suffix' => 'nullable|string|max:64',
             'claimant.relationship_to_deceased' => 'required|numeric|exists:relationships,id',
             'claimant.mobile_number' => 'required|string|digits:11',
             'claimant.address' => 'required|string|max:255',
@@ -50,16 +51,16 @@ class StoreBurialAssistanceRequest extends FormRequest
 
             'funeraria' => 'required|string|max:255',
             'amount' => 'nullable|decimal:0,2|min:0',
-            'remarks'   => 'nullable|string|max:255',
-            'swa'    => 'nullable|string|max:255',
-            'encoder'=> 'nullable|exists:users,id',
+            'remarks' => 'nullable|string|max:255',
+            'swa' => 'nullable|string|max:255',
+            'encoder' => 'nullable|exists:users,id',
             'initial_checker' => 'nullable|exists:users,id',
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
 
             // System-generated
             // 'tracking_no' => handled in model, not request
             // 'application_date' => handled in controller, not request
-            'status' => 'in:pending,approved,rejected'
+            'status' => 'in:pending,approved,rejected',
         ];
     }
 }

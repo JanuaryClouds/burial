@@ -13,19 +13,19 @@ class CivilStatusService
 
     public function updateCivilStatus(array $data, $civil): CivilStatus
     {
-        if($civil->update($data))
-        {
+        if ($civil->update($data)) {
             return $civil;
         }
+
         return null;
     }
 
     public function deleteCivilStatus($civil): CivilStatus
     {
-        if($civil->delete())
-        {
+        if ($civil->delete()) {
             return $civil;
         }
+
         return null;
     }
 }

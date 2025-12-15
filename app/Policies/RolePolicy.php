@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\Role;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class RolePolicy
 {
@@ -40,7 +39,7 @@ class RolePolicy
         if (in_array($role->id, [1, 2, 3, 4])) {
             return false;
         }
-    
+
         return $user->can('manage-roles');
     }
 

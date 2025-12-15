@@ -10,6 +10,7 @@ class Sex extends Model
     use HasFactory;
 
     protected $table = 'sexes';
+
     protected $fillable = [
         'name',
         'remarks',
@@ -22,7 +23,7 @@ class Sex extends Model
 
     public function clientDemographic()
     {
-        return $this->hasMany(ClientDemographic::class);    
+        return $this->hasMany(ClientDemographic::class);
     }
 
     public function clientFamily()
@@ -30,7 +31,8 @@ class Sex extends Model
         return $this->belongsTo(ClientBeneficiaryFamily::class);
     }
 
-    public function deceased() {
-        return $this->hasMany(Deceased::class,'gender','id');
+    public function deceased()
+    {
+        return $this->hasMany(Deceased::class, 'gender', 'id');
     }
 }

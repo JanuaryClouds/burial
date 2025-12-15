@@ -2,16 +2,19 @@
 
 namespace App\View\Components;
 
+use App\Models\WorkflowStep;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
-use App\Models\WorkflowStep;
 
 class processUpdater extends Component
 {
     public $processLogs;
+
     public $application;
+
     public $workflowSteps;
+
     /**
      * Create a new component instance.
      */

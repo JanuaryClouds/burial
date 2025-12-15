@@ -10,7 +10,7 @@ class ClientRequest extends FormRequest
     {
         return true;
     }
-    
+
     public function rules(): array
     {
         return [
@@ -54,7 +54,7 @@ class ClientRequest extends FormRequest
             'fam_income.*' => 'nullable|string|max:255',
             'ass_problem_presented' => 'nullable|string|max:1000',
             'ass_assessment' => 'nullable|string|max:1000',
-            'rec_assistance_id'  => 'nullable|exists:assistances,id',
+            'rec_assistance_id' => 'nullable|exists:assistances,id',
             'rec_burial_referral' => 'nullable|string|max:255',
             'rec_moa' => 'nullable|numeric|exists:mode_of_assistances,id',
             'rec_amount' => 'nullable|string|max:255',
