@@ -39,8 +39,7 @@ class UserController extends Controller
                         ->log("Successful login attempt");
 
                     return redirect()
-                        ->route('dashboard')
-                        ->with('success', 'You have successfully logged in!');
+                        ->route('dashboard');
                 } else {
                     return redirect()->back()->with('warning', 'Your account is inactive. Please contact the superadmin.');
                 }
@@ -67,8 +66,7 @@ class UserController extends Controller
 
         Auth::logout();
         return redirect()
-            ->route('landing.page')
-            ->with('success', 'You have successfully logged out!');
+            ->route('landing.page');
     }
 
     public function loginPage()
