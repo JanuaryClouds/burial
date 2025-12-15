@@ -7,95 +7,81 @@
             <h1 class="card-title">Manage Funeral Assistances</h1>
         </div>
         <div class="card-body">
-            @if ($data->count() > 0)
-                <div class="table-responsive overflow-x-hidden">
-                    <div class="dataTables_wrapper">
-                        <table id="{{ $resource }}-table" class="table data-table" style="width:100%">
-                            <thead class="border-bottom border-bottom-1 border-gray-200 fw-bold">
-                                <tr role="row">
-                                    @forelse ($data->first()->getAttributes() as $column => $value)
-                                        @if (in_array($column, $renderColumns))
-                                            @if ($column == 'client_id')
-                                                <th class="sorting sort-handler">Name</th>
-                                            @else
-                                                <th class="">
-                                                    {{ str_replace('Id', '', str_replace('_', ' ', Str::title($column))) }}
-                                                </th>
+            <div class="table-responsive overflow-x-hidden">
+                <div class="dataTables_wrapper">
+                    <table id="{{ $resource }}-table" class="table data-table" style="width:100%">
+                        <thead class="border-bottom border-bottom-1 border-gray-200 fw-bold">
+                            <tr role="row">
+                                @foreach ($data->first()->getAttributes() as $column => $value)
+                                    @if (in_array($column, $renderColumns))
+                                        @if ($column == 'client_id')
+                                            <th class="sorting sort-handler">Name</th>
+                                        @else
+                                            <th class="">
+                                                {{ str_replace('Id', '', str_replace('_', ' ', Str::title($column))) }}
+                                            </th>
+                                        @endif
+                                    @endif
+                                @endforeach
+                                <th class="sorting sort-handler">
+                                    Beneficiary
+                                </th>
+                                <th class="sorting sort-handler">
+                                    Submitted at
+                                </th>
+                                <th class="sorting sort-handler">
+                                    Status
+                                </th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($data as $entry)
+                                <tr class="">
+                                    @foreach ($entry->getAttributes() as $key => $value)
+                                        @if (in_array($key, $renderColumns))
+                                            @if ($key == 'client_id')
+                                                <td>
+                                                    {{ $entry->client->first_name }}
+                                                    {{ Str::limit($entry->client->middle_name, '1', '.') }}
+                                                    {{ $entry->client->last_name }}
+                                                    {{ $entry->client->suffix ?? '' }}
+                                                </td>
                                             @endif
                                         @endif
-                                    @empty
-                                        <th>No Applications</th>
-                                    @endforelse
-                                    <th class="sorting sort-handler">
-                                        Beneficiary
-                                    </th>
-                                    <th class="sorting sort-handler">
-                                        Submitted at
-                                    </th>
-                                    <th class="sorting sort-handler">
-                                        Status
-                                    </th>
-                                    <th>Actions</th>
+                                    @endforeach
+                                    <td>
+                                        {{ $entry->client->beneficiary->first_name }}
+                                        {{ Str::limit($entry->client->beneficiary->middle_name, '1', '.') }}
+                                        {{ $entry->client->beneficiary->last_name }}
+                                        {{ $entry->client->beneficiary->suffix ?? '' }}
+                                    </td>
+                                    <td>
+                                        {{ $entry->client->created_at->format('M d, Y') }}
+                                    </td>
+                                    <td>
+                                        @if ($entry->approved_at == null)
+                                            <span class="badge badge-danger">Pending</span>
+                                        @else
+                                            @if ($entry->forwarded_at == null)
+                                                <span class="badge badge-warning">Approved</span>
+                                            @else
+                                                <span class="badge badge-success">Forwarded</span>
+                                            @endif
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <a href="{{ route('funeral.show', ['id' => $entry->id]) }}"
+                                            class="btn btn-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($data as $entry)
-                                    @if ($entry->approved_at == null || $entry->forwarded_at == null)
-                                        <tr class="">
-                                            @foreach ($entry->getAttributes() as $key => $value)
-                                                @if (in_array($key, $renderColumns))
-                                                    @if ($key == 'client_id')
-                                                        <td>
-                                                            {{ $entry->client->first_name }}
-                                                            {{ Str::limit($entry->client->middle_name, '1', '.') }}
-                                                            {{ $entry->client->last_name }}
-                                                            {{ $entry->client->suffix ?? '' }}
-                                                        </td>
-                                                    @endif
-                                                @endif
-                                            @endforeach
-                                            <td>
-                                                {{ $entry->client->beneficiary->first_name }}
-                                                {{ Str::limit($entry->client->beneficiary->middle_name, '1', '.') }}
-                                                {{ $entry->client->beneficiary->last_name }}
-                                                {{ $entry->client->beneficiary->suffix ?? '' }}
-                                            </td>
-                                            <td>
-                                                {{ $entry->client->created_at->format('M d, Y') }}
-                                            </td>
-                                            <td>
-                                                @if ($entry->approved_at == null)
-                                                    <span class="badge badge-danger">Pending</span>
-                                                @else
-                                                    @if ($entry->forwarded_at == null)
-                                                        <span class="badge badge-warning">Approved</span>
-                                                    @else
-                                                        <span class="badge badge-success">Forwarded</span>
-                                                    @endif
-                                                @endif
-                                            </td>
-                                            <td>
-                                                <a href="{{ route('funeral.show', ['id' => $entry->id]) }}"
-                                                    class="btn btn-primary">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    @endif
-                                @empty
-                                    <tr>
-                                        <td>No Applications</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
-            @else
-                <div class="d-flex justify-content-center">
-                    <p class="text-muted">No Funeral Assistances</p>
-                </div>
-            @endif
+            </div>
         </div>
     </div>
     <script>

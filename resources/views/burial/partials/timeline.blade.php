@@ -4,7 +4,7 @@
         <span class="badge badge-pill p-0">{{ $burialAssistance->created_at }}</span>
     </li>
     @foreach ($claimants as $claimant)
-        @foreach ($processLogs as $log)
+        @forelse ($processLogs as $log)
             <li
                 class="list-group-item d-flex justify-content-between align-items-center {{ $loop->last ? 'bg-primary text-white' : 'bg-body-secondary' }}">
                 <p
@@ -101,7 +101,11 @@
                     </div>
                 </div>
             @endif
-        @endforeach
+        @empty
+            <li class="list-group-item d-flex justify-content-center align-items-center">
+                <p class="mb-0">No logs yet</p>
+            </li>
+        @endforelse
 
         @php
             $lastLogDate = $claimant->processLogs->last()?->date_in;

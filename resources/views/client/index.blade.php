@@ -12,7 +12,7 @@
                     <table id="{{ $resource }}-table" class="table data-table" style="width:100%">
                         <thead class="border-bottom border-bottom-1 border-gray-200 fw-bold">
                             <tr role="row">
-                                @forelse ($data->first()->getAttributes() as $column => $value)
+                                @foreach ($data->first()->getAttributes() as $column => $value)
                                     @if (in_array($column, $renderColumns))
                                         @if ($column == 'first_name')
                                             <th class="sorting sort-handler">Name</th>
@@ -21,14 +21,12 @@
                                                 {{ str_replace('Id', '', str_replace('_', ' ', Str::title($column))) }}</th>
                                         @endif
                                     @endif
-                                @empty
-                                    <th>No {{ $resource }}</th>
-                                @endforelse
+                                @endforeach
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($data as $entry)
+                            @foreach ($data as $entry)
                                 @if (!$entry->claimant && !$entry->funeralAssistance)
                                     <tr class="">
                                         @foreach ($entry->getAttributes() as $key => $value)
@@ -53,11 +51,7 @@
                                         </td>
                                     </tr>
                                 @endif
-                            @empty
-                                <tr>
-                                    <td>No {{ $resource }}</td>
-                                </tr>
-                            @endforelse
+                            @endforeach
                         </tbody>
                     </table>
                 </div>

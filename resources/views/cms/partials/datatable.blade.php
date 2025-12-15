@@ -33,7 +33,7 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse ($data as $entry)
+                @foreach ($data as $entry)
                     <tr class="">
                         @foreach ($entry->getAttributes() as $key => $value)
                             @if (!in_array($key, $excemptions))
@@ -49,11 +49,7 @@
                             @endcan
                         </td>
                     </tr>
-                @empty
-                    <tr>
-                        <td>No {{ $resource }}</td>
-                    </tr>
-                @endforelse
+                @endforeach
             </tbody>
         </table>
     </div>

@@ -6,7 +6,7 @@
                     <table id="generic-table" class="table data-table generic-table" style="width:100%">
                         <thead class="border-bottom border-bottom-1 border-gray-200 fw-bold">
                             <tr role="row">
-                                @forelse ($claimants->first()->getAttributes() as $column => $value)
+                                @foreach ($claimants->first()->getAttributes() as $column => $value)
                                     @php
                                         $excemptions = ['id', 'created_at', 'updated_at'];
                                     @endphp
@@ -14,13 +14,12 @@
                                         <th class="sorting sort-handler">
                                             {{ Str::title(Str::replace('_', ' ', $column)) }}</th>
                                     @endif
-                                @empty
                                     <th>No Claimants</th>
-                                @endforelse
+                                @endforeach
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($claimants as $entry)
+                            @foreach ($claimants as $entry)
                                 <tr class="">
                                     @foreach ($entry->getAttributes() as $key => $value)
                                         @if (!in_array($key, $excemptions))
@@ -34,11 +33,7 @@
                                         @endif
                                     @endforeach
                                 </tr>
-                            @empty
-                                <tr>
-                                    <td>No Claimants</td>
-                                </tr>
-                            @endforelse
+                            @endforeach
                         </tbody>
                     </table>
                 </div>

@@ -16,7 +16,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($burialAssistances as $application)
+                            @foreach ($burialAssistances as $application)
                                 <tr class="">
                                     <td>{{ $application->tracking_no }}</td>
                                     <td>
@@ -68,11 +68,7 @@
                                         @endif
                                     </td>
                                 </tr>
-                            @empty
-                                <tr>
-                                    <td>No Applications</td>
-                                </tr>
-                            @endforelse
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
