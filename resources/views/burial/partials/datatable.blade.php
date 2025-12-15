@@ -38,7 +38,7 @@
                 </button>
             </div>
 
-            <div class="table-responsive mt-4">
+            <div class="table-responsive mt-4 overflow-x-hidden">
                 <div class="dataTables_wrapper">
                     <table id="applications-table" class="table data-table" style="width:100%">
                         <thead class="border-bottom border-bottom-1 border-gray-200 fw-bold">
@@ -56,7 +56,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($applications as $application)
+                            @foreach ($applications as $application)
                                 <tr class="">
                                     <td>{{ $application->tracking_no }}</td>
                                     <td>
@@ -123,11 +123,7 @@
                                     @endif
                                     <td><x-application-actions :application="$application" /></td>
                                 </tr>
-                            @empty
-                                <tr>
-                                    <td>No Applications</td>
-                                </tr>
-                            @endforelse
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
