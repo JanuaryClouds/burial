@@ -15,8 +15,8 @@
                         target="_blank">
                         Download Certificate
                     </a>
-                    @if (app()->isLocal())
-                        <a href="{{ route('burial.tracker', ['uuid' => $application->id]) }}" class="btn btn-light mr-2"
+                    @if (env('APP_DEBUG'))
+                        <a href="{{ route('burial.tracker', ['uuid' => $application->id]) }}" class="btn btn-warning mr-2"
                             target="_blank">
                             <i class="fas fa-eye"></i>
                             View as Guest
