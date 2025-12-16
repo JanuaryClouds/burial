@@ -20,9 +20,9 @@ Route::post('/test/component/post', [TestController::class, 'post'])
     ->name('test.component.post');
 
 Route::get('/login', [UserController::class, 'loginPage'])
-    ->name('login.page');
-Route::post('/login/check', [UserController::class, 'login'])
     ->name('login');
+Route::post('/login/check', [UserController::class, 'login'])
+    ->name('login.check');
 Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
 require __DIR__.'/guest.php';
