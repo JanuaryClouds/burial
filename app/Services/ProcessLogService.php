@@ -50,7 +50,7 @@ class ProcessLogService
             $dod = Carbon::parse($application->deceased->date_of_death)->format('F d, Y');
 
             // TODO API Post to Disbursement System
-            if (env('APP_DEBUG')) {
+            if (! env('APP_DEBUG')) {
                 $response = Http::withHeader('X-Secret-Key', env('API_KEY_DISBURSEMENT_SYSTEM'))->post(env('API_DISBURSEMENT_SYSTEM'), [
                     'key' => 'burial',
                     'payee' => $claimant->first_name.' '.$claimant?->middle_name.' '.$claimant->last_name,
