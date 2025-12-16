@@ -19,5 +19,7 @@ class TestController extends Controller
         return $pdf->stream("certificate-of-eligibility-{$client->id}.pdf");
     }
 
-    public function post(Request $request, $id) {}
+    public function post(Request $request) {
+        return $request->json();
+    }
 }

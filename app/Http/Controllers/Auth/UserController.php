@@ -27,23 +27,30 @@ class UserController extends Controller
             $ip = request()->ip();
             $browser = request()->header('User-Agent');
 
-            if (Auth::attempt($request->validated())) {
-                $user = Auth::user();
-                if ($user->is_active) {
-                    Auth::login($user);
-                    activity()
-                        ->causedBy($user)
-                        ->withProperties(['ip' => $ip, 'browser' => $browser])
-                        ->log('Successful login attempt');
-
-                    return redirect()
-                        ->route('dashboard');
-                } else {
-                    return redirect()->back()->with('warning', 'Your account is inactive. Please contact the superadmin.');
-                }
-            } else {
-                return redirect()->back()->with('error', 'Invalid username or password.');
+            if (! Auth::attempt($request->validated())) {
+                return back()
+                    ->withErrors(['error' => 'Invalid username or password.'])
+                    ->withInput();
             }
+
+            $user = Auth::user();
+
+            if (! $user->is_active) {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                activity()
+                    ->causedBy($user)
+                    ->withProperties(['ip' => $ip, 'browser' => $browser])
+                    ->log('Successful login attempt');
+
+                return redirect()->back()->with('warning', 'Your account is inactive. Please contact the superadmin.');
+
+            }
+
+            return redirect()
+                ->route('dashboard');
         } catch (Exception $e) {
             activity()
                 ->causedBy(null)
