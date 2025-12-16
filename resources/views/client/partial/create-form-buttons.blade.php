@@ -3,7 +3,7 @@
         Cancel
     </button>
 
-    <button class="btn btn-primary hover-scale" id="submitGISForm">
+    <button class="btn btn-primary hover-scale text-nowrap" id="submitGISForm">
         Submit Application
     </button>
 </span>

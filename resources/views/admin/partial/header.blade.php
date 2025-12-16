@@ -17,7 +17,7 @@
         </div>
         <!--end::Page title--->
         <!--begin::Wrapper-->
-        <div class="d-flex align-items-center flex-wrap gap-3">
+        <div class="d-flex align-items-center justify-content-end flex-wrap gap-3">
             <!-- begin::Menu wrapper -->
             @includeWhen(Route::is('funeral.show'), 'funeral.partials.action-buttons')
             @includeWhen(Route::is('client.show'), 'client.partial.action-buttons')
@@ -25,6 +25,7 @@
                 'superadmin.partial.new-content')
             <!-- end::Menu wrapper -->
 
+            @include('admin.partial.mobile-nav')
             <!-- begin::Theme mode -->
             @include('components.theme-toggle')
             <!-- end::Theme mode -->

@@ -2,9 +2,9 @@
 @section('content')
     <div class="d-flex flex-column flex-center min-vh-100" style="margin-top: -10rem; z-index: -1;">
         <img src="{{ asset('images/CSWDO.webp') }}" alt="CSWDO Logo" class="mb-5" style="width: 150px; height: auto;">
-        <h1 class="display-4">Funeral Assistance System</h1>
-        <h2 class="display-6">City Social Welfare & Development Office</h2>
-        <h3>Taguig City</h3>
+        <h1 class="display-4 text-center">Funeral Assistance System</h1>
+        <h2 class="display-6 text-center">City Social Welfare & Development Office</h2>
+        <h3 class="text-cemter">Taguig City</h3>
     </div>
 
     <div class="bg-body py-10">
@@ -15,10 +15,10 @@
                 @include('admin.partial.cards')
                 <div class="separator"></div>
                 <div class="row">
-                    <div class="col">
+                    <div class="col-12 col-md-6 col-lg-6">
                         @include('guest.partial.process')
                     </div>
-                    <div class="col">
+                    <div class="col-12 col-md-6 col-lg-6">
                         @include('guest.partial.documents')
                     </div>
                 </div>
