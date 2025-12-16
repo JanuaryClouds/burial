@@ -66,10 +66,8 @@
                         </div>
                         <div id="burials_tab" class="tab-pane fade" role="tabpanel">
                             @include('client.partial.burial-history')
-                            {{-- TODO: List of Burial Assistances --}}
                         </div>
                         <div id="funerals_tab" class="tab-pane fade" role="tabpanel">
-                            {{-- TODO: List of Funeral Assistances --}}
                             @include('funeral.partials.history')
                         </div>
                     </div>

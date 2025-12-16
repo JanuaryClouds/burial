@@ -5,14 +5,6 @@
     @endphp
     <title>Dashboard</title>
     @include('admin.partial.cards')
-    <!-- TODO: Decide if this is needed -->
-    @cannot('manage-assignments')
-        <div class="row mt-5 mt-xl-8">
-            <div class="col-12">
-                <x-assigned-applications-list />
-            </div>
-        </div>
-    @endcan
     <div class="row mt-5 mt-xl-8">
         <div class="col-12">
             <x-latest-clients-table />
