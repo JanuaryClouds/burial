@@ -94,19 +94,19 @@
                 ordering: true,
                 dom:
                     // First row: buttons on the left, filter on the right
-                    "<'row mb-2'<'col-sm-6 d-flex align-items-center'l<'me-5'>B><'col-sm-6 d-flex justify-content-end'f>>" +
+                    "<'row mb-2'<'col-sm-6 d-flex align-items-center'l><'col-sm-6 d-flex justify-content-end'f<'me-5'>B>>" +
                     // Table
                     "<'row'<'col-12'tr>>" +
                     // Bottom row: info and pagination
                     "<'row mt-2'<'col-sm-6'i><'col-sm-6 d-flex justify-content-end'p>>",
                 buttons: [{
                         extend: 'excel',
-                        text: '<i class="mr-2 fas fa-file-excel"></i> Export to Excel',
+                        text: 'Export to Excel',
                         className: 'btn btn-primary py-1 px-3',
                     },
                     {
                         extend: 'print',
-                        text: '<i class="mr-2 fas fa-print"></i> Print',
+                        text: 'Print',
                         className: 'btn btn-secondary py-1 px-3 ml-2',
                     },
                     // 'copy', 

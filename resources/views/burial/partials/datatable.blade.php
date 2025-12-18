@@ -66,7 +66,11 @@
                         <tbody>
                             @foreach ($applications as $application)
                                 <tr class="">
-                                    <td>{{ $application->tracking_no }}</td>
+                                    <td>
+                                        <a href="{{ route('burial.show', $application->id) }}">
+                                            {{ $application->tracking_no }}
+                                        </a>
+                                    </td>
                                     <td>
                                         {{ $application->deceased->first_name }}
                                         {{ $application->deceased->middle_name ? Str::charAt($application->deceased->middle_name, 0) . '.' : '' }}

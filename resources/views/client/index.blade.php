@@ -27,30 +27,50 @@
                         </thead>
                         <tbody>
                             @foreach ($data as $entry)
-                                @if (!$entry->claimant && !$entry->funeralAssistance)
-                                    <tr class="">
-                                        @foreach ($entry->getAttributes() as $key => $value)
-                                            @if (in_array($key, $renderColumns))
-                                                @if ($key == 'first_name')
-                                                    <td>
-                                                        {{ $entry->first_name }}
-                                                        {{ Str::limit($entry->middle_name, '1', '.') }}
-                                                        {{ $entry->last_name }} {{ $entry?->suffix }}
-                                                    </td>
-                                                @elseif ($key == 'barangay_id')
-                                                    <td>{{ $entry->barangay->name }}</td>
-                                                @else
-                                                    <td>{{ $value }}</td>
-                                                @endif
+                                <tr
+                                    class="{{ $entry?->claimant?->burialAssistance->status == 'released' || $entry?->funeralAssistance?->forwarded_at != null ? 'text-muted' : '' }}">
+                                    @foreach ($entry->getAttributes() as $key => $value)
+                                        @if (in_array($key, $renderColumns))
+                                            @if ($key == 'first_name')
+                                                <td>
+                                                    {{ $entry->first_name }}
+                                                    {{ Str::limit($entry->middle_name, '1', '.') }}
+                                                    {{ $entry->last_name }} {{ $entry?->suffix }}
+                                                </td>
+                                            @elseif ($key == 'barangay_id')
+                                                <td>{{ $entry->barangay->name }}</td>
+                                            @elseif ($key == 'tracking_no')
+                                                <td class="d-flex align-items-center gap-1">
+                                                    <a href="{{ route('client.show', $entry) }}">
+                                                        {{ $entry->tracking_no }}
+                                                    </a>
+                                                    @if ($entry?->claimant)
+                                                        <span class="badge badge-pill badge-primary">
+                                                            <a href="{{ route('burial.show', $entry->claimant->burialAssistance->id) }}"
+                                                                class="text-white">
+                                                                B
+                                                            </a>
+                                                        </span>
+                                                    @elseif ($entry?->funeralAssistance)
+                                                        <span class="badge badge-pill badge-secondary">
+                                                            <a href="{{ route('funeral.show', $entry->funeralAssistance->id) }}"
+                                                                class="text-white">
+                                                                F
+                                                            </a>
+                                                        </span>
+                                                    @endif
+                                                </td>
+                                            @else
+                                                <td>{{ $value }}</td>
                                             @endif
-                                        @endforeach
-                                        <td>
-                                            <a href="{{ route('client.show', $entry) }}" class="btn btn-primary">
-                                                <i class="fas fa-eye pe-0"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                @endif
+                                        @endif
+                                    @endforeach
+                                    <td>
+                                        <a href="{{ route('client.show', $entry) }}" class="btn btn-primary">
+                                            <i class="fas fa-eye pe-0"></i>
+                                        </a>
+                                    </td>
+                                </tr>
                             @endforeach
                         </tbody>
                     </table>
@@ -65,19 +85,19 @@
                 ordering: true,
                 dom:
                     // First row: buttons on the left, filter on the right
-                    "<'row mb-2'<'col-sm-6 d-flex align-items-center'l<'me-5'>B><'col-sm-6 d-flex justify-content-end'f>>" +
+                    "<'row mb-2'<'col-sm-6 d-flex align-items-center'l><'col-sm-6 d-flex justify-content-end'f<'me-5'>B>>" +
                     // Table
                     "<'row'<'col-12'tr>>" +
                     // Bottom row: info and pagination
                     "<'row mt-2'<'col-sm-6'i><'col-sm-6 d-flex justify-content-end'p>>",
                 buttons: [{
                         extend: 'excel',
-                        text: '<i class="mr-2 fas fa-file-excel"></i> Export to Excel',
+                        text: 'Export to Excel',
                         className: 'btn btn-primary py-1 px-3',
                     },
                     {
                         extend: 'print',
-                        text: '<i class="mr-2 fas fa-print"></i> Print',
+                        text: 'Print',
                         className: 'btn btn-secondary py-1 px-3 ml-2',
                     },
                     // 'copy', 
