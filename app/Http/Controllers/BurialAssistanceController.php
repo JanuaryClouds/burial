@@ -152,11 +152,12 @@ class BurialAssistanceController extends Controller
     public function index($status = null)
     {
         $page_title = 'Burial Assistance Applications';
+        $resource = 'burial';
         $applications = BurialAssistance::select('id', 'tracking_no', 'funeraria', 'amount', 'application_date', 'status', 'assigned_to', 'created_at')
             ->where(function ($query) use ($status) {
                 try {
                     if ($status == 'all') {
-                        return $query;
+                        return $query->orderBy('created_at', 'desc');
                     } else {
                         return $query->where('status', $status);
                     }
@@ -175,38 +176,38 @@ class BurialAssistanceController extends Controller
         }
         $barangays = Barangay::select('id', 'name')->get();
 
-        return view('burial.index', compact('applications', 'status', 'barangays', 'statusOptions', 'page_title'));
+        return view('burial.index', compact('resource', 'applications', 'status', 'barangays', 'statusOptions', 'page_title'));
     }
 
     public function show($id, ProcessLogService $processLogService)
     {
-        $application = BurialAssistance::findOrFail($id);
-        $client = $application->claimant->client;
-        $page_title = $client->first_name.' '.$client->last_name.'\'s Burial Assistance Application';
-        $readonly = ! auth()->user()->can('manage-content');
-        $path = "clients/{$client->tracking_no}";
-        $storedFiles = Storage::disk('local')->files($path);
-        $files = collect($storedFiles)->map(function ($file) {
-            return [
-                'name' => basename($file),
-                'path' => $file,
-            ];
-        });
-        $updateAverage = $processLogService->getAvgProcessingTime($application)->avg();
+        try {
+            //code...
+            $application = BurialAssistance::findOrFail($id);
+            $client = $application->claimant->client;
+            $page_title = $client->first_name.' '.$client->last_name.'\'s Burial Assistance Application';
+            $readonly = auth()->user()->cannot('manage-content') && $application->status != 'released';
+            $path = "clients/{$client->tracking_no}";
+            $storedFiles = Storage::disk('local')->files($path);
+            $files = collect($storedFiles)->map(function ($file) {
+                return [
+                    'name' => basename($file),
+                    'path' => $file,
+                ];
+            });
+            $updateAverage = $processLogService->getAvgProcessingTime($application)->avg();
+            return view('burial.manage', compact('application', 'files', 'updateAverage', 'page_title', 'readonly'));
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('error', $th->getMessage());
+        }
 
-        return view('burial.manage', compact('application', 'files', 'updateAverage', 'page_title', 'readonly'));
     }
 
     public function update(StoreBurialAssistanceRequest $request, $id)
     {
-        try {
             $burialAssistance = BurialAssistance::where('id', $id)->with('claimant', 'deceased')->first();
             $burialAssistance = $this->burialAssistanceService->update($request->validated(), $burialAssistance);
-
             return redirect()->back()->with('success', 'Successfully updated application.');
-        } catch (Exception $e) {
-            return redirect()->back()->with('error', 'An error occurred.'.$e->getMessage());
-        }
 
     }
 

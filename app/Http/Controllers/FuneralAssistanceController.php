@@ -63,7 +63,7 @@ class FuneralAssistanceController extends Controller
             $client = $data->client;
             $page_title = Str::title($client->first_name).' '.Str::title($client->last_name);
             $page_subtitle = $client->tracking_no.' - '.$client->id;
-            $readonly = ! auth()->user()->can('manage-content');
+            $readonly = auth()->user()->cannot('manage-content') || $data?->forwarded_at != null;
             $path = "clients/{$client->tracking_no}";
             $storedFiles = Storage::disk('local')->files($path);
             $files = collect($storedFiles)->map(function ($file) {

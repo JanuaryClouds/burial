@@ -1,9 +1,9 @@
 <div class="row">
     <div class="d-flex justify-content-end gap-3">
-        <a href="{{ route('clients.gis-form', ['id' => $data->client_id]) }}" class="btn btn-light mr-2" data-no-loader>
+        <a href="{{ route('clients.gis-form', ['id' => $data->client_id]) }}" class="btn btn-info mr-2" data-no-loader>
             Generate GIS Form
         </a>
-        <a href="{{ route('funeral.certificate', ['id' => $data->id]) }}" class="btn btn-light mr-2" target="_blank">
+        <a href="{{ route('funeral.certificate', ['id' => $data->id]) }}" class="btn btn-info mr-2" target="_blank">
             Download Certificate
         </a>
         @if ($data->approved_at == null)

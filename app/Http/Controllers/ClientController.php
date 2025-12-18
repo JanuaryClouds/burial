@@ -33,7 +33,7 @@ class ClientController extends Controller
         $this->citizenServices = $citizenService;
     }
 
-    public function index(CmsDataTable $dataTable)
+    public function index()
     {
         $page_title = 'Clients';
         $resource = 'client';
@@ -89,9 +89,7 @@ class ClientController extends Controller
             ],
         ];
 
-        return $dataTable
-            ->render('client.index', compact(
-                'dataTable',
+        return view('client.index', compact(
                 'page_title',
                 'cardData',
                 'resource',
@@ -102,32 +100,37 @@ class ClientController extends Controller
 
     public function show(Client $client)
     {
-        $resource = 'client';
-        $client = Client::find($client->id);
-        $page_title = $client->first_name.' '.$client->last_name."'s Application";
-        $page_subtitle = $client->tracking_no.' - '.$client->id;
-        $readonly = ! auth()->user()->can('manage-content');
+        try {
 
-        if ($client) {
-            $path = "clients/{$client->tracking_no}";
-            $storedFiles = Storage::disk('local')->files($path);
-            $files = collect($storedFiles)->map(function ($file) {
-                return [
-                    'name' => basename($file),
-                    'path' => $file,
-                ];
-            });
-
-            return view('client.view', compact(
-                'page_title',
-                'page_subtitle',
-                'resource',
-                'client',
-                'files',
-                'readonly',
-            ));
-        } else {
-            return redirect()->back()->with('error', 'Client not found.');
+            $resource = 'client';
+            $client = Client::find($client->id);
+            $page_title = $client->first_name.' '.$client->last_name."'s Application";
+            $page_subtitle = $client->tracking_no.' - '.$client->id;
+            $readonly = auth()->user()->cannot('manage-content') || ($client?->claimant?->burialAssistance->status != 'released' || $client?->funeralAssistance?->forwarded_at != null); ;
+            
+            if ($client) {
+                $path = "clients/{$client->tracking_no}";
+                $storedFiles = Storage::disk('local')->files($path);
+                $files = collect($storedFiles)->map(function ($file) {
+                    return [
+                        'name' => basename($file),
+                        'path' => $file,
+                    ];
+                });
+    
+                return view('client.view', compact(
+                    'page_title',
+                    'page_subtitle',
+                    'resource',
+                    'client',
+                    'files',
+                    'readonly',
+                ));
+            } else {
+                return redirect()->back()->with('error', 'Client not found.');
+            }
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('error', $th->getMessage());
         }
     }
 

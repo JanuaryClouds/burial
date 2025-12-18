@@ -15,18 +15,25 @@
             </div>
             <div class="card">
                 <div class="card-body">
-                    @include('components.claimant-form', ['claimant' => $application->claimant])
+                    @include('components.claimant-form', [
+                        'claimant' => $application->claimant,
+                        'readonly' => $readonly,
+                    ])
                 </div>
             </div>
             <div class="card">
                 <div class="card-body">
-                    @include('components.deceased-form', ['deceased' => $application->deceased])
+                    @include('components.deceased-form', [
+                        'deceased' => $application->deceased,
+                        'readonly' => $readonly,
+                    ])
                 </div>
             </div>
             <div class="card">
                 <div class="card-body">
                     @include('components.burial-assistance-details-form', [
                         'burialAssistance' => $application,
+                        'readonly' => $readonly,
                     ])
                 </div>
             </div>

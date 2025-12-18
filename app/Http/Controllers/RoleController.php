@@ -52,6 +52,9 @@ class RoleController extends Controller
         $page_title = 'Edit Role';
         $resource = 'role';
         $permissions = Permission::select('id', 'name')->get();
+        if (in_array($data->id, [1, 2, 3])) {
+            return redirect()->route('role.index')->with('warning', 'You cannot edit this role.');
+        }
 
         return view('cms.edit', compact('data', 'page_title', 'resource', 'permissions'));
     }
