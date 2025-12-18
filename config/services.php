@@ -33,4 +33,8 @@ return [
 
     'api_keys' => explode(',', env('API_KEYS', '')),
 
+    'disbursement' => [
+        'key' => env('API_KEY_DISBURSEMENT_SYSTEM'),
+        'url' => env('API_DISBURSEMENT_SYSTEM'),
+    ],
 ];

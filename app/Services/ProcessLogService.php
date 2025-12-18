@@ -4,10 +4,13 @@ namespace App\Services;
 
 use App\Models\BurialAssistance;
 use App\Models\Claimant;
+use App\Models\Deceased;
 use App\Models\ProcessLog;
 use App\Models\WorkflowStep;
 use Carbon\Carbon;
+use DB;
 use Exception;
+use Illuminate\Http\Client\RequestException;
 use Http;
 use Str;
 
@@ -41,32 +44,21 @@ class ProcessLogService
         }
 
         if ($step->order_no == 11) {
-            $application->latestCheque()->update([
-                'cheque_number' => $data['extra_data']['cheque_number'],
-                'amount' => $data['extra_data']['amount'],
-            ]);
-
-            $deceased = $application->deceased->first_name.' '.Str::charAt($application->deceased->middle_name, 0).'. '.$application->deceased->last_name.' '.$application->deceased?->suffix;
-            $dod = Carbon::parse($application->deceased->date_of_death)->format('F d, Y');
-
-            // TODO API Post to Disbursement System
-            if (! env('APP_DEBUG')) {
-                $response = Http::withHeader('X-Secret-Key', env('API_KEY_DISBURSEMENT_SYSTEM'))->post(env('API_DISBURSEMENT_SYSTEM'), [
-                    'key' => 'burial',
-                    'payee' => $claimant->first_name.' '.$claimant?->middle_name.' '.$claimant->last_name,
-                    'particulars' => 'For payment of funeral to the
-                    '.$deceased.' who died on '.$dod.' as per Ordinance No.34 series Of 2015',
-                    'cheque_number' => $data['extra_data']['cheque_number'],
-                    'amount' => $data['extra_data']['amount'],
-                    'date' => $data['date_in'],
-                ]);
-
-                if ($response->failed()) {
-                    throw new Exception($response->body());
+            DB::transaction(function () use ($application, $data) {
+                try {
+                    $claimant = $application->claimant->first_name.' '.Str::charAt($application->claimant?->middle_name, 0).'. '.$application->claimant->last_name.' '.$application->claimant?->suffix;
+                    $deceased = $application->deceased->first_name.' '.Str::charAt($application->deceased->middle_name, 0).'. '.$application->deceased->last_name.' '.$application->deceased?->suffix;
+                    $dod = Carbon::parse($application->deceased->date_of_death)->format('F d, Y');
+                    $disbursement = $this->createDisbursement($data, $deceased, $claimant, $dod);
+    
+                    $application->latestCheque()->update([
+                        'cheque_number' => $data['extra_data']['cheque_number'],
+                        'amount' => $data['extra_data']['amount'],
+                    ]);
+                } catch (\Throwable $e) {
+                    throw new Exception($e->getMessage());
                 }
-
-                return $response->json();
-            }
+            });
         }
 
         if ($step->order_no == 12) {
@@ -79,7 +71,6 @@ class ProcessLogService
         if ($application->initial_checker == null) {
             $application->initial_checker = auth()->user()->id;
         }
-        $application->update();
 
         $application->processLogs()->create([
             'id' => Str::uuid(),
@@ -94,6 +85,34 @@ class ProcessLogService
             'extra_data' => $data['extra_data'],
             'added_by' => auth()->user()->id,
         ]);
+    }
+
+    /**
+     * @param array $data  Process Log Data to save
+     * @param string $deceased  Deceased Name
+     * @param string $claimant  Claimant Name
+     * @param string $dod  Date of Death
+     */
+    public function createDisbursement(array $data, String $deceased, String $claimant, $dod)
+    {
+        // TODO API Post to Disbursement System
+        if (! env('APP_DEBUG')) {
+            $response = Http::withHeader('X-Secret-Key', config('services.disbursement.key'))->post(config('services.disbursement.url'), [
+                'key' => 'burial',
+                'payee' => $claimant,
+                'particulars' => 'For payment of funeral to the
+                '.$deceased.' who died on '.$dod.' as per Ordinance No.34 series Of 2015',
+                'cheque_number' => $data['extra_data']['cheque_number'],
+                'amount' => $data['extra_data']['amount'],
+                'date' => $data['date_in'],
+            ]);
+
+            if ($response->failed()) {
+                throw new RequestException($response);
+            }
+
+            return $response->json();
+        }
     }
 
     /**
