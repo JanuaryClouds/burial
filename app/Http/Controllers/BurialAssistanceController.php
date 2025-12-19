@@ -5,14 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreBurialAssistanceRequest;
 use App\Models\Barangay;
 use App\Models\BurialAssistance;
-use App\Models\Claimant;
-use App\Models\Deceased;
-use App\Models\Relationship;
 use App\Models\Religion;
 use App\Services\BurialAssistanceService;
 use App\Services\ProcessLogService;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Crypt;
 use Exception;
 use Illuminate\Http\Request;
 use Storage;
@@ -29,108 +25,6 @@ class BurialAssistanceController extends Controller
         $this->processLogService = $processLogService;
         $this->burialAssistanceService = $burialAssistanceService;
     }
-
-    // ! Unused
-    public function view()
-    {
-        $barangays = Barangay::select('id', 'name')->get();
-        $relationships = Relationship::select('id', 'name')->get();
-
-        return view('burial.view', compact(
-            'barangays',
-            'relationships',
-        ));
-    }
-
-    // ! Unused
-    public function store(StoreBurialAssistanceRequest $request)
-    {
-        try {
-            $validated = $request->validated();
-            $existingDeceased = Deceased::where(function ($query) use ($validated) {
-                $query->where('first_name', $validated['deceased']['first_name']);
-                $query->where('middle_name', $validated['deceased']['middle_name']);
-                $query->where('last_name', $validated['deceased']['last_name']);
-                $query->where('suffix', $validated['deceased']['suffix']);
-            })->first();
-            if (! $existingDeceased) {
-                $validated['deceased']['id'] = Str::uuid();
-                $validated['claimant']['id'] = Str::uuid();
-
-                $deceased = Deceased::create($validated['deceased']);
-                $claimant = Claimant::create($validated['claimant']);
-                $burialAssistance = BurialAssistance::create([
-                    'id' => Str::uuid(),
-                    'tracking_code' => strtoupper(Str::random(6)),
-                    'application_date' => now(),
-                    'funeraria' => $validated['funeraria'],
-                    'amount' => $validated['amount'],
-                    'remarks' => $validated['remarks'],
-                ]);
-                foreach ($request->file('images', []) as $fieldName => $uploadedFile) {
-                    $extension = $uploadedFile->getClientOriginalExtension();
-                    $filename = $fieldName.'.'.$extension.'.enc';
-                    $path = "burial-assistance/{$burialAssistance->tracking_no}/";
-                    Storage::disk('local')->put($path.$filename, Crypt::encrypt(file_get_contents($uploadedFile)));
-                }
-
-                activity()
-                    ->causedBy(null)
-                    ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
-                    ->log('Burial Assistance application submitted by guest');
-
-                return redirect()->route('landing.page')
-                    ->with(
-                        'success',
-                        'Successfully submitted burial assistance application. Please check your SMS messages for the assistance tracking code. You can use the given code to track the progress of the assistance application.'
-                    );
-            } else {
-                return redirect()->back()
-                    ->with('info', 'A burial assistance has already been submitted for this deceased person.');
-            }
-        } catch (Exception $e) {
-            return redirect()->back()->with('error', 'Something went wrong. Please try again.'.$e->getMessage());
-        }
-    }
-
-    // public function track(Request $request) {
-    //     $request->validate([
-    //         'tracking_code' => 'required|string|exists:burial_assistances,tracking_code',
-    //         'mobile_number' => 'required|string',
-    //     ]);
-
-    //     $burialAssistance = BurialAssistance::where('tracking_code', $request->tracking_code)->first();
-    //     if ($burialAssistance->claimantChanges()->count() > 0) {
-    //         if ($burialAssistance->claimantChanges()->latest()->first()->where('status', 'approved')) {
-    //             $mobileNumber = substr($burialAssistance->claimantChanges()->where('status', 'approved')->latest()->first()->newclaimant->mobile_number, -4);
-    //         } else {
-    //             $mobileNumber = substr($burialAssistance->claimant->mobile_number, -4);
-    //         }
-    //     } else {
-    //         $mobileNumber = substr($burialAssistance->claimant->mobile_number, -4);
-    //     }
-    //     if (!$burialAssistance) {
-    //         return redirect()->back()->with([
-    //             'error'=> 'Burial Assistance Application not found.'
-    //         ]);
-    //     } elseif ($request->mobile_number != $mobileNumber) {
-    //         return redirect()->back()->with([
-    //             'info' => 'Mobile number does not match. Please try again.'
-    //         ]);
-    //     }
-
-    //     // dd($burialAssistance);
-
-    //     $ip = request()->ip();
-    //     $browser = request()->header('User-Agent');
-    //     activity()
-    //         ->causedBy(null)
-    //         ->withProperties(['ip' => $ip, 'browser' => $browser])
-    //         ->log('Burial Assistance tracked by guest');
-
-    //     // return view('guest.burial-assistance.tracker', compact('burialAssistance'));
-    //     return redirect()->route('guest.burial-assistance.track-page', ['code' => $request->tracking_code]);
-    // }
 
     public function tracker($uuid, ProcessLogService $processLogService)
     {
@@ -182,7 +76,7 @@ class BurialAssistanceController extends Controller
     public function show($id, ProcessLogService $processLogService)
     {
         try {
-            //code...
+            // code...
             $application = BurialAssistance::findOrFail($id);
             $client = $application->claimant->client;
             $page_title = $client->first_name.' '.$client->last_name.'\'s Burial Assistance Application';
@@ -196,6 +90,7 @@ class BurialAssistanceController extends Controller
                 ];
             });
             $updateAverage = $processLogService->getAvgProcessingTime($application)->avg();
+
             return view('burial.manage', compact('application', 'files', 'updateAverage', 'page_title', 'readonly'));
         } catch (\Throwable $th) {
             return redirect()->back()->with('error', $th->getMessage());
@@ -205,9 +100,10 @@ class BurialAssistanceController extends Controller
 
     public function update(StoreBurialAssistanceRequest $request, $id)
     {
-            $burialAssistance = BurialAssistance::where('id', $id)->with('claimant', 'deceased')->first();
-            $burialAssistance = $this->burialAssistanceService->update($request->validated(), $burialAssistance);
-            return redirect()->back()->with('success', 'Successfully updated application.');
+        $burialAssistance = BurialAssistance::where('id', $id)->with('claimant', 'deceased')->first();
+        $burialAssistance = $this->burialAssistanceService->update($request->validated(), $burialAssistance);
+
+        return redirect()->back()->with('success', 'Successfully updated application.');
 
     }
 
