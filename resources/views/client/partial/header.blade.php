@@ -37,6 +37,11 @@
                             <a href="https://tlcportal.taguig.gov.ph/login" class="btn btn-primary hover-scale">
                                 Register
                             </a>
+                            @if (session('info') && session('info') == 'Unable to fetch citizen details.')
+                                <a href="{{ route('general.intake.form') }}" class="btn btn-light hover-scale">
+                                    Apply without Citizen ID
+                                </a>
+                            @endif
                             @if (Route::is('landing.page'))
                                 <a href="{{ route('login') }}" class="btn btn-light text-nowrap hover-scale">
                                     Sign In

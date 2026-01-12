@@ -22,7 +22,7 @@ class CentralClientService
             return null;
         }
 
-        if (env('APP_DEBUG')) {
+        if (env('APP_ENV') == 'local') {
             // Temporary: Load from local file
             $path = storage_path('app/clients.json');
             if (file_exists($path)) {
@@ -34,10 +34,13 @@ class CentralClientService
             }
         } else {
             $response = Http::withHeader('X-Secret-Key', $apiKey)->get($api); // Temporarily disable to prevent repeated requests
-            $decodedResponse = json_decode($response, true);
-            $citizen = collect($decodedResponse['data'])->firstWhere($key, $value);
-
-            return $citizen;
+            if ($response->failed()) {
+                return null;
+            } else {
+                $decodedResponse = json_decode($response, true);
+                $citizen = collect($decodedResponse['data'])->firstWhere($key, $value);
+                return $citizen;
+            }
         }
 
         return null;

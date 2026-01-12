@@ -58,7 +58,7 @@ class CitizenAccessController extends Controller
                     // Store citizen data in session to keep them "logged in"
                     session(['citizen' => $citizen]);
                 } else {
-                    return back()->with('info', 'No citizen found.');
+                    return back()->with('info', 'Unable to fetch citizen details.');
                 }
             } catch (Exception $e) {
                 return back()->with('error', $e->getMessage());
