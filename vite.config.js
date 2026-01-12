@@ -5,7 +5,14 @@ import laravel from "laravel-vite-plugin";
 export default defineConfig({
     plugins: [
         laravel({
-            input: ["resources/css/app.css", "resources/js/app.js", "resources/js/custom.js"],
+            input: [
+                "resources/css/style.bundle.css", 
+                "resources/css/plugin.style.css", 
+                "resources/css/custom.css", 
+                "resources/js/app.js", 
+                "resources/js/custom.js",
+
+            ],
             refresh: true,
         }),
         // tailwindcss(),
