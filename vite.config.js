@@ -7,11 +7,10 @@ export default defineConfig({
         laravel({
             input: [
                 "resources/css/style.bundle.css", 
-                "resources/css/plugin.style.css", 
+                "resources/css/plugins.style.css", 
                 "resources/css/custom.css", 
                 "resources/js/app.js", 
                 "resources/js/custom.js",
-
             ],
             refresh: true,
         }),
