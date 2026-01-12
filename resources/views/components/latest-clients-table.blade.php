@@ -3,83 +3,87 @@
         <h2 class="card-title fw-medium fs-2">Latest Clients</h2>
     </div>
     <div class="card-body">
-        <div class="table-responsive overflow-x-hidden">
-            <div class="dataTables_wrapper">
-                <table id="latest-clients-table" class="table data-table">
-                    <thead class="border-bottom border-bottom-1 border-gray-200 fs-7 fw-bold">
-                        <tr role="row" class="text-uppercase">
-                            <th>Tracking No.</th>
-                            <th>Name</th>
-                            <th>Address</th>
-                            <th>Contact No.</th>
-                            <th>Status</th>
-                            <th class="sorting sort-handler">Submitted on</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($data as $entry)
-                            <tr class="border-bottom border-bottom-1 border-gray-200">
-                                <td>{{ $entry->tracking_no }}</td>
-                                <td>
-                                    {{ $entry->first_name }}
-                                    {{ $entry->middle_name ? Str::charAt($entry->middle_name, 0) . '.' : '' }}
-                                    {{ $entry->last_name }} {{ $entry->suffix }}
-                                </td>
-                                <td>
-                                    {{ $entry->house_no . ' ' . $entry->street . ', ' . $entry->barangay->name }}
-                                </td>
-                                <td>{{ $entry->contact_no }}</td>
-                                <td>
-                                    @if ($entry->claimant)
-                                        <span class="badge badge-pill badge-info">
-                                            <a href="{{ route('burial.show', $entry->claimant->burialAssistance->id) }}"
-                                                class="text-white">
-                                                Burial
-                                            </a>
-                                        </span>
-                                    @elseif ($entry->funeralAssistance)
-                                        <span class="badge badge-pill badge-info">
-                                            <a href="{{ route('funeral.show', $entry->funeralAssistance->id) }}"
-                                                class="text-white">
-                                                Funeral
-                                            </a>
-                                        </span>
-                                    @endif
-                                    @if (!$entry->interviews->isEmpty())
-                                        @if (Carbon\Carbon::parse($entry->interviews->first()->schedule)->diffInHours(Carbon\Carbon::now()) >= 1)
-                                            <span class="badge badge-pill badge-danger">
-                                                Interview
+        @if ($data->isEmpty())
+            <p class="text-muted text-center">No Data</p>
+        @else
+            <div class="table-responsive overflow-x-hidden">
+                <div class="dataTables_wrapper">
+                    <table id="latest-clients-table" class="table data-table">
+                        <thead class="border-bottom border-bottom-1 border-gray-200 fs-7 fw-bold">
+                            <tr role="row" class="text-uppercase">
+                                <th>Tracking No.</th>
+                                <th>Name</th>
+                                <th>Address</th>
+                                <th>Contact No.</th>
+                                <th>Status</th>
+                                <th class="sorting sort-handler">Submitted on</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($data as $entry)
+                                <tr class="border-bottom border-bottom-1 border-gray-200">
+                                    <td>{{ $entry->tracking_no }}</td>
+                                    <td>
+                                        {{ $entry->first_name }}
+                                        {{ $entry->middle_name ? Str::charAt($entry->middle_name, 0) . '.' : '' }}
+                                        {{ $entry->last_name }} {{ $entry->suffix }}
+                                    </td>
+                                    <td>
+                                        {{ $entry->house_no . ' ' . $entry->street . ', ' . $entry->barangay->name }}
+                                    </td>
+                                    <td>{{ $entry->contact_no }}</td>
+                                    <td>
+                                        @if ($entry->claimant)
+                                            <span class="badge badge-pill badge-info">
+                                                <a href="{{ route('burial.show', $entry->claimant->burialAssistance->id) }}"
+                                                    class="text-white">
+                                                    Burial
+                                                </a>
                                             </span>
-                                        @elseif (Carbon\Carbon::parse($entry->interviews->first()->schedule)->diffInHours(Carbon\Carbon::now()) < 1)
-                                            <span class="badge badge-pill badge-warning">
-                                                Interview
+                                        @elseif ($entry->funeralAssistance)
+                                            <span class="badge badge-pill badge-info">
+                                                <a href="{{ route('funeral.show', $entry->funeralAssistance->id) }}"
+                                                    class="text-white">
+                                                    Funeral
+                                                </a>
                                             </span>
                                         @endif
-                                    @elseif (!$entry->assessment->isEmpty())
-                                        <span class="badge badge-pill badge-info">
-                                            Assessed
-                                        </span>
-                                    @else
-                                        <span class="badge badge-pill badge-warning">
-                                            Pending
-                                        </span>
-                                    @endif
-                                </td>
-                                <td>
-                                    {{ Carbon\Carbon::parse($entry->created_at)->format('M d, Y') }}
-                                </td>
-                                <td>
-                                    <a href="{{ route('client.show', $entry) }}" class="btn btn-sm btn-primary">
-                                        <i class="fas fa-eye pe-0"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                                        @if (!$entry->interviews->isEmpty())
+                                            @if (Carbon\Carbon::parse($entry->interviews->first()->schedule)->diffInHours(Carbon\Carbon::now()) >= 1)
+                                                <span class="badge badge-pill badge-danger">
+                                                    Interview
+                                                </span>
+                                            @elseif (Carbon\Carbon::parse($entry->interviews->first()->schedule)->diffInHours(Carbon\Carbon::now()) < 1)
+                                                <span class="badge badge-pill badge-warning">
+                                                    Interview
+                                                </span>
+                                            @endif
+                                        @elseif (!$entry->assessment->isEmpty())
+                                            <span class="badge badge-pill badge-info">
+                                                Assessed
+                                            </span>
+                                        @else
+                                            <span class="badge badge-pill badge-warning">
+                                                Pending
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        {{ Carbon\Carbon::parse($entry->created_at)->format('M d, Y') }}
+                                    </td>
+                                    <td>
+                                        <a href="{{ route('client.show', $entry) }}" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-eye pe-0"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
+        @endif
     </div>
 </div>
 
