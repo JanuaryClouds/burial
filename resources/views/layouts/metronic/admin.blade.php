@@ -13,7 +13,7 @@
 
     <link rel="stylesheet" href="{{ asset('metronic/plugins/global/plugins.bundle.css') }}">
     <link rel="stylesheet" href="{{ asset('metronic/css/style.bundle.css') }}">
-    @vite(['resources/js/metronic-app.js', 'public/metronic/css/style.bundle.css', 'public/metronic/plugins/global/plugins.bundle.css', 'resources/css/custom.css'])
+    @vite(['resources/js/metronic-app.js', 'resources/css/style.bundle.css', 'resources/css/plugins.style.css', 'resources/css/custom.css'])
 </head>
 
 <body id="kt_body"
