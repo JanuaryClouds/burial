@@ -39,13 +39,13 @@ class ClientService
         return $year.'-'.str_pad($newNumber, 4, '0', STR_PAD_LEFT);
     }
 
-    public function storeClient(array $data, string $uuid): ?Client
+    public function storeClient(array $data, string $uuid = null): ?Client
     {
         $tracking_no = $this->generateTrackingNo();
 
         $client = Client::create([
             'id' => Str::uuid(),
-            'citizen_id' => $uuid,
+            'citizen_id' => $uuid ?? null,
             'tracking_no' => $tracking_no,
             'first_name' => $data['first_name'],
             'middle_name' => $data['middle_name'],
