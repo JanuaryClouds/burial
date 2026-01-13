@@ -1,6 +1,8 @@
 export function checkAndRenderDataTables() {
     $(document).ready(function () {
-        $('#cms-table').DataTable({
+        const cmsTable = $('#cms-table');
+
+        cmsTable ?? cmsTable.DataTable({
             responsive: true,
             ordering: true,
             dom: 
@@ -32,9 +34,11 @@ export function checkAndRenderDataTables() {
                 sortable: ''     // override neutral sortable class 
             }
         })
+
+        const perBarangayTable = $('#per-barangay-table');
         
         // Cannot have export options because of the row grouping
-        $('#per-barangay-table').DataTable({
+        perBarangayTable ?? perBarangayTable.DataTable({
             responsive: true,
             ordering: true,
             rowGroup: {
@@ -58,32 +62,9 @@ export function checkAndRenderDataTables() {
             }
         })
 
-        // ! Unused table
-        $('#applications-per-encoder-table').DataTable({
-            responsive: true,
-            ordering: true,
-            dom: 
-                // First row: buttons on the left, filter on the right
-                "<'row mb-2'<'col-sm-6 d-flex align-items-center'l<'mr-3'>B><'col-sm-6 d-flex justify-content-end'f>>" +
-                // Table
-                "<'row'<'col-12'tr>>" +
-                // Bottom row: info and pagination
-                "<'row mt-2'<'col-sm-6'i><'col-sm-6 d-flex justify-content-end'p>>",
-            buttons:[
-                'copy',
-                'csv', 
-                'excel', 
-                'pdf', 
-                'print'
-            ],
-            classes: {
-                sortAsc: '',     // override ascending class
-                sortDesc: '',    // override descending class
-                sortable: ''     // override neutral sortable class 
-            }
-        })
+        const assignmentTable = $('#assignment-table');
 
-        $('#assignments-table').DataTable({
+        assignmentTable ?? assignmentTable.DataTable({
             responsive: true,
             order: [[3, 'desc']],
             ordering: true,
@@ -104,7 +85,9 @@ export function checkAndRenderDataTables() {
             }
         })
 
-        $('#assigned-applications-table').DataTable({
+        const assignedApplicationsTable = $('#assigned-applications-table');
+
+        assignedApplicationsTable ?? assignedApplicationsTable.DataTable({
             responsive: true,
             ordering: true,
             dom: 
@@ -124,7 +107,9 @@ export function checkAndRenderDataTables() {
             }
         })
 
-        $('#latest-applications-table').DataTable({
+        const latestApplicationsTable = $('#latest-applications-table');
+
+        latestApplicationsTable ?? latestApplicationsTable.DataTable({
             responsive: true,
             ordering: true,
             order:[[6, 'desc']], // order by Submitted on column descending
@@ -158,8 +143,10 @@ export function checkAndRenderDataTables() {
             }
         })
 
-        $('.generic-table').each(function() {
-            $(this).DataTable({
+        const genericTable = $('.generic-table');
+
+        genericTable ?? genericTable.each(function() {
+            this.DataTable({
                 responsive: true,
                 ordering: true,
                 dom: 
@@ -194,7 +181,8 @@ export function checkAndRenderDataTables() {
             })
         });
 
-        $('#reports-applications-table').DataTable({
+        const reportsTable = $('#reports-applications-table');
+        reportsTable ?? reportsTable.DataTable({
             responsive: true,
             ordering: true, // keep ordering functional
             dom:
