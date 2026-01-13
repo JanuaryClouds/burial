@@ -3,7 +3,7 @@
         <h2 class="card-title fw-medium fs-2">Latest Clients</h2>
     </div>
     <div class="card-body">
-        @if (!isset($data))
+        @if ($data->isEmpty())
             <p class="text-muted text-center">No Data</p>
         @else
             <div class="table-responsive overflow-x-hidden">

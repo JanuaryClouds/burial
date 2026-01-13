@@ -7,7 +7,7 @@
             <h1 class="card-title">Manage Funeral Assistances</h1>
         </div>
         <div class="card-body">
-            @if (!isset($data))
+            @if ($data->isEmpty())
                 <p class="text-muted text-center">No Applications</p>
             @else
                 <div class="table-responsive overflow-x-hidden">

@@ -21,7 +21,13 @@
             <h4 class="card-title">{{ Str::ucfirst($resource) }}s</h4>
         </div>
         <div class="card-body">
-            @include('cms.partials.datatable')
+            @if ($data->isEmpty())
+                <p class="text-muted text-center">
+                    No Data
+                </p>
+            @else
+                @include('cms.partials.datatable')
+            @endif
         </div>
     </div>
 @endsection
