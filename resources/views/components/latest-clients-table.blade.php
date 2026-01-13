@@ -88,7 +88,7 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    $(document).ready(function() {
         $('#latest-clients-table').DataTable({
             responsive: true,
             ordering: true,
@@ -123,5 +123,6 @@
                 sortable: '' // override neutral sortable class 
             }
         });
-    });
+    })
+    document.addEventListener('DOMContentLoaded', function() {});
 </script>
