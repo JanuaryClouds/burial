@@ -84,7 +84,7 @@ class ProcessLogService
             'date_in' => $data['date_in'],
             'date_out' => $data['date_out'],
             'comments' => $data['comments'],
-            'extra_data' => $data['extra_data'],
+            'extra_data' => $data['extra_data'] ?? null,
             'added_by' => auth()->user()->id,
         ]);
     }
