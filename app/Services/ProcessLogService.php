@@ -10,8 +10,8 @@ use App\Models\WorkflowStep;
 use Carbon\Carbon;
 use DB;
 use Exception;
-use Illuminate\Http\Client\RequestException;
 use Http;
+use Illuminate\Http\Client\RequestException;
 use Str;
 
 class ProcessLogService
@@ -46,19 +46,21 @@ class ProcessLogService
         if ($step->order_no == 11) {
             DB::transaction(function () use ($application, $data) {
                 try {
-                    $claimant = $application->claimant->first_name.' '.Str::charAt($application->claimant?->middle_name, 0).'. '.$application->claimant->last_name.' '.$application->claimant?->suffix;
-                    $deceased = $application->deceased->first_name.' '.Str::charAt($application->deceased->middle_name, 0).'. '.$application->deceased->last_name.' '.$application->deceased?->suffix;
-                    $dod = Carbon::parse($application->deceased->date_of_death)->format('F d, Y');
-                    $disbursement = $this->createDisbursement($data, $deceased, $claimant, $dod);
-    
                     $application->latestCheque()->update([
                         'cheque_number' => $data['extra_data']['cheque_number'],
                         'amount' => $data['extra_data']['amount'],
                     ]);
+
+                    // todo create an internal log in-case the disbursement system doesn't work that will periodically post to it
                 } catch (\Throwable $e) {
                     throw new Exception($e->getMessage());
                 }
             });
+
+            $claimant = $application->claimant->first_name.' '.Str::charAt($application->claimant?->middle_name, 0).'. '.$application->claimant->last_name.' '.$application->claimant?->suffix;
+            $deceased = $application->deceased->first_name.' '.Str::charAt($application->deceased->middle_name, 0).'. '.$application->deceased->last_name.' '.$application->deceased?->suffix;
+            $dod = Carbon::parse($application->deceased->date_of_death)->format('F d, Y');
+            $disbursement = $this->createDisbursement($data, $deceased, $claimant, $dod);
         }
 
         if ($step->order_no == 12) {
@@ -88,28 +90,29 @@ class ProcessLogService
     }
 
     /**
-     * @param array $data  Process Log Data to save
-     * @param string $deceased  Deceased Name
-     * @param string $claimant  Claimant Name
-     * @param string $dod  Date of Death
+     * @param  array  $data  Process Log Data to save
+     * @param  string  $deceased  Deceased Name
+     * @param  string  $claimant  Claimant Name
+     * @param  string  $dod  Date of Death
      */
-    public function createDisbursement(array $data, String $deceased, String $claimant, $dod)
+    public function createDisbursement(array $data, string $deceased, string $claimant, $dod)
     {
         // TODO API Post to Disbursement System
-        if (! env('APP_DEBUG')) {
-            $response = Http::withHeader('X-Secret-Key', config('services.disbursement.key'))->post(config('services.disbursement.url'), [
-                'key' => 'burial',
-                'payee' => $claimant,
-                'particulars' => 'For payment of funeral to the
-                '.$deceased.' who died on '.$dod.' as per Ordinance No.34 series Of 2015',
-                'cheque_number' => $data['extra_data']['cheque_number'],
-                'amount' => $data['extra_data']['amount'],
-                'date' => $data['date_in'],
-            ]);
+        if (config('services.disbursement.enabled')) {
+            $response = Http::timeout(10)
+                ->retry(3, 1000)
+                ->withHeader('X-Secret-Key', config('services.disbursement.key'))
+                ->post(config('services.disbursement.url'), [
+                    'key' => 'burial',
+                    'payee' => $claimant,
+                    'particulars' => 'For payment of funeral to the
+                    '.$deceased.' who died on '.$dod.' as per Ordinance No.34 series Of 2015',
+                    'cheque_number' => $data['extra_data']['cheque_number'],
+                    'amount' => $data['extra_data']['amount'],
+                    'date' => $data['date_in'],
+                ]);
 
-            if ($response->failed()) {
-                throw new RequestException($response);
-            }
+            throw_if($response->failed(), RequestException::class, $response);
 
             return $response->json();
         }
