@@ -21,35 +21,36 @@
                                                 {{ Str::title(Str::replace('_', ' ', $column)) }}</th>
                                         @endif
                                     @endif
-                                    @empty
-                                        <th>No Funerals</th>
+                                @endforeach
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($funerals as $entry)
+                                <tr class="bg-white">
+                                    @foreach ($entry->getAttributes() as $key => $value)
+                                        @if (!in_array($key, $excemptions))
+                                            @if ($key == 'client_id')
+                                                <td>{{ $entry->client->first_name }}
+                                                    {{ $entry->client->middle_name }}
+                                                    {{ $entry->client->last_name }}
+                                                    {{ $entry->client->suffix ?? '' }}
+                                                </td>
+                                                <td>{{ $entry->client->beneficiary->first_name }}
+                                                    {{ Str::limit($entry->client->beneficiary->middle_name, '1', '.') }}
+                                                    {{ $entry->client->beneficiary->last_name }}
+                                                    {{ $entry->client->beneficiary->suffix ?? '' }}</td>
+                                            @else
+                                                <td>{{ $value }}</td>
+                                            @endif
+                                        @endif
                                     @endforeach
                                 </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($funerals as $entry)
-                                    <tr class="bg-white">
-                                        @foreach ($entry->getAttributes() as $key => $value)
-                                            @if (!in_array($key, $excemptions))
-                                                @if ($key == 'client_id')
-                                                    <td>{{ $entry->client->first_name }} {{ $entry->client->middle_name }}
-                                                        {{ $entry->client->last_name }} {{ $entry->client->suffix ?? '' }}
-                                                    </td>
-                                                    <td>{{ $entry->client->beneficiary->first_name }}
-                                                        {{ Str::limit($entry->client->beneficiary->middle_name, '1', '.') }}
-                                                        {{ $entry->client->beneficiary->last_name }}
-                                                        {{ $entry->client->beneficiary->suffix ?? '' }}</td>
-                                                @else
-                                                    <td>{{ $value }}</td>
-                                                @endif
-                                            @endif
-                                        @endforeach
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
             </div>
-        </div>
-    @endif
+@endif
+</div>
+</div>
+@endif
