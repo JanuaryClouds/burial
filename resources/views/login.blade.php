@@ -44,7 +44,7 @@
                                 <div class="d-flex">
                                     <input :type="show ? 'text' : 'password'" id="password" name="password"
                                         style=" border-radius: 10px 0px 0px 10px" placeholder="Enter your password"
-                                        class="form-control" required>
+                                        class="form-control" required autocomplete="false">
                                     <button type="button" @click="show = !show" class="btn btn-sm ms-1"
                                         style="background-color:#999999; border-radius: 0px 10px 10px 0px">
                                         <i class="fa-solid fa-eye" x-show="!show" x-cloak></i>
