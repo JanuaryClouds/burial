@@ -7,7 +7,7 @@
             <h2 class="card-title fs-2 fw-medium">Manage {{ $resource }}</h2>
         </div>
         <div class="card-body">
-            @if ($data->isEmpty())
+            @if (!isset($data) || $data->count() == 0)
                 <p class="text-muted text-center">
                     No Data.
                 </p>
