@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Models\Interview;
 use App\Models\Client;
+use App\Models\Interview;
 use Exception;
 use Str;
 
@@ -15,6 +15,7 @@ class InterviewService
             $client = Client::findOrFail($id);
             $data['client_id'] = $client->id;
             $data['id'] = Str::uuid();
+
             return Interview::create($data);
         } catch (Exception $e) {
             return null;
@@ -26,6 +27,7 @@ class InterviewService
         try {
             $interview = Interview::findOrFail($id);
             $interview->update(['status' => 'done']);
+
             return $interview;
         } catch (Exception $e) {
             return redirect()->back()->with('info', $e->getMessage());

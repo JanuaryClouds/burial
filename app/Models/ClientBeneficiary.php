@@ -8,14 +8,18 @@ use Illuminate\Database\Eloquent\Model;
 class ClientBeneficiary extends Model
 {
     use HasFactory;
+
     protected $table = 'client_beneficiaries';
 
     protected $primaryKey = 'id';
+
     public $incrementing = false;
+
     protected $keyType = 'string';
+
     protected $fillable = [
         'id',
-        'client_id', 
+        'client_id',
         'first_name',
         'middle_name',
         'last_name',

@@ -25,6 +25,7 @@ class changeClaimantModal extends Component
     {
         $barangays = Barangay::select('id', 'name')->get();
         $relationships = Relationship::select('id', 'name')->get();
+
         return view('components.change-claimant-modal', compact(['barangays', 'relationships']));
     }
 }

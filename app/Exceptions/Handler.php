@@ -26,9 +26,9 @@ class Handler extends ExceptionHandler
             // return response()->view('errors.main', [], 403);
             return redirect()->to(url()->previous() ?? route('landing.page'))
                 ->with('error', 'You do not have permission to access this page.');
-            } else if ($exception instanceof NotFoundHttpException) {
+        } elseif ($exception instanceof NotFoundHttpException) {
             return redirect()->to(url()->previous() ?? route('landing.page'))
-            ->with('error', 'You do not have permission to access this page.');
+                ->with('error', 'You do not have permission to access this page.');
             // return response()->view('errors.main', [], 404);
         }
 

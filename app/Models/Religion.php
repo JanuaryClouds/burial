@@ -10,6 +10,7 @@ class Religion extends Model
     use HasFactory;
 
     protected $table = 'religions';
+
     protected $fillable = [
         'name',
         'remarks',
@@ -25,7 +26,8 @@ class Religion extends Model
         return $this->hasMany(ClientDemographic::class);
     }
 
-    public function deceased() {
+    public function deceased()
+    {
         return $this->hasMany(Deceased::class, 'religion_id', 'id');
     }
 }

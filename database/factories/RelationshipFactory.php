@@ -19,9 +19,9 @@ class RelationshipFactory extends Factory
         $sampleRelationships = [
             'Father', 'Mother', 'Brother', 'Sister', 'Grandfather', 'Grandmother',
         ];
-        
+
         return [
-            "name" => $this->faker->randomElement($sampleRelationships),
+            'name' => $this->faker->randomElement($sampleRelationships),
         ];
     }
 }

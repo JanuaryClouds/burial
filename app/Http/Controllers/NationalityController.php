@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Nationality;
-use App\Http\Requests\NationalityRequest;
 use App\DataTables\CmsDataTable;
+use App\Http\Requests\NationalityRequest;
+use App\Models\Nationality;
 use App\Services\NationalityService;
 use Illuminate\Support\Facades\Auth;
 
@@ -16,7 +16,7 @@ class NationalityController extends Controller
     {
         $this->nationalityServices = $nationalityServices;
     }
-    
+
     public function index(CmsDataTable $dataTable)
     {
         $page_title = 'Nationality';
@@ -33,7 +33,7 @@ class NationalityController extends Controller
                 'data'
             ));
     }
-    
+
     public function store(NationalityRequest $request)
     {
         $nationality = $this->nationalityServices->storeNationality($request->validated());
@@ -41,13 +41,13 @@ class NationalityController extends Controller
         activity()
             ->causedBy(Auth::user())
             ->performedOn($nationality)
-            ->log('Created a new nationality: ' . $nationality->name);
+            ->log('Created a new nationality: '.$nationality->name);
 
         return redirect()
             ->route('nationality.index')
             ->with('success', 'You have successfully create a nationality!');
     }
-    
+
     public function update(NationalityRequest $request, Nationality $nationality)
     {
         $nationality = $this->nationalityServices->updateNationality($request->validated(), $nationality);
@@ -55,13 +55,13 @@ class NationalityController extends Controller
         activity()
             ->causedBy(Auth::user())
             ->performedOn($nationality)
-            ->log('Updated the nationality: ' . $nationality->name);
+            ->log('Updated the nationality: '.$nationality->name);
 
         return redirect()
             ->route('nationality.index')
             ->with('success', 'You have successfully updated a nationality!');
     }
-    
+
     public function destroy(Nationality $nationality)
     {
         $nationality = $this->nationalityServices->deleteNationality($nationality);
@@ -69,7 +69,7 @@ class NationalityController extends Controller
         activity()
             ->causedBy(Auth::user())
             ->performedOn($nationality)
-            ->log('Deleted the nationality: ' . $nationality->name);
+            ->log('Deleted the nationality: '.$nationality->name);
 
         return redirect()
             ->route('nationality.index')

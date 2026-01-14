@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 use App\Models\ModeOfAssistance;
+use Illuminate\Database\Seeder;
 
 class MoaSeeder extends Seeder
 {
@@ -13,13 +12,13 @@ class MoaSeeder extends Seeder
         $moas = [
             'Cash',
             'Check',
-            'Guarantee Letter'
+            'Guarantee Letter',
         ];
 
         foreach ($moas as $moa) {
             ModeOfAssistance::firstOrCreate([
-                'name'  => $moa,
-                'remarks'   => 'seeder generated',
+                'name' => $moa,
+                'remarks' => 'seeder generated',
             ]);
         }
     }

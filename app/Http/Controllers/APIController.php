@@ -7,13 +7,13 @@ use App\Models\Cheque;
 use App\Models\Claimant;
 use App\Models\Deceased;
 use App\Models\ProcessLog;
-use Illuminate\Http\Request;
 
 class APIController extends Controller
 {
-    public function getBurialAssistances() {
+    public function getBurialAssistances()
+    {
         $data = BurialAssistance::select(
-            'id', 
+            'id',
             'tracking_no',
             'application_date',
             'swa',
@@ -23,7 +23,7 @@ class APIController extends Controller
         )
             ->with('deceased', 'claimant')
             ->get()
-            ->map(function($application) {
+            ->map(function ($application) {
                 return [
                     'id' => $application->id,
                     'trackingNumber' => $application->tracking_no,
@@ -33,14 +33,15 @@ class APIController extends Controller
                     'deceased' => $application->deceased,
                     'claimant' => $application->claimant,
                     'amount' => $application->amount,
-                    'remarks' => $application->remarks
+                    'remarks' => $application->remarks,
                 ];
             });
 
         return response()->json($data);
     }
 
-    public function deceased() {
+    public function deceased()
+    {
         $data = Deceased::select(
             'id',
             'first_name',
@@ -66,13 +67,15 @@ class APIController extends Controller
                     'dateOfDeath' => $deceased->date_of_death,
                     'gender' => $deceased->gender == 1 ? 'Male' : 'Female',
                     'barangay' => $deceased->barangay,
-                    'religion' => $deceased->religion
+                    'religion' => $deceased->religion,
                 ];
             });
+
         return response()->json($data);
     }
 
-    public function claimants() {
+    public function claimants()
+    {
         $data = Claimant::select(
             'id',
             'first_name',
@@ -97,14 +100,15 @@ class APIController extends Controller
                     'barangay' => $claimant->barangay,
                     'mobileNumber' => $claimant->mobile_number,
                     'relationshipOfDeceasedToClaimant' => $claimant->relationship,
-                    'cheque' => $claimant->cheque
+                    'cheque' => $claimant->cheque,
                 ];
             });
 
         return response()->json($data);
     }
 
-    public function cheques() {
+    public function cheques()
+    {
         $data = Cheque::select(
             'id',
             'burial_assistance_id',
@@ -128,13 +132,15 @@ class APIController extends Controller
                     'dvNumber' => $cheque->dv_number,
                     'amount' => $cheque->amount,
                     'dateIssued' => $cheque->date_issued,
-                    'dateClaimed' => $cheque->date_claimed
+                    'dateClaimed' => $cheque->date_claimed,
                 ];
             });
+
         return response()->json($data);
     }
 
-    public function processLogs() {
+    public function processLogs()
+    {
         $data = ProcessLog::select(
             'id',
             'burial_assistance_id',
@@ -156,7 +162,7 @@ class APIController extends Controller
                     'dateIn' => $log->date_in,
                     'dateOut' => $log->date_out,
                     'comments' => $log->comments,
-                    'extraData' => $log->extra_data
+                    'extraData' => $log->extra_data,
                 ];
             });
 

@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use Crypt;
-use Illuminate\Http\Request;
-use App\Models\Client;
 use Storage;
 
 class ImageController extends Controller
@@ -19,6 +17,6 @@ class ImageController extends Controller
 
         return response($decrypted)
             ->header('Content-Type', $mime)
-            ->header('Content-Disposition', 'inline; filename="' . $filename . '"');
+            ->header('Content-Disposition', 'inline; filename="'.$filename.'"');
     }
 }

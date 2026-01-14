@@ -5,10 +5,11 @@
         <div class="container-xxl">
             <div class="row">
                 <div class="col d-flex align-items-center gap-2">
-                    <img src="{{ asset('images/CSWDO.webp') }}" alt="CSWDO Logo" class="landing-logo w-50px h-50px" />
+                    <img src="{{ asset('images/CSWDO.webp') }}" alt="CSWDO Logo"
+                        class="landing-logo w-50px h-50px d-none d-md-block d-lg-block" />
                     <img src="{{ asset('images/city_logo.webp') }}" alt="Taguig City Logo"
-                        class="landing-logo w-50px h-50px" />
-                    <h1 class="ms-4 mb-0">
+                        class="landing-logo w-50px h-50px d-none d-md-block d-lg-block" />
+                    <h1 class="ms-4 mb-0 d-none d-md-block d-lg-block">
                         @if (Route::is('landing.page'))
                             {{ session()->has('citizen') ? 'Welcome, ' . session('citizen')['firstname'] : '' }}
                         @else
@@ -36,8 +37,13 @@
                             <a href="https://tlcportal.taguig.gov.ph/login" class="btn btn-primary hover-scale">
                                 Register
                             </a>
+                            @if (session('info') && session('info') == 'Unable to fetch citizen details.')
+                                <a href="{{ route('general.intake.form') }}" class="btn btn-light hover-scale">
+                                    Apply without Citizen ID
+                                </a>
+                            @endif
                             @if (Route::is('landing.page'))
-                                <a href="{{ route('login.page') }}" class="btn btn-light hover-scale">
+                                <a href="{{ route('login') }}" class="btn btn-light text-nowrap hover-scale">
                                     Sign In
                                 </a>
                             @endif

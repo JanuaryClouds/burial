@@ -8,26 +8,30 @@ use Illuminate\Database\Eloquent\Model;
 class WorkflowStep extends Model
 {
     use HasFactory;
+
     protected $fillable = [
-        "order_no",
-        "handler_id",
-        "description",
-        "requires_extra_data",
-        "is_optional",
-        "extra_data_schema"
+        'order_no',
+        'handler_id',
+        'description',
+        'requires_extra_data',
+        'is_optional',
+        'extra_data_schema',
     ];
 
     protected $casts = [
-        'extra_data_schema' => 'array'
+        'extra_data_schema' => 'array',
     ];
-    protected $table = "workflow_steps";
+
+    protected $table = 'workflow_steps';
 
     // ! No longer used in replacement of Loggable
-    public function processLog() {
+    public function processLog()
+    {
         return $this->hasMany(ProcessLog::class);
     }
 
-    public function handler() {
+    public function handler()
+    {
         return $this->hasOne(Handler::class, 'handler_id', 'id');
     }
 }

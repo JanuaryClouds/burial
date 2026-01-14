@@ -13,19 +13,19 @@ class EducationService
 
     public function updateEducation(array $data, $education): Education
     {
-        if($education->update($data))
-        {
+        if ($education->update($data)) {
             return $education;
         }
+
         return null;
     }
 
     public function deleteEducation(Education $education): Education
     {
-        if($education->delete())
-        {
+        if ($education->delete()) {
             return $education;
         }
+
         return null;
     }
 }

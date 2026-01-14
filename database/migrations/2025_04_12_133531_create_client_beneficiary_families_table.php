@@ -23,7 +23,7 @@ return new class extends Migration
             $table->timestamps();
         });
     }
-    
+
     public function down(): void
     {
         Schema::dropIfExists('client_beneficiary_families');

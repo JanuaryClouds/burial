@@ -2,20 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Barangay;
 use App\Models\BurialAssistanceRequest;
 use App\Models\BurialService;
 use App\Models\BurialServiceProvider;
-
-use App\Models\Barangay;
 use App\Models\Relationship;
+use Illuminate\Http\Request;
 
 class SearchController extends Controller
 {
     public function admin(Request $request)
     {
         $term = $request->get('q', '');
-        if (!$term) {
+        if (! $term) {
             return response()->json([]);
         }
 
@@ -23,22 +22,22 @@ class SearchController extends Controller
         $requests = BurialAssistanceRequest::with(['barangay', 'service', 'relationship'])
             ->where(function ($q) use ($term) {
                 $q->where('deceased_firstname', 'like', "%{$term}%")
-                ->orWhere('deceased_lastname', 'like', "%{$term}%")
-                ->orWhere('representative', 'like', "%{$term}%")
-                ->orWhere('representative_phone', 'like', "%{$term}%")
-                ->orWhere('representative_email', 'like', "%{$term}%")
-                ->orWhere('representative_relationship', 'like', "%{$term}%")
-                ->orWhere('barangay_id', 'like', "%{$term}%")
-                ->orWhere('burial_address', 'like', "%{$term}%")
-                ->orWhere('start_of_burial', 'like', "%{$term}%")
-                ->orWhere('end_of_burial', 'like', "%{$term}%")
-                ->orWhere('status', 'like', "%{$term}%")
-                ->orWhere('service_id', 'like', "%{$term}%")
-                ->orWhere('remarks', 'like', "%{$term}%");
+                    ->orWhere('deceased_lastname', 'like', "%{$term}%")
+                    ->orWhere('representative', 'like', "%{$term}%")
+                    ->orWhere('representative_phone', 'like', "%{$term}%")
+                    ->orWhere('representative_email', 'like', "%{$term}%")
+                    ->orWhere('representative_relationship', 'like', "%{$term}%")
+                    ->orWhere('barangay_id', 'like', "%{$term}%")
+                    ->orWhere('burial_address', 'like', "%{$term}%")
+                    ->orWhere('start_of_burial', 'like', "%{$term}%")
+                    ->orWhere('end_of_burial', 'like', "%{$term}%")
+                    ->orWhere('status', 'like', "%{$term}%")
+                    ->orWhere('service_id', 'like', "%{$term}%")
+                    ->orWhere('remarks', 'like', "%{$term}%");
             })
             ->take(5)
             ->get()
-            ->map(fn($r) => [
+            ->map(fn ($r) => [
                 'type' => 'Requests',
                 'deceased_firstname' => $r->deceased_firstname,
                 'deceased_lastname' => $r->deceased_lastname,
@@ -57,22 +56,22 @@ class SearchController extends Controller
         $services = BurialService::with(['barangay', 'provider',  'relationship'])
             ->where(function ($s) use ($term) {
                 $s->where('deceased_firstname', 'like', "%{$term}%")
-                ->orWhere('deceased_lastname', 'like', "%{$term}%")
-                ->orWhere('representative', 'like', "%{$term}%")
-                ->orWhere('representative_phone', 'like', "%{$term}%")
-                ->orWhere('representative_email', 'like', "%{$term}%")
-                ->orWhere('representative_relationship', 'like', "%{$term}%")
-                ->orWhere('burial_address', 'like', "%{$term}%")
-                ->orWhere('barangay_id', 'like', "%{$term}%")
-                ->orWhere('start_of_burial', 'like', "%{$term}%")
-                ->orWhere('end_of_burial', 'like', "%{$term}%")
-                ->orWhere('burial_service_provider', 'like', "%{$term}%")
-                ->orWhere('collected_funds', 'like', "%{$term}%")
-                ->orWhere('remarks', 'like', "%{$term}%");
+                    ->orWhere('deceased_lastname', 'like', "%{$term}%")
+                    ->orWhere('representative', 'like', "%{$term}%")
+                    ->orWhere('representative_phone', 'like', "%{$term}%")
+                    ->orWhere('representative_email', 'like', "%{$term}%")
+                    ->orWhere('representative_relationship', 'like', "%{$term}%")
+                    ->orWhere('burial_address', 'like', "%{$term}%")
+                    ->orWhere('barangay_id', 'like', "%{$term}%")
+                    ->orWhere('start_of_burial', 'like', "%{$term}%")
+                    ->orWhere('end_of_burial', 'like', "%{$term}%")
+                    ->orWhere('burial_service_provider', 'like', "%{$term}%")
+                    ->orWhere('collected_funds', 'like', "%{$term}%")
+                    ->orWhere('remarks', 'like', "%{$term}%");
             })
             ->take(5)
             ->get()
-            ->map(fn($s) => [
+            ->map(fn ($s) => [
                 'type' => 'Services',
                 'deceased_firstname' => $s->deceased_firstname,
                 'deceased_lastname' => $s->deceased_lastname,
@@ -91,14 +90,14 @@ class SearchController extends Controller
         $providers = BurialServiceProvider::with(['barangay'])
             ->where(function ($p) use ($term) {
                 $p->where('name', 'like', "%{$term}%")
-                ->orWhere('contact_details', 'like', "%{$term}%")
-                ->orWhere('address', 'like', "%{$term}%")
-                ->orWhere('barangay_id', 'like', "%{$term}%")
-                ->orWhere('remarks', 'like', "%{$term}%");
+                    ->orWhere('contact_details', 'like', "%{$term}%")
+                    ->orWhere('address', 'like', "%{$term}%")
+                    ->orWhere('barangay_id', 'like', "%{$term}%")
+                    ->orWhere('remarks', 'like', "%{$term}%");
             })
             ->take(5)
             ->get()
-            ->map(fn($p) => [
+            ->map(fn ($p) => [
                 'type' => 'Providers',
                 'name' => $p->name,
                 'contact' => $p->contact_details,
@@ -109,12 +108,14 @@ class SearchController extends Controller
             ]);
 
         $results = $requests->concat($services)->concat($providers);
+
         return response()->json($results);
     }
 
-    public function superadmin(Request $request) {
+    public function superadmin(Request $request)
+    {
         $term = $request->get('q', '');
-        if (!$term) {
+        if (! $term) {
             return response()->json([]);
         }
 
@@ -122,22 +123,22 @@ class SearchController extends Controller
         $requests = BurialAssistanceRequest::with(['barangay', 'service', 'relationship'])
             ->where(function ($q) use ($term) {
                 $q->where('deceased_firstname', 'like', "%{$term}%")
-                ->orWhere('deceased_lastname', 'like', "%{$term}%")
-                ->orWhere('representative', 'like', "%{$term}%")
-                ->orWhere('representative_phone', 'like', "%{$term}%")
-                ->orWhere('representative_email', 'like', "%{$term}%")
-                ->orWhere('representative_relationship', 'like', "%{$term}%")
-                ->orWhere('barangay_id', 'like', "%{$term}%")
-                ->orWhere('burial_address', 'like', "%{$term}%")
-                ->orWhere('start_of_burial', 'like', "%{$term}%")
-                ->orWhere('end_of_burial', 'like', "%{$term}%")
-                ->orWhere('status', 'like', "%{$term}%")
-                ->orWhere('service_id', 'like', "%{$term}%")
-                ->orWhere('remarks', 'like', "%{$term}%");
+                    ->orWhere('deceased_lastname', 'like', "%{$term}%")
+                    ->orWhere('representative', 'like', "%{$term}%")
+                    ->orWhere('representative_phone', 'like', "%{$term}%")
+                    ->orWhere('representative_email', 'like', "%{$term}%")
+                    ->orWhere('representative_relationship', 'like', "%{$term}%")
+                    ->orWhere('barangay_id', 'like', "%{$term}%")
+                    ->orWhere('burial_address', 'like', "%{$term}%")
+                    ->orWhere('start_of_burial', 'like', "%{$term}%")
+                    ->orWhere('end_of_burial', 'like', "%{$term}%")
+                    ->orWhere('status', 'like', "%{$term}%")
+                    ->orWhere('service_id', 'like', "%{$term}%")
+                    ->orWhere('remarks', 'like', "%{$term}%");
             })
             ->take(5)
             ->get()
-            ->map(fn($r) => [
+            ->map(fn ($r) => [
                 'type' => 'Requests',
                 'deceased_firstname' => $r->deceased_firstname,
                 'deceased_lastname' => $r->deceased_lastname,
@@ -156,22 +157,22 @@ class SearchController extends Controller
         $services = BurialService::with(['barangay', 'provider',  'relationship'])
             ->where(function ($s) use ($term) {
                 $s->where('deceased_firstname', 'like', "%{$term}%")
-                ->orWhere('deceased_lastname', 'like', "%{$term}%")
-                ->orWhere('representative', 'like', "%{$term}%")
-                ->orWhere('representative_phone', 'like', "%{$term}%")
-                ->orWhere('representative_email', 'like', "%{$term}%")
-                ->orWhere('representative_relationship', 'like', "%{$term}%")
-                ->orWhere('burial_address', 'like', "%{$term}%")
-                ->orWhere('barangay_id', 'like', "%{$term}%")
-                ->orWhere('start_of_burial', 'like', "%{$term}%")
-                ->orWhere('end_of_burial', 'like', "%{$term}%")
-                ->orWhere('burial_service_provider', 'like', "%{$term}%")
-                ->orWhere('collected_funds', 'like', "%{$term}%")
-                ->orWhere('remarks', 'like', "%{$term}%");
+                    ->orWhere('deceased_lastname', 'like', "%{$term}%")
+                    ->orWhere('representative', 'like', "%{$term}%")
+                    ->orWhere('representative_phone', 'like', "%{$term}%")
+                    ->orWhere('representative_email', 'like', "%{$term}%")
+                    ->orWhere('representative_relationship', 'like', "%{$term}%")
+                    ->orWhere('burial_address', 'like', "%{$term}%")
+                    ->orWhere('barangay_id', 'like', "%{$term}%")
+                    ->orWhere('start_of_burial', 'like', "%{$term}%")
+                    ->orWhere('end_of_burial', 'like', "%{$term}%")
+                    ->orWhere('burial_service_provider', 'like', "%{$term}%")
+                    ->orWhere('collected_funds', 'like', "%{$term}%")
+                    ->orWhere('remarks', 'like', "%{$term}%");
             })
             ->take(5)
             ->get()
-            ->map(fn($s) => [
+            ->map(fn ($s) => [
                 'type' => 'Services',
                 'deceased_firstname' => $s->deceased_firstname,
                 'deceased_lastname' => $s->deceased_lastname,
@@ -190,14 +191,14 @@ class SearchController extends Controller
         $providers = BurialServiceProvider::with(['barangay'])
             ->where(function ($p) use ($term) {
                 $p->where('name', 'like', "%{$term}%")
-                ->orWhere('contact_details', 'like', "%{$term}%")
-                ->orWhere('address', 'like', "%{$term}%")
-                ->orWhere('barangay_id', 'like', "%{$term}%")
-                ->orWhere('remarks', 'like', "%{$term}%");
+                    ->orWhere('contact_details', 'like', "%{$term}%")
+                    ->orWhere('address', 'like', "%{$term}%")
+                    ->orWhere('barangay_id', 'like', "%{$term}%")
+                    ->orWhere('remarks', 'like', "%{$term}%");
             })
             ->take(5)
             ->get()
-            ->map(fn($p) => [
+            ->map(fn ($p) => [
                 'type' => 'Providers',
                 'name' => $p->name,
                 'contact' => $p->contact_details,
@@ -209,33 +210,34 @@ class SearchController extends Controller
         $barangays = Barangay::with(['district'])
             ->where(function ($q) use ($term) {
                 $q->where('name', 'like', '%'.$term.'%')
-                ->orWhere('remarks', 'like', '%'.$term.'%')
-                ->orWhere('district_id', 'like', '%'.$term.'%');
+                    ->orWhere('remarks', 'like', '%'.$term.'%')
+                    ->orWhere('district_id', 'like', '%'.$term.'%');
             })
             ->take(5)
             ->get()
-            ->map(fn($b) => [
+            ->map(fn ($b) => [
                 'type' => 'Barangays',
                 'name' => $b->name,
                 'district' => optional($b->district)->name,
                 'remarks' => $b->remarks,
-                'url' => route('superadmin.cms.barangays')
+                'url' => route('superadmin.cms.barangays'),
             ]);
         $relationships = Relationship::where(
             function ($q) use ($term) {
                 $q->where('name', 'like', '%'.$term.'%')
-                ->orWhere('remarks', 'like', '%'.$term.'%');
+                    ->orWhere('remarks', 'like', '%'.$term.'%');
             })
             ->take(5)
             ->get()
-            ->map(fn($r) => [
+            ->map(fn ($r) => [
                 'type' => 'Relationships',
                 'name' => $r->name,
                 'remarks' => $r->remarks,
-                'url' => route('superadmin.cms.relationships')
+                'url' => route('superadmin.cms.relationships'),
             ]);
-        
+
         $results = $requests->concat($services)->concat($providers)->concat($barangays)->concat($relationships);
+
         return response()->json($results);
     }
 }

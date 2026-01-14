@@ -2,35 +2,35 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BurialAssistance;
 use App\Models\Cheque;
 use App\Models\Claimant;
-use App\Models\Deceased;
-use Illuminate\Http\Request;
-use App\Services\ReportService;
 use App\Models\Client;
-use App\Models\BurialAssistance;
+use App\Models\Deceased;
 use App\Models\FuneralAssistance;
+use App\Services\ReportService;
 use Carbon\Carbon;
-use Storage;
+use Illuminate\Http\Request;
 
 class ReportController extends Controller
 {
     protected $reportService;
-    
+
     private $reportTypes = [
         'burial_assistance' => 'Burial Assistance Report',
         'deceased' => 'Deceased Persons Report',
         'cheques' => 'Cheques Report',
     ];
 
-    public function clients(Request $request, ReportService $reportService) {
+    public function clients(Request $request, ReportService $reportService)
+    {
         $model = 'clients';
         if ($request->has('start_date') && $request->start_date != '') {
             $startDate = Carbon::parse($request->start_date);
         } else {
             $startDate = Carbon::now()->startOfYear();
         }
-        
+
         if ($request->has('end_date') && $request->end_date != '') {
             $endDate = Carbon::parse($request->end_date);
         } else {
@@ -38,22 +38,23 @@ class ReportController extends Controller
         }
 
         $clients = Client::select(
-                'id', 
-                'tracking_no', 
-                'first_name', 
-                'middle_name', 
-                'last_name', 
-                'suffix', 
-                'contact_no', 
-                'house_no', 
-                'street', 
-                'barangay_id'
-            )
+            'id',
+            'tracking_no',
+            'first_name',
+            'middle_name',
+            'last_name',
+            'suffix',
+            'contact_no',
+            'house_no',
+            'street',
+            'barangay_id'
+        )
             ->whereBetween('created_at', [$startDate, $endDate])
             ->get();
 
         $clientsPerBarangay = $reportService->clientsPerBarangay($startDate, $endDate);
         $clientsPerAssistance = $reportService->clientsPerAssistance($startDate, $endDate);
+
         return view('reports.index', compact(
             'clients',
             'model',
@@ -64,14 +65,15 @@ class ReportController extends Controller
         ));
     }
 
-    public function burialAssistances(Request $request, ReportService $reportService) {
+    public function burialAssistances(Request $request, ReportService $reportService)
+    {
         $model = 'burial-assistances';
         if ($request->has('start_date') && $request->start_date != '') {
             $startDate = Carbon::parse($request->start_date);
         } else {
             $startDate = Carbon::now()->startOfYear();
         }
-        
+
         if ($request->has('end_date') && $request->end_date != '') {
             $endDate = Carbon::parse($request->end_date);
         } else {
@@ -82,9 +84,9 @@ class ReportController extends Controller
             ->orderBy('tracking_no', 'asc')
             ->whereBetween('application_date', [$startDate, $endDate])
             ->get();
-            
+
         $deceasedPerBarangay = $reportService->deceasedPerBarangay($startDate, $endDate);
-        $deceasedPerReligion = $reportService->deceasedPerReligion($startDate, $endDate); 
+        $deceasedPerReligion = $reportService->deceasedPerReligion($startDate, $endDate);
         $statistics = [
             $burialAssistanceStatistics = [
                 'type' => 'burial_assistance',
@@ -98,7 +100,7 @@ class ReportController extends Controller
                     'approved' => $burialAssistances->where('status', 'approved')->count(),
                     'released' => $burialAssistances->where('status', 'released')->count(),
                     'rejected' => $burialAssistances->where('status', 'rejected')->count(),
-                ]
+                ],
             ],
         ];
 
@@ -136,7 +138,7 @@ class ReportController extends Controller
         ];
 
         return view('reports.index', compact(
-            'burialAssistances', 
+            'burialAssistances',
             'model',
             'statistics',
             'deceasedPerBarangay',
@@ -147,14 +149,15 @@ class ReportController extends Controller
         ));
     }
 
-    public function deceased(Request $request, ReportService $reportService) {
+    public function deceased(Request $request, ReportService $reportService)
+    {
         $model = 'deceased';
         if ($request->has('start_date') && $request->start_date != '') {
             $startDate = Carbon::parse($request->start_date);
         } else {
             $startDate = Carbon::now()->startOfYear();
         }
-        
+
         if ($request->has('end_date') && $request->end_date != '') {
             $endDate = Carbon::parse($request->end_date);
         } else {
@@ -169,6 +172,7 @@ class ReportController extends Controller
         $deceasedPerBarangay = $reportService->deceasedPerBarangay($startDate, $endDate);
         $deceasedPerReligion = $reportService->deceasedPerReligion($startDate, $endDate);
         $deceasedPerGender = $reportService->deceasedPerGender($startDate, $endDate);
+
         return view('reports.index', compact(
             'deceased',
             'model',
@@ -181,27 +185,28 @@ class ReportController extends Controller
         ));
     }
 
-    public function claimants(Request $request, ReportService $reportService) {
+    public function claimants(Request $request, ReportService $reportService)
+    {
         $model = 'claimants';
         if ($request->has('start_date') && $request->start_date != '') {
             $startDate = Carbon::parse($request->start_date);
         } else {
             $startDate = Carbon::now()->startOfYear();
         }
-        
+
         if ($request->has('end_date') && $request->end_date != '') {
             $endDate = Carbon::parse($request->end_date);
         } else {
             $endDate = Carbon::now()->endOfYear();
         }
-        
+
         $claimants = Claimant::select('first_name', 'middle_name', 'last_name', 'suffix', 'relationship_to_deceased', 'mobile_number', 'address', 'barangay_id')->get();
         $claimantsPerBarangay = $reportService->claimantPerBarangay($startDate, $endDate);
         $claimantsPerRelationship = $reportService->claimantPerRelationship($startDate, $endDate);
 
         return view('reports.index', compact(
             'claimants',
-            'model', 
+            'model',
             'claimantsPerBarangay',
             'claimantsPerRelationship',
             'startDate',
@@ -209,7 +214,8 @@ class ReportController extends Controller
         ));
     }
 
-    public function generate(Request $request, ReportService $reportService) {
+    public function generate(Request $request, ReportService $reportService)
+    {
         try {
             $request->validate([
                 'report_type' => 'required|string',
@@ -219,7 +225,7 @@ class ReportController extends Controller
             $reportType = $request->input('report_type');
             $startDate = $request->input('start_date');
             $endDate = $request->input('end_date');
-    
+
             if ($reportType == 'burial_assistance') {
                 return $reportService->burialAssistanceReport($startDate, $endDate);
             } elseif ($reportType == 'deceased') {
@@ -229,35 +235,36 @@ class ReportController extends Controller
                 return back()->with('error', 'Invalid report type selected.');
             }
         } catch (\Exception $e) {
-            return back()->with('error', 'An error occurred while generating the report: ' . $e->getMessage());
+            return back()->with('error', 'An error occurred while generating the report: '.$e->getMessage());
         }
     }
 
-    public function cheques(Request $request, ReportService $reportService) {
+    public function cheques(Request $request, ReportService $reportService)
+    {
         $model = 'cheques';
         if ($request->has('start_date') && $request->start_date != '') {
             $startDate = Carbon::parse($request->start_date);
         } else {
             $startDate = Carbon::now()->startOfYear();
         }
-        
+
         if ($request->has('end_date') && $request->end_date != '') {
             $endDate = Carbon::parse($request->end_date);
         } else {
             $endDate = Carbon::now()->endOfYear();
         }
-        
+
         $cheques = Cheque::select(
-            'id', 
-            'burial_assistance_id', 
-            'claimant_id', 
-            'obr_number', 
-            'cheque_number', 
-            'dv_number', 
-            'amount', 
-            'date_issued', 
-            'date_claimed', 
-            'status', 
+            'id',
+            'burial_assistance_id',
+            'claimant_id',
+            'obr_number',
+            'cheque_number',
+            'dv_number',
+            'amount',
+            'date_issued',
+            'date_claimed',
+            'status',
             'created_at'
         )
             ->whereBetween('date_issued', [$startDate, $endDate])
@@ -266,21 +273,22 @@ class ReportController extends Controller
 
         return view('reports.index', compact(
             'cheques',
-            'model', 
+            'model',
             'chequesPerStatus',
             'startDate',
             'endDate',
         ));
     }
 
-    public function funerals(Request $request, ReportService $reportService) {
+    public function funerals(Request $request, ReportService $reportService)
+    {
         $model = 'funerals';
         if ($request->has('start_date') && $request->start_date != '') {
             $startDate = Carbon::parse($request->start_date);
         } else {
             $startDate = Carbon::now()->startOfYear();
         }
-        
+
         if ($request->has('end_date') && $request->end_date != '') {
             $endDate = Carbon::parse($request->end_date);
         } else {
@@ -296,12 +304,13 @@ class ReportController extends Controller
             ->whereBetween('created_at', [$startDate, $endDate])
             ->get();
         $funeralsPerStatus = $reportService->funeralsPerStatus($startDate, $endDate);
+
         return view('reports.index', compact(
             'funerals',
             'model',
             'funeralsPerStatus',
             'startDate',
-            'endDate', 
+            'endDate',
         ));
     }
 }

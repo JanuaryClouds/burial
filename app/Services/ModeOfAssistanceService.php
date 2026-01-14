@@ -13,19 +13,19 @@ class ModeOfAssistanceService
 
     public function updateModeOfAssistance(array $data, $moa): ModeOfAssistance
     {
-        if($moa->update($data))
-        {
+        if ($moa->update($data)) {
             return $moa;
         }
+
         return null;
     }
 
     public function deleteModeOfAssistance($moa): ModeOfAssistance
     {
-        if($moa->delete())
-        {
+        if ($moa->delete()) {
             return $moa;
         }
+
         return null;
     }
 }

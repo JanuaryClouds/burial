@@ -31,6 +31,7 @@ class applicationsModalLoader extends Component
             'status',
         )
             ->get();
+
         return view('components.applications-modal-loader', compact('applications'));
     }
 }

@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ApplicationStep;
 use App\Models\BurialAssistance;
+use App\Models\Client;
 use App\Models\DocumentRequirement;
 use App\Models\FuneralAssistance;
 use App\Services\CentralClientService;
-use App\Models\Client;
-use App\Models\ApplicationStep;
-use Exception;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 
 class CitizenAccessController extends Controller
@@ -58,17 +58,18 @@ class CitizenAccessController extends Controller
                     // Store citizen data in session to keep them "logged in"
                     session(['citizen' => $citizen]);
                 } else {
-                    return back()->with('info', "No citizen found.");
+                    return back()->with('info', 'Unable to fetch citizen details.');
                 }
             } catch (Exception $e) {
                 return back()->with('error', $e->getMessage());
             }
         }
 
-        if ($citizen) 
+        if ($citizen) {
             $existingClient = Client::where('citizen_id', session('citizen')['user_id'])->exists();
-        else 
+        } else {
             $existingClient = false;
+        }
 
         $cardData = [
             [
@@ -96,7 +97,7 @@ class CitizenAccessController extends Controller
                 'count' => $totalClients,
             ],
         ];
-        
+
         return view('landing', compact(
             'citizen',
             'existingClient',

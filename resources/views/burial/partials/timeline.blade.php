@@ -1,14 +1,13 @@
 <ul class="list-group">
-    <li class="list-group-item bg-body-secondary d-flex justify-content-between align-items-center">
+    <li class="list-group-item bg-transparent bg-body-secondary d-flex justify-content-between align-items-center">
         Submitted Application
         <span class="badge badge-pill p-0">{{ $burialAssistance->created_at }}</span>
     </li>
     @foreach ($claimants as $claimant)
-        @foreach ($processLogs as $log)
+        @forelse ($processLogs as $log)
             <li
-                class="list-group-item d-flex justify-content-between align-items-center {{ $loop->last ? 'bg-primary text-white' : 'bg-body-secondary' }}">
-                <p
-                    class="mb-0 {{ $loop->last ? 'fw-bold text-white' : 'text-black' }} d-flex align-items-baseline gap-3">
+                class="list-group-item d-flex justify-content-between align-items-center {{ $loop->last ? 'bg-primary text-white' : 'bg-body-secondary bg-transparent' }}">
+                <p class="mb-0 {{ $loop->last ? 'fw-bold text-white' : '' }} d-flex align-items-baseline gap-3">
                     <b>{{ class_basename($log->loggable) === 'WorkflowStep' ? $log->loggable?->description : $log->comments }}</b>
                     @if (class_basename($log->loggable) === 'WorkflowStep' && $log->comments)
                         <a class="ml-4 {{ $loop->last ? 'text-white' : '' }}"
@@ -34,7 +33,7 @@
                 @if (class_basename($log->loggable) === 'WorkflowStep')
                     <span class="d-flex justify-content-center align-items-center gap-3">
                         <span
-                            class="badge badge-pill p-0 m-0 d-flex align-items-center {{ $loop->last ? 'text-white fw-bold' : 'text-black' }}">
+                            class="badge badge-pill p-0 m-0 d-flex align-items-center {{ $loop->last ? 'text-white fw-bold' : '' }}">
                             In: {{ $log->date_in }}
                             {{ $log->date_out ? '/ Out: ' . $log->date_out : '' }}
                         </span>
@@ -101,7 +100,11 @@
                     </div>
                 </div>
             @endif
-        @endforeach
+        @empty
+            <li class="list-group-item d-flex justify-content-center align-items-center">
+                <p class="mb-0">No logs yet</p>
+            </li>
+        @endforelse
 
         @php
             $lastLogDate = $claimant->processLogs->last()?->date_in;

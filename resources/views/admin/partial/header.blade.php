@@ -8,7 +8,12 @@
             class="page-title d-flex flex-column align-items-start justify-content-center flex-wrap me-lg-20 py-3 py-lg-0 me-3">
             <!--begin::Heading-->
             <h1 class="d-flex flex-column text-gray-900 fw-bold my-1">
-                <span class="text-white fs-1">{{ $page_title ?? 'CSWDO - Funeral Assistance' }}</span>
+                <span class="text-white fs-1">
+                    {{ $page_title ?? 'CSWDO - Funeral Assistance' }}
+                    @if (Route::is('*.show') && $readonly ?? false)
+                        <i class="ki-duotone ki-lock-3"></i>
+                    @endif
+                </span>
                 <small class="text-gray-600 fs-6 fw-normal pt-2">
                     {{ $page_subtitle ?? 'Today is ' . \Carbon\Carbon::now()->format('l, F d, Y') }}.
                 </small>
@@ -17,14 +22,17 @@
         </div>
         <!--end::Page title--->
         <!--begin::Wrapper-->
-        <div class="d-flex align-items-center flex-wrap gap-3">
+        <div class="d-flex align-items-center justify-content-end flex-wrap gap-3">
             <!-- begin::Menu wrapper -->
             @includeWhen(Route::is('funeral.show'), 'funeral.partials.action-buttons')
             @includeWhen(Route::is('client.show'), 'client.partial.action-buttons')
             @includeWhen(Route::is('*.index') && auth()->user()->can('manage-content'),
                 'superadmin.partial.new-content')
+            @includeWhen(Route::is('*.show') && auth()->user()->can('manage-content'),
+                'cms.partials.edit-content-buttons')
             <!-- end::Menu wrapper -->
 
+            @include('admin.partial.mobile-nav')
             <!-- begin::Theme mode -->
             @include('components.theme-toggle')
             <!-- end::Theme mode -->

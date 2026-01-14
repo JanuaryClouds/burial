@@ -8,19 +8,23 @@ use Illuminate\Database\Eloquent\Model;
 class ClientSocialInfo extends Model
 {
     use HasFactory;
+
     protected $table = 'client_social_infos';
 
     protected $primaryKey = 'id';
+
     public $incrementing = false;
+
     protected $keyType = 'string';
-    protected $fillable  = [
+
+    protected $fillable = [
         'id',
         'client_id',
         'relationship_id',
         'civil_id',
-        'education_id', 
+        'education_id',
         'income',
-        'philhealth', 
+        'philhealth',
         'skill',
     ];
 

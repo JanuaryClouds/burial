@@ -5,9 +5,6 @@ namespace App\View\Components;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
-use App\Models\Barangay;
-use App\Models\Sex;
-use App\Models\Religion;
 
 class deceasedForm extends Component
 {

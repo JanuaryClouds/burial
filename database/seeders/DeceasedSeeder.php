@@ -2,11 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
-use App\Models\Deceased;
 use App\Models\Barangay;
+use App\Models\Deceased;
 use App\Models\Sex;
+use Illuminate\Database\Seeder;
 
 class DeceasedSeeder extends Seeder
 {
@@ -37,12 +36,12 @@ class DeceasedSeeder extends Seeder
                 'suffix' => null,
                 'date_of_birth' => '1960-05-30',
                 'date_of_death' => '2025-08-18',
-                'gender'=> $genders->random(),
+                'gender' => $genders->random(),
                 'address' => '456 Second St',
                 'barangay_id' => $barangays->random(),
             ],
             [
-                'given_name'=> 'David',
+                'given_name' => 'David',
                 'middle_name' => 'Garcia',
                 'last_name' => 'Santos',
                 'suffix' => 'Jr.',

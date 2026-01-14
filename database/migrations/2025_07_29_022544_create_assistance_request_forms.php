@@ -29,7 +29,7 @@ return new class extends Migration
                 ->noActionOnUpdate();
             $table->datetime('start_of_burial');
             $table->datetime('end_of_burial');
-            $table->enum("status", [
+            $table->enum('status', [
                 'pending',
                 'approved',
                 'rejected',

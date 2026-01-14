@@ -6,7 +6,7 @@
                     <table id="generic-table" class="table data-table generic-table" style="width:100%">
                         <thead>
                             <tr role="row">
-                                @forelse ($deceased->first()->getAttributes() as $column => $value)
+                                @foreach ($deceased->first()->getAttributes() as $column => $value)
                                     @php
                                         $excemptions = ['id', 'created_at', 'updated_at'];
                                     @endphp
@@ -14,13 +14,11 @@
                                         <th class="sorting sort-handler">
                                             {{ Str::title(Str::replace('_', ' ', $column)) }}</th>
                                     @endif
-                                @empty
-                                    <th>No Deceased</th>
-                                @endforelse
+                                @endforeach
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($deceased as $entry)
+                            @foreach ($deceased as $entry)
                                 <tr class="bg-white">
                                     @foreach ($entry->getAttributes() as $key => $value)
                                         @if (!in_array($key, $excemptions))
@@ -36,11 +34,7 @@
                                         @endif
                                     @endforeach
                                 </tr>
-                            @empty
-                                <tr>
-                                    <td>No Deceased</td>
-                                </tr>
-                            @endforelse
+                            @endforeach
                         </tbody>
                     </table>
                 </div>

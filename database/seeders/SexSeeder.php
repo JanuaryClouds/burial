@@ -2,23 +2,22 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 use App\Models\Sex;
+use Illuminate\Database\Seeder;
 
 class SexSeeder extends Seeder
 {
     public function run(): void
     {
         $sexes = [
-            'Female', 
-            'Male'
+            'Female',
+            'Male',
         ];
 
         foreach ($sexes as $sex) {
             Sex::firstOrCreate([
                 'name' => $sex,
-                'remarks'   => 'seeder generated',
+                'remarks' => 'seeder generated',
             ]);
         }
     }

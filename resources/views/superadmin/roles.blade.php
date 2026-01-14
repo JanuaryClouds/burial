@@ -19,7 +19,7 @@
         </div>
         <div id="new-role-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="new-role-modal"
             aria-hidden="true">
-            <form action="{{ route('roles.store') }}" method="post">
+            <form action="{{ route('role.store') }}" method="post">
                 @csrf
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
@@ -46,7 +46,8 @@
                                         'is_active',
                                     ]))
                                     <div class="form-group">
-                                        <label for="{{ $field }}">{{ ucfirst(str_replace('_', ' ', $field)) }}</label>
+                                        <label
+                                            for="{{ $field }}">{{ ucfirst(str_replace('_', ' ', $field)) }}</label>
                                         <input type="text" name="{{ $field }}" id="{{ $field }}"
                                             class="form-control">
                                     </div>

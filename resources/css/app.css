@@ -1,63 +1,42 @@
-/* Bootstrap core */
-@import "bootstrap/dist/css/bootstrap.min.css";
+/**
+ *
+ * You can write your CSS code here, DO NOT touch the default JavaScript file
+ * because it will make it harder for you to update.
+ * 
+ */
 
-/* DataTables Bootstrap 4 theme */
-@import url('datatables.net-bs4');
-@import url('datatables.net-buttons-bs4');
-@import url('datatables.net-responsive-bs4');
-@import "datatables.net-bs4/css/dataTables.bootstrap4.css";
-@import "datatables.net-responsive-bs4/css/responsive.bootstrap4.css";
-
-/* Stisla */
-@import './style.css';
-@import './components.css';
-@import './custom.css';
-
-
-/* Custom fonts and overrides */
+/*# sourceMappingURL=custom.css.map */
 @font-face {
-   font-family: 'Inter Bold';
-   font-style: normal;
-   font-weight: 400;
-   src: url("../fonts/FuturaCyrillicMedium.ttf");
+    font-family: Helvetica;
+    src: url(../fonts/Helvetica.ttf);
 }
 
 @font-face {
-   font-family: 'Poppins';
-   font-style: normal;
-   font-weight: 400;
-   src: url("../fonts/poppins.ttf");
+    font-family: Inter;
+    src: url(../fonts/Futura.ttf);
 }
 
-h1, h2, h3, h4, h5, h6 {
-   font-family: 'Poppins', sans-serif;
-   font-weight: bold;
+@font-face {
+    font-family: Poppins;
+    src: url(../fonts/poppins.ttf);
 }
 
 body {
-   font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-family: Poppins;
+    src: url(../fonts/poppins.ttf);
 }
 
-#sidebar-wrapper {
-   overflow-y: auto;
-   max-height: 100vh;
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
 }
 
-#sidebar-wrapper::-webkit-scrollbar {
-   scrollbar-width: thin;
-   background: transparent;
-   position: absolute;
+.swal2-popup {
+    font-family: 'Poppins', sans-serif !important;
 }
 
-#sidebar-wrapper:hover {
-   scrollbar-width: thin;
- }
- 
- #sidebar-wrapper:hover::-webkit-scrollbar {
-   width: thin;
- }
- 
- #sidebar-wrapper:hover::-webkit-scrollbar-thumb {
-   background-color: rgba(120, 120, 120, 0.6);
-   border-radius: 3px;
- }
+:root, [data-bs-theme="light"] {   
+    --bs-blue: #1A4798;
+    --bs-red: #ed1c24;
+    --bs-yellow: #f4c027;
+}

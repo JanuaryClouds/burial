@@ -16,7 +16,7 @@
                                         'contact_no',
                                     ];
                                 @endphp
-                                @forelse ($clients->first()->getAttributes() as $column => $value)
+                                @foreach ($clients->first()->getAttributes() as $column => $value)
                                     @if (in_array($column, $renderColumns))
                                         @if ($column == 'first_name')
                                             <th class="sorting sort-handler">Name</th>
@@ -26,14 +26,12 @@
                                             </th>
                                         @endif
                                     @endif
-                                @empty
-                                    <th>No Clients</th>
-                                @endforelse
+                                @endforeach
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($clients as $entry)
+                            @foreach ($clients as $entry)
                                 @if (!$entry->funeralAssistance)
                                     <tr class="">
                                         @foreach ($entry->getAttributes() as $key => $value)
@@ -58,11 +56,7 @@
                                         </td>
                                     </tr>
                                 @endif
-                            @empty
-                                <tr>
-                                    <td>No Clients</td>
-                                </tr>
-                            @endforelse
+                            @endforeach
                         </tbody>
                     </table>
                 </div>

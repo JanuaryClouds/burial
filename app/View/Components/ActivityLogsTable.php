@@ -25,6 +25,7 @@ class ActivityLogsTable extends Component
         $logs = Activity::select('id', 'description', 'causer_type', 'causer_id', 'properties', 'created_at')
             ->orderBy('created_at', 'desc')
             ->get();
+
         return view('components.activity-logs-table', compact('logs'));
     }
 }

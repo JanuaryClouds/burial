@@ -9,10 +9,14 @@ class Cheque extends Model
 {
     use HasFactory;
 
-    protected $table = "cheques";
-    protected $primaryKey = "id";
+    protected $table = 'cheques';
+
+    protected $primaryKey = 'id';
+
     public $incrementing = false;
+
     protected $keyType = 'string';
+
     protected $fillable = [
         'id',
         'burial_assistance_id',
@@ -23,18 +27,20 @@ class Cheque extends Model
         'amount',
         'date_issued',
         'date_claimed',
-        'status'
+        'status',
     ];
 
     // TODO Soon to send to disbursement system
     // TODO Deletion is not allowed, but should be stored as request for editing and deleting
     // TODO Head can see those request
 
-    public function burialAssistance() {
+    public function burialAssistance()
+    {
         return $this->belongsTo(BurialAssistance::class, 'burial_assistance_id', 'id');
     }
 
-    public function claimant() {
+    public function claimant()
+    {
         return $this->belongsTo(Claimant::class, 'claimant_id', 'id');
     }
 }

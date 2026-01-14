@@ -2,25 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ClaimantChange;
-use App\Models\WorkflowStep;
-use Illuminate\Http\Request;
 use App\Models\BurialAssistance;
-use App\Services\ProcessLogService;
 use App\Models\User;
-use App\Exports\BurialAssistancesExport;
-use App\Exports\BurialAssistancesExportTemplate;
-use Maatwebsite\Excel\Facades\Excel;
+use App\Services\ProcessLogService;
+use Carbon\Carbon;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use Illuminate\Support\Facades\Response;
-use Carbon\Carbon;
 
 class ExportController extends Controller
 {
     protected $processLogService;
 
-    public function applications(ProcessLogService $processLogService) {
+    public function applications(ProcessLogService $processLogService)
+    {
         $templatePath = storage_path('app/templates/burial-assistances-template.xlsx');
         $spreadsheet = IOFactory::load($templatePath);
 
@@ -59,7 +53,7 @@ class ExportController extends Controller
             $sheet->setCellValue("A{$row}", $ba->tracking_no);
             $sheet->setCellValue("B{$row}", $ba->application_date);
             $sheet->setCellValue("C{$row}", $ba->swa);
-            $sheet->setCellValue("D{$row}", $encoder ? $encoder->first_name . ' ' . $encoder->last_name : '');
+            $sheet->setCellValue("D{$row}", $encoder ? $encoder->first_name.' '.$encoder->last_name : '');
             $sheet->setCellValue("E{$row}", $firstClaimant->last_name);
             $sheet->setCellValue("F{$row}", $firstClaimant->first_name);
             $sheet->setCellValue("G{$row}", $firstClaimant?->middle_name);
@@ -120,18 +114,19 @@ class ExportController extends Controller
                 $sheet->setCellValue("BH{$row}", $processLogService->getLog($newClaimant, 7)?->date_out ?? '');
                 $sheet->setCellValue("BI{$row}", $processLogService->getLog($newClaimant, 7)?->date_in ?? '');
                 $sheet->setCellValue("BJ{$row}",
-                ($processLogService->getLog($newClaimant, 9)?->date_in ?? '') . ' / ' .
-                    ($processLogService->getLog($newClaimant, 8)?->date_in ?? '') . ' / ' .
-                    ($processLogService->getLog($newClaimant, 10)?->date_in ?? '')
+                    ($processLogService->getLog($newClaimant, 9)?->date_in ?? '').' / '.
+                        ($processLogService->getLog($newClaimant, 8)?->date_in ?? '').' / '.
+                        ($processLogService->getLog($newClaimant, 10)?->date_in ?? '')
                 );
             }
             $sheet->setCellValue("BK{$row}", $ba?->status ?? '');
             $sheet->setCellValue("BL{$row}", $ba?->remarks ?? '');
-            $sheet->setCellValue("BM{$row}", $initialChecker ? $initialChecker->first_name . ' ' . $initialChecker->last_name : '');
+            $sheet->setCellValue("BM{$row}", $initialChecker ? $initialChecker->first_name.' '.$initialChecker->last_name : '');
             $row++;
-        };
+        }
 
-        $filename = 'burial-assistances-database-export-' . '-' . now()->format('YmdHis') . '.xlsx';
+        $filename = 'burial-assistances-database-export-'.'-'.now()->format('YmdHis').'.xlsx';
+
         return response()->streamDownload(function () use ($spreadsheet) {
             $writer = new Xlsx($spreadsheet);
             $writer->save('php://output');

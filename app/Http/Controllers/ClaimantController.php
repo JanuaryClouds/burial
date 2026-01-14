@@ -10,7 +10,8 @@ use Illuminate\Http\Request;
 
 class ClaimantController extends Controller
 {
-    public function generatePdfReport(Request $request, $startDate, $endDate) {
+    public function generatePdfReport(Request $request, $startDate, $endDate)
+    {
         try {
             $claimants = Claimant::select(
                 'id',
@@ -23,40 +24,41 @@ class ClaimantController extends Controller
                 'address',
                 'barangay_id'
             )
-            ->with('barangay', 'relationship', 'barangay', 'oldClaimantChanges', 'newClaimantChanges', 'burialAssistance')
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->get();
-            
-            $barangays = Barangay::with(['claimant' => function($query) use ($startDate, $endDate) {
+                ->with('barangay', 'relationship', 'barangay', 'oldClaimantChanges', 'newClaimantChanges', 'burialAssistance')
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->get();
+
+            $barangays = Barangay::with(['claimant' => function ($query) use ($startDate, $endDate) {
                 $query->whereBetween('created_at', [$startDate, $endDate]);
             }])
                 ->select('id', 'name')
-                ->whereHas('claimant', function($query) use ($startDate, $endDate) {
+                ->whereHas('claimant', function ($query) use ($startDate, $endDate) {
                     $query->whereBetween('created_at', [$startDate, $endDate]);
                 })
                 ->get();
 
-            $relationships = Relationship::with(['claimant' => function($query) use ($startDate, $endDate) {
+            $relationships = Relationship::with(['claimant' => function ($query) use ($startDate, $endDate) {
                 $query->whereBetween('created_at', [$startDate, $endDate]);
             }])
                 ->select('id', 'name')
-                ->whereHas('claimant', function($query) use ($startDate, $endDate) {
+                ->whereHas('claimant', function ($query) use ($startDate, $endDate) {
                     $query->whereBetween('created_at', [$startDate, $endDate]);
                 })
                 ->get();
 
             $charts = $request->input('charts', []);
             $pdf = Pdf::loadView('pdf.claimant', compact(
-                'claimants', 
-                'barangays', 
+                'claimants',
+                'barangays',
                 'relationships',
                 'startDate',
                 'endDate',
                 'charts',
             ));
+
             return $pdf->stream('claimant-report.pdf');
         } catch (\Exception $e) {
-            return back()->with('error', 'An error occurred while generating the report: ' . $e->getMessage());
+            return back()->with('error', 'An error occurred while generating the report: '.$e->getMessage());
         }
     }
 }

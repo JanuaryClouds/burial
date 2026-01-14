@@ -11,7 +11,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles;
+    use HasApiTokens, HasFactory, HasRoles, Notifiable;
 
     protected $fillable = [
         'first_name',
@@ -21,39 +21,44 @@ class User extends Authenticatable
         'contact_number',
         'password',
     ];
-    
+
     protected $hidden = [
         'password',
         'remember_token',
     ];
-    
+
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
 
-    public function isAdmin ()
+    public function isAdmin()
     {
         return $this->hasRole('admin');
     }
 
-    public function processLogs() {
+    public function processLogs()
+    {
         return $this->hasMany(ProcessLog::class, 'added_by', 'id');
     }
 
-    public function encoder() {
+    public function encoder()
+    {
         return $this->hasMany(BurialAssistance::class, 'encoder', 'id');
     }
 
-    public function initialChecker() {
+    public function initialChecker()
+    {
         return $this->hasMany(BurialAssistance::class, 'initial_checker', 'id');
     }
 
-    public function assignedTo() {
+    public function assignedTo()
+    {
         return $this->hasMany(BurialAssistance::class, 'assigned_to', 'id');
     }
 
-    public function routeRestrictions() {
+    public function routeRestrictions()
+    {
         return $this->hasMany(UserRouteRestriction::class, 'user_id', 'id');
     }
 }

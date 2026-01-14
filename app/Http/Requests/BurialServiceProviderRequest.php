@@ -26,7 +26,7 @@ class BurialServiceProviderRequest extends FormRequest
             'contact_details' => 'required|string|max:255',
             'address' => 'required|string|max:255',
             'barangay_id' => 'required|exists:barangays,id',
-            'remarks'=> 'nullable|string|max:255',
+            'remarks' => 'nullable|string|max:255',
         ];
     }
 }

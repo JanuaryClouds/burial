@@ -17,12 +17,12 @@ class CheckApiKey
     {
         $providedApiKey = $request->header('X-API-KEY');
         $validApiKeys = config('services.api_keys');
-        if (!$providedApiKey || !in_array($providedApiKey, $validApiKeys, true)) {
+        if (! $providedApiKey || ! in_array($providedApiKey, $validApiKeys, true)) {
             return response()->json([
                 'message' => 'Invalid or missing API key.',
             ], 401);
         }
-        
+
         return $next($request);
     }
 }

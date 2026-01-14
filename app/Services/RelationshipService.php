@@ -13,19 +13,19 @@ class RelationshipService
 
     public function updateRelationship(array $data, $relationship): Relationship
     {
-        if($relationship->update($data))
-        {
+        if ($relationship->update($data)) {
             return $relationship;
         }
+
         return null;
     }
 
     public function deleteRelationship($relationship): Relationship
     {
-        if($relationship->delete())
-        {
+        if ($relationship->delete()) {
             return $relationship;
         }
+
         return null;
     }
 }

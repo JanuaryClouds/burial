@@ -7852,8 +7852,8 @@ var KTThemeModeUser = function () {
         KTThemeMode.on("kt.thememode.change", function() {                
             var menuMode = KTThemeMode.getMenuMode();
             var mode = KTThemeMode.getMode();
-            console.log("user selected theme mode:" + menuMode);
-            console.log("theme mode:" + mode);
+            // console.log("user selected theme mode:" + menuMode);
+            // console.log("theme mode:" + mode);
 
             // Submit selected theme mode menu option via ajax and 
             // store it in user profile and set the user opted theme mode via HTML attribute

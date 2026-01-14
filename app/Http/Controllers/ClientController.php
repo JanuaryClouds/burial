@@ -9,12 +9,10 @@ use App\Models\Barangay;
 use App\Models\Citizen;
 use App\Models\CivilStatus;
 use App\Models\Client;
-use App\Models\Interview;
 use App\Models\Sex;
 use App\Services\CentralClientService;
 use App\Services\ClientService;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Cache;
 use Crypt;
 use Exception;
 use Illuminate\Http\Request;
@@ -28,14 +26,14 @@ class ClientController extends Controller
     protected $clientServices;
 
     protected $citizenServices;
-    
+
     public function __construct(ClientService $clientService, CentralClientService $citizenService)
     {
         $this->clientServices = $clientService;
         $this->citizenServices = $citizenService;
     }
 
-    public function index(CmsDataTable $dataTable)
+    public function index()
     {
         $page_title = 'Clients';
         $resource = 'client';
@@ -91,9 +89,7 @@ class ClientController extends Controller
             ],
         ];
 
-        return $dataTable
-            ->render('client.index', compact(
-                'dataTable',
+        return view('client.index', compact(
                 'page_title',
                 'cardData',
                 'resource',
@@ -104,107 +100,39 @@ class ClientController extends Controller
 
     public function show(Client $client)
     {
-        $resource = 'client';
-        $client = Client::find($client->id);
-        $page_title = $client->first_name.' '.$client->last_name."'s Application";
-        $page_subtitle = $client->tracking_no.' - '.$client->id;
-        $readonly = !auth()->user()->can('manage-content');
+        try {
 
-        if ($client) {
-            $path = "clients/{$client->tracking_no}";
-            $storedFiles = Storage::disk('local')->files($path);
-            $files = collect($storedFiles)->map(function ($file) {
-                return [
-                    'name' => basename($file),
-                    'path' => $file,
-                ];
-            });
-
-            return view('client.view', compact(
-                'page_title',
-                'page_subtitle',
-                'resource',
-                'client',
-                'files',
-                'readonly',
-            ));
-        } else {
-            return redirect()->back()->with('error', 'Client not found.');
+            $resource = 'client';
+            $client = Client::find($client->id);
+            $page_title = $client->first_name.' '.$client->last_name."'s Application";
+            $page_subtitle = $client->tracking_no.' - '.$client->id;
+            $readonly = auth()->user()->cannot('manage-content') || ($client?->claimant?->burialAssistance->status != 'released' || $client?->funeralAssistance?->forwarded_at != null); ;
+            
+            if ($client) {
+                $path = "clients/{$client->tracking_no}";
+                $storedFiles = Storage::disk('local')->files($path);
+                $files = collect($storedFiles)->map(function ($file) {
+                    return [
+                        'name' => basename($file),
+                        'path' => $file,
+                    ];
+                });
+    
+                return view('client.view', compact(
+                    'page_title',
+                    'page_subtitle',
+                    'resource',
+                    'client',
+                    'files',
+                    'readonly',
+                ));
+            } else {
+                return redirect()->back()->with('error', 'Client not found.');
+            }
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('error', $th->getMessage());
         }
     }
-
-    // public function create()
-    // {
-    //     $page_title = 'Client information';
-    //     $resource = 'client';
-    //     $sexes = Sex::getAllSexes();
-    //     $religions = Religion::getAllReligions();
-    //     $nationalities = Nationality::getAllNationalities();
-    //     $civils = CivilStatus::getAllCivilStatuses();
-    //     $relationships = Relationship::getAllRelationships();
-    //     $educations = Education::getAllEducations();
-    //     $districts = District::getAllDistricts();
-    //     $barangays = Barangay::getAllBarangays();
-    //     $assistances = Assistance::getAllAssistances();
-    //     $moas = ModeOfAssistance::getAllMoas();
-    //     $burial = Assistance::getBurial();
-
-    //     $oldFamilyRows = collect(old('fam_name', []))->map(function ($_, $i) {
-    //         return [
-    //             'name' => old("fam_name.$i"),
-    //             'sex_id' => old("fam_sex_id.$i"),
-    //             'age' => old("fam_age.$i"),
-    //             'civil_id' => old("fam_civil_id.$i"),
-    //             'relationship_id' => old("fam_relationship_id.$i"),
-    //             'occupation' => old("fam_occupation.$i"),
-    //             'income' => old("fam_income.$i"),
-    //         ];
-    //     })->values();
-
-    //     if ($oldFamilyRows->isEmpty()) {
-    //         $oldFamilyRows = collect([[
-    //             'name' => '',
-    //             'sex_id' => '',
-    //             'age' => '',
-    //             'civil_id' => '',
-    //             'relationship_id' => '',
-    //             'occupation' => '',
-    //             'income' => ''
-    //         ]]);
-    //     }
-
-    //     $oldAssessmentRows = collect(old('ass_problem_presented', []))->map(function ($_, $i) {
-    //         return [
-    //             'problem_presented' => old("ass_problem_presented.$i"),
-    //             'assessment' => old("ass_assessment.$i"),
-    //         ];
-    //     })->values();
-
-    //     if ($oldAssessmentRows->isEmpty()) {
-    //         $oldAssessmentRows = collect([[
-    //             'problem_presented' => '',
-    //             'assessment' => '',
-    //         ]]);
-    //     }
-
-    //     return view('client.create', compact(
-    //         'page_title',
-    //         'resource',
-    //         'sexes',
-    //         'religions',
-    //         'nationalities',
-    //         'civils',
-    //         'relationships',
-    //         'educations',
-    //         'districts',
-    //         'barangays',
-    //         'assistances',
-    //         'moas',
-    //         'burial',
-    //         'oldFamilyRows',
-    //         'oldAssessmentRows'
-    //     ));
-    // }
 
     public function create()
     {
@@ -218,14 +146,18 @@ class ClientController extends Controller
                     return null;
                 }
                 $normalizedValue = strtolower(preg_replace('/[^a-z0-9]/i', '', $value));
-                
+
                 foreach ($options as $id => $name) {
                     $normalizedOption = strtolower(preg_replace('/[^a-z0-9]/i', '', $name));
                     if ($normalizedValue === $normalizedOption) {
                         return $id;
                     }
-                    if ($normalizedValue == 'female') return 1; 
-                    if ($normalizedValue == 'male') return 2;
+                    if ($normalizedValue == 'female') {
+                        return 1;
+                    }
+                    if ($normalizedValue == 'male') {
+                        return 2;
+                    }
 
                     if ($strict) {
                         // Check for contains if exact match fails (e.g. "Calzada-tipas" vs "Calzada Tipas")
@@ -241,7 +173,7 @@ class ClientController extends Controller
             $barangays = Barangay::pluck('name', 'id');
             $genders = Sex::pluck('name', 'id');
             $civilStatus = CivilStatus::pluck('name', 'id');
-            
+
             if (isset($citizen['gender'])) {
                 $matched['sex_id'] = $findMatch($citizen['gender'], $genders, true);
             }
@@ -301,7 +233,7 @@ class ClientController extends Controller
                 ->route('landing.page')
                 ->with('success', 'Client information added successfully!');
         } catch (Exception $e) {
-            return redirect()->back()->with('error', 'Client information added failed! ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Client information added failed! '.$e->getMessage());
         }
     }
 
@@ -473,17 +405,19 @@ class ClientController extends Controller
         }
     }
 
-    public function history() {
+    public function history()
+    {
         // ! This does prevent unregistered users from the TLC Portal from tracking clients
         $records = Citizen::records();
-        if (!$records) {
+        if (! $records) {
             return redirect()->route('landing.page')->with('error', 'You do not have permission to access this page.');
         }
         $client = Client::where('citizen_id', session('citizen')['user_id'])->latest()->get()->first();
-        
-        $page_title = session('citizen')['firstname'] . ' ' . session('citizen')['lastname'] . ' | Client History';
+
+        $page_title = session('citizen')['firstname'].' '.session('citizen')['lastname'].' | Client History';
         $readonly = true;
         $disabled = true;
+
         return view('client.history', compact(
             'records',
             'client',

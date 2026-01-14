@@ -1,15 +1,13 @@
 <?php
 
+use App\Http\Controllers\BurialAssistanceController;
+use App\Http\Controllers\ChequeController;
+use App\Http\Controllers\ClaimantController;
+use App\Http\Controllers\ClientController;
+use App\Http\Controllers\DeceasedController;
 use App\Http\Controllers\FuneralAssistanceController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\{
-    ClientController,
-    ReportController,
-    DeceasedController,
-    ClaimantController,
-    BurialAssistanceController,
-    ChequeController,
-};
 
 Route::middleware('permission:view-reports')
     ->name('reports.')

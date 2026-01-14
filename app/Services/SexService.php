@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Models\Sex;
 
-class SexService 
+class SexService
 {
     public function storeSex(array $data): Sex
     {
@@ -13,18 +13,19 @@ class SexService
 
     public function updateSex(array $data, $sex): Sex
     {
-        if ($sex->update($data)) { 
+        if ($sex->update($data)) {
             return $sex;
         }
+
         return null;
     }
 
     public function deleteSex($sex): Sex
     {
-        if($sex->delete())
-        {
+        if ($sex->delete()) {
             return $sex;
         }
+
         return null;
     }
 }

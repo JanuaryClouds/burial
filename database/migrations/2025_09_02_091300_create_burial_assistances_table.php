@@ -25,10 +25,10 @@ return new class extends Migration
             $table->string('funeraria');
             $table->string('amount')->nullable();
             $table->enum('status', [
-                'pending', 
+                'pending',
                 'processing',
-                'approved', 
-                'released', 
+                'approved',
+                'released',
                 'rejected'])
                 ->default('pending');
             $table->string('remarks')->nullable();

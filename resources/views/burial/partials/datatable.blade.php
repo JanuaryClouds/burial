@@ -1,34 +1,42 @@
 <div class="section-body">
     <div class="card">
         <div class="card-body">
-            <div class="d-flex justify-content-between gap-3">
-                @if (Request::is('applications/all'))
+            <div class="row">
+                <div class="col">
+                    @if (Request::is('burial/list/all*'))
+                        <div class="form-group w-100 mr-2">
+                            <label for="filter-status">Filter by Status</label>
+                            <select name="status" id="status" class="form-control w-100">
+                                <option value="all">All</option>
+                                @foreach ($statusOptions as $option)
+                                    <option value="{{ $option }}">{{ Str::title($option) }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @endif
+                </div>
+                <div class="col">
                     <div class="form-group w-100 mr-2">
-                        <label for="filter-status">Filter by Status</label>
-                        <select name="status" id="status" class="custom-select w-100">
+                        <label for="min-date">Submitted on/after</label>
+                        <input id="min-date" class="form-control" type="date" name="min-date">
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group w-100 mr-2">
+                        <label for="max-date">Submitted on/before</label>
+                        <input id="max-date" class="form-control" type="date" name="max-date">
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group w-100 mr-2">
+                        <label for="filter-barangay">Filter by Barangay</label>
+                        <select name="filter-barangay" id="filter-barangay" class="form-control w-100">
                             <option value="all">All</option>
-                            @foreach ($statusOptions as $option)
-                                <option value="{{ $option }}">{{ Str::title($option) }}</option>
+                            @foreach ($barangays as $key => $barangay)
+                                <option value="{{ $barangay }}">{{ $barangay }}</option>
                             @endforeach
                         </select>
                     </div>
-                @endif
-                <div class="form-group w-100 mr-2">
-                    <label for="min-date">Submitted on/after</label>
-                    <input id="min-date" class="form-control" type="date" name="min-date">
-                </div>
-                <div class="form-group w-100 mr-2">
-                    <label for="max-date">Submitted on/before</label>
-                    <input id="max-date" class="form-control" type="date" name="max-date">
-                </div>
-                <div class="form-group w-100 mr-2">
-                    <label for="filter-barangay">Filter by Barangay</label>
-                    <select name="filter-barangay" id="filter-barangay" class="form-control w-100">
-                        <option value="all">All</option>
-                        @foreach ($barangays as $key => $barangay)
-                            <option value="{{ $barangay }}">{{ $barangay }}</option>
-                        @endforeach
-                    </select>
                 </div>
             </div>
             <div class="d-flex justify-content-end">
@@ -38,7 +46,7 @@
                 </button>
             </div>
 
-            <div class="table-responsive mt-4">
+            <div class="table-responsive mt-4 overflow-x-hidden">
                 <div class="dataTables_wrapper">
                     <table id="applications-table" class="table data-table" style="width:100%">
                         <thead class="border-bottom border-bottom-1 border-gray-200 fw-bold">
@@ -56,9 +64,13 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($applications as $application)
+                            @foreach ($applications as $application)
                                 <tr class="">
-                                    <td>{{ $application->tracking_no }}</td>
+                                    <td>
+                                        <a href="{{ route('burial.show', $application->id) }}">
+                                            {{ $application->tracking_no }}
+                                        </a>
+                                    </td>
                                     <td>
                                         {{ $application->deceased->first_name }}
                                         {{ $application->deceased->middle_name ? Str::charAt($application->deceased->middle_name, 0) . '.' : '' }}
@@ -123,11 +135,7 @@
                                     @endif
                                     <td><x-application-actions :application="$application" /></td>
                                 </tr>
-                            @empty
-                                <tr>
-                                    <td>No Applications</td>
-                                </tr>
-                            @endforelse
+                            @endforeach
                         </tbody>
                     </table>
                 </div>

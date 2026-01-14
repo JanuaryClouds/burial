@@ -1,7 +1,7 @@
 @extends('layouts.metronic.guest')
 <title>General Intake Form</title>
 @section('content')
-    <div class="h-100 d-flex flex-column justify-content-center align-items-center w-75 px-5 mx-auto my-0">
+    <div class="h-100 d-flex flex-column justify-content-center align-items-center w-lg-75 px-5 mx-auto my-0">
         <!--div class="container min-vh-100 d-flex justify-content-center align-items-center"-->
         <div class="row my-10">
             <!--div class="col"-->

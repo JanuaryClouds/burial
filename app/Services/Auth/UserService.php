@@ -2,22 +2,22 @@
 
 namespace App\Services\Auth;
 
-use Spatie\Permission\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Spatie\Permission\Models\Role;
 
 class UserService
 {
     public function login(array $data)
     {
-        if(Auth::attempt($data))
-        {
+        if (Auth::attempt($data)) {
             $user = Auth::user();
             Auth::login($user);
+
             return $user;
         }
 
-        return redirect()->back()->with("error","Invalid login credentials.");
+        return redirect()->back()->with('error', 'Invalid login credentials.');
     }
 
     public function logout(): void
@@ -31,6 +31,7 @@ class UserService
     {
         $user = User::create($data);
         $user->assignRole('admin');
+
         return $user;
     }
 
@@ -46,6 +47,7 @@ class UserService
         }
         $role = Role::firstOrCreate(['name' => $data['role']]);
         $user->syncRoles($role);
+
         return $user;
     }
 }

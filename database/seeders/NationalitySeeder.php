@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 use App\Models\Nationality;
+use Illuminate\Database\Seeder;
 
 class NationalitySeeder extends Seeder
 {
@@ -20,7 +19,7 @@ class NationalitySeeder extends Seeder
         foreach ($Nationalities as $Nationality) {
             Nationality::firstOrCreate([
                 'name' => $Nationality,
-                'remarks'   => 'seeder generated',
+                'remarks' => 'seeder generated',
             ]);
         }
     }

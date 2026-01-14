@@ -46,14 +46,16 @@ class UserFactory extends Factory
         ]);
     }
 
-    public function superadmin() {
+    public function superadmin()
+    {
         return $this->afterCreating(function ($user) {
             $role = Role::firstOrCreate(['name' => 'superadmin']);
             $user->assignRole($role);
         });
     }
 
-    public function admin() {
+    public function admin()
+    {
         return $this->afterCreating(function ($user) {
             $role = Role::firstOrCreate(['name' => 'admin']);
             $user->assignRole($role);

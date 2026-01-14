@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 use App\Models\User;
+use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 
 class BaoAccountSeeder extends Seeder
@@ -19,8 +18,8 @@ class BaoAccountSeeder extends Seeder
         $baoAccount = User::firstOrCreate(
             ['email' => 'janmichaelcristianbcruz@gmail.com'],
             [
-                'first_name' => 'Jan Michael Cristian', 
-                'middle_name' => 'Brequillo', 
+                'first_name' => 'Jan Michael Cristian',
+                'middle_name' => 'Brequillo',
                 'last_name' => 'Cruz',
                 'contact_number' => '09665691880',
                 'password' => bcrypt('bao.password'),

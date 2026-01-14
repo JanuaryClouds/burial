@@ -2,10 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class RolePermissionSeeder extends Seeder
 {
@@ -19,7 +18,7 @@ class RolePermissionSeeder extends Seeder
         //     'view',
         //     'view-reports',
         //     'schedule-interviews',
-        //     'assess-applications', 
+        //     'assess-applications',
         //     'recommend-services',
         //     'reject-applications',
         //     'approve-funeral-services',
@@ -122,7 +121,7 @@ class RolePermissionSeeder extends Seeder
         //         $query->where('name', '!=', 'manage-roles');
         //         $query->where('name', '!=', 'manage-assignments');
         //     })->get(),
-        //     'user' => 'view' 
+        //     'user' => 'view'
         // ];
 
         // foreach($role as $roleName => $perm)

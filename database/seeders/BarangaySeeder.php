@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 use App\Models\Barangay;
+use Illuminate\Database\Seeder;
 
 class BarangaySeeder extends Seeder
 {
@@ -20,41 +19,41 @@ class BarangaySeeder extends Seeder
                 'Hagonoy',
                 'Ibayo-tipas',
                 'Ligid-tipas',
-                'Lower bicutan', 
+                'Lower bicutan',
                 'New lower bicutan',
-                'Napindan', 
+                'Napindan',
                 'Palingon',
                 'Pembo',
-                'Rizal', 
+                'Rizal',
                 'San miguel',
-                'Sta Ana', 
+                'Sta Ana',
                 'Tuktukan',
-                'Ususan', 
-                'Wawa'
+                'Ususan',
+                'Wawa',
             ],
             '2' => [
                 'Cembo',
-                'Central bicutan', 
-                'Central signal village', 
+                'Central bicutan',
+                'Central signal village',
                 'East rembo',
-                'Fort bonifacio', 
-                'Katuparan', 
+                'Fort bonifacio',
+                'Katuparan',
                 'Maharlika village',
-                'North daang hari', 
-                'North signal village', 
+                'North daang hari',
+                'North signal village',
                 'Pinagsama',
-                'Pitogo', 
-                'Post proper northside', 
+                'Pitogo',
+                'Post proper northside',
                 'Post proper southside',
                 'South cembo',
-                'South daang hari', 
-                'South signal village', 
-                'West rembo'
+                'South daang hari',
+                'South signal village',
+                'West rembo',
             ],
         ];
 
-        foreach($barangays as $key => $names) {
-            foreach($names as $name) {
+        foreach ($barangays as $key => $names) {
+            foreach ($names as $name) {
                 Barangay::firstOrCreate([
                     'district_id' => $key,
                     'name' => $name,

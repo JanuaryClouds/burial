@@ -8,11 +8,15 @@ use Illuminate\Database\Eloquent\Model;
 class Client extends Model
 {
     use HasFactory;
+
     protected $table = 'clients';
 
     protected $primaryKey = 'id';
+
     public $incrementing = false;
+
     protected $keyType = 'string';
+
     protected $fillable = [
         'id',
         'citizen_id',
@@ -28,14 +32,15 @@ class Client extends Model
         'district_id',
         'barangay_id',
         'city',
-        'contact_no'
+        'contact_no',
     ];
 
-    protected static function booted() {
+    protected static function booted()
+    {
         static::creating(function ($client) {
             $year = now()->format('Y');
             $count = self::whereYear('created_at', $year)->count() + 1;
-    
+
             $client->tracking_no = sprintf('%s-%04d', $year, $count);
         });
     }
@@ -95,11 +100,13 @@ class Client extends Model
         return $this->hasMany(Interview::class);
     }
 
-    public function claimant() {
+    public function claimant()
+    {
         return $this->hasOne(Claimant::class, 'client_id', 'id');
     }
 
-    public function funeralAssistance() {
+    public function funeralAssistance()
+    {
         return $this->hasOne(FuneralAssistance::class, 'client_id', 'id');
     }
 }

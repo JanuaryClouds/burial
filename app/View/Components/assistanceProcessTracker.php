@@ -2,18 +2,21 @@
 
 namespace App\View\Components;
 
-use App\Models\BurialAssistance;
+use App\Models\ProcessLog;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
-use App\Models\ProcessLog;
 
 class assistanceProcessTracker extends Component
 {
     public $processLogs;
+
     public $burialAssistance;
+
     public $claimantChanges;
+
     public $claimants;
+
     /**
      * Create a new component instance.
      */
@@ -21,7 +24,7 @@ class assistanceProcessTracker extends Component
     {
         $this->burialAssistance = $burialAssistance;
         $this->processLogs = $burialAssistance
-            ? $burialAssistance->processLogs()->oldest()->get()
+            ? ProcessLog::where('burial_assistance_id', $burialAssistance->id)->with('loggable')->oldest()->get()
             : collect();
         $this->claimantChanges = $burialAssistance ? $burialAssistance->claimantChanges()->latest()->get() : collect();
         $this->claimants = $burialAssistance ? $burialAssistance->claimant()->get() : collect();

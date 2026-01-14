@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::table('burial_assistance_requests', function (Blueprint $table) {
             $table->foreignId('service_id')
-            ->nullable()
-            ->after('type_of_assistance')
-            ->constrained('burial_services')
-            ->nullOnDelete();
+                ->nullable()
+                ->after('type_of_assistance')
+                ->constrained('burial_services')
+                ->nullOnDelete();
         });
     }
 
@@ -26,7 +26,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('burial_assistance_requests', function (Blueprint $table) {
-            Schema::dropColumns('burial_assistance_requests', ['service_id']);            
+            Schema::dropColumns('burial_assistance_requests', ['service_id']);
         });
     }
 };

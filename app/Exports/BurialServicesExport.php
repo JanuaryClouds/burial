@@ -4,25 +4,26 @@ namespace App\Exports;
 
 use App\Models\BurialService;
 use Carbon\Carbon;
-use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
-use Str;
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
-use Maatwebsite\Excel\Concerns\WithColumnFormatting;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
+use Str;
 
-class BurialServicesExport implements FromCollection, WithMapping, WithHeadings, WithColumnFormatting
+class BurialServicesExport implements FromCollection, WithColumnFormatting, WithHeadings, WithMapping
 {
     /**
-    * @return \Illuminate\Support\Collection
-    */
+     * @return \Illuminate\Support\Collection
+     */
     public function collection()
     {
         return BurialService::with(['relationship', 'barangay', 'provider'])->get();
 
     }
 
-    public function map($service): array {
+    public function map($service): array
+    {
         return [
             $service->id,
             $service->deceased_firstname,
@@ -31,18 +32,19 @@ class BurialServicesExport implements FromCollection, WithMapping, WithHeadings,
             $service->representative_phone,
             $service?->representative_email ?? '',
             $service->relationship?->name ?? 'Unknown',
-            $service->burial_address . " " . $service->barangay?->name ?? 'Unknown',
-            $service->start_of_burial ? Carbon::parse($service->start_of_burial)->format("m-d-Y") : 'Unknown',
-            $service->end_of_burial ? Carbon::parse($service->end_of_burial)->format("m-d-Y") : 'Unknown',
+            $service->burial_address.' '.$service->barangay?->name ?? 'Unknown',
+            $service->start_of_burial ? Carbon::parse($service->start_of_burial)->format('m-d-Y') : 'Unknown',
+            $service->end_of_burial ? Carbon::parse($service->end_of_burial)->format('m-d-Y') : 'Unknown',
             $service->provider?->name ?? 'Unknown',
-            "Php " . Str::substr($service->collected_funds, 1,10),
+            'Php '.Str::substr($service->collected_funds, 1, 10),
             $service->remarks,
-            Carbon::parse($service->created_at)->format("m-d-Y"),
-            Carbon::parse($service->updated_at)->format("m-d-Y"),
+            Carbon::parse($service->created_at)->format('m-d-Y'),
+            Carbon::parse($service->updated_at)->format('m-d-Y'),
         ];
     }
 
-    public function headings(): array {
+    public function headings(): array
+    {
         return [
             'ID',
             'First Name',
@@ -61,7 +63,8 @@ class BurialServicesExport implements FromCollection, WithMapping, WithHeadings,
         ];
     }
 
-    public function columnFormats(): array {
+    public function columnFormats(): array
+    {
         return [
             'E' => NumberFormat::FORMAT_TEXT,
             'H' => NumberFormat::FORMAT_DATE_DDMMYYYY,

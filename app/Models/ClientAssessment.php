@@ -8,11 +8,15 @@ use Illuminate\Database\Eloquent\Model;
 class ClientAssessment extends Model
 {
     use HasFactory;
+
     protected $table = 'client_assessments';
 
     protected $primaryKey = 'id';
+
     public $incrementing = false;
+
     protected $keyType = 'string';
+
     protected $fillable = [
         'id',
         'client_id',

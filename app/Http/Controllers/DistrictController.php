@@ -2,21 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\District;
-use App\Services\DistrictService; 
 use App\DataTables\CmsDataTable;
 use App\Http\Requests\DistrictRequest;
+use App\Models\District;
+use App\Services\DistrictService;
 use Illuminate\Support\Facades\Auth;
 
 class DistrictController extends Controller
 {
     protected $districtServices;
-    
+
     public function __construct(DistrictService $districtServices)
     {
         $this->districtServices = $districtServices;
     }
-    
+
     public function index(CmsDataTable $dataTable)
     {
         $page_title = 'District';
@@ -33,21 +33,21 @@ class DistrictController extends Controller
                 'data'
             ));
     }
-    
+
     public function store(DistrictRequest $request)
     {
         $district = $this->districtServices->storeDistrict($request->validated());
-        
+
         activity()
             ->performedOn($district)
             ->causedBy(Auth::user())
-            ->log('District created:' . $district->name);
+            ->log('District created:'.$district->name);
 
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first() . '.district.index')
+            ->route(Auth::user()->getRoleNames()->first().'.district.index')
             ->with('success', 'District created successfully!');
     }
-    
+
     public function update(DistrictRequest $request, District $district)
     {
         $district = $this->districtServices->updateDistrict($request->validated(), $district);
@@ -55,13 +55,13 @@ class DistrictController extends Controller
         activity()
             ->performedOn($district)
             ->causedBy(Auth::user())
-            ->log('District updated:'. $district->name);
+            ->log('District updated:'.$district->name);
 
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first() . '.district.index')
+            ->route(Auth::user()->getRoleNames()->first().'.district.index')
             ->with('success', 'District updated successfully!');
     }
-    
+
     public function destroy(District $district)
     {
         $district = $this->districtServices->deleteDistrict($district);
@@ -69,10 +69,10 @@ class DistrictController extends Controller
         activity()
             ->performedOn($district)
             ->causedBy(Auth::user())
-            ->log('District deleted:'. $district->name);
+            ->log('District deleted:'.$district->name);
 
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first() . '.district.index')
+            ->route(Auth::user()->getRoleNames()->first().'.district.index')
             ->with('success', 'District deleted successfully!');
     }
 }

@@ -2,20 +2,20 @@
 
 namespace App\Services;
 
+use App\Models\BurialAssistance;
+use App\Models\Claimant;
 use App\Models\Client;
+use App\Models\ClientAssessment;
 use App\Models\ClientBeneficiary;
+use App\Models\ClientBeneficiaryFamily;
 use App\Models\ClientDemographic;
 use App\Models\ClientRecommendation;
 use App\Models\ClientSocialInfo;
-use App\Models\ClientAssessment;
-use App\Models\ClientBeneficiaryFamily;
-use App\Models\Claimant;
 use App\Models\Deceased;
-use App\Models\BurialAssistance;
 use App\Models\FuneralAssistance;
+use Carbon\Carbon;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use Carbon\Carbon;
 use Str;
 
 class ClientService
@@ -23,11 +23,11 @@ class ClientService
     private function generateTrackingNo(): string
     {
         $year = date('Y');
-        
-        $latestClient = Client::where('tracking_no', 'LIKE', $year . '-%')
+
+        $latestClient = Client::where('tracking_no', 'LIKE', $year.'-%')
             ->orderBy('created_at', 'desc')
             ->first();
-    
+
         if ($latestClient) {
             $parts = explode('-', $latestClient->tracking_no);
             $lastNumber = (int) end($parts);
@@ -35,17 +35,17 @@ class ClientService
         } else {
             $newNumber = 1;
         }
-        
-        return $year . '-' . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
+
+        return $year.'-'.str_pad($newNumber, 4, '0', STR_PAD_LEFT);
     }
 
-    public function storeClient(array $data, string $uuid): ?Client
+    public function storeClient(array $data, string $uuid = null): ?Client
     {
         $tracking_no = $this->generateTrackingNo();
-        
+
         $client = Client::create([
             'id' => Str::uuid(),
-            'citizen_id' => $uuid,
+            'citizen_id' => $uuid ?? null,
             'tracking_no' => $tracking_no,
             'first_name' => $data['first_name'],
             'middle_name' => $data['middle_name'],
@@ -59,7 +59,7 @@ class ClientService
             'city' => $data['city'],
             'contact_no' => $data['contact_no'],
         ]);
-    
+
         if ($client) {
             $demographic = ClientDemographic::create([
                 'id' => Str::uuid(),
@@ -68,7 +68,7 @@ class ClientService
                 'religion_id' => $data['religion_id'],
                 'nationality_id' => $data['nationality_id'],
             ]);
-    
+
             $social = ClientSocialInfo::create([
                 'id' => Str::uuid(),
                 'client_id' => $client->id,
@@ -95,8 +95,7 @@ class ClientService
                 'place_of_birth' => $data['ben_place_of_birth'],
             ]);
 
-            foreach ($data['fam_name'] as $index => $name) 
-            {
+            foreach ($data['fam_name'] as $index => $name) {
                 ClientBeneficiaryFamily::create([
                     'id' => Str::uuid(),
                     'client_id' => $client->id,
@@ -109,13 +108,12 @@ class ClientService
                     'income' => $data['fam_income'][$index],
                 ]);
             }
-            
 
             // $assessmentRows = [];
-            // foreach($data['ass_problem_presented'] as $index => $problem) 
+            // foreach($data['ass_problem_presented'] as $index => $problem)
             // {
             //     $assessmentRows[] = ClientAssessment::create([
-                    // 'id' => Str::uuid(),
+            // 'id' => Str::uuid(),
             //         'client_id' => $client->id,
             //         'problem_presented' => $problem,
             //         'assessment' => $data['ass_assessment'][$index],
@@ -124,9 +122,9 @@ class ClientService
 
             // $assistanceIds = $data['rec_assistance_id'] ?? [];
             // foreach ($assistanceIds as $assistanceId) {
-            //     if ($assistanceId == 8) { 
+            //     if ($assistanceId == 8) {
             //         ClientRecommendation::create([
-                        // 'id' => Str::uuid(),
+            // 'id' => Str::uuid(),
             //             'client_id'     => $client->id,
             //             'assistance_id' => 8,
             //             'referral'      => $data['rec_burial_referral'][0] ?? null,
@@ -134,9 +132,9 @@ class ClientService
             //             'amount'        => $data['rec_amount'][0] ?? null,
             //             'others'        => null,
             //         ]);
-            //     } elseif ($assistanceId == 14) { 
+            //     } elseif ($assistanceId == 14) {
             //         ClientRecommendation::create([
-                            // 'id' => Str::uuid(),
+            // 'id' => Str::uuid(),
             //             'client_id'     => $client->id,
             //             'assistance_id' => 14,
             //             'referral'      => null,
@@ -146,7 +144,7 @@ class ClientService
             //         ]);
             //     } else {
             //         ClientRecommendation::create([
-                            // 'id' => Str::uuid(),
+            // 'id' => Str::uuid(),
             //             'client_id'     => $client->id,
             //             'assistance_id' => $assistanceId,
             //             'referral'      => null,
@@ -156,16 +154,17 @@ class ClientService
             //         ]);
             //     }
             // }
-    
+
             if ($demographic && $social && $beneficiary) {
                 return $client;
             } else {
                 $client->delete();
             }
         }
+
         return null;
     }
-    
+
     public function transferClient($client_id)
     {
         $client = Client::find($client_id);
@@ -192,8 +191,8 @@ class ClientService
                     'suffix' => $client->suffix ?? null,
                     'relationship_to_deceased' => $client->socialInfo->relationship->id,
                     'mobile_number' => $client->contact_no,
-                    'address' => $client->house_no . ' ' . $client->street,
-                    'barangay_id' => $client->barangay_id
+                    'address' => $client->house_no.' '.$client->street,
+                    'barangay_id' => $client->barangay_id,
                 ]);
 
                 $deceased = Deceased::create([
@@ -208,7 +207,7 @@ class ClientService
                     'gender' => $client->beneficiary->sex_id,
                     'address' => $client->beneficiary->place_of_birth,
                     'religion_id' => $client->beneficiary->religion_id,
-                    'barangay_id' => $client->beneficiary->barangay_id
+                    'barangay_id' => $client->beneficiary->barangay_id,
                 ]);
 
                 return $burialAssistance;
@@ -216,13 +215,13 @@ class ClientService
                 $funeralAssistance = FuneralAssistance::create([
                     'id' => Str::uuid(),
                     'client_id' => $client->id,
-                    'remarks' => $client->recommendation->first()->remarks
+                    'remarks' => $client->recommendation->first()->remarks,
                 ]);
-                    
+
                 return $funeralAssistance;
             }
         }
-        
+
         return null;
     }
 
@@ -262,15 +261,16 @@ class ClientService
 
         foreach ($families as $index => $family) {
             $family->update([
-                'name'            => $data['fam_name'][$index],
-                'sex_id'          => $data['fam_sex_id'][$index],
-                'age'             => $data['fam_age'][$index],
-                'civil_id'        => $data['fam_civil_id'][$index],
+                'name' => $data['fam_name'][$index],
+                'sex_id' => $data['fam_sex_id'][$index],
+                'age' => $data['fam_age'][$index],
+                'civil_id' => $data['fam_civil_id'][$index],
                 'relationship_id' => $data['fam_relationship_id'][$index],
-                'occupation'      => $data['fam_occupation'][$index],
-                'income'          => $data['fam_income'][$index],
+                'occupation' => $data['fam_occupation'][$index],
+                'income' => $data['fam_income'][$index],
             ]);
         }
+
         return $client;
     }
 
@@ -279,18 +279,19 @@ class ClientService
         return $client->delete() ? $client : null;
     }
 
-    public function exportGIS($client) {
+    public function exportGIS($client)
+    {
         $templatePath = storage_path('app/templates/general-intake-form.xlsx');
         $spreadsheet = IOFactory::load($templatePath);
         $sheet = $spreadsheet->getActiveSheet();
 
         $sheet->setCellValue(
-            'K4', 
-            'Date: ' . Carbon::parse($client->created_at)->format('m/d/Y')
+            'K4',
+            'Date: '.Carbon::parse($client->created_at)->format('m/d/Y')
         );
         $sheet->setCellValue(
             'E7',
-            $client->first_name . ' ' . Str::limit($client?->middle_name, 1, '.') . ' ' . $client->last_name . ($client?->suffix ? ' ' . $client->suffix : '')
+            $client->first_name.' '.Str::limit($client?->middle_name, 1, '.').' '.$client->last_name.($client?->suffix ? ' '.$client->suffix : '')
         );
         $sheet->setCellValue('J7', $client->age);
         $sheet->setCellValue(
@@ -300,7 +301,7 @@ class ClientService
         $sheet->setCellValue('E8', Carbon::parse($client->date_of_birth)->format('F j, Y'));
         $sheet->setCellValue(
             'I8',
-            $client->house_no . ' ' . $client->street . ' ' . $client->barangay->name . ' ,Taguig City' 
+            $client->house_no.' '.$client->street.' '.$client->barangay->name.' ,Taguig City'
         );
         $sheet->setCellValue('F9', $client->socialInfo->relationship->name);
         $sheet->setCellValue('K9', $client->socialInfo->civil->name);
@@ -312,12 +313,12 @@ class ClientService
         $sheet->setCellValue('E12', $client->socialInfo->philhealth);
         $sheet->setCellValue('J12', $client->contact_no);
         $sheet->setCellValue(
-            'E16', 
-            $client->beneficiary->first_name . ' ' . Str::limit($client->beneficiary->middle_name, 1, '.') . ' ' . $client->beneficiary->last_name . ($client->beneficiary->suffix ? ' ' . $client->beneficiary->suffix : '')
+            'E16',
+            $client->beneficiary->first_name.' '.Str::limit($client->beneficiary->middle_name, 1, '.').' '.$client->beneficiary->last_name.($client->beneficiary->suffix ? ' '.$client->beneficiary->suffix : '')
         );
         $sheet->setCellValue('J16', $client->beneficiary->gender == 2 ? 'Male' : 'Female');
         $sheet->setCellValue('E17', Carbon::parse($client->beneficiary->date_of_birth)->format('F j, Y'));
-        $sheet->setCellValue('I17', $client->beneficiary->place_of_birth . ' ' . $client->beneficiary->barangay->name . ' ,Taguig City');
+        $sheet->setCellValue('I17', $client->beneficiary->place_of_birth.' '.$client->beneficiary->barangay->name.' ,Taguig City');
 
         $rowStart = 22;
         foreach ($client->family as $member) {
@@ -344,11 +345,11 @@ class ClientService
                 $sheet->setCellValue(
                     'I37', '✓ Cash'
                 );
-            } else if ($client->recommendation->first()->moa->name == 'Check') {
+            } elseif ($client->recommendation->first()->moa->name == 'Check') {
                 $sheet->setCellValue(
                     'J39', '✓ Check'
                 );
-            } else if ($client->recommendation->first()->moa->name == 'Guarantee Letter') {
+            } elseif ($client->recommendation->first()->moa->name == 'Guarantee Letter') {
                 $sheet->setCellValue(
                     'K39', '✓ Guarantee Letter'
                 );
@@ -363,29 +364,30 @@ class ClientService
                 $sheet->setCellValue(
                     'F47', 'Taguig City Public Cemetery'
                 );
-            } else if ($client->recommendation->first()->type == 'burial') {
+            } elseif ($client->recommendation->first()->type == 'burial') {
                 $sheet->setCellValue(
                     'C47', '✓'
                 );
                 $sheet->setCellValue(
-                    'F47', $client->recommendation->first()->referral 
+                    'F47', $client->recommendation->first()->referral
                 );
                 $sheet->setCellValue(
-                    'J36', $client->recommendation->first()->amount 
+                    'J36', $client->recommendation->first()->amount
                 );
             }
         }
 
         $sheet->setCellValue(
-            'E55', $client->first_name . ' ' . Str::limit($client?->middle_name, 1, '.') . ' ' . $client->last_name . ($client?->suffix ? ' ' . $client->suffix : '')
+            'E55', $client->first_name.' '.Str::limit($client?->middle_name, 1, '.').' '.$client->last_name.($client?->suffix ? ' '.$client->suffix : '')
         );
 
         $sheet->setCellValue(
             'E56',
-            $client->house_no . ' ' . $client->street . ' ' . $client->barangay->name . ' ,Taguig City' 
+            $client->house_no.' '.$client->street.' '.$client->barangay->name.' ,Taguig City'
         );
 
-        $filename = $client->first_name . '-' . $client->last_name . '-General-Intake-Sheet.xlsx';
+        $filename = $client->first_name.'-'.$client->last_name.'-General-Intake-Sheet.xlsx';
+
         return response()->streamDownload(function () use ($spreadsheet) {
             $writer = new Xlsx($spreadsheet);
             $writer->save('php://output');

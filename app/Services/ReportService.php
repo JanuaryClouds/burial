@@ -1,30 +1,30 @@
 <?php
 
 namespace App\Services;
-use App\Models\Cheque;
-use App\Models\ClientRecommendation;
-use Carbon\Carbon;
+
 use App\Models\BurialAssistance;
-use App\Models\FuneralAssistance;
-use App\Models\Client;
-use App\Models\Deceased;
+use App\Models\Cheque;
 use App\Models\Claimant;
-use App\Models\ProcessLog;
+use App\Models\Client;
+use App\Models\ClientRecommendation;
+use App\Models\Deceased;
+use App\Models\FuneralAssistance;
+use App\Models\User;
 use App\Models\WorkflowStep;
+use Carbon\Carbon;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use App\Services\ProcessLogService;
-use App\Models\User;
 
-class ReportService 
+class ReportService
 {
     protected $processLogService;
 
-    private function getLog($claimant, $order, $startDate = null, $endDate = null) {
+    private function getLog($claimant, $order, $startDate = null, $endDate = null)
+    {
         return $claimant->processLogs()
             ->whereHasMorph(
-                'loggable', 
-                [WorkflowStep::class], 
+                'loggable',
+                [WorkflowStep::class],
                 // fn($q) => $q->where('order_no', $order)
                 function ($q) use ($order, $startDate, $endDate) {
                     $q->where('order_no', $order);
@@ -37,7 +37,8 @@ class ReportService
             ->first();
     }
 
-    public function clientsPerBarangay($startDate, $endDate) {
+    public function clientsPerBarangay($startDate, $endDate)
+    {
         return Client::selectRaw('barangay_id, COUNT(*) as total')
             ->with('barangay')
             ->groupBy('barangay_id')
@@ -45,26 +46,28 @@ class ReportService
             ->get()
             ->map(function ($item) {
                 return [
-                    'name'  => $item->barangay->name ?? 'Unknown',
+                    'name' => $item->barangay->name ?? 'Unknown',
                     'count' => $item->total,
                 ];
             });
     }
 
-    public function clientsPerAssistance($startDate, $endDate) {
+    public function clientsPerAssistance($startDate, $endDate)
+    {
         return ClientRecommendation::selectRaw('type, COUNT(*) as total')
             ->whereBetween('created_at', [$startDate, $endDate])
             ->groupBy('type')
             ->get()
             ->map(function ($item) {
                 return [
-                    'name'  => $item->type,
+                    'name' => $item->type,
                     'count' => $item->total,
                 ];
             });
     }
 
-    public function burialAssistanceReport($startDate, $endDate) {
+    public function burialAssistanceReport($startDate, $endDate)
+    {
         $templatePath = storage_path('app/templates/burial-assistances-template.xlsx');
         $spreadsheet = IOFactory::load($templatePath);
         $sheet = $spreadsheet->getActiveSheet();
@@ -103,7 +106,7 @@ class ReportService
             $sheet->setCellValue("A{$row}", $ba->tracking_no);
             $sheet->setCellValue("B{$row}", $ba->application_date);
             $sheet->setCellValue("C{$row}", $ba->swa);
-            $sheet->setCellValue("D{$row}", $encoder ? $encoder->first_name . ' ' . $encoder->last_name : '');
+            $sheet->setCellValue("D{$row}", $encoder ? $encoder->first_name.' '.$encoder->last_name : '');
             $sheet->setCellValue("E{$row}", $firstClaimant->last_name);
             $sheet->setCellValue("F{$row}", $firstClaimant->first_name);
             $sheet->setCellValue("G{$row}", $firstClaimant?->middle_name);
@@ -164,18 +167,19 @@ class ReportService
                 $sheet->setCellValue("BH{$row}", $this->getLog($newClaimant, 7, $startDate, $endDate)?->date_out ?? '');
                 $sheet->setCellValue("BI{$row}", $this->getLog($newClaimant, 7, $startDate, $endDate)?->date_in ?? '');
                 $sheet->setCellValue("BJ{$row}",
-                    ($this->getLog($newClaimant, 9, $startDate, $endDate)?->date_in ?? '') . ' / ' .
-                    ($this->getLog($newClaimant, 8, $startDate, $endDate)?->date_in ?? '') . ' / ' .
+                    ($this->getLog($newClaimant, 9, $startDate, $endDate)?->date_in ?? '').' / '.
+                    ($this->getLog($newClaimant, 8, $startDate, $endDate)?->date_in ?? '').' / '.
                     ($this->getLog($newClaimant, 10, $startDate, $endDate)?->date_in ?? '')
                 );
             }
             $sheet->setCellValue("BK{$row}", $ba?->status ?? '');
             $sheet->setCellValue("BL{$row}", $ba?->remarks ?? '');
-            $sheet->setCellValue("BM{$row}", $initialChecker ? $initialChecker->first_name . ' ' . $initialChecker->last_name : '');
+            $sheet->setCellValue("BM{$row}", $initialChecker ? $initialChecker->first_name.' '.$initialChecker->last_name : '');
             $row++;
-        };
+        }
 
-        $filename = 'burial-assistances-database-export-' . now()->format('YmdHis') . '.xlsx';
+        $filename = 'burial-assistances-database-export-'.now()->format('YmdHis').'.xlsx';
+
         return response()->streamDownload(function () use ($spreadsheet) {
             $writer = new Xlsx($spreadsheet);
             $writer->save('php://output');
@@ -184,7 +188,8 @@ class ReportService
         ]);
     }
 
-    public function deceasedReport($startDate, $endDate) {
+    public function deceasedReport($startDate, $endDate)
+    {
         $templatePath = storage_path('app/templates/deceased-persons-template.xlsx');
         $spreadsheet = IOFactory::load($templatePath);
         $sheet = $spreadsheet->getActiveSheet();
@@ -193,9 +198,9 @@ class ReportService
             'gender',
             'religion',
         ])
-        ->where(function ($query) use ($startDate, $endDate) {
-            $query->whereBetween('date_of_death', [$startDate, $endDate]);
-        })->get();
+            ->where(function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('date_of_death', [$startDate, $endDate]);
+            })->get();
 
         foreach ($deceased as $d) {
             $dob = Carbon::parse($d->date_of_birth);
@@ -214,7 +219,8 @@ class ReportService
             $row++;
         }
 
-        $filename = 'deceased-persons-database-export-' . now()->format('YmdHis') . '.xlsx';
+        $filename = 'deceased-persons-database-export-'.now()->format('YmdHis').'.xlsx';
+
         return response()->streamDownload(function () use ($spreadsheet) {
             $writer = new Xlsx($spreadsheet);
             $writer->save('php://output');
@@ -223,7 +229,8 @@ class ReportService
         ]);
     }
 
-    public function deceasedPerMonth($startDate, $endDate) {
+    public function deceasedPerMonth($startDate, $endDate)
+    {
         return Deceased::selectRaw('YEAR(date_of_death) as year, MONTH(date_of_death) as month, COUNT(*) as total')
             ->whereBetween('date_of_death', [$startDate, $endDate])
             ->groupBy('year', 'month')
@@ -233,30 +240,32 @@ class ReportService
             ->map(function ($item) {
                 return [
                     'period' => Carbon::create($item->year, $item->month)->format('F Y'),
-                    'count'  => $item->total,
+                    'count' => $item->total,
                 ];
             });
     }
-    
-    public function deceasedPerWeek($startDate, $endDate) {
-        return Deceased::selectRaw('YEAR(date_of_death) as year, WEEK(date_of_death, 1) as week, COUNT(*) as total')
-        ->whereBetween('date_of_death', [$startDate, $endDate])
-        ->groupBy('year', 'week')
-        ->orderBy('year')
-        ->orderBy('week')
-        ->get()
-        ->map(function ($item) {
-            $startOfWeek = Carbon::now()->setISODate($item->year, $item->week)->startOfWeek();
-            $endOfWeek = (clone $startOfWeek)->endOfWeek();
 
-            return [
-                'period' => $startOfWeek->format('M d, Y') . ' - ' . $endOfWeek->format('M d, Y'),
-                'count'  => $item->total,
-            ];
-        });
+    public function deceasedPerWeek($startDate, $endDate)
+    {
+        return Deceased::selectRaw('YEAR(date_of_death) as year, WEEK(date_of_death, 1) as week, COUNT(*) as total')
+            ->whereBetween('date_of_death', [$startDate, $endDate])
+            ->groupBy('year', 'week')
+            ->orderBy('year')
+            ->orderBy('week')
+            ->get()
+            ->map(function ($item) {
+                $startOfWeek = Carbon::now()->setISODate($item->year, $item->week)->startOfWeek();
+                $endOfWeek = (clone $startOfWeek)->endOfWeek();
+
+                return [
+                    'period' => $startOfWeek->format('M d, Y').' - '.$endOfWeek->format('M d, Y'),
+                    'count' => $item->total,
+                ];
+            });
     }
 
-    public function deceasedPerDay($startDate, $endDate) {
+    public function deceasedPerDay($startDate, $endDate)
+    {
         return Deceased::selectRaw('DATE(date_of_death) as day, COUNT(*) as total')
             ->whereBetween('date_of_death', [$startDate, $endDate])
             ->groupBy('day')
@@ -265,12 +274,13 @@ class ReportService
             ->map(function ($item) {
                 return [
                     'period' => Carbon::parse($item->day)->format('M d, Y'),
-                    'count'  => $item->total,
+                    'count' => $item->total,
                 ];
-        });
+            });
     }
 
-    public function deceasedPerBarangay($startDate, $endDate) {
+    public function deceasedPerBarangay($startDate, $endDate)
+    {
         return Deceased::selectRaw('barangay_id, COUNT(*) as total')
             ->with('barangay')
             ->groupBy('barangay_id')
@@ -278,13 +288,14 @@ class ReportService
             ->get()
             ->map(function ($item) {
                 return [
-                    'name'  => $item->barangay->name ?? 'Unknown',
+                    'name' => $item->barangay->name ?? 'Unknown',
                     'count' => $item->total,
                 ];
             });
     }
 
-    public function deceasedPerReligion($startDate, $endDate) {
+    public function deceasedPerReligion($startDate, $endDate)
+    {
         return Deceased::selectRaw('religion_id, COUNT(*) as total')
             ->with('religion')
             ->groupBy('religion_id')
@@ -292,26 +303,28 @@ class ReportService
             ->get()
             ->map(function ($item) {
                 return [
-                    'name'  => $item->religion->name ?? 'Unknown',
+                    'name' => $item->religion->name ?? 'Unknown',
                     'count' => $item->total,
                 ];
             });
     }
 
-    public function deceasedPerGender($startDate, $endDate) {
+    public function deceasedPerGender($startDate, $endDate)
+    {
         return Deceased::selectRaw('gender, COUNT(*) as total')
             ->groupBy('gender')
             ->whereBetween('date_of_death', [$startDate, $endDate])
             ->get()
             ->map(function ($item) {
                 return [
-                    'name'  => $item->gender == 1 ? 'Male' : 'Female',
+                    'name' => $item->gender == 1 ? 'Male' : 'Female',
                     'count' => $item->total,
                 ];
             });
     }
 
-    public function claimantPerBarangay($startDate, $endDate) {
+    public function claimantPerBarangay($startDate, $endDate)
+    {
         return Claimant::selectRaw('barangay_id, COUNT(*) as total')
             ->with('barangay')
             ->groupBy('barangay_id')
@@ -319,13 +332,14 @@ class ReportService
             ->get()
             ->map(function ($item) {
                 return [
-                    'name'  => $item->barangay->name ?? 'Unknown',
+                    'name' => $item->barangay->name ?? 'Unknown',
                     'count' => $item->total,
                 ];
             });
     }
 
-    public function claimantPerRelationship($startDate, $endDate) {
+    public function claimantPerRelationship($startDate, $endDate)
+    {
         return Claimant::selectRaw('relationship_to_deceased, COUNT(*) as total')
             ->with('relationship')
             ->groupBy('relationship_to_deceased')
@@ -333,26 +347,28 @@ class ReportService
             ->get()
             ->map(function ($item) {
                 return [
-                    'name'  => $item->relationship->name ?? 'Unknown',
+                    'name' => $item->relationship->name ?? 'Unknown',
                     'count' => $item->total,
                 ];
             });
     }
 
-    public function chequesPerStatus($startDate, $endDate) {
+    public function chequesPerStatus($startDate, $endDate)
+    {
         return Cheque::selectRaw('status, COUNT(*) as total')
             ->groupBy('status')
             ->whereBetween('created_at', [$startDate, $endDate])
             ->get()
             ->map(function ($item) {
                 return [
-                    'name'  => $item->status,
+                    'name' => $item->status,
                     'count' => $item->total,
                 ];
             });
     }
 
-    public function funeralsPerStatus($startDate, $endDate) {
+    public function funeralsPerStatus($startDate, $endDate)
+    {
         return FuneralAssistance::selectRaw("
             CASE
                 WHEN approved_at IS NOT NULL THEN 'Approved'
@@ -366,7 +382,7 @@ class ReportService
             ->get()
             ->map(function ($item) {
                 return [
-                    'name'  => $item->status_group,
+                    'name' => $item->status_group,
                     'count' => $item->total,
                 ];
             });

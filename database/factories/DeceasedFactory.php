@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\Barangay;
 use App\Models\Religion;
 use App\Models\Sex;
-use App\Models\Barangay;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -23,7 +23,7 @@ class DeceasedFactory extends Factory
             'id' => $this->faker->uuid(),
             'first_name' => $this->faker->firstName(),
             'middle_name' => $this->faker->optional()->lastName(),
-            'last_name'=> $this->faker->lastName(),
+            'last_name' => $this->faker->lastName(),
             'suffix' => $this->faker->optional()->randomElement([
                 'Jr.', 'Sr.', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X',
             ]),

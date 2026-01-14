@@ -33,6 +33,7 @@ class applicationStatusCharts extends Component
                     'count' => count($status),
                 ];
             });
+
         // dd($applications);
         return view('components.application-status-charts', compact('applications'));
     }

@@ -19,7 +19,7 @@ class RouteAccess
         $user = auth()->user();
         $route = $request->route()->getName();
         $restrictedRoutes = UserRouteRestriction::select('user_id', 'name')->pluck('name')->toArray();
-        if (in_array($route, $restrictedRoutes) && !$user->hasRole('superadmin')) {
+        if (in_array($route, $restrictedRoutes) && ! $user->hasRole('superadmin')) {
             return back()->with('alertError', 'You do not have access to this page');
         }
 

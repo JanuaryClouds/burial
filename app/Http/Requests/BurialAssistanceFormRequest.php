@@ -22,17 +22,17 @@ class BurialAssistanceFormRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "tracking_no" => "required|string|max:255|unique:burial_assistances,tracking_no",
-            "application_date" => "required|date",
-            "swa" => "string|nullable|max:255",
-            "encoder" => "nullable|exists:users,id",
-            "funeraria" => "string|nullable|max:255",
-            "deceased_id" => "required|numeric|exists:deceased,id",
-            "claimant_id" => "required|numeric|exists:claimants,id",
-            "amount" => "numeric|nullable",
+            'tracking_no' => 'required|string|max:255|unique:burial_assistances,tracking_no',
+            'application_date' => 'required|date',
+            'swa' => 'string|nullable|max:255',
+            'encoder' => 'nullable|exists:users,id',
+            'funeraria' => 'string|nullable|max:255',
+            'deceased_id' => 'required|numeric|exists:deceased,id',
+            'claimant_id' => 'required|numeric|exists:claimants,id',
+            'amount' => 'numeric|nullable',
             // "status" => "string|nullable|max:255",
-            "remarks" => "string|nullable|max:255",
-            "initial_checker" => "nullable|exists:users,id",
+            'remarks' => 'string|nullable|max:255',
+            'initial_checker' => 'nullable|exists:users,id',
         ];
     }
 }

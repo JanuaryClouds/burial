@@ -1,20 +1,21 @@
 <?php
 
 namespace App\Services;
+
 use App\Models\FuneralAssistance;
 
 class FuneralAssistanceService
 {
     /**
-     * @param array $data Data passed from request
-     * @param FuneralAssistance $funeralAssistance Original application
+     * @param  array  $data  Data passed from request
+     * @param  FuneralAssistance  $funeralAssistance  Original application
      * @return FuneralAssistance returns the updated funeral assistance and client
      */
     public function update(array $data, $funeralAssistance)
     {
         $funeralAssistance->update($data);
         $client = $funeralAssistance->client;
-        
+
         $client->demographic->update([
             'sex_id' => $data['sex_id'],
             'religion_id' => $data['religion_id'],
@@ -47,15 +48,16 @@ class FuneralAssistanceService
 
         foreach ($families as $index => $family) {
             $family->update([
-                'name'            => $data['fam_name'][$index],
-                'sex_id'          => $data['fam_sex_id'][$index],
-                'age'             => $data['fam_age'][$index],
-                'civil_id'        => $data['fam_civil_id'][$index],
+                'name' => $data['fam_name'][$index],
+                'sex_id' => $data['fam_sex_id'][$index],
+                'age' => $data['fam_age'][$index],
+                'civil_id' => $data['fam_civil_id'][$index],
                 'relationship_id' => $data['fam_relationship_id'][$index],
-                'occupation'      => $data['fam_occupation'][$index],
-                'income'          => $data['fam_income'][$index],
+                'occupation' => $data['fam_occupation'][$index],
+                'income' => $data['fam_income'][$index],
             ]);
         }
+
         return $funeralAssistance;
     }
 }

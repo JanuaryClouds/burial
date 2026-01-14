@@ -21,13 +21,11 @@
         <table id="cms-table" class="table data-table" style="width:100%">
             <thead class="border-bottom border-bottom-1 border-gray-200 fw-bold">
                 <tr role="row">
-                    @forelse ($data->first()->getAttributes() as $column => $value)
+                    @foreach ($data->first()->getAttributes() as $column => $value)
                         @if (!in_array($column, $excemptions))
                             <th class="sorting sort-handler">{{ Str::replace('_', ' ', Str::title($column)) }}</th>
                         @endif
-                    @empty
-                        <th>No {{ $type }}</th>
-                    @endforelse
+                    @endforeach
                     @if (Request::is('users.manage'))
                         <th>Role</th>
                     @endif
@@ -37,13 +35,11 @@
             <tbody>
                 @foreach ($data as $entry)
                     <tr class="">
-                        @forelse ($entry->getAttributes() as $key => $value)
+                        @foreach ($entry->getAttributes() as $key => $value)
                             @if (!in_array($key, $excemptions))
                                 <td>{{ $value }}</td>
                             @endif
-                        @empty
-                            <td>No {{ $type }}</td>
-                        @endforelse
+                        @endforeach
                         <td>
                             @can('update-resource', $entry)
                                 <button class="btn btn-primary" type="button" data-bs-toggle="modal"

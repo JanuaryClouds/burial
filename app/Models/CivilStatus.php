@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class CivilStatus extends Model
 {
     use HasFactory;
+
     protected $table = 'civil_statuses';
+
     protected $fillable = [
         'name',
         'remarks',
@@ -21,7 +23,7 @@ class CivilStatus extends Model
 
     public function clientSocialInfo()
     {
-        return $this->hasMany(ClientSocialInfo::class); 
+        return $this->hasMany(ClientSocialInfo::class);
     }
 
     public function clientFamily()

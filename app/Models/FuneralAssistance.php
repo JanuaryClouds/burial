@@ -10,8 +10,11 @@ class FuneralAssistance extends Model
     use HasFactory;
 
     protected $table = 'funeral_assistances';
+
     protected $primaryKey = 'id';
+
     public $incrementing = false;
+
     protected $keyType = 'string';
 
     protected $fillable = [
@@ -19,10 +22,10 @@ class FuneralAssistance extends Model
         'client_id',
         'approved_at',
         'forwarded_at',
-        'remarks'
+        'remarks',
     ];
 
-    public function client() 
+    public function client()
     {
         return $this->belongsTo(Client::class, 'client_id', 'id');
     }

@@ -1,4 +1,4 @@
-<div class="d-flex align-items-center ms-3">
+<div class="d-flex align-items-center">
     <a href="#" class="btn btn-icon btn-custom btn-active-color-primary" data-kt-menu-trigger="{default:'click'}"
         data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
         <i class="ki-duotone ki-night-day theme-light-show fs-1">

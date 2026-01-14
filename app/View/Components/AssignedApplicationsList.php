@@ -33,11 +33,12 @@ class AssignedApplicationsList extends Component
             'processLogs',
             'user',
         ])
-        ->where(function ($query) {
-            $query->where('status', '!=', 'rejected')
-                ->where('status', '!=', 'released')
-                ->where('assigned_to', auth()->user()->id);   
-        })->get();
+            ->where(function ($query) {
+                $query->where('status', '!=', 'rejected')
+                    ->where('status', '!=', 'released')
+                    ->where('assigned_to', auth()->user()->id);
+            })->get();
+
         return view('components.assigned-applications-list', compact('applications'));
     }
 }

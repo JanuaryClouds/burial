@@ -13,19 +13,19 @@ class ReligionService
 
     public function updateReligion(array $data, $religion): Religion
     {
-        if($religion->update($data))
-        {
+        if ($religion->update($data)) {
             return $religion;
         }
+
         return null;
     }
 
     public function deleteReligion($religion): Religion
     {
-        if($religion->delete())
-        {
+        if ($religion->delete()) {
             return $religion;
         }
+
         return null;
     }
 }

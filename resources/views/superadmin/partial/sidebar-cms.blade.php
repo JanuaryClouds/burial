@@ -43,7 +43,6 @@
                 <span class="menu-title">Barangays</span>
             </a>
         </div>
-        {{-- TODO: update to use resource --}}
         <div class="menu-item">
             <a href="{{ route('relationship.index') }}" @class(['active' => Route::is('relationship.*'), 'menu-link'])>
                 <span class="menu-bullet">

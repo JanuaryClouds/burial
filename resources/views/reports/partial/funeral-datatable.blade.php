@@ -6,7 +6,7 @@
                     <table id="generic-table" class="table data-table generic-table" style="width:100%">
                         <thead>
                             <tr role="row">
-                                @forelse ($funerals->first()->getAttributes() as $column => $value)
+                                @foreach ($funerals->first()->getAttributes() as $column => $value)
                                     @php
                                         $excemptions = ['id', 'created_at', 'updated_at'];
                                     @endphp
@@ -21,19 +21,19 @@
                                                 {{ Str::title(Str::replace('_', ' ', $column)) }}</th>
                                         @endif
                                     @endif
-                                @empty
-                                    <th>No Funerals</th>
-                                @endforelse
+                                @endforeach
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($funerals as $entry)
+                            @foreach ($funerals as $entry)
                                 <tr class="bg-white">
                                     @foreach ($entry->getAttributes() as $key => $value)
                                         @if (!in_array($key, $excemptions))
                                             @if ($key == 'client_id')
-                                                <td>{{ $entry->client->first_name }} {{ $entry->client->middle_name }}
-                                                    {{ $entry->client->last_name }} {{ $entry->client->suffix ?? '' }}
+                                                <td>{{ $entry->client->first_name }}
+                                                    {{ $entry->client->middle_name }}
+                                                    {{ $entry->client->last_name }}
+                                                    {{ $entry->client->suffix ?? '' }}
                                                 </td>
                                                 <td>{{ $entry->client->beneficiary->first_name }}
                                                     {{ Str::limit($entry->client->beneficiary->middle_name, '1', '.') }}
@@ -45,10 +45,7 @@
                                         @endif
                                     @endforeach
                                 </tr>
-                            @empty
-                                <tr>
-                                    <td>No Funerals</td>
-                            @endforelse
+                            @endforeach
                         </tbody>
                     </table>
                 </div>

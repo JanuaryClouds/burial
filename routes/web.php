@@ -1,17 +1,14 @@
 <?php
 
-use App\Http\Controllers\FuneralAssistanceController;
+use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\Auth\UserController;
+use App\Http\Controllers\BurialAssistanceController;
+use App\Http\Controllers\CitizenAccessController;
+use App\Http\Controllers\ClientController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ExportController;
+use App\Http\Controllers\TestController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\{
-    Auth\UserController,
-    ClientController,
-    ExportController,
-    BurialAssistanceController,
-    ActivityLogController,
-    DashboardController,
-    TestController,
-    CitizenAccessController,
-};
 
 Route::get('/', [CitizenAccessController::class, 'index'])
     ->name('landing.page');
@@ -23,9 +20,9 @@ Route::post('/test/component/post', [TestController::class, 'post'])
     ->name('test.component.post');
 
 Route::get('/login', [UserController::class, 'loginPage'])
-    ->name('login.page');
-Route::post('/login/check', [UserController::class, 'login'])
     ->name('login');
+Route::post('/login/check', [UserController::class, 'login'])
+    ->name('login.check');
 Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
 require __DIR__.'/guest.php';

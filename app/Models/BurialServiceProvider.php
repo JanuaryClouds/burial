@@ -2,16 +2,17 @@
 
 namespace App\Models;
 
-use Laravel\Scout\Searchable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Scout\Searchable;
 
 class BurialServiceProvider extends Model
 {
     use HasFactory;
     use Searchable;
 
-    protected $table = "burial_service_providers";
+    protected $table = 'burial_service_providers';
+
     protected $BurialServiceProviderService;
 
     protected $fillable = [
@@ -19,10 +20,10 @@ class BurialServiceProvider extends Model
         'contact_details',
         'address',
         'barangay_id',
-        'remarks'
+        'remarks',
     ];
 
-    public static function getAllProviders() 
+    public static function getAllProviders()
     {
         return self::all();
     }
@@ -32,11 +33,13 @@ class BurialServiceProvider extends Model
         return $this->hasMany(BurialService::class);
     }
 
-    public function barangay() {
+    public function barangay()
+    {
         return $this->belongsTo(Barangay::class, 'barangay_id', 'id');
     }
 
-    public function toSearchableArray() {
+    public function toSearchableArray()
+    {
         return [
             'id' => $this->id,
             'name' => $this->name,

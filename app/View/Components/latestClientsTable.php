@@ -2,8 +2,8 @@
 
 namespace App\View\Components;
 
-use Closure;
 use App\Models\Client;
+use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
@@ -27,19 +27,20 @@ class latestClientsTable extends Component
             'barangay',
             'funeralAssistance',
             'interviews',
-            'assessment'
+            'assessment',
         ])
-        ->select(
-            'id',
-            'tracking_no',
-            'first_name',
-            'middle_name',
-            'last_name',
-            'house_no',
-            'street',
-            'barangay_id',
-            'contact_no',
-        )->orderBy('created_at', 'desc')->take(10)->get();
+            ->select(
+                'id',
+                'tracking_no',
+                'first_name',
+                'middle_name',
+                'last_name',
+                'house_no',
+                'street',
+                'barangay_id',
+                'contact_no',
+            )->orderBy('created_at', 'desc')->take(10)->get();
+
         return view('components.latest-clients-table', compact('data'));
     }
 }

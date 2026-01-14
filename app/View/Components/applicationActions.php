@@ -2,10 +2,10 @@
 
 namespace App\View\Components;
 
+use App\Models\User;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
-use App\Models\User;
 
 class applicationActions extends Component
 {
@@ -25,6 +25,7 @@ class applicationActions extends Component
         $admins = User::where(function ($query) {
             $query->where('is_active', true);
         })->get();
+
         return view('components.application-actions', compact('admins'));
     }
 }

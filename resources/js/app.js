@@ -1,3 +1,12 @@
+/**
+ *
+ * You can write your JS code here, DO NOT touch the default style file
+ * because it will make it harder for you to update.
+ *
+ */
+
+"use strict";
+
 // 1. Core jQuery first
 import $ from "jquery";
 window.$ = window.jQuery = $;
@@ -6,9 +15,15 @@ window.$ = window.jQuery = $;
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 // 3. jQuery plugins (must come AFTER jQuery is set globally)
-import "popper.js";
-import "jquery.nicescroll";   // Stisla requires this
-import "moment";              // Stisla also uses moment
+// import "popper.js";
+// import "jquery.nicescroll";   // Stisla requires this
+// import "moment";              // Stisla also uses moment
+import DataTable from "datatables.net-responsive-bs4";
+import "datatables.net-bs4/css/dataTables.bootstrap4.min.css";
+import 'datatables.net-buttons-bs4';
+import 'datatables.net-buttons/js/buttons.html5.mjs';
+import 'datatables.net-buttons/js/buttons.print.mjs';
+import 'datatables.net-responsive-bs4';
 import { checkAndRenderCharts } from "./charts";
 import { checkAndRenderDataTables } from "./dataTables";
 document.addEventListener('DOMContentLoaded', () => {
@@ -19,12 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
 // 4. DataTables (depends on jQuery)
 import jszip from 'jszip';
 import pdfmake from 'pdfmake';
-import DataTable from "datatables.net-responsive-bs4";
-import "datatables.net-bs4/css/dataTables.bootstrap4.min.css";
-import 'datatables.net-buttons-bs4';
-import 'datatables.net-buttons/js/buttons.html5.mjs';
-import 'datatables.net-buttons/js/buttons.print.mjs';
-import 'datatables.net-responsive-bs4';
 
 DataTable.Buttons.jszip(jszip);
 DataTable.Buttons.pdfMake(pdfmake);

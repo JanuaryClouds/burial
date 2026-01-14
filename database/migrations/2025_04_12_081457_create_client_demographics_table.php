@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('client_demographics', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('client_id')->constrained('clients')->onDelete('CASCADE');            
+            $table->foreignUuid('client_id')->constrained('clients')->onDelete('CASCADE');
             $table->foreignId('sex_id')->constrained('sexes');
             $table->foreignId('religion_id')->constrained('religions');
             $table->foreignId('nationality_id')->constrained('nationalities');

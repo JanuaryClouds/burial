@@ -7,7 +7,6 @@ use App\Models\District;
 use App\Models\Relationship;
 use App\Models\Religion;
 use App\Models\Sex;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class SeederForTesting extends Seeder
@@ -34,10 +33,10 @@ class SeederForTesting extends Seeder
             'Child',
             'Sibling',
             'Spouse',
-            'Others'
+            'Others',
         ];
 
-        foreach($relationships as $relationship) {
+        foreach ($relationships as $relationship) {
             Relationship::firstOrCreate([
                 'name' => $relationship,
             ]);

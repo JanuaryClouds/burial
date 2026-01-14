@@ -1,10 +1,8 @@
 <?php
 
+use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ImageController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\{
-    ClientController,
-};
 
 Route::get('/general-intake-form', [ClientController::class, 'create'])
     ->name('general.intake.form');

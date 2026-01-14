@@ -3,8 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\Barangay;
-use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\Relationship;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Claimant>
@@ -21,10 +21,10 @@ class ClaimantFactory extends Factory
         return [
             'id' => $this->faker->uuid(),
             'first_name' => $this->faker->firstName(),
-            'middle_name'=> $this->faker->optional()->lastName(),
-            'last_name'=> $this->faker->lastName(),
+            'middle_name' => $this->faker->optional()->lastName(),
+            'last_name' => $this->faker->lastName(),
             'suffix' => $this->faker->optional()->randomElement(([
-                    'Jr.', 'Sr.', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X',
+                'Jr.', 'Sr.', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X',
             ])),
             'relationship_to_deceased' => Relationship::inRandomOrder()->first()->id,
             'mobile_number' => $this->faker->regexify('09[0-9]{9}'),

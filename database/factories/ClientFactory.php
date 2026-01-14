@@ -10,7 +10,6 @@ use App\Models\ClientDemographic;
 use App\Models\ClientSocialInfo;
 use App\Models\District;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Client>
@@ -22,7 +21,6 @@ class ClientFactory extends Factory
      *
      * @return array<string, mixed>
      */
-
     protected $model = Client::class;
 
     public function definition()
@@ -39,27 +37,28 @@ class ClientFactory extends Factory
             'street' => $this->faker->streetName(),
             'barangay_id' => Barangay::inRandomOrder()->first()->id,
             'district_id' => District::inRandomOrder()->first()->id,
-            'city' => "Taguig City",
+            'city' => 'Taguig City',
             'contact_no' => $this->faker->regexify('09[0-9]{9}'),
         ];
     }
 
-    public function configure() {
+    public function configure()
+    {
         return $this->afterCreating(function (Client $client) {
             ClientBeneficiary::factory()->create([
-                'client_id' => $client->id
+                'client_id' => $client->id,
             ]);
 
             ClientSocialInfo::factory()->create([
-                'client_id' => $client->id
+                'client_id' => $client->id,
             ]);
 
             ClientDemographic::factory()->create([
-                'client_id' => $client->id
+                'client_id' => $client->id,
             ]);
 
             ClientBeneficiaryFamily::factory()->count(5)->create([
-                'client_id' => $client->id              
+                'client_id' => $client->id,
             ]);
         });
     }
