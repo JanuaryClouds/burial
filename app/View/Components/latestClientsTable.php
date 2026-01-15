@@ -39,6 +39,7 @@ class latestClientsTable extends Component
                 'street',
                 'barangay_id',
                 'contact_no',
+                'created_at'
             )->orderBy('created_at', 'desc')->take(10)->get();
 
         return view('components.latest-clients-table', compact('data'));

@@ -45,6 +45,9 @@
                                                     </td>
                                                 @elseif ($key == 'barangay_id')
                                                     <td>{{ $entry->barangay->name }}</td>
+                                                @elseif ($key == 'created_at')
+                                                    <td>{{ \Carbon\Carbon::parse($entry->created_at)->format('M d, Y') }}
+                                                    </td>
                                                 @elseif ($key == 'tracking_no')
                                                     <td class="d-flex align-items-center gap-1">
                                                         <a href="{{ route('client.show', $entry) }}">

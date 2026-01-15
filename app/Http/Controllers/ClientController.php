@@ -37,7 +37,7 @@ class ClientController extends Controller
     {
         $page_title = 'Clients';
         $resource = 'client';
-        $renderColumns = ['tracking_no', 'first_name', 'house_no', 'street', 'barangay_id', 'contact_no'];
+        $renderColumns = ['tracking_no', 'first_name', 'house_no', 'street', 'barangay_id', 'contact_no', 'created_at'];
         $data = Client::with([
             'barangay',
             'claimant',
