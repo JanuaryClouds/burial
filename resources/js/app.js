@@ -7,29 +7,22 @@
 
 "use strict";
 
-import $ from "jquery";
-window.$ = window.jQuery = $;
+// import $ from "jquery";
+// window.$ = window.jQuery = $;
 
-import "bootstrap/dist/js/bootstrap.bundle.min.js";
+// import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
-import DataTable from "datatables.net-responsive-bs4";
-import "datatables.net-bs4/css/dataTables.bootstrap4.min.css";
-import 'datatables.net-buttons-bs4';
-import 'datatables.net-buttons/js/buttons.html5.mjs';
-import 'datatables.net-buttons/js/buttons.print.mjs';
-import 'datatables.net-responsive-bs4';
+// import "datatables.net-bs4/css/dataTables.bootstrap4.min.css";
+// import 'datatables.net-buttons-bs4';
+// import 'datatables.net-buttons/js/buttons.html5.mjs';
+// import 'datatables.net-buttons/js/buttons.print.mjs';
+// import 'datatables.net-responsive-bs4';
 import { checkAndRenderCharts } from "./charts";
 import { checkAndRenderDataTables } from "./dataTables";
 document.addEventListener('DOMContentLoaded', () => {
     checkAndRenderCharts();
     checkAndRenderDataTables();
 })
-
-import jszip from 'jszip';
-import pdfmake from 'pdfmake';
-
-DataTable.Buttons.jszip(jszip);
-DataTable.Buttons.pdfMake(pdfmake);
 
 $(document).ready(function () {
     $(".nav-link.has-dropdown").each(function () {
