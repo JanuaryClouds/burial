@@ -10,6 +10,8 @@
 import $ from "jquery";
 window.$ = window.jQuery = $;
 
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
+
 import DataTable from "datatables.net-responsive-bs4";
 import "datatables.net-bs4/css/dataTables.bootstrap4.min.css";
 import 'datatables.net-buttons-bs4';
@@ -45,6 +47,8 @@ $(document).ready(function () {
     });
 });
 
+
+// 6. AlpineJS (doesn’t depend on jQuery)
 import Alpine from "alpinejs";
 import persist from "@alpinejs/persist";
 Alpine.plugin(persist);
