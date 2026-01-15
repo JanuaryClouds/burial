@@ -16,7 +16,7 @@
         @include('components.footer')
     </div>
     @include('components.alert')
-    <script src="{{ asset('metronic/js/scripts.bundle.js') }}"></script>
+    @include('partials.document-scripts')
 </body>
 
 </html>

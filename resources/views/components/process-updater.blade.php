@@ -25,7 +25,7 @@
     }
 @endphp
 <div id="addUpdateModal-{{ $application->id }}" class="modal fade flex justify-content-center" tabindex="-1" role="dialog"
-    data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="add-process" aria-hidden="true">
+    data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="add-process">
     @foreach ($workflowSteps as $step)
         @if ($processLogs->count() == 0 || $step?->order_no > $nextOrderNo)
             <div class="modal-dialog" role="document">

@@ -17,7 +17,7 @@
                         <span class="badge badge-pill badge-primary ml-2">{{ $encodedApplications->count() }}</span>
                     </h5>
                 </span>
-                <button class="btn btn-primary" data-target="#encoder-{{ $encoder->id }}-applications"
+                <button class="btn btn-primary" data-bs-target="#encoder-{{ $encoder->id }}-applications"
                     data-bs-toggle="collapse" aria-expanded="false"
                     aria-controls="encoder-{{ $encoder->id }}-applications">Show Encoded Applications</button>
             </div>

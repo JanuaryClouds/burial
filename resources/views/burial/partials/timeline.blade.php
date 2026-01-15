@@ -11,14 +11,14 @@
                     <b>{{ class_basename($log->loggable) === 'WorkflowStep' ? $log->loggable?->description : $log->comments }}</b>
                     @if (class_basename($log->loggable) === 'WorkflowStep' && $log->comments)
                         <a class="ml-4 {{ $loop->last ? 'text-white' : '' }}"
-                            data-target="#show-comments-{{ $log->id }}" data-toggle="collapse" aria-expanded="false"
-                            aria-controls="show-comments-{{ $log->id }}">
+                            data-bs-target="#show-comments-{{ $log->id }}" data-bs-toggle="collapse"
+                            aria-expanded="false" aria-controls="show-comments-{{ $log->id }}">
                             <i class="fa fa-comment-alt"></i>
                         </a>
                     @endif
                     @if (class_basename($log->loggable) === 'WorkflowStep' && $log->extra_data)
                         <a class="ml-4 {{ $loop->last ? 'text-white' : '' }}"
-                            data-target="#show-extra-data-{{ $log->id }}" data-toggle="collapse"
+                            data-bs-target="#show-extra-data-{{ $log->id }}" data-bs-toggle="collapse"
                             aria-expanded="false" aria-controls="show-comments-{{ $log->id }}">
                             <i class="fas fa-circle-info"></i>
                         </a>

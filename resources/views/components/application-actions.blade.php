@@ -7,7 +7,7 @@
         @if ($application->assigned_to == auth()->user()->id || $application->assigned_to == null)
             @if ($application->status == 'pending' || $application->status == 'approved' || $application->status == 'processing')
                 <button id="action-options" class="btn btn-light btn-sm dropdown-toggle dropdown-toggle-split"
-                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Actions
                     <span class="sr-only">
                         <i class="fas fa-caret-down"></i>
