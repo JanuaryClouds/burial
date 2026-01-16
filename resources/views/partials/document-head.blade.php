@@ -22,4 +22,4 @@
 
 <link rel="icon" type="image/x-icon" href="{{ asset('images/favicon.ico') }}">
 
-@vite(['resources/js/app.js', 'resources/css/app.css'])
+<link rel="stylesheet" href="{{ asset('assets/css/app.css') }}">

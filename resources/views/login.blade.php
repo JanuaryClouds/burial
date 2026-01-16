@@ -39,16 +39,13 @@
                                 <input type="email" id="email" name="email" placeholder="Enter your email"
                                     class="form-control" required>
                             </div>
-                            <div class="mb-6" x-data="{ show: false }">
+                            <div class="mb-6">
                                 <label for="password" class="form-label">Password</label>
                                 <div class="d-flex">
-                                    <input :type="show ? 'text' : 'password'" id="password" name="password"
-                                        style=" border-radius: 10px 0px 0px 10px" placeholder="Enter your password"
-                                        class="form-control" required autocomplete="false">
-                                    <button type="button" @click="show = !show" class="btn btn-sm ms-1"
-                                        style="background-color:#999999; border-radius: 0px 10px 10px 0px">
-                                        <i class="fa-solid fa-eye" x-show="!show" x-cloak></i>
-                                        <i class="fa-solid fa-eye-slash" x-show="show" x-cloak></i>
+                                    <input type="password" id="password" name="password" placeholder="Enter your password"
+                                        class="form-control" required>
+                                    <button type="button" id="togglePassword" class="btn btn-sm ms-1">
+                                        <i class="fa-solid fa-eye"></i>
                                     </button>
                                 </div>
                             </div>
@@ -73,4 +70,10 @@
             </div>
         </div>
     </section>
+    <script>
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const passwordInput = document.getElementById('password');
+            passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
+        })
+    </script>
 @endsection
