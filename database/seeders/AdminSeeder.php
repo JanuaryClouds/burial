@@ -21,7 +21,7 @@ class AdminSeeder extends Seeder
                 'middle_name' => 'System',
                 'last_name' => 'Admin',
                 'contact_number' => '09123456789',
-                'password' => 'funeral.password',
+                'password' => config('app.admin_password'), // todo: change to a more secure password after deployment
             ]
         );
 
@@ -32,7 +32,7 @@ class AdminSeeder extends Seeder
                 'middle_name' => 'Admin',
                 'last_name' => 'Admin',
                 'contact_number' => '09987654321',
-                'password' => 'funeral.password',
+                'password' => config('app.admin_password'),
             ]
         );
 
@@ -43,7 +43,7 @@ class AdminSeeder extends Seeder
                 'middle_name' => null,
                 'last_name' => 'Admin',
                 'contact_number' => '09234567891',
-                'password' => 'funeral.password',
+                'password' => config('app.admin_password'),
             ]
         );
 
@@ -52,7 +52,7 @@ class AdminSeeder extends Seeder
         $admin->assignRole($adminRole);
 
         $adminFactories = User::factory()->count(5)->create([
-            'password' => 'funeral.password',
+            'password' => config('app.admin_password'),
         ]);
         foreach ($adminFactories as $adminFactory) {
             $adminFactory->assignRole($adminRole);
