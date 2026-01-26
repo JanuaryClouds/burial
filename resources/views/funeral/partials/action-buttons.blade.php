@@ -15,6 +15,11 @@
             <a href="{{ route('funeral.forwarded', ['id' => $data->id]) }}" class="btn btn-primary">
                 Forwarded
             </a>
+        @else
+            <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                title="Funeral Assistance has been provided">
+                Forwarded
+            </button>
         @endif
     </div>
 </div>

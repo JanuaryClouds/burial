@@ -48,7 +48,7 @@
                             <a href="#funerals_tab" class="nav-link text-gray-700 pb-6" data-bs-toggle="tab">
                                 Funeral Assistances
                                 <span
-                                    class="badge rounded-pill text-bg-light ms-2">{{ $records->sum(fn($c) => $c->funeralAssistance?->count()) ?? 0 }}</span>
+                                    class="badge rounded-pill text-bg-light ms-2">{{ $records->sum(fn($c) => $c->funeralAssistance?->where('client_id', $c->id)->count()) ?? 0 }}</span>
                             </a>
                         </li>
                     </ul>

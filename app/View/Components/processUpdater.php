@@ -30,6 +30,10 @@ class processUpdater extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.process-updater');
+        return view('components.process-updater', [
+            'application' => $this->application,
+            'processLogs' => $this->processLogs,
+            'workflowSteps' => $this->workflowSteps
+        ]);
     }
 }

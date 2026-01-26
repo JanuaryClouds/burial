@@ -22,12 +22,12 @@
                                 <tr class="">
                                     @foreach ($entry->getAttributes() as $key => $value)
                                         @if (!in_array($key, $excemptions))
-                                            @if ($key == 'gender')
-                                                <td>{{ $value == 1 ? 'Male' : 'Female' }}</td>
-                                            @elseif ($key == 'barangay_id')
-                                                <td>{{ $entry->barangay->name }}</td>
-                                            @elseif ($key == 'religion_id')
-                                                <td>{{ $entry->religion->name }}</td>
+                                            @if ($key == 'burial_assistance_id')
+                                                <td>{{ $entry->burialAssistance->tracking_no }}</td>
+                                            @elseif ($key == 'claimant_id')
+                                                <td>{{ $entry->claimant->first_name }}
+                                                    {{ Str::limit($entry->claimant->middle_name, 1, '.') }}
+                                                    {{ $entry->claimant->last_name }} </td>
                                             @else
                                                 <td>{{ $value }}</td>
                                             @endif

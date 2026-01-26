@@ -80,7 +80,7 @@ class ProcessLogService
             'loggable_type' => WorkflowStep::class,
             'is_progress_step' => true,
             'burial_assistance_id' => $application->id,
-            'claimant_id' => $claimant->id,
+            'claimant_id' => $application->claimantChanges->where('status', 'approved')->first()->newClaimant->id ?? $application->claimant->id,
             'date_in' => $data['date_in'],
             'date_out' => $data['date_out'],
             'comments' => $data['comments'],

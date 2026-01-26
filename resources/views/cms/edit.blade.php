@@ -12,7 +12,7 @@
                 <div class="d-flex flex-column gap-3">
                     @foreach ($data->getAttributes() as $field => $value)
                         <div class="row">
-                            @if (!in_array($field, ['id', 'created_at', 'updated_at', 'is_active']))
+                            @if (!in_array($field, ['id', 'created_at', 'updated_at', 'handler_id', 'is_active']))
                                 <div class="col">
                                     @include('components.form-input', [
                                         'name' => $field,

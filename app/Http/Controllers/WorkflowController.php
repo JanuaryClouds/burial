@@ -9,7 +9,7 @@ class WorkflowController extends Controller
     public function index()
     {
         $page_title = 'Workflow';
-        $resource = 'workflow';
+        $resource = 'workflowstep';
         $data = WorkflowStep::select('id', 'description', 'handler_id')->get();
 
         return view('cms.index', compact('page_title', 'resource', 'data'));
@@ -18,8 +18,8 @@ class WorkflowController extends Controller
     public function edit(WorkflowStep $workflow)
     {
         $page_title = 'Workflow';
-        $resource = 'workflow';
-        $data = WorkflowStep::find($workflow->id)->select('id', 'description')->first();
+        $resource = 'workflowstep';
+        $data = WorkflowStep::find($workflow->id);
 
         return view('cms.edit', compact('page_title', 'data', 'resource'));
     }

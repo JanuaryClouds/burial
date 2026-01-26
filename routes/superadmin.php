@@ -37,7 +37,7 @@ Route::middleware('permission:manage-content')
             ->only(['update']);
         Route::resource('funeral', FuneralAssistanceController::class)
             ->only(['update']);
-        Route::resource('workflow', WorkflowController::class)
+        Route::resource('workflowstep', WorkflowController::class)
             ->only(['index', 'edit', 'update']);
         Route::resource('handler', HandlerController::class)
             ->only(['index', 'edit', 'update']);
@@ -49,41 +49,19 @@ Route::middleware('permission:manage-content')
             ->only(['index']);
         Route::resource('assistance', AssistanceController::class);
         Route::resource('civil', CivilStatusController::class);
-        Route::resource('education', EducationController::class);
-        Route::resource('nationality', NationalityController::class);
-        Route::resource('relationship', RelationshipController::class);
-        Route::resource('religion', ReligionController::class);
+        Route::resource('education', EducationController::class)
+            ->only(['index', 'store', 'edit', 'update']);
+        Route::resource('nationality', NationalityController::class)
+            ->only(['index', 'store', 'edit', 'update']);
+        Route::resource('relationship', RelationshipController::class)
+            ->only(['index', 'store', 'edit', 'update']);
+        Route::resource('religion', ReligionController::class)
+            ->only(['index', 'store', 'edit', 'update']);
         Route::resource('sex', SexController::class);
         Route::resource('district', DistrictController::class);
-        Route::resource('barangay', BarangayController::class);
+        Route::resource('barangay', BarangayController::class)
+            ->only(['index', 'store', 'edit', 'update']);
         Route::resource('moa', ModeOfAssistanceController::class);
-    });
-
-Route::middleware('permission:manage-content')
-    ->name('cms.')
-    ->prefix('cms')
-    ->group(function () {
-        // Route::get('/barangays', [CmsController::class, 'barangays'])
-        //     ->name('barangays');
-        // Route::get('/relationships', [CmsController::class, 'relationships'])
-        //     ->name('relationships');
-        // Route::get('/workflow', [CmsController::class, 'workflow'])
-        //     ->name('workflow');
-        // Route::get('/handlers', [CmsController::class, 'handlers'])
-        //     ->name('handlers');
-        // Route::get('/users', [CmsController::class, 'users'])
-        //     ->name('users');
-        // Route::get('/religions', [CmsController::class, 'religions'])
-        //     ->name('religions');
-
-        // Route::post('/{type}/store', [CmsController::class, 'storeContent'])
-        //     ->name('store');
-
-        // Route::post('/{type}/{id}/update', [CmsController::class, 'updateContent'])
-        //     ->name('update');
-
-        // Route::post('/{type}/{id}/delete', [CmsController::class, 'deleteContent'])
-        //     ->name('delete');
     });
 
 Route::middleware('permission:manage-accounts')
@@ -96,18 +74,3 @@ Route::middleware('permission:manage-accounts')
         Route::post('/{userId}/restrictions/edit', [UserRouteRestrictionController::class, 'update'])
             ->name('restrictions.update');
     });
-
-// Route::middleware('permission:manage-roles')
-//     ->group(function () {
-//         Route::get('/permissions', [PermissionController::class, 'index'])
-//             ->name('permissions');
-
-//         Route::get('/roles', [RoleController::class, 'index'])
-//             ->name('roles');
-
-//         Route::post('/roles/store', [RoleController::class, 'store'])
-//             ->name('roles.store');
-
-//         Route::post('/roles/{id}/update', [RoleController::class, 'update'])
-//             ->name('roles.update');
-//     });

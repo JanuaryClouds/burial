@@ -20,6 +20,9 @@
 <link rel="stylesheet" href="{{ asset('metronic/plugins/global/plugins.bundle.css') }}">
 <link rel="stylesheet" href="{{ asset('metronic/css/style.bundle.css') }}">
 
+<script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.x.x/dist/cdn.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.15.4/dist/cdn.min.js"></script>
+
 <link rel="icon" type="image/x-icon" href="{{ asset('images/favicon.ico') }}">
 
 <link rel="stylesheet" href="{{ asset('assets/css/app.css') }}">

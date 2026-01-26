@@ -382,7 +382,3 @@ $(document).ready(function () {
         e.stopPropagation();
     });
 });
-
-Alpine.plugin(persist);
-window.Alpine = Alpine;
-Alpine.start();

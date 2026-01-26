@@ -1,8 +1,8 @@
 @props(['burialAssistance', 'updateAverage'])
 @php
     use App\Models\WorkflowStep;
-    $latestStep = $processLogs->last();
-    $currentStep = $latestStep?->loggable?->order_no;
+    $latestStep = $burialAssistance->processLogs->sortBy('created_at')->last() ?? [];
+    $currentStep = $latestStep ? $latestStep?->loggable?->order_no : 0;
     $totalWorkflowSteps = WorkflowStep::select('id')->get()->count();
     switch ($burialAssistance->status) {
         case 'processing':

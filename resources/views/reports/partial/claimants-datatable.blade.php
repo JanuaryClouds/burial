@@ -13,8 +13,9 @@
                                     @if (!in_array($column, $excemptions))
                                         <th class="sorting sort-handler">
                                             {{ Str::title(Str::replace('_', ' ', $column)) }}</th>
+                                    @else
+                                        <th>No Claimants</th>
                                     @endif
-                                    <th>No Claimants</th>
                                 @endforeach
                             </tr>
                         </thead>

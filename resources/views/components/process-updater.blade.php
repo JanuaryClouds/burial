@@ -1,5 +1,13 @@
 @php
     $nextStep = null;
+    $workflowSteps = \App\Models\WorkflowStep::select(
+        'id',
+        'order_no',
+        'description',
+        'extra_data_schema',
+        'requires_extra_data',
+    )->get();
+    $processLogs = $application->processLogs;
 
     if ($processLogs->count() != 0) {
         $processLogs = $processLogs->sortBy(fn($log) => $log->created_at)->values();

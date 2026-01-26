@@ -48,7 +48,12 @@ class BurialAssistance extends Model
 
     public function claimant()
     {
-        return $this->hasOne(Claimant::class, 'burial_assistance_id', 'id');
+        return $this->hasOne(Claimant::class, 'burial_assistance_id', 'id')->latestOfMany('created_at');
+    }
+
+    public function claimants()
+    {
+        return $this->hasMany(Claimant::class, 'burial_assistance_id', 'id');
     }
 
     public function claimantChanges()
@@ -68,7 +73,7 @@ class BurialAssistance extends Model
 
     public function latestCheque()
     {
-        return $this->hasOne(Cheque::class, 'burial_assistance_id', 'id')->latestOfMany()->first();
+        return $this->hasOne(Cheque::class, 'burial_assistance_id', 'id')->latestOfMany();
     }
 
     public function encoder()

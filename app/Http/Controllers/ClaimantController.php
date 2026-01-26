@@ -15,6 +15,7 @@ class ClaimantController extends Controller
         try {
             $claimants = Claimant::select(
                 'id',
+                'burial_assistance_id',
                 'first_name',
                 'middle_name',
                 'last_name',
@@ -24,33 +25,47 @@ class ClaimantController extends Controller
                 'address',
                 'barangay_id'
             )
-                ->with('barangay', 'relationship', 'barangay', 'oldClaimantChanges', 'newClaimantChanges', 'burialAssistance')
+                ->with(['barangay', 'relationship', 'barangay', 'oldClaimantChanges', 'newClaimantChanges', 'burialAssistance'])
                 ->whereBetween('created_at', [$startDate, $endDate])
                 ->get();
 
-            $barangays = Barangay::with(['claimant' => function ($query) use ($startDate, $endDate) {
-                $query->whereBetween('created_at', [$startDate, $endDate]);
-            }])
+            $claimantPerBarangay = Barangay::query()
                 ->select('id', 'name')
-                ->whereHas('claimant', function ($query) use ($startDate, $endDate) {
-                    $query->whereBetween('created_at', [$startDate, $endDate]);
+                ->withCount([
+                    'deceased as deceased_count' => function ($query) use ($startDate, $endDate) {
+                        $query->whereBetween('date_of_death', [$startDate, $endDate]);
+                    }
+                ])
+                ->whereHas('deceased', function ($query) use ($startDate, $endDate) {
+                    $query->whereBetween('date_of_death', [$startDate, $endDate]);
                 })
-                ->get();
+                ->get()
+                ->mapWithKeys(function ($barangay) {
+                    return [$barangay->name => $barangay->deceased_count];
+                })
+                ->toArray();
 
-            $relationships = Relationship::with(['claimant' => function ($query) use ($startDate, $endDate) {
-                $query->whereBetween('created_at', [$startDate, $endDate]);
-            }])
+            $relationshipsPerClaimant = Relationship::query()
                 ->select('id', 'name')
+                ->withCount([
+                    'claimant as claimant_count' => function ($query) use ($startDate, $endDate) {
+                        $query->whereBetween('created_at', [$startDate, $endDate]);
+                    }
+                ])
                 ->whereHas('claimant', function ($query) use ($startDate, $endDate) {
                     $query->whereBetween('created_at', [$startDate, $endDate]);
                 })
-                ->get();
+                ->get()
+                ->mapWithKeys(function ($religion) {
+                    return [$religion->name => $religion->claimant_count];
+                })
+                ->toArray();
 
             $charts = $request->input('charts', []);
             $pdf = Pdf::loadView('pdf.claimant', compact(
                 'claimants',
-                'barangays',
-                'relationships',
+                'claimantPerBarangay',
+                'relationshipsPerClaimant',
                 'startDate',
                 'endDate',
                 'charts',

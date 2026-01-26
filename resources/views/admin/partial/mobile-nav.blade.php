@@ -98,7 +98,7 @@
                 </a>
             </div>
             <div class="menu-item">
-                <a href="{{ route('education.index') }}" @class(['active' => Route::is('religion.*'), 'menu-link'])>
+                <a href="{{ route('education.index') }}" @class(['active' => Route::is('education.*'), 'menu-link'])>
                     <span class="menu-bullet">
                         <span class="bullet bullet-dot"></span>
                     </span>
@@ -106,7 +106,7 @@
                 </a>
             </div>
             <div class="menu-item">
-                <a href="{{ route('nationality.index') }}" @class(['active' => Route::is('religion.*'), 'menu-link'])>
+                <a href="{{ route('nationality.index') }}" @class(['active' => Route::is('nationality.*'), 'menu-link'])>
                     <span class="menu-bullet">
                         <span class="bullet bullet-dot"></span>
                     </span>

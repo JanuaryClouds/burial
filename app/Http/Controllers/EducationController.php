@@ -34,6 +34,19 @@ class EducationController extends Controller
             ));
     }
 
+    public function edit(Education $education)
+    {
+        $page_title = 'Education';
+        $resource = 'education';
+        $data = $education;
+        
+        return view('cms.edit', compact(
+            'data',
+            'resource',
+            'page_title',
+        ));
+    }
+
     public function store(EducationRequest $request)
     {
         $education = $this->educationServices->storeEducation($request->validated());

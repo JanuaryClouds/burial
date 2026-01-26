@@ -4,7 +4,7 @@
         <span class="badge badge-pill p-0">{{ $burialAssistance->created_at }}</span>
     </li>
     @foreach ($claimants as $claimant)
-        @forelse ($processLogs as $log)
+        @forelse ($claimant->processLogs->sortBy('created_at') as $log)
             <li
                 class="list-group-item d-flex justify-content-between align-items-center {{ $loop->last ? 'bg-primary text-white' : 'bg-body-secondary bg-transparent' }}">
                 <p class="mb-0 {{ $loop->last ? 'fw-bold text-white' : '' }} d-flex align-items-baseline gap-3">
@@ -108,7 +108,7 @@
 
         @php
             $lastLogDate = $claimant->processLogs->last()?->date_in;
-            $change = $claimantChanges->first(function ($c) use ($lastLogDate) {
+            $change = $burialAssistance->claimantChanges->first(function ($c) use ($lastLogDate) {
                 return $lastLogDate === null || $c->changed_at > $lastLogDate;
             });
         @endphp

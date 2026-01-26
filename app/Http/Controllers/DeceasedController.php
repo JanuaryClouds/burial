@@ -15,6 +15,7 @@ class DeceasedController extends Controller
         try {
             $deceased = Deceased::select(
                 'id',
+                'burial_assistance_id',
                 'first_name',
                 'middle_name',
                 'last_name',
@@ -27,35 +28,48 @@ class DeceasedController extends Controller
                 'religion_id',
                 'created_at',
             )
-                ->with('gender', 'religion', 'barangay')
+                ->with(['gender', 'religion', 'barangay', 'burialAssistance'])
                 ->whereBetween('date_of_death', [$startDate, $endDate])
                 ->get();
-
-            $barangays = Barangay::with(['deceased' => function ($query) use ($startDate, $endDate) {
-                $query->whereBetween('deceased.date_of_death', [$startDate, $endDate]);
-            }])
+            
+            $deceasedPerBarangay = Barangay::query()
                 ->select('id', 'name')
+                ->withCount([
+                    'deceased as deceased_count' => function ($query) use ($startDate, $endDate) {
+                        $query->whereBetween('date_of_death', [$startDate, $endDate]);
+                    }
+                ])
                 ->whereHas('deceased', function ($query) use ($startDate, $endDate) {
-                    $query->whereBetween('deceased.date_of_death', [$startDate, $endDate]);
+                    $query->whereBetween('date_of_death', [$startDate, $endDate]);
                 })
-                ->get();
+                ->get()
+                ->mapWithKeys(function ($barangay) {
+                    return [$barangay->name => $barangay->deceased_count];
+                })
+                ->toArray();
 
-            $religions = Religion::with(['deceased' => function ($query) use ($startDate, $endDate) {
-                $query->whereBetween('deceased.date_of_death', [$startDate, $endDate]);
-            }])
+            $deceasedPerReligion = Religion::query()
                 ->select('id', 'name')
-                ->with('deceased')
+                ->withCount([
+                    'deceased as deceased_count' => function ($query) use ($startDate, $endDate) {
+                        $query->whereBetween('date_of_death', [$startDate, $endDate]);
+                    }
+                ])
                 ->whereHas('deceased', function ($query) use ($startDate, $endDate) {
-                    $query->whereBetween('deceased.date_of_death', [$startDate, $endDate]);
+                    $query->whereBetween('date_of_death', [$startDate, $endDate]);
                 })
-                ->get();
+                ->get()
+                ->mapWithKeys(function ($religion) {
+                    return [$religion->name => $religion->deceased_count];
+                })
+                ->toArray();
 
             $charts = $request->input('charts', []);
 
             $pdf = Pdf::loadView('pdf.deceased', compact(
                 'deceased',
-                'barangays',
-                'religions',
+                'deceasedPerBarangay',
+                'deceasedPerReligion',
                 'startDate',
                 'endDate',
                 'charts',

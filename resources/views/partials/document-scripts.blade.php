@@ -19,9 +19,6 @@
     integrity="sha512-axXaF5grZBaYl7qiM6OMHgsgVXdSLxqq0w7F4CQxuFyrcPmn0JfnqsOtYHUun80g6mRRdvJDrTCyL8LQqBOt/Q=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-<script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.x.x/dist/cdn.min.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.15.4/dist/cdn.min.js"></script>
-
 <script src="{{ asset('assets/js/app.js') }}"></script>
 
 <script src="{{ asset('metronic/js/scripts.bundle.js') }}"></script>

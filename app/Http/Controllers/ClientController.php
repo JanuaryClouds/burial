@@ -106,7 +106,8 @@ class ClientController extends Controller
             $client = Client::find($client->id);
             $page_title = $client->first_name.' '.$client->last_name."'s Application";
             $page_subtitle = $client->tracking_no.' - '.$client->id;
-            $readonly = auth()->user()->cannot('manage-content') || ($client?->claimant?->burialAssistance->status != 'released' || $client?->funeralAssistance?->forwarded_at != null); ;
+            $readonly = auth()->user()->cannot('manage-content');
+            $released = $client?->claimant?->burialAssistance->status != 'released' || $client?->funeralAssistance?->forwarded_at != null;
             
             if ($client) {
                 $path = "clients/{$client->tracking_no}";
@@ -125,6 +126,7 @@ class ClientController extends Controller
                     'client',
                     'files',
                     'readonly',
+                    'released',
                 ));
             } else {
                 return redirect()->back()->with('error', 'Client not found.');
