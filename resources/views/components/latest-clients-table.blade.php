@@ -1,3 +1,21 @@
+@php
+    $data = App\Models\Client::with(['claimant', 'barangay', 'funeralAssistance', 'interviews', 'assessment'])
+        ->select(
+            'id',
+            'tracking_no',
+            'first_name',
+            'middle_name',
+            'last_name',
+            'house_no',
+            'street',
+            'barangay_id',
+            'contact_no',
+            'created_at',
+        )
+        ->orderBy('created_at', 'desc')
+        ->take(10)
+        ->get();
+@endphp
 <div class="card">
     <div class="card-header">
         <h2 class="card-title fw-medium fs-2">Latest Clients</h2>
