@@ -22,10 +22,14 @@
                         Funeral for {{ $beneficiary->first_name }} {{ Str::charAt($beneficiary->middle_name, 0) }}.
                         {{ $beneficiary->last_name }} {{ $beneficiary?->suffix }}
                     </span>
-                    <span class="d-flex gap-2">
-                        <p class="text-gray-700">{{ $funeral->approved_at?->format('F j, Y g:i A') ?? '' }}</p>
-                        <p class="text-success">{{ $funeral->forwarded_at?->format('F j, Y g:i A') ?? '' }}</p>
-                        {{ $funeral->created_at->format('F j, Y g:i A') }}
+                    <span class="d-flex fs-6">
+                        <p class="mb-0">Submitted in {{ $funeral->created_at->format('F j, Y g:i A') }}</p>
+                        <p class="text-gray-700 mb-0">
+                            {{ ', approved ' . \Carbon\Carbon::parse($funeral?->approved_at)->diffForHumans($funeral->created_at) ?? '' }}
+                        </p>
+                        <p class="text-success mb-0">
+                            {{ ', forwarded to Taguig Public Cemetery ' . \Carbon\Carbon::parse($funeral?->forwarded_at)->format('F j, Y g:i A') ?? '' }}
+                        </p>
                     </span>
                 </div>
             </li>
