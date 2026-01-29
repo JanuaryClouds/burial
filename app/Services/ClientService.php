@@ -14,6 +14,7 @@ use App\Models\ClientSocialInfo;
 use App\Models\Deceased;
 use App\Models\FuneralAssistance;
 use Carbon\Carbon;
+use DB;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Str;
@@ -41,128 +42,92 @@ class ClientService
 
     public function storeClient(array $data, string $uuid = null): ?Client
     {
-        $tracking_no = $this->generateTrackingNo();
-
-        $client = Client::create([
-            'id' => Str::uuid(),
-            'citizen_id' => $uuid ?? null,
-            'tracking_no' => $tracking_no,
-            'first_name' => $data['first_name'],
-            'middle_name' => $data['middle_name'],
-            'last_name' => $data['last_name'],
-            'age' => $data['age'],
-            'date_of_birth' => $data['date_of_birth'],
-            'house_no' => $data['house_no'],
-            'street' => $data['street'],
-            'district_id' => $data['district_id'],
-            'barangay_id' => $data['barangay_id'],
-            'city' => $data['city'],
-            'contact_no' => $data['contact_no'],
-        ]);
-
-        if ($client) {
-            $demographic = ClientDemographic::create([
+        return DB::transaction(function () use ($data, $uuid) {
+            $tracking_no = $this->generateTrackingNo();
+    
+            $client = Client::create([
                 'id' => Str::uuid(),
-                'client_id' => $client->id,
-                'sex_id' => $data['sex_id'],
-                'religion_id' => $data['religion_id'],
-                'nationality_id' => $data['nationality_id'],
+                'citizen_id' => $uuid ?? null,
+                'tracking_no' => $tracking_no,
+                'first_name' => $data['first_name'],
+                'middle_name' => $data['middle_name'],
+                'last_name' => $data['last_name'],
+                'age' => $data['age'],
+                'date_of_birth' => $data['date_of_birth'],
+                'house_no' => $data['house_no'],
+                'street' => $data['street'],
+                'district_id' => $data['district_id'],
+                'barangay_id' => $data['barangay_id'],
+                'city' => $data['city'],
+                'contact_no' => $data['contact_no'],
             ]);
-
-            $social = ClientSocialInfo::create([
-                'id' => Str::uuid(),
-                'client_id' => $client->id,
-                'relationship_id' => $data['relationship_id'],
-                'civil_id' => $data['civil_id'],
-                'education_id' => $data['education_id'],
-                'income' => $data['income'],
-                'philhealth' => $data['philhealth'],
-                'skill' => $data['skill'],
-            ]);
-
-            $beneficiary = ClientBeneficiary::create([
-                'id' => Str::uuid(),
-                'client_id' => $client->id,
-                'first_name' => $data['ben_first_name'],
-                'middle_name' => $data['ben_middle_name'],
-                'last_name' => $data['ben_last_name'],
-                'suffix' => $data['ben_suffix'] ?? '',
-                'religion_id' => $data['ben_religion_id'],
-                'barangay_id' => $data['ben_barangay_id'],
-                'sex_id' => $data['ben_sex_id'],
-                'date_of_birth' => $data['ben_date_of_birth'],
-                'date_of_death' => $data['ben_date_of_death'],
-                'place_of_birth' => $data['ben_place_of_birth'],
-            ]);
-
-            foreach ($data['fam_name'] as $index => $name) {
-                ClientBeneficiaryFamily::create([
+    
+            if ($client) {
+                $demographic = ClientDemographic::create([
                     'id' => Str::uuid(),
                     'client_id' => $client->id,
-                    'name' => $name,
-                    'sex_id' => $data['fam_sex_id'][$index],
-                    'age' => $data['fam_age'][$index],
-                    'civil_id' => $data['fam_civil_id'][$index],
-                    'relationship_id' => $data['fam_relationship_id'][$index],
-                    'occupation' => $data['fam_occupation'][$index],
-                    'income' => $data['fam_income'][$index],
+                    'sex_id' => $data['sex_id'],
+                    'religion_id' => $data['religion_id'],
+                    'nationality_id' => $data['nationality_id'],
                 ]);
-            }
+                
+                if (!$demographic) {
+                    throw new \RuntimeException('Failed to create client related records');
+                }
+    
+                $social = ClientSocialInfo::create([
+                    'id' => Str::uuid(),
+                    'client_id' => $client->id,
+                    'relationship_id' => $data['relationship_id'],
+                    'civil_id' => $data['civil_id'],
+                    'education_id' => $data['education_id'],
+                    'income' => $data['income'],
+                    'philhealth' => $data['philhealth'],
+                    'skill' => $data['skill'],
+                ]);
 
-            // $assessmentRows = [];
-            // foreach($data['ass_problem_presented'] as $index => $problem)
-            // {
-            //     $assessmentRows[] = ClientAssessment::create([
-            // 'id' => Str::uuid(),
-            //         'client_id' => $client->id,
-            //         'problem_presented' => $problem,
-            //         'assessment' => $data['ass_assessment'][$index],
-            //     ]);
-            // }
+                if (!$social) {
+                    throw new \RuntimeException('Failed to create client related records');
+                }
+    
+                $beneficiary = ClientBeneficiary::create([
+                    'id' => Str::uuid(),
+                    'client_id' => $client->id,
+                    'first_name' => $data['ben_first_name'],
+                    'middle_name' => $data['ben_middle_name'],
+                    'last_name' => $data['ben_last_name'],
+                    'suffix' => $data['ben_suffix'] ?? '',
+                    'religion_id' => $data['ben_religion_id'],
+                    'barangay_id' => $data['ben_barangay_id'],
+                    'sex_id' => $data['ben_sex_id'],
+                    'date_of_birth' => $data['ben_date_of_birth'],
+                    'date_of_death' => $data['ben_date_of_death'],
+                    'place_of_birth' => $data['ben_place_of_birth'],
+                ]);
 
-            // $assistanceIds = $data['rec_assistance_id'] ?? [];
-            // foreach ($assistanceIds as $assistanceId) {
-            //     if ($assistanceId == 8) {
-            //         ClientRecommendation::create([
-            // 'id' => Str::uuid(),
-            //             'client_id'     => $client->id,
-            //             'assistance_id' => 8,
-            //             'referral'      => $data['rec_burial_referral'][0] ?? null,
-            //             'moa_id'        => $data['rec_moa'][0] ?? null,
-            //             'amount'        => $data['rec_amount'][0] ?? null,
-            //             'others'        => null,
-            //         ]);
-            //     } elseif ($assistanceId == 14) {
-            //         ClientRecommendation::create([
-            // 'id' => Str::uuid(),
-            //             'client_id'     => $client->id,
-            //             'assistance_id' => 14,
-            //             'referral'      => null,
-            //             'moa_id'        => null,
-            //             'amount'        => null,
-            //             'others'        => $data['rec_assistance_other'][0] ?? null,
-            //         ]);
-            //     } else {
-            //         ClientRecommendation::create([
-            // 'id' => Str::uuid(),
-            //             'client_id'     => $client->id,
-            //             'assistance_id' => $assistanceId,
-            //             'referral'      => null,
-            //             'moa_id'        => null,
-            //             'amount'        => null,
-            //             'others'        => null,
-            //         ]);
-            //     }
-            // }
-
-            if ($demographic && $social && $beneficiary) {
+                if (!$beneficiary) {
+                    throw new \RuntimeException('Failed to create client related records');
+                }
+    
+                if (is_array($data['fam_name']) && count($data['fam_name']) > 0) {
+                    foreach ($data['fam_name'] as $index => $name) {
+                        ClientBeneficiaryFamily::create([
+                            'id' => Str::uuid(),
+                            'client_id' => $client->id,
+                            'name' => $name,
+                            'sex_id' => $data['fam_sex_id'][$index],
+                            'age' => $data['fam_age'][$index],
+                            'civil_id' => $data['fam_civil_id'][$index],
+                            'relationship_id' => $data['fam_relationship_id'][$index],
+                            'occupation' => $data['fam_occupation'][$index],
+                            'income' => $data['fam_income'][$index],
+                        ]);
+                    }
+                }
+                
                 return $client;
-            } else {
-                $client->delete();
             }
-        }
-
-        return null;
+        });
     }
 
     public function transferClient($client_id)
@@ -341,7 +306,6 @@ class ClientService
 
         if ($client->recommendation->count() > 0 && $client->recommendation->first()->moa) {
             if ($client->recommendation->first()->moa->name == 'Cash') {
-                dd($client->recommendation->first()->moa->name);
                 $sheet->setCellValue(
                     'I37', '✓ Cash'
                 );

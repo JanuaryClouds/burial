@@ -58,9 +58,9 @@ class ClientController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        $clientsWithInterview = Client::with('interviews')->whereHas('interviews')->get()->count();
-        $clientsWithAssessments = Client::with('assessment')->whereHas('assessment')->get()->count();
-        $clientsWithRecommendation = Client::with('recommendation')->whereHas('recommendation')->get()->count();
+        $clientsWithInterview = Client::has('interviews')->count();
+        $clientsWithAssessments = Client::has('assessment')->count();
+        $clientsWithRecommendation = Client::has('recommendation')->count();
 
         $cardData = [
             [
@@ -255,7 +255,6 @@ class ClientController extends Controller
     public function update(ClientRequest $request, Client $client)
     {
         $client = $this->clientServices->updateClient($request->validated(), $client);
-        dd($client);
         activity()
             ->performedOn($client)
             ->causedBy(Auth::user());
