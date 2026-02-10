@@ -9,7 +9,6 @@ use App\Models\ProcessLog;
 use App\Models\WorkflowStep;
 use Carbon\Carbon;
 use DB;
-use Exception;
 use Http;
 use Illuminate\Http\Client\RequestException;
 use Str;
@@ -45,20 +44,15 @@ class ProcessLogService
 
         if ($step->order_no == 11) {
             DB::transaction(function () use ($application, $data) {
-                try {
-                    $application->latestCheque()->update([
-                        'cheque_number' => $data['extra_data']['cheque_number'],
-                        'amount' => $data['extra_data']['amount'],
-                    ]);
+                $application->latestCheque()->update([
+                    'cheque_number' => $data['extra_data']['cheque_number'],
+                    'amount' => $data['extra_data']['amount'],
+                ]);
 
-                    // todo create an internal log in-case the disbursement system doesn't work that will periodically post to it
-                } catch (\Throwable $e) {
-                    throw new Exception($e->getMessage());
-                }
             });
 
-            $claimant = $application->claimant->first_name.' '.Str::charAt($application->claimant?->middle_name, 0).'. '.$application->claimant->last_name.' '.$application->claimant?->suffix;
-            $deceased = $application->deceased->first_name.' '.Str::charAt($application->deceased->middle_name, 0).'. '.$application->deceased->last_name.' '.$application->deceased?->suffix;
+            $claimant = $application->claimant->first_name.' '.Str::charAt($application->claimant?->middle_name ?? '', 0).'. '.$application->claimant->last_name.' '.$application->claimant?->suffix;
+            $deceased = $application->deceased->first_name.' '.Str::charAt($application->deceased->middle_name ?? '', 0).'. '.$application->deceased->last_name.' '.$application->deceased?->suffix;
             $dod = Carbon::parse($application->deceased->date_of_death)->format('F d, Y');
             $disbursement = $this->createDisbursement($data, $deceased, $claimant, $dod);
         }

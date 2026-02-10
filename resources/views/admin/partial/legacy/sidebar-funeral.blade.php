@@ -1,12 +1,6 @@
 <!--begin:funeral assistance-->
-<a
-    href="{{ route('funeral-assistances') }}"
-    id="sidebarFuneral" data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start"
-    @class([
-        'menu-item',
-        'here' => Route::is('funeral-assistances*'),
-    ])
->
+<a href="{{ route('funeral-assistances') }}" id="sidebarFuneral" data-kt-menu-trigger="{default: 'click', lg: 'hover'}"
+    data-kt-menu-placement="right-start" @class(['menu-item', 'here' => Route::is('funeral-assistances*')])>
     <!--begin:Menu link-->
     <span class="menu-link menu-center d-flex flex-column">
         <span class="menu-icon me-0">
@@ -22,7 +16,7 @@
     <div class="menu-sub menu-sub-dropdown px-2 py-4 w-250px mh-75 overflow-auto">
         <div class="menu-item">
             <div class="menu-content ">
-                <span class="menu-section fs-5 fw-bolder ps-1 py-1">Funeral Assistances</span>
+                <span class="menu-section fs-5 fw-bolder ps-1 py-1">Libreng Libing</span>
             </div>
         </div>
     </div>

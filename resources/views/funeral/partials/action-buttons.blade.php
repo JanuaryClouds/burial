@@ -17,7 +17,7 @@
             </a>
         @else
             <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                title="Funeral Assistance has been provided">
+                title="Libreng Libing has been provided">
                 Forwarded
             </button>
         @endif

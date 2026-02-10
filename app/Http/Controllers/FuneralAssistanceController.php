@@ -22,7 +22,7 @@ class FuneralAssistanceController extends Controller
 
     public function index()
     {
-        $page_title = 'Funeral Assistances';
+        $page_title = 'Libreng Libing Applications';
         $resource = 'funeral-assistances';
         $renderColumns = ['client_id', 'action'];
         $data = FuneralAssistance::select('id', 'client_id', 'approved_at', 'forwarded_at')
@@ -92,7 +92,7 @@ class FuneralAssistanceController extends Controller
             $funeralAssistance = FuneralAssistance::find($id);
             $funeralAssistance = $this->funeralAssistanceService->update($request->all(), $funeralAssistance);
 
-            return redirect()->back()->with('success', 'Successfully updated Funeral Assistance.');
+            return redirect()->back()->with('success', 'Successfully updated Libreng Libing Application.');
         } catch (Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
@@ -105,7 +105,7 @@ class FuneralAssistanceController extends Controller
             $data->approved_at = now();
             $data->save();
 
-            return redirect()->back()->with('success', 'Successfully approved Funeral Assistance.');
+            return redirect()->back()->with('success', 'Successfully approved Libreng Libing Application.');
         } catch (Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
@@ -118,7 +118,7 @@ class FuneralAssistanceController extends Controller
             $data->forwarded_at = now();
             $data->save();
 
-            return redirect()->back()->with('success', 'Application for Funeral Assistance has been forwarded to Cemetery Staff.');
+            return redirect()->back()->with('success', 'Application for Libreng Libing has been forwarded to Cemetery Staff.');
         } catch (Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }

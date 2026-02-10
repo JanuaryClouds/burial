@@ -1,11 +1,8 @@
-@props([
-    'client',
-    'readonly' => false
-])
+@props(['client', 'readonly' => false])
 @php
     $types = [
         'burial' => 'Burial Assistance',
-        'funeral' => 'Funeral Assistance',
+        'funeral' => 'Libreng Libing',
     ];
 
     if (isset($client)) {
@@ -20,13 +17,8 @@
     @foreach ($assistances as $id => $name)
         <div class="col-6">
             <label class="form-check form-check-custom form-check-solid mb-4">
-                <input 
-                    class="form-check-input" 
-                    type="checkbox" 
-                    name="assistances[]" 
-                    value="{{ $id }}" 
-                    {{ in_array($name, ['Burial']) ? 'checked disabled' : 'disabled' }} 
-                />
+                <input class="form-check-input" type="checkbox" name="assistances[]" value="{{ $id }}"
+                    {{ in_array($name, ['Burial']) ? 'checked disabled' : 'disabled' }} />
                 <span class="form-check-label">
                     {{ Str::title($name) }}
                 </span>
@@ -40,7 +32,7 @@
             'label' => 'Type of Assistance',
             'options' => $types,
             'selected' => $recommendedAssistance->type ?? null,
-            'disabled' => $recommendedAssistance
+            'disabled' => $recommendedAssistance,
         ])
         <div id="referral">
             @include('components.form-input', [
@@ -48,7 +40,7 @@
                 'id' => 'referralField',
                 'label' => 'Referral',
                 'value' => $recommendedAssistance->referral ?? null,
-                'readonly' => $recommendedAssistance
+                'readonly' => $recommendedAssistance,
             ])
         </div>
         <div id="amount">
@@ -59,7 +51,7 @@
                 'label' => 'Amount of Assistance to be Extended',
                 'type' => 'number',
                 'value' => $recommendedAssistance->amount ?? null,
-                'readonly' => $recommendedAssistance
+                'readonly' => $recommendedAssistance,
             ])
         </div>
         <div id="moa">
@@ -69,14 +61,14 @@
                 'label' => 'Mode of Assistance',
                 'options' => $modes,
                 'selected' => $recommendedAssistance->moa_id ?? null,
-                'disabled' => $recommendedAssistance
+                'disabled' => $recommendedAssistance,
             ])
         </div>
         @include('components.form-textarea', [
             'name' => 'remarks',
             'label' => 'Remarks',
             'value' => $recommendedAssistance->remarks ?? null,
-            'readonly' => $recommendedAssistance
+            'readonly' => $recommendedAssistance,
         ])
     </div>
 </div>
@@ -88,7 +80,7 @@
     const moaContainer = document.getElementById('moa');
     const moaField = document.getElementById('moaField');
 
-    typeField.addEventListener('change', function () {
+    typeField.addEventListener('change', function() {
         if (typeField.value == 'funeral') {
             referralField.value = "Taguig City Public Cemetery";
             amountContainer.classList.add('d-none');
@@ -96,7 +88,7 @@
             amountField.removeAttribute('required');
             moaField.removeAttribute('required');
         }
-        
+
         if (typeField.value == 'burial') {
             referralField.value = "";
             amountContainer.classList.remove('d-none');

@@ -61,7 +61,7 @@
             <li @class(['active' => Request::is('funeral-assistances*')])>
                 <a href="{{ route('funeral-assistances') }}" class="nav-link">
                     <i class="fas fa-file-lines"></i>
-                    <span>Funeral Assistances</span>
+                    <span>Libreng Libing</span>
                 </a>
             </li>
             <li @class(['active' => Request::is('applications/all')])>

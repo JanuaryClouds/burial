@@ -31,13 +31,13 @@ class DeceasedController extends Controller
                 ->with(['gender', 'religion', 'barangay', 'burialAssistance'])
                 ->whereBetween('date_of_death', [$startDate, $endDate])
                 ->get();
-            
+
             $deceasedPerBarangay = Barangay::query()
                 ->select('id', 'name')
                 ->withCount([
                     'deceased as deceased_count' => function ($query) use ($startDate, $endDate) {
                         $query->whereBetween('date_of_death', [$startDate, $endDate]);
-                    }
+                    },
                 ])
                 ->whereHas('deceased', function ($query) use ($startDate, $endDate) {
                     $query->whereBetween('date_of_death', [$startDate, $endDate]);
@@ -53,7 +53,7 @@ class DeceasedController extends Controller
                 ->withCount([
                     'deceased as deceased_count' => function ($query) use ($startDate, $endDate) {
                         $query->whereBetween('date_of_death', [$startDate, $endDate]);
-                    }
+                    },
                 ])
                 ->whereHas('deceased', function ($query) use ($startDate, $endDate) {
                     $query->whereBetween('date_of_death', [$startDate, $endDate]);

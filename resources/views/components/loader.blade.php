@@ -1,6 +1,7 @@
 <div id="splashScreen"
     style="
         position: fixed; inset: 0; z-index: -1; display: flex; opacity: 0; align-items: center; justify-content: center; overflow: hidden;
+        max-width: 100vw;
         background: url('{{ asset('images/splash-screen-transparent.png') }}') no-repeat center center / cover;
         background-color: #00000077;
         backdrop-filter: blur(2px);

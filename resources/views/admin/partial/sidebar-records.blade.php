@@ -43,7 +43,7 @@
                         <span class="path2"></span>
                     </i>
                 </span>
-                <span class="menu-title">Funeral Assistances</span>
+                <span class="menu-title">Libreng Libing</span>
             </a>
         </div>
         @can('manage-assignments')

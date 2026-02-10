@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\DataTables\CmsDataTable;
 use App\Http\Requests\ClientRequest;
 use App\Models\Assistance;
 use App\Models\Barangay;
@@ -90,12 +89,12 @@ class ClientController extends Controller
         ];
 
         return view('client.index', compact(
-                'page_title',
-                'cardData',
-                'resource',
-                'renderColumns',
-                'data'
-            ));
+            'page_title',
+            'cardData',
+            'resource',
+            'renderColumns',
+            'data'
+        ));
     }
 
     public function show(Client $client)
@@ -108,7 +107,7 @@ class ClientController extends Controller
             $page_subtitle = $client->tracking_no.' - '.$client->id;
             $readonly = auth()->user()->cannot('manage-content');
             $released = $client?->claimant?->burialAssistance->status != 'released' || $client?->funeralAssistance?->forwarded_at != null;
-            
+
             if ($client) {
                 $path = "clients/{$client->tracking_no}";
                 $storedFiles = Storage::disk('local')->files($path);
@@ -118,7 +117,7 @@ class ClientController extends Controller
                         'path' => $file,
                     ];
                 });
-    
+
                 return view('client.view', compact(
                     'page_title',
                     'page_subtitle',
@@ -351,7 +350,7 @@ class ClientController extends Controller
 
                 $application = $this->clientServices->transferClient($client->id);
                 activity()
-                    ->log('Funeral Assistance Application created');
+                    ->log('Libreng Libing Application created');
 
                 return redirect()->back()->with('success', 'Successfuly created funeral assistance application for the client!');
             } else {

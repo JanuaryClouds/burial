@@ -1,6 +1,6 @@
 <ul class="list-group list-group-flush fs-4">
     @if ($records->sum(fn($c) => $c->funeralAssistance?->count()) == 0)
-        <li class="list-group-item">No Requested Funeral Assistances</li>
+        <li class="list-group-item">No Requested Libreng Libing</li>
     @else
         @foreach ($records as $client)
             @php

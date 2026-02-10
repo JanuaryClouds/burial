@@ -53,7 +53,7 @@ class DashboardController extends Controller
                 'count' => $pendingBurialAssistance,
             ],
             [
-                'label' => 'Pending Funeral Assistance',
+                'label' => 'Pending Libreng Libing Applications',
                 'icon' => 'ki-watch',
                 'pathsCount' => 2,
                 'link' => route('funeral.index'),

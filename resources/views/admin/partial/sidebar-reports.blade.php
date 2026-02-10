@@ -31,7 +31,7 @@
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                 </span>
-                <span class="menu-title">Funeral Assistances</span>
+                <span class="menu-title">Libreng Libing</span>
             </a>
         </div>
         <div class="menu-item">

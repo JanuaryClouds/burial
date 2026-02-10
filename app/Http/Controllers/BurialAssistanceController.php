@@ -190,12 +190,12 @@ class BurialAssistanceController extends Controller
                 ->whereBetween('application_date', [$startDate, $endDate])
                 ->get();
 
-                $deceasedPerBarangay = Barangay::query()
+            $deceasedPerBarangay = Barangay::query()
                 ->select('id', 'name')
                 ->withCount([
                     'deceased as deceased_count' => function ($query) use ($startDate, $endDate) {
                         $query->whereBetween('date_of_death', [$startDate, $endDate]);
-                    }
+                    },
                 ])
                 ->whereHas('deceased', function ($query) use ($startDate, $endDate) {
                     $query->whereBetween('date_of_death', [$startDate, $endDate]);
@@ -211,7 +211,7 @@ class BurialAssistanceController extends Controller
                 ->withCount([
                     'deceased as deceased_count' => function ($query) use ($startDate, $endDate) {
                         $query->whereBetween('date_of_death', [$startDate, $endDate]);
-                    }
+                    },
                 ])
                 ->whereHas('deceased', function ($query) use ($startDate, $endDate) {
                     $query->whereBetween('date_of_death', [$startDate, $endDate]);
@@ -230,7 +230,7 @@ class BurialAssistanceController extends Controller
                 'deceasedPerBarangay' => $deceasedPerBarangay,
                 'charts' => $charts,
                 'startDate' => $startDate,
-                'endDate' => $endDate
+                'endDate' => $endDate,
             ])
                 ->setPaper('letter', 'portrait');
 

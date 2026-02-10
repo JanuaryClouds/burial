@@ -25,6 +25,9 @@
                             <a href="{{ route('general.intake.form') }}" class="btn btn-primary hover-scale">
                                 Apply
                             </a>
+                            <a href="{{ route('landing.page', ['uuid' => 'logout']) }}" class="btn btn-danger">
+                                <i class="fa-solid fa-right-from-bracket pe-0"></i>
+                            </a>
                             @if ($existingClient)
                                 <a href="{{ route('client.history') }}" class="btn btn-light hover-scale">
                                     History
@@ -34,17 +37,12 @@
                                 </a>
                             @endif
                         @else
-                            <a href="https://tlcportal.taguig.gov.ph/login" class="btn btn-primary hover-scale">
+                            <a href="https://development-eservices.taguig.info/" class="btn btn-primary hover-scale">
                                 Register
                             </a>
                             @if (session('info') && session('info') == 'Unable to fetch citizen details.')
                                 <a href="{{ route('general.intake.form') }}" class="btn btn-light hover-scale">
                                     Apply without Citizen ID
-                                </a>
-                            @endif
-                            @if (Route::is('landing.page'))
-                                <a href="{{ route('login') }}" class="btn btn-light text-nowrap hover-scale">
-                                    Sign In
                                 </a>
                             @endif
                         @endif

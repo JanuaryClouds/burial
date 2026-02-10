@@ -39,6 +39,7 @@ class CentralClientService
             } else {
                 $decodedResponse = json_decode($response, true);
                 $citizen = collect($decodedResponse['data'])->firstWhere($key, $value);
+
                 return $citizen;
             }
         }

@@ -5,11 +5,9 @@ namespace App\Services;
 use App\Models\BurialAssistance;
 use App\Models\Claimant;
 use App\Models\Client;
-use App\Models\ClientAssessment;
 use App\Models\ClientBeneficiary;
 use App\Models\ClientBeneficiaryFamily;
 use App\Models\ClientDemographic;
-use App\Models\ClientRecommendation;
 use App\Models\ClientSocialInfo;
 use App\Models\Deceased;
 use App\Models\FuneralAssistance;
@@ -40,11 +38,11 @@ class ClientService
         return $year.'-'.str_pad($newNumber, 4, '0', STR_PAD_LEFT);
     }
 
-    public function storeClient(array $data, string $uuid = null): ?Client
+    public function storeClient(array $data, ?string $uuid = null): ?Client
     {
         return DB::transaction(function () use ($data, $uuid) {
             $tracking_no = $this->generateTrackingNo();
-    
+
             $client = Client::create([
                 'id' => Str::uuid(),
                 'citizen_id' => $uuid ?? null,
@@ -61,7 +59,7 @@ class ClientService
                 'city' => $data['city'],
                 'contact_no' => $data['contact_no'],
             ]);
-    
+
             if ($client) {
                 $demographic = ClientDemographic::create([
                     'id' => Str::uuid(),
@@ -70,11 +68,11 @@ class ClientService
                     'religion_id' => $data['religion_id'],
                     'nationality_id' => $data['nationality_id'],
                 ]);
-                
-                if (!$demographic) {
+
+                if (! $demographic) {
                     throw new \RuntimeException('Failed to create client related records');
                 }
-    
+
                 $social = ClientSocialInfo::create([
                     'id' => Str::uuid(),
                     'client_id' => $client->id,
@@ -86,10 +84,10 @@ class ClientService
                     'skill' => $data['skill'],
                 ]);
 
-                if (!$social) {
+                if (! $social) {
                     throw new \RuntimeException('Failed to create client related records');
                 }
-    
+
                 $beneficiary = ClientBeneficiary::create([
                     'id' => Str::uuid(),
                     'client_id' => $client->id,
@@ -105,10 +103,10 @@ class ClientService
                     'place_of_birth' => $data['ben_place_of_birth'],
                 ]);
 
-                if (!$beneficiary) {
+                if (! $beneficiary) {
                     throw new \RuntimeException('Failed to create client related records');
                 }
-    
+
                 if (is_array($data['fam_name']) && count($data['fam_name']) > 0) {
                     foreach ($data['fam_name'] as $index => $name) {
                         ClientBeneficiaryFamily::create([
@@ -124,7 +122,7 @@ class ClientService
                         ]);
                     }
                 }
-                
+
                 return $client;
             }
         });

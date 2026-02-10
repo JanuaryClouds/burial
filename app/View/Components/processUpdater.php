@@ -33,7 +33,7 @@ class processUpdater extends Component
         return view('components.process-updater', [
             'application' => $this->application,
             'processLogs' => $this->processLogs,
-            'workflowSteps' => $this->workflowSteps
+            'workflowSteps' => $this->workflowSteps,
         ]);
     }
 }

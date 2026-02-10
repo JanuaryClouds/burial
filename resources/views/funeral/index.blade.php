@@ -4,7 +4,7 @@
     @include('admin.partial.cards')
     <div class="card mt-8">
         <div class="card-header">
-            <h1 class="card-title">Manage Funeral Assistances</h1>
+            <h1 class="card-title">Manage Libreng Libing Applications</h1>
         </div>
         <div class="card-body">
             @if (!isset($data) || $data->count() == 0)

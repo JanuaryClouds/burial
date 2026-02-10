@@ -39,7 +39,7 @@ class EducationController extends Controller
         $page_title = 'Education';
         $resource = 'education';
         $data = $education;
-        
+
         return view('cms.edit', compact(
             'data',
             'resource',

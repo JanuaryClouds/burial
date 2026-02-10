@@ -34,7 +34,7 @@ class ClaimantController extends Controller
                 ->withCount([
                     'deceased as deceased_count' => function ($query) use ($startDate, $endDate) {
                         $query->whereBetween('date_of_death', [$startDate, $endDate]);
-                    }
+                    },
                 ])
                 ->whereHas('deceased', function ($query) use ($startDate, $endDate) {
                     $query->whereBetween('date_of_death', [$startDate, $endDate]);
@@ -50,7 +50,7 @@ class ClaimantController extends Controller
                 ->withCount([
                     'claimant as claimant_count' => function ($query) use ($startDate, $endDate) {
                         $query->whereBetween('created_at', [$startDate, $endDate]);
-                    }
+                    },
                 ])
                 ->whereHas('claimant', function ($query) use ($startDate, $endDate) {
                     $query->whereBetween('created_at', [$startDate, $endDate]);
