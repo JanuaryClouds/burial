@@ -6,7 +6,6 @@ use App\Http\Controllers\BarangayController;
 use App\Http\Controllers\BurialAssistanceController;
 use App\Http\Controllers\CivilStatusController;
 use App\Http\Controllers\ClientController;
-use App\Http\Controllers\CmsController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\EducationController;

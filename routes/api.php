@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\APIController;
+use App\Http\Controllers\TestController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -20,7 +21,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::middleware('api.check')
-    ->prefix('api')
     ->name('api.')
     ->group(function () {
         Route::get('/burial-assistances', [APIController::class, 'getBurialAssistances']);
@@ -28,4 +28,7 @@ Route::middleware('api.check')
         Route::get('/deceased', [APIController::class, 'deceased']);
         Route::get('/cheques', [APIController::class, 'cheques']);
         Route::get('/process-logs', [APIController::class, 'processLogs']);
+
+        Route::post('/test/component/post', [TestController::class, 'post'])
+            ->name('test.component.post');
     });

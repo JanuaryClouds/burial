@@ -2,20 +2,16 @@
 
 namespace Tests\Feature;
 
-use App\Models\BurialAssistance;
-use Http;
-use Illuminate\Http\Client\Request;
-use Tests\TestCase;
 use App\Services\ProcessLogService;
+use Illuminate\Http\Client\Request;
+use Illuminate\Support\Facades\Http;
+use Tests\TestCase;
 
 class DisbursementTest extends TestCase
 {
-    public $processLogService;
-
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
-        $this->processLogService = new ProcessLogService();
     }
 
     /**
@@ -24,8 +20,7 @@ class DisbursementTest extends TestCase
     public function test_api_post_to_disbursement(): void
     {
         Http::fake([
-            config('services.disbursement.url') => 
-                Http::response(['message' => 'Disbursement created successfully', 'reference' => '2025-0001'], 201),
+            config('services.disbursement.url').'*' => Http::response(['message' => 'Disbursement created successfully', 'reference' => '2025-0001'], 201),
         ]);
 
         $service = app(ProcessLogService::class);
@@ -45,6 +40,7 @@ class DisbursementTest extends TestCase
         $this->assertEquals('Disbursement created successfully', $result['message']);
         Http::assertSent(function (Request $request) {
             return $request->url() === config('services.disbursement.url')
+                && $request->method() === 'POST'
                 && $request->hasHeader('X-Secret-Key')
                 && $request['key'] === 'burial'
                 && $request['amount'] === '21000';

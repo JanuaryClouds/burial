@@ -13,11 +13,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [CitizenAccessController::class, 'index'])
     ->name('landing.page');
 
-Route::get('/test/component/{id}', [TestController::class, 'get'])
-    ->name('test.component');
-
-Route::post('/test/component/post', [TestController::class, 'post'])
-    ->name('test.component.post');
+// Route::get('/test/component/{id}', [TestController::class, 'get'])
+//     ->name('test.component');
 
 Route::get('/login', [UserController::class, 'loginPage'])
     ->name('login');
@@ -29,7 +26,6 @@ require __DIR__.'/guest.php';
 require __DIR__.'/client.php';
 require __DIR__.'/burial.php';
 require __DIR__.'/funeral.php';
-require __DIR__.'/api.php';
 
 Route::middleware(['auth'])
     ->group(function () {
