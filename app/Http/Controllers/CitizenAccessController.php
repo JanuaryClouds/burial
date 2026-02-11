@@ -85,7 +85,7 @@ class CitizenAccessController extends Controller
                 'count' => $finishedBurialAssistances,
             ],
             [
-                'label' => 'Libreng Libing Assistances Provided',
+                'label' => 'Libreng Libing Provided',
                 'icon' => 'ki-file-up',
                 'pathsCount' => 2,
                 'count' => $finishedFuneralAssistances,
