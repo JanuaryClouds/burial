@@ -32,9 +32,6 @@
                                 <a href="{{ route('client.history') }}" class="btn btn-light hover-scale">
                                     History
                                 </a>
-                                <a href="{{ route('landing.page', ['uuid' => 'logout']) }}" class="btn btn-danger">
-                                    <i class="fa-solid fa-right-from-bracket pe-0"></i>
-                                </a>
                             @endif
                         @else
                             <a href="https://development-eservices.taguig.info/" class="btn btn-primary hover-scale">

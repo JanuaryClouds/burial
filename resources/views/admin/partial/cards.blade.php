@@ -6,7 +6,7 @@
     @foreach ($cardData as $statistic)
         <div class="col">
             <a href="{{ $statistic['link'] ?? '#' }}"
-                class="card w-100 p-10 hover-elevate-up parent-hover overflow-hidden position-relative">
+                class="card w-100 p-10 hover-elevate-up parent-hover overflow-hidden position-relative bg-white">
                 <div class="d-flex justify-content-between align-items-center">
                     <span class="parent-hover-primary">
                         <p class="fw-bold fs-1">{{ $statistic['count'] }}</p>
