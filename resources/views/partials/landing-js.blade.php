@@ -6,8 +6,8 @@
         const qsa = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
         const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-        const topbar = qs('.tsms-topbar');
-        const hero = qs('#tsms-hero');
+        const topbar = qs('.topbar');
+        const hero = qs('#hero');
         const toTop = qs('#toTop');
         const docQuick = qs('#docQuick');
         const phTimeEl = qs('#ph-time');
@@ -218,7 +218,7 @@
             document.body.classList.add('motion-ready');
 
             const revealSelector =
-                '.section-head, .section-body, .divider, .hero-img, .panel, .tile, .documents-box, .dl-card, .gallery-item, .documents-bullets, .documents-steps, .merit-totals, .swa-eq, .req-callout, .req-ids, .req-footer-logos';
+                '.section-head, .section-body, .divider, .hero-img, .panel, .tile, .box, .dl-card, .gallery-item, .list-check, .list-number, .totals, .swa-eq, .callout, .panel-footer-wrapper';
 
             sectionNodes.forEach((section) => {
                 const uniqueNodes = [...new Set(qsa(revealSelector, section).filter(Boolean))];
@@ -311,7 +311,7 @@
                     caseSensitive: false,
                     diacritics: true,
                     acrossElements: true,
-                    exclude: ['nav', '.tsms-topbar', '.tsms-search', '#searchForm', '#searchMeta',
+                    exclude: ['nav', '.topbar', '.search', '#searchForm', '#searchMeta',
                         'script', 'style',
                         'footer', '#toTop', '#docQuick', '#reqQuickModal', '#lightboxModal'
                     ],

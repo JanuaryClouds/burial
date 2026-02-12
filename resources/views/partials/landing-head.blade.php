@@ -1,6 +1,7 @@
 <head>
     <meta charset="UTF-8">
     <title>{{ $page_title ?? config('app.name') }}</title>
+    <link rel="icon" type="image/x-icon" href="{{ asset('images/favicon.ico') }}">
     <link rel="preload" as="image" href="{{ asset('images/sunray.jpg') }}">
     <link rel="preload" as="image" href="{{ asset('images/footer-trim.png') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" />

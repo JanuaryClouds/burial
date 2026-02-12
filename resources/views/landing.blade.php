@@ -4,13 +4,13 @@
 
 <body>
     @include('partials.landing-nav')
-    <section id="fas-hero" class="fas-hero">
+    <section id="hero" class="hero">
         <div class="container">
-            <div class="fas-center">
-                <p class="fas-eyebrow">City Government of Taguig</p>
-                <h1 class="fas-title">Funeral Assistance System</h1>
-                <h2 class="fas-quote">City Social Welfare & Development Office</h2>
-                <div class="fas-actions">
+            <div class="center">
+                <p class="eyebrow">City Government of Taguig</p>
+                <h1 class="title">Funeral Assistance System</h1>
+                <h2 class="quote">City Social Welfare & Development Office</h2>
+                <div class="actions">
                     @if (session('citizen') && session('citizen')['user_id'])
                         <a href="{{ route('general.intake.form') }}" class="btn btn-primary btn-lg hover-scale">
                             Apply
@@ -36,7 +36,7 @@
                 </div>
             </div>
         </div>
-        <button id="scrollArrow" class="fas-hero-arrow" type="button" aria-label="Scroll to LANI section">
+        <button id="scrollArrow" class="hero-arrow" type="button" aria-label="Scroll to LANI section">
             <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
         </button>
     </section>
@@ -49,6 +49,7 @@
             @include('guest.partial.process')
         </div>
     </div>
+    @include('partials.landing-footer')
     <button id="toTop" class="btn" aria-label="Back to top"><i class="fa-solid fa-arrow-up"></i></button>
     @include('partials.landing-js')
 </body>

@@ -6,8 +6,8 @@
                 <span class="y"></span>
                 <span class="b"></span>
             </div>
-            <div class="wrap-body-c">
-                <h2 class="wrap-title wrap-title-c">Application Process</h2>
+            <div class="wrap-body">
+                <h2 class="wrap-title">Application Process</h2>
                 <ol class="list-number">
                     @foreach ($steps as $step)
                         <li class="">
