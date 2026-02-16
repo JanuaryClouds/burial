@@ -154,7 +154,7 @@
         }
 
         function initSectionAnimations() {
-            const sectionNodes = qsa('.section-block');
+            const sectionNodes = qsa('.section');
             if (!sectionNodes.length) return;
 
             const countNodes = qsa('.amount-pill, .total-box .val, .swa-pill');
@@ -218,7 +218,7 @@
             document.body.classList.add('motion-ready');
 
             const revealSelector =
-                '.section-head, .section-body, .divider, .hero-img, .panel, .tile, .box, .dl-card, .gallery-item, .list-check, .list-number, .totals, .swa-eq, .callout, .panel-footer-wrapper';
+                '.card-head, .card-body, .divider, .hero-img, .card, .tile, .dl-card, .gallery-item, .list-check, .list-number, .totals, .swa-eq, .callout, .card-footer-wrapper';
 
             sectionNodes.forEach((section) => {
                 const uniqueNodes = [...new Set(qsa(revealSelector, section).filter(Boolean))];
@@ -280,7 +280,7 @@
             const clearHighlights = () => {
                 mark.unmark({
                     element: 'mark',
-                    className: 'search-hit search-current',
+                    // className: 'search-hit search-current',
                     done: () => {
                         hits = [];
                         idx = -1;
@@ -301,7 +301,7 @@
             };
 
             const performSearch = (q) => {
-                if (!q || !q.trim()) {
+                if (!q || !q.trim() || q == "") {
                     clearHighlights();
                     return;
                 }
@@ -311,7 +311,8 @@
                     caseSensitive: false,
                     diacritics: true,
                     acrossElements: true,
-                    exclude: ['nav', '.topbar', '.search', '#searchForm', '#searchMeta',
+                    exclude: ['nav', '.topbar', '.brand-title', '.brand-subtitle', '.search',
+                        '#searchForm', '#searchMeta', '.time-label', '.time',
                         'script', 'style',
                         'footer', '#toTop', '#docQuick', '#reqQuickModal', '#lightboxModal'
                     ],
