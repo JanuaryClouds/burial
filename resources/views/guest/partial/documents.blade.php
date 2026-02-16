@@ -1,51 +1,55 @@
-<section id="requirements" class="section-block tint-grey motion-ready">
-    <div class="container-xxl">
-        <div class="wrap">
-            <div class="topbars-b">
+<section id="requirements" class="section tint-grey motion-ready">
+    <div class="container">
+        <div class="card">
+            <div class="card-accent-b">
                 <span class="r"></span>
                 <span class="y"></span>
                 <span class="b"></span>
             </div>
-            <div class="wrap-body-dashed">
-                <h2 class="wrap-title">Required Documents</h2>
+            <div class="card-body-dashed">
+                <h2 class="card-title">Required Documents</h2>
                 <div class="row g-2">
                     <div class="col-12 col-lg-6">
-                        <div class="box panel">
-                            <span class="ribbon">For Burial Assistance</span>
-                            <ol class="list-check">
-                                @foreach ($burialDocuments as $document)
-                                    @if (!$document['is_muslim'])
-                                        <li class="">
-                                            {{ $document['name'] }}
-                                            {{ $document['is_muslim'] ? '(For Deceased Muslim Citizens only)' : '' }}
-                                        </li>
-                                    @endif
-                                @endforeach
-                            </ol>
-                            <div class="callout-highlight">
-                                <strong>For Deceased Muslim Citizens, also bring:</strong>
+                        <div class="card">
+                            <div class="card-body">
+                                <span class="ribbon">For Burial Assistance</span>
                                 <ol class="list-check">
                                     @foreach ($burialDocuments as $document)
-                                        @if ($document['is_muslim'])
+                                        @if (!$document['is_muslim'])
                                             <li class="">
                                                 {{ $document['name'] }}
+                                                {{ $document['is_muslim'] ? '(For Deceased Muslim Citizens only)' : '' }}
                                             </li>
                                         @endif
                                     @endforeach
                                 </ol>
+                                <div class="callout-highlight">
+                                    <strong>For Deceased Muslim Citizens, also bring:</strong>
+                                    <ol class="list-check">
+                                        @foreach ($burialDocuments as $document)
+                                            @if ($document['is_muslim'])
+                                                <li class="">
+                                                    {{ $document['name'] }}
+                                                </li>
+                                            @endif
+                                        @endforeach
+                                    </ol>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div class="col-12 col-lg-6">
-                        <div class="box panel h-100">
-                            <span class="ribbon">For Libreng Libing</span>
-                            <ol class="list-check">
-                                @foreach ($funeralDocuments as $document)
-                                    <li class="">
-                                        {{ $document['name'] }}
-                                    </li>
-                                @endforeach
-                            </ol>
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <span class="ribbon">For Libreng Libing</span>
+                                <ol class="list-check">
+                                    @foreach ($funeralDocuments as $document)
+                                        <li class="">
+                                            {{ $document['name'] }}
+                                        </li>
+                                    @endforeach
+                                </ol>
+                            </div>
                         </div>
                     </div>
                 </div>
