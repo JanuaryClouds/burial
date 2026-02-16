@@ -5,7 +5,7 @@
 <body>
     @include('partials.landing-nav')
     <section id="hero" class="hero">
-        <div class="container">
+        <div class="container-xxl">
             <div class="center">
                 <p class="eyebrow">City Government of Taguig</p>
                 <h1 class="title">Funeral Assistance System</h1>

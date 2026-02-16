@@ -1,11 +1,11 @@
 <footer>
     <section class="py-3">
-        <div class="container">
+        <div class="container-xxl">
             <div class="footer-bar">
-                <p class="small mb-0 footer-meta">
+                <p class="small footer-meta">
                     <span class="footer-meta-item">&copy; <span id="year"></span></span>
                     <span class="footer-dot">&bull;</span>
-                    <span class="footer-meta-item">Powered by <strong>Information Technology</strong></span>
+                    <span class="footer-meta-item">Powered by <b>Information Technology</b></span>
                 </p>
                 <nav class="footer-social" aria-label="Social links">
                     <a class="social-link" href="https://www.facebook.com/taguigcity" target="_blank" rel="noopener"
