@@ -507,10 +507,9 @@
     }
 
     .section-head h2 {
-        font-family: 'FuturaCyrillicExtraBold';
-        color: var(--taguig-blue);
+        font-weight: 600;
+        letter-spacing: .02em;
         font-size: var(--head-text);
-        margin-bottom: 0;
     }
 
     .section-body {
@@ -635,14 +634,6 @@
         filter: saturate(1.1)
     }
 
-    /* start::wrap */
-    :where(.wrap) {
-        background: #fff;
-        border-radius: var(--border-radius);
-        overflow: clip;
-        box-shadow: var(--shadow-soft)
-    }
-
     :where(.card-accent-a, .card-accent-b, .card-accent-c) {
         height: var(--card-accent-h);
         display: flex;
@@ -695,16 +686,7 @@
         flex: 2
     }
 
-    /* end::wrap */
-
     /* start::Content */
-    .h2 {
-        font-weight: 600;
-        letter-spacing: .02em;
-        font-size: var(--head-text);
-        margin: .4rem 0 1rem
-    }
-
     .list-number {
         list-style: none;
         counter-reset: n;
@@ -738,7 +720,7 @@
         font-size: calc(var(--body-text) * .5);
     }
 
-    .hr {
+    hr {
         height: 1px;
         background: #e5edf9;
         border: 0;

@@ -1,6 +1,8 @@
 <section id="services" class="section">
     <div class="container">
-        <h2 class="h2">Services Offered</h2>
+        <div class="section-head">
+            <h2 class="h2">Services Offered</h2>
+        </div>
         <div class="divider">
             <span class="r"></span>
             <span class="y"></span>
