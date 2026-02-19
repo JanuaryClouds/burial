@@ -59,16 +59,22 @@ class RelationshipController extends Controller
 
     public function update(RelationshipRequest $request, Relationship $relationship)
     {
-        $relationship = $this->relationshipServices->updateRelationship($request->validated(), $relationship);
-
-        activity()
-            ->causedBy(Auth::user())
-            ->performedOn($relationship)
-            ->log('Updated the relationship: '.$relationship->name);
-
-        return redirect()
-            ->back()
-            ->with('success', 'Relationship updated successfully.');
+        try {
+            $relationship = $this->relationshipServices->updateRelationship($request->validated(), $relationship);
+            activity()
+                ->causedBy(Auth::user())
+                ->performedOn($relationship)
+                ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
+                ->log('Updated the relationship: '.$relationship->name);
+    
+            return redirect()
+                ->route('relationship.index')
+                ->with('success', 'Relationship updated successfully.');
+        } catch (\Throwable $th) {
+            return redirect()
+                ->back()
+                ->with('error', 'Unable to update relationship. ' . config('app.env') === 'local' ? $th->getMessage() : '');
+        }
     }
 
     public function destroy(Relationship $relationship)

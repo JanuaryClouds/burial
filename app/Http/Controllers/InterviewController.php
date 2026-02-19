@@ -22,7 +22,8 @@ class InterviewController extends Controller
         try {
             $interview = $this->interviewService->store($request->validated(), $id);
             if ($interview) {
-                // TODO: send SMS message
+                // TODO send SMS message
+                // Unavialable
 
                 return redirect()->back()->with('success', 'Interview created successfully.');
             }

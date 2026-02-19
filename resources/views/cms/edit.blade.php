@@ -12,7 +12,22 @@
                 <div class="d-flex flex-column gap-3">
                     @foreach ($data->getAttributes() as $field => $value)
                         <div class="row">
-                            @if (!in_array($field, ['id', 'created_at', 'updated_at', 'handler_id', 'is_active']))
+                            @if (
+                                !in_array($field, [
+                                    'id',
+                                    'created_at',
+                                    'updated_at',
+                                    'handler_id',
+                                    'district_id',
+                                    'is_optional',
+                                    'requires_extra_data',
+                                    'extra_data_schema',
+                                    'order_no',
+                                    'email_verified_at',
+                                    'password',
+                                    'remember_token',
+                                    'is_active',
+                                ]))
                                 <div class="col">
                                     @include('components.form-input', [
                                         'name' => $field,

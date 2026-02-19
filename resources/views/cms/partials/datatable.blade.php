@@ -42,7 +42,6 @@
                         @endforeach
                         <td>
                             @can('update', $entry)
-                                {{-- todo : use modal --}}
                                 <a href="{{ route($resource . '.edit', [$resource => $entry]) }}" class="btn btn-primary">
                                     <i class="fas fa-edit pe-0"></i>
                                 </a>

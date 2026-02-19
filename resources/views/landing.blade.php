@@ -1,46 +1,57 @@
-@extends('layouts.metronic.guest')
-@section('content')
-    <div class="d-flex flex-column flex-center min-vh-100" style="margin-top: -10rem; z-index: -1;">
-        <p class="eyebrow">Taguig City</p>
-        <h1 class="fas-title">Funeral Assistance System</h1>
-        <h2 class="fas-quote">City Social Welfare & Development Office</h2>
-    </div>
+<!DOCTYPE html>
+<html lang="en">
+@include('partials.landing-head')
 
-    <div class="bg-body py-10">
-        <div class="container-xxl gap-20">
-            <div class="d-flex flex-column gap-20">
-                <div class="divider">
-                    <span class="r"></span>
-                    <span class="b"></span>
-                    <span class="y"></span>
+<body>
+    @include('partials.landing-nav')
+    <section id="hero" class="hero">
+        <div class="container-xxl">
+            <div class="center">
+                <p class="eyebrow">City Government of Taguig</p>
+                <h1 class="title">Funeral Assistance System</h1>
+                <h2 class="quote">City Social Welfare & Development Office</h2>
+                <div class="actions">
+                    @if (session('citizen.user_id'))
+                        <a href="{{ route('general.intake.form') }}" class="btn btn-primary btn-lg hover-scale">
+                            Apply
+                        </a>
+                        @if ($existingClient)
+                            <a href="{{ route('client.history') }}" class="btn btn-lg btn-light hover-scale">
+                                History
+                            </a>
+                        @endif
+                        <a href="{{ route('landing.page', ['uuid' => 'logout']) }}" class="btn btn-lg btn-danger">
+                            Logout
+                        </a>
+                    @else
+                        <a href="{{ config('services.portal.url') }}" class="btn btn-lg btn-primary hover-scale">
+                            Register
+                        </a>
+                        @if (session('info') && session('info') == 'Unable to fetch citizen details.')
+                            <a href="{{ route('general.intake.form') }}" class="btn btn-lg btn-light hover-scale">
+                                Apply without Citizen ID
+                            </a>
+                        @endif
+                    @endif
                 </div>
-                @include('guest.partial.services')
-                <div class="card shadow-sm bg-body multicolor-border">
-                    <div class="card-header">
-                        <h4 class="card-title fw-bold">Who may avail of service</h4>
-                    </div>
-                    <div class="card-body">
-                        <p class="fs-4">
-                            May be availed by immediate family members, relatives or guardians of the deceased provided the
-                            deceased
-                            is:
-                        </p>
-                        <ul class="fs-5">
-                            <li>An indigent as certified by the City Social Welfare and Development Office</li>
-                            <li>A bonafide resident of the City of Taguig for at least five (5) years as determined by the
-                                City
-                                Social Welfare and Development Office</li>
-                            <li>Not a beneficiary of veterans benefits under Ordinance No. 56 series of 2014</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="separator"></div>
-                @include('guest.partial.documents')
-                <div class="separator"></div>
-                @include('guest.partial.process')
-                <div class="separator"></div>
-                @include('admin.partial.cards')
             </div>
         </div>
+        <button id="scrollArrow" class="hero-arrow" type="button" aria-label="Scroll to LANI section">
+            <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+        </button>
+    </section>
+
+    <div class="py-10" style="background-color: #f4f6f9;">
+        <div class="d-flex flex-column" id="start">
+            @include('guest.partial.services')
+            @include('guest.partial.clients')
+            @include('guest.partial.documents')
+            @include('guest.partial.process')
+        </div>
     </div>
-@endsection
+    @include('partials.landing-footer')
+    <button id="toTop" class="btn" aria-label="Back to top"><i class="fa-solid fa-arrow-up"></i></button>
+    @include('partials.landing-js')
+</body>
+
+</html>

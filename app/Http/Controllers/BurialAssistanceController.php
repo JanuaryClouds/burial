@@ -93,7 +93,7 @@ class BurialAssistanceController extends Controller
 
             return view('burial.manage', compact('application', 'files', 'updateAverage', 'page_title', 'readonly'));
         } catch (\Throwable $th) {
-            return redirect()->back()->with('error', $th->getMessage());
+            return redirect()->back()->with('error', 'Unable to find application.');
         }
 
     }
@@ -130,7 +130,8 @@ class BurialAssistanceController extends Controller
                     'burial_assistance_id' => $application->id,
                 ]);
 
-                // TODO: Send notification via SMS
+                // TODO Send notification via SMS
+                // Unavialable
             }
 
             if ($application->processLogs()->count() > 0) {

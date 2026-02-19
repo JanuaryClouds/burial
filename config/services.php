@@ -38,4 +38,8 @@ return [
         'url' => env('API_DISBURSEMENT_SYSTEM', ''),
         'enabled' => env('DISBURSEMENT_SYSTEM_ENABLED', false),
     ],
+
+    'portal' => [
+        'url' => env('CITIZEN_PORTAL', ''),
+    ]
 ];

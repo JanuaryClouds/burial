@@ -1,24 +1,22 @@
-<div class="card shadow-sm bg-body multicolor-border">
-    <div class="card-header">
-        <h4 class="card-title fw-bold">Application Process</h4>
-    </div>
-    <div class="card-body">
-        <div class="d-flex flex-column gap-2">
-            @foreach ($steps as $step)
-                <div class="card parent-hover border-1">
-                    <div class="card-body d-flex align-items">
-                        <span class="svg-icon fs-1">
-                            {{ $step['order'] }}
-                        </span>
-
-                        <span class="ms-3 parent-hover-primary fs-4">
-                            <p class="fw-bold">{{ $step['name'] }}</p>
-                            <p class="text-muted">{{ $step['description'] }}</p>
-                        </span>
-                    </div>
-                </div>
-                <div class="separator"></div>
-            @endforeach
+<section class="section motion-ready tint-blue">
+    <div class="container">
+        <div class="card">
+            <div class="card-accent-c">
+                <span class="r"></span>
+                <span class="y"></span>
+                <span class="b"></span>
+            </div>
+            <div class="card-body">
+                <h2 class="card-title">Application Process</h2>
+                <ol class="list-number">
+                    @foreach ($steps as $step)
+                        <li class="">
+                            <strong>{{ $step['name'] }} - </strong>
+                            {{ $step['description'] }}
+                        </li>
+                    @endforeach
+                </ol>
+            </div>
         </div>
     </div>
-</div>
+</section>
