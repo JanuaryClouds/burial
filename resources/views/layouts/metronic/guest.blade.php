@@ -9,7 +9,7 @@
 <body id="kt_body" class="app-blank"
     style="background: url('{{ asset('images/white_bg_city.png') }}') no-repeat center center / cover; overflow-x: hidden; background-attachment: fixed;">
     @include('partials.theme-script')
-    <div class="d-flex flex-column" id="kt_app_root" style="min-width: 100vw;">
+    <div class="d-flex flex-column flex-root min-vw-100" id="kt_app_root">
         <x-loader />
         @includeWhen(!Route::is('login'), 'client.partial.header')
         @yield('content')
