@@ -66,30 +66,26 @@ class BarangayController extends Controller
             ->log('Created a new barangay: '.$barangay->name);
 
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first().'.barangay.index')
+            ->route('barangay.index')
             ->with('success', 'Barangay Created Successfully');
     }
 
     public function update(Request $request, Barangay $Barangay)
     {
-        try {
-            $barangay = $this->BarangayServices->updateBarangay($request->validate([
-                'name' => 'required',
-                'remarks' => 'nullable',
+        $barangay = $this->BarangayServices->updateBarangay($request->validate([
+            'name' => 'required',
+            'remarks' => 'nullable',
             ]), $Barangay);
-    
-            activity()
-                ->causedBy(Auth::user())
-                ->performedOn($barangay)
-                ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
-                ->log('Updated the barangay: '.$barangay->name);
-    
-            return redirect()
-                ->route('barangay.index')
-                ->with('success', 'Barangay Updated Successfully');
-        } catch (Throwable $th) {
-            return back()->with('error', 'Unable to Update Barangay ' . config('app.env') == 'local' ? $th->getMessage() : '');
-        }
+            
+        activity()
+            ->causedBy(Auth::user())
+            ->performedOn($barangay)
+            ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
+            ->log('Updated the barangay: '.$barangay->name);
+
+        return redirect()
+            ->route('barangay.index')
+            ->with('success', 'Barangay Updated Successfully');
     }
 
     public function destroy(Barangay $Barangay)
@@ -102,7 +98,7 @@ class BarangayController extends Controller
             ->log('Deleted the barangay: '.$barangay->name);
 
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first().'.barangay.index')
+            ->route('barangay.index')
             ->with('success', 'Barangay Deleted Successfully');
     }
 }

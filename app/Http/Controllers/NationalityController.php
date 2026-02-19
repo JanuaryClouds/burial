@@ -60,25 +60,21 @@ class NationalityController extends Controller
 
     public function update($id, Request $request)
     {
-        try {
-            $nationality = Nationality::findOrFail($id);
-            $nationality = $this->nationalityServices->updateNationality($request->validate([
-                'name' => 'required',
-                'remarks' => 'nullable',
-            ]), $nationality);
-    
-            activity()
-                ->causedBy(Auth::user())
-                ->performedOn($nationality)
-                ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
-                ->log('Updated the nationality: '.$nationality->name);
-    
-            return redirect()
-                ->route('nationality.index')
-                ->with('success', 'You have successfully updated a nationality!');
-        } catch (\Throwable $th) {
-            //throw $th;
-        }
+        $nationality = Nationality::findOrFail($id);
+        $nationality = $this->nationalityServices->updateNationality($request->validate([
+            'name' => 'required',
+            'remarks' => 'nullable',
+        ]), $nationality);
+
+        activity()
+            ->causedBy(Auth::user())
+            ->performedOn($nationality)
+            ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
+            ->log('Updated the nationality: '.$nationality->name);
+
+        return redirect()
+            ->route('nationality.index')
+            ->with('success', 'You have successfully updated a nationality!');
     }
 
     public function destroy(Nationality $nationality)

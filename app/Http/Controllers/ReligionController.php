@@ -58,25 +58,21 @@ class ReligionController extends Controller
 
     public function update($id, Request $request)
     {
-        try {
-            $religion = Religion::find($id);
-            $religion = $this->religionServices->updateReligion($request->validate([
-                'name' => 'required',
-                'remarks' => 'nullable',
-            ]), $religion);
-    
-            activity()
-                ->causedBy(Auth::user())
-                ->performedOn($religion)
-                ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
-                ->log('Created the religion: '.$religion->name);
-    
-            return redirect()
-                ->route('religion.index')
-                ->with('success', 'Religion updated successfully.');
-        } catch (\Throwable $th) {
-            return back()->with('error', 'Unable to update religion ' . config('app.env') == 'local' ? $th->getMessage() : '');
-        }
+        $religion = Religion::findOrFail($id);
+        $religion = $this->religionServices->updateReligion($request->validate([
+            'name' => 'required',
+            'remarks' => 'nullable',
+        ]), $religion);
+
+        activity()
+            ->causedBy(Auth::user())
+            ->performedOn($religion)
+            ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
+            ->log('Updated the religion: '.$religion->name);
+
+        return redirect()
+            ->route('religion.index')
+            ->with('success', 'Religion updated successfully.');
     }
 
     public function destroy(Religion $religion)

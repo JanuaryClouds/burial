@@ -73,7 +73,7 @@ class RelationshipController extends Controller
         } catch (\Throwable $th) {
             return redirect()
                 ->back()
-                ->with('error', 'Unable to update relationship. ' . config('app.env') == 'local' ? $th->getMessage() : '');
+                ->with('error', 'Unable to update relationship. ' . config('app.env') === 'local' ? $th->getMessage() : '');
         }
     }
 

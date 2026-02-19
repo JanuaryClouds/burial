@@ -26,21 +26,17 @@ class WorkflowController extends Controller
     
     public function update($id, Request $request)
     {
-        try {
-            $request->validate([
-                'description' => 'required',
-            ]);
-            $workflow = WorkflowStep::find($id);
-            $workflow->update($request->all());
-            activity()
-                ->causedBy(auth()->user())
-                ->performedOn($workflow)
-                ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
-                ->log('Updated a workflow');
+        $request->validate([
+            'description' => 'required',
+        ]);
+        $workflow = WorkflowStep::findOrFail($id);
+        $workflow->update($request->only(['description']));
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($workflow)
+            ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
+            ->log('Updated a workflow');
 
-            return redirect()->route('workflowstep.index')->with('success', 'Workflow updated successfully');
-        } catch (\Throwable $th) {
-            return back()->with('error', 'Unable to update Workflow');
-        }
+        return redirect()->route('workflowstep.index')->with('success', 'Workflow updated successfully');
     }
 }

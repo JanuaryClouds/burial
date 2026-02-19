@@ -64,25 +64,21 @@ class EducationController extends Controller
 
     public function update($id, Request $request)
     {
-        try {
-            $education = Education::find($id);
-            $education = $this->educationServices->updateEducation($request->validate([
-                'name' => 'required',
-                'remarks' => 'nullable'
-            ]), $education);
-    
-            activity()
-                ->performedOn($education)
-                ->causedBy(Auth::user())
-                ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
-                ->log('Updated the education: '.$education->name);
-    
-            return redirect()
-                ->route('education.index')
-                ->with('success', 'Education updated successfully.');
-        } catch (\Throwable $th) {
-            return back()->with('error', 'Unable to update education ' . config('app.env') == 'local' ? $th->getMessage() : '');
-        }
+        $education = Education::findOrFail($id);
+        $education = $this->educationServices->updateEducation($request->validate([
+            'name' => 'required',
+            'remarks' => 'nullable'
+        ]), $education);
+
+        activity()
+            ->performedOn($education)
+            ->causedBy(Auth::user())
+            ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
+            ->log('Updated the education: '.$education->name);
+
+        return redirect()
+            ->route('education.index')
+            ->with('success', 'Education updated successfully.');
     }
 
     public function destroy(Education $education)

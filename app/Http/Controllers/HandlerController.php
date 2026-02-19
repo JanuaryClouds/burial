@@ -26,21 +26,17 @@ class HandlerController extends Controller
 
     public function update($id, Request $request)
     {
-        try {
-            $request->validate([
-                'name' => 'required',
-                'department' => 'required',
-            ]);
-            $handler = Handler::find($id);
-            $handler->update($request->all());
-            activity()
-                ->causedBy(auth()->user())
-                ->performedOn($handler)
-                ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
-                ->log('Updated a handler');
-            return redirect()->route('handler.index')->with('success', 'Handler updated successfully');
-        } catch (\Throwable $th) {
-            return back()->with('error', 'Unable to Update Handler');
-        }
+        $request->validate([
+            'name' => 'required',
+            'department' => 'required',
+        ]);
+        $handler = Handler::findOrFail($id);
+        $handler->update($request->only(['name', 'department']));
+        activity()
+            ->causedBy(auth()->user())
+            ->performedOn($handler)
+            ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
+            ->log('Updated a handler');
+        return redirect()->route('handler.index')->with('success', 'Handler updated successfully');
     }
 }
