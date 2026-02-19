@@ -69,7 +69,6 @@
         /* Content */
         --content-pad: clamp(2.25rem, 2.8vw, 3.75rem);
         --content-gap: clamp(.65rem, .55rem + .6vw, 1rem);
-        --gap: 1rem;
         --gap-lg: 1.15rem;
         --head-text: calc(var(--body-text) * 1.2);
         --sub-text: calc(var(--body-text) * 0.75);
@@ -366,16 +365,6 @@
         text-align: center
     }
 
-    .eyebrow {
-        color: var(--taguig-red);
-        font-weight: 800;
-        letter-spacing: .07em;
-        text-transform: uppercase;
-        font-style: italic;
-        font-size: var(--eyebrow);
-        font-family: "FuturaCyrillicExtraBold"
-    }
-
     .title {
         color: var(--taguig-blue);
         font-family: "FuturaCyrillicExtraBold";
@@ -487,7 +476,8 @@
         letter-spacing: .06em;
         text-transform: uppercase;
         font-style: italic;
-        font-size: var(--eyebrow)
+        font-size: var(--eyebrow);
+        font-family: "FuturaCyrillicExtraBold";
     }
 
     /* end::Hero */
@@ -1489,10 +1479,8 @@
         :root {
             --nav-h: 74px;
             --body-text: clamp(1rem, 1vw, 2rem);
-            --title: calc(var(--body-text) * 2.7);
             --skyline-h: 20vh;
             --card-accent-h: 0.65rem;
-            --arrow: clamp(2.5rem, 4vw, 6rem);
             --padding: clamp(1rem, 2vw, 2.25rem);
             --gap: clamp(1.2rem, 1.5vw, 2rem);
             --to-top-d: clamp(3.5rem, 4.5vw, 5rem);
