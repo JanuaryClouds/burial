@@ -74,7 +74,7 @@
                 </a>
             </div>
             <div class="menu-item">
-                <a href="{{ route('workflow.index') }}" @class(['active' => Route::is('workflow.*'), 'menu-link'])>
+                <a href="{{ route('workflowstep.index') }}" @class(['active' => Route::is('workflow.*'), 'menu-link'])>
                     <span class="menu-bullet">
                         <span class="bullet bullet-dot"></span>
                     </span>
