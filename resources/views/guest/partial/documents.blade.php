@@ -18,7 +18,7 @@
                                         @if (!$document['is_muslim'])
                                             <li class="">
                                                 {{ $document['name'] }}
-                                                {{ $document['is_muslim'] ? '(For Deceased Muslim Citizens only)' : '' }}
+                                                (For Deceased Muslim Citizens Only)
                                             </li>
                                         @endif
                                     @endforeach
