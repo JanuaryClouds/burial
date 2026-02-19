@@ -130,7 +130,8 @@ class BurialAssistanceController extends Controller
                     'burial_assistance_id' => $application->id,
                 ]);
 
-                // TODO: Send notification via SMS
+                // TODO Send notification via SMS
+                // Unavialable
             }
 
             if ($application->processLogs()->count() > 0) {
