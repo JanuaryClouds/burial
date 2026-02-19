@@ -11,7 +11,7 @@
                 <h1 class="title">Funeral Assistance System</h1>
                 <h2 class="quote">City Social Welfare & Development Office</h2>
                 <div class="actions">
-                    @if (session('citizen') && session('citizen')['user_id'])
+                    @if (session('citizen.user_id'))
                         <a href="{{ route('general.intake.form') }}" class="btn btn-primary btn-lg hover-scale">
                             Apply
                         </a>
@@ -24,7 +24,7 @@
                             Logout
                         </a>
                     @else
-                        <a href="https://development-eservices.taguig.info/" class="btn btn-lg btn-primary hover-scale">
+                        <a href="{{ config('services.portal.url') }}" class="btn btn-lg btn-primary hover-scale">
                             Register
                         </a>
                         @if (session('info') && session('info') == 'Unable to fetch citizen details.')
