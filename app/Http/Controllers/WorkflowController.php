@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\WorkflowStep;
+use Illuminate\Http\Request;
 
 class WorkflowController extends Controller
 {
@@ -10,17 +11,36 @@ class WorkflowController extends Controller
     {
         $page_title = 'Workflow';
         $resource = 'workflowstep';
-        $data = WorkflowStep::select('id', 'description', 'handler_id')->get();
+        $data = WorkflowStep::select('id', 'description')->get();
 
         return view('cms.index', compact('page_title', 'resource', 'data'));
     }
 
-    public function edit(WorkflowStep $workflow)
+    public function edit($id)
     {
         $page_title = 'Workflow';
         $resource = 'workflowstep';
-        $data = WorkflowStep::find($workflow->id);
-
+        $data = WorkflowStep::select('id', 'description')->findOrFail($id);
         return view('cms.edit', compact('page_title', 'data', 'resource'));
+    }
+    
+    public function update($id, Request $request)
+    {
+        try {
+            $request->validate([
+                'description' => 'required',
+            ]);
+            $workflow = WorkflowStep::find($id);
+            $workflow->update($request->all());
+            activity()
+                ->causedBy(auth()->user())
+                ->performedOn($workflow)
+                ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
+                ->log('Updated a workflow');
+
+            return redirect()->route('workflowstep.index')->with('success', 'Workflow updated successfully');
+        } catch (\Throwable $th) {
+            return back()->with('error', 'Unable to update Workflow');
+        }
     }
 }

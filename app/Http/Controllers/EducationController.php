@@ -6,6 +6,7 @@ use App\DataTables\CmsDataTable;
 use App\Http\Requests\EducationRequest;
 use App\Models\Education;
 use App\Services\EducationService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class EducationController extends Controller
@@ -61,18 +62,27 @@ class EducationController extends Controller
             ->with('success', 'Education created successfully.');
     }
 
-    public function update(EducationRequest $request, Education $education)
+    public function update($id, Request $request)
     {
-        $education = $this->educationServices->updateEducation($request->validated(), $education);
-
-        activity()
-            ->performedOn($education)
-            ->causedBy(Auth::user())
-            ->log('Updated the education: '.$education->name);
-
-        return redirect()
-            ->route('education.index')
-            ->with('success', 'Education updated successfully.');
+        try {
+            $education = Education::find($id);
+            $education = $this->educationServices->updateEducation($request->validate([
+                'name' => 'required',
+                'remarks' => 'nullable'
+            ]), $education);
+    
+            activity()
+                ->performedOn($education)
+                ->causedBy(Auth::user())
+                ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
+                ->log('Updated the education: '.$education->name);
+    
+            return redirect()
+                ->route('education.index')
+                ->with('success', 'Education updated successfully.');
+        } catch (\Throwable $th) {
+            return back()->with('error', 'Unable to update education ' . config('app.env') == 'local' ? $th->getMessage() : '');
+        }
     }
 
     public function destroy(Education $education)

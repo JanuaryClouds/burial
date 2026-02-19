@@ -100,7 +100,6 @@ class ClientController extends Controller
     public function show(Client $client)
     {
         try {
-
             $resource = 'client';
             $client = Client::find($client->id);
             $page_title = $client->first_name.' '.$client->last_name."'s Application";
@@ -131,7 +130,7 @@ class ClientController extends Controller
                 return redirect()->back()->with('error', 'Client not found.');
             }
         } catch (\Throwable $th) {
-            return redirect()->back()->with('error', $th->getMessage());
+            return redirect()->back()->with('error', 'Unable to find application.');
         }
     }
 

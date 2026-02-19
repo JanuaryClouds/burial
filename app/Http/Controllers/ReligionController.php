@@ -6,6 +6,7 @@ use App\DataTables\CmsDataTable;
 use App\Http\Requests\ReligionRequest;
 use App\Models\Religion;
 use App\Services\ReligionService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ReligionController extends Controller
@@ -17,16 +18,14 @@ class ReligionController extends Controller
         $this->religionServices = $religionServices;
     }
 
-    public function index(CmsDataTable $dataTable)
+    public function index()
     {
         $page_title = 'Religion';
         $resource = 'religion';
         $columns = ['id', 'name', 'remarks', 'action'];
         $data = Religion::getAllReligions();
 
-        return $dataTable
-            ->render('cms.index', compact(
-                'dataTable',
+        return view('cms.index', compact(
                 'page_title',
                 'resource',
                 'columns',
@@ -57,18 +56,27 @@ class ReligionController extends Controller
         return view('cms.edit', compact('page_title', 'data', 'resource'));
     }
 
-    public function update(ReligionRequest $request, Religion $religion)
+    public function update($id, Request $request)
     {
-        $religion = $this->religionServices->updateReligion($request->validated(), $religion);
-
-        activity()
-            ->causedBy(Auth::user())
-            ->performedOn($religion)
-            ->log('Created the religion: '.$religion->name);
-
-        return redirect()
-            ->route('religion.index')
-            ->with('sucess', 'You have successfully updated a religion!');
+        try {
+            $religion = Religion::find($id);
+            $religion = $this->religionServices->updateReligion($request->validate([
+                'name' => 'required',
+                'remarks' => 'nullable',
+            ]), $religion);
+    
+            activity()
+                ->causedBy(Auth::user())
+                ->performedOn($religion)
+                ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
+                ->log('Created the religion: '.$religion->name);
+    
+            return redirect()
+                ->route('religion.index')
+                ->with('success', 'Religion updated successfully.');
+        } catch (\Throwable $th) {
+            return back()->with('error', 'Unable to update religion ' . config('app.env') == 'local' ? $th->getMessage() : '');
+        }
     }
 
     public function destroy(Religion $religion)

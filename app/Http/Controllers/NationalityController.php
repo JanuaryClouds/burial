@@ -6,6 +6,7 @@ use App\DataTables\CmsDataTable;
 use App\Http\Requests\NationalityRequest;
 use App\Models\Nationality;
 use App\Services\NationalityService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class NationalityController extends Controller
@@ -33,6 +34,15 @@ class NationalityController extends Controller
                 'data'
             ));
     }
+    
+    public function edit(Nationality $nationality)
+    {
+        $page_title = 'Nationality';
+        $type = 'nationality';
+        $data = $nationality;
+        $resource = 'nationality';
+        return view('cms.edit', compact('page_title', 'data', 'type', 'resource'));
+    }
 
     public function store(NationalityRequest $request)
     {
@@ -48,18 +58,27 @@ class NationalityController extends Controller
             ->with('success', 'You have successfully create a nationality!');
     }
 
-    public function update(NationalityRequest $request, Nationality $nationality)
+    public function update($id, Request $request)
     {
-        $nationality = $this->nationalityServices->updateNationality($request->validated(), $nationality);
-
-        activity()
-            ->causedBy(Auth::user())
-            ->performedOn($nationality)
-            ->log('Updated the nationality: '.$nationality->name);
-
-        return redirect()
-            ->route('nationality.index')
-            ->with('success', 'You have successfully updated a nationality!');
+        try {
+            $nationality = Nationality::findOrFail($id);
+            $nationality = $this->nationalityServices->updateNationality($request->validate([
+                'name' => 'required',
+                'remarks' => 'nullable',
+            ]), $nationality);
+    
+            activity()
+                ->causedBy(Auth::user())
+                ->performedOn($nationality)
+                ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
+                ->log('Updated the nationality: '.$nationality->name);
+    
+            return redirect()
+                ->route('nationality.index')
+                ->with('success', 'You have successfully updated a nationality!');
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
     }
 
     public function destroy(Nationality $nationality)

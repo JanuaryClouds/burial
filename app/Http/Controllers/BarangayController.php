@@ -7,7 +7,9 @@ use App\Http\Requests\BarangayRequest;
 use App\Models\Barangay;
 use App\Models\District;
 use App\Services\BarangayService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Throwable;
 
 class BarangayController extends Controller
 {
@@ -45,11 +47,11 @@ class BarangayController extends Controller
         // return view('cms.show', compact('page_title', 'data', 'type'));
     }
 
-    public function edit(Barangay $barangay)
+    public function edit($id)
     {
         $page_title = 'Barangay';
         $resource = 'barangay';
-        $data = $barangay;
+        $data = Barangay::select('id', 'name')->findOrFail($id);
 
         return view('cms.edit', compact('page_title', 'data', 'resource'));
     }
@@ -68,18 +70,26 @@ class BarangayController extends Controller
             ->with('success', 'Barangay Created Successfully');
     }
 
-    public function update(BarangayRequest $request, Barangay $Barangay)
+    public function update(Request $request, Barangay $Barangay)
     {
-        $barangay = $this->BarangayServices->updateBarangay($request->validated(), $Barangay);
-
-        activity()
-            ->causedBy(Auth::user())
-            ->performedOn($barangay)
-            ->log('Updated the barangay: '.$barangay->name);
-
-        return redirect()
-            ->route('barangay.index')
-            ->with('success', 'Barangay Updated Successfully');
+        try {
+            $barangay = $this->BarangayServices->updateBarangay($request->validate([
+                'name' => 'required',
+                'remarks' => 'nullable',
+            ]), $Barangay);
+    
+            activity()
+                ->causedBy(Auth::user())
+                ->performedOn($barangay)
+                ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
+                ->log('Updated the barangay: '.$barangay->name);
+    
+            return redirect()
+                ->route('barangay.index')
+                ->with('success', 'Barangay Updated Successfully');
+        } catch (Throwable $th) {
+            return back()->with('error', 'Unable to Update Barangay ' . config('app.env') == 'local' ? $th->getMessage() : '');
+        }
     }
 
     public function destroy(Barangay $Barangay)
