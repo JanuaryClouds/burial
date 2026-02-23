@@ -40,10 +40,12 @@ class ProcessLogController extends Controller
                         'date_claimed' => $request['date_in'],
                     ]);
                     if ($request->file('cheque-image-proof')) {
-                        $extension = $request->file('cheque-image-proof')->getClientOriginalExtension();
-                        $filename = $application->latestCheque->id.'-cheque-proof.'.$extension;
-                        $path = "burial-assistance/{$application->tracking_no}/";
-                        Storage::disk('local')->put($path.$filename, Crypt::encrypt(file_get_contents($request->file('cheque-image-proof'))));
+                        if (config('app.accept_images')) {
+                            $extension = $request->file('cheque-image-proof')->getClientOriginalExtension();
+                            $filename = $application->latestCheque->id.'-cheque-proof.'.$extension;
+                            $path = "burial-assistance/{$application->tracking_no}/";
+                            Storage::disk('local')->put($path.$filename, Crypt::encrypt(file_get_contents($request->file('cheque-image-proof'))));
+                        }
                         $application->update(['status' => 'released']);
                     } else {
                         return redirect()->back()->with('info', 'Please upload a photo of the cheque.');
