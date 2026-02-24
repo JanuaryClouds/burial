@@ -3,7 +3,7 @@
         Submitted Application
         <span class="badge badge-pill p-0">{{ $burialAssistance->created_at }}</span>
     </li>
-    @foreach ($claimants as $claimant)
+    @foreach ($burialAssistance->claimants as $claimant)
         @forelse ($claimant->processLogs->sortBy('created_at') as $log)
             <li
                 class="list-group-item d-flex justify-content-between align-items-center {{ $loop->last ? 'bg-primary text-white' : 'bg-body-secondary bg-transparent' }}">

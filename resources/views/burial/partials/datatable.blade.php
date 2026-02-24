@@ -46,7 +46,7 @@
                 </button>
             </div>
 
-            <div class="table-responsive mt-4 overflow-x-hidden">
+            <div class="table-responsive mt-4">
                 <div class="dataTables_wrapper">
                     <table id="applications-table" class="table data-table" style="width:100%">
                         <thead class="border-bottom border-bottom-1 border-gray-200 fw-bold">
@@ -133,7 +133,12 @@
                                             @endif
                                         </td>
                                     @endif
-                                    <td><x-application-actions :application="$application" /></td>
+                                    <td>
+                                        <a href="{{ route('burial.show', $application->id) }}"
+                                            class="btn btn-sm btn-primary">
+                                            <i class="fas fa-eye pe-0"></i>
+                                        </a>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -143,7 +148,7 @@
         </div>
     </div>
 </div>
-<script>
+<script nonce="{{ $nonce }}">
     document.addEventListener('DOMContentLoaded', () => {
         const statusSelect = document.getElementById('status');
         const barangaySelect = document.getElementById('filter-barangay');
