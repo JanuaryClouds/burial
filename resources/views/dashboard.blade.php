@@ -10,5 +10,4 @@
             <x-latest-clients-table />
         </div>
     </div>
-    <x-applications-modal-loader />
 @endsection
