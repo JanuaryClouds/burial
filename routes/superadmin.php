@@ -40,12 +40,6 @@ Route::middleware('permission:manage-content')
             ->only(['index', 'edit', 'update']);
         Route::resource('handler', HandlerController::class)
             ->only(['index', 'edit', 'update']);
-        Route::resource('user', UserController::class)
-            ->only(['index', 'store', 'edit', 'update']);
-        Route::resource('role', RoleController::class)
-            ->only(['index', 'store', 'edit', 'update']);
-        Route::resource('permission', PermissionController::class)
-            ->only(['index']);
         Route::resource('assistance', AssistanceController::class);
         Route::resource('civil', CivilStatusController::class);
         Route::resource('education', EducationController::class)
@@ -64,12 +58,14 @@ Route::middleware('permission:manage-content')
     });
 
 Route::middleware('permission:manage-accounts')
-    ->prefix('users')
-    ->name('users.')
     ->group(function () {
-        Route::get('/{userId}', [UserRouteRestrictionController::class, 'manage'])
-            ->name('manage');
-
-        Route::post('/{userId}/restrictions/edit', [UserRouteRestrictionController::class, 'update'])
-            ->name('restrictions.update');
+        Route::resource('user', UserController::class)
+            ->only(['index', 'edit']);
+        Route::resource('user', UserController::class)
+            ->only(['store', 'update'])
+            ->middleware(['throttle:5,1']);
+        Route::resource('role', RoleController::class)
+            ->only(['index', 'store', 'edit', 'update']);
+        Route::resource('permission', PermissionController::class)
+            ->only(['index']);
     });
