@@ -50,9 +50,10 @@
 
     </div>
 
-    <script>
+    <script nonce="{{ $nonce }}">
         document.addEventListener('DOMContentLoaded', () => {
             const confirmClaimantChangeButton = document.getElementById('confirmClaimantChangeButton');
+            if (!confirmClaimantChangeButton) return;
             const claimantChangeForm = document.getElementById('claimantChangeForm');
             const submitButton = document.getElementById('submitButton');
             const requiredFields = claimantChangeForm.querySelectorAll('[required]');
@@ -60,6 +61,7 @@
 
             function checkRequiredFields() {
                 const allFilled = [...requiredFields].every(field => field.value.trim() !== '');
+                if (!confirmClaimantChangeButton) return;
                 confirmClaimantChangeButton.disabled = !allFilled;
             }
 

@@ -63,7 +63,7 @@
 
 
 </div>
-<script>
+<script nonce="{{ $nonce ?? '' }}">
     document.addEventListener('DOMContentLoaded', () => {
         const splash = document.getElementById('splashScreen');
 

@@ -1,11 +1,8 @@
-@props([
-    'user',
-    'routes' => [],
-    'restrictions' => []  
-])
+@props(['user', 'routes' => [], 'restrictions' => []])
 <!-- Permissions -->
 <div class="card">
-    <form action="{{ route('superadmin.user.restrictions.update', ['userId' => $user->id]) }}" method="post" id="userRestrictionsForm">
+    <form action="{{ route('superadmin.user.restrictions.update', ['userId' => $user->id]) }}" method="post"
+        id="userRestrictionsForm">
         @csrf
         <div class="card-header">
             <h4>{{ $user->first_name }} {{ $user->last_name }} can access</h4>
@@ -13,13 +10,8 @@
         <div class="card-body">
             @foreach ($routes as $route)
                 <div class="form-check">
-                    <input 
-                        class="form-check-input" 
-                        type="checkbox"
-                        name="allowed[]"
-                        value="{{ $route }}"
-                        {{ !in_array($route, $restrictions) ? 'checked' : '' }}
-                    >
+                    <input class="form-check-input" type="checkbox" name="allowed[]" value="{{ $route }}"
+                        {{ !in_array($route, $restrictions) ? 'checked' : '' }}>
                     <label class="form-check-label">
                         {{ Str::title(Str::replace('.', ' ', $route)) }}
                     </label>
@@ -35,7 +27,7 @@
         </div>
     </form>
 </div>
-<script>
+<script nonce="{{ $nonce ?? '' }}">
     const form = document.getElementById('userRestrictionsForm');
     const allowAllBtn = document.getElementById('allowAllBtn');
     const denyAllBtn = document.getElementById('denyAllBtn');

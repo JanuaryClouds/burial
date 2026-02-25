@@ -1,8 +1,4 @@
-@props([
-    'type',
-    'startDate' => now()->startOfYear()->format('Y-m-d'),
-    'endDate' => now()->endOfYear()->format('Y-m-d')
-])
+@props(['type', 'startDate' => now()->startOfYear()->format('Y-m-d'), 'endDate' => now()->endOfYear()->format('Y-m-d'), 'uid' => \Illuminate\Support\Str::uuid()])
 <form action="{{ route('reports.' . $type) }}" method="POST">
     @csrf
     <div class="card">
@@ -10,22 +6,12 @@
             <h5 class="card-title">Filter Data</h5>
             <div class="row">
                 <div class="col-12 col-lg-6">
-                    <x-form-input
-                        type="date"
-                        name="start_date"
-                        label="Start Date"
-                        id="start_date"
-                        value="{{ \Carbon\Carbon::parse($startDate)->format('Y-m-d') }}"
-                    />
+                    <x-form-input type="date" name="start_date" label="Start Date" id="start_date_{{ $uid }}"
+                        value="{{ \Carbon\Carbon::parse($startDate)->format('Y-m-d') }}" />
                 </div>
                 <div class="col-12 col-lg-6">
-                    <x-form-input
-                        type="date"
-                        name="end_date"
-                        label="End Date"
-                        id="end_date"
-                        value="{{ \Carbon\Carbon::parse($endDate)->format('Y-m-d') }}"
-                    />
+                    <x-form-input type="date" name="end_date" label="End Date" id="end_date_{{ $uid }}"
+                        value="{{ \Carbon\Carbon::parse($endDate)->format('Y-m-d') }}" />
                 </div>
             </div>
         </div>
@@ -50,14 +36,15 @@
     </div>
 </form>
 
-<script>
+<script nonce="{{ $nonce }}">
     document.getElementById('preset-year').addEventListener('click', function() {
         document.getElementById('start_date').value = '{{ now()->startOfYear()->format('Y-m-d') }}';
         document.getElementById('end_date').value = '{{ now()->endOfYear()->format('Y-m-d') }}';
         this.form.submit();
     });
     document.getElementById('preset-month-prev').addEventListener('click', function() {
-        document.getElementById('start_date').value = '{{ now()->subMonth()->startOfMonth()->format('Y-m-d') }}';
+        document.getElementById('start_date').value =
+            '{{ now()->subMonth()->startOfMonth()->format('Y-m-d') }}';
         document.getElementById('end_date').value = '{{ now()->subMonth()->endOfMonth()->format('Y-m-d') }}';
         this.form.submit();
     });

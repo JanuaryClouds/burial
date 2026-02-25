@@ -52,7 +52,7 @@
 @else
     <div class="alert alert-info">No activity logs found.</div>
 @endif
-<script>
+<script nonce="{{ $nonce ?? '' }}">
     document.addEventListener('DOMContentLoaded', function() {
         $('#activity-logs-table').DataTable({
             responsive: true,

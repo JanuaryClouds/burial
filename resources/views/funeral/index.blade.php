@@ -46,7 +46,7 @@
                                                 @if ($key == 'client_id')
                                                     <td>
                                                         {{ $entry->client->first_name }}
-                                                        {{ Str::limit($entry->client->middle_name, '1', '.') }}
+                                                        {{ Str::limit($entry->client->middle_name ?? '', 1, '.') }}
                                                         {{ $entry->client->last_name }}
                                                         {{ $entry->client->suffix ?? '' }}
                                                     </td>
@@ -54,10 +54,14 @@
                                             @endif
                                         @endforeach
                                         <td>
-                                            {{ $entry->client->beneficiary->first_name }}
-                                            {{ Str::limit($entry->client->beneficiary->middle_name, '1', '.') }}
-                                            {{ $entry->client->beneficiary->last_name }}
-                                            {{ $entry->client->beneficiary->suffix ?? '' }}
+                                            @if ($entry->client->beneficiary)
+                                                {{ $entry->client->beneficiary->first_name }}
+                                                {{ Str::limit($entry->client->beneficiary->middle_name ?? '', 1, '.') }}
+                                                {{ $entry->client->beneficiary->last_name }}
+                                                {{ $entry->client->beneficiary->suffix ?? '' }}
+                                            @else
+                                                <span class="text-muted">—</span>
+                                            @endif
                                         </td>
                                         <td>
                                             {{ $entry->client->created_at->format('M d, Y') }}
@@ -88,9 +92,9 @@
             @endif
         </div>
     </div>
-    <script>
+    <script nonce="{{ $nonce ?? '' }}">
         document.addEventListener('DOMContentLoaded', function() {
-            $('#{{ $resource }}-table').DataTable({
+            $('#' + {{ Js::from($resource) }} + '-table').DataTable({
                 order: [
                     [2, 'desc']
                 ],

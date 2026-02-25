@@ -70,10 +70,13 @@
             </div>
         </div>
     </section>
-    <script>
+    <script nonce="{{ $nonce ?? '' }}">
         document.getElementById('togglePassword').addEventListener('click', function() {
             const passwordInput = document.getElementById('password');
+            const icon = this.querySelector('i');
             passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
+            icon.classList.toggle('fa-eye', passwordInput.type === 'password');
+            icon.classList.toggle('fa-eye-slash', passwordInput.type === 'text');
         })
     </script>
 @endsection

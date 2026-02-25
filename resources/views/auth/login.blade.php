@@ -44,7 +44,7 @@
             </div>
         </div>
     </section>
-    <script>
+    <script nonce="{{ $nonce ?? '' }}">
         document.getElementById('togglePassword').addEventListener('click', function() {
             const passwordInput = document.getElementById('password');
             passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';

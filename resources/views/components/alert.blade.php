@@ -1,4 +1,4 @@
-<script>
+<script nonce="{{ $nonce }}">
     window.sweetalert = function(title, icon, message, confirm = true, cancel = false) {
         Swal.fire({
             title,
@@ -12,7 +12,7 @@
     };
 </script>
 @if (session('success'))
-    <script>
+    <script nonce="{{ $nonce }}">
         sweetalert(
             '',
             'success',
@@ -21,7 +21,7 @@
         )
     </script>
 @elseif (session('warning'))
-    <script>
+    <script nonce="{{ $nonce }}">
         sweetalert(
             '',
             'warning',
@@ -30,7 +30,7 @@
         )
     </script>
 @elseif (session('error'))
-    <script>
+    <script nonce="{{ $nonce }}">
         sweetalert(
             '',
             'error',
@@ -39,7 +39,7 @@
         )
     </script>
 @elseif (session('info'))
-    <script>
+    <script nonce="{{ $nonce }}">
         sweetalert(
             '',
             'info',
