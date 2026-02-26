@@ -19,12 +19,13 @@ class Client extends Model
 
     protected $fillable = [
         'id',
+        'user_id',
         'citizen_id',
         'tracking_no',
-        'first_name',
-        'middle_name',
-        'last_name',
-        'suffix',
+        // 'first_name',
+        // 'middle_name',
+        // 'last_name',
+        // 'suffix',
         'age',
         'date_of_birth',
         'house_no',
@@ -32,7 +33,7 @@ class Client extends Model
         'district_id',
         'barangay_id',
         'city',
-        'contact_no',
+        // 'contact_no',
     ];
 
     protected static function booted()
@@ -53,6 +54,11 @@ class Client extends Model
     public static function getClientInfo($client)
     {
         return self::where('id', $client)->first();
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function assessment()

@@ -29,6 +29,7 @@ class UserFactory extends Factory
             'middle_name' => $this->faker->optional()->lastName(),
             'last_name' => $this->faker->lastName(),
             'email' => fake()->unique()->safeEmail(),
+            'suffix' => $this->faker->optional()->randomElement(['Jr.', 'Sr.', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X']),
             // 'email_verified_at' => now(),
             'contact_number' => $this->faker->regexify('09[0-9]{9}'),
             'password' => static::$password ??= Hash::make('password'),
@@ -58,6 +59,14 @@ class UserFactory extends Factory
     {
         return $this->afterCreating(function ($user) {
             $role = Role::firstOrCreate(['name' => 'admin']);
+            $user->assignRole($role);
+        });
+    }
+
+    public function client()
+    {
+        return $this->afterCreating(function ($user) {
+            $role = Role::firstOrCreate(['name' => 'client']);
             $user->assignRole($role);
         });
     }
