@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\User;
 use Illuminate\Support\Facades\Http;
 
 class CentralClientService
@@ -22,7 +23,7 @@ class CentralClientService
             return null;
         }
 
-        if (env('APP_ENV') == 'local') {
+        if (config('app.env') === 'local') {
             // Temporary: Load from local file
             $path = storage_path('app/clients.json');
             if (file_exists($path)) {
@@ -60,5 +61,33 @@ class CentralClientService
         }
 
         return [];
+    }
+
+    /**
+     * Summary of checkIfUser
+     * @param string $citizen_uuid
+     * @return object|User|\Illuminate\Database\Eloquent\Model
+     */
+    public function checkIfUser(string $citizen_uuid)
+    {
+        $user = User::where('citizen_id', $citizen_uuid)->first();
+        if ($user) {
+            return $user;
+        } else {
+            $citizenData = $this->fetchCitizen($citizen_uuid);
+            return $user = User::firstOrCreate(
+                ['citizen_id' => $citizen_uuid],
+                [
+                    'citizen_id' => $citizen_uuid,
+                    'first_name' => $citizenData['firstname'],
+                    'middle_name' => $citizenData['middlename'],
+                    'last_name' => $citizenData['lastname'],
+                    'suffix' => $citizenData['suffix'],
+                    'email' => $citizenData['email'],
+                    'contact_number' => $citizenData['contact_number'],
+                    'password' => bcrypt('funeral.password'),
+                ]
+            );
+        }
     }
 }

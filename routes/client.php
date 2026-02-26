@@ -10,7 +10,6 @@ Route::resource('client', ClientController::class)
 Route::prefix('clients')
     ->name('clients.')
     ->group(function () {
-
         Route::get('/{id}/gis-form', [ClientController::class, 'generateGISForm'])
             ->name('gis-form');
 

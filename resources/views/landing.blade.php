@@ -11,28 +11,26 @@
                 <h1 class="title">Funeral Assistance System</h1>
                 <h2 class="quote">City Social Welfare & Development Office</h2>
                 <div class="actions">
-                    @if (session('citizen.user_id'))
+                    @auth()
                         <a href="{{ route('general.intake.form') }}" class="btn btn-primary btn-lg hover-scale">
                             Apply
                         </a>
-                        @if ($existingClient)
+                        @if (auth()->user()->clients()->count() > 0)
                             <a href="{{ route('client.history') }}" class="btn btn-lg btn-light hover-scale">
                                 History
                             </a>
                         @endif
-                        <a href="{{ route('landing.page', ['uuid' => 'logout']) }}" class="btn btn-lg btn-danger">
-                            Logout
-                        </a>
+                        <form action="{{ route('logout') }}" method="POST" class="block mb-0">
+                            @csrf
+                            <button type="submit" class="btn btn-lg btn-danger">
+                                Logout
+                            </button>
+                        </form>
                     @else
                         <a href="{{ config('services.portal.url') }}" class="btn btn-lg btn-primary hover-scale">
                             Register
                         </a>
-                        @if (session('info') && session('info') == 'Unable to fetch citizen details.')
-                            <a href="{{ route('general.intake.form') }}" class="btn btn-lg btn-light hover-scale">
-                                Apply without Citizen ID
-                            </a>
-                        @endif
-                    @endif
+                    @endauth
                 </div>
             </div>
         </div>
