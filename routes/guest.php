@@ -15,3 +15,6 @@ Route::get('/history', [ClientController::class, 'history'])
 
 Route::get('/{id}/documents/{filename}', [ImageController::class, 'stream'])
     ->name('clients.documents');
+
+Route::get('/image/{filename}', [ImageController::class, 'get'])
+    ->name('image');

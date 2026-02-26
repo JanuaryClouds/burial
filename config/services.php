@@ -41,5 +41,10 @@ return [
 
     'portal' => [
         'url' => env('CITIZEN_PORTAL', ''),
+    ],
+
+    'fileserver' => [
+        'url' => env('FILESERVER_URL', ''),
+        'api' => env('FILESERVER_API', ''),
     ]
 ];
