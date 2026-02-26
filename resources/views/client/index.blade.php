@@ -40,7 +40,7 @@
                                                 @if ($key == 'first_name')
                                                     <td>
                                                         {{ $entry->first_name }}
-                                                        {{ Str::limit($entry->middle_name, '1', '.') }}
+                                                        {{ Str::limit($entry->middle_name ?? '', 1, '.') }}
                                                         {{ $entry->last_name }} {{ $entry?->suffix }}
                                                     </td>
                                                 @elseif ($key == 'barangay_id')
@@ -88,7 +88,7 @@
             @endif
         </div>
     </div>
-    <script>
+    <script nonce="{{ $nonce ?? '' }}">
         document.addEventListener('DOMContentLoaded', function() {
             $('#{{ $resource }}-table').DataTable({
                 responsive: true,

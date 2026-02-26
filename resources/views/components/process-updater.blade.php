@@ -1,5 +1,4 @@
 @php
-    $nextStep = null;
     $workflowSteps = \App\Models\WorkflowStep::select(
         'id',
         'order_no',
@@ -12,7 +11,6 @@
     if ($processLogs->count() != 0) {
         $processLogs = $processLogs->sortBy(fn($log) => $log->created_at)->values();
         $lastStep = $processLogs->last()?->loggable;
-        $nextStep = $lastStep?->order_no ?? 1;
 
         $claimantChangeIndex = $processLogs
             ->keys()
@@ -145,7 +143,7 @@
         @endif
     @endforeach
 </div>
-<script>
+<script nonce="{{ $nonce ?? '' }}">
     document.addEventListener('DOMContentLoaded', () => {
         const dateIn = document.getElementById('date_in');
         const dateOut = document.getElementById('date_out');

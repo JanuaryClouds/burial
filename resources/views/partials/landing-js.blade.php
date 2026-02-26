@@ -1,4 +1,4 @@
-<script>
+<script nonce="{{ $nonce }}">
     (function() {
         'use strict';
 
@@ -280,7 +280,6 @@
             const clearHighlights = () => {
                 mark.unmark({
                     element: 'mark',
-                    // className: 'search-hit search-current',
                     done: () => {
                         hits = [];
                         idx = -1;
@@ -301,7 +300,7 @@
             };
 
             const performSearch = (q) => {
-                if (!q || !q.trim() || q == "") {
+                if (!q || !q.trim()) {
                     clearHighlights();
                     return;
                 }

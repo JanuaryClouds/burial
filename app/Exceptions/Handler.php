@@ -23,13 +23,21 @@ class Handler extends ExceptionHandler
     public function render($request, Throwable $exception)
     {
         if ($exception instanceof UnauthorizedException) {
-            // return response()->view('errors.main', [], 403);
-            return redirect()->to(url()->previous() ?? route('landing.page'))
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'You do not have permission to access this page.',
+                ], 403);
+            }
+            return redirect()->back()
                 ->with('error', 'You do not have permission to access this page.');
         } elseif ($exception instanceof NotFoundHttpException) {
-            return redirect()->to(url()->previous() ?? route('landing.page'))
-                ->with('error', 'You do not have permission to access this page.');
-            // return response()->view('errors.main', [], 404);
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'The page you requested could not be found.',
+                ], 404);
+            }
+            return redirect()->route(auth()->check() ? 'dashboard' : 'landing.page')
+                ->with('error', 'The page you requested could not be found.');
         }
 
         return parent::render($request, $exception);

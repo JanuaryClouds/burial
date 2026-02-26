@@ -97,10 +97,10 @@
     <div class="header-offset"></div>
 </div>
 
-<script>
+<script nonce="{{ $nonce ?? '' }}">
     const header = document.getElementById('main-header-web')
-    const darkBanner = "{{ asset('images/banner-dark.svg') }}";
-    const lightBanner = "{{ asset('images/banner-light.svg') }}";
+    const darkBanner = @json(asset('images/banner-dark.svg'));
+    const lightBanner = @json(asset('images/banner-light.svg'));
 
     document.querySelectorAll('[data-kt-element="mode"]').forEach(mode => {
         mode.addEventListener('click', () => {

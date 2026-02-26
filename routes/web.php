@@ -19,6 +19,7 @@ Route::get('/', [CitizenAccessController::class, 'index'])
 Route::get('/login', [UserController::class, 'loginPage'])
     ->name('login');
 Route::post('/login/check', [UserController::class, 'login'])
+    ->middleware('throttle:5,1')
     ->name('login.check');
 Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 

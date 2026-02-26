@@ -11,7 +11,7 @@
         </div>
         <!--/div-->
     </div>
-    <script>
+    <script nonce="{{ $nonce ?? '' }}">
         document.addEventListener('DOMContentLoaded', () => {
             const gisForm = document.getElementById('gisForm');
             const documentsTab = gisForm.querySelector('#documents_tab');

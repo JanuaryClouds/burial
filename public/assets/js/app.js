@@ -98,7 +98,6 @@ function checkAndRenderCharts() {
 
     function renderBarChart(chartData, chartId, chartLabels, chartTitle) {
         const barChart = document.getElementById(chartId);
-        console.log(chartLabels);
         if (barChart) {
             const chart = new Chart(barChart, {
                 type: 'bar',

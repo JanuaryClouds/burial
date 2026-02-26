@@ -1,30 +1,30 @@
 @if (session()->has('success'))
-    <script>
+    <script nonce="{{ $nonce ?? '' }}">
         iziToast.success({
             title: 'Success',
-            message: '{{ session('success') }}',
+            message: @json(session('success')),
             position: 'bottomRight',
             icon: 'fas fa-check-circle',
-            backgroundColor: '#ffc83dff', 
+            backgroundColor: '#ffc83dff',
         })
-        </script>
+    </script>
 @elseif (session()->has('error'))
-<script>
-    iziToast.error({
+    <script nonce="{{ $nonce ?? '' }}">
+        iziToast.error({
             title: 'Error',
-            message: '{{ session('error') }}',
+            message: @json(session('error')),
             position: 'bottomRight',
             messageColor: '#ffffffff',
             icon: 'fas fa-times-circle',
-            backgroundColor: '#dc3545ff', 
+            backgroundColor: '#dc3545ff',
         })
     </script>
 @elseif (session()->has('info'))
-    <script>
+    <script nonce="{{ $nonce ?? '' }}">
         iziToast.info({
             title: 'Info',
-            message: '{{ session('info') }}',
-            messageColor: '#000000',
+            message: @json(session('info')),
+            messageColor: '#000000ff',
             position: 'bottomRight',
             icon: 'fas fa-info-circle',
             backgroundColor: '#ffffffff',

@@ -1,4 +1,4 @@
-<script>
+<script nonce="{{ $nonce ?? '' }}">
     document.addEventListener('DOMContentLoaded', function() {
         const calendarEl = document.getElementById('calendar');
         var calendar = new FullCalendar.Calendar(calendarEl, {

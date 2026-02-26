@@ -8,6 +8,7 @@ Route::get('/general-intake-form', [ClientController::class, 'create'])
     ->name('general.intake.form');
 
 Route::post('/general-intake-form/store', [ClientController::class, 'store'])
+    ->middleware('throttle:5,1')
     ->name('general.intake.form.store');
 
 Route::get('/history', [ClientController::class, 'history'])

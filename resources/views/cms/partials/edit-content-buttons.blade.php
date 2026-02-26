@@ -5,7 +5,7 @@
         </button>
     </span>
 
-    <script>
+    <script nonce="{{ $nonce ?? '' }}">
         document.addEventListener('DOMContentLoaded', () => {
             const form = document.getElementById('contentForm');
             const saveContentBtn = document.getElementById('saveContentBtn');

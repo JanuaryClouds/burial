@@ -95,7 +95,7 @@
         @endif
     </div>
 
-    <script>
+    <script nonce="{{ $nonce ?? '' }}">
         function showLimitModal() {
             swal('Notice', "You have reached the maximum number of family members.", "info")
         }
