@@ -3,6 +3,7 @@
 @include('partials.landing-head')
 
 <body>
+    @include('components.alert')
     @include('partials.landing-nav')
     <section id="hero" class="hero">
         <div class="container-xxl">
