@@ -152,10 +152,10 @@ class ClientController extends Controller
                     if ($normalizedValue === $normalizedOption) {
                         return $id;
                     }
-                    if ($normalizedValue == 'female') {
+                    if ($normalizedValue == 'Female') {
                         return 1;
                     }
-                    if ($normalizedValue == 'male') {
+                    if ($normalizedValue == 'Male') {
                         return 2;
                     }
 
@@ -173,13 +173,13 @@ class ClientController extends Controller
             $barangays = Barangay::pluck('name', 'id');
             $genders = Sex::pluck('name', 'id');
             $civilStatus = CivilStatus::pluck('name', 'id');
-
-            if (isset($citizen['gender'])) {
-                $matched['sex_id'] = $findMatch($citizen['gender'], $genders, true);
+            
+            if (isset($citizen['sex'])) {
+                $matched['sex_id'] = $findMatch($citizen['sex'], $genders, true);
             }
 
-            if (isset($citizen['latest_address']['barangay'])) {
-                $matched['barangay_id'] = $findMatch($citizen['latest_address']['barangay'], $barangays, true);
+            if (isset($citizen['barangay'])) {
+                $matched['barangay_id'] = $findMatch($citizen['barangay'], $barangays, true);
             }
 
             if (isset($citizen['civil_status'])) {

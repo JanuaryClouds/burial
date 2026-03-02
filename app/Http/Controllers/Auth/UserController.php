@@ -71,6 +71,9 @@ class UserController extends Controller
             ->log('Successful logout');
 
         Auth::logout();
+        if (session()->has('citizen')) {
+            session()->forget('citizen');
+        }
 
         return redirect()
             ->route('landing.page');

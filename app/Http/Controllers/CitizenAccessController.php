@@ -37,21 +37,28 @@ class CitizenAccessController extends Controller
         $uuid = $request->query('uuid');
         if ($uuid) {
             $user = $this->centralClientService->checkIfUser($uuid);
+            if (! $user) {
+                return redirect()->route('landing.page');
+            }
+
+            if (! Auth::check()) {
+                Auth::login($user);
+                if (Auth::user()->is_active) {
+                    Auth::logout();
+                    return redirect()->route('landing.page')
+                        ->with('info', 'Your account is inactive. Please contact the us: ' . config('mail.from.address'));
+                }
+            }
+
+            $user->createToken('fileserver')->plainTextToken;
+            return redirect()->route('landing.page');
         }
 
-        if (isset($user)) {
-            if (! $user->is_active) 
-                return redirect()->route('landing.page')->with('info', 'Your account has been deactivated. Please contact us to activate your account.');
-            Auth::login($user);
-            $token = $user->createToken('fileserver')->plainTextToken;
-            return redirect()->route('landing.page');
-        } else {
-            return view('landing', compact(
-                'steps',
-                'burialDocuments',
-                'funeralDocuments',
-                'page_title',
-            ));
-        }
+        return view('landing', compact(
+            'steps',
+            'burialDocuments',
+            'funeralDocuments',
+            'page_title',
+        ));
     }
 }

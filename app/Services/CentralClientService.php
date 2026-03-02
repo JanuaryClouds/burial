@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
+use Str;
 
 class CentralClientService
 {
@@ -71,23 +72,44 @@ class CentralClientService
     public function checkIfUser(string $citizen_uuid)
     {
         $user = User::where('citizen_id', $citizen_uuid)->first();
+        $citizenData = $this->fetchCitizen($citizen_uuid);
+        session(['citizen' => $this->filterData($citizenData)]);
         if ($user) {
             return $user;
         } else {
-            $citizenData = $this->fetchCitizen($citizen_uuid);
-            return $user = User::firstOrCreate(
-                ['citizen_id' => $citizen_uuid],
-                [
-                    'citizen_id' => $citizen_uuid,
-                    'first_name' => $citizenData['firstname'],
-                    'middle_name' => $citizenData['middlename'],
-                    'last_name' => $citizenData['lastname'],
-                    'suffix' => $citizenData['suffix'],
-                    'email' => $citizenData['email'],
-                    'contact_number' => $citizenData['contact_number'],
-                    'password' => bcrypt('funeral.password'),
-                ]
-            );
+            return User::firstOrCreate([
+                'citizen_id' => $citizen_uuid,
+                'first_name' => $citizenData['firstname'],
+                'middle_name' => $citizenData['middlename'],
+                'last_name' => $citizenData['lastname'],
+                'suffix' => $citizenData['suffix'],
+                'email' => $citizenData['email'],
+                'is_active' => true,
+                'contact_number' => $citizenData['contact_number'],
+                'password' => bcrypt('funeral.p4$$vv0rD'),
+            ]);
         }
+    }
+
+    /**
+     * Summary of filterData
+     * @param mixed $citizen citizen data to filter from
+     * @return array
+     */
+    public function filterData($citizen)
+    {
+        return [
+            'firstname' => $citizen['firstname'],
+            'middlename' => $citizen['middlename'] ?? null,
+            'lastname' => $citizen['lastname'],
+            'suffix' => $citizen['suffix'] ?? null,
+            'age' => $citizen['age'],
+            'birthday' => $citizen['birthday'],
+            'sex' => Str::ucfirst($citizen['gender']),
+            'street' => $citizen['latest_address']['street'],
+            'barangay' => $citizen['latest_address']['barangay'],
+            'civil_status' => $citizen['civil_status'],
+            'contact_number' => $citizen['contact_number'],
+        ];
     }
 }
