@@ -46,8 +46,7 @@
         </div>
         <div class="col-8 col-md-8 col-lg-4">
             <x-form-input name="street" label="5.2. Street" required="true" type="text"
-                value="{{ $client->street ?? (session('citizen')['latest_address']['street'] ?? null) }}"
-                :readonly="$readonly" />
+                value="{{ $client->street ?? (session('citizen')['street'] ?? null) }}" :readonly="$readonly" />
         </div>
         <div class="col-6 col-md-6 col-lg-2">
             <x-form-select name="barangay_id" label="5.3 Barangay" required="true" :options="$barangays ?? []" :selected="$client->barangay_id ?? ($matched['barangay_id'] ?? '')"

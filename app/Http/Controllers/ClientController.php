@@ -152,10 +152,10 @@ class ClientController extends Controller
                     if ($normalizedValue === $normalizedOption) {
                         return $id;
                     }
-                    if ($normalizedValue == 'Female') {
+                    if ($normalizedValue == 'female') {
                         return 1;
                     }
-                    if ($normalizedValue == 'Male') {
+                    if ($normalizedValue == 'male') {
                         return 2;
                     }
 

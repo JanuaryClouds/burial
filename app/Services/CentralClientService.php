@@ -86,7 +86,7 @@ class CentralClientService
                 'email' => $citizenData['email'],
                 'is_active' => true,
                 'contact_number' => $citizenData['contact_number'],
-                'password' => bcrypt('funeral.p4$$vv0rD'),
+                'password' => bcrypt(Str::random(32)),
             ]);
         }
     }
@@ -106,10 +106,10 @@ class CentralClientService
             'age' => $citizen['age'],
             'birthday' => $citizen['birthday'],
             'sex' => Str::ucfirst($citizen['gender']),
-            'street' => $citizen['latest_address']['street'],
-            'barangay' => $citizen['latest_address']['barangay'],
+            'street' => $citizen['latest_address']['street'] ?? null,
+            'barangay' => $citizen['latest_address']['barangay'] ?? null,
             'civil_status' => $citizen['civil_status'],
-            'contact_number' => $citizen['contact_number'],
+            'contact_number' => $citizen['contact_number'] ?? null,
         ];
     }
 }

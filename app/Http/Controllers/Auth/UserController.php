@@ -71,6 +71,8 @@ class UserController extends Controller
             ->log('Successful logout');
 
         Auth::logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
         if (session()->has('citizen')) {
             session()->forget('citizen');
         }

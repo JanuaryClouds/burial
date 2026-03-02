@@ -43,14 +43,9 @@ class CitizenAccessController extends Controller
 
             if (! Auth::check()) {
                 Auth::login($user);
-                if (Auth::user()->is_active) {
-                    Auth::logout();
-                    return redirect()->route('landing.page')
-                        ->with('info', 'Your account is inactive. Please contact the us: ' . config('mail.from.address'));
-                }
+                $user->createToken('fileserver')->plainTextToken;
             }
 
-            $user->createToken('fileserver')->plainTextToken;
             return redirect()->route('landing.page');
         }
 

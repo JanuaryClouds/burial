@@ -18,8 +18,13 @@ class ImageService
     
     public function get(string $filename)
     {
+        $filename = basename($filename);
         $url = $this->fileserverUrl . '/burial/' . $filename;
         $request = Http::get($url);
+        if ($request->failed()) {
+            return null;
+        }
+
         return $request->body();
     }
 }
