@@ -28,7 +28,7 @@
                 </div>
             @endif
         @endforeach
-    @elseif (count($files) == 0 && !auth()->user())
+    @elseif (count($files) == 0 && auth()->user())
         <div class="col mb-4">
             <x-form-image-submission name="images[death_certificate]"
                 label="Certified True Copy of Registered Death Certificate" helpText="From Taguig City Civil Registry."
