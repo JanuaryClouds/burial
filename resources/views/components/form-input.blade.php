@@ -29,4 +29,7 @@
     @if ($helpText)
         <small id="helpId" class="form-text text-muted">{{ $helpText }}</small>
     @endif
+    @error($name)
+        <small class="form-text text-danger">{{ $message }}</small>
+    @enderror
 </div>
