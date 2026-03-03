@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Str;
 
 class Client extends Model
 {
@@ -59,6 +60,21 @@ class Client extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function fullname()
+    {
+        $fullname = $this->user->first_name . ' ' . 
+            ($this->user->middle_name ? Str::limit($this->user->middle_name, 1, '.') . ' ' : '' ) . 
+            $this->user->last_name . 
+            ($this->user->suffix ? ' ' . Str::limit($this->user->suffix, 1, '.') : '');
+        return $fullname;
+    }
+
+    public function address()
+    {
+        $address = $this->house_no . ' ' . $this->street . ', ' . $this->barangay->name;
+        return $address;
     }
 
     public function assessment()

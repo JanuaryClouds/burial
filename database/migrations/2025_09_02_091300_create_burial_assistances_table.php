@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('burial_assistances', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('tracking_no')->unique();
-            $table->string('tracking_code')->unique();
+            // $table->string('tracking_no')->unique();
+            // $table->string('tracking_code')->unique();
             $table->date('application_date');
             $table->string('swa')->nullable();
             $table->foreignId('encoder')

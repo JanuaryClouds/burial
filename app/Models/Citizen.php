@@ -49,7 +49,7 @@ class Citizen extends Model
             return false;
         }
 
-        return Client::where('citizen_id', session('citizen')['user_id'])
+        return Client::where('user_id', Auth()->user()->id)
             ->with(['interviews', 'claimant', 'funeralAssistance'])
             ->orderBy('created_at', 'desc')
             ->get();
