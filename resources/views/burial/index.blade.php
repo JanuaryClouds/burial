@@ -1,6 +1,20 @@
 @extends('layouts.metronic.admin')
 <title>{{ $page_title }}</title>
 @section('content')
-    @include('burial.partials.datatable')
-    <x-applications-modal-loader />
+    <div class="card">
+        <div class="card-header">
+            <h4 class="card-title">{{ $page_title }}</h4>
+        </div>
+        <div class="card-body">
+            @if (!isset($data) || $data->count() == 0)
+                <p class="text-muted text-center">No Data</p>
+            @else
+                @include('partials.datatable.index', [
+                    'classes' => 'with-status',
+                    'columns' => $columns,
+                    'route' => route('burial.index', ['status' => $status]),
+                ])
+            @endif
+        </div>
+    </div>
 @endsection

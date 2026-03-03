@@ -12,79 +12,13 @@
                     No Data.
                 </p>
             @else
-                <div class="table-responsive overflow-x-hidden">
-                    <div class="dataTables_wrapper">
-                        <table id="{{ $resource }}-table" class="table data-table" style="width:100%">
-                            <thead class="border-bottom border-bottom-1 border-gray-200 fw-bold">
-                                <tr role="row">
-                                    @foreach ($data->first()->getAttributes() as $column => $value)
-                                        @if (in_array($column, $renderColumns))
-                                            @if ($column == 'first_name')
-                                                <th class="sorting sort-handler">Name</th>
-                                            @else
-                                                <th class="sorting sort-handler">
-                                                    {{ str_replace('Id', '', str_replace('_', ' ', Str::title($column))) }}
-                                                </th>
-                                            @endif
-                                        @endif
-                                    @endforeach
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($data as $entry)
-                                    <tr
-                                        class="{{ $entry?->claimant?->burialAssistance->status == 'released' || $entry?->funeralAssistance?->forwarded_at != null ? 'text-muted' : '' }}">
-                                        @foreach ($entry->getAttributes() as $key => $value)
-                                            @if (in_array($key, $renderColumns))
-                                                @if ($key == 'first_name')
-                                                    <td>
-                                                        {{ $entry->first_name }}
-                                                        {{ Str::limit($entry->middle_name, '1', '.') }}
-                                                        {{ $entry->last_name }} {{ $entry?->suffix }}
-                                                    </td>
-                                                @elseif ($key == 'barangay_id')
-                                                    <td>{{ $entry->barangay->name }}</td>
-                                                @elseif ($key == 'created_at')
-                                                    <td>{{ \Carbon\Carbon::parse($entry->created_at)->format('M d, Y') }}
-                                                    </td>
-                                                @elseif ($key == 'tracking_no')
-                                                    <td class="d-flex align-items-center gap-1">
-                                                        <a href="{{ route('client.show', $entry) }}">
-                                                            {{ $entry->tracking_no }}
-                                                        </a>
-                                                        @if ($entry?->claimant)
-                                                            <span class="badge badge-pill badge-primary">
-                                                                <a href="{{ route('burial.show', $entry->claimant->burialAssistance->id) }}"
-                                                                    class="text-white">
-                                                                    B
-                                                                </a>
-                                                            </span>
-                                                        @elseif ($entry?->funeralAssistance)
-                                                            <span class="badge badge-pill badge-secondary">
-                                                                <a href="{{ route('funeral.show', $entry->funeralAssistance->id) }}"
-                                                                    class="text-white">
-                                                                    F
-                                                                </a>
-                                                            </span>
-                                                        @endif
-                                                    </td>
-                                                @else
-                                                    <td>{{ $value }}</td>
-                                                @endif
-                                            @endif
-                                        @endforeach
-                                        <td>
-                                            <a href="{{ route('client.show', $entry) }}" class="btn btn-primary">
-                                                <i class="fas fa-eye pe-0"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                @include('partials.datatable.index', [
+                    'data' => $data,
+                    'resource' => $resource,
+                    'columns' => $columns,
+                    'route' => Request::route()->getName(),
+                    'classes' => 'with-status',
+                ])
             @endif
         </div>
     </div>
