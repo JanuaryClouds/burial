@@ -6,6 +6,49 @@ use App\Models\FuneralAssistance;
 
 class FuneralAssistanceService
 {
+    public function index(
+        string $orderColumn = 'created_at',
+        string $orderDirection = 'asc',
+    ){
+        return FuneralAssistance::with(['client'])
+            ->orderBy($orderColumn, $orderDirection)
+            ->get()
+            ->map(function ($application) {
+                if ($application?->approved_at) {
+                    $status = 'Approved';
+                }
+
+                if ($application?->forwarded_at) {
+                    $status = 'Forwarded';
+                }
+
+                return [
+                    'id' => $application->id,
+                    'tracking_no' => $application->client->tracking_no,
+                    'client' => $application->client->fullname(),
+                    'status' => $status ?? 'Pending',
+                    'created_at' => $application->created_at->format('M d, Y'),
+                    'show_route' => route('funeral.show', $application),
+                ];
+            });
+    }
+
+    public function columns($data)
+    {
+        if ($data->isEmpty()) {
+            return collect();
+        }
+
+        $columns = collect(array_keys($data->first()))
+            ->reject(fn ($key) => in_array($key, ['id', 'status', 'show_route']))
+            ->map(fn ($key) => [
+                'data'  => $key,
+            ])
+            ->values();
+
+        return $columns;
+    }
+
     /**
      * @param  array  $data  Data passed from request
      * @param  FuneralAssistance  $funeralAssistance  Original application

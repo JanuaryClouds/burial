@@ -11,6 +11,7 @@ use App\Models\Client;
 use App\Models\Sex;
 use App\Services\CentralClientService;
 use App\Services\ClientService;
+use App\Services\ImageService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Crypt;
 use Exception;
@@ -23,39 +24,29 @@ use Str;
 class ClientController extends Controller
 {
     protected $clientServices;
-
     protected $citizenServices;
+    protected $imageServices;
 
-    public function __construct(ClientService $clientService, CentralClientService $citizenService)
+    public function __construct(ClientService $clientService, CentralClientService $citizenService, ImageService $imageService)
     {
         $this->clientServices = $clientService;
         $this->citizenServices = $citizenService;
+        $this->imageServices = $imageService;
     }
 
     public function index()
     {
         $page_title = 'Clients';
         $resource = 'client';
-        $renderColumns = ['tracking_no', 'first_name', 'house_no', 'street', 'barangay_id', 'contact_no', 'created_at'];
-        $data = Client::with([
-            'barangay',
-            'claimant',
-            'funeralAssistance',
-        ])
-            ->select(
-                'id',
-                'tracking_no',
-                'first_name',
-                'middle_name',
-                'last_name',
-                'house_no',
-                'street',
-                'barangay_id',
-                'contact_no',
-                'created_at'
-            )
-            ->orderBy('created_at', 'desc')
-            ->get();
+
+        $data = $this->clientServices->index('tracking_no', 'asc');
+        $columns = $this->clientServices->columns($data);
+
+        if (request()->expectsJson()) {
+            return response()->json([
+                'data' => $data->values(),
+            ]);
+        }
 
         $clientsWithInterview = Client::has('interviews')->count();
         $clientsWithAssessments = Client::has('assessment')->count();
@@ -92,7 +83,7 @@ class ClientController extends Controller
             'page_title',
             'cardData',
             'resource',
-            'renderColumns',
+            'columns',
             'data'
         ));
     }
@@ -101,28 +92,28 @@ class ClientController extends Controller
     {
         try {
             $resource = 'client';
-            $client = Client::find($client->id);
-            $page_title = $client->first_name.' '.$client->last_name."'s Application";
-            $page_subtitle = $client->tracking_no.' - '.$client->id;
+            $client = $this->clientServices->get($client->id);
+            $page_title = $client->fullname()."'s Application";
+            $page_subtitle = $client->tracking_no;
             $readonly = auth()->user()->cannot('manage-content');
             $released = $client?->claimant?->burialAssistance->status != 'released' || $client?->funeralAssistance?->forwarded_at != null;
 
             if ($client) {
-                $path = "clients/{$client->tracking_no}";
-                $storedFiles = Storage::disk('local')->files($path);
-                $files = collect($storedFiles)->map(function ($file) {
-                    return [
-                        'name' => basename($file),
-                        'path' => $file,
-                    ];
-                });
+                // $path = "clients/{$client->tracking_no}";
+                // $storedFiles = Storage::disk('local')->files($path);
+                // $files = collect($storedFiles)->map(function ($file) {
+                //     return [
+                //         'name' => basename($file),
+                //         'path' => $file,
+                //     ];
+                // });
 
                 return view('client.view', compact(
                     'page_title',
                     'page_subtitle',
                     'resource',
                     'client',
-                    'files',
+                    // 'files',
                     'readonly',
                     'released',
                 ));
@@ -140,50 +131,20 @@ class ClientController extends Controller
         $matched = [];
 
         if ($citizen) {
-            // Helper for fuzzy matching
-            $findMatch = function ($value, $options, $strict) {
-                if (! $value) {
-                    return null;
-                }
-                $normalizedValue = strtolower(preg_replace('/[^a-z0-9]/i', '', $value));
-
-                foreach ($options as $id => $name) {
-                    $normalizedOption = strtolower(preg_replace('/[^a-z0-9]/i', '', $name));
-                    if ($normalizedValue === $normalizedOption) {
-                        return $id;
-                    }
-                    if ($normalizedValue == 'female') {
-                        return 1;
-                    }
-                    if ($normalizedValue == 'male') {
-                        return 2;
-                    }
-
-                    if ($strict) {
-                        // Check for contains if exact match fails (e.g. "Calzada-tipas" vs "Calzada Tipas")
-                        if (str_contains($normalizedOption, $normalizedValue) || str_contains($normalizedValue, $normalizedOption)) {
-                            return $id;
-                        }
-                    }
-                }
-
-                return null;
-            };
-
             $barangays = Barangay::pluck('name', 'id');
             $genders = Sex::pluck('name', 'id');
             $civilStatus = CivilStatus::pluck('name', 'id');
             
             if (isset($citizen['sex'])) {
-                $matched['sex_id'] = $findMatch($citizen['sex'], $genders, true);
+                $matched['sex_id'] = $this->clientServices->match($citizen['sex'], $genders, true);
             }
 
             if (isset($citizen['barangay'])) {
-                $matched['barangay_id'] = $findMatch($citizen['barangay'], $barangays, true);
+                $matched['barangay_id'] = $this->clientServices->match($citizen['barangay'], $barangays, true);
             }
 
             if (isset($citizen['civil_status'])) {
-                $matched['civil_id'] = $findMatch($citizen['civil_status'], $civilStatus, false);
+                $matched['civil_id'] = $this->clientServices->match($citizen['civil_status'], $civilStatus, false);
             }
         }
 
@@ -213,16 +174,7 @@ class ClientController extends Controller
     public function store(ClientRequest $request)
     {
         try {
-            $citizenUuid = session('citizen')['user_id'] ?? null;
-            $client = $this->clientServices->storeClient($request->validated(), $citizenUuid);
-
-            foreach ($request->file('images', []) as $fieldName => $uploadedFile) {
-                $extension = $uploadedFile->getClientOriginalExtension();
-                $filename = $fieldName.'.'.$extension.'.enc';
-                $path = "clients/{$client->tracking_no}/";
-                Storage::disk('local')->put($path.$filename, Crypt::encrypt(file_get_contents($uploadedFile)));
-            }
-
+            $client = $this->clientServices->storeClient($request->validated(), Auth::user(), $request->file('images', []));
             $ip = request()->ip();
             $browser = request()->header('User-Agent');
             activity()
@@ -411,7 +363,7 @@ class ClientController extends Controller
         if (! $records) {
             return redirect()->route('landing.page')->with('error', 'You do not have permission to access this page.');
         }
-        $client = Client::where('citizen_id', session('citizen')['user_id'])->latest()->get()->first();
+        $client = Client::where('user_id', Auth()->user()->id)->latest()->get()->first();
 
         $page_title = session('citizen')['firstname'].' '.session('citizen')['lastname'].' | Client History';
         $readonly = true;

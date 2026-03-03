@@ -6,6 +6,56 @@ use App\Models\BurialAssistance;
 
 class BurialAssistanceService
 {
+    public function index(
+        string $orderColumn = 'created_at',
+        string $orderDirection = 'asc',
+        string $status = null,
+    ){
+        return BurialAssistance::where(function ($query) use ($status) {
+            try {
+                if ($status == 'all') {
+                    return $query->orderBy('created_at', 'desc');
+                } else {
+                    return $query->where('status', $status);
+                }
+            } catch (\Exception $e) {
+                throw new \InvalidArgumentException($e->getMessage());
+            }
+        })
+            ->with([
+                'claimant.client',
+            ])
+            ->orderBy($orderColumn, $orderDirection)
+            ->get()
+            ->map(function ($application) {
+                return [
+                    'id' => $application->id,
+                    'tracking_no' => $application->claimant?->client?->tracking_no,
+                    'client' => $application->claimant?->client?->fullname(),
+                    'contact_number' => $application->claimant?->client?->contact_number,
+                    'funeraria' => $application->funeraria,
+                    'status' => $application->status,
+                    'show_route' => route('burial.show', $application),
+                ];
+            });
+    }
+
+    public function columns($data)
+    {
+        if ($data->isEmpty()) {
+            return collect();
+        }
+
+        $columns = collect(array_keys($data->first()))
+            ->reject(fn ($key) => in_array($key, ['id', 'status', 'show_route']))
+            ->map(fn ($key) => [
+                'data'  => $key,
+            ])
+            ->values();
+
+        return $columns;
+    }
+
     public function store(array $data)
     {
         return BurialAssistance::create($data);

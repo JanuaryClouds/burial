@@ -47,39 +47,41 @@ class BurialAssistanceController extends Controller
     {
         $page_title = 'Burial Assistance Applications';
         $resource = 'burial';
-        $applications = BurialAssistance::select('id', 'tracking_no', 'funeraria', 'amount', 'application_date', 'status', 'assigned_to', 'created_at')
-            ->where(function ($query) use ($status) {
-                try {
-                    if ($status == 'all') {
-                        return $query->orderBy('created_at', 'desc');
-                    } else {
-                        return $query->where('status', $status);
-                    }
-                } catch (Exception $e) {
-                    return redirect()->back()->with('error', $e->getMessage());
-                }
-            })
-            ->orderBy('created_at', 'desc')
-            ->get();
+        $data = $this->burialAssistanceService->index('created_at', 'desc', $status);
+        $columns = $this->burialAssistanceService->columns($data);
 
-        if ($applications->isNotEmpty()) {
-            $statusOptions = array_unique($applications->pluck('status')->toArray());
+        if (request()->expectsJson()) {
+            return response()->json([
+                'data' => $data->values(),
+            ]);
+        }
+
+        if ($data->isNotEmpty()) {
+            $statusOptions = array_unique($data->pluck('status')->toArray());
         } else {
             $applications = [];
             $statusOptions = [];
         }
+        
         $barangays = Barangay::select('id', 'name')->get();
-
-        return view('burial.index', compact('resource', 'applications', 'status', 'barangays', 'statusOptions', 'page_title'));
+        return view('burial.index', compact(
+            'resource', 
+            'data', 
+            'columns', 
+            'status', 
+            'barangays', 
+            'statusOptions', 
+            'page_title'
+        ));
     }
 
     public function show($id, ProcessLogService $processLogService)
     {
         try {
-            // code...
             $application = BurialAssistance::findOrFail($id);
             $client = $application->claimant->client;
-            $page_title = $client->first_name.' '.$client->last_name.'\'s Burial Assistance Application';
+            $page_title = $client->tracking_no;
+            $page_subtitle = $client->fullname()."'s Burial Assistance Application";
             $readonly = auth()->user()->cannot('manage-content') && $application->status != 'released';
             $path = "clients/{$client->tracking_no}";
             $storedFiles = Storage::disk('local')->files($path);
@@ -151,6 +153,7 @@ class BurialAssistanceController extends Controller
     public function assignments()
     {
         $page_title = 'Burial Assistance Assignments';
+        // TODO remove tracking number
         $applications = BurialAssistance::select('id', 'tracking_no', 'application_date', 'status', 'assigned_to')->get();
 
         return view('superadmin.assignment', compact('applications', 'page_title'));

@@ -11,6 +11,7 @@ use App\Models\ClientDemographic;
 use App\Models\ClientSocialInfo;
 use App\Models\Deceased;
 use App\Models\FuneralAssistance;
+use App\Models\User;
 use Carbon\Carbon;
 use DB;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -19,6 +20,130 @@ use Str;
 
 class ClientService
 {
+    protected $imageServices;
+
+    public function __construct(ImageService $imageService)
+    {
+        $this->imageServices = $imageService;
+    }
+
+    public function index(
+        string $orderColumn = 'created_at',
+        string $orderDirection = 'asc',
+    ) {
+        return Client::with([
+            'user',
+            'funeralAssistance',
+            'interviews',
+            'assessment',
+            'claimant',
+            'claimant.burialAssistance',
+        ])
+            ->orWhereHas('funeralAssistance', function ($query) {
+                $query->where('forwarded_at', null);
+            })
+            ->orWhereHas('claimant.burialAssistance', function ($query) {
+                $query->where('status', '!=', 'released');
+            })
+            ->orWhereDoesntHave('claimant.burialAssistance')
+            ->orWhereDoesntHave('funeralAssistance')
+            ->orderBy($orderColumn, $orderDirection)
+            ->get()
+            ->map(function ($client) {
+                if ($client?->interviews->count() > 0) {
+                    $status = 'Interviewed';
+                }
+
+                if ($client?->assessment->count() > 0) {
+                    $status = 'Assessed';
+                }
+                
+                if (isset($client?->claimant)) {
+                    $status = 'For Burial Assistance';
+                }
+
+                if (isset($client?->funeralAssistance)) {
+                    $status = 'For Libreng Libing';
+                }
+                
+                if ($client?->funeralAssistance == null || $client?->claimant == null) {
+                    $show_route = route('client.show', $client);
+                }
+                    
+                if ($client?->claimant != null) {
+                    $show_route = route('burial.show', $client?->claimant?->burialAssistance);
+                }
+
+                if ($client?->funeralAssistance != null) {
+                    $show_route = route('funeral.show', $client->funeralAssistance);
+                }
+
+                return [
+                    'id' => $client->id,
+                    'tracking_no' => $client->tracking_no,
+                    'full_name' => $client->fullname(),
+                    'address' => $client->address(),
+                    'contact_number' => $client->user->contact_number,
+                    'status' => $status ?? 'pending',
+                    'created_at' => $client->created_at->format('M d, Y'),
+                    'show_route' => $show_route,
+                ]; 
+            });
+    }
+
+    public function columns($data)
+    {
+        if ($data->isEmpty()) {
+            return collect();
+        }
+
+        $columns = collect(array_keys($data->first()))
+            ->reject(fn ($key) => in_array($key, ['id', 'status', 'show_route']))
+            ->map(fn ($key) => [
+                'data'  => $key,
+            ])
+            ->values();
+
+        return $columns;
+    }
+
+    /**
+     * Summary of match
+     * @param mixed $value Provided value
+     * @param mixed $options System resource to match from
+     * @param mixed $strict Match strictly
+     */
+    public function match($value, $options, $strict = false)
+    {
+        // Helper for fuzzy matching
+        if (! $value) {
+            return null;
+        }
+        $normalizedValue = strtolower(preg_replace('/[^a-z0-9]/i', '', $value));
+
+        foreach ($options as $id => $name) {
+            $normalizedOption = strtolower(preg_replace('/[^a-z0-9]/i', '', $name));
+            if ($normalizedValue === $normalizedOption) {
+                return $id;
+            }
+            if ($normalizedValue == 'female') {
+                return 1;
+            }
+            if ($normalizedValue == 'male') {
+                return 2;
+            }
+
+            if ($strict) {
+                // Check for contains if exact match fails (e.g. "Calzada-tipas" vs "Calzada Tipas")
+                if (str_contains($normalizedOption, $normalizedValue) || str_contains($normalizedValue, $normalizedOption)) {
+                    return $id;
+                }
+            }
+        }
+
+        return null;
+    }
+
     private function generateTrackingNo(): string
     {
         $year = date('Y');
@@ -38,18 +163,21 @@ class ClientService
         return $year.'-'.str_pad($newNumber, 4, '0', STR_PAD_LEFT);
     }
 
-    public function storeClient(array $data, ?string $uuid = null): ?Client
+    /**
+     * Summary of storeClient
+     * @param array $data form data
+     * @param User $user client/user submitted the form
+     * @param array $images attached images of documents
+     */
+    public function storeClient(array $data, User $user, array $images): ?Client
     {
-        return DB::transaction(function () use ($data, $uuid) {
+        return DB::transaction(function () use ($data, $user, $images) {
             $tracking_no = $this->generateTrackingNo();
 
             $client = Client::create([
                 'id' => Str::uuid(),
-                'citizen_id' => $uuid ?? null,
+                'user_id' => $user->id,
                 'tracking_no' => $tracking_no,
-                'first_name' => $data['first_name'],
-                'middle_name' => $data['middle_name'],
-                'last_name' => $data['last_name'],
                 'age' => $data['age'],
                 'date_of_birth' => $data['date_of_birth'],
                 'house_no' => $data['house_no'],
@@ -123,9 +251,30 @@ class ClientService
                     }
                 }
 
+                foreach ($images as $fieldName => $uploadedFile) {
+                    $this->imageServices->post($fieldName, $uploadedFile);    
+                }
+                dd('Catch');
+
                 return $client;
             }
         });
+    }
+
+    public function get(string $id)
+    {
+        return Client::with([
+            'user',
+            'assessment',
+            'beneficiary',
+            'family',
+            'demographic',
+            'socialInfo',
+            'recommendation',
+            'interviews',
+            'barangay'
+        ])
+            ->findOrFail($id);
     }
 
     public function transferClient($client_id)
@@ -135,7 +284,6 @@ class ClientService
             if ($client->recommendation->first()->type == 'burial') {
                 $burialAssistance = BurialAssistance::create([
                     'id' => Str::uuid(),
-                    'tracking_code' => strtoupper(Str::random(6)),
                     'application_date' => $client->created_at,
                     'swa' => $client->assessment->first()->assessment,
                     'encoder' => auth()->user()->id,
@@ -148,12 +296,12 @@ class ClientService
                     'id' => Str::uuid(),
                     'client_id' => $client->id,
                     'burial_assistance_id' => $burialAssistance->id,
-                    'first_name' => $client->first_name,
-                    'middle_name' => $client->middle_name ?? null,
-                    'last_name' => $client->last_name,
-                    'suffix' => $client->suffix ?? null,
+                    'first_name' => $client->user->first_name,
+                    'middle_name' => $client->user->middle_name ?? null,
+                    'last_name' => $client->user->last_name,
+                    'suffix' => $client->user->suffix ?? null,
                     'relationship_to_deceased' => $client->socialInfo->relationship->id,
-                    'mobile_number' => $client->contact_no,
+                    'mobile_number' => $client->user->contact_no,
                     'address' => $client->house_no.' '.$client->street,
                     'barangay_id' => $client->barangay_id,
                 ]);

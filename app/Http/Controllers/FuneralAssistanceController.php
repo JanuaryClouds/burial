@@ -25,9 +25,14 @@ class FuneralAssistanceController extends Controller
         $page_title = 'Libreng Libing Applications';
         $resource = 'funeral-assistances';
         $renderColumns = ['client_id', 'action'];
-        $data = FuneralAssistance::select('id', 'client_id', 'approved_at', 'forwarded_at')
-            ->with('client')
-            ->get();
+        $data = $this->funeralAssistanceService->index();
+        $columns = $this->funeralAssistanceService->columns($data);
+
+        if (request()->expectsJson()) {
+            return response()->json([
+                'data' => $data->values(),
+            ]);
+        }
 
         $approvedApplications = FuneralAssistance::where('approved_at', '!=', null)->count();
         $forwardedApplications = FuneralAssistance::where('forwarded_at', '!=', null)->count();
@@ -53,7 +58,7 @@ class FuneralAssistanceController extends Controller
             ],
         ];
 
-        return view('funeral.index', compact('data', 'page_title', 'resource', 'renderColumns', 'cardData'));
+        return view('funeral.index', compact('data', 'page_title', 'resource', 'renderColumns', 'cardData', 'columns'));
     }
 
     public function show($id)
@@ -61,8 +66,8 @@ class FuneralAssistanceController extends Controller
         try {
             $data = FuneralAssistance::find($id);
             $client = $data->client;
-            $page_title = Str::title($client->first_name).' '.Str::title($client->last_name);
-            $page_subtitle = $client->tracking_no.' - '.$client->id;
+            $page_title = $client->tracking_no;
+            $page_subtitle = $client->fullname()."'s Funeral Assistance Application";
             $readonly = auth()->user()->cannot('manage-content') || $data?->forwarded_at != null;
             $path = "clients/{$client->tracking_no}";
             $storedFiles = Storage::disk('local')->files($path);

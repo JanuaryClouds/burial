@@ -3,18 +3,22 @@
 namespace App\View\Components;
 
 use App\Models\Client;
+use App\Models\User;
+use App\Services\ClientService;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
+use Str;
 
 class latestClientsTable extends Component
 {
+    protected $clientServices;
     /**
      * Create a new component instance.
      */
-    public function __construct()
+    public function __construct(ClientService $clientService)
     {
-        //
+        $this->clientServices = $clientService;
     }
 
     /**
@@ -22,26 +26,9 @@ class latestClientsTable extends Component
      */
     public function render(): View|Closure|string
     {
-        $data = Client::with([
-            'claimant',
-            'barangay',
-            'funeralAssistance',
-            'interviews',
-            'assessment',
-        ])
-            ->select(
-                'id',
-                'tracking_no',
-                'first_name',
-                'middle_name',
-                'last_name',
-                'house_no',
-                'street',
-                'barangay_id',
-                'contact_no',
-                'created_at'
-            )->orderBy('created_at', 'desc')->take(10)->get();
-
-        return view('components.latest-clients-table', compact('data'));
+        $data = $this->clientServices->index('tracking_no', 'asc');
+        $columns = $this->clientServices->columns($data);
+        $resource = 'client';
+        return view('components.latest-clients-table', compact('data', 'columns', 'resource'));
     }
 }
