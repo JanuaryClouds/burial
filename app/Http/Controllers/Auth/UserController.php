@@ -39,16 +39,16 @@ class UserController extends Controller
                 Auth::logout();
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
-
+                
                 activity()
-                    ->causedBy($user)
-                    ->withProperties(['ip' => $ip, 'browser' => $browser])
-                    ->log('Successful login attempt');
+                ->causedBy($user)
+                ->withProperties(['ip' => $ip, 'browser' => $browser])
+                ->log('Inactive account login attempt');
 
                 return redirect()->back()->with('warning', 'Your account is inactive. Please contact the superadmin.');
-
             }
-
+                    
+            $user->createToken('fileserver')->plainTextToken;
             return redirect()
                 ->route('dashboard');
         } catch (Exception $e) {
@@ -73,6 +73,7 @@ class UserController extends Controller
         Auth::logout();
         request()->session()->invalidate();
         request()->session()->regenerateToken();
+        $user->tokens()->delete();
         if (session()->has('citizen')) {
             session()->forget('citizen');
         }
