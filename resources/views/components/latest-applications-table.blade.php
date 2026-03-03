@@ -21,13 +21,18 @@
                     <tbody>
                         @foreach ($applications as $application)
                             <tr class="border-bottom border-bottom-1 border-gray-200">
+                                {{-- TODO use client tracking number --}}
                                 <td>{{ $application->tracking_no }}</td>
                                 <td>
-                                    {{ $application->deceased->first_name }} {{ $application->deceased->middle_name ? Str::charAt($application->deceased->middle_name, 0).'.' : '' }} {{ $application->deceased->last_name }} {{ $application->deceased->suffix }}
+                                    {{ $application->deceased->first_name }}
+                                    {{ $application->deceased->middle_name ? Str::charAt($application->deceased->middle_name, 0) . '.' : '' }}
+                                    {{ $application->deceased->last_name }} {{ $application->deceased->suffix }}
                                 </td>
                                 <td>{{ $application->deceased->date_of_death }}</td>
                                 <td>
-                                    {{ $application->claimant->first_name }} {{ $application->claimant->middle_name ? Str::charAt($application->claimant->middle_name, 0).'.' : '' }} {{ $application->claimant->last_name }} {{ $application->claimant->suffix }}
+                                    {{ $application->claimant->first_name }}
+                                    {{ $application->claimant->middle_name ? Str::charAt($application->claimant->middle_name, 0) . '.' : '' }}
+                                    {{ $application->claimant->last_name }} {{ $application->claimant->suffix }}
                                 </td>
                                 <td>
                                     @if ($application->status === 'pending')

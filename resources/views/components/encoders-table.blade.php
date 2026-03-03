@@ -40,6 +40,7 @@
                             <tbody>
                                 @foreach ($encodedApplications as $application)
                                     <tr class="bg-white">
+                                        {{-- TODO use client tracking number --}}
                                         <td>{{ $application->tracking_no }}</td>
                                         <td>
                                             {{ $application->deceased->first_name }}

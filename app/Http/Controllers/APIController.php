@@ -14,7 +14,7 @@ class APIController extends Controller
     {
         $data = BurialAssistance::select(
             'id',
-            'tracking_no',
+            'tracking_no', // TODO use client tracking number
             'application_date',
             'swa',
             'funeraria',
@@ -26,7 +26,7 @@ class APIController extends Controller
             ->map(function ($application) {
                 return [
                     'id' => $application->id,
-                    'trackingNumber' => $application->tracking_no,
+                    'trackingNumber' => $application->tracking_no, // TODO use client tracking number
                     'applicationDate' => $application->application_date,
                     'swa' => $application->swa,
                     'funeraria' => $application->funeraria,

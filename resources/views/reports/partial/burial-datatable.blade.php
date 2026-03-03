@@ -18,6 +18,7 @@
                         <tbody>
                             @foreach ($burialAssistances as $application)
                                 <tr class="">
+                                    {{-- TODO use client tracking number --}}
                                     <td>{{ $application->tracking_no }}</td>
                                     <td>
                                         {{ $application->deceased->first_name }}

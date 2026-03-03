@@ -34,6 +34,7 @@ class ExportController extends Controller
             'claimantChanges.newClaimant',
         ]);
 
+        // TODO use client's tracking number
         $burialAssistances = $query->orderBy('tracking_no', 'asc')->get();
 
         foreach ($burialAssistances as $ba) {
@@ -50,6 +51,7 @@ class ExportController extends Controller
                 $firstClaimant = $ba->claimant;
             }
 
+            // TODO use client's tracking number
             $sheet->setCellValue("A{$row}", $ba->tracking_no);
             $sheet->setCellValue("B{$row}", $ba->application_date);
             $sheet->setCellValue("C{$row}", $ba->swa);

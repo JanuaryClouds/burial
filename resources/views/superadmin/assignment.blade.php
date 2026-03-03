@@ -1,74 +1,75 @@
 @extends('layouts.metronic.admin')
 <title>Assignments</title>
 @section('content')
-<div class="card mb-8">
-    <div class="card-body">
-        <div class="table-responsive overflow-x-hidden">
-            <div class="dataTables_wrapper">
-                <table id="assignments-table" class="table data-table" style="width:100%">
-                    <thead class="border-bottom border-bottom-1 border-gray-200 fs-7 fw-bold">
-                        <tr role="row">
-                            <th class="sorting sort-handler">Tracking No.</th>
-                            <th class="sorting">Deceased</th>
-                            <th class="sorting">Claimant</th>
-                            <th class="sorting">Submitted on</th>
-                            <th class="sorting">Status</th>
-                            <th class="">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($applications as $application)
-                            <tr class="">
-                                <td>{{ $application->tracking_no }}</td>
-                                <td>
-                                    {{ $application->deceased->first_name }}
-                                    {{ $application->deceased->middle_name ? Str::charAt($application->deceased->middle_name, 0).'.' : '' }}
-                                    {{ $application->deceased->last_name }}
-                                    {{ $application->deceased->suffix }}
-                                </td>
-                                <td>
-                                    {{ $application->claimant->first_name }}
-                                    {{ $application->claimant->middle_name ? Str::charAt($application->claimant->middle_name, 0).'.' : '' }}
-                                    {{ $application->claimant->last_name }}
-                                    {{ $application->claimant->suffix }}
-                                </td>
-                                <td>{{ $application->application_date }}</td>
-                                <td>
-                                    @if ($application->status === 'pending')
-                                        <span
-                                            class="badge badge-pill badge-warning">{{ ucfirst($application->status) }}</span>
-                                    @elseif ($application->status === 'processing')
-                                        <span
-                                            class="badge badge-pill badge-primary">{{ ucfirst($application->status) }}</span>
-                                    @elseif ($application->status === 'approved')
-                                        <span
-                                            class="badge badge-pill badge-success">{{ ucfirst($application->status) }}</span>
-                                    @elseif ($application->status === 'released')
-                                        <span
-                                            class="badge badge-pill badge-success">{{ ucfirst($application->status) }}</span>
-                                    @elseif ($application->status === 'rejected')
-                                        <span
-                                            class="badge badge-pill badge-danger">{{ ucfirst($application->status) }}</span>
-                                    @endif
-                                </td>
-                                <td><x-application-actions :application="$application" /></td>
+    <div class="card mb-8">
+        <div class="card-body">
+            <div class="table-responsive overflow-x-hidden">
+                <div class="dataTables_wrapper">
+                    <table id="assignments-table" class="table data-table" style="width:100%">
+                        <thead class="border-bottom border-bottom-1 border-gray-200 fs-7 fw-bold">
+                            <tr role="row">
+                                <th class="sorting sort-handler">Tracking No.</th>
+                                <th class="sorting">Deceased</th>
+                                <th class="sorting">Claimant</th>
+                                <th class="sorting">Submitted on</th>
+                                <th class="sorting">Status</th>
+                                <th class="">Actions</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach ($applications as $application)
+                                <tr class="">
+                                    {{-- TODO use client tracking number --}}
+                                    <td>{{ $application->tracking_no }}</td>
+                                    <td>
+                                        {{ $application->deceased->first_name }}
+                                        {{ $application->deceased->middle_name ? Str::charAt($application->deceased->middle_name, 0) . '.' : '' }}
+                                        {{ $application->deceased->last_name }}
+                                        {{ $application->deceased->suffix }}
+                                    </td>
+                                    <td>
+                                        {{ $application->claimant->first_name }}
+                                        {{ $application->claimant->middle_name ? Str::charAt($application->claimant->middle_name, 0) . '.' : '' }}
+                                        {{ $application->claimant->last_name }}
+                                        {{ $application->claimant->suffix }}
+                                    </td>
+                                    <td>{{ $application->application_date }}</td>
+                                    <td>
+                                        @if ($application->status === 'pending')
+                                            <span
+                                                class="badge badge-pill badge-warning">{{ ucfirst($application->status) }}</span>
+                                        @elseif ($application->status === 'processing')
+                                            <span
+                                                class="badge badge-pill badge-primary">{{ ucfirst($application->status) }}</span>
+                                        @elseif ($application->status === 'approved')
+                                            <span
+                                                class="badge badge-pill badge-success">{{ ucfirst($application->status) }}</span>
+                                        @elseif ($application->status === 'released')
+                                            <span
+                                                class="badge badge-pill badge-success">{{ ucfirst($application->status) }}</span>
+                                        @elseif ($application->status === 'rejected')
+                                            <span
+                                                class="badge badge-pill badge-danger">{{ ucfirst($application->status) }}</span>
+                                        @endif
+                                    </td>
+                                    <td><x-application-actions :application="$application" /></td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
-</div>
-@if (!$applications->isEmpty())
-    <div class="row">
-        <div class="col-12 col-lg-6">
-            <x-application-status-charts />
+    @if (!$applications->isEmpty())
+        <div class="row">
+            <div class="col-12 col-lg-6">
+                <x-application-status-charts />
+            </div>
+            <div class="col-12 col-lg-6">
+                <x-application-barangay-chart />
+            </div>
         </div>
-        <div class="col-12 col-lg-6">
-            <x-application-barangay-chart />
-        </div>
-    </div>
-@endif
-<x-applications-modal-loader />
+    @endif
+    <x-applications-modal-loader />
 @endsection

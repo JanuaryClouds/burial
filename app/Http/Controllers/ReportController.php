@@ -80,6 +80,7 @@ class ReportController extends Controller
             $endDate = Carbon::now()->endOfYear();
         }
 
+        // TODO remove tracking number to use client's
         $burialAssistances = BurialAssistance::select('id', 'tracking_no', 'application_date', 'funeraria', 'amount', 'status', 'created_at')
             ->orderBy('tracking_no', 'asc')
             ->whereBetween('application_date', [$startDate, $endDate])

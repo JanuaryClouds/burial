@@ -117,6 +117,7 @@
             @foreach ($deceased as $d)
                 <tr>
                     <td>
+                        {{-- TODO use client tracking number --}}
                         {{ $d->burialAssistance->tracking_no }}
                     </td>
                     <td>{{ $d->first_name }} {{ $d->middle_name == null ? '' : Str::limit($d?->middle_name, 1, '.') }}

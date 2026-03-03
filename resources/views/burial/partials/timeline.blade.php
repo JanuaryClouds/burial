@@ -85,6 +85,7 @@
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
                             <div class="modal-body">
+                                {{-- TODO use client tracking number --}}
                                 @php
                                     $encryptedFile = Storage::disk('local')->get(
                                         "burial-assistance/{$burialAssistance->tracking_no}/{$burialAssistance->latestCheque->id}-cheque-proof.png",

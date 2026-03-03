@@ -124,6 +124,7 @@
                             @foreach ($c->newClaimantChanges as $ncc)
                                 @if ($ncc->status === 'approved')
                                     @if ($ncc->newClaimant->id == $c->id)
+                                        {{-- TODO use client tracking number --}}
                                         New claimant of {{ $ncc->burialAssistance?->tracking_no }}
                                     @endif
                                 @endif
@@ -131,11 +132,13 @@
                             @foreach ($c->oldClaimantChanges as $occ)
                                 @if ($occ->status === 'approved')
                                     @if ($occ->oldClaimant->id == $c->id)
+                                        {{-- TODO use client tracking number --}}
                                         Old claimant of {{ $occ->burialAssistance?->tracking_no }}
                                     @endif
                                 @endif
                             @endforeach
                         @else
+                            {{-- TODO use client tracking number --}}
                             {{ $c->burialAssistance->tracking_no }}
                         @endif
 

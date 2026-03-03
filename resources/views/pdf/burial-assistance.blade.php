@@ -115,6 +115,7 @@
         <tbody>
             @foreach ($burialAssistance as $ba)
                 <tr>
+                    {{-- TODO use client tracking number --}}
                     <td>{{ $ba->tracking_no }}</td>
                     <td>{{ \Carbon\Carbon::parse($ba->application_date)->format('F d, Y') }}</td>
                     <td>{{ $ba->deceased->first_name }} {{ Str::limit($ba->deceased->middle_name, 1, '.') }}

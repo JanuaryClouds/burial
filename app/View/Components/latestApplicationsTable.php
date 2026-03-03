@@ -22,6 +22,7 @@ class latestApplicationsTable extends Component
      */
     public function render(): View|Closure|string
     {
+        // TODO use service
         $applications = BurialAssistance::select(['id', 'tracking_no', 'funeraria', 'status', 'application_date', 'assigned_to', 'amount'])
             ->with(['deceased', 'claimant'])
             ->orderBy('application_date', 'asc')
