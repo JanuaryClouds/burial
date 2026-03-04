@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\DataTables\CmsDataTable;
 use App\Http\Requests\EducationRequest;
 use App\Models\Education;
+use App\Services\DatatableService;
 use App\Services\EducationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,22 +13,36 @@ use Illuminate\Support\Facades\Auth;
 class EducationController extends Controller
 {
     protected $educationServices;
+    protected $datatableServices;
 
-    public function __construct(EducationService $educationServices)
+    public function __construct(EducationService $educationService, DatatableService $datatableService)
     {
-        $this->educationServices = $educationServices;
+        $this->educationServices = $educationService;
+        $this->datatableServices = $datatableService;
     }
 
-    public function index(CmsDataTable $dataTable)
+    public function index()
     {
         $page_title = 'Education';
         $resource = 'education';
-        $columns = ['id', 'name', 'remarks', 'action'];
-        $data = Education::getAllEducations();
-
-        return $dataTable
-            ->render('cms.index', compact(
-                'dataTable',
+        $data = Education::getAllEducations()
+            ->map(function ($education) {
+                return [
+                    'id' => $education->id,
+                    'name' => $education->name,
+                    'remarks' => $education->remarks,
+                    'show_route' => route('education.edit', $education->id),
+                ];
+            });
+        $columns = $this->datatableServices->getColumns($data, ['id', 'show_route']);
+            
+        if (request()->expectsJson()) {
+            return response()->json([
+                'data' => $data->values(),
+            ]);
+        }
+        
+        return view('cms.index', compact(
                 'page_title',
                 'resource',
                 'columns',

@@ -13,9 +13,16 @@
         @includeWhen(Route::is('reports.claimants'), 'reports.partial.claimants-charts')
         {{-- TODO: create charts for cheques --}}
         <div class="col-12 mt-8">
-            @includeWhen(Route::is('reports.clients'), 'reports.partial.client-datatable')
+            <div class="card">
+                <div class="card-body">
+                    @include('partials.datatable.index', [
+                        'columns' => $columns,
+                        'route' => Request::route()->getName(),
+                    ])
+                </div>
+            </div>
+
             @includeWhen(Route::is('reports.funerals'), 'reports.partial.funeral-datatable')
-            @includeWhen(Route::is('reports.burial-assistances'), 'reports.partial.burial-datatable')
             @includeWhen(Route::is('reports.deceased'), 'reports.partial.deceased-datatable')
             @includeWhen(Route::is('reports.claimants'), 'reports.partial.claimants-datatable')
             {{-- TODO: create datatables for cheques --}}

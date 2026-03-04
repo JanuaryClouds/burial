@@ -17,16 +17,27 @@ class SexController extends Controller
         $this->sexServices = $sexServices;
     }
 
-    public function index(CmsDataTable $dataTable)
+    public function index()
     {
         $page_title = 'Sex';
         $resource = 'sex';
-        $columns = ['id', 'name', 'remarks', 'action'];
-        $data = Sex::getAllSexes();
+        $columns = ['name', 'remarks'];
+        $data = Sex::getAllSexes()->map(function ($sex) {
+            return [
+                'id' => $sex->id,
+                'name' => $sex->name,
+                'remarks' => $sex->remarks,
+                'show_route' => route('sex.edit', $sex->id),
+            ];
+        });
 
-        return $dataTable
-            ->render('cms.index', compact(
-                'dataTable',
+        if (request()->expectsJson()) {
+            return response()->json([
+                'data' => $data->values(),
+            ]);
+        }
+
+        return view('cms.index', compact(
                 'page_title',
                 'resource',
                 'columns',

@@ -5,6 +5,16 @@
     'resource' => '',
     'route' => '',
 ])
+@php
+    // FIXME Returns an error if data is empty
+    if (array_key_exists('show_route', $data->toArray()[0])) {
+        $classes .= ' with-actions';
+    }
+
+    if (array_key_exists('status', $data->toArray()[0])) {
+        $classes .= ' with-status';
+    }
+@endphp
 <div class="table-responsive overflow-x-hidden">
     <div class="dataTables_wrapper">
         <table class="table data-table {{ $classes }}" style="width:100%" data-route="{{ $route ?? '' }}"

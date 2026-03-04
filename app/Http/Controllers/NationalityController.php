@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\DataTables\CmsDataTable;
 use App\Http\Requests\NationalityRequest;
 use App\Models\Nationality;
+use App\Services\DatatableService;
 use App\Services\NationalityService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,22 +13,35 @@ use Illuminate\Support\Facades\Auth;
 class NationalityController extends Controller
 {
     protected $nationalityServices;
+    protected $datatableServices;
 
-    public function __construct(NationalityService $nationalityServices)
+    public function __construct(NationalityService $nationalityServices, DatatableService $datatableService)
     {
         $this->nationalityServices = $nationalityServices;
+        $this->datatableServices = $datatableService;
     }
 
-    public function index(CmsDataTable $dataTable)
+    public function index()
     {
         $page_title = 'Nationality';
         $resource = 'nationality';
-        $columns = ['id', 'name', 'remarks', 'action'];
-        $data = Nationality::getAllNationalities();
-
-        return $dataTable
-            ->render('cms.index', compact(
-                'dataTable',
+        $data = Nationality::getAllNationalities()->map(function ($nationality) {
+            return [
+                'id' => $nationality->id,
+                'name' => $nationality->name,
+                'remarks' => $nationality->remarks,
+                'show_route' => route('nationality.edit', $nationality->id),
+            ];
+        });
+        $columns = $this->datatableServices->getColumns($data, ['id', 'show_route']);
+        
+        if (request()->expectsJson()) {
+            return response()->json([
+                'data' => $data->values(),
+            ]);
+        }
+        
+        return view('cms.index', compact(
                 'page_title',
                 'resource',
                 'columns',

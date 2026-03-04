@@ -38,12 +38,28 @@ class RoleController extends Controller
 
     public function index()
     {
-        $data = Role::select('id', 'name')->get();
+        $data = Role::select('id', 'name')->get()
+            ->map(function ($role) {
+                return [
+                    'id' => $role->id,
+                    'name' => $role->name,
+                    'show_route' => route('role.edit', $role->id),
+                ];
+            });
+        $columns = collect(['name'])->map(fn ($key) => [
+            'data'  => $key,
+        ]);
         $page_title = 'Role';
         $resource = 'role';
         $permissions = Permission::select('id', 'name')->get();
 
-        return view('cms.index', compact('data', 'page_title', 'resource', 'permissions'));
+        if (request()->expectsJson()) {
+            return response()->json([
+                'data' => $data->values(),
+            ]);
+        }
+
+        return view('cms.index', compact('data', 'page_title', 'resource', 'permissions', 'columns'));
     }
 
     public function edit(Role $role)

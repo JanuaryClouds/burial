@@ -37,11 +37,25 @@ class PermissionController extends Controller
 
     public function index(CmsDataTable $dataTable)
     {
-        $data = Permission::getAllPermissions();
+        $data = Permission::getAllPermissions()
+            ->map(function ($permission) {
+                return [
+                    'id' => $permission->id,
+                    'name' => $permission->name,
+                    'guard' => $permission->guard_name,
+                ];
+            });
+        $columns = ['name', 'guard'];
         $resource = 'permission';
         $page_title = 'Permission';
 
-        return view('cms.index', compact('data', 'dataTable', 'resource', 'page_title'));
+        if (request()->expectsJson()) {
+            return response()->json([
+                'data' => $data->values(),
+            ]);
+        }
+
+        return view('cms.index', compact('data', 'dataTable', 'resource', 'columns', 'page_title'));
     }
 
     public function store(PermissionRequest $request)
