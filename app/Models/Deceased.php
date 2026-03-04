@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Str;
 
 class Deceased extends Model
 {
@@ -35,6 +36,15 @@ class Deceased extends Model
     public function burialAssistance()
     {
         return $this->belongsTo(BurialAssistance::class, 'burial_assistance_id', 'id');
+    }
+
+    public function fullname()
+    {
+        $fullname = $this->first_name . ' ' . 
+            ($this->middle_name ? Str::limit($this->middle_name, 1, '.') . ' ' : '' ) . 
+            $this->last_name . 
+            ($this->suffix ? ' ' . Str::limit($this->suffix, 1, '.') : '');
+        return $fullname;
     }
 
     public function gender()
