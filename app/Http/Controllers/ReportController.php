@@ -8,13 +8,21 @@ use App\Models\Claimant;
 use App\Models\Client;
 use App\Models\Deceased;
 use App\Models\FuneralAssistance;
+use App\Services\DatatableService;
 use App\Services\ReportService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class ReportController extends Controller
 {
-    protected $reportService;
+    protected $reportServices;
+    protected $datatableServices;
+
+    public function __construct(ReportService $reportService, DatatableService $datatableService)
+    {
+        $this->reportServices = $reportService;
+        $this->datatableServices = $datatableService;
+    }
 
     private $reportTypes = [
         'burial_assistance' => 'Burial Assistance Report',
@@ -22,7 +30,7 @@ class ReportController extends Controller
         'cheques' => 'Cheques Report',
     ];
 
-    public function clients(Request $request, ReportService $reportService)
+    public function clients(Request $request)
     {
         $model = 'clients';
         if ($request->has('start_date') && $request->start_date != '') {
@@ -37,26 +45,33 @@ class ReportController extends Controller
             $endDate = Carbon::now()->endOfYear();
         }
 
-        $clients = Client::select(
-            'id',
-            'tracking_no',
-            'first_name',
-            'middle_name',
-            'last_name',
-            'suffix',
-            'contact_no',
-            'house_no',
-            'street',
-            'barangay_id'
-        )
+        $data = Client::with(['user'])
             ->whereBetween('created_at', [$startDate, $endDate])
-            ->get();
+            ->orderBy('tracking_no', 'asc')
+            ->get()
+            ->map(function ($client) {
+                return [
+                    'tracking_no' => $client->tracking_no,
+                    'name' => $client->fullname(),
+                    'address' => $client->address(),
+                    'created_at' => $client->created_at->format('M d, Y'),
+                ];
+            });
 
-        $clientsPerBarangay = $reportService->clientsPerBarangay($startDate, $endDate);
-        $clientsPerAssistance = $reportService->clientsPerAssistance($startDate, $endDate);
+        $columns = $this->datatableServices->getColumns($data, []);
+
+        $clientsPerBarangay = $this->reportServices->clientsPerBarangay($startDate, $endDate);
+        $clientsPerAssistance = $this->reportServices->clientsPerAssistance($startDate, $endDate);
+
+        if (request()->expectsJson()) {
+            return response()->json([
+                'data' => $data->values(), 
+            ]);
+        }
 
         return view('reports.index', compact(
-            'clients',
+            'data',
+            'columns',
             'model',
             'clientsPerBarangay',
             'clientsPerAssistance',
@@ -65,7 +80,7 @@ class ReportController extends Controller
         ));
     }
 
-    public function burialAssistances(Request $request, ReportService $reportService)
+    public function burialAssistances(Request $request)
     {
         $model = 'burial-assistances';
         if ($request->has('start_date') && $request->start_date != '') {
@@ -80,14 +95,36 @@ class ReportController extends Controller
             $endDate = Carbon::now()->endOfYear();
         }
 
-        // TODO remove tracking number to use client's
-        $burialAssistances = BurialAssistance::select('id', 'tracking_no', 'application_date', 'funeraria', 'amount', 'status', 'created_at')
-            ->orderBy('tracking_no', 'asc')
+        $data = BurialAssistance::with([
+            'claimant',
+            'claimant.client',
+            'deceased'
+        ])
+            ->orderBy('application_date', 'asc')
             ->whereBetween('application_date', [$startDate, $endDate])
-            ->get();
+            ->get()
+            ->map(function ($burialAssistance) {
+                return [
+                    'tracking_no' => $burialAssistance->claimant?->client?->tracking_no,
+                    'beneficiary' => $burialAssistance->deceased?->fullname(),
+                    'address' => $burialAssistance->claimant?->client?->address(),
+                    'applied_at' => $burialAssistance->application_date,
+                    'funeraria' => $burialAssistance->funeraria,
+                    'amount' => $burialAssistance->amount,
+                    'status' => $burialAssistance->status
+                ];
+            });
 
-        $deceasedPerBarangay = $reportService->deceasedPerBarangay($startDate, $endDate);
-        $deceasedPerReligion = $reportService->deceasedPerReligion($startDate, $endDate);
+        if (request()->expectsJson()) {
+            return response()->json([
+                'data' => $data->values(),
+            ]);
+        }
+
+        $columns = $this->datatableServices->getColumns($data, ['status']);
+
+        $deceasedPerBarangay = $this->reportServices->deceasedPerBarangay($startDate, $endDate);
+        $deceasedPerReligion = $this->reportServices->deceasedPerReligion($startDate, $endDate);
         $statistics = [
             $burialAssistanceStatistics = [
                 'type' => 'burial_assistance',
@@ -95,12 +132,12 @@ class ReportController extends Controller
                 'color' => 'primary',
                 'icon' => 'file',
                 'numbers' => [
-                    'total' => $burialAssistances->count(),
-                    'pending' => $burialAssistances->where('status', 'pending')->count(),
-                    'processing' => $burialAssistances->where('status', 'processing')->count(),
-                    'approved' => $burialAssistances->where('status', 'approved')->count(),
-                    'released' => $burialAssistances->where('status', 'released')->count(),
-                    'rejected' => $burialAssistances->where('status', 'rejected')->count(),
+                    'total' => $data->count(),
+                    'pending' => $data->where('status', 'pending')->count(),
+                    'processing' => $data->where('status', 'processing')->count(),
+                    'approved' => $data->where('status', 'approved')->count(),
+                    'released' => $data->where('status', 'released')->count(),
+                    'rejected' => $data->where('status', 'rejected')->count(),
                 ],
             ],
         ];
@@ -110,36 +147,37 @@ class ReportController extends Controller
                 'label' => 'Pending',
                 'icon' => 'ki-file',
                 'pathsCount' => 2,
-                'count' => $burialAssistances->where('status', 'pending')->count(),
+                'count' => $data->where('status', 'pending')->count(),
             ],
             [
                 'label' => 'Processing',
                 'icon' => 'ki-file-right',
                 'pathsCount' => 2,
-                'count' => $burialAssistances->where('status', 'processing')->count(),
+                'count' => $data->where('status', 'processing')->count(),
             ],
             [
                 'label' => 'Approved',
                 'icon' => 'ki-file-added',
                 'pathsCount' => 2,
-                'count' => $burialAssistances->where('status', 'approved')->count(),
+                'count' => $data->where('status', 'approved')->count(),
             ],
             [
                 'label' => 'Approved',
                 'icon' => 'ki-folder-added',
                 'pathsCount' => 2,
-                'count' => $burialAssistances->where('status', 'released')->count(),
+                'count' => $data->where('status', 'released')->count(),
             ],
             [
                 'label' => 'Rejected',
                 'icon' => 'ki-delete-folder',
                 'pathsCount' => 2,
-                'count' => $burialAssistances->where('status', 'rejected')->count(),
+                'count' => $data->where('status', 'rejected')->count(),
             ],
         ];
 
         return view('reports.index', compact(
-            'burialAssistances',
+            'data',
+            'columns',
             'model',
             'statistics',
             'deceasedPerBarangay',
