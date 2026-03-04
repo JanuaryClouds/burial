@@ -27,6 +27,28 @@ class UserService
         request()->session()->regenerate();
     }
 
+    public function index()
+    {
+        return User::select('id', 'first_name', 'middle_name', 'last_name', 'email', 'password', 'contact_number', 'is_active')
+            ->orWhereHas('roles', function ($query) {
+                $query->where('name', '!=', 'superadmin');
+            })
+            ->orWhereDoesntHave('roles')
+            ->get()
+            ->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'first_name' => $user->first_name,
+                    'middle_name' => $user->middle_name,
+                    'last_name' => $user->last_name,
+                    'email' => $user->email,
+                    'contact_number' => $user->contact_number,
+                    'is_active' => $user->is_active,
+                    'show_route' => route('user.edit', $user->id),
+                ];
+            });
+    }
+
     public function storeUser(array $data)
     {
         $user = User::create($data);
