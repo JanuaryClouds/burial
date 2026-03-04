@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProcessLogRequest;
 use App\Models\BurialAssistance;
 use App\Models\WorkflowStep;
+use App\Services\DatatableService;
 use App\Services\ProcessLogService;
 use Exception;
 use Illuminate\Support\Facades\Crypt;

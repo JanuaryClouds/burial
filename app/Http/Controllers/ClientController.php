@@ -11,6 +11,7 @@ use App\Models\Client;
 use App\Models\Sex;
 use App\Services\CentralClientService;
 use App\Services\ClientService;
+use App\Services\DatatableService;
 use App\Services\ImageService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Crypt;
@@ -26,12 +27,18 @@ class ClientController extends Controller
     protected $clientServices;
     protected $citizenServices;
     protected $imageServices;
+    protected $datatableServices;
 
-    public function __construct(ClientService $clientService, CentralClientService $citizenService, ImageService $imageService)
-    {
+    public function __construct(
+        ClientService $clientService, 
+        CentralClientService $citizenService, 
+        ImageService $imageService,
+        DatatableService $datatableService,
+    ) {
         $this->clientServices = $clientService;
         $this->citizenServices = $citizenService;
         $this->imageServices = $imageService;
+        $this->datatableServices = $datatableService;
     }
 
     public function index()
@@ -40,7 +47,7 @@ class ClientController extends Controller
         $resource = 'client';
 
         $data = $this->clientServices->index('tracking_no', 'asc');
-        $columns = $this->clientServices->columns($data);
+        $columns = $this->datatableServices->getColumns($data, ['id', 'status', 'show_route']);
 
         if (request()->expectsJson()) {
             return response()->json([
@@ -78,7 +85,7 @@ class ClientController extends Controller
                 'count' => $clientsWithRecommendation,
             ],
         ];
-
+        
         return view('client.index', compact(
             'page_title',
             'cardData',

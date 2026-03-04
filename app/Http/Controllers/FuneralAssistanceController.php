@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ClientRequest;
 use App\Models\FuneralAssistance;
+use App\Services\DatatableService;
 use App\Services\FuneralAssistanceService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Exception;
@@ -13,11 +14,13 @@ use Str;
 
 class FuneralAssistanceController extends Controller
 {
-    protected $funeralAssistanceService;
+    protected $funeralAssistanceServices;
+    protected $datatableServices;
 
-    public function __construct(FuneralAssistanceService $funeralAssistanceService)
+    public function __construct(FuneralAssistanceService $funeralAssistanceService, DatatableService $datatableService)
     {
-        $this->funeralAssistanceService = $funeralAssistanceService;
+        $this->funeralAssistanceServices = $funeralAssistanceService;
+        $this->datatableServices = $datatableService;
     }
 
     public function index()
@@ -25,8 +28,8 @@ class FuneralAssistanceController extends Controller
         $page_title = 'Libreng Libing Applications';
         $resource = 'funeral-assistances';
         $renderColumns = ['client_id', 'action'];
-        $data = $this->funeralAssistanceService->index();
-        $columns = $this->funeralAssistanceService->columns($data);
+        $data = $this->funeralAssistanceServices->index();
+        $columns = $this->datatableServices->getColumns($data, ['id', 'status', 'show_route']);
 
         if (request()->expectsJson()) {
             return response()->json([
@@ -95,7 +98,7 @@ class FuneralAssistanceController extends Controller
     {
         try {
             $funeralAssistance = FuneralAssistance::find($id);
-            $funeralAssistance = $this->funeralAssistanceService->update($request->all(), $funeralAssistance);
+            $funeralAssistance = $this->funeralAssistanceServices->update($request->all(), $funeralAssistance);
 
             return redirect()->back()->with('success', 'Successfully updated Libreng Libing Application.');
         } catch (Exception $e) {

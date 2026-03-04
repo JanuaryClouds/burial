@@ -7,6 +7,7 @@ use App\Models\Barangay;
 use App\Models\BurialAssistance;
 use App\Models\Religion;
 use App\Services\BurialAssistanceService;
+use App\Services\DatatableService;
 use App\Services\ProcessLogService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Exception;
@@ -16,14 +17,17 @@ use Str;
 
 class BurialAssistanceController extends Controller
 {
-    protected $processLogService;
+    protected $processLogServices;
 
-    protected $burialAssistanceService;
+    protected $burialAssistanceServices;
 
-    public function __construct(ProcessLogService $processLogService, BurialAssistanceService $burialAssistanceService)
+    protected $datatableServices;
+
+    public function __construct(ProcessLogService $processLogService, BurialAssistanceService $burialAssistanceService, DatatableService $datatableService)
     {
-        $this->processLogService = $processLogService;
-        $this->burialAssistanceService = $burialAssistanceService;
+        $this->processLogServices = $processLogService;
+        $this->burialAssistanceServices = $burialAssistanceService;
+        $this->datatableServices = $datatableService;
     }
 
     public function tracker($uuid, ProcessLogService $processLogService)
@@ -47,8 +51,8 @@ class BurialAssistanceController extends Controller
     {
         $page_title = 'Burial Assistance Applications';
         $resource = 'burial';
-        $data = $this->burialAssistanceService->index('created_at', 'desc', $status);
-        $columns = $this->burialAssistanceService->columns($data);
+        $data = $this->burialAssistanceServices->index('created_at', 'desc', $status);
+        $columns = $this->datatableServices->getColumns($data, ['id', 'status', 'show_route']);
 
         if (request()->expectsJson()) {
             return response()->json([
@@ -103,7 +107,7 @@ class BurialAssistanceController extends Controller
     public function update(StoreBurialAssistanceRequest $request, $id)
     {
         $burialAssistance = BurialAssistance::where('id', $id)->with('claimant', 'deceased')->first();
-        $burialAssistance = $this->burialAssistanceService->update($request->validated(), $burialAssistance);
+        $burialAssistance = $this->burialAssistanceServices->update($request->validated(), $burialAssistance);
 
         return redirect()->back()->with('success', 'Successfully updated application.');
 
