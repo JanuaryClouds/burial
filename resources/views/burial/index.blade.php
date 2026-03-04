@@ -10,7 +10,7 @@
                 <p class="text-muted text-center">No Data</p>
             @else
                 @include('partials.datatable.index', [
-                    'classes' => 'with-status',
+                    'classes' => 'with-status with-actions',
                     'columns' => $columns,
                     'route' => route('burial.index', ['status' => $status]),
                 ])

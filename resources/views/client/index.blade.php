@@ -17,7 +17,6 @@
                     'resource' => $resource,
                     'columns' => $columns,
                     'route' => Request::route()->getName(),
-                    'classes' => 'with-status',
                 ])
             @endif
         </div>

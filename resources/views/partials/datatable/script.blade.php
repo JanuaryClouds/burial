@@ -6,8 +6,6 @@
         let columns = datatable.data('columns') || [];
         let route = datatable.data('route') ?? null;
 
-        if (!route) console.warn('No route provided');
-
         if (datatable.hasClass('with-status')) {
             columns.push({
                 data: null,
@@ -23,22 +21,24 @@
             })
         }
 
-        columns.push({
-            data: null,
-            title: 'Actions',
-            orderable: false,
-            searchable: false,
-            className: 'text-center',
-            render: (_, __, row) => `
-            <a href="${row.show_route}" class="btn btn-sm btn-primary">
-                <i class="ki-duotone ki-eye pe-0">
-                    <span class="path1"></span>
-                    <span class="path2"></span>
-                    <span class="path3"></span>
-                </i>
-            </a>
-            `
-        })
+        if (datatable.hasClass('with-actions')) {
+            columns.push({
+                data: null,
+                title: 'Actions',
+                orderable: false,
+                searchable: false,
+                className: 'text-center',
+                render: (_, __, row) => `
+                    <a href="${row.show_route}" class="btn btn-sm btn-primary">
+                        <i class="ki-duotone ki-eye pe-0">
+                            <span class="path1"></span>
+                            <span class="path2"></span>
+                            <span class="path3"></span>
+                        </i>
+                    </a>
+                    `
+            })
+        }
 
         $('.data-table').DataTable({
             responsive: true,

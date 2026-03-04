@@ -11,7 +11,7 @@
                 'resource' => $resource,
                 'columns' => $columns,
                 'route' => route('client.index'),
-                'classes' => 'with-status',
+                'classes' => 'with-status with-actions',
             ])
         @endif
     </div>
