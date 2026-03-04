@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 
 
@@ -9,13 +10,11 @@ class ImageService
 {
     protected $serverUrl;
     protected $serverApi;
-    protected $token;
 
     public function __construct()
     {
         $this->serverUrl = config('services.fileserver.url');
         $this->serverApi = config('services.fileserver.api');
-        $this->token = config('services.fileserver.token');
     }
     
     public function get(string $filename)
@@ -50,20 +49,14 @@ class ImageService
             throw new \RuntimeException($filename . ' already exists.');
         }
 
+        // This will not work during live because personal_access_tokens from live are the only accepted tokens
         $response = Http::asMultipart()
             ->timeout(15)
             ->retry(3, 200)
-            ->attach('file', file_get_contents($file->getRealPath()), $filename)
-            ->withHeaders([
-                'Content-Type' => 'multipart/form-data',
-                'token' => $this->token . now()->format('Ymd'),
-            ])
-            ->post($this->serverUrl . $this->serverApi);
-
-        dd($response->json());
-        // FIXME
-        // "status" => "error"
-        // "message" => "No file uploaded or upload error."
+            ->attach('file', file_get_contents($file), $filename)
+            ->post($this->serverUrl . $this->serverApi, [
+                'token' => Auth::user()->tokens()->first()->token . now()->format('Ymd'),
+            ]);
 
         if ($response->failed() || $response->json()['status'] === 'error') {
             throw new \RuntimeException('{$response->status()}: Failed to upload file: ' . $filename);
