@@ -46,8 +46,8 @@ Route::middleware('permission:manage-content')
             ->only(['index', 'store', 'edit', 'update']);
         Route::resource('permission', PermissionController::class)
             ->only(['index']);
-        Route::resource('assistance', AssistanceController::class);
-        Route::resource('civil', CivilStatusController::class);
+        // Route::resource('assistance', AssistanceController::class);
+        // Route::resource('civil', CivilStatusController::class);
         Route::resource('education', EducationController::class)
             ->only(['index', 'store', 'edit', 'update']);
         Route::resource('nationality', NationalityController::class)
