@@ -290,6 +290,7 @@ class ClientService
                     'funeraria' => $client->recommendation->first()->referral,
                     'amount' => $client->recommendation->first()->amount,
                     'remarks' => $client->recommendation->first()->remarks,
+                    'initial_checker' => auth()->user()->id, // TODO ask who is the initial checker
                 ]);
 
                 $claimant = Claimant::create([
@@ -301,25 +302,26 @@ class ClientService
                     'last_name' => $client->user->last_name,
                     'suffix' => $client->user->suffix ?? null,
                     'relationship_to_deceased' => $client->socialInfo->relationship->id,
-                    'mobile_number' => $client->user->contact_no,
+                    'mobile_number' => $client->user->contact_number,
                     'address' => $client->house_no.' '.$client->street,
                     'barangay_id' => $client->barangay_id,
                 ]);
 
-                $deceased = Deceased::create([
-                    'id' => Str::uuid(),
-                    'burial_assistance_id' => $burialAssistance->id,
-                    'first_name' => $client->beneficiary->first_name,
-                    'middle_name' => $client->beneficiary->middle_name ?? null,
-                    'last_name' => $client->beneficiary->last_name,
-                    'suffix' => $client->beneficiary->suffix ?? null,
-                    'date_of_birth' => $client->beneficiary->date_of_birth,
-                    'date_of_death' => $client->beneficiary->date_of_death,
-                    'gender' => $client->beneficiary->sex_id,
-                    'address' => $client->beneficiary->place_of_birth,
-                    'religion_id' => $client->beneficiary->religion_id,
-                    'barangay_id' => $client->beneficiary->barangay_id,
-                ]);
+                // TODO use ClientBeneficiary model instead
+                // $deceased = Deceased::create([
+                //     'id' => Str::uuid(),
+                //     'burial_assistance_id' => $burialAssistance->id,
+                //     'first_name' => $client->beneficiary->first_name,
+                //     'middle_name' => $client->beneficiary->middle_name ?? null,
+                //     'last_name' => $client->beneficiary->last_name,
+                //     'suffix' => $client->beneficiary->suffix ?? null,
+                //     'date_of_birth' => $client->beneficiary->date_of_birth,
+                //     'date_of_death' => $client->beneficiary->date_of_death,
+                //     'gender' => $client->beneficiary->sex_id,
+                //     'address' => $client->beneficiary->place_of_birth,
+                //     'religion_id' => $client->beneficiary->religion_id,
+                //     'barangay_id' => $client->beneficiary->barangay_id,
+                // ]);
 
                 return $burialAssistance;
             } elseif ($client->recommendation->first()->type == 'funeral') {
