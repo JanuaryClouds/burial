@@ -32,7 +32,7 @@ class BurialAssistanceService
                     'id' => $application->id,
                     'tracking_no' => $application->claimant?->client?->tracking_no,
                     'client' => $application->claimant?->client?->fullname(),
-                    'contact_number' => $application->claimant?->client?->contact_number,
+                    'contact_number' => $application->claimant?->client?->user?->contact_number,
                     'funeraria' => $application->funeraria,
                     'status' => $application->status,
                     'show_route' => route('burial.show', $application),
@@ -69,7 +69,7 @@ class BurialAssistanceService
     {
         $application->update($data);
         $application->claimant->update($data['claimant']);
-        $application->deceased->update($data['deceased']);
+        $application->claimant->client->beneficiary->update($data['beneficiary']);
         $client = $application->claimant->client;
         // $client->demographic->update([
         //     'sex_id' => $data['sex_id'],

@@ -29,16 +29,16 @@ class StoreBurialAssistanceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'deceased.first_name' => 'required|string|max:255',
-            'deceased.middle_name' => 'nullable|string|max:255',
-            'deceased.last_name' => 'required|string|max:255',
-            'deceased.suffix' => 'nullable|string|max:64',
-            'deceased.gender' => 'required|numeric|exists:sexes,id',
-            'deceased.address' => 'required|string|max:255',
-            'deceased.barangay_id' => 'required|numeric|exists:barangays,id',
-            'deceased.religion_id' => 'required|numeric|exists:religions,id',
-            'deceased.date_of_birth' => 'required|date',
-            'deceased.date_of_death' => 'required|date',
+            'beneficiary.first_name' => 'required|string|max:255',
+            'beneficiary.middle_name' => 'nullable|string|max:255',
+            'beneficiary.last_name' => 'required|string|max:255',
+            'beneficiary.suffix' => 'nullable|string|max:64',
+            'beneficiary.sex_id' => 'required|numeric|exists:sexes,id',
+            'beneficiary.religion_id' => 'required|numeric|exists:religions,id',
+            'beneficiary.date_of_birth' => 'required|date',
+            'beneficiary.date_of_death' => 'required|date',
+            'beneficiary.place_of_birth' => 'required|string|max:255',
+            'beneficiary.barangay_id' => 'required|numeric|exists:barangays,id',
 
             'claimant.first_name' => 'required|string|max:255',
             'claimant.middle_name' => 'nullable|string|max:255',

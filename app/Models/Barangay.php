@@ -27,6 +27,11 @@ class Barangay extends Model
         return $this->hasMany(Client::class, 'barangay_id', 'id');
     }
 
+    public function beneficiary()
+    {
+        return $this->hasMany(ClientBeneficiary::class, 'barangay_id', 'id');
+    }
+
     public function district()
     {
         return $this->belongsTo(District::class);

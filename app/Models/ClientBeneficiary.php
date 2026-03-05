@@ -65,4 +65,9 @@ class ClientBeneficiary extends Model
     {
         return $this->belongsTo(Barangay::class, 'barangay_id');
     }
+
+    public function address()
+    {
+        return $this->place_of_birth;
+    }
 }
