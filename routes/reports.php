@@ -25,6 +25,8 @@ Route::middleware('permission:view-reports')
             ->name('funerals');
         Route::match(['get', 'post'], '/clients', [ReportController::class, 'clients'])
             ->name('clients');
+
+        // TODO remove because unused
         Route::post('/generate', [ReportController::class, 'generate'])
             ->name('reports.generate');
 

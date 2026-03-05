@@ -41,7 +41,7 @@ class BurialAssistance extends Model
     //     });
     // }
 
-    
+    // TODO use ClientBeneficiary Model instead
     public function deceased()
     {
         return $this->hasOne(Deceased::class, 'burial_assistance_id', 'id');

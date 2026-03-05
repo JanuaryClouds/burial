@@ -89,6 +89,8 @@ class BurialAssistanceController extends Controller
             $readonly = auth()->user()->cannot('manage-content') && $application->status != 'released';
             $path = "clients/{$client->tracking_no}";
             $storedFiles = Storage::disk('local')->files($path);
+
+            // ! Unused if fileserver is used
             $files = collect($storedFiles)->map(function ($file) {
                 return [
                     'name' => basename($file),
@@ -110,7 +112,6 @@ class BurialAssistanceController extends Controller
         $burialAssistance = $this->burialAssistanceServices->update($request->validated(), $burialAssistance);
 
         return redirect()->back()->with('success', 'Successfully updated application.');
-
     }
 
     public function toggleReject(Request $request, $id)
@@ -182,10 +183,9 @@ class BurialAssistanceController extends Controller
 
     public function generatePdfReport(Request $request, $startDate, $endDate)
     {
-        try {
+        // try {
             $burialAssistance = BurialAssistance::select(
                 'id',
-                'tracking_no',
                 'application_date',
                 'encoder',
                 'funeraria',
@@ -201,32 +201,32 @@ class BurialAssistanceController extends Controller
             $deceasedPerBarangay = Barangay::query()
                 ->select('id', 'name')
                 ->withCount([
-                    'deceased as deceased_count' => function ($query) use ($startDate, $endDate) {
+                    'beneficiary as beneficiary_count' => function ($query) use ($startDate, $endDate) {
                         $query->whereBetween('date_of_death', [$startDate, $endDate]);
                     },
                 ])
-                ->whereHas('deceased', function ($query) use ($startDate, $endDate) {
+                ->whereHas('beneficiary', function ($query) use ($startDate, $endDate) {
                     $query->whereBetween('date_of_death', [$startDate, $endDate]);
                 })
                 ->get()
                 ->mapWithKeys(function ($barangay) {
-                    return [$barangay->name => $barangay->deceased_count];
+                    return [$barangay->name => $barangay->beneficiary_count];
                 })
                 ->toArray();
 
             $deceasedPerReligion = Religion::query()
                 ->select('id', 'name')
                 ->withCount([
-                    'deceased as deceased_count' => function ($query) use ($startDate, $endDate) {
+                    'beneficiary as beneficiary_count' => function ($query) use ($startDate, $endDate) {
                         $query->whereBetween('date_of_death', [$startDate, $endDate]);
                     },
                 ])
-                ->whereHas('deceased', function ($query) use ($startDate, $endDate) {
+                ->whereHas('beneficiary', function ($query) use ($startDate, $endDate) {
                     $query->whereBetween('date_of_death', [$startDate, $endDate]);
                 })
                 ->get()
                 ->mapWithKeys(function ($religion) {
-                    return [$religion->name => $religion->deceased_count];
+                    return [$religion->name => $religion->beneficiary_count];
                 })
                 ->toArray();
 
@@ -243,9 +243,9 @@ class BurialAssistanceController extends Controller
                 ->setPaper('letter', 'portrait');
 
             return $pdf->stream("burial-assistance-report-{$startDate}-to-{$endDate}.pdf");
-        } catch (Exception $e) {
+        // } catch (Exception $e) {
             return back()->with('error', 'Error generating report: '.$e->getMessage());
-        }
+        // }
     }
 
     public function certificate($id)
