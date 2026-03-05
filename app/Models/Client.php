@@ -64,11 +64,10 @@ class Client extends Model
 
     public function fullname()
     {
-        $fullname = $this->user->first_name . ' ' . 
+        return $this->user->first_name . ' ' . 
             ($this->user->middle_name ? Str::limit($this->user->middle_name, 1, '.') . ' ' : '' ) . 
             $this->user->last_name . 
             ($this->user->suffix ? ' ' . Str::limit($this->user->suffix, 1, '.') : '');
-        return $fullname;
     }
 
     public function address()

@@ -40,11 +40,10 @@ class Deceased extends Model
 
     public function fullname()
     {
-        $fullname = $this->first_name . ' ' . 
+        return $this->first_name . ' ' . 
             ($this->middle_name ? Str::limit($this->middle_name, 1, '.') . ' ' : '' ) . 
             $this->last_name . 
             ($this->suffix ? ' ' . Str::limit($this->suffix, 1, '.') : '');
-        return $fullname;
     }
 
     public function gender()
