@@ -17,4 +17,10 @@
             @endif
         </div>
     </div>
+    @if (isset($data) && $data->count() > 0)
+        <div class="d-flex justify-content-center mt-10">
+            <a name="" id="" class="btn btn-primary align-self-end" data-no-loader
+                href="{{ route('applications.export.all') }}" role="button">Export Database to Excel</a>
+        </div>
+    @endif
 @endsection
