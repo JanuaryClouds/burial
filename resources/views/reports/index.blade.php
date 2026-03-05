@@ -11,7 +11,7 @@
         @includeWhen(Route::is('reports.burial-assistances'), 'reports.partial.burial-charts')
         @includeWhen(Route::is('reports.deceased'), 'reports.partial.deceased-charts')
         @includeWhen(Route::is('reports.claimants'), 'reports.partial.claimants-charts')
-        {{-- TODO: create charts for cheques --}}
+        @includeWhen(Route::is('reports.cheques'), 'reports.partial.cheques-charts')
         <div class="col-12 mt-8">
             <div class="card">
                 <div class="card-body">
@@ -21,11 +21,6 @@
                     ])
                 </div>
             </div>
-
-            @includeWhen(Route::is('reports.funerals'), 'reports.partial.funeral-datatable')
-            @includeWhen(Route::is('reports.deceased'), 'reports.partial.deceased-datatable')
-            @includeWhen(Route::is('reports.claimants'), 'reports.partial.claimants-datatable')
-            {{-- TODO: create datatables for cheques --}}
         </div>
     </div>
     <div class="d-flex justify-content-center mt-8">
