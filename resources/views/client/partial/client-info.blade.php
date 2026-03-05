@@ -102,7 +102,7 @@
         </div>
         <div class="col-12 col-md-6 col-lg-3">
             <x-form-input name="contact_no" label="14. Contact Number" required="true" type="text"
-                value="{{ $client->user->contact_number ?? (session('citizen')['contact_number'] ?? null) }}"
+                value="{{ $client->user?->contact_number ?? (session('citizen')['contact_number'] ?? null) }}"
                 :readonly="$readonly" />
         </div>
     </div>

@@ -98,7 +98,7 @@ class ReportController extends Controller
         $data = BurialAssistance::with([
             'claimant',
             'claimant.client',
-            'deceased'
+            'claimant.client.beneficiary',
         ])
             ->orderBy('application_date', 'asc')
             ->whereBetween('application_date', [$startDate, $endDate])
@@ -106,7 +106,7 @@ class ReportController extends Controller
             ->map(function ($burialAssistance) {
                 return [
                     'tracking_no' => $burialAssistance->claimant?->client?->tracking_no,
-                    'beneficiary' => $burialAssistance->deceased?->fullname(),
+                    'beneficiary' => $burialAssistance->claimant?->client?->beneficiary?->fullname(),
                     'address' => $burialAssistance->claimant?->client?->address(),
                     'applied_at' => $burialAssistance->application_date,
                     'funeraria' => $burialAssistance->funeraria,

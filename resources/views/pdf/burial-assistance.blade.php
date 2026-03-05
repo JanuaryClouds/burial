@@ -116,10 +116,9 @@
             @foreach ($burialAssistance as $ba)
                 <tr>
                     {{-- TODO use client tracking number --}}
-                    <td>{{ $ba->tracking_no }}</td>
+                    <td>{{ $ba->claimant?->client?->tracking_no }}</td>
                     <td>{{ \Carbon\Carbon::parse($ba->application_date)->format('F d, Y') }}</td>
-                    <td>{{ $ba->deceased->first_name }} {{ Str::limit($ba->deceased->middle_name, 1, '.') }}
-                        {{ $ba->deceased->last_name }} {{ $ba?->deceased->suffix }}</td>
+                    <td>{{ $ba->claimant?->client?->beneficiary?->fullname() }}</td>
                     <td>
                         @if ($ba?->claimantChanges->isNotEmpty())
                             @foreach ($ba->claimantChanges as $cc)
