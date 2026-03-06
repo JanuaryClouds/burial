@@ -183,20 +183,8 @@ class BurialAssistanceController extends Controller
 
     public function generatePdfReport(Request $request, $startDate, $endDate)
     {
-        // try {
-            $burialAssistance = BurialAssistance::select(
-                'id',
-                'application_date',
-                'encoder',
-                'funeraria',
-                'amount',
-                'initial_checker',
-                'assigned_to',
-                'created_at',
-            )
-                ->with('deceased', 'claimant', 'assignedTo', 'encoder', 'initialChecker')
-                ->whereBetween('application_date', [$startDate, $endDate])
-                ->get();
+        try {
+            $burialAssistance = $this->burialAssistanceServices->reportIndex($startDate, $endDate);
 
             $deceasedPerBarangay = Barangay::query()
                 ->select('id', 'name')
@@ -243,9 +231,9 @@ class BurialAssistanceController extends Controller
                 ->setPaper('letter', 'portrait');
 
             return $pdf->stream("burial-assistance-report-{$startDate}-to-{$endDate}.pdf");
-        // } catch (Exception $e) {
+        } catch (Exception $e) {
             return back()->with('error', 'Error generating report: '.$e->getMessage());
-        // }
+        }
     }
 
     public function certificate($id)

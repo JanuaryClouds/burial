@@ -8,6 +8,9 @@ use App\Models\Claimant;
 use App\Models\Client;
 use App\Models\Deceased;
 use App\Models\FuneralAssistance;
+use App\Services\ClientService;
+use App\Services\BurialAssistanceService;
+use App\Services\FuneralAssistanceService;
 use App\Services\DatatableService;
 use App\Services\ReportService;
 use Carbon\Carbon;
@@ -16,12 +19,23 @@ use Illuminate\Http\Request;
 class ReportController extends Controller
 {
     protected $reportServices;
+    protected $clientServices;
+    protected $burialAssistanceServices;
+    protected $funeralAssistanceServices;
     protected $datatableServices;
 
-    public function __construct(ReportService $reportService, DatatableService $datatableService)
-    {
+    public function __construct(
+        ReportService $reportService, 
+        DatatableService $datatableService,
+        ClientService $clientService,
+        BurialAssistanceService $burialAssistanceService,
+        FuneralAssistanceService $funeralAssistanceService
+    ) {
         $this->reportServices = $reportService;
         $this->datatableServices = $datatableService;
+        $this->clientServices = $clientService;
+        $this->burialAssistanceServices = $burialAssistanceService;
+        $this->funeralAssistanceServices = $funeralAssistanceService;
     }
 
     private $reportTypes = [
@@ -45,19 +59,7 @@ class ReportController extends Controller
             $endDate = Carbon::now()->endOfYear();
         }
 
-        $data = Client::with(['user'])
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->orderBy('tracking_no', 'asc')
-            ->get()
-            ->map(function ($client) {
-                return [
-                    'tracking_no' => $client->tracking_no,
-                    'name' => $client->fullname(),
-                    'address' => $client->address(),
-                    'created_at' => $client->created_at->format('M d, Y'),
-                ];
-            });
-
+        $data = $this->clientServices->reportIndex($startDate, $endDate);
         $columns = $this->datatableServices->getColumns($data, []);
 
         $clientsPerBarangay = $this->reportServices->clientsPerBarangay($startDate, $endDate);
@@ -95,25 +97,7 @@ class ReportController extends Controller
             $endDate = Carbon::now()->endOfYear();
         }
 
-        $data = BurialAssistance::with([
-            'claimant',
-            'claimant.client',
-            'claimant.client.beneficiary',
-        ])
-            ->orderBy('application_date', 'asc')
-            ->whereBetween('application_date', [$startDate, $endDate])
-            ->get()
-            ->map(function ($burialAssistance) {
-                return [
-                    'tracking_no' => $burialAssistance->claimant?->client?->tracking_no,
-                    'beneficiary' => $burialAssistance->claimant?->client?->beneficiary?->fullname(),
-                    'address' => $burialAssistance->claimant?->client?->address(),
-                    'applied_at' => $burialAssistance->application_date,
-                    'funeraria' => $burialAssistance->funeraria,
-                    'amount' => $burialAssistance->amount,
-                    'status' => $burialAssistance->status
-                ];
-            });
+        $data = $this->burialAssistanceServices->reportIndex($startDate, $endDate);
 
         if (request()->expectsJson()) {
             return response()->json([
@@ -357,7 +341,7 @@ class ReportController extends Controller
             ->map(function ($cheque) {
                 return [
                     'tracking_no' => $cheque->burialAssistance?->claimant?->client?->tracking_no,
-                    'name' => $cheque->burialAssistance?->claimant?->fullname(),
+                    'claimant' => $cheque->burialAssistance?->claimant?->fullname(),
                     'obr_number' => $cheque->obr_number,
                     'cheque_number' => $cheque->cheque_number,
                     'dv_number' => $cheque->dv_number,
@@ -403,26 +387,7 @@ class ReportController extends Controller
             $endDate = Carbon::now()->endOfYear();
         }
 
-        $data = FuneralAssistance::with([
-            'client',
-            'client.beneficiary',
-        ])->select(
-            'id',
-            'client_id',
-            'approved_at',
-            'forwarded_at',
-        )
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->get()
-            ->map(function ($funeral) {
-                return [
-                    'tracking_no' => $funeral->client?->tracking_no,
-                    'client' => $funeral->client?->fullname(),
-                    'beneficiary' => $funeral->client?->beneficiary?->fullname(),
-                    'approved_at' => $funeral->approved_at ?? null,
-                    'forwarded_at' => $funeral->forwarded_at ?? null,
-                ];
-            });
+        $data = $this->funeralAssistanceServices->reportIndex($startDate, $endDate);
 
         if (request()->expectsJson()) {
             return response()->json([

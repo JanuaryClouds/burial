@@ -37,7 +37,9 @@ class ClientService
             'interviews',
             'assessment',
             'claimant',
+            'beneficiary',
             'claimant.burialAssistance',
+            'socialInfo.relationship',
         ])
             ->orWhereHas('funeralAssistance', function ($query) {
                 $query->where('forwarded_at', null);
@@ -81,13 +83,29 @@ class ClientService
                 return [
                     'id' => $client->id,
                     'tracking_no' => $client->tracking_no,
-                    'full_name' => $client->fullname(),
-                    'address' => $client->address(),
-                    'contact_number' => $client->user->contact_number,
+                    'client' => $client->fullname() . ' (' . $client->socialInfo?->relationship?->name . ')',
+                    'beneficiary' => $client->beneficiary?->fullname(),
                     'status' => $status ?? 'pending',
-                    'created_at' => $client->created_at->format('M d, Y'),
+                    'created_at' => $client->created_at->format('F d, Y'),
                     'show_route' => $show_route,
                 ]; 
+            });
+    }
+
+    public function reportIndex($startDate, $endDate)
+    {
+        return Client::with(['user', 'beneficiary', 'socialInfo.relationship'])
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->orderBy('tracking_no', 'asc')
+            ->get()
+            ->map(function ($client) {
+                return [
+                    'tracking_no' => $client->tracking_no,
+                    'client' => $client->fullname() . ' (' . $client->socialInfo?->relationship?->name . ')',
+                    'beneficiary' => $client->beneficiary?->fullname(),
+                    'address' => $client->address(),
+                    'created_at' => $client->created_at->format('F d, Y H:i'),
+                ];
             });
     }
 
@@ -404,7 +422,7 @@ class ClientService
         );
         $sheet->setCellValue(
             'E7',
-            $client->first_name.' '.Str::limit($client?->middle_name, 1, '.').' '.$client->last_name.($client?->suffix ? ' '.$client->suffix : '')
+            $client->fullname()
         );
         $sheet->setCellValue('J7', $client->age);
         $sheet->setCellValue(
@@ -424,7 +442,7 @@ class ClientService
         $sheet->setCellValue('E11', $client->socialInfo->skill);
         $sheet->setCellValue('L11', $client->socialInfo->income);
         $sheet->setCellValue('E12', $client->socialInfo->philhealth);
-        $sheet->setCellValue('J12', $client->contact_no);
+        $sheet->setCellValue('J12', $client->user->contact_number);
         $sheet->setCellValue(
             'E16',
             $client->beneficiary->first_name.' '.Str::limit($client->beneficiary->middle_name, 1, '.').' '.$client->beneficiary->last_name.($client->beneficiary->suffix ? ' '.$client->beneficiary->suffix : '')
@@ -490,15 +508,14 @@ class ClientService
         }
 
         $sheet->setCellValue(
-            'E55', $client->first_name.' '.Str::limit($client?->middle_name, 1, '.').' '.$client->last_name.($client?->suffix ? ' '.$client->suffix : '')
-        );
+            'E55', $client->fullname());
 
         $sheet->setCellValue(
             'E56',
-            $client->house_no.' '.$client->street.' '.$client->barangay->name.' ,Taguig City'
+            $client->address()
         );
 
-        $filename = $client->first_name.'-'.$client->last_name.'-General-Intake-Sheet.xlsx';
+        $filename = $client->fullname().'-General-Intake-Sheet.xlsx';
 
         return response()->streamDownload(function () use ($spreadsheet) {
             $writer = new Xlsx($spreadsheet);

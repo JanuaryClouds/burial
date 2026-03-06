@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\BurialAssistance;
+use Str;
 
 class BurialAssistanceService
 {
@@ -38,6 +39,29 @@ class BurialAssistanceService
                     'show_route' => route('burial.show', $application),
                 ];
             });
+    }
+
+    public function reportIndex($startDate, $endDate)
+    {
+        return BurialAssistance::with([
+            'claimant',
+            'claimant.client',
+            'claimant.client.beneficiary',
+        ])
+            ->whereBetween('application_date', [$startDate, $endDate])
+            ->get()
+            ->map(function ($burialAssistance) {
+                return [
+                    'tracking_no' => $burialAssistance->claimant?->client?->tracking_no,
+                    'client' => $burialAssistance->claimant?->client?->fullname(),
+                    'beneficiary' => $burialAssistance->claimant?->client?->beneficiary?->fullname(),
+                    'address' => $burialAssistance->claimant?->client?->address(),
+                    'funeraria' => $burialAssistance->funeraria,
+                    'amount' => $burialAssistance->amount,
+                    'status' => Str::title($burialAssistance->status)
+                ];
+            })
+            ->sortBy('tracking_no');
     }
 
     public function columns($data)

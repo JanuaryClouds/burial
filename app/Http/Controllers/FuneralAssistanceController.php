@@ -148,15 +148,7 @@ class FuneralAssistanceController extends Controller
     public function generatePdfReport(Request $request, $startDate, $endDate)
     {
         try {
-            $funeralAssistances = FuneralAssistance::select(
-                'id',
-                'client_id',
-                'approved_at',
-                'forwarded_at',
-            )
-                ->with('client')
-                ->whereBetween('created_at', [$startDate, $endDate])
-                ->get();
+            $funeralAssistances = $this->funeralAssistanceServices->reportIndex($startDate, $endDate);
 
             $charts = $request->input('charts', []);
             $pdf = Pdf::loadView('pdf.funeral-assistance', compact(

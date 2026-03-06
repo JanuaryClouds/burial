@@ -26,12 +26,38 @@ class FuneralAssistanceService
                     'id' => $application->id,
                     'tracking_no' => $application->client->tracking_no,
                     'client' => $application->client->fullname(),
+                    'beneficiary' => $application->client->beneficiary->fullname(),
                     'status' => $status ?? 'Pending',
                     'created_at' => $application->created_at->format('M d, Y'),
                     'show_route' => route('funeral.show', $application),
                 ];
             });
     }
+
+    public function reportIndex($startDate, $endDate)
+    {
+        return FuneralAssistance::with([
+            'client',
+            'client.beneficiary',
+        ])->select(
+            'id',
+            'client_id',
+            'approved_at',
+            'forwarded_at',
+        )
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->get()
+            ->map(function ($funeral) {
+                return [
+                    'tracking_no' => $funeral->client?->tracking_no,
+                    'client' => $funeral->client?->fullname(),
+                    'beneficiary' => $funeral->client?->beneficiary?->fullname(),
+                    'approved_at' => $funeral->approved_at ?? 'N/A',
+                    'forwarded_at' => $funeral->forwarded_at ?? 'N/A',
+                ];
+            });
+    }
+
 
     public function columns($data)
     {
