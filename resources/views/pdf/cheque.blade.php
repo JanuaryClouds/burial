@@ -1,21 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Cheques Report</title>
     <style>
-        body {font-size: 12px;}
-        table {width: 100%; border-collapse: collapse; margin-top: 20px;}
-        .text-center {text-align: center;}
-        .title {font-weight: bold; font-size: 24px; text-transform: uppercase; font-family: serif;}
-        .subtitle {font-size: 16px; text-transform: uppercase; font-family: serif;}
-        .logo {width: 70%; height: auto;}
-        .no-border {border: none !important;}
-        th, td {border: 1px solid #000000; padding: 6px; text-align: left;}
-        th {background-color: #f2f2f2;}
-        .text-muted {color: #6c757d !important; font-size: 8px;}
+        body {
+            font-size: 12px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .title {
+            font-weight: bold;
+            font-size: 24px;
+            text-transform: uppercase;
+            font-family: serif;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            text-transform: uppercase;
+            font-family: serif;
+        }
+
+        .logo {
+            width: 70%;
+            height: auto;
+        }
+
+        .no-border {
+            border: none !important;
+        }
+
+        th,
+        td {
+            border: 1px solid #000000;
+            padding: 6px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .text-muted {
+            color: #6c757d !important;
+            font-size: 8px;
+        }
     </style>
 </head>
+
 <body>
     <table>
         <tr>
@@ -25,8 +68,10 @@
             <td class="no-border">
                 <h1 class="title text-center">Taguig City CSWDO</h1>
                 <p class="subtitle text-center" style="font-weight: bold;">Funeral Assistance</p>
-                <h2 class="text-center" style="font-family: serif; text-transform: uppercase;">Cheques Report</h2>
-                <p class="text-center" style="font-family: serif;">{{ \Carbon\Carbon::parse($startDate)->format('F d, Y') }} to {{ \Carbon\Carbon::parse($endDate)->format('F d, Y') }}</p>
+                <h2 class="text-center" style="font-family: serif; text-transform: uppercase;">Checks Report</h2>
+                <p class="text-center" style="font-family: serif;">
+                    {{ \Carbon\Carbon::parse($startDate)->format('F d, Y') }} to
+                    {{ \Carbon\Carbon::parse($endDate)->format('F d, Y') }}</p>
             </td>
             <td style="width: 30%; text-align: center;" class="no-border">
                 <img src="./images/city_logo.webp" alt="" class="logo">
@@ -34,15 +79,16 @@
         </tr>
     </table>
     <h2>Charts</h2>
-    @if(!empty($charts))
+    @if (!empty($charts))
         <table class="no-border" style="width: 100%;">
             @foreach (array_chunk($charts, 2, true) as $chunk)
                 <tr>
-                    @foreach($chunk as $id => $chartImage)
+                    @foreach ($chunk as $id => $chartImage)
                         <td class="no-border" style="width: 50%; text-align: center;">
                             <p>{{ Str::title(Str::replace('-', ' ', $id)) }}</p>
                             <div class="chart">
-                                <img src="{{ $chartImage }}" alt="{{ $id }}" style="max-width:100%; height:auto;" class="text-center">
+                                <img src="{{ $chartImage }}" alt="{{ $id }}"
+                                    style="max-width:100%; height:auto;" class="text-center">
                             </div>
                         </td>
                     @endforeach
@@ -53,64 +99,53 @@
             @endforeach
         </table>
     @endif
-    <h2>Details</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Cheque Number</th>
-                <th>OBR Number</th>
-                <th>DV Number</th>
-                <th>Amount</th>
-                <th>Date Issued</th>
-                <th>Date Claimed</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($cheques as $c)
+    @if ($cheques->count() > 0)
+        <h2>Details</h2>
+        <table>
+            <thead>
                 <tr>
-                    <td>{{ $c->cheque_number }}</td>
-                    <td>{{ $c->obr_number }}</td>
-                    <td>{{ $c->dv_number }}</td>
-                    <td>{{ $c->amount }}</td>
-                    <td>{{ $c->date_issued }}</td>
-                    <td>{{ $c->date_claimed }}</td>
+                    @foreach ($cheques[0] as $key => $value)
+                        <th>{{ $key }}</th>
+                    @endforeach
                 </tr>
-            @endforeach
-        </tbody>
-    </table>
-    <strong>Total: </strong>{{ $cheques->count() }}
-    <table style="margin-top: 20px;">
-        <thead>
-            <tr>
-                <th>Claimant</th>
-                <th>Mobile Number</th>
-                <th>Address</th>
-                <th>Cheque Number</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($claimants as $cm)
+            </thead>
+            <tbody>
+                @foreach ($cheques as $c)
+                    <tr>
+                        @foreach ($c as $key => $value)
+                            <td>{{ $value }}</td>
+                        @endforeach
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+        <strong>Total: </strong>{{ $cheques->count() }}
+    @else
+        <p>No check records found.</p>
+    @endif
+    @if ($claimants->count() > 0)
+        <table style="margin-top: 20px;">
+            <thead>
                 <tr>
-                    <td>
-                        {{ $cm->first_name }} 
-                        {{ $cm->middle_name ? Str::limit($cm?->middle_name, 1, '.') : '' }} 
-                        {{ $cm->last_name }}
-                        {{ $cm->suffix ?? '' }}
-                    </td>
-                    <td>
-                        {{ $cm->mobile_number }}
-                    </td>
-                    <td>
-                        {{ $cm->address }}, {{ $cm->barangay->name }}
-                    </td>
-                    <td>
-                        {{ $cm->cheque ? $cm->cheque->cheque_number : '' }}
-                    </td>
+                    @foreach ($claimants[0] as $key => $value)
+                        <td>{{ Str::title(Str::replace('_', ' ', $key)) }}</td>
+                    @endforeach
                 </tr>
-            @endforeach
-        </tbody>
-    </table>
-    <strong>Total: </strong> {{ $claimants->count() }}
+            </thead>
+            <tbody>
+                @foreach ($claimants as $cm)
+                    <tr>
+                        @foreach ($cm as $key => $value)
+                            <td>{{ $value }}</td>
+                        @endforeach
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+        <strong>Total: </strong> {{ $claimants->count() }}
+    @else
+        <p>No claimant records found.</p>
+    @endif
     <table>
         <tbody>
             <tr>
@@ -118,12 +153,13 @@
                     Report Generated at {{ \Carbon\Carbon::now()->toISOString() }}
                 </td>
                 <td class="no-border text-muted" style="text-align: right;">
-                    Generated by 
-                    {{ auth()->user()->first_name }} 
+                    Generated by
+                    {{ auth()->user()->first_name }}
                     {{ auth()->user()->last_name }}
                 </td>
             </tr>
         </tbody>
     </table>
 </body>
+
 </html>

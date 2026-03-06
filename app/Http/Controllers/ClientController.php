@@ -331,21 +331,7 @@ class ClientController extends Controller
     public function generatePdfReport(Request $request, $startDate, $endDate)
     {
         try {
-            $clients = Client::select(
-                'id',
-                'tracking_no',
-                'first_name',
-                'middle_name',
-                'last_name',
-                'suffix',
-                'house_no',
-                'street',
-                'barangay_id',
-                'contact_no',
-            )
-                ->with('beneficiary')
-                ->whereBetween('created_at', [$startDate, $endDate])
-                ->get();
+            $clients = $this->clientServices->reportIndex($startDate, $endDate);
 
             $charts = $request->input('charts', []);
 

@@ -68,7 +68,8 @@
             <td class="no-border">
                 <h1 class="title text-center">Taguig City CSWDO</h1>
                 <p class="subtitle text-center" style="font-weight: bold;">Funeral Assistance</p>
-                <h2 class="text-center" style="font-family: serif; text-transform: uppercase;">Clients Report</h2>
+                <h2 class="text-center" style="font-family: serif; text-transform: uppercase;">Libreng Libing Report
+                </h2>
                 <p class="text-center" style="font-family: serif;">
                     {{ \Carbon\Carbon::parse($startDate)->format('F d, Y') }} to
                     {{ \Carbon\Carbon::parse($endDate)->format('F d, Y') }}</p>
@@ -99,47 +100,30 @@
             @endforeach
         </table>
     @endif
-    <h2>Details</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Tracking Number</th>
-                <th>Full Name (First Name MI. Last Name, Suffix)</th>
-                <th>Address</th>
-                <th>Beneficiary</th>
-                <th>Contact Number</th>
-                <th>Relationship of Client to Beneficiary</th>
-                <th>Approved At</th>
-                <th>Forwarded At</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($funeralAssistances as $fa)
+    @if ($funeralAssistances->count() > 0)
+        <h2>Details</h2>
+        <table>
+            <thead>
                 <tr>
-                    <td>{{ $fa->client->tracking_no }}</td>
-                    <td>
-                        {{ $fa->client->first_name }}
-                        {{ $fa->client->middle_name == null ? '' : Str::limit($fa->client?->middle_name, 1, '.') }}
-                        {{ $fa->client->last_name }}
-                        {{ $fa->client?->suffix }}
-                    </td>
-                    <td>{{ $fa->client->house_no }}, {{ $fa->client->street }}, {{ $fa->client->barangay->name }}
-                    </td>
-                    <td>
-                        {{ $fa->client->beneficiary->first_name }}
-                        {{ $fa->client->beneficiary->middle_name == null ? '' : Str::limit($fa->client->beneficiary?->middle_name, 1, '.') }}
-                        {{ $fa->client->beneficiary->last_name }}
-                        {{ $fa->client->beneficiary?->suffix }}
-                    </td>
-                    <td>{{ $fa->client->contact_no }}</td>
-                    <td>{{ $fa->client->socialInfo->relationship->name }}</td>
-                    <td>{{ $fa?->approved_at }}</td>
-                    <td>{{ $fa?->forwarded_at }}</td>
+                    @foreach ($funeralAssistances[0] as $key => $value)
+                        <th>{{ Str::title(Str::replace('_', ' ', $key)) }}</th>
+                    @endforeach
                 </tr>
-            @endforeach
-        </tbody>
-    </table>
-    <strong>Total: </strong>{{ $funeralAssistances->count() }}
+            </thead>
+            <tbody>
+                @foreach ($funeralAssistances as $fa)
+                    <tr>
+                        @foreach ($fa as $key => $value)
+                            <td>{{ $value }}</td>
+                        @endforeach
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+        <strong>Total: </strong>{{ $funeralAssistances->count() }}
+    @else
+        <p>No Libreng Libing records found</p>
+    @endif
     <table>
         <tbody>
             <tr>

@@ -99,42 +99,30 @@
             @endforeach
         </table>
     @endif
-    <h2>Details</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Tracking Number</th>
-                <th>Full Name (First Name MI. Last Name, Suffix)</th>
-                <th>Address</th>
-                <th>Contact Number</th>
-                <th>Beneficiary</th>
-                <th>Relationship of Client to Beneficiary</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($clients as $c)
+    @if ($clients->count() > 0)
+        <h2>Details</h2>
+        <table>
+            <thead>
                 <tr>
-                    <td>{{ $c->tracking_no }}</td>
-                    <td>
-                        {{ $c->first_name }}
-                        {{ $c->middle_name == null ? '' : Str::limit($c?->middle_name, 1, '.') }}
-                        {{ $c->last_name }}
-                        {{ $c?->suffix }}
-                    </td>
-                    <td>{{ $c->house_no }}, {{ $c->street }}, {{ $c->barangay->name }}</td>
-                    <td>{{ $c->contact_no }}</td>
-                    <td>
-                        {{ $c->beneficiary->first_name }}
-                        {{ $c->beneficiary->middle_name == null ? '' : Str::limit($c->beneficiary?->middle_name, 1, '.') }}
-                        {{ $c->beneficiary->last_name }}
-                        {{ $c->beneficiary?->suffix }}
-                    </td>
-                    <td>{{ $c->socialInfo->relationship->name }}</td>
+                    @foreach ($clients[0] as $key => $value)
+                        <th>{{ Str::title(Str::replace('_', ' ', $key)) }}</th>
+                    @endforeach
                 </tr>
-            @endforeach
-        </tbody>
-    </table>
-    <strong>Total: </strong>{{ $clients->count() }}
+            </thead>
+            <tbody>
+                @foreach ($clients as $c)
+                    <tr>
+                        @foreach ($c as $key => $value)
+                            <td>{{ $value }}</td>
+                        @endforeach
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+        <strong>Total: </strong>{{ $clients->count() }}
+    @else
+        <p>No client records found</p>
+    @endif
     <table>
         <tbody>
             <tr>
