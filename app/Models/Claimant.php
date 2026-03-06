@@ -35,9 +35,14 @@ class Claimant extends Model
     public function fullname()
     {
         return $this->first_name . ' ' . 
-            ($this->middle_name ? Str::limit($this->user->middle_name, 1, '.') . ' ' : '' ) . 
+            ($this->middle_name ? Str::limit($this->middle_name, 1, '.') . ' ' : '' ) . 
             $this->last_name . 
-            ($this->suffix ? ' ' . Str::limit($this->user->suffix, 1, '.') : '');
+            ($this->suffix ? ' ' . Str::limit($this->suffix, 1, '.') : '');
+    }
+
+    public function address()
+    {
+        return $this->address . ', ' . $this->barangay->name;
     }
 
     public function client()
