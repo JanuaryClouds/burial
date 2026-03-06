@@ -6,6 +6,12 @@
         let columns = datatable.data('columns') || [];
         let route = datatable.data('route') ?? null;
 
+        const escapeHtml = (str) => {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
         if (datatable.hasClass('with-status')) {
             columns.push({
                 data: null,
@@ -13,11 +19,16 @@
                 orderable: true,
                 searchable: true,
                 className: 'text-center',
-                render: (_, __, row) => `
-                    <span class="badge ${row.status == 'pending' ? 'bg-danger text-white' : 'bg-dark text-white'}">
-                        ${(row.status || 'pending').toUpperCase()}
-                    </span>
-                `
+                render: (_, __, row) => {
+                    const status = escapeHtml(row.status) || 'pending';
+                    const badgeClass = status == 'pending' ? 'bg-danger text-white' :
+                        'bg-dark text-white';
+                    return `
+                        <span class="badge ${badgeClass}">
+                            ${status.toUpperCase()}
+                        </span>
+                    `;
+                }
             })
         }
 
@@ -28,15 +39,23 @@
                 orderable: false,
                 searchable: false,
                 className: 'text-center',
-                render: (_, __, row) => `
-                    <a href="${row.show_route}" class="btn btn-sm btn-primary">
-                        <i class="ki-duotone ki-eye pe-0">
-                            <span class="path1"></span>
-                            <span class="path2"></span>
-                            <span class="path3"></span>
-                        </i>
-                    </a>
-                    `
+                render: (_, __, row) => {
+                    const route = row.show_route || '#';
+                    if (!route.startsWith('/') && !route.startsWith(window.location.origin)) {
+                        console.warn(`Invalid route: ${route}`);
+                        return '';
+                    }
+                    const safeRoute = encodeURI(route);
+                    return ` 
+                        <a href="${safeRoute}" class="btn btn-sm btn-primary">
+                            <i class="ki-duotone ki-eye pe-0">
+                                <span class="path1"></span>
+                                <span class="path2"></span>
+                                <span class="path3"></span>
+                            </i>
+                        </a>
+                    `;
+                }
             })
         }
 

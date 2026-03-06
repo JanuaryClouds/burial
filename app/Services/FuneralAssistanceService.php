@@ -10,6 +10,12 @@ class FuneralAssistanceService
         string $orderColumn = 'created_at',
         string $orderDirection = 'asc',
     ){
+        $allowedColumns = ['created_at', 'id'];
+        $allowedDirections = ['asc', 'desc'];
+
+        $orderColumn = in_array($orderColumn, $allowedColumns) ? $orderColumn : 'created_at';
+        $orderDirection = in_array(strtolower($orderDirection), $allowedDirections) ? $orderDirection : 'asc';
+
         return FuneralAssistance::with(['client'])
             ->orderBy($orderColumn, $orderDirection)
             ->get()
@@ -24,9 +30,9 @@ class FuneralAssistanceService
 
                 return [
                     'id' => $application->id,
-                    'tracking_no' => $application->client->tracking_no,
-                    'client' => $application->client->fullname(),
-                    'beneficiary' => $application->client->beneficiary->fullname(),
+                    'tracking_no' => $application->client?->tracking_no,
+                    'client' => $application->client?->fullname(),
+                    'beneficiary' => $application->client?->beneficiary?->fullname(),
                     'status' => $status ?? 'Pending',
                     'created_at' => $application->created_at->format('M d, Y'),
                     'show_route' => route('funeral.show', $application),

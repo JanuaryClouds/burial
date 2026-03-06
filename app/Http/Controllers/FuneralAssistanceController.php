@@ -67,8 +67,11 @@ class FuneralAssistanceController extends Controller
     public function show($id)
     {
         try {
-            $data = FuneralAssistance::find($id);
+            $data = FuneralAssistance::findOrFail($id);
             $client = $data->client;
+            if (!$client) {
+                return redirect()->back()->with('error', 'Client not found for this application.');
+            }
             $page_title = $client->tracking_no;
             $page_subtitle = $client->fullname()."'s Funeral Assistance Application";
             $readonly = auth()->user()->cannot('manage-content') || $data?->forwarded_at != null;
@@ -97,7 +100,7 @@ class FuneralAssistanceController extends Controller
     public function update(ClientRequest $request, $id)
     {
         try {
-            $funeralAssistance = FuneralAssistance::find($id);
+            $funeralAssistance = FuneralAssistance::findOrFail($id);
             $funeralAssistance = $this->funeralAssistanceServices->update($request->all(), $funeralAssistance);
 
             return redirect()->back()->with('success', 'Successfully updated Libreng Libing Application.');

@@ -29,8 +29,9 @@
 </div>
 <div class="row justify-content-start align-items-center g-2">
     <div class="col-12 col-lg-8">
-        <x-form-input name="beneficiary[place_of_birth]" label="Address" value="{{ $beneficiary->address() ?? '' }}"
-            disabled="{{ $disabled }}" readonly="{{ $readonly }}" />
+        <x-form-input name="beneficiary[place_of_birth]" label="Address"
+            value="{{ $beneficiary->place_of_birth ?? '' }}" disabled="{{ $disabled }}"
+            readonly="{{ $readonly }}" />
     </div>
     <div class="col-12 col-lg-4">
         <x-form-select name="beneficiary[barangay_id]" label="Barangay" required="true" :options="$barangays"
@@ -39,7 +40,7 @@
 </div>
 <div class="row justify-content-start align-items-center g-2">
     <div class="col-12 col-lg-3">
-        <x-form-select name="beneficiary[sex_id]" label="Gender" required="true" :options="$genders->pluck('name', 'id')" :selected="$beneficiary->sex->id ?? ''"
+        <x-form-select name="beneficiary[sex_id]" label="Gender" required="true" :options="$genders->pluck('name', 'id')" :selected="$beneficiary->sex?->id ?? ''"
             disabled="{{ $disabled }}" />
     </div>
     <div class="col-12 col-lg-3">

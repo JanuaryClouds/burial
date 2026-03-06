@@ -52,8 +52,8 @@ class ProcessLogService
             });
 
             // TODO point towards the ClientBeneficiary Model
-            $claimant = $application->claimant->first_name.' '.Str::charAt($application->claimant?->middle_name ?? '', 0).'. '.$application->claimant->last_name.' '.$application->claimant?->suffix;
-            $deceased = $application->deceased->first_name.' '.Str::charAt($application->deceased->middle_name ?? '', 0).'. '.$application->deceased->last_name.' '.$application->deceased?->suffix;
+            $claimant = $application->claimant?->fullname();
+            $deceased = $application->claimant?->client?->fullname();
             $dod = Carbon::parse($application->deceased->date_of_death)->format('F d, Y');
             $disbursement = $this->createDisbursement($data, $deceased, $claimant, $dod);
         }

@@ -142,7 +142,7 @@
                 @endforeach
             </tbody>
         </table>
-        <strong>Total: </strong> {{ count($deceasedPerBarangay) }}
+        <strong>Total: </strong> {{ $deceasedPerBarangay->sum() }}
     @endif
     @if ($deceasedPerReligion->count() > 0)
         <table style="margin-top: 20px;">
@@ -161,7 +161,7 @@
                 @endforeach
             </tbody>
         </table>
-        <strong>Total: </strong>{{ count($deceasedPerReligion) }}
+        <strong>Total: </strong>{{ $deceasedPerReligion->sum() }}
     @endif
     <table>
         <tbody>

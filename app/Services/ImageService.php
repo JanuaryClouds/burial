@@ -40,13 +40,18 @@ class ImageService
 
         $extension = $file->getClientOriginalExtension();
         if (app()->environment('local')) {
-            $filename = 'test-'.$filename.'.'.$extension;
+            $filename = 'test-'.$filename;
         }
+        $filename = $filename . '.' . $extension;
 
         $url = $this->serverUrl;
         $duplicateCheck = Http::get($url . '/burial/' . $filename);
         if ($duplicateCheck->successful()) {
             throw new \RuntimeException($filename . ' already exists.');
+        }
+
+        if (!auth()->check()) {
+            throw new \RuntimeException('You are not logged in.');
         }
 
         if (auth()->user()->tokens()->count() === 0) {
@@ -63,7 +68,7 @@ class ImageService
             ]);
 
         if ($response->failed() || $response->json()['status'] === 'error') {
-            throw new \RuntimeException('{$response->status()}: Failed to upload file: ' . $filename);
+            throw new \RuntimeException("{$response->status()}: Failed to upload file: " . $filename);
         }
 
         return true;

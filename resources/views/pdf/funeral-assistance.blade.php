@@ -105,7 +105,7 @@
         <table>
             <thead>
                 <tr>
-                    @foreach ($funeralAssistances[0] as $key => $value)
+                    @foreach ($funeralAssistances->first() as $key => $value)
                         <th>{{ Str::title(Str::replace('_', ' ', $key)) }}</th>
                     @endforeach
                 </tr>

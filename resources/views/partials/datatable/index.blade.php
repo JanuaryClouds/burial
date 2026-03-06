@@ -1,5 +1,5 @@
 @props([
-    'data' => [],
+    'data' => collect([]),
     'columns' => [],
     'classes' => '',
     'resource' => '',

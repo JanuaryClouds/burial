@@ -35,7 +35,7 @@ class PermissionController extends Controller
     //         ));
     // }
 
-    public function index(CmsDataTable $dataTable)
+    public function index()
     {
         $data = Permission::getAllPermissions()
             ->map(function ($permission) {
@@ -55,7 +55,7 @@ class PermissionController extends Controller
             ]);
         }
 
-        return view('cms.index', compact('data', 'dataTable', 'resource', 'columns', 'page_title'));
+        return view('cms.index', compact('data', 'resource', 'columns', 'page_title'));
     }
 
     public function store(PermissionRequest $request)

@@ -146,7 +146,7 @@ class ReportController extends Controller
                 'count' => $data->where('status', 'approved')->count(),
             ],
             [
-                'label' => 'Approved',
+                'label' => 'Released',
                 'icon' => 'ki-folder-added',
                 'pathsCount' => 2,
                 'count' => $data->where('status', 'released')->count(),
@@ -248,7 +248,9 @@ class ReportController extends Controller
         $data = Claimant::with([
             'relationship',
             'barangay',
-        ])->select('first_name', 'middle_name', 'last_name', 'suffix', 'relationship_to_deceased', 'mobile_number', 'address', 'barangay_id')->get()
+        ])->select('first_name', 'middle_name', 'last_name', 'suffix', 'relationship_to_deceased', 'mobile_number', 'address', 'barangay_id')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->get()
             ->map(function ($claimant) {
                 return [
                     'full_name' => $claimant->fullname(),

@@ -75,5 +75,7 @@
                     claimant is baptized</li>
             </ul>
         </div>
+    @else
+        <p class="text-muted">No documents uploaded</p>
     @endif
 </div>

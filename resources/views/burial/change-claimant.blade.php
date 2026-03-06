@@ -51,7 +51,7 @@
 
     </div>
 
-    <script>
+    <script nonce="{{ $nonce }}">
         document.addEventListener('DOMContentLoaded', () => {
             const confirmClaimantChangeButton = document.getElementById('confirmClaimantChangeButton');
             const claimantChangeForm = document.getElementById('claimantChangeForm');

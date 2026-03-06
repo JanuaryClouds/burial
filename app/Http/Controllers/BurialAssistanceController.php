@@ -51,7 +51,7 @@ class BurialAssistanceController extends Controller
     {
         $page_title = 'Burial Assistance Applications';
         $resource = 'burial';
-        $data = $this->burialAssistanceServices->index('created_at', 'desc', $status);
+        $data = $this->burialAssistanceServices->index($status);
         $columns = $this->datatableServices->getColumns($data, ['id', 'status', 'show_route']);
 
         if (request()->expectsJson()) {
@@ -60,12 +60,7 @@ class BurialAssistanceController extends Controller
             ]);
         }
 
-        if ($data->isNotEmpty()) {
-            $statusOptions = array_unique($data->pluck('status')->toArray());
-        } else {
-            $applications = [];
-            $statusOptions = [];
-        }
+        $statusOptions = $data->pluck('status')->unique()->values()->toArray();
         
         $barangays = Barangay::select('id', 'name')->get();
         return view('burial.index', compact(

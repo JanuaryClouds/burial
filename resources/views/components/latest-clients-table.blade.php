@@ -1,3 +1,8 @@
+@props([
+    'data' => [],
+    'resource' => null,
+    'columns' => [],
+])
 <div class="card">
     <div class="card-header">
         <h2 class="card-title fw-medium fs-2">Latest Clients</h2>

@@ -19,8 +19,6 @@ class BurialAssistance extends Model
 
     protected $fillable = [
         'id',
-        // 'tracking_no',
-        // 'tracking_code',
         'application_date',
         'swa',
         'encoder',
@@ -30,16 +28,6 @@ class BurialAssistance extends Model
         'remarks',
         'initial_checker',
     ];
-
-    // protected static function booted()
-    // {
-    //     static::creating(function ($burialAssistance) {
-    //         $year = now()->format('Y');
-    //         $count = self::whereYear('created_at', $year)->count() + 1;
-
-    //         $burialAssistance->tracking_no = sprintf('%s-%04d', $year, $count);
-    //     });
-    // }
 
     // TODO use ClientBeneficiary Model instead
     public function deceased()

@@ -35,6 +35,7 @@ class CitizenAccessController extends Controller
         $funeralDocuments = DocumentRequirement::funeral();
 
         $uuid = $request->query('uuid');
+
         if ($uuid) {
             $user = $this->centralClientService->checkIfUser($uuid);
             if (! $user) {

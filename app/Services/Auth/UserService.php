@@ -29,11 +29,10 @@ class UserService
 
     public function index()
     {
-        return User::select('id', 'first_name', 'middle_name', 'last_name', 'email', 'password', 'contact_number', 'is_active')
-            ->orWhereHas('roles', function ($query) {
-                $query->where('name', '!=', 'superadmin');
+        return User::select('id', 'first_name', 'middle_name', 'last_name', 'email', 'contact_number', 'is_active')
+            ->whereDoesntHave('roles', function ($query) {
+                $query->where('name', 'superadmin');
             })
-            ->orWhereDoesntHave('roles')
             ->get()
             ->map(function ($user) {
                 return [

@@ -41,6 +41,7 @@ class ClientService
             'claimant.burialAssistance',
             'socialInfo.relationship',
         ])
+            ->whereHas('recommendation')
             ->orWhereHas('funeralAssistance', function ($query) {
                 $query->where('forwarded_at', null);
             })
@@ -52,6 +53,8 @@ class ClientService
             ->orderBy($orderColumn, $orderDirection)
             ->get()
             ->map(function ($client) {
+                $show_route = route('client.show', $client);
+
                 if ($client?->interviews->count() > 0) {
                     $status = 'Interviewed';
                 }
@@ -68,10 +71,6 @@ class ClientService
                     $status = 'For Libreng Libing';
                 }
                 
-                if ($client?->funeralAssistance == null || $client?->claimant == null) {
-                    $show_route = route('client.show', $client);
-                }
-                    
                 if ($client?->claimant != null) {
                     $show_route = route('burial.show', $client?->claimant?->burialAssistance);
                 }
@@ -139,16 +138,17 @@ class ClientService
         }
         $normalizedValue = strtolower(preg_replace('/[^a-z0-9]/i', '', $value));
 
+        if ($normalizedValue == 'female') {
+            return 1;
+        }
+        if ($normalizedValue == 'male') {
+            return 2;
+        }
+
         foreach ($options as $id => $name) {
             $normalizedOption = strtolower(preg_replace('/[^a-z0-9]/i', '', $name));
             if ($normalizedValue === $normalizedOption) {
                 return $id;
-            }
-            if ($normalizedValue == 'female') {
-                return 1;
-            }
-            if ($normalizedValue == 'male') {
-                return 2;
             }
 
             if ($strict) {
@@ -272,7 +272,6 @@ class ClientService
                 foreach ($images as $fieldName => $uploadedFile) {
                     $this->imageServices->post($fieldName, $uploadedFile);    
                 }
-                dd('Catch');
 
                 return $client;
             }
@@ -297,7 +296,18 @@ class ClientService
 
     public function transferClient($client_id)
     {
-        $client = Client::find($client_id);
+        $client = Client::with([
+            'user',
+            'assessment',
+            'beneficiary',
+            'family',
+            'demographic',
+            'socialInfo',
+            'socialInfo.relationship',
+            'recommendation',
+            'barangay'
+        ])
+            ->find($client_id);
         if ($client && $client->beneficiary && $client->assessment->count() > 0 && $client->recommendation->count() > 0) {
             if ($client->recommendation->first()->type == 'burial') {
                 $burialAssistance = BurialAssistance::create([
@@ -315,12 +325,12 @@ class ClientService
                     'id' => Str::uuid(),
                     'client_id' => $client->id,
                     'burial_assistance_id' => $burialAssistance->id,
-                    'first_name' => $client->user->first_name,
-                    'middle_name' => $client->user->middle_name ?? null,
-                    'last_name' => $client->user->last_name,
-                    'suffix' => $client->user->suffix ?? null,
+                    'first_name' => $client->user?->first_name,
+                    'middle_name' => $client->user?->middle_name ?? null,
+                    'last_name' => $client->user?->last_name,
+                    'suffix' => $client->user?->suffix ?? null,
                     'relationship_to_deceased' => $client->socialInfo->relationship->id,
-                    'mobile_number' => $client->user->contact_number,
+                    'mobile_number' => $client->user?->contact_number,
                     'address' => $client->house_no.' '.$client->street,
                     'barangay_id' => $client->barangay_id,
                 ]);

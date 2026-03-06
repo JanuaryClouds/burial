@@ -73,19 +73,24 @@ class CentralClientService
     {
         $user = User::where('citizen_id', $citizen_uuid)->first();
         $citizenData = $this->fetchCitizen($citizen_uuid);
+
+        if (empty($citizenData)) {
+            return $user;
+        }
+
         session(['citizen' => $this->filterData($citizenData)]);
         if ($user) {
             return $user;
         } else {
-            return User::firstOrCreate([
+            return User::create([
                 'citizen_id' => $citizen_uuid,
-                'first_name' => $citizenData['firstname'],
-                'middle_name' => $citizenData['middlename'],
-                'last_name' => $citizenData['lastname'],
-                'suffix' => $citizenData['suffix'],
-                'email' => $citizenData['email'],
+                'first_name' => $citizenData['firstname'] ?? null,
+                'middle_name' => $citizenData['middlename'] ?? null,
+                'last_name' => $citizenData['lastname'] ?? null,
+                'suffix' => $citizenData['suffix'] ?? null,
+                'email' => $citizenData['email'] ?? null,
                 'is_active' => true,
-                'contact_number' => $citizenData['contact_number'],
+                'contact_number' => $citizenData['contact_number'] ?? null,
                 'password' => bcrypt(Str::random(32)),
             ]);
         }
@@ -98,17 +103,21 @@ class CentralClientService
      */
     public function filterData($citizen)
     {
+        if (!is_array($citizen)) {
+            return [];
+        }
+
         return [
-            'firstname' => $citizen['firstname'],
+            'firstname' => $citizen['firstname'] ?? null,
             'middlename' => $citizen['middlename'] ?? null,
-            'lastname' => $citizen['lastname'],
+            'lastname' => $citizen['lastname'] ?? null,
             'suffix' => $citizen['suffix'] ?? null,
-            'age' => $citizen['age'],
-            'birthday' => $citizen['birthday'],
-            'sex' => Str::ucfirst($citizen['gender']),
+            'age' => $citizen['age'] ?? null,
+            'birthday' => $citizen['birthday'] ?? null,
+            'sex' => isset($citizen['gender']) ? Str::ucfirst($citizen['gender']) : null,
             'street' => $citizen['latest_address']['street'] ?? null,
             'barangay' => $citizen['latest_address']['barangay'] ?? null,
-            'civil_status' => $citizen['civil_status'],
+            'civil_status' => $citizen['civil_status'] ?? null,
             'contact_number' => $citizen['contact_number'] ?? null,
         ];
     }

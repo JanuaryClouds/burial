@@ -30,12 +30,13 @@ class APIController extends Controller
                     'status' => Str::title($burialAssistance->status)
                 ];
             })
-            ->sortBy('tracking_no');
+            ->sortBy('tracking_no')
+            ->values();
 
         return response()->json($data);
     }
 
-    // ! Depracated
+    // ! Deprecated
     public function deceased()
     {
         $data = Deceased::select(

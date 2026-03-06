@@ -25,7 +25,7 @@ class EducationController extends Controller
     {
         $page_title = 'Education';
         $resource = 'education';
-        $data = Education::getAllEducations()
+        $data = Education::get()
             ->map(function ($education) {
                 return [
                     'id' => $education->id,

@@ -1,4 +1,4 @@
-@props(['client', 'readonly' => false])
+@props(['client'])
 @php
     $types = [
         'burial' => 'Burial Assistance',
@@ -76,7 +76,7 @@
         ])
     </div>
 </div>
-<script>
+<script nonce="{{ $nonce }}">
     const typeField = document.getElementById('type');
     const referralField = document.getElementById('referralField');
     const amountContainer = document.getElementById('amount');

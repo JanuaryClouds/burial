@@ -8,25 +8,16 @@ use Str;
 class BurialAssistanceService
 {
     public function index(
-        string $orderColumn = 'created_at',
-        string $orderDirection = 'asc',
-        string $status = null,
+        ?string $status = null,
     ){
         return BurialAssistance::where(function ($query) use ($status) {
-            try {
-                if ($status == 'all') {
-                    return $query->orderBy('created_at', 'desc');
-                } else {
-                    return $query->where('status', $status);
-                }
-            } catch (\Exception $e) {
-                throw new \InvalidArgumentException($e->getMessage());
+            if ($status != 'all') {
+                return $query->where('status', $status);
             }
         })
             ->with([
-                'claimant.client',
+                'claimant.client.user',
             ])
-            ->orderBy($orderColumn, $orderDirection)
             ->get()
             ->map(function ($application) {
                 return [
@@ -38,7 +29,8 @@ class BurialAssistanceService
                     'status' => $application->status,
                     'show_route' => route('burial.show', $application),
                 ];
-            });
+            })
+            ->sortBy('tracking_no');
     }
 
     public function reportIndex($startDate, $endDate)
@@ -92,8 +84,8 @@ class BurialAssistanceService
     public function update(array $data, $application)
     {
         $application->update($data);
-        $application->claimant->update($data['claimant']);
-        $application->claimant->client->beneficiary->update($data['beneficiary']);
+        $application->claimant?->update($data['claimant']);
+        $application->claimant?->client?->beneficiary->update($data['beneficiary']);
         $client = $application->claimant->client;
         // $client->demographic->update([
         //     'sex_id' => $data['sex_id'],

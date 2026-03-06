@@ -28,9 +28,6 @@ class ClientFactory extends Factory
     {
         return [
             'id' => $this->faker->uuid(),
-            // 'first_name' => $this->faker->firstName(),
-            // 'middle_name' => $this->faker->optional()->lastName(),
-            // 'last_name' => $this->faker->lastName(),
             'age' => $this->faker->numberBetween(1, 100),
             'date_of_birth' => $this->faker->date('Y-m-d'),
             'house_no' => $this->faker->buildingNumber(),
@@ -38,7 +35,6 @@ class ClientFactory extends Factory
             'barangay_id' => Barangay::inRandomOrder()->first()->id,
             'district_id' => District::inRandomOrder()->first()->id,
             'city' => 'Taguig City',
-            // 'contact_no' => $this->faker->regexify('09[0-9]{9}'),
         ];
     }
 

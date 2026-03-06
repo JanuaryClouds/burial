@@ -14,7 +14,7 @@
 
 @php
     $isInactive = $disabled ? ' bg-body text-gray-700' : '';
-    $errorname = '';
+    $errorname = $name;
     if (str_contains($name, '[')) {
         $errorname = str_replace('[', '.', str_replace(']', '', $name));
     }

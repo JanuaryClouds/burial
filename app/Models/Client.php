@@ -64,6 +64,10 @@ class Client extends Model
 
     public function fullname()
     {
+        if (!$this->user) {
+            return '';
+        }
+
         return $this->user->first_name . ' ' . 
             ($this->user->middle_name ? Str::limit($this->user->middle_name, 1, '.') . ' ' : '' ) . 
             $this->user->last_name . 
@@ -72,7 +76,7 @@ class Client extends Model
 
     public function address()
     {
-        $address = $this->house_no . ' ' . $this->street . ', ' . $this->barangay->name;
+        $address = $this->house_no . ' ' . $this->street . ', ' . $this->barangay?->name;
         return $address;
     }
 

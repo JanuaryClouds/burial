@@ -97,8 +97,7 @@
         (Certificate of Eligibility)
     </p>
     <p style="text-align: justify; margin: 0px 10px 0px 10px; line-height: 1.5">
-        Pinatutunayan nito na si <strong
-            class="bold underline">{{ $claimant->first_name . ' ' . $claimant?->middle_name . ' ' . $claimant->last_name . ' ' . $claimant->suffix }}</strong>,
+        Pinatutunayan nito na si <strong class="bold underline">{{ $claimant->fullname() }}</strong>,
         edad <strong class="bold underline">{{ $claimant->client->age }}</strong>, at kasalukuyang may pahatirang-sulat
         sa
         <strong class="bold underline">{{ $claimant->address }}, {{ $claimant->barangay->name }}</strong>,

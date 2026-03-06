@@ -7,6 +7,7 @@
 ])
 
 @php
+    $errorname = $name;
     if (str_contains($name, 'images[')) {
         $errorname = str_replace('[', '.', str_replace(']', '', $name));
     }
@@ -17,7 +18,8 @@
         <label for="{{ $name }}" class="form-label">{{ $label }}{{ $required ? '*' : '' }}</label>
     @endif
     <input type="file" class="form-control" name="{{ $name }}" id="{{ $id }}" placeholder=""
-        aria-describedby="fileHelpId" accept="image/png, image/jpeg, image/jpg" {{ $required ? 'required' : '' }} />
+        {{ $helpText ? 'aria-describedby=fileHelpId' : '' }} accept="image/png, image/jpeg"
+        {{ $required ? 'required' : '' }} />
     @if ($helpText)
         <div id="fileHelpId" class="form-text">{{ $helpText }}</div>
     @endif

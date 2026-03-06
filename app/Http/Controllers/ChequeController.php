@@ -12,7 +12,7 @@ class ChequeController extends Controller
     public function generatePdfReport(Request $request, $startDate, $endDate)
     {
         try {
-            $cheques = Cheque::with('burialAssistance', 'claimant', 'claimant.client')
+            $cheques = Cheque::with('burialAssistance.claimant.client')
                 ->whereBetween('date_issued', [$startDate, $endDate])
                 ->get()
                 ->map(function ($cheque) {
@@ -28,6 +28,9 @@ class ChequeController extends Controller
                 });
 
             $claimants = Claimant::with(['cheque', 'client', 'barangay'])
+                ->whereHas('cheque', function ($query) use ($startDate, $endDate) {
+                    $query->whereBetween('date_issued', [$startDate, $endDate]);
+                })
                 ->get()
                 ->map(function ($claimant) {
                     return [

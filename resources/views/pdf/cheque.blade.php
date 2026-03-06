@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Cheques Report</title>
+    <title>Checks Report</title>
     <style>
         body {
             font-size: 12px;
@@ -124,11 +124,12 @@
         <p>No check records found.</p>
     @endif
     @if ($claimants->count() > 0)
+        <h2>Claimants</h2>
         <table style="margin-top: 20px;">
             <thead>
                 <tr>
                     @foreach ($claimants[0] as $key => $value)
-                        <td>{{ Str::title(Str::replace('_', ' ', $key)) }}</td>
+                        <th>{{ Str::title(Str::replace('_', ' ', $key)) }}</th>
                     @endforeach
                 </tr>
             </thead>

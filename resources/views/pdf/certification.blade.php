@@ -97,13 +97,14 @@
     <div style="text-align: justify; margin: 0px 10px 0px 10px; line-height: 2.0;">
         <p><strong>Sa Kinauukulan:</strong></p>
         <p style="text-indent: 3em;">
-            PINATUTUNAYAN nito na si <strong class="underline">{{ $client->beneficiary->fullname() }}</strong>
+            PINATUTUNAYAN nito na si <strong class="underline">{{ $client->beneficiary?->fullname() }}</strong>
             (<i>namatay</i>) ay tunay na residente ng Lungsod Taguig at maralita o nangangailangan, at kung ganoon ay
             sakop ng <strong>Programang Benepisyo sa Pagpapalibing</strong>.
         </p>
         <p style="text-indent: 3em">
             PINATUTUNAYAN din na si <strong class="underline">{{ $client->first_name }}
-                {{ \Str::limit($client?->middle_name, 1, '.') }} {{ $client->last_name }}</strong>
+                {{ $client->middle_name ? \Str::limit($client?->middle_name, 1, '.') : '' }}
+                {{ $client->last_name }}</strong>
             (<i>aplikante</i>) ay may angkop na ugnayan sa namatay, at karapat-dapat ng tumanggap ng benepisyo.
         </p>
         <p style="text-indent: 3em;">
@@ -123,7 +124,7 @@
             <br>
             Social Welfare Officer III
             <br>
-            Lisensiyang PRC:: 0029548
+            Lisensiyang PRC: 0029548
             <br>
             May Bisa: December 14, 2027
             <br>

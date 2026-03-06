@@ -42,7 +42,7 @@ class Claimant extends Model
 
     public function address()
     {
-        return $this->address . ', ' . $this->barangay->name;
+        return $this->getAttributeValue('address') . ', ' . $this->barangay?->name;
     }
 
     public function client()

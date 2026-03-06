@@ -50,8 +50,7 @@ class UserController extends Controller
 
                 return redirect()->back()->with('warning', 'Your account is inactive. Please contact the superadmin.');
             }
-                    
-            $user->createToken('fileserver')->plainTextToken;
+            $user->createToken('fileserver');
             return redirect()
                 ->route('dashboard');
         } catch (Exception $e) {

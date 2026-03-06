@@ -14,20 +14,21 @@
     <div class="row">
         <div class="col-6 col-md-6 col-lg-3">
             <x-form-input name="first_name" label="1.1 First Name" required="true"
-                value="{{ $client->user->first_name ?? (session('citizen')['firstname'] ?? null) }}" :readonly="$readonly" />
+                value="{{ $client->user?->first_name ?? (session('citizen')['firstname'] ?? null) }}"
+                :readonly="$readonly" />
         </div>
         <div class="col-6 col-md-6 col-lg-2">
             <x-form-input name="middle_name" label="1.2 Middle Name"
-                value="{{ $client->user->middle_name ?? (session('citizen')['middlename'] ?? null) }}"
+                value="{{ $client->user?->middle_name ?? (session('citizen')['middlename'] ?? null) }}"
                 :readonly="$readonly" />
         </div>
         <div class="col-8 col-md-8 col-lg-2">
             <x-form-input name="last_name" label="1.3 Last Name" required="true"
-                value="{{ $client->user->last_name ?? (session('citizen')['lastname'] ?? null) }}" :readonly="$readonly" />
+                value="{{ $client->user?->last_name ?? (session('citizen')['lastname'] ?? null) }}" :readonly="$readonly" />
         </div>
         <div class="col-4 col-md-4 col-lg-1">
             <x-form-input name="suffix" label="1.4 Suffix"
-                value="{{ $client->user->suffix ?? (session('citizen')['suffix'] ?? null) }}" :readonly="$readonly" />
+                value="{{ $client->user?->suffix ?? (session('citizen')['suffix'] ?? null) }}" :readonly="$readonly" />
         </div>
         <div class="col-4 col-md-4 col-lg-1">
             <x-form-input name="age" label="2. Age" required="true" type="number"

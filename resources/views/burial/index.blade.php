@@ -1,5 +1,4 @@
 @extends('layouts.metronic.admin')
-<title>{{ $page_title }}</title>
 @section('content')
     <div class="card">
         <div class="card-header">

@@ -31,10 +31,10 @@ class BarangayController extends Controller
             return [
                 'id' => $barangay->id,
                 'name' => $barangay->name,
-                'district' => $barangay->district->name,
+                'district' => $barangay->district?->name ?? '',
                 'remarks' => $barangay->remarks,
             ];
-            });
+        });
         $columns = $this->datatableServices->getColumns($data, ['id']);
         // $subRecords = District::getAllDistricts();
         

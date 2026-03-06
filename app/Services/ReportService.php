@@ -77,7 +77,8 @@ class ReportService
         $query = BurialAssistance::with([
             'claimant.relationship',
             'claimant.barangay',
-            'claimant.beneficiary',
+            'claimant.client',
+            'claimant.client.beneficiary',
             'deceased',
             'deceased.gender',
             'claimant',
@@ -92,11 +93,11 @@ class ReportService
         $burialAssistances = $query->get();
 
         foreach ($burialAssistances as $ba) {
-            $dob = Carbon::parse($ba->claimant?->client?->beneficiary?->date_of_birth);
-            $dod = Carbon::parse($ba->claimant?->client?->beneficiary?->date_of_death);
+            $dob = Carbon::parse($ba->claimant?->client?->beneficiary?->date_of_birth ?? null);
+            $dod = Carbon::parse($ba->claimant?->client?->beneficiary?->date_of_death ?? null);
             $encoder = User::find($ba->encoder);
             $initialChecker = User::find($ba->initial_checker);
-            $age = $dob->diffInYears($dod);
+            $age = ($dob && $dod) ? $dob->diffInYears($dod) : null;
             $approvedChange = $ba->claimantChanges->firstwhere('status', 'approved');
             if ($approvedChange) {
                 $newClaimant = $approvedChange?->newClaimant;
