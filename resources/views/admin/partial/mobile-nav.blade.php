@@ -150,22 +150,6 @@
                 </a>
             </div>
             <div class="menu-item">
-                <a href="{{ route('reports.deceased') }}" @class(['active' => Request::is('reports/deceased'), 'menu-link'])>
-                    <span class="menu-bullet">
-                        <span class="bullet bullet-dot"></span>
-                    </span>
-                    <span class="menu-title">Deceased</span>
-                </a>
-            </div>
-            <div class="menu-item">
-                <a href="{{ route('reports.claimants') }}" @class(['active' => Request::is('reports/claimants'), 'menu-link'])>
-                    <span class="menu-bullet">
-                        <span class="bullet bullet-dot"></span>
-                    </span>
-                    <span class="menu-title">Claimants</span>
-                </a>
-            </div>
-            <div class="menu-item">
                 <a href="{{ route('reports.cheques') }}" @class(['active' => Request::is('reports/cheques'), 'menu-link'])>
                     <span class="menu-bullet">
                         <span class="bullet bullet-dot"></span>
