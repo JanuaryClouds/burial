@@ -49,7 +49,11 @@ class ImageService
             throw new \RuntimeException($filename . ' already exists.');
         }
 
-        // This will not work during live because personal_access_tokens from live are the only accepted tokens
+        if (auth()->user()->tokens()->count() === 0) {
+            throw new \RuntimeException('No token found. You cannot upload images without a token.');
+        }
+
+        // This will not work during local because personal_access_tokens from live are the only accepted tokens
         $response = Http::asMultipart()
             ->timeout(15)
             ->retry(3, 200)
