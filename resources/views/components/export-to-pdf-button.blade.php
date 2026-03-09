@@ -7,7 +7,7 @@
         Export all to PDF
     </button>
 </form>
-<script nonce="{{ $nonce }}">
+<script nonce="{{ $nonce ?? '' }}">
     const form = document.getElementById('export-to-pdf-form');
 
     // List all chart IDs you want to include in the PDF

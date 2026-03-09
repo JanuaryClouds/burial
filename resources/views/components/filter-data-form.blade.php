@@ -36,7 +36,7 @@
     </div>
 </form>
 
-<script nonce="{{ $nonce }}">
+<script nonce="{{ $nonce ?? '' }}">
     document.getElementById('preset-year').addEventListener('click', function() {
         document.getElementById('start_date').value = '{{ now()->startOfYear()->format('Y-m-d') }}';
         document.getElementById('end_date').value = '{{ now()->endOfYear()->format('Y-m-d') }}';
