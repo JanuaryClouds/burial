@@ -28,7 +28,6 @@ class ClientFactory extends Factory
     {
         return [
             'id' => $this->faker->uuid(),
-            'age' => $this->faker->numberBetween(1, 100),
             'date_of_birth' => $this->faker->date('Y-m-d'),
             'house_no' => $this->faker->buildingNumber(),
             'street' => $this->faker->streetName(),

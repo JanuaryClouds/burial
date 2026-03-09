@@ -13,9 +13,8 @@ return new class extends Migration
     {
         Schema::create('clients', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->string('tracking_no')->unique();
-            // $table->integer('age');
             $table->date('date_of_birth');
             $table->string('house_no');
             $table->string('street');
