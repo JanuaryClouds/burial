@@ -61,15 +61,16 @@ class BurialAssistanceController extends Controller
         }
 
         $statusOptions = $data->pluck('status')->unique()->values()->toArray();
-        
+
         $barangays = Barangay::select('id', 'name')->get();
+
         return view('burial.index', compact(
-            'resource', 
-            'data', 
-            'columns', 
-            'status', 
-            'barangays', 
-            'statusOptions', 
+            'resource',
+            'data',
+            'columns',
+            'status',
+            'barangays',
+            'statusOptions',
             'page_title'
         ));
     }

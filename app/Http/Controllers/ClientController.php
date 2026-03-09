@@ -14,10 +14,8 @@ use App\Services\ClientService;
 use App\Services\DatatableService;
 use App\Services\ImageService;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Crypt;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Storage;
 use Str;
@@ -25,13 +23,16 @@ use Str;
 class ClientController extends Controller
 {
     protected $clientServices;
+
     protected $citizenServices;
+
     protected $imageServices;
+
     protected $datatableServices;
 
     public function __construct(
-        ClientService $clientService, 
-        CentralClientService $citizenService, 
+        ClientService $clientService,
+        CentralClientService $citizenService,
         ImageService $imageService,
         DatatableService $datatableService,
     ) {
@@ -85,7 +86,7 @@ class ClientController extends Controller
                 'count' => $clientsWithRecommendation,
             ],
         ];
-        
+
         return view('client.index', compact(
             'page_title',
             'cardData',
@@ -141,7 +142,7 @@ class ClientController extends Controller
             $barangays = Barangay::pluck('name', 'id');
             $genders = Sex::pluck('name', 'id');
             $civilStatus = CivilStatus::pluck('name', 'id');
-            
+
             if (isset($citizen['sex'])) {
                 $matched['sex_id'] = $this->clientServices->match($citizen['sex'], $genders, true);
             }

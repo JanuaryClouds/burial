@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\DataTables\CmsDataTable;
 use App\Http\Requests\DistrictRequest;
 use App\Models\District;
 use App\Services\DistrictService;
@@ -39,11 +38,11 @@ class DistrictController extends Controller
         }
 
         return view('cms.index', compact(
-                'page_title',
-                'resource',
-                'columns',
-                'data'
-            ));
+            'page_title',
+            'resource',
+            'columns',
+            'data'
+        ));
     }
 
     public function store(DistrictRequest $request)

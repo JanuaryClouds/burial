@@ -10,7 +10,6 @@ use App\Models\ClientDemographic;
 use App\Models\ClientSocialInfo;
 use App\Models\District;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use App\Models\User;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Client>

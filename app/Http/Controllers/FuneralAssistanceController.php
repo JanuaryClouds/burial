@@ -15,6 +15,7 @@ use Str;
 class FuneralAssistanceController extends Controller
 {
     protected $funeralAssistanceServices;
+
     protected $datatableServices;
 
     public function __construct(FuneralAssistanceService $funeralAssistanceService, DatatableService $datatableService)
@@ -69,7 +70,7 @@ class FuneralAssistanceController extends Controller
         try {
             $data = FuneralAssistance::findOrFail($id);
             $client = $data->client;
-            if (!$client) {
+            if (! $client) {
                 return redirect()->back()->with('error', 'Client not found for this application.');
             }
             $page_title = $client->tracking_no;

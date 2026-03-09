@@ -26,7 +26,7 @@ class APIController extends Controller
                     'address' => $burialAssistance->claimant?->client?->address(),
                     'funeraria' => $burialAssistance->funeraria,
                     'amount' => $burialAssistance->amount,
-                    'status' => Str::title($burialAssistance->status)
+                    'status' => Str::title($burialAssistance->status),
                 ];
             })
             ->sortBy('tracking_no')

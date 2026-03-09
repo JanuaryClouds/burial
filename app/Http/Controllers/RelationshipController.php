@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\DataTables\CmsDataTable;
 use App\Http\Requests\RelationshipRequest;
 use App\Models\Relationship;
 use App\Services\DatatableService;
@@ -12,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 class RelationshipController extends Controller
 {
     protected $relationshipServices;
+
     protected $datatableServices;
 
     public function __construct(RelationshipService $relationshipServices, DatatableService $datatableService)
@@ -42,11 +42,11 @@ class RelationshipController extends Controller
         }
 
         return view('cms.index', compact(
-                'page_title',
-                'resource',
-                'columns',
-                'data'
-            ));
+            'page_title',
+            'resource',
+            'columns',
+            'data'
+        ));
     }
 
     public function store(RelationshipRequest $request)
@@ -81,14 +81,14 @@ class RelationshipController extends Controller
                 ->performedOn($relationship)
                 ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
                 ->log('Updated the relationship: '.$relationship->name);
-    
+
             return redirect()
                 ->route('relationship.index')
                 ->with('success', 'Relationship updated successfully.');
         } catch (\Throwable $th) {
             return redirect()
                 ->back()
-                ->with('error', 'Unable to update relationship. ' . config('app.env') === 'local' ? $th->getMessage() : '');
+                ->with('error', 'Unable to update relationship. '.config('app.env') === 'local' ? $th->getMessage() : '');
         }
     }
 

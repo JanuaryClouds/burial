@@ -2,15 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\BurialAssistance;
 use App\Models\Cheque;
 use App\Models\Claimant;
-use App\Models\Client;
-use App\Models\FuneralAssistance;
-use App\Services\ClientService;
 use App\Services\BurialAssistanceService;
-use App\Services\FuneralAssistanceService;
+use App\Services\ClientService;
 use App\Services\DatatableService;
+use App\Services\FuneralAssistanceService;
 use App\Services\ReportService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -18,13 +15,17 @@ use Illuminate\Http\Request;
 class ReportController extends Controller
 {
     protected $reportServices;
+
     protected $clientServices;
+
     protected $burialAssistanceServices;
+
     protected $funeralAssistanceServices;
+
     protected $datatableServices;
 
     public function __construct(
-        ReportService $reportService, 
+        ReportService $reportService,
         DatatableService $datatableService,
         ClientService $clientService,
         BurialAssistanceService $burialAssistanceService,
@@ -66,7 +67,7 @@ class ReportController extends Controller
 
         if (request()->expectsJson()) {
             return response()->json([
-                'data' => $data->values(), 
+                'data' => $data->values(),
             ]);
         }
 
@@ -196,8 +197,8 @@ class ReportController extends Controller
                 return [
                     'full_name' => $claimant->fullname(),
                     'mobile_number' => $claimant->mobile_number,
-                    'address' => $claimant->address . $claimant->barangay ? ', ' . $claimant->barangay->name : '',
-                    'relationship_to_deceased' => $claimant->relationship?->name
+                    'address' => $claimant->address.$claimant->barangay ? ', '.$claimant->barangay->name : '',
+                    'relationship_to_deceased' => $claimant->relationship?->name,
                 ];
             });
 
@@ -266,19 +267,19 @@ class ReportController extends Controller
         $data = Cheque::with([
             'burialAssistance.claimant.client',
         ])
-        ->select(
-            'id',
-            'burial_assistance_id',
-            'claimant_id',
-            'obr_number',
-            'cheque_number',
-            'dv_number',
-            'amount',
-            'date_issued',
-            'date_claimed',
-            'status',
-            'created_at'
-        )
+            ->select(
+                'id',
+                'burial_assistance_id',
+                'claimant_id',
+                'obr_number',
+                'cheque_number',
+                'dv_number',
+                'amount',
+                'date_issued',
+                'date_claimed',
+                'status',
+                'created_at'
+            )
             ->whereBetween('date_issued', [$startDate, $endDate])
             ->get()
             ->map(function ($cheque) {
@@ -292,7 +293,7 @@ class ReportController extends Controller
                     'date_issued' => $cheque->date_issued,
                     'date_claimed' => $cheque->date_claimed,
                     'status' => $cheque->status,
-                    'created_at' => $cheque->created_at
+                    'created_at' => $cheque->created_at,
                 ];
             });
 

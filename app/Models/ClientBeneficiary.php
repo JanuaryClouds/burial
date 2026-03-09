@@ -35,10 +35,10 @@ class ClientBeneficiary extends Model
 
     public function fullname()
     {
-        return $this->first_name . ' ' . 
-            ($this->middle_name ? Str::substr($this->middle_name, 0, 1) . '. ' : '' ) . 
-            $this->last_name . 
-            ($this->suffix ? ' ' . $this->suffix : '');
+        return $this->first_name.' '.
+            ($this->middle_name ? Str::substr($this->middle_name, 0, 1).'. ' : '').
+            $this->last_name.
+            ($this->suffix ? ' '.$this->suffix : '');
     }
 
     public static function getClientBeneficiary($client)

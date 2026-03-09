@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\DataTables\CmsDataTable;
 use App\Http\Requests\NationalityRequest;
 use App\Models\Nationality;
 use App\Services\DatatableService;
@@ -13,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 class NationalityController extends Controller
 {
     protected $nationalityServices;
+
     protected $datatableServices;
 
     public function __construct(NationalityService $nationalityServices, DatatableService $datatableService)
@@ -34,27 +34,28 @@ class NationalityController extends Controller
             ];
         });
         $columns = $this->datatableServices->getColumns($data, ['id', 'show_route']);
-        
+
         if (request()->expectsJson()) {
             return response()->json([
                 'data' => $data->values(),
             ]);
         }
-        
+
         return view('cms.index', compact(
-                'page_title',
-                'resource',
-                'columns',
-                'data'
-            ));
+            'page_title',
+            'resource',
+            'columns',
+            'data'
+        ));
     }
-    
+
     public function edit(Nationality $nationality)
     {
         $page_title = 'Nationality';
         $type = 'nationality';
         $data = $nationality;
         $resource = 'nationality';
+
         return view('cms.edit', compact('page_title', 'data', 'type', 'resource'));
     }
 

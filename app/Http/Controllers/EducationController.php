@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\DataTables\CmsDataTable;
 use App\Http\Requests\EducationRequest;
 use App\Models\Education;
 use App\Services\DatatableService;
@@ -13,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 class EducationController extends Controller
 {
     protected $educationServices;
+
     protected $datatableServices;
 
     public function __construct(EducationService $educationService, DatatableService $datatableService)
@@ -35,19 +35,19 @@ class EducationController extends Controller
                 ];
             });
         $columns = $this->datatableServices->getColumns($data, ['id', 'show_route']);
-            
+
         if (request()->expectsJson()) {
             return response()->json([
                 'data' => $data->values(),
             ]);
         }
-        
+
         return view('cms.index', compact(
-                'page_title',
-                'resource',
-                'columns',
-                'data'
-            ));
+            'page_title',
+            'resource',
+            'columns',
+            'data'
+        ));
     }
 
     public function edit(Education $education)
@@ -82,7 +82,7 @@ class EducationController extends Controller
         $education = Education::findOrFail($id);
         $education = $this->educationServices->updateEducation($request->validate([
             'name' => 'required',
-            'remarks' => 'nullable'
+            'remarks' => 'nullable',
         ]), $education);
 
         activity()

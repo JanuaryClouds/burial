@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\DataTables\CmsDataTable;
 use App\Http\Requests\ReligionRequest;
 use App\Models\Religion;
 use App\Services\DatatableService;
@@ -13,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 class ReligionController extends Controller
 {
     protected $religionServices;
+
     protected $datatableServices;
 
     public function __construct(ReligionService $religionServices, DatatableService $datatableService)
@@ -30,11 +30,11 @@ class ReligionController extends Controller
                 'id' => $religion->id,
                 'name' => $religion->name,
                 'remarks' => $religion->remarks,
-                'show_route' => route('religion.edit', $religion->id),  
+                'show_route' => route('religion.edit', $religion->id),
             ];
         });
         $columns = $this->datatableServices->getColumns($data, ['id', 'show_route']);
-        
+
         if (request()->expectsJson()) {
             return response()->json([
                 'data' => $data->values(),
@@ -42,11 +42,11 @@ class ReligionController extends Controller
         }
 
         return view('cms.index', compact(
-                'page_title',
-                'resource',
-                'columns',
-                'data',
-            ));
+            'page_title',
+            'resource',
+            'columns',
+            'data',
+        ));
     }
 
     public function store(ReligionRequest $request)

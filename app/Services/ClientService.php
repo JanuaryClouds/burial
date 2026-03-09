@@ -65,7 +65,7 @@ class ClientService
                 if ($client?->assessment->count() > 0) {
                     $status = 'Assessed';
                 }
-                
+
                 if (isset($client?->claimant)) {
                     $status = 'For Burial Assistance';
                 }
@@ -73,7 +73,7 @@ class ClientService
                 if (isset($client?->funeralAssistance)) {
                     $status = 'For Libreng Libing';
                 }
-                
+
                 if ($client?->claimant != null) {
                     $show_route = route('burial.show', $client?->claimant?->burialAssistance);
                 }
@@ -85,12 +85,12 @@ class ClientService
                 return [
                     'id' => $client->id,
                     'tracking_no' => $client->tracking_no,
-                    'client' => $client->fullname() . ' (' . $client->socialInfo?->relationship?->name . ')',
+                    'client' => $client->fullname().' ('.$client->socialInfo?->relationship?->name.')',
                     'beneficiary' => $client->beneficiary?->fullname(),
                     'status' => $status ?? 'pending',
                     'created_at' => $client->created_at->format('F d, Y'),
                     'show_route' => $show_route,
-                ]; 
+                ];
             });
     }
 
@@ -103,7 +103,7 @@ class ClientService
             ->map(function ($client) {
                 return [
                     'tracking_no' => $client->tracking_no,
-                    'client' => $client->fullname() . ' (' . $client->socialInfo?->relationship?->name . ')',
+                    'client' => $client->fullname().' ('.$client->socialInfo?->relationship?->name.')',
                     'beneficiary' => $client->beneficiary?->fullname(),
                     'address' => $client->address(),
                     'created_at' => $client->created_at->format('F d, Y H:i'),
@@ -120,7 +120,7 @@ class ClientService
         $columns = collect(array_keys($data->first()))
             ->reject(fn ($key) => in_array($key, ['id', 'status', 'show_route']))
             ->map(fn ($key) => [
-                'data'  => $key,
+                'data' => $key,
             ])
             ->values();
 
@@ -129,9 +129,10 @@ class ClientService
 
     /**
      * Summary of match
-     * @param mixed $value Provided value
-     * @param mixed $options System resource to match from
-     * @param mixed $strict Match strictly
+     *
+     * @param  mixed  $value  Provided value
+     * @param  mixed  $options  System resource to match from
+     * @param  mixed  $strict  Match strictly
      */
     public function match($value, $options, $strict = false)
     {
@@ -186,9 +187,10 @@ class ClientService
 
     /**
      * Summary of storeClient
-     * @param array $data form data
-     * @param User $user client/user submitted the form
-     * @param array $images attached images of documents
+     *
+     * @param  array  $data  form data
+     * @param  User  $user  client/user submitted the form
+     * @param  array  $images  attached images of documents
      */
     public function storeClient(array $data, User $user, array $images): ?Client
     {
@@ -273,7 +275,7 @@ class ClientService
                 }
 
                 foreach ($images as $fieldName => $uploadedFile) {
-                    $this->imageServices->post($fieldName, $uploadedFile);    
+                    $this->imageServices->post($fieldName, $uploadedFile);
                 }
 
                 return $client;
@@ -292,7 +294,7 @@ class ClientService
             'socialInfo',
             'recommendation',
             'interviews',
-            'barangay'
+            'barangay',
         ])
             ->findOrFail($id);
     }
@@ -308,7 +310,7 @@ class ClientService
             'socialInfo',
             'socialInfo.relationship',
             'recommendation',
-            'barangay'
+            'barangay',
         ])
             ->find($client_id);
         if ($client && $client->beneficiary && $client->assessment->count() > 0 && $client->recommendation->count() > 0) {

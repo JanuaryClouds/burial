@@ -9,7 +9,8 @@ use Illuminate\Http\Request;
 class WorkflowController extends Controller
 {
     protected $datatableServices;
-    public function __construct(DatatableService $datatableService) 
+
+    public function __construct(DatatableService $datatableService)
     {
         $this->datatableServices = $datatableService;
     }
@@ -43,9 +44,10 @@ class WorkflowController extends Controller
         $page_title = 'Workflow';
         $resource = 'workflowstep';
         $data = WorkflowStep::select('id', 'description')->findOrFail($id);
+
         return view('cms.edit', compact('page_title', 'data', 'resource'));
     }
-    
+
     public function update($id, Request $request)
     {
         $request->validate([

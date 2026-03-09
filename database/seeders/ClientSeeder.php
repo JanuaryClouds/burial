@@ -17,7 +17,7 @@ class ClientSeeder extends Seeder
         $users = User::factory()->count(10)->create([
             'citizen_id' => fn () => Str::uuid()->toString(),
         ]);
-        
+
         Client::factory()->count(10)->create([
             'user_id' => fn () => $users->random()->id,
         ]);

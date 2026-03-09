@@ -17,7 +17,7 @@ class SecurityHeaders
     {
         $nonce = base64_encode(random_bytes(16));
         view()->share('nonce', $nonce);
-        
+
         $response = $next($request);
 
         $response->headers->set('X-Frame-Options', 'DENY');
@@ -29,16 +29,16 @@ class SecurityHeaders
         );
 
         $csp = "default-src 'self'; "
-            . "script-src 'self' 'nonce-$nonce' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://cdn.datatables.net; "
-            . "style-src 'self' 'unsafe-inline' https://cdn.datatables.net https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; "
-            . "connect-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://cdn.datatables.net https://code.jquery.com; "
-            . "font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com; "
-            . "img-src 'self' data:; " // TODO Update when fileserver API is working
-            . "form-action 'self'; "
-            . "object-src 'none'; "
-            . "frame-ancestors 'none'; "
-            . "base-uri 'self';";
-        
+            ."script-src 'self' 'nonce-$nonce' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://cdn.datatables.net; "
+            ."style-src 'self' 'unsafe-inline' https://cdn.datatables.net https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; "
+            ."connect-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://cdn.datatables.net https://code.jquery.com; "
+            ."font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com; "
+            ."img-src 'self' data:; " // TODO Update when fileserver API is working
+            ."form-action 'self'; "
+            ."object-src 'none'; "
+            ."frame-ancestors 'none'; "
+            ."base-uri 'self';";
+
         $isProduction = config('app.env') === 'production';
         $cspHeader = $isProduction ? 'Content-Security-Policy' : 'Content-Security-Policy-Report-Only';
         $response->headers->set($cspHeader, $csp);

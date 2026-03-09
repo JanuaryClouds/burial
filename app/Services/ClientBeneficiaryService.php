@@ -24,6 +24,7 @@ class ClientBeneficiaryService
                 if ($clientBeneficiary->client?->funeralAssistance?->count() > 0) {
                     $assistance = 'Funeral Assistance';
                 }
+
                 return [
                     'tracking_no' => $clientBeneficiary->client?->tracking_no,
                     'beneficiary' => $clientBeneficiary->fullname(),
