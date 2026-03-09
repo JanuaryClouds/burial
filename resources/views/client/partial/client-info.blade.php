@@ -84,8 +84,8 @@
                 :selected="$demographic->nationality_id ?? ''" :disabled="$readonly" />
         </div>
         <div class="col-12 col-md-12 col-lg-4">
-            <x-form-select name="education_id" label="10. Educational Attainment" :options="$educations ?? []" :selected="$socialInfo->education_id ?? ''"
-                :disabled="$readonly" />
+            <x-form-select name="education_id" label="10. Educational Attainment" required="true" :options="$educations ?? []"
+                :selected="$socialInfo->education_id ?? ''" :disabled="$readonly" />
         </div>
     </div>
     <div class="row">
