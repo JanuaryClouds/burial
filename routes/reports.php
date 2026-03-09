@@ -2,9 +2,7 @@
 
 use App\Http\Controllers\BurialAssistanceController;
 use App\Http\Controllers\ChequeController;
-use App\Http\Controllers\ClaimantController;
 use App\Http\Controllers\ClientController;
-use App\Http\Controllers\DeceasedController;
 use App\Http\Controllers\FuneralAssistanceController;
 use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
@@ -15,20 +13,12 @@ Route::middleware('permission:view-reports')
     ->group(function () {
         Route::match(['get', 'post'], '/burial-assistances', [ReportController::class, 'burialAssistances'])
             ->name('burial-assistances');
-        // Route::match(['get', 'post'], '/deceased', [ReportController::class, 'deceased'])
-        //     ->name('deceased');
-        // Route::match(['get', 'post'], '/claimants', [ReportController::class, 'claimants'])
-        //     ->name('claimants');
         Route::match(['get', 'post'], '/cheques', [ReportController::class, 'cheques'])
             ->name('cheques');
         Route::match(['get', 'post'], '/funerals', [ReportController::class, 'funerals'])
             ->name('funerals');
         Route::match(['get', 'post'], '/clients', [ReportController::class, 'clients'])
             ->name('clients');
-
-        // TODO remove because unused
-        // Route::post('/generate', [ReportController::class, 'generate'])
-        //     ->name('reports.generate');
 
         Route::post('/export/clients/{startDate}/{endDate}', [ClientController::class, 'generatePdfReport'])
             ->name('clients.pdf');
@@ -38,12 +28,6 @@ Route::middleware('permission:view-reports')
 
         Route::post('/export/burial-assistances/{startDate}/{endDate}', [BurialAssistanceController::class, 'generatePdfReport'])
             ->name('burial-assistances.pdf');
-
-        Route::post('/export/deceased/{startDate}/{endDate}', [DeceasedController::class, 'generatePdfReport'])
-            ->name('deceased.pdf');
-
-        // Route::post('/export/claimant/{startDate}/{endDate}', [ClaimantController::class, 'generatePdfReport'])
-        //     ->name('claimants.pdf');
 
         Route::post('/export/cheques/{startDate}/{endDate}', [ChequeController::class, 'generatePdfReport'])
             ->name('cheques.pdf');

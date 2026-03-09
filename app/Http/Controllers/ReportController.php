@@ -6,7 +6,6 @@ use App\Models\BurialAssistance;
 use App\Models\Cheque;
 use App\Models\Claimant;
 use App\Models\Client;
-use App\Models\Deceased;
 use App\Models\FuneralAssistance;
 use App\Services\ClientService;
 use App\Services\BurialAssistanceService;
@@ -169,64 +168,6 @@ class ReportController extends Controller
             'startDate',
             'endDate',
             'cardData',
-        ));
-    }
-
-    public function deceased(Request $request)
-    {
-        $model = 'deceased';
-        if ($request->has('start_date') && $request->start_date != '') {
-            $startDate = Carbon::parse($request->start_date);
-        } else {
-            $startDate = Carbon::now()->startOfYear();
-        }
-
-        if ($request->has('end_date') && $request->end_date != '') {
-            $endDate = Carbon::parse($request->end_date);
-        } else {
-            $endDate = Carbon::now()->endOfYear();
-        }
-
-        $data = Deceased::with([
-            'burialAssistance.claimant.client',
-            'religion',
-        ])
-            ->whereBetween('date_of_death', [$startDate, $endDate])
-            ->get()
-            ->map(function ($deceased) {
-                return [
-                    'tracking_no' => $deceased->burialAssistance?->claimant?->client?->tracking_no,
-                    'name' => $deceased->fullname(),
-                    'address' => $deceased->address . $deceased->barangay ? ', ' . $deceased->barangay->name : '',
-                    'date_of_birth' => $deceased->date_of_birth,
-                    'date_of_death' => $deceased->date_of_death,
-                    'religion' => $deceased->religion?->name
-                ];
-            });
-
-        if (request()->expectsJson()) {
-            return response()->json([
-                'data' => $data->values(),
-            ]);
-        }
-
-        $columns = $this->datatableServices->getColumns($data, []);
-
-        $deceasedThisMonth = $this->reportServices->deceasedPerMonth($startDate, $endDate);
-        $deceasedPerBarangay = $this->reportServices->deceasedPerBarangay($startDate, $endDate);
-        $deceasedPerReligion = $this->reportServices->deceasedPerReligion($startDate, $endDate);
-        $deceasedPerGender = $this->reportServices->deceasedPerGender($startDate, $endDate);
-
-        return view('reports.index', compact(
-            'data',
-            'columns',
-            'model',
-            'deceasedThisMonth',
-            'deceasedPerBarangay',
-            'deceasedPerReligion',
-            'deceasedPerGender',
-            'startDate',
-            'endDate'
         ));
     }
 

@@ -17,18 +17,8 @@ Route::name('burial.')
         Route::get('/tracker/{uuid}', [BurialAssistanceController::class, 'tracker'])
             ->name('tracker');
 
-        // Route::get('/{uuid}/claimant-change', [ClaimantChangeController::class, 'form'])
-        //     ->name('claimant-change');
-
-        // Route::post('/{uuid}/claimant-change/store', [ClaimantChangeController::class, 'store'])
-        //     ->name('claimant-change.store');
-
-        // Route::post('/{uuid}/claimant-change/{change}/decision', [ClaimantChangeController::class, 'decide'])
-        //     ->name('claimant-change.decision');
-
         Route::middleware(['auth'])
             ->group(function () {
-
                 Route::get('/{id}', [BurialAssistanceController::class, 'show'])
                     ->name('show');
 

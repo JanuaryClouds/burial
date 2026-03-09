@@ -31,11 +31,6 @@ class Relationship extends Model
         return $this->belongsTo(ClientBeneficiaryFamily::class);
     }
 
-    public function burialServices()
-    {
-        return $this->hasMany(BurialService::class);
-    }
-
     public function claimant()
     {
         return $this->hasMany(Claimant::class, 'relationship_to_deceased', 'id');

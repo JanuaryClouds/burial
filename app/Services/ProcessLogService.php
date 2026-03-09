@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\BurialAssistance;
 use App\Models\Claimant;
-use App\Models\Deceased;
 use App\Models\ProcessLog;
 use App\Models\WorkflowStep;
 use Carbon\Carbon;

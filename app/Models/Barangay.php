@@ -37,26 +37,6 @@ class Barangay extends Model
         return $this->belongsTo(District::class);
     }
 
-    public function burialServices()
-    {
-        return $this->hasMany(BurialService::class);
-    }
-
-    public function burialServiceProviders()
-    {
-        return $this->hasMany(BurialServiceProvider::class);
-    }
-
-    public function burialAssistanceRequests()
-    {
-        return $this->hasMany(BurialAssistanceRequest::class);
-    }
-
-    public function deceased()
-    {
-        return $this->hasMany(Deceased::class, 'barangay_id', 'id');
-    }
-
     public function claimant()
     {
         return $this->hasMany(Claimant::class, 'barangay_id', 'id');

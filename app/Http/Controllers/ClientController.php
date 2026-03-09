@@ -160,24 +160,6 @@ class ClientController extends Controller
         ));
     }
 
-    public function getLatestTracking()
-    {
-        $year = Carbon::now()->format('Y');
-
-        $latest = Client::where('tracking_no', 'like', "{$year}_%")
-            ->latest('created_at')
-            ->first();
-
-        if ($latest && preg_match('/^'.$year.'_(\d{4})$/', $latest->tracking_no, $matches)) {
-            $number = (int) $matches[1] + 1;
-            $tracking_no = $year.'_'.str_pad($number, 4, '0', STR_PAD_LEFT);
-        } else {
-            $tracking_no = $year.'_0001';
-        }
-
-        return response()->json(['tracking_no' => $tracking_no]);
-    }
-
     public function store(ClientRequest $request)
     {
         try {

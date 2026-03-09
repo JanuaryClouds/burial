@@ -9,7 +9,6 @@ use App\Models\ClientBeneficiary;
 use App\Models\ClientBeneficiaryFamily;
 use App\Models\ClientDemographic;
 use App\Models\ClientSocialInfo;
-use App\Models\Deceased;
 use App\Models\FuneralAssistance;
 use App\Models\User;
 use Carbon\Carbon;
