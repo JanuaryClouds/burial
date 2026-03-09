@@ -36,7 +36,7 @@
     </div>
 </div>
 
-<script>
+<script nonce="{{ $nonce ?? '' }}">
     const changeClaimantLink = document.getElementById('changeClaimantLink');
 
     changeClaimantLink.addEventListener('click', function() {

@@ -1,4 +1,4 @@
-<script>
+<script nonce="{{ $nonce ?? '' }}">
     var defaultThemeMode = "system";
     var themeMode;
 

@@ -1,8 +1,7 @@
 @extends('layouts.dashboard')
 @section('content')
-
 @section('breadcrumb')
-<x-breadcrumb :items="[
+    <x-breadcrumb :items="[
         ['label' => 'Client', 'url' => route(Auth::user()->getRoleNames()->first() . '.' . $resource . '.index')],
         ['label' => $page_title],
     ]" />
@@ -31,66 +30,68 @@
         </div>
     </form>
 </div>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const dobInput = document.getElementById('date_of_birth');
-    const ageInput = document.getElementById('age');
+<script nonce="{{ $nonce ?? '' }}">
+    document.addEventListener('DOMContentLoaded', function() {
+        const dobInput = document.getElementById('date_of_birth');
+        const ageInput = document.getElementById('age');
 
-    dobInput.addEventListener('change', function() {
-        const dob = new Date(this.value);
-        const today = new Date();
-        let age = today.getFullYear() - dob.getFullYear();
-        const m = today.getMonth() - dob.getMonth();
+        if (!dobInput || !ageInput) return;
 
-        if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
-            age--;
-        }
+        dobInput.addEventListener('change', function() {
+            const dob = new Date(this.value);
+            const today = new Date();
+            let age = today.getFullYear() - dob.getFullYear();
+            const m = today.getMonth() - dob.getMonth();
 
-        ageInput.value = isNaN(age) ? '' : age;
+            if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+                age--;
+            }
+
+            ageInput.value = isNaN(age) ? '' : age;
+        });
     });
-});
 
-function assessmentForm() {
-    return {
-        assessments: @json($oldAssessmentRows),
-        errors: {},
-        initErrors(serverErrors) {
-            this.errors = serverErrors || {};
-        },
-        addAssessment() {
-            this.assessments.push({
-                problem_presented: '',
-                assessment: ''
-            });
-        },
-        removeAssessment(index) {
-            this.assessments.splice(index, 1);
+    function assessmentForm() {
+        return {
+            assessments: @json($oldAssessmentRows),
+            errors: {},
+            initErrors(serverErrors) {
+                this.errors = serverErrors || {};
+            },
+            addAssessment() {
+                this.assessments.push({
+                    problem_presented: '',
+                    assessment: ''
+                });
+            },
+            removeAssessment(index) {
+                this.assessments.splice(index, 1);
+            }
         }
     }
-}
 
-function familyForm() {
-    return {
-        rows: @json($oldFamilyRows),
-        errors: {},
-        initErrors(serverErrors) {
-            this.errors = serverErrors || {};
-        },
-        addRow() {
-            this.rows.push({
-                name: '',
-                sex_id: '',
-                age: '',
-                civil_id: '',
-                relationship_id: '',
-                occupation: '',
-                income: ''
-            });
-        },
-        removeRow(index) {
-            this.rows.splice(index, 1);
+    function familyForm() {
+        return {
+            rows: @json($oldFamilyRows),
+            errors: {},
+            initErrors(serverErrors) {
+                this.errors = serverErrors || {};
+            },
+            addRow() {
+                this.rows.push({
+                    name: '',
+                    sex_id: '',
+                    age: '',
+                    civil_id: '',
+                    relationship_id: '',
+                    occupation: '',
+                    income: ''
+                });
+            },
+            removeRow(index) {
+                this.rows.splice(index, 1);
+            }
         }
     }
-}
 </script>
 @endsection

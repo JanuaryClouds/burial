@@ -1,35 +1,22 @@
 @extends('layouts.metronic.guest')
 @section('content')
     <title>CSWDO Burial Assistance</title>
-    <div
-        class="d-flex flex-column flex-lg-row flex-column-fluid stepper stepper-pills stepper-column stepper-multistep"
-        id="kt_create_account_stepper"
-        data-kt-stepper="true"
-    >
+    <div class="d-flex flex-column flex-lg-row flex-column-fluid stepper stepper-pills stepper-column stepper-multistep"
+        id="kt_create_account_stepper" data-kt-stepper="true">
         <!-- begin::Aside -->
-        <div
-            class="d-flex flex-column flex-lg-row-auto w-lg-350px w-xl-500px"
-            style="background-color: #dc3545;"
-        >
-            <div
-                class="d-flex flex-column position-lg-fixed top-0 bottom-0 w-lg-350px w-xl-500px scroll-y w-xl-500px scroll-y bgi-size-conver bgi-position-center"
-                style="background-image: {{ asset('images/cover.webp') }};"
-            >
+        <div class="d-flex flex-column flex-lg-row-auto w-lg-350px w-xl-500px" style="background-color: #dc3545;">
+            <div class="d-flex flex-column position-lg-fixed top-0 bottom-0 w-lg-350px w-xl-500px scroll-y bgi-size-cover bgi-position-center"
+                style="background-image: {{ asset('images/cover.webp') }};">
                 <!--begin:Header-->
-                <div
-                    class="d-flex flex-center py-10 py-lg-20 mt-lg-20"
-                >
+                <div class="d-flex flex-center py-10 py-lg-20 mt-lg-20">
                     <a href="{{ route('landing.page') }}">
                         <img src="{{ asset('images/CSWDO.webp') }}" alt="" class="h-100px"
-                            style="background-color: white; border-radius: 100%;"
-                        >
+                            style="background-color: white; border-radius: 100%;">
                     </a>
                 </div>
                 <!--end:Header-->
                 <!--begin:Body-->
-                <div
-                    class="d-flex flex-row-fluid justify-content-center p-10"
-                >
+                <div class="d-flex flex-row-fluid justify-content-center p-10">
                     <div class="stepper-nav">
                         <!-- step 1 -->
                         <div class="stepper-item current" data-kt-stepper-element="nav">
@@ -132,22 +119,21 @@
                 <div class="w-lg-650px w-xl-700px p-10 p-lg-15 mx-auto">
 
                     <!-- begin::Form -->
-                    <form
-                        action="{{ route('guest.burial-assistance.store') }}"
-                        method="post"
-                        enctype="multipart/form-data"
-                        id="kt_create_account_form"
-                        class="my-auto pb-5 fv-plugins-bootstrap5 fv-plugins-framework"
-                        novalidate="novalidate"
-                    >
+                    <form action="{{ route('guest.burial-assistance.store') }}" method="post" enctype="multipart/form-data"
+                        id="kt_create_account_form" class="my-auto pb-5 fv-plugins-bootstrap5 fv-plugins-framework"
+                        novalidate="novalidate">
                         <!-- Step 1: Disclaimer -->
                         <div data-kt-stepper-element="content" class="current">
                             @csrf
                             <div class="bg-white rounded p-4 shadow">
                                 <h1>Burial Assistance Application Form</h1>
-                                <p>Please fill out the following information. Fields marked with an asterisk are required. Leave blank if inapplicable.</p>
+                                <p>Please fill out the following information. Fields marked with an asterisk are required.
+                                    Leave blank if inapplicable.</p>
                                 <p class="fw-bold">
-                                    Upon submission, the application will be sent to the CSWDO of Taguig City for review. After which, the information you provided will be permanent and cannot be edited or deleted. You are allowed to request a change of claimants after review using the system tracker.
+                                    Upon submission, the application will be sent to the CSWDO of Taguig City for review.
+                                    After which, the information you provided will be permanent and cannot be edited or
+                                    deleted. You are allowed to request a change of claimants after review using the system
+                                    tracker.
                                 </p>
 
                                 @if (app()->isLocal())
@@ -180,7 +166,8 @@
                         <!-- Stepper Actions -->
                         <div class="d-flex flex-stack pt-15">
                             <div class="me-2">
-                                <button type="button" class="btn btn-lg btn-light-primary me-3" data-kt-stepper-action="previous">
+                                <button type="button" class="btn btn-lg btn-light-primary me-3"
+                                    data-kt-stepper-action="previous">
                                     <i class="fas fa-arrow-left fs-4 me-1"></i>
                                     Previous
                                 </button>
@@ -211,17 +198,11 @@
             <!-- end::Content -->
         </div>
         <!-- end::Body -->
-
-
-        <!-- <div class="row w-100 bg-white">
-            <div class="col-12 col-lg-10 mx-auto">
-            </div>
-        </div> -->
     </div>
-    <script>
+    <script nonce="{{ $nonce }}">
         const religion = document.getElementById('religion');
         const muslimRequirements = document.getElementById('muslim-requirements');
-        religion.addEventListener('change', function () {
+        religion.addEventListener('change', function() {
             if (religion.value == 2) {
                 muslimRequirements.classList.remove('d-none');
                 document.getElementById('burialRites').setAttribute('required', 'required');

@@ -37,6 +37,7 @@ class UserController extends Controller
             }
 
             $user = Auth::user();
+            $token = $user->createToken('fileserver')->plainTextToken;
 
             if (! $user->is_active) {
                 Auth::logout();
@@ -67,6 +68,8 @@ class UserController extends Controller
     public function logout()
     {
         $user = Auth::user();
+        $user->tokens()->delete();
+        
         activity()
             ->performedOn($user)
             ->causedBy($user)

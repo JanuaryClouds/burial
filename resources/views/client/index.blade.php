@@ -21,7 +21,7 @@
             @endif
         </div>
     </div>
-    <script>
+    <script nonce="{{ $nonce ?? '' }}">
         document.addEventListener('DOMContentLoaded', function() {
             $('#{{ $resource }}-table').DataTable({
                 responsive: true,

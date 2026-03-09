@@ -1,12 +1,13 @@
 @props(['type', 'startDate', 'endDate'])
-<form action="{{ route('reports.' . $type . '.pdf', ['startDate' => $startDate, 'endDate' => $endDate]) }}" method="post" id="export-to-pdf-form" target="_blank" data-no-loader>
+<form action="{{ route('reports.' . $type . '.pdf', ['startDate' => $startDate, 'endDate' => $endDate]) }}" method="post"
+    id="export-to-pdf-form" target="_blank" data-no-loader>
     @csrf
     <button class="btn btn-primary" type="submit">
         <i class="fas fa-file-pdf"></i>
         Export all to PDF
     </button>
 </form>
-<script>
+<script nonce="{{ $nonce }}">
     const form = document.getElementById('export-to-pdf-form');
 
     // List all chart IDs you want to include in the PDF
@@ -36,7 +37,7 @@
         return canvas ? canvas.toDataURL() : null;
     }
 
-    form.addEventListener('submit', function (event) {
+    form.addEventListener('submit', function(event) {
         event.preventDefault();
 
         // Loop through chart IDs
