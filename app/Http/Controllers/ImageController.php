@@ -2,11 +2,25 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\ImageService;
 use Crypt;
 use Storage;
 
 class ImageController extends Controller
 {
+    protected $imageService;
+
+    public function __construct(
+        ImageService $imageService
+    ) {
+        $this->imageService = $imageService;
+    }
+
+    public function get(string $filename)
+    {
+        return $this->imageService->get($filename);
+    }
+
     public function stream($tracking_no, $filename)
     {
         $path = "clients/{$tracking_no}/{$filename}";

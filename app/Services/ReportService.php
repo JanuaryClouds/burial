@@ -6,6 +6,7 @@ use App\Models\BurialAssistance;
 use App\Models\Cheque;
 use App\Models\Claimant;
 use App\Models\Client;
+use App\Models\ClientBeneficiary;
 use App\Models\ClientRecommendation;
 use App\Models\Deceased;
 use App\Models\FuneralAssistance;
@@ -76,6 +77,8 @@ class ReportService
         $query = BurialAssistance::with([
             'claimant.relationship',
             'claimant.barangay',
+            'claimant.client',
+            'claimant.client.beneficiary',
             'deceased',
             'deceased.gender',
             'claimant',
@@ -90,11 +93,11 @@ class ReportService
         $burialAssistances = $query->get();
 
         foreach ($burialAssistances as $ba) {
-            $dob = Carbon::parse($ba->deceased->date_of_birth);
-            $dod = Carbon::parse($ba->deceased->date_of_death);
+            $dob = Carbon::parse($ba->claimant?->client?->beneficiary?->date_of_birth ?? null);
+            $dod = Carbon::parse($ba->claimant?->client?->beneficiary?->date_of_death ?? null);
             $encoder = User::find($ba->encoder);
             $initialChecker = User::find($ba->initial_checker);
-            $age = $dob->diffInYears($dod);
+            $age = ($dob && $dod) ? $dob->diffInYears($dod) : null;
             $approvedChange = $ba->claimantChanges->firstwhere('status', 'approved');
             if ($approvedChange) {
                 $newClaimant = $approvedChange?->newClaimant;
@@ -103,7 +106,9 @@ class ReportService
                 $firstClaimant = $ba->claimant;
             }
 
-            $sheet->setCellValue("A{$row}", $ba->tracking_no);
+            // TODO use client's tracking number
+            // TODO Check if unused
+            $sheet->setCellValue("A{$row}", $ba->claimant?->client?->tracking_no);
             $sheet->setCellValue("B{$row}", $ba->application_date);
             $sheet->setCellValue("C{$row}", $ba->swa);
             $sheet->setCellValue("D{$row}", $encoder ? $encoder->first_name.' '.$encoder->last_name : '');
@@ -281,7 +286,7 @@ class ReportService
 
     public function deceasedPerBarangay($startDate, $endDate)
     {
-        return Deceased::selectRaw('barangay_id, COUNT(*) as total')
+        return ClientBeneficiary::selectRaw('barangay_id, COUNT(*) as total')
             ->with('barangay')
             ->groupBy('barangay_id')
             ->whereBetween('date_of_death', [$startDate, $endDate])
@@ -296,7 +301,7 @@ class ReportService
 
     public function deceasedPerReligion($startDate, $endDate)
     {
-        return Deceased::selectRaw('religion_id, COUNT(*) as total')
+        return ClientBeneficiary::selectRaw('religion_id, COUNT(*) as total')
             ->with('religion')
             ->groupBy('religion_id')
             ->whereBetween('date_of_death', [$startDate, $endDate])

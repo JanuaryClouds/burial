@@ -5,28 +5,43 @@ namespace App\Http\Controllers;
 use App\DataTables\CmsDataTable;
 use App\Http\Requests\RelationshipRequest;
 use App\Models\Relationship;
+use App\Services\DatatableService;
 use App\Services\RelationshipService;
 use Illuminate\Support\Facades\Auth;
 
 class RelationshipController extends Controller
 {
     protected $relationshipServices;
+    protected $datatableServices;
 
-    public function __construct(RelationshipService $relationshipServices)
+    public function __construct(RelationshipService $relationshipServices, DatatableService $datatableService)
     {
         $this->relationshipServices = $relationshipServices;
+        $this->datatableServices = $datatableService;
     }
 
-    public function index(CmsDataTable $dataTable)
+    public function index()
     {
         $page_title = 'Relationship';
         $resource = 'relationship';
-        $columns = ['id', 'name', 'remarks', 'action'];
-        $data = Relationship::getAllRelationships();
+        $data = Relationship::getAllRelationships()
+            ->map(function ($relationship) {
+                return [
+                    'id' => $relationship->id,
+                    'name' => $relationship->name,
+                    'remarks' => $relationship->remarks,
+                    'show_route' => route('relationship.edit', $relationship->id),
+                ];
+            });
+        $columns = $this->datatableServices->getColumns($data, ['id', 'show_route']);
 
-        return $dataTable
-            ->render('cms.index', compact(
-                'dataTable',
+        if (request()->expectsJson()) {
+            return response()->json([
+                'data' => $data->values(),
+            ]);
+        }
+
+        return view('cms.index', compact(
                 'page_title',
                 'resource',
                 'columns',

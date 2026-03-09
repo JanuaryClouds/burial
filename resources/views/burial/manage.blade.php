@@ -24,7 +24,7 @@
             <div class="card">
                 <div class="card-body">
                     @include('components.deceased-form', [
-                        'deceased' => $application->deceased,
+                        'beneficiary' => $application->claimant?->client?->beneficiary,
                         'readonly' => $readonly,
                     ])
                 </div>

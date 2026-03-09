@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProcessLogRequest;
 use App\Models\BurialAssistance;
 use App\Models\WorkflowStep;
+use App\Services\DatatableService;
+use App\Services\ImageService;
 use App\Services\ProcessLogService;
 use Exception;
 use Illuminate\Support\Facades\Crypt;
@@ -12,11 +14,13 @@ use Storage;
 
 class ProcessLogController extends Controller
 {
-    protected $processLogService;
+    protected $processLogServices;
+    protected $imageServices;
 
-    public function __construct(ProcessLogService $processLogService)
+    public function __construct(ProcessLogService $processLogService, ImageService $imageService)
     {
-        $this->processLogService = $processLogService;
+        $this->processLogServices = $processLogService;
+        $this->imageServices = $imageService;
     }
 
     public function add(ProcessLogRequest $request, $id, $stepId)
@@ -27,7 +31,7 @@ class ProcessLogController extends Controller
             $validated = $request->validated();
 
             if ($application) {
-                $this->processLogService->create(
+                $this->processLogServices->create(
                     $application,
                     $application->claimantChanges->where('status', 'approved')->first()->newClaimant ?? $application->claimant,
                     $step,
@@ -35,17 +39,17 @@ class ProcessLogController extends Controller
                 );
 
                 if ($step->order_no == 13) {
-                    $application->latestCheque()->update([
+                    $latestCheque = $application->latestCheque();
+                    if (!$latestCheque) {
+                        return redirect()->back()->with('error', 'Unable to find latest cheque.');
+                    }
+                    $latestCheque->update([
                         'status' => 'claimed',
                         'date_claimed' => $request['date_in'],
                     ]);
                     if ($request->file('cheque-image-proof')) {
-                        if (config('app.accept_images')) {
-                            $extension = $request->file('cheque-image-proof')->getClientOriginalExtension();
-                            $filename = $application->latestCheque->id.'-cheque-proof.'.$extension;
-                            $path = "burial-assistance/{$application->tracking_no}/";
-                            Storage::disk('local')->put($path.$filename, Crypt::encrypt(file_get_contents($request->file('cheque-image-proof'))));
-                        }
+                        $extension = $request->file('cheque-image-proof')->getClientOriginalExtension();
+                        $this->imageServices->post($application->claimant->client->tracking_no.'-cheque-proof', $request->file('cheque-image-proof'));
                         $application->update(['status' => 'released']);
                     } else {
                         return redirect()->back()->with('info', 'Please upload a photo of the cheque.');

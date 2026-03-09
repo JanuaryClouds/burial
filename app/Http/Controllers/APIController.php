@@ -7,39 +7,36 @@ use App\Models\Cheque;
 use App\Models\Claimant;
 use App\Models\Deceased;
 use App\Models\ProcessLog;
+use Str;
 
 class APIController extends Controller
 {
     public function getBurialAssistances()
     {
-        $data = BurialAssistance::select(
-            'id',
-            'tracking_no',
-            'application_date',
-            'swa',
-            'funeraria',
-            'amount',
-            'remarks',
-        )
-            ->with('deceased', 'claimant')
+        $data = BurialAssistance::with([
+            'claimant',
+            'claimant.client',
+            'claimant.client.beneficiary',
+        ])
             ->get()
-            ->map(function ($application) {
+            ->map(function ($burialAssistance) {
                 return [
-                    'id' => $application->id,
-                    'trackingNumber' => $application->tracking_no,
-                    'applicationDate' => $application->application_date,
-                    'swa' => $application->swa,
-                    'funeraria' => $application->funeraria,
-                    'deceased' => $application->deceased,
-                    'claimant' => $application->claimant,
-                    'amount' => $application->amount,
-                    'remarks' => $application->remarks,
+                    'tracking_no' => $burialAssistance->claimant?->client?->tracking_no,
+                    'client' => $burialAssistance->claimant?->client?->fullname(),
+                    'beneficiary' => $burialAssistance->claimant?->client?->beneficiary?->fullname(),
+                    'address' => $burialAssistance->claimant?->client?->address(),
+                    'funeraria' => $burialAssistance->funeraria,
+                    'amount' => $burialAssistance->amount,
+                    'status' => Str::title($burialAssistance->status)
                 ];
-            });
+            })
+            ->sortBy('tracking_no')
+            ->values();
 
         return response()->json($data);
     }
 
+    // ! Deprecated
     public function deceased()
     {
         $data = Deceased::select(
@@ -74,6 +71,7 @@ class APIController extends Controller
         return response()->json($data);
     }
 
+    // ! Unused
     public function claimants()
     {
         $data = Claimant::select(
@@ -139,6 +137,7 @@ class APIController extends Controller
         return response()->json($data);
     }
 
+    // ! Unused
     public function processLogs()
     {
         $data = ProcessLog::select(

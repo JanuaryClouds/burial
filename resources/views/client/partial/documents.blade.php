@@ -60,7 +60,27 @@
                     <x-form-image-submission name="images[internment_certificate]" label="Certificate of Internment"
                         helpText="From Muslim/Islam Religious Community" id="internmentCertificate" />
                 </div>
-            </div>
+            @endif
+        @endforeach
+    @elseif (count($files) == 0 && auth()->user())
+        <div class="col mb-4">
+            <x-form-image-submission name="images[death_certificate]"
+                label="Certified True Copy of Registered Death Certificate"
+                helpText="From Taguig City Civil Registry." />
+        </div>
+        <div class="col mb-4">
+            <x-form-image-submission name="images[funeral_contract]" label="Certified True Copy of Funeral Contract"
+                helpText="From Funeral Establishment." />
+        </div>
+        <div class="col mb-4">
+            <x-form-image-submission name="images[claimant_valid_id]"
+                label="Photocopy of Valid Identification Card of Claimant" />
+        </div>
+        <div class="col mb-4">
+            <x-form-image-submission name="images[deceased_valid_id]"
+                label="Photocopy of Valid Identification Card of Deceased" />
+        </div>
+        <div id="muslim-requirements" class="col mb-4 p-0">
             <hr>
             <div class="col mb-4">
                 <x-form-image-submission name="images[proof_of_relationship]"
@@ -78,6 +98,23 @@
                         claimant is baptized</li>
                 </ul>
             </div>
-        @endif
-    </div>
-@endif
+        </div>
+        <hr>
+        <div class="col mb-4">
+            <x-form-image-submission name="images[proof_of_relationship]"
+                label="Proof of Relationship between Claimant and Deceased"
+                helpText="From Taguig City Civil Registry or Philippine Statistics Authority (PSA)." />
+        </div>
+        <div class="col mb-4">
+            <ul class="list-group">
+                <li class="list-group-item active">Example of documents for Proof of Relationship</li>
+                <li class="list-group-item">Marriage Contract (Spouse) - From Taguig City Civil Registry</li>
+                <li class="list-group-item">Birth Certificate - From Taguig City Civil Registry</li>
+                <li class="list-group-item">Baptismal Certificate (for Siblings, Children, Parents) - Church where the
+                    claimant is baptized</li>
+            </ul>
+        </div>
+    @else
+        <p class="text-muted">No documents uploaded</p>
+    @endif
+</div>

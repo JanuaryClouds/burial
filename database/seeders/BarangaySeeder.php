@@ -32,6 +32,7 @@ class BarangaySeeder extends Seeder
                 'Wawa',
             ],
             '2' => [
+                'Bagong Tanyag',
                 'Cembo',
                 'Central bicutan',
                 'Central signal village',

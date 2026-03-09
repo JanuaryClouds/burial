@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\BurialAssistance;
+use App\Models\Client;
 use App\Models\User;
 use App\Services\ProcessLogService;
 use Carbon\Carbon;
@@ -24,6 +25,8 @@ class ExportController extends Controller
         $query = BurialAssistance::with([
             'claimant.relationship',
             'claimant.barangay',
+            'claimant.client.beneficiary',
+            'claimant.client',
             'deceased',
             'deceased.gender',
             'claimant',
@@ -34,44 +37,67 @@ class ExportController extends Controller
             'claimantChanges.newClaimant',
         ]);
 
-        $burialAssistances = $query->orderBy('tracking_no', 'asc')->get();
+        $query = Client::with([
+            'claimant',
+            'claimant.cheque',
+            'claimant.barangay',
+            'claimant.processLogs',
+            'claimant.relationship',
+            'claimant.burialAssistance',
+            'claimant.burialAssistance.claimantChanges.oldClaimant',
+            'claimant.burialAssistance.claimantChanges.newClaimant',
+            'beneficiary',
+        ])
+        ->whereHas('claimant');
 
-        foreach ($burialAssistances as $ba) {
-            $dob = Carbon::parse($ba->deceased->date_of_birth);
-            $dod = Carbon::parse($ba->deceased->date_of_death);
-            $encoder = User::find($ba->encoder);
-            $initialChecker = User::find($ba->initial_checker);
-            $age = $dob->diffInYears($dod);
-            $approvedChange = $ba->claimantChanges->firstwhere('status', 'approved');
+        $clients = $query->orderBy('created_at', 'asc')->get();
+        $users = User::select([
+            'id',
+            'first_name',
+            'middle_name',
+            'last_name',
+            'suffix',
+        ])->get()->keyBy('id');
+
+        foreach ($clients as $client) {
+            $beneficiary = $client->beneficiary;
+            $burialAssistance = $client->claimant?->burialAssistance;
+
+            $dob = $beneficiary?->date_of_birth ? Carbon::parse($beneficiary->date_of_birth) : null;
+            $dod = $beneficiary?->date_of_death ? Carbon::parse($beneficiary->date_of_death) : null;
+            $encoder = $users->get($burialAssistance?->encoder);
+            $initialChecker = $users->get($burialAssistance?->initial_checker);
+            $age = ($dob && $dod) ? $dob->diffInYears($dod) : null;
+            $approvedChange = $burialAssistance?->claimantChanges?->firstwhere('status', 'approved');
             if ($approvedChange) {
                 $newClaimant = $approvedChange?->newClaimant;
                 $firstClaimant = $approvedChange?->oldClaimant;
             } else {
-                $firstClaimant = $ba->claimant;
+                $firstClaimant = $burialAssistance?->claimant;
             }
-
-            $sheet->setCellValue("A{$row}", $ba->tracking_no);
-            $sheet->setCellValue("B{$row}", $ba->application_date);
-            $sheet->setCellValue("C{$row}", $ba->swa);
+            
+            $sheet->setCellValue("A{$row}", $client->tracking_no);
+            $sheet->setCellValue("B{$row}", $burialAssistance?->application_date);
+            $sheet->setCellValue("C{$row}", $burialAssistance?->swa);
             $sheet->setCellValue("D{$row}", $encoder ? $encoder->first_name.' '.$encoder->last_name : '');
-            $sheet->setCellValue("E{$row}", $firstClaimant->last_name);
-            $sheet->setCellValue("F{$row}", $firstClaimant->first_name);
+            $sheet->setCellValue("E{$row}", $firstClaimant?->last_name);
+            $sheet->setCellValue("F{$row}", $firstClaimant?->first_name);
             $sheet->setCellValue("G{$row}", $firstClaimant?->middle_name);
             $sheet->setCellValue("H{$row}", $firstClaimant?->suffix);
-            $sheet->setCellValue("I{$row}", $ba->deceased->last_name);
-            $sheet->setCellValue("J{$row}", $ba->deceased->first_name);
-            $sheet->setCellValue("K{$row}", $ba->deceased?->middle_name);
-            $sheet->setCellValue("L{$row}", $ba->deceased?->suffix);
-            $sheet->setCellValue("M{$row}", $firstClaimant->relationship->name);
-            $sheet->setCellValue("N{$row}", $ba->deceased->date_of_birth);
+            $sheet->setCellValue("I{$row}", $beneficiary?->last_name);
+            $sheet->setCellValue("J{$row}", $beneficiary?->first_name);
+            $sheet->setCellValue("K{$row}", $beneficiary?->middle_name);
+            $sheet->setCellValue("L{$row}", $beneficiary?->suffix);
+            $sheet->setCellValue("M{$row}", $firstClaimant?->relationship?->name);
+            $sheet->setCellValue("N{$row}", $beneficiary?->date_of_birth);
             $sheet->setCellValue("O{$row}", $age);
-            $sheet->setCellValue("P{$row}", $ba->deceased->gender == 1 ? 'M' : 'F');
-            $sheet->setCellValue("Q{$row}", $firstClaimant->barangay->name);
-            $sheet->setCellValue("R{$row}", $firstClaimant->address);
-            $sheet->setCellValue("S{$row}", $ba->funeraria);
-            $sheet->setCellValue("T{$row}", $ba->amount);
-            $sheet->setCellValue("U{$row}", $ba->deceased->date_of_death);
-            $sheet->setCellValue("V{$row}", $firstClaimant->mobile_number);
+            $sheet->setCellValue("P{$row}", $beneficiary?->gender === null ? '' : ($beneficiary?->gender == 1 ? 'M' : 'F'));
+            $sheet->setCellValue("Q{$row}", $firstClaimant?->barangay?->name);
+            $sheet->setCellValue("R{$row}", $firstClaimant?->address);
+            $sheet->setCellValue("S{$row}", $burialAssistance?->funeraria);
+            $sheet->setCellValue("T{$row}", $burialAssistance?->amount);
+            $sheet->setCellValue("U{$row}", $beneficiary?->date_of_death);
+            $sheet->setCellValue("V{$row}", $firstClaimant?->mobile_number);
             $sheet->setCellValue("W{$row}", $processLogService->getLog($firstClaimant, 1)?->date_out);
             $sheet->setCellValue("X{$row}", $processLogService->getLog($firstClaimant, 1)?->date_in);
             $sheet->setCellValue("Y{$row}", $processLogService->getLog($firstClaimant, 1)?->comments);
@@ -119,13 +145,13 @@ class ExportController extends Controller
                         ($processLogService->getLog($newClaimant, 10)?->date_in ?? '')
                 );
             }
-            $sheet->setCellValue("BK{$row}", $ba?->status ?? '');
-            $sheet->setCellValue("BL{$row}", $ba?->remarks ?? '');
+            $sheet->setCellValue("BK{$row}", $burialAssistance?->status ?? '');
+            $sheet->setCellValue("BL{$row}", $burialAssistance?->remarks ?? '');
             $sheet->setCellValue("BM{$row}", $initialChecker ? $initialChecker->first_name.' '.$initialChecker->last_name : '');
             $row++;
         }
 
-        $filename = 'burial-assistances-database-export-'.'-'.now()->format('YmdHis').'.xlsx';
+        $filename = 'burial-assistances-database-export-'.now()->format('YmdHis').'.xlsx';
 
         return response()->streamDownload(function () use ($spreadsheet) {
             $writer = new Xlsx($spreadsheet);

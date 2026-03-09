@@ -17,16 +17,28 @@ class ModeOfAssistanceController extends Controller
         $this->ModeOfAssistanceServices = $ModeOfAssistanceServices;
     }
 
-    public function index(CmsDataTable $dataTable)
+    public function index()
     {
         $page_title = 'Mode of assistance';
         $resource = 'moa';
-        $columns = ['id', 'name', 'remarks', 'action'];
-        $data = ModeOfAssistance::getAllMoas();
+        $columns = ['name', 'remarks'];
+        $data = ModeOfAssistance::getAllMoas()
+            ->map(function ($moa) {
+                return [
+                    'id' => $moa->id,
+                    'name' => $moa->name,
+                    'remarks' => $moa->remarks,
+                    'show_route' => route('moa.edit', $moa->id),
+                ];
+            });
 
-        return $dataTable
-            ->render('cms.index', compact(
-                'dataTable',
+        if (request()->expectsJson()) {
+            return response()->json([
+                'data' => $data->values(),
+            ]);
+        }
+
+        return view('cms.index', compact(
                 'page_title',
                 'resource',
                 'columns',

@@ -1,5 +1,4 @@
 @extends('layouts.metronic.admin')
-<title>{{ $client->first_name }} {{ $client->last_name }}'s Application</title>
 @section('content')
     @include('client.partial.interview-alert')
     @include('client.partial.assessment-modal')

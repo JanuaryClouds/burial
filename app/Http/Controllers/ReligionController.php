@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\DataTables\CmsDataTable;
 use App\Http\Requests\ReligionRequest;
 use App\Models\Religion;
+use App\Services\DatatableService;
 use App\Services\ReligionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,18 +13,33 @@ use Illuminate\Support\Facades\Auth;
 class ReligionController extends Controller
 {
     protected $religionServices;
+    protected $datatableServices;
 
-    public function __construct(ReligionService $religionServices)
+    public function __construct(ReligionService $religionServices, DatatableService $datatableService)
     {
         $this->religionServices = $religionServices;
+        $this->datatableServices = $datatableService;
     }
 
     public function index()
     {
         $page_title = 'Religion';
         $resource = 'religion';
-        $columns = ['id', 'name', 'remarks', 'action'];
-        $data = Religion::getAllReligions();
+        $data = Religion::getAllReligions()->map(function ($religion) {
+            return [
+                'id' => $religion->id,
+                'name' => $religion->name,
+                'remarks' => $religion->remarks,
+                'show_route' => route('religion.edit', $religion->id),  
+            ];
+        });
+        $columns = $this->datatableServices->getColumns($data, ['id', 'show_route']);
+        
+        if (request()->expectsJson()) {
+            return response()->json([
+                'data' => $data->values(),
+            ]);
+        }
 
         return view('cms.index', compact(
                 'page_title',

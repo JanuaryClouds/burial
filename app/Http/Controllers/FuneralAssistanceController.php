@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ClientRequest;
 use App\Models\FuneralAssistance;
+use App\Services\DatatableService;
 use App\Services\FuneralAssistanceService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Exception;
@@ -13,11 +14,13 @@ use Str;
 
 class FuneralAssistanceController extends Controller
 {
-    protected $funeralAssistanceService;
+    protected $funeralAssistanceServices;
+    protected $datatableServices;
 
-    public function __construct(FuneralAssistanceService $funeralAssistanceService)
+    public function __construct(FuneralAssistanceService $funeralAssistanceService, DatatableService $datatableService)
     {
-        $this->funeralAssistanceService = $funeralAssistanceService;
+        $this->funeralAssistanceServices = $funeralAssistanceService;
+        $this->datatableServices = $datatableService;
     }
 
     public function index()
@@ -25,9 +28,14 @@ class FuneralAssistanceController extends Controller
         $page_title = 'Libreng Libing Applications';
         $resource = 'funeral-assistances';
         $renderColumns = ['client_id', 'action'];
-        $data = FuneralAssistance::select('id', 'client_id', 'approved_at', 'forwarded_at')
-            ->with('client')
-            ->get();
+        $data = $this->funeralAssistanceServices->index();
+        $columns = $this->datatableServices->getColumns($data, ['id', 'status', 'show_route']);
+
+        if (request()->expectsJson()) {
+            return response()->json([
+                'data' => $data->values(),
+            ]);
+        }
 
         $approvedApplications = FuneralAssistance::where('approved_at', '!=', null)->count();
         $forwardedApplications = FuneralAssistance::where('forwarded_at', '!=', null)->count();
@@ -53,16 +61,19 @@ class FuneralAssistanceController extends Controller
             ],
         ];
 
-        return view('funeral.index', compact('data', 'page_title', 'resource', 'renderColumns', 'cardData'));
+        return view('funeral.index', compact('data', 'page_title', 'resource', 'renderColumns', 'cardData', 'columns'));
     }
 
     public function show($id)
     {
         try {
-            $data = FuneralAssistance::find($id);
+            $data = FuneralAssistance::findOrFail($id);
             $client = $data->client;
-            $page_title = Str::title($client->first_name).' '.Str::title($client->last_name);
-            $page_subtitle = $client->tracking_no.' - '.$client->id;
+            if (!$client) {
+                return redirect()->back()->with('error', 'Client not found for this application.');
+            }
+            $page_title = $client->tracking_no;
+            $page_subtitle = $client->fullname()."'s Funeral Assistance Application";
             $readonly = auth()->user()->cannot('manage-content') || $data?->forwarded_at != null;
             $path = "clients/{$client->tracking_no}";
             $storedFiles = Storage::disk('local')->files($path);
@@ -89,8 +100,8 @@ class FuneralAssistanceController extends Controller
     public function update(ClientRequest $request, $id)
     {
         try {
-            $funeralAssistance = FuneralAssistance::find($id);
-            $funeralAssistance = $this->funeralAssistanceService->update($request->all(), $funeralAssistance);
+            $funeralAssistance = FuneralAssistance::findOrFail($id);
+            $funeralAssistance = $this->funeralAssistanceServices->update($request->all(), $funeralAssistance);
 
             return redirect()->back()->with('success', 'Successfully updated Libreng Libing Application.');
         } catch (Exception $e) {
@@ -140,15 +151,7 @@ class FuneralAssistanceController extends Controller
     public function generatePdfReport(Request $request, $startDate, $endDate)
     {
         try {
-            $funeralAssistances = FuneralAssistance::select(
-                'id',
-                'client_id',
-                'approved_at',
-                'forwarded_at',
-            )
-                ->with('client')
-                ->whereBetween('created_at', [$startDate, $endDate])
-                ->get();
+            $funeralAssistances = $this->funeralAssistanceServices->reportIndex($startDate, $endDate);
 
             $charts = $request->input('charts', []);
             $pdf = Pdf::loadView('pdf.funeral-assistance', compact(

@@ -14,6 +14,10 @@
 
 @php
     $isInactive = $disabled ? ' bg-body text-gray-700' : '';
+    $errorname = $name;
+    if (str_contains($name, '[')) {
+        $errorname = str_replace('[', '.', str_replace(']', '', $name));
+    }
 @endphp
 
 <div class="mb-3">
@@ -29,4 +33,7 @@
     @if ($helpText)
         <small id="helpId" class="form-text text-muted">{{ $helpText }}</small>
     @endif
+    @error($errorname)
+        <small class="form-text text-danger">{{ $message }}</small>
+    @enderror
 </div>

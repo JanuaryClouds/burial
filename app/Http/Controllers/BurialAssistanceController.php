@@ -7,6 +7,7 @@ use App\Models\Barangay;
 use App\Models\BurialAssistance;
 use App\Models\Religion;
 use App\Services\BurialAssistanceService;
+use App\Services\DatatableService;
 use App\Services\ProcessLogService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Exception;
@@ -16,14 +17,17 @@ use Str;
 
 class BurialAssistanceController extends Controller
 {
-    protected $processLogService;
+    protected $processLogServices;
 
-    protected $burialAssistanceService;
+    protected $burialAssistanceServices;
 
-    public function __construct(ProcessLogService $processLogService, BurialAssistanceService $burialAssistanceService)
+    protected $datatableServices;
+
+    public function __construct(ProcessLogService $processLogService, BurialAssistanceService $burialAssistanceService, DatatableService $datatableService)
     {
-        $this->processLogService = $processLogService;
-        $this->burialAssistanceService = $burialAssistanceService;
+        $this->processLogServices = $processLogService;
+        $this->burialAssistanceServices = $burialAssistanceService;
+        $this->datatableServices = $datatableService;
     }
 
     public function tracker($uuid, ProcessLogService $processLogService)
@@ -47,42 +51,41 @@ class BurialAssistanceController extends Controller
     {
         $page_title = 'Burial Assistance Applications';
         $resource = 'burial';
-        $applications = BurialAssistance::select('id', 'tracking_no', 'funeraria', 'amount', 'application_date', 'status', 'assigned_to', 'created_at')
-            ->where(function ($query) use ($status) {
-                try {
-                    if ($status == 'all') {
-                        return $query->orderBy('created_at', 'desc');
-                    } else {
-                        return $query->where('status', $status);
-                    }
-                } catch (Exception $e) {
-                    return redirect()->back()->with('error', $e->getMessage());
-                }
-            })
-            ->orderBy('created_at', 'desc')
-            ->get();
+        $data = $this->burialAssistanceServices->index($status);
+        $columns = $this->datatableServices->getColumns($data, ['id', 'status', 'show_route']);
 
-        if ($applications->isNotEmpty()) {
-            $statusOptions = array_unique($applications->pluck('status')->toArray());
-        } else {
-            $applications = [];
-            $statusOptions = [];
+        if (request()->expectsJson()) {
+            return response()->json([
+                'data' => $data->values(),
+            ]);
         }
-        $barangays = Barangay::select('id', 'name')->get();
 
-        return view('burial.index', compact('resource', 'applications', 'status', 'barangays', 'statusOptions', 'page_title'));
+        $statusOptions = $data->pluck('status')->unique()->values()->toArray();
+        
+        $barangays = Barangay::select('id', 'name')->get();
+        return view('burial.index', compact(
+            'resource', 
+            'data', 
+            'columns', 
+            'status', 
+            'barangays', 
+            'statusOptions', 
+            'page_title'
+        ));
     }
 
     public function show($id, ProcessLogService $processLogService)
     {
         try {
-            // code...
             $application = BurialAssistance::findOrFail($id);
             $client = $application->claimant->client;
-            $page_title = $client->first_name.' '.$client->last_name.'\'s Burial Assistance Application';
+            $page_title = $client->tracking_no;
+            $page_subtitle = $client->fullname()."'s Burial Assistance Application";
             $readonly = auth()->user()->cannot('manage-content') && $application->status != 'released';
             $path = "clients/{$client->tracking_no}";
             $storedFiles = Storage::disk('local')->files($path);
+
+            // ! Unused if fileserver is used
             $files = collect($storedFiles)->map(function ($file) {
                 return [
                     'name' => basename($file),
@@ -101,10 +104,9 @@ class BurialAssistanceController extends Controller
     public function update(StoreBurialAssistanceRequest $request, $id)
     {
         $burialAssistance = BurialAssistance::where('id', $id)->with('claimant', 'deceased')->first();
-        $burialAssistance = $this->burialAssistanceService->update($request->validated(), $burialAssistance);
+        $burialAssistance = $this->burialAssistanceServices->update($request->validated(), $burialAssistance);
 
         return redirect()->back()->with('success', 'Successfully updated application.');
-
     }
 
     public function toggleReject(Request $request, $id)
@@ -151,6 +153,7 @@ class BurialAssistanceController extends Controller
     public function assignments()
     {
         $page_title = 'Burial Assistance Assignments';
+        // TODO remove tracking number
         $applications = BurialAssistance::select('id', 'tracking_no', 'application_date', 'status', 'assigned_to')->get();
 
         return view('superadmin.assignment', compact('applications', 'page_title'));
@@ -176,50 +179,37 @@ class BurialAssistanceController extends Controller
     public function generatePdfReport(Request $request, $startDate, $endDate)
     {
         try {
-            $burialAssistance = BurialAssistance::select(
-                'id',
-                'tracking_no',
-                'application_date',
-                'encoder',
-                'funeraria',
-                'amount',
-                'initial_checker',
-                'assigned_to',
-                'created_at',
-            )
-                ->with('deceased', 'claimant', 'assignedTo', 'encoder', 'initialChecker')
-                ->whereBetween('application_date', [$startDate, $endDate])
-                ->get();
+            $burialAssistance = $this->burialAssistanceServices->reportIndex($startDate, $endDate);
 
             $deceasedPerBarangay = Barangay::query()
                 ->select('id', 'name')
                 ->withCount([
-                    'deceased as deceased_count' => function ($query) use ($startDate, $endDate) {
+                    'beneficiary as beneficiary_count' => function ($query) use ($startDate, $endDate) {
                         $query->whereBetween('date_of_death', [$startDate, $endDate]);
                     },
                 ])
-                ->whereHas('deceased', function ($query) use ($startDate, $endDate) {
+                ->whereHas('beneficiary', function ($query) use ($startDate, $endDate) {
                     $query->whereBetween('date_of_death', [$startDate, $endDate]);
                 })
                 ->get()
                 ->mapWithKeys(function ($barangay) {
-                    return [$barangay->name => $barangay->deceased_count];
+                    return [$barangay->name => $barangay->beneficiary_count];
                 })
                 ->toArray();
 
             $deceasedPerReligion = Religion::query()
                 ->select('id', 'name')
                 ->withCount([
-                    'deceased as deceased_count' => function ($query) use ($startDate, $endDate) {
+                    'beneficiary as beneficiary_count' => function ($query) use ($startDate, $endDate) {
                         $query->whereBetween('date_of_death', [$startDate, $endDate]);
                     },
                 ])
-                ->whereHas('deceased', function ($query) use ($startDate, $endDate) {
+                ->whereHas('beneficiary', function ($query) use ($startDate, $endDate) {
                     $query->whereBetween('date_of_death', [$startDate, $endDate]);
                 })
                 ->get()
                 ->mapWithKeys(function ($religion) {
-                    return [$religion->name => $religion->deceased_count];
+                    return [$religion->name => $religion->beneficiary_count];
                 })
                 ->toArray();
 

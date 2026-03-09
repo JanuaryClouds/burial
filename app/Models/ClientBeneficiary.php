@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Str;
 
 class ClientBeneficiary extends Model
 {
@@ -31,6 +32,14 @@ class ClientBeneficiary extends Model
         'place_of_birth',
         'barangay_id',
     ];
+
+    public function fullname()
+    {
+        return $this->first_name . ' ' . 
+            ($this->middle_name ? Str::substr($this->middle_name, 0, 1) . '. ' : '' ) . 
+            $this->last_name . 
+            ($this->suffix ? ' ' . $this->suffix : '');
+    }
 
     public static function getClientBeneficiary($client)
     {

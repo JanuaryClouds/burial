@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Str;
 
 class Claimant extends Model
 {
@@ -30,6 +31,19 @@ class Claimant extends Model
     ];
 
     protected $table = 'claimants';
+
+    public function fullname()
+    {
+        return $this->first_name . ' ' . 
+            ($this->middle_name ? Str::limit($this->middle_name, 1, '.') . ' ' : '' ) . 
+            $this->last_name . 
+            ($this->suffix ? ' ' . $this->suffix : '');
+    }
+
+    public function fullAddress()
+    {
+        return $this->address . ', ' . $this->barangay?->name;
+    }
 
     public function client()
     {

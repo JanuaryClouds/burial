@@ -3,9 +3,75 @@
 namespace App\Services;
 
 use App\Models\BurialAssistance;
+use Str;
 
 class BurialAssistanceService
 {
+    public function index(
+        ?string $status = null,
+    ){
+        return BurialAssistance::where(function ($query) use ($status) {
+            if ($status !== null && $status != 'all') {
+                return $query->where('status', $status);
+            }
+        })
+            ->with([
+                'claimant.client.user',
+            ])
+            ->get()
+            ->map(function ($application) {
+                return [
+                    'id' => $application->id,
+                    'tracking_no' => $application->claimant?->client?->tracking_no,
+                    'client' => $application->claimant?->client?->fullname(),
+                    'contact_number' => $application->claimant?->client?->user?->contact_number,
+                    'funeraria' => $application->funeraria,
+                    'status' => $application->status,
+                    'show_route' => route('burial.show', $application),
+                ];
+            })
+            ->sortBy('tracking_no');
+    }
+
+    public function reportIndex($startDate, $endDate)
+    {
+        return BurialAssistance::with([
+            'claimant',
+            'claimant.client',
+            'claimant.client.beneficiary',
+        ])
+            ->whereBetween('application_date', [$startDate, $endDate])
+            ->get()
+            ->map(function ($burialAssistance) {
+                return [
+                    'tracking_no' => $burialAssistance->claimant?->client?->tracking_no,
+                    'client' => $burialAssistance->claimant?->client?->fullname(),
+                    'beneficiary' => $burialAssistance->claimant?->client?->beneficiary?->fullname(),
+                    'address' => $burialAssistance->claimant?->client?->address(),
+                    'funeraria' => $burialAssistance->funeraria,
+                    'amount' => $burialAssistance->amount,
+                    'status' => Str::title($burialAssistance->status)
+                ];
+            })
+            ->sortBy('tracking_no');
+    }
+
+    public function columns($data)
+    {
+        if ($data->isEmpty()) {
+            return collect();
+        }
+
+        $columns = collect(array_keys($data->first()))
+            ->reject(fn ($key) => in_array($key, ['id', 'status', 'show_route']))
+            ->map(fn ($key) => [
+                'data'  => $key,
+            ])
+            ->values();
+
+        return $columns;
+    }
+
     public function store(array $data)
     {
         return BurialAssistance::create($data);
@@ -18,9 +84,15 @@ class BurialAssistanceService
     public function update(array $data, $application)
     {
         $application->update($data);
-        $application->claimant->update($data['claimant']);
-        $application->deceased->update($data['deceased']);
-        $client = $application->claimant->client;
+        if (isset($data['claimant'])) {
+            $application->claimant?->update($data['claimant']);
+        }
+
+        if (isset($data['beneficiary'])) {
+            $application->claimant?->client?->beneficiary->update($data['beneficiary']);
+        }
+
+        // $client = $application->claimant->client;
         // $client->demographic->update([
         //     'sex_id' => $data['sex_id'],
         //     'religion_id' => $data['religion_id'],

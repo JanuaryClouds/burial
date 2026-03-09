@@ -100,80 +100,70 @@
             @endforeach
         </table>
     @endif
-    <h2>Details</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Tracking Number</th>
-                <th>Application Date</th>
-                <th>Deceased</th>
-                <th>Claimant</th>
-                <th>Amount</th>
-                <th>Funeraria</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($burialAssistance as $ba)
+    @if ($burialAssistance->count() > 0)
+        <h2>Details</h2>
+        <table>
+            <thead>
                 <tr>
-                    <td>{{ $ba->tracking_no }}</td>
-                    <td>{{ \Carbon\Carbon::parse($ba->application_date)->format('F d, Y') }}</td>
-                    <td>{{ $ba->deceased->first_name }} {{ Str::limit($ba->deceased->middle_name, 1, '.') }}
-                        {{ $ba->deceased->last_name }} {{ $ba?->deceased->suffix }}</td>
-                    <td>
-                        @if ($ba?->claimantChanges->isNotEmpty())
-                            @foreach ($ba->claimantChanges as $cc)
-                                @if ($cc->status === 'approved')
-                                    {{ $cc->newClaimant->first_name }}
-                                    {{ Str::limit($cc->newClaimant->middle_name, 1, '.') }}
-                                    {{ $cc->newClaimant->last_name }} {{ $cc?->newClaimant->suffix }}
-                                @endif
-                            @endforeach
-                        @else
-                            {{ $ba->claimant->first_name }} {{ Str::limit($ba->claimant->middle_name, 1, '.') }}
-                            {{ $ba->claimant->last_name }} {{ $ba?->claimant->suffix }}
-                        @endif
-                    </td>
-                    <td>{{ $ba->amount }}</td>
-                    <td>{{ $ba->funeraria }}</td>
+                    @foreach ($burialAssistance[0] as $key => $value)
+                        <th>{{ Str::title(Str::replace('_', ' ', $key)) }}</th>
+                    @endforeach
                 </tr>
-            @endforeach
-        </tbody>
-    </table>
-    <strong>Total: </strong> {{ $burialAssistance->count() }}
-    <table style="margin-top: 20px;">
-        <thead>
-            <tr>
-                <th>Barangay</th>
-                <th>Count of Assistance Claimants</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($deceasedPerBarangay as $barangayName => $count)
+            </thead>
+            <tbody>
+                @foreach ($burialAssistance as $ba)
+                    <tr>
+                        @foreach ($ba as $key => $value)
+                            <td>{{ $value }}</td>
+                        @endforeach
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+        <strong>Total: </strong> {{ $burialAssistance->count() }}
+    @else
+        <p>No burial assistance records found.</p>
+    @endif
+    @if ($deceasedPerBarangay->count() > 0)
+        <h2>Deceased</h2>
+        <table style="margin-top: 20px;">
+            <thead>
                 <tr>
-                    <td>{{ $barangayName }}</td>
-                    <td>{{ $count }}</td>
+                    <th>Barangay</th>
+                    <th>Count of Assistance Claimants</th>
                 </tr>
-            @endforeach
-        </tbody>
-    </table>
-    <strong>Total: </strong> {{ count($deceasedPerBarangay) }}
-    <table style="margin-top: 20px;">
-        <thead>
-            <tr>
-                <th>Religion</th>
-                <th>Count</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($deceasedPerReligion as $religionName => $count)
+            </thead>
+            <tbody>
+                @foreach ($deceasedPerBarangay as $barangayName => $count)
+                    <tr>
+                        <td>{{ $barangayName }}</td>
+                        <td>{{ $count }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+        <strong>Total: </strong> {{ $deceasedPerBarangay->sum() }}
+    @endif
+    @if ($deceasedPerReligion->count() > 0)
+        <h2>Religion</h2>
+        <table style="margin-top: 20px;">
+            <thead>
                 <tr>
-                    <td>{{ $religionName }}</td>
-                    <td>{{ $count }}</td>
+                    <th>Religion</th>
+                    <th>Count</th>
                 </tr>
-            @endforeach
-        </tbody>
-    </table>
-    <strong>Total: </strong>{{ count($deceasedPerReligion) }}
+            </thead>
+            <tbody>
+                @foreach ($deceasedPerReligion as $religionName => $count)
+                    <tr>
+                        <td>{{ $religionName }}</td>
+                        <td>{{ $count }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+        <strong>Total: </strong>{{ $deceasedPerReligion->sum() }}
+    @endif
     <table>
         <tbody>
             <tr>

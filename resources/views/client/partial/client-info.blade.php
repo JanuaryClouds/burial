@@ -14,23 +14,25 @@
     <div class="row">
         <div class="col-6 col-md-6 col-lg-3">
             <x-form-input name="first_name" label="1.1 First Name" required="true"
-                value="{{ $client->first_name ?? (session('citizen')['firstname'] ?? null) }}" :readonly="$readonly" />
+                value="{{ $client->user?->first_name ?? (session('citizen')['firstname'] ?? null) }}"
+                :readonly="$readonly" />
         </div>
         <div class="col-6 col-md-6 col-lg-2">
             <x-form-input name="middle_name" label="1.2 Middle Name"
-                value="{{ $client->middle_name ?? (session('citizen')['middlename'] ?? null) }}" :readonly="$readonly" />
+                value="{{ $client->user?->middle_name ?? (session('citizen')['middlename'] ?? null) }}"
+                :readonly="$readonly" />
         </div>
         <div class="col-8 col-md-8 col-lg-2">
             <x-form-input name="last_name" label="1.3 Last Name" required="true"
-                value="{{ $client->last_name ?? (session('citizen')['lastname'] ?? null) }}" :readonly="$readonly" />
+                value="{{ $client->user?->last_name ?? (session('citizen')['lastname'] ?? null) }}" :readonly="$readonly" />
         </div>
         <div class="col-4 col-md-4 col-lg-1">
             <x-form-input name="suffix" label="1.4 Suffix"
-                value="{{ $client->suffix ?? (session('citizen')['suffix'] ?? null) }}" :readonly="$readonly" />
+                value="{{ $client->user?->suffix ?? (session('citizen')['suffix'] ?? null) }}" :readonly="$readonly" />
         </div>
         <div class="col-4 col-md-4 col-lg-1">
             <x-form-input name="age" label="2. Age" required="true" type="number"
-                value="{{ $client->age ?? (session('citizen')['age'] ?? null) }}" :readonly="$readonly" />
+                value="{{ $client->age() ?? (session('citizen')['age'] ?? null) }}" :readonly="$readonly" />
         </div>
         <div class="col-4 col-md-4 col-lg-1">
             <x-form-select name="sex_id" label="3. Sex" required="true" :selected="$demographic->sex_id ?? ($matched['sex_id'] ?? '')" :options="$genders ?? []"
@@ -46,8 +48,7 @@
         </div>
         <div class="col-8 col-md-8 col-lg-4">
             <x-form-input name="street" label="5.2. Street" required="true" type="text"
-                value="{{ $client->street ?? (session('citizen')['latest_address']['street'] ?? null) }}"
-                :readonly="$readonly" />
+                value="{{ $client->street ?? (session('citizen')['street'] ?? null) }}" :readonly="$readonly" />
         </div>
         <div class="col-6 col-md-6 col-lg-2">
             <x-form-select name="barangay_id" label="5.3 Barangay" required="true" :options="$barangays ?? []" :selected="$client->barangay_id ?? ($matched['barangay_id'] ?? '')"
@@ -102,7 +103,7 @@
         </div>
         <div class="col-12 col-md-6 col-lg-3">
             <x-form-input name="contact_no" label="14. Contact Number" required="true" type="text"
-                value="{{ $client->contact_no ?? (session('citizen')['contact_number'] ?? null) }}"
+                value="{{ $client->user?->contact_number ?? (session('citizen')['contact_number'] ?? null) }}"
                 :readonly="$readonly" />
         </div>
     </div>

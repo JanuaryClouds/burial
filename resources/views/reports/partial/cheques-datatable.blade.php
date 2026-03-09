@@ -23,6 +23,7 @@
                                     @foreach ($entry->getAttributes() as $key => $value)
                                         @if (!in_array($key, $excemptions))
                                             @if ($key == 'burial_assistance_id')
+                                                {{-- TODO use client tracking number --}}
                                                 <td>{{ $entry->burialAssistance->tracking_no }}</td>
                                             @elseif ($key == 'claimant_id')
                                                 <td>{{ $entry->claimant->first_name }}

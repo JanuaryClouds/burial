@@ -17,16 +17,28 @@ class DistrictController extends Controller
         $this->districtServices = $districtServices;
     }
 
-    public function index(CmsDataTable $dataTable)
+    public function index()
     {
         $page_title = 'District';
         $resource = 'district';
         $columns = ['id', 'name', 'remarks', 'action'];
-        $data = District::getAllDistricts();
+        $data = District::getAllDistricts()
+            ->map(function ($district) {
+                return [
+                    'id' => $district->id,
+                    'name' => $district->name,
+                    'remarks' => $district->remarks,
+                    'action' => $district->action,
+                ];
+            });
 
-        return $dataTable
-            ->render('cms.index', compact(
-                'dataTable',
+        if (request()->expectsJson()) {
+            return response()->json([
+                'data' => $data->values(),
+            ]);
+        }
+
+        return view('cms.index', compact(
                 'page_title',
                 'resource',
                 'columns',

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Str;
 
 class Client extends Model
 {
@@ -19,20 +20,21 @@ class Client extends Model
 
     protected $fillable = [
         'id',
+        'user_id',
         'citizen_id',
         'tracking_no',
-        'first_name',
-        'middle_name',
-        'last_name',
-        'suffix',
-        'age',
+        // 'first_name',
+        // 'middle_name',
+        // 'last_name',
+        // 'suffix',
+        // 'age',
         'date_of_birth',
         'house_no',
         'street',
         'district_id',
         'barangay_id',
         'city',
-        'contact_no',
+        // 'contact_no',
     ];
 
     protected static function booted()
@@ -53,6 +55,34 @@ class Client extends Model
     public static function getClientInfo($client)
     {
         return self::where('id', $client)->first();
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function fullname()
+    {
+        if (!$this->user) {
+            return '';
+        }
+
+        return $this->user->first_name . ' ' . 
+            ($this->user->middle_name ? Str::limit($this->user->middle_name, 1, '.') . ' ' : '' ) . 
+            $this->user->last_name . 
+            ($this->user->suffix ? ' ' . $this->user->suffix : '');
+    }
+
+    public function age()
+    {
+        return now()->diffInYears($this->date_of_birth);
+    }
+
+    public function address()
+    {
+        $address = $this->house_no . ' ' . $this->street . ', ' . $this->barangay?->name;
+        return $address;
     }
 
     public function assessment()

@@ -13,20 +13,15 @@ return new class extends Migration
     {
         Schema::create('clients', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('citizen_id')->nullable();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('tracking_no')->unique();
-            $table->string('first_name');
-            $table->string('middle_name')->nullable();
-            $table->string('last_name');
-            $table->string('suffix')->nullable();
-            $table->integer('age');
+            // $table->integer('age');
             $table->date('date_of_birth');
             $table->string('house_no');
             $table->string('street');
             $table->foreignId('district_id')->constrained('districts');
             $table->foreignId('barangay_id')->constrained('barangays');
             $table->string('city')->default('Taguig City');
-            $table->string('contact_no');
             $table->timestamps();
         });
     }

@@ -7,6 +7,7 @@ use App\Http\Requests\BarangayRequest;
 use App\Models\Barangay;
 use App\Models\District;
 use App\Services\BarangayService;
+use App\Services\DatatableService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Throwable;
@@ -14,28 +15,41 @@ use Throwable;
 class BarangayController extends Controller
 {
     protected $BarangayServices;
+    protected $datatableServices;
 
-    public function __construct(BarangayService $BarangayServices)
+    public function __construct(BarangayService $BarangayServices, DatatableService $datatableService)
     {
         $this->BarangayServices = $BarangayServices;
+        $this->datatableServices = $datatableService;
     }
 
-    public function index(CmsDataTable $dataTable)
+    public function index()
     {
         $page_title = 'Barangay';
         $resource = 'barangay';
-        $columns = ['id', 'name', 'remarks', 'action'];
-        $data = Barangay::getAllBarangays();
-        $subRecords = District::getAllDistricts();
+        $data = Barangay::get()->map(function ($barangay) {
+            return [
+                'id' => $barangay->id,
+                'name' => $barangay->name,
+                'district' => $barangay->district?->name ?? '',
+                'remarks' => $barangay->remarks,
+            ];
+        });
+        $columns = $this->datatableServices->getColumns($data, ['id']);
+        // $subRecords = District::getAllDistricts();
+        
+        if (request()->expectsJson()) {
+            return response()->json([
+                'data' => $data->values(),
+            ]);
+        }
 
-        return $dataTable
-            ->render('cms.index', compact(
+        return view('cms.index', compact(
                 'page_title',
                 'resource',
                 'columns',
                 'data',
-                'dataTable',
-                'subRecords'
+                // 'subRecords'
             ));
     }
 

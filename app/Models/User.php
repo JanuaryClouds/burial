@@ -14,9 +14,11 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, HasRoles, Notifiable;
 
     protected $fillable = [
+        'citizen_id',
         'first_name',
         'middle_name',
         'last_name',
+        'suffix',
         'email',
         'contact_number',
         'password',
@@ -35,6 +37,11 @@ class User extends Authenticatable
     public function isAdmin()
     {
         return $this->hasRole('admin');
+    }
+
+    public function clients()
+    {
+        return $this->hasMany(Client::class);
     }
 
     public function processLogs()

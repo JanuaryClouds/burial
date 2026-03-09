@@ -8,6 +8,7 @@ use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use App\Services\Auth\UserService;
+use App\Services\DatatableService;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Role;
@@ -15,10 +16,12 @@ use Spatie\Permission\Models\Role;
 class UserController extends Controller
 {
     protected $userServices;
+    protected $datatableServices;
 
-    public function __construct(UserService $userServices)
+    public function __construct(UserService $userServices, DatatableService $datatableService)
     {
         $this->userServices = $userServices;
+        $this->datatableServices = $datatableService;
     }
 
     public function login(LoginRequest $request)
@@ -40,16 +43,16 @@ class UserController extends Controller
                 Auth::logout();
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
-
+                
                 activity()
-                    ->causedBy($user)
-                    ->withProperties(['ip' => $ip, 'browser' => $browser])
-                    ->log('Successful login attempt');
+                ->causedBy($user)
+                ->withProperties(['ip' => $ip, 'browser' => $browser])
+                ->log('Inactive account login attempt');
 
                 return redirect()->back()->with('warning', 'Your account is inactive. Please contact the superadmin.');
-
             }
-
+            $token = $user->createToken('fileserver')->plainTextToken;
+            session(['api_token' => $token]);
             return redirect()
                 ->route('dashboard');
         } catch (Exception $e) {
@@ -74,6 +77,12 @@ class UserController extends Controller
             ->log('Successful logout');
 
         Auth::logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+        $user->tokens()->delete();
+        if (session()->has('citizen')) {
+            session()->forget('citizen');
+        }
 
         return redirect()
             ->route('landing.page');
@@ -89,9 +98,17 @@ class UserController extends Controller
     {
         $page_title = 'Users';
         $resource = 'user';
-        $data = User::select('id', 'first_name', 'middle_name', 'last_name', 'email', 'password', 'contact_number', 'is_active')->get();
+        $data = $this->userServices->index();
 
-        return view('cms.index', compact('data', 'page_title', 'resource'));
+        if (request()->expectsJson()) {
+            return response()->json([
+                'data' => $data->values(),
+            ]);
+        }
+
+        $columns = $this->datatableServices->getColumns($data, ['id', 'show_route']);
+
+        return view('cms.index', compact('data', 'page_title', 'resource', 'columns'));
     }
 
     public function edit(User $user)

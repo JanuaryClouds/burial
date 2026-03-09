@@ -59,7 +59,7 @@ class ClientRequest extends FormRequest
             'rec_moa' => 'nullable|numeric|exists:mode_of_assistances,id',
             'rec_amount' => 'nullable|string|max:255',
             'rec_assistance_other' => 'nullable|string|max:255',
-            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'images.*' => 'nullable|image|max:10240',
         ];
     }
 }

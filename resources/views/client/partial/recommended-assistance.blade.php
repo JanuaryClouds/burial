@@ -44,25 +44,29 @@
             ])
         </div>
         <div id="amount">
-            @include('components.form-input', [
-                'name' => 'amount',
-                'id' => 'amountField',
-                'min' => 0,
-                'label' => 'Amount of Assistance to be Extended',
-                'type' => 'number',
-                'value' => $recommendedAssistance->amount ?? null,
-                'readonly' => $recommendedAssistance,
-            ])
+            @if (!isset($client?->funeralAssistance))
+                @include('components.form-input', [
+                    'name' => 'amount',
+                    'id' => 'amountField',
+                    'min' => 0,
+                    'label' => 'Amount of Assistance to be Extended',
+                    'type' => 'number',
+                    'value' => $recommendedAssistance->amount ?? null,
+                    'readonly' => $recommendedAssistance,
+                ])
+            @endif
         </div>
         <div id="moa">
-            @include('components.form-select', [
-                'name' => 'moa_id',
-                'id' => 'moaField',
-                'label' => 'Mode of Assistance',
-                'options' => $modes,
-                'selected' => $recommendedAssistance->moa_id ?? null,
-                'disabled' => $recommendedAssistance,
-            ])
+            @if (!isset($client?->funeralAssistance))
+                @include('components.form-select', [
+                    'name' => 'moa_id',
+                    'id' => 'moaField',
+                    'label' => 'Mode of Assistance',
+                    'options' => $modes,
+                    'selected' => $recommendedAssistance->moa_id ?? null,
+                    'disabled' => $recommendedAssistance,
+                ])
+            @endif
         </div>
         @include('components.form-textarea', [
             'name' => 'remarks',
@@ -85,16 +89,16 @@
             referralField.value = "Taguig City Public Cemetery";
             amountContainer.classList.add('d-none');
             moaContainer.classList.add('d-none');
-            amountField.removeAttribute('required');
-            moaField.removeAttribute('required');
+            amountField?.removeAttribute('required');
+            moaField?.removeAttribute('required');
         }
 
         if (typeField.value == 'burial') {
             referralField.value = "";
             amountContainer.classList.remove('d-none');
             moaContainer.classList.remove('d-none');
-            amountField.setAttribute('required', '');
-            moaField.setAttribute('required', '');
+            amountField?.setAttribute('required', 'true');
+            moaField?.setAttribute('required', 'true');
         }
     })
 </script>

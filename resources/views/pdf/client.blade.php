@@ -1,21 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Clients Report</title>
     <style>
-        body {font-size: 12px;}
-        table {width: 100%; border-collapse: collapse; margin-top: 20px;}
-        .text-center {text-align: center;}
-        .title {font-weight: bold; font-size: 24px; text-transform: uppercase; font-family: serif;}
-        .subtitle {font-size: 16px; text-transform: uppercase; font-family: serif;}
-        .logo {width: 70%; height: auto;}
-        .no-border {border: none !important;}
-        th, td {border: 1px solid #000000; padding: 6px; text-align: left;}
-        th {background-color: #f2f2f2;}
-        .text-muted {color: #6c757d !important; font-size: 8px;}
+        body {
+            font-size: 12px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .title {
+            font-weight: bold;
+            font-size: 24px;
+            text-transform: uppercase;
+            font-family: serif;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            text-transform: uppercase;
+            font-family: serif;
+        }
+
+        .logo {
+            width: 70%;
+            height: auto;
+        }
+
+        .no-border {
+            border: none !important;
+        }
+
+        th,
+        td {
+            border: 1px solid #000000;
+            padding: 6px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .text-muted {
+            color: #6c757d !important;
+            font-size: 8px;
+        }
     </style>
 </head>
+
 <body>
     <table>
         <tr>
@@ -26,7 +69,9 @@
                 <h1 class="title text-center">Taguig City CSWDO</h1>
                 <p class="subtitle text-center" style="font-weight: bold;">Funeral Assistance</p>
                 <h2 class="text-center" style="font-family: serif; text-transform: uppercase;">Clients Report</h2>
-                <p class="text-center" style="font-family: serif;">{{ \Carbon\Carbon::parse($startDate)->format('F d, Y') }} to {{ \Carbon\Carbon::parse($endDate)->format('F d, Y') }}</p>
+                <p class="text-center" style="font-family: serif;">
+                    {{ \Carbon\Carbon::parse($startDate)->format('F d, Y') }} to
+                    {{ \Carbon\Carbon::parse($endDate)->format('F d, Y') }}</p>
             </td>
             <td style="width: 30%; text-align: center;" class="no-border">
                 <img src="./images/city_logo.webp" alt="" class="logo">
@@ -34,15 +79,16 @@
         </tr>
     </table>
     <h2>Charts</h2>
-    @if(!empty($charts))
+    @if (!empty($charts))
         <table class="no-border" style="width: 100%;">
             @foreach (array_chunk($charts, 2, true) as $chunk)
                 <tr>
-                    @foreach($chunk as $id => $chartImage)
+                    @foreach ($chunk as $id => $chartImage)
                         <td class="no-border" style="width: 50%; text-align: center;">
                             <p>{{ Str::title(Str::replace('-', ' ', $id)) }}</p>
                             <div class="chart">
-                                <img src="{{ $chartImage }}" alt="{{ $id }}" style="max-width:100%; height:auto;" class="text-center">
+                                <img src="{{ $chartImage }}" alt="{{ $id }}"
+                                    style="max-width:100%; height:auto;" class="text-center">
                             </div>
                         </td>
                     @endforeach
@@ -53,42 +99,30 @@
             @endforeach
         </table>
     @endif
-    <h2>Details</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Tracking Number</th>
-                <th>Full Name (First Name MI. Last Name, Suffix)</th>
-                <th>Address</th>
-                <th>Contact Number</th>
-                <th>Beneficiary</th>
-                <th>Relationship of Client to Beneficiary</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($clients as $c)
+    @if ($clients->count() > 0)
+        <h2>Details</h2>
+        <table>
+            <thead>
                 <tr>
-                    <td>{{ $c->tracking_no }}</td>
-                    <td>
-                        {{ $c->first_name }} 
-                        {{ $c->middle_name == null ? '' : Str::limit($c?->middle_name, 1, '.') }} 
-                        {{ $c->last_name }} 
-                        {{ $c?->suffix }} 
-                    </td>
-                    <td>{{ $c->house_no }}, {{ $c->street }}, {{ $c->barangay->name }}</td>
-                    <td>{{ $c->contact_no }}</td>
-                    <td>
-                        {{ $c->beneficiary->first_name }}
-                        {{ $c->beneficiary->middle_name == null ? '' : Str::limit($c->beneficiary?->middle_name, 1, '.') }}
-                        {{ $c->beneficiary->last_name }}
-                        {{ $c->beneficiary?->suffix }}
-                    </td>
-                    <td>{{ $c->socialInfo->relationship->name }}</td>
+                    @foreach ($clients[0] as $key => $value)
+                        <th>{{ Str::title(Str::replace('_', ' ', $key)) }}</th>
+                    @endforeach
                 </tr>
-            @endforeach
-        </tbody>
-    </table>
-    <strong>Total: </strong>{{ $clients->count() }}
+            </thead>
+            <tbody>
+                @foreach ($clients as $c)
+                    <tr>
+                        @foreach ($c as $key => $value)
+                            <td>{{ $value }}</td>
+                        @endforeach
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+        <strong>Total: </strong>{{ $clients->count() }}
+    @else
+        <p>No client records found</p>
+    @endif
     <table>
         <tbody>
             <tr>
@@ -96,12 +130,13 @@
                     Report Generated at {{ \Carbon\Carbon::now()->toISOString() }}
                 </td>
                 <td class="no-border text-muted" style="text-align: right;">
-                    Generated by 
-                    {{ auth()->user()->first_name }} 
-                    {{ auth()->user()->last_name }}
+                    Generated by
+                    {{ auth()->user()?->first_name ?? 'System' }}
+                    {{ auth()->user()?->last_name ?? '' }}
                 </td>
             </tr>
         </tbody>
     </table>
 </body>
+
 </html>
