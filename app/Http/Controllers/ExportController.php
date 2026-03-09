@@ -16,6 +16,7 @@ class ExportController extends Controller
 
     public function applications(ProcessLogService $processLogService)
     {
+        // TODO move to export file
         $templatePath = storage_path('app/templates/burial-assistances-template.xlsx');
         $spreadsheet = IOFactory::load($templatePath);
 
