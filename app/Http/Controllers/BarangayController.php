@@ -33,6 +33,7 @@ class BarangayController extends Controller
                 'name' => $barangay->name,
                 'district' => $barangay->district?->name ?? '',
                 'remarks' => $barangay->remarks,
+                'show_route' => route('barangay.edit', $barangay->id),
             ];
         });
         $columns = $this->datatableServices->getColumns($data, ['id']);
