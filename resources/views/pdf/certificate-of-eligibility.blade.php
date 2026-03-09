@@ -98,7 +98,8 @@
     </p>
     <p style="text-align: justify; margin: 0px 10px 0px 10px; line-height: 1.5">
         Pinatutunayan nito na si <strong class="bold underline">{{ $claimant->fullname() }}</strong>,
-        edad <strong class="bold underline">{{ $claimant->client->age }}</strong>, at kasalukuyang may pahatirang-sulat
+        edad <strong class="bold underline">{{ $claimant->client->age() }}</strong>, at kasalukuyang may
+        pahatirang-sulat
         sa
         <strong class="bold underline">{{ $claimant->address }}, {{ $claimant->barangay->name }}</strong>,
         Taguig City. Matapos ang isinagawang ebalwasyon ay kwalipikadong makatanggap ng benepisyo sa ilalim ng

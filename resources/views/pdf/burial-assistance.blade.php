@@ -145,6 +145,7 @@
         <strong>Total: </strong> {{ $deceasedPerBarangay->sum() }}
     @endif
     @if ($deceasedPerReligion->count() > 0)
+        <h2>Religion</h2>
         <table style="margin-top: 20px;">
             <thead>
                 <tr>

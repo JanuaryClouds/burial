@@ -1,4 +1,3 @@
 @props([
-    'data' => [],
     'columns' => [],
 ])

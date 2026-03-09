@@ -16,7 +16,7 @@ class FuneralAssistanceService
         $orderColumn = in_array($orderColumn, $allowedColumns) ? $orderColumn : 'created_at';
         $orderDirection = in_array(strtolower($orderDirection), $allowedDirections) ? $orderDirection : 'asc';
 
-        return FuneralAssistance::with(['client'])
+        return FuneralAssistance::with(['client', 'client.beneficiary'])
             ->orderBy($orderColumn, $orderDirection)
             ->get()
             ->map(function ($application) {

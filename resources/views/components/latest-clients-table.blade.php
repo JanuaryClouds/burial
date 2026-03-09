@@ -1,5 +1,5 @@
 @props([
-    'data' => [],
+    'data' => null,
     'resource' => null,
     'columns' => [],
 ])
@@ -8,7 +8,7 @@
         <h2 class="card-title fw-medium fs-2">Latest Clients</h2>
     </div>
     <div class="card-body">
-        @if (!isset($data) || $data->isEmpty())
+        @if (!$data || $data->isEmpty())
             <p class="text-muted text-center">No Data</p>
         @else
             @include('partials.datatable.index', [

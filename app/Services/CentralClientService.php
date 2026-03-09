@@ -67,33 +67,28 @@ class CentralClientService
     /**
      * Summary of checkIfUser
      * @param string $citizen_uuid
-     * @return object|User|\Illuminate\Database\Eloquent\Model
+     * @return User|null
      */
     public function checkIfUser(string $citizen_uuid)
     {
-        $user = User::where('citizen_id', $citizen_uuid)->first();
         $citizenData = $this->fetchCitizen($citizen_uuid);
-
         if (empty($citizenData)) {
-            return $user;
+            return User::where('citizen_id', $citizen_uuid)->first();;
         }
 
         session(['citizen' => $this->filterData($citizenData)]);
-        if ($user) {
-            return $user;
-        } else {
-            return User::create([
-                'citizen_id' => $citizen_uuid,
-                'first_name' => $citizenData['firstname'] ?? null,
-                'middle_name' => $citizenData['middlename'] ?? null,
-                'last_name' => $citizenData['lastname'] ?? null,
-                'suffix' => $citizenData['suffix'] ?? null,
-                'email' => $citizenData['email'] ?? null,
-                'is_active' => true,
-                'contact_number' => $citizenData['contact_number'] ?? null,
-                'password' => bcrypt(Str::random(32)),
-            ]);
-        }
+        return User::firstOrCreate([
+            'citizen_id' => $citizen_uuid,
+        ], [
+            'first_name' => $citizenData['firstname'] ?? null,
+            'middle_name' => $citizenData['middlename'] ?? null,
+            'last_name' => $citizenData['lastname'] ?? null,
+            'suffix' => $citizenData['suffix'] ?? null,
+            'email' => $citizenData['email'] ?? null,
+            'is_active' => true,
+            'contact_number' => $citizenData['contact_number'] ?? null,
+            'password' => bcrypt(Str::random(32)),
+        ]);
     }
 
     /**

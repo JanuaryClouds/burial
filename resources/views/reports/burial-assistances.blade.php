@@ -68,10 +68,10 @@
                                                     {{-- TODO use client tracking number --}}
                                                     <td>{{ $application->tracking_no }}</td>
                                                     <td>
-                                                        {{ $application->deceased->first_name }}
-                                                        {{ $application->deceased->middle_name ? Str::charAt($application->deceased->middle_name, 0) . '.' : '' }}
-                                                        {{ $application->deceased->last_name }}
-                                                        {{ $application->deceased->suffix }}
+                                                        {{ $application->deceased?->first_name }}
+                                                        {{ $application->deceased?->middle_name ? Str::charAt($application->deceased?->middle_name, 0) . '.' : '' }}
+                                                        {{ $application->deceased?->last_name }}
+                                                        {{ $application->deceased?->suffix }}
                                                         <p class="text-muted">({{ $application->deceased->barangay->name }})
                                                         </p>
                                                     </td>
@@ -81,24 +81,25 @@
                                                             @foreach ($application->claimantChanges as $cc)
                                                                 @if ($cc->status === 'approved')
                                                                     {{ $cc->newClaimant->first_name }}
-                                                                    {{ Str::limit($cc->newClaimant->middle_name, 1, '.') }}
+                                                                    {{ Str::limit($cc->newClaimant?->middle_name, 1, '.') }}
                                                                     {{ $cc->newClaimant->last_name }}
                                                                     {{ $cc?->newClaimant->suffix }}
                                                                     <p class="text-muted">
-                                                                        ({{ $cc->newClaimant->barangay->name }})</p>
+                                                                        ({{ $cc->newClaimant->barangay->name }})
+                                                                    </p>
                                                                 @endif
                                                             @endforeach
                                                         @else
-                                                            {{ $application->claimant->first_name }}
-                                                            {{ $application->claimant->middle_name ? Str::limit($application->claimant->middle_name, 1, '.') : '' }}
-                                                            {{ $application->claimant->last_name }}
-                                                            {{ $application->claimant->suffix }}
+                                                            {{ $application->claimant?->first_name }}
+                                                            {{ $application->claimant?->middle_name ? Str::charAt($application->claimant?->middle_name, 1) . '.' : '' }}
+                                                            {{ $application->claimant?->last_name }}
+                                                            {{ $application->claimant?->suffix }}
                                                             <p class="text-muted">
-                                                                ({{ $application->claimant->barangay->name }})</p>
+                                                                ({{ $application->claimant?->barangay?->name }})</p>
                                                         @endif
                                                     </td>
                                                     <td>{{ $application->application_date }}</td>
-                                                    <td>{{ $application->processLogs->last()->date_in ?? 'Submitted on: ' . $application->application_date }}
+                                                    <td>{{ $application->processLogs->last()?->date_in ?? 'Submitted on: ' . $application->application_date }}
                                                     </td>
                                                     <td>
                                                         @if ($application->status === 'pending')

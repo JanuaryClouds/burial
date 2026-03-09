@@ -18,6 +18,7 @@ class ActivityLogController extends Controller
     {
         $logs = Activity::with('causer')
             ->select('id', 'description', 'causer_type', 'causer_id', 'properties', 'created_at')
+            ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($log) {
                 $properties = $log->properties?->toArray() ?? [];

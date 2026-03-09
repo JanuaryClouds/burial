@@ -54,8 +54,11 @@ class ProcessLogService
             // TODO point towards the ClientBeneficiary Model
             $claimant = $application->claimant?->fullname();
             $deceased = $application->claimant?->client?->fullname();
-            $dod = Carbon::parse($application->deceased->date_of_death)->format('F d, Y');
-            $disbursement = $this->createDisbursement($data, $deceased, $claimant, $dod);
+            $dod = Carbon::parse($application->deceased?->date_of_death)->format('F d, Y');
+
+            if ($claimant && $deceased) {
+                $this->createDisbursement($data, $deceased, $claimant, $dod);
+            }
         }
 
         if ($step->order_no == 12) {

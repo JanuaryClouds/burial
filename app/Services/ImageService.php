@@ -39,6 +39,10 @@ class ImageService
         }
 
         $extension = $file->getClientOriginalExtension();
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+        if (!in_array(strtolower($extension), $allowedExtensions, true)) {
+            throw new \RuntimeException('Invalid file extension: ' . $extension);
+        }
         if (app()->environment('local')) {
             $filename = 'test-'.$filename;
         }
@@ -67,9 +71,13 @@ class ImageService
                 'token' => Auth::user()->tokens()->first()->token . now()->format('Ymd'),
             ]);
 
-        if ($response->failed() || $response->json()['status'] === 'error') {
+        if ($response->failed() || (isset($response->json()['status']) && $response->json()['status'] === 'error')) {
             throw new \RuntimeException("{$response->status()}: Failed to upload file: " . $filename);
         }
+
+        return true;
+    }
+}
 
         return true;
     }

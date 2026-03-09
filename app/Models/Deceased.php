@@ -43,7 +43,7 @@ class Deceased extends Model
         return $this->first_name . ' ' . 
             ($this->middle_name ? Str::substr($this->middle_name, 0, 1) . '. ' : '' ) . 
             $this->last_name . 
-            ($this->suffix ? ' ' . Str::substr($this->suffix, 0, 1) . '.' : '');
+            ($this->suffix ? ' ' . $this->suffix: '');
     }
 
     public function gender()

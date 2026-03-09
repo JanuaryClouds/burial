@@ -20,8 +20,9 @@
                 searchable: true,
                 className: 'text-center',
                 render: (_, __, row) => {
-                    const status = escapeHtml(row.status) || 'pending';
-                    const badgeClass = status == 'pending' ? 'bg-danger text-white' :
+                    const rawStatus = row.status || 'pending';
+                    const status = escapeHtml(rowStatus);
+                    const badgeClass = rawStatus === 'pending' ? 'bg-danger text-white' :
                         'bg-dark text-white';
                     return `
                         <span class="badge ${badgeClass}">
@@ -40,12 +41,14 @@
                 searchable: false,
                 className: 'text-center',
                 render: (_, __, row) => {
-                    const route = row.show_route || '#';
-                    if (!route.startsWith('/') && !route.startsWith(window.location.origin)) {
+                    const routeValue = row.show_route || '#';
+                    const isValidPath = routeValue.startsWith('/') && !routeValue.startsWith('//');
+                    const isSameOrigin = routeValue.startsWith(window.location.origin);
+                    if (!isValidPath && !isSameOrigin) {
                         console.warn(`Invalid route: ${route}`);
                         return '';
                     }
-                    const safeRoute = encodeURI(route);
+                    const safeRoute = encodeURI(routeValue);
                     return ` 
                         <a href="${safeRoute}" class="btn btn-sm btn-primary">
                             <i class="ki-duotone ki-eye pe-0">

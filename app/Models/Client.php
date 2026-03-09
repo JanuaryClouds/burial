@@ -27,7 +27,7 @@ class Client extends Model
         // 'middle_name',
         // 'last_name',
         // 'suffix',
-        'age',
+        // 'age',
         'date_of_birth',
         'house_no',
         'street',
@@ -71,7 +71,12 @@ class Client extends Model
         return $this->user->first_name . ' ' . 
             ($this->user->middle_name ? Str::limit($this->user->middle_name, 1, '.') . ' ' : '' ) . 
             $this->user->last_name . 
-            ($this->user->suffix ? ' ' . Str::limit($this->user->suffix, 1, '.') : '');
+            ($this->user->suffix ? ' ' . $this->user->suffix : '');
+    }
+
+    public function age()
+    {
+        return now()->diffInYears($this->date_of_birth);
     }
 
     public function address()

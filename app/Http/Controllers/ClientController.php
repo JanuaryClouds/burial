@@ -103,7 +103,7 @@ class ClientController extends Controller
             $page_title = $client->fullname()."'s Application";
             $page_subtitle = $client->tracking_no;
             $readonly = auth()->user()->cannot('manage-content');
-            $released = $client?->claimant?->burialAssistance->status != 'released' || $client?->funeralAssistance?->forwarded_at != null;
+            $released = $client?->claimant?->burialAssistance?->status != 'released' || $client?->funeralAssistance?->forwarded_at != null;
 
             if ($client) {
                 // $path = "clients/{$client->tracking_no}";
@@ -356,7 +356,7 @@ class ClientController extends Controller
         if (! $records) {
             return redirect()->route('landing.page')->with('error', 'You do not have permission to access this page.');
         }
-        $client = Client::where('user_id', Auth()->user()->id)->latest()->get()->first();
+        $client = Client::where('user_id', Auth()->user()->id)->latest()->first();
 
         $page_title = session('citizen')['firstname'].' '.session('citizen')['lastname'].' | Client History';
         $readonly = true;

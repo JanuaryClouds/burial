@@ -57,17 +57,17 @@ class ExportController extends Controller
             'middle_name',
             'last_name',
             'suffix',
-        ]);
+        ])->get()->keyBy('id');
 
         foreach ($clients as $client) {
             $beneficiary = $client->beneficiary;
             $burialAssistance = $client->claimant?->burialAssistance;
 
-            $dob = Carbon::parse($beneficiary?->date_of_birth);
-            $dod = Carbon::parse($beneficiary?->date_of_death);
-            $encoder = $users->where('id', $burialAssistance?->encoder)->first();
-            $initialChecker = $users->where('id', $burialAssistance?->initial_checker)->first();
-            $age = $dob->diffInYears($dod);
+            $dob = $beneficiary?->date_of_birth ? Carbon::parse($beneficiary->date_of_birth) : null;
+            $dod = $beneficiary?->date_of_death ? Carbon::parse($beneficiary->date_of_death) : null;
+            $encoder = $users->get($burialAssistance?->encoder);
+            $initialChecker = $users->get($burialAssistance?->initial_checker);
+            $age = ($dob && $dod) ? $dob->diffInYears($dod) : null;
             $approvedChange = $burialAssistance?->claimantChanges?->firstwhere('status', 'approved');
             if ($approvedChange) {
                 $newClaimant = $approvedChange?->newClaimant;
@@ -91,7 +91,7 @@ class ExportController extends Controller
             $sheet->setCellValue("M{$row}", $firstClaimant?->relationship?->name);
             $sheet->setCellValue("N{$row}", $beneficiary?->date_of_birth);
             $sheet->setCellValue("O{$row}", $age);
-            $sheet->setCellValue("P{$row}", $beneficiary?->gender == 1 ? 'M' : 'F');
+            $sheet->setCellValue("P{$row}", $beneficiary?->gender === null ? '' : ($beneficiary?->gender == 1 ? 'M' : 'F'));
             $sheet->setCellValue("Q{$row}", $firstClaimant?->barangay?->name);
             $sheet->setCellValue("R{$row}", $firstClaimant?->address);
             $sheet->setCellValue("S{$row}", $burialAssistance?->funeraria);

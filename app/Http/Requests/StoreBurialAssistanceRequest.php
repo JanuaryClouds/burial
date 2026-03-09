@@ -35,8 +35,8 @@ class StoreBurialAssistanceRequest extends FormRequest
             'beneficiary.suffix' => 'nullable|string|max:64',
             'beneficiary.sex_id' => 'required|numeric|exists:sexes,id',
             'beneficiary.religion_id' => 'required|numeric|exists:religions,id',
-            'beneficiary.date_of_birth' => 'required|date',
-            'beneficiary.date_of_death' => 'required|date',
+            'beneficiary.date_of_birth' => 'required|date|before_or_equal:beneficiary.date_of_death',
+            'beneficiary.date_of_death' => 'required|date|after_or_equal:beneficiary.date_of_birth|before_or_equal:today',
             'beneficiary.place_of_birth' => 'required|string|max:255',
             'beneficiary.barangay_id' => 'required|numeric|exists:barangays,id',
 
@@ -47,7 +47,7 @@ class StoreBurialAssistanceRequest extends FormRequest
             'claimant.relationship_to_deceased' => 'required|numeric|exists:relationships,id',
             'claimant.mobile_number' => 'required|string|digits:11',
             'claimant.address' => 'required|string|max:255',
-            'claimant.barangay_id' => 'required|exists:barangays,id',
+            'claimant.barangay_id' => 'required|numeric|exists:barangays,id',
 
             'funeraria' => 'required|string|max:255',
             'amount' => 'nullable|decimal:0,2|min:0',

@@ -37,12 +37,12 @@ class Claimant extends Model
         return $this->first_name . ' ' . 
             ($this->middle_name ? Str::limit($this->middle_name, 1, '.') . ' ' : '' ) . 
             $this->last_name . 
-            ($this->suffix ? ' ' . Str::limit($this->suffix, 1, '.') : '');
+            ($this->suffix ? ' ' . $this->suffix : '');
     }
 
-    public function address()
+    public function fullAddress()
     {
-        return $this->getAttributeValue('address') . ', ' . $this->barangay?->name;
+        return $this->address . ', ' . $this->barangay?->name;
     }
 
     public function client()

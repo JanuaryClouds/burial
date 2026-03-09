@@ -197,7 +197,7 @@ class ReportController extends Controller
                 return [
                     'tracking_no' => $deceased->burialAssistance?->claimant?->client?->tracking_no,
                     'name' => $deceased->fullname(),
-                    'address' => $deceased->address . ', ' . $deceased->barangay?->name,
+                    'address' => $deceased->address . $deceased->barangay ? ', ' . $deceased->barangay->name : '',
                     'date_of_birth' => $deceased->date_of_birth,
                     'date_of_death' => $deceased->date_of_death,
                     'religion' => $deceased->religion?->name
@@ -255,7 +255,7 @@ class ReportController extends Controller
                 return [
                     'full_name' => $claimant->fullname(),
                     'mobile_number' => $claimant->mobile_number,
-                    'address' => $claimant->address . ', ' . $claimant->barangay?->name,
+                    'address' => $claimant->address . $claimant->barangay ? ', ' . $claimant->barangay->name : '',
                     'relationship_to_deceased' => $claimant->relationship?->name
                 ];
             });

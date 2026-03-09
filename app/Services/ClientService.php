@@ -31,6 +31,10 @@ class ClientService
         string $orderColumn = 'created_at',
         string $orderDirection = 'asc',
     ) {
+        $allowedColumns = ['created_at', 'tracking_no', 'id'];
+        $orderColumn = in_array($orderColumn, $allowedColumns) ? $orderColumn : 'created_at';
+        $orderDirection = in_array(strtolower($orderDirection), ['asc', 'desc']) ? $orderDirection : 'asc';
+
         return Client::with([
             'user',
             'funeralAssistance',
@@ -434,7 +438,7 @@ class ClientService
             'E7',
             $client->fullname()
         );
-        $sheet->setCellValue('J7', $client->age);
+        $sheet->setCellValue('J7', $client->age());
         $sheet->setCellValue(
             'L7',
             $client->gender == 2 ? 'Male' : 'Female'
@@ -452,7 +456,7 @@ class ClientService
         $sheet->setCellValue('E11', $client->socialInfo->skill);
         $sheet->setCellValue('L11', $client->socialInfo->income);
         $sheet->setCellValue('E12', $client->socialInfo->philhealth);
-        $sheet->setCellValue('J12', $client->user->contact_number);
+        $sheet->setCellValue('J12', $client->user?->contact_number);
         $sheet->setCellValue(
             'E16',
             $client->beneficiary->first_name.' '.Str::limit($client->beneficiary->middle_name, 1, '.').' '.$client->beneficiary->last_name.($client->beneficiary->suffix ? ' '.$client->beneficiary->suffix : '')

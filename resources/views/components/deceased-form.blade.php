@@ -29,7 +29,7 @@
 </div>
 <div class="row justify-content-start align-items-center g-2">
     <div class="col-12 col-lg-8">
-        <x-form-input name="beneficiary[place_of_birth]" label="Address"
+        <x-form-input name="beneficiary[place_of_birth]" label="Place of Birth"
             value="{{ $beneficiary->place_of_birth ?? '' }}" disabled="{{ $disabled }}"
             readonly="{{ $readonly }}" />
     </div>

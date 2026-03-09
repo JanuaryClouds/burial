@@ -44,7 +44,8 @@ class CitizenAccessController extends Controller
 
             if (! Auth::check()) {
                 Auth::login($user);
-                $user->createToken('fileserver')->plainTextToken;
+                $token = $user->createToken('fileserver')->plainTextToken;
+                session(['api_token' => $token]);
             }
 
             return redirect()->route('landing.page');

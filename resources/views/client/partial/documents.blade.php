@@ -31,20 +31,20 @@
     @elseif (count($files) == 0 && auth()->user())
         <div class="col mb-4">
             <x-form-image-submission name="images[death_certificate]"
-                label="Certified True Copy of Registered Death Certificate" helpText="From Taguig City Civil Registry."
-                required="{{ $readonly }}" />
+                label="Certified True Copy of Registered Death Certificate"
+                helpText="From Taguig City Civil Registry." />
         </div>
         <div class="col mb-4">
             <x-form-image-submission name="images[funeral_contract]" label="Certified True Copy of Funeral Contract"
-                helpText="From Funeral Establishment." required="{{ $readonly }}" />
+                helpText="From Funeral Establishment." />
         </div>
         <div class="col mb-4">
             <x-form-image-submission name="images[claimant_valid_id]"
-                label="Photocopy of Valid Identification Card of Claimant" required="{{ $readonly }}" />
+                label="Photocopy of Valid Identification Card of Claimant" />
         </div>
         <div class="col mb-4">
             <x-form-image-submission name="images[deceased_valid_id]"
-                label="Photocopy of Valid Identification Card of Deceased" required="{{ $readonly }}" />
+                label="Photocopy of Valid Identification Card of Deceased" />
         </div>
         <div id="muslim-requirements" class="col mb-4 p-0">
             <hr>
@@ -63,8 +63,7 @@
         <div class="col mb-4">
             <x-form-image-submission name="images[proof_of_relationship]"
                 label="Proof of Relationship between Claimant and Deceased"
-                helpText="From Taguig City Civil Registry or Philippine Statistics Authority (PSA)."
-                required="{{ $readonly }}" />
+                helpText="From Taguig City Civil Registry or Philippine Statistics Authority (PSA)." />
         </div>
         <div class="col mb-4">
             <ul class="list-group">

@@ -6,12 +6,15 @@
     'route' => '',
 ])
 @php
-    if ($data->count() > 0) {
-        if (array_key_exists('show_route', $data->toArray()[0])) {
+    if ($data->isNotEmpty()) {
+        $firstItem = $data->first();
+
+        $firstItemArray = is_array($firstItem) ? $firstItem : $firstItem->toArray();
+        if (array_key_exists('show_route', $firstItemArray)) {
             $classes .= ' with-actions';
         }
 
-        if (array_key_exists('status', $data->toArray()[0])) {
+        if (array_key_exists('status', $firstItemArray)) {
             $classes .= ' with-status';
         }
     }
@@ -20,7 +23,7 @@
     <div class="table-responsive overflow-x-hidden">
         <div class="dataTables_wrapper">
             <table class="table data-table {{ $classes }}" style="width:100%" data-route="{{ $route ?? '' }}"
-                data-columns="{{ json_encode($columns) }}">
+                data-columns='@json($columns)'>
                 <thead class="border-bottom border-bottom-1 border-gray-200 fw-bold">
                     @include('partials.datatable.head', [
                         'columns' => $columns,

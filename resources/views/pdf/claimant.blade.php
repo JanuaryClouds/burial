@@ -133,13 +133,12 @@
                                 @if ($occ->status === 'approved')
                                     @if ($occ->oldClaimant->id == $c->id)
                                         {{-- TODO use client tracking number --}}
-                                        Old claimant of {{ $occ->burialAssistance?->tracking_no }}
+                                        Old claimant of {{ $occ->oldClaimant?->tracking_no }}
                                     @endif
                                 @endif
                             @endforeach
                         @else
-                            {{-- TODO use client tracking number --}}
-                            {{ $c->burialAssistance->tracking_no }}
+                            {{ $c->tracking_no }}
                         @endif
 
                     </td>

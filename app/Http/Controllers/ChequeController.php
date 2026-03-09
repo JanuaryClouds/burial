@@ -12,6 +12,10 @@ class ChequeController extends Controller
     public function generatePdfReport(Request $request, $startDate, $endDate)
     {
         try {
+            if (!strtotime($startDate) || !strtotime($endDate)) {
+                return redirect()->back()->with('error', 'Invalid date format.');
+            }
+
             $cheques = Cheque::with('burialAssistance.claimant.client')
                 ->whereBetween('date_issued', [$startDate, $endDate])
                 ->get()
@@ -21,7 +25,7 @@ class ChequeController extends Controller
                         'check_number' => $cheque->cheque_number ?? 'N/A',
                         'obr_number' => $cheque->obr_number ?? 'N/A',
                         'dv_number' => $cheque->dv_number ?? 'N/A',
-                        'amount' => $cheque->amount,
+                        'amount' => $cheque->amount ?? 0,
                         'date_issued' => $cheque->date_issued ?? 'N/A',
                         'date_claimed' => $cheque->date_claimed ?? 'N/A',
                     ];
@@ -58,4 +62,5 @@ class ChequeController extends Controller
             return back()->with('error', 'An error occurred: '.$e->getMessage());
         }
     }
+}
 }

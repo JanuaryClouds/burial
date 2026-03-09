@@ -89,16 +89,16 @@
             referralField.value = "Taguig City Public Cemetery";
             amountContainer.classList.add('d-none');
             moaContainer.classList.add('d-none');
-            amountField.removeAttribute('required');
-            moaField.removeAttribute('required');
+            amountField?.removeAttribute('required');
+            moaField?.removeAttribute('required');
         }
 
         if (typeField.value == 'burial') {
             referralField.value = "";
             amountContainer.classList.remove('d-none');
             moaContainer.classList.remove('d-none');
-            amountField.setAttribute('required', 'true');
-            moaField.setAttribute('required', 'true');
+            amountField?.setAttribute('required', 'true');
+            moaField?.setAttribute('required', 'true');
         }
     })
 </script>

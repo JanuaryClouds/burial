@@ -11,7 +11,7 @@ class BurialAssistanceService
         ?string $status = null,
     ){
         return BurialAssistance::where(function ($query) use ($status) {
-            if ($status != 'all') {
+            if ($status !== null && $status != 'all') {
                 return $query->where('status', $status);
             }
         })
@@ -84,9 +84,15 @@ class BurialAssistanceService
     public function update(array $data, $application)
     {
         $application->update($data);
-        $application->claimant?->update($data['claimant']);
-        $application->claimant?->client?->beneficiary->update($data['beneficiary']);
-        $client = $application->claimant->client;
+        if (isset($data['claimant'])) {
+            $application->claimant?->update($data['claimant']);
+        }
+
+        if (isset($data['beneficiary'])) {
+            $application->claimant?->client?->beneficiary->update($data['beneficiary']);
+        }
+
+        // $client = $application->claimant->client;
         // $client->demographic->update([
         //     'sex_id' => $data['sex_id'],
         //     'religion_id' => $data['religion_id'],

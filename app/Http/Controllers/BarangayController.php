@@ -27,7 +27,7 @@ class BarangayController extends Controller
     {
         $page_title = 'Barangay';
         $resource = 'barangay';
-        $data = Barangay::getAllBarangays()->map(function ($barangay) {
+        $data = Barangay::get()->map(function ($barangay) {
             return [
                 'id' => $barangay->id,
                 'name' => $barangay->name,

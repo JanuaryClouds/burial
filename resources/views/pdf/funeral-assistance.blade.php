@@ -114,7 +114,7 @@
                 @foreach ($funeralAssistances as $fa)
                     <tr>
                         @foreach ($fa as $key => $value)
-                            <td>{{ $value }}</td>
+                            <td>{{ is_scalar($value) || is_null($value) ? $value : json_encode($value) }}</td>
                         @endforeach
                     </tr>
                 @endforeach
