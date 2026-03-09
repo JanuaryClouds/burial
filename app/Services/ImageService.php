@@ -78,7 +78,3 @@ class ImageService
         return true;
     }
 }
-
-        return true;
-    }
-}
