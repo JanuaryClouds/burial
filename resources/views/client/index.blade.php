@@ -16,7 +16,6 @@
                     'data' => $data,
                     'resource' => $resource,
                     'columns' => $columns,
-                    'route' => Request::route()->getName(),
                 ])
             @endif
         </div>

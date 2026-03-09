@@ -3,7 +3,7 @@
     'columns' => [],
     'classes' => '',
     'resource' => '',
-    'route' => '',
+    'route' => null,
 ])
 @php
     if ($data->isNotEmpty()) {
@@ -22,8 +22,8 @@
 @if ($data->count() > 0)
     <div class="table-responsive overflow-x-hidden">
         <div class="dataTables_wrapper">
-            <table class="table data-table {{ $classes }}" style="width:100%" data-route="{{ $route ?? '' }}"
-                data-columns='@json($columns)'>
+            <table class="table data-table {{ $classes }}" style="width:100%"
+                data-route="{{ $route ?? request()->url() }}" data-columns='@json($columns)'>
                 <thead class="border-bottom border-bottom-1 border-gray-200 fw-bold">
                     @include('partials.datatable.head', [
                         'columns' => $columns,
