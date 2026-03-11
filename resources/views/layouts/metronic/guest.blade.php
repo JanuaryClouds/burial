@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" x-data="{ sidebarMini: $persist(true), screenSmall: window.innerWidth < 1024 }" x-init="window.addEventListener('resize', () => { screenSmall = window.innerWidth < 1024; })"
-    data-bs-theme="system" data-bs-theme-mode="system">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-bs-theme="system" data-bs-theme-mode="system">
 
 <head>
     @include('partials.document-head')
