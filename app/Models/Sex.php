@@ -28,6 +28,6 @@ class Sex extends Model
 
     public function clientFamily()
     {
-        return $this->belongsTo(ClientBeneficiaryFamily::class);
+        return $this->belongsTo(BeneficiaryFamily::class);
     }
 }

@@ -29,7 +29,7 @@ class Barangay extends Model
 
     public function beneficiary()
     {
-        return $this->hasMany(ClientBeneficiary::class, 'barangay_id', 'id');
+        return $this->hasMany(Beneficiary::class, 'barangay_id', 'id');
     }
 
     public function district()

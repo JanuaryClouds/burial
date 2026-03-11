@@ -6,11 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Str;
 
-class ClientBeneficiary extends Model
+class Beneficiary extends Model
 {
     use HasFactory;
 
-    protected $table = 'client_beneficiaries';
+    protected $table = 'beneficiaries';
 
     protected $primaryKey = 'id';
 
@@ -41,7 +41,7 @@ class ClientBeneficiary extends Model
             ($this->suffix ? ' '.$this->suffix : '');
     }
 
-    public static function getClientBeneficiary($client)
+    public static function getBeneficiary($client)
     {
         return self::where('client_id', $client)->first();
     }

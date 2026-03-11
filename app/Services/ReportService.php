@@ -6,7 +6,6 @@ use App\Models\BurialAssistance;
 use App\Models\Cheque;
 use App\Models\Claimant;
 use App\Models\Client;
-use App\Models\ClientBeneficiary;
 use App\Models\ClientRecommendation;
 use App\Models\FuneralAssistance;
 use App\Models\User;
@@ -194,7 +193,7 @@ class ReportService
 
     public function deceasedPerBarangay($startDate, $endDate)
     {
-        return ClientBeneficiary::selectRaw('barangay_id, COUNT(*) as total')
+        return Beneficiary::selectRaw('barangay_id, COUNT(*) as total')
             ->with('barangay')
             ->groupBy('barangay_id')
             ->whereBetween('date_of_death', [$startDate, $endDate])
@@ -209,7 +208,7 @@ class ReportService
 
     public function deceasedPerReligion($startDate, $endDate)
     {
-        return ClientBeneficiary::selectRaw('religion_id, COUNT(*) as total')
+        return Beneficiary::selectRaw('religion_id, COUNT(*) as total')
             ->with('religion')
             ->groupBy('religion_id')
             ->whereBetween('date_of_death', [$startDate, $endDate])

@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ClientBeneficiaryFamily extends Model
+class BeneficiaryFamily extends Model
 {
     use HasFactory;
 
-    protected $table = 'client_beneficiary_families';
+    protected $table = 'beneficiary_families';
 
     protected $primaryKey = 'id';
 
@@ -29,7 +29,7 @@ class ClientBeneficiaryFamily extends Model
         'income',
     ];
 
-    public static function getClientBeneficiaryFamilies($client)
+    public static function getBeneficiaryFamilies($client)
     {
         return self::where('client_id', $client);
     }

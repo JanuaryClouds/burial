@@ -1,5 +1,5 @@
 @extends('layouts.metronic.guest')
-{{-- TODO point to ClientBeneficiary --}}
+{{-- TODO point to Beneficiary --}}
 <title>{{ $burialAssistance->deceased->first_name }} {{ $burialAssistance->deceased->last_name }} Burial Assistance
 </title>
 @section('content')

@@ -93,12 +93,12 @@ class Client extends Model
 
     public function beneficiary()
     {
-        return $this->hasOne(ClientBeneficiary::class);
+        return $this->hasOne(Beneficiary::class);
     }
 
     public function family()
     {
-        return $this->hasMany(ClientBeneficiaryFamily::class);
+        return $this->hasMany(BeneficiaryFamily::class);
     }
 
     public function demographic()

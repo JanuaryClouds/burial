@@ -2,11 +2,10 @@
 
 namespace App\Services;
 
+use App\Models\Beneficiary;
 use App\Models\BurialAssistance;
 use App\Models\Claimant;
 use App\Models\Client;
-use App\Models\ClientBeneficiary;
-use App\Models\ClientBeneficiaryFamily;
 use App\Models\ClientDemographic;
 use App\Models\ClientSocialInfo;
 use App\Models\FuneralAssistance;
@@ -239,7 +238,7 @@ class ClientService
                     throw new \RuntimeException('Failed to create client related records');
                 }
 
-                $beneficiary = ClientBeneficiary::create([
+                $beneficiary = Beneficiary::create([
                     'id' => Str::uuid(),
                     'client_id' => $client->id,
                     'first_name' => $data['ben_first_name'],
@@ -260,7 +259,7 @@ class ClientService
 
                 if (is_array($data['fam_name']) && count($data['fam_name']) > 0) {
                     foreach ($data['fam_name'] as $index => $name) {
-                        ClientBeneficiaryFamily::create([
+                        BeneficiaryFamily::create([
                             'id' => Str::uuid(),
                             'client_id' => $client->id,
                             'name' => $name,
@@ -340,7 +339,7 @@ class ClientService
                     'barangay_id' => $client->barangay_id,
                 ]);
 
-                // TODO use ClientBeneficiary model instead
+                // TODO use Beneficiary model instead
                 // $deceased = Deceased::create([
                 //     'id' => Str::uuid(),
                 //     'burial_assistance_id' => $burialAssistance->id,

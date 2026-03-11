@@ -8,9 +8,9 @@ use App\Models\Sex;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ClientBeneficiaryFamily>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\BeneficiaryFamily>
  */
-class ClientBeneficiaryFamilyFactory extends Factory
+class BeneficiaryFamilyFactory extends Factory
 {
     /**
      * Define the model's default state.

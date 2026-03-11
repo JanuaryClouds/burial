@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('client_beneficiaries', function (Blueprint $table) {
+        Schema::create('beneficiaries', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('client_id')->constrained('clients')->onDelete('CASCADE');
             $table->string('first_name');
