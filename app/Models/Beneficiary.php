@@ -33,12 +33,35 @@ class Beneficiary extends Model
         'barangay_id',
     ];
 
+    public function tracking_no()
+    {
+        return $this->client?->tracking_no;
+    }
+
     public function fullname()
     {
         return $this->first_name.' '.
             ($this->middle_name ? Str::substr($this->middle_name, 0, 1).'. ' : '').
             $this->last_name.
             ($this->suffix ? ' '.$this->suffix : '');
+    }
+
+    public function age()
+    {
+        return \Carbon\Carbon::parse($this->date_of_birth)->age;
+    }
+
+    public function assistance()
+    {
+        if ($this->client?->claimant?->count() > 0) {
+            return $this->client?->claimant?->burialAssistance;
+        }
+
+        if ($this->client?->funeralAssistance?->count() > 0) {
+            return $this->client?->funeralAssistance;
+        }
+
+        return null;
     }
 
     public static function getBeneficiary($client)

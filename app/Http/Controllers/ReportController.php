@@ -38,12 +38,6 @@ class ReportController extends Controller
         $this->funeralAssistanceServices = $funeralAssistanceService;
     }
 
-    private $reportTypes = [
-        'burial_assistance' => 'Burial Assistance Report',
-        'deceased' => 'Deceased Persons Report',
-        'cheques' => 'Cheques Report',
-    ];
-
     public function clients(Request $request)
     {
         $model = 'clients';
@@ -81,6 +75,8 @@ class ReportController extends Controller
             'endDate'
         ));
     }
+
+    // TODO create function to return beneficiaries
 
     public function burialAssistances(Request $request)
     {
