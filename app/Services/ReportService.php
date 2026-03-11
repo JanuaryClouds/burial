@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Beneficiary;
 use App\Models\BurialAssistance;
 use App\Models\Cheque;
 use App\Models\Claimant;
@@ -104,8 +105,6 @@ class ReportService
                 $firstClaimant = $ba->claimant;
             }
 
-            // TODO use client's tracking number
-            // TODO Check if unused
             $sheet->setCellValue("A{$row}", $ba->claimant?->client?->tracking_no);
             $sheet->setCellValue("B{$row}", $ba->application_date);
             $sheet->setCellValue("C{$row}", $ba->swa);
@@ -223,7 +222,7 @@ class ReportService
 
     public function deceasedPerGender($startDate, $endDate)
     {
-        return Deceased::selectRaw('gender, COUNT(*) as total')
+        return Beneficiary::selectRaw('gender, COUNT(*) as total')
             ->groupBy('gender')
             ->whereBetween('date_of_death', [$startDate, $endDate])
             ->get()

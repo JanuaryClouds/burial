@@ -151,15 +151,6 @@ class BurialAssistanceController extends Controller
         }
     }
 
-    public function assignments()
-    {
-        $page_title = 'Burial Assistance Assignments';
-        // TODO remove tracking number
-        $applications = BurialAssistance::select('id', 'tracking_no', 'application_date', 'status', 'assigned_to')->get();
-
-        return view('superadmin.assignment', compact('applications', 'page_title'));
-    }
-
     public function assign(Request $request, $id)
     {
         $request->validate([

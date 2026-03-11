@@ -224,31 +224,6 @@ class ReportController extends Controller
         ));
     }
 
-    public function generate(Request $request, ReportService $reportService)
-    {
-        try {
-            $request->validate([
-                'report_type' => 'required|string',
-                'start_date' => 'required|date',
-                'end_date' => 'required|date|after_or_equal:start_date',
-            ]);
-            $reportType = $request->input('report_type');
-            $startDate = $request->input('start_date');
-            $endDate = $request->input('end_date');
-
-            if ($reportType == 'burial_assistance') {
-                return $reportService->burialAssistanceReport($startDate, $endDate);
-            } elseif ($reportType == 'deceased') {
-                // Implement deceased report generation
-                return $reportService->deceasedReport($startDate, $endDate);
-            } else {
-                return back()->with('error', 'Invalid report type selected.');
-            }
-        } catch (\Exception $e) {
-            return back()->with('error', 'An error occurred while generating the report: '.$e->getMessage());
-        }
-    }
-
     public function cheques(Request $request)
     {
         $model = 'cheques';

@@ -50,9 +50,8 @@ class ProcessLogService
 
             });
 
-            // TODO point towards the Beneficiary Model
             $claimant = $application->claimant?->fullname();
-            $deceased = $application->claimant?->client?->fullname();
+            $deceased = $application->claimant?->client?->beneficiary?->fullname();
             $dod = Carbon::parse($application->deceased?->date_of_death)->format('F d, Y');
 
             if ($claimant && $deceased) {
