@@ -1,6 +1,3 @@
-<script nonce="{{ $nonce ?? '' }}" src="https://cdn.jsdelivr.net/npm/sweetalert2@11.26.20/dist/sweetalert2.all.min.js"
-    integrity="sha256-AdsOUa1T5MFNHdura152IyIfRU9R4LYlXbqyGXv2z+g=" crossorigin="anonymous"></script>
-
 <script nonce="{{ $nonce ?? '' }}" src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"
     integrity="sha256-SERKgtTty1vsDxll+qzd4Y2cF9swY9BCq62i9wXJ9Uo=" crossorigin="anonymous"></script>
 
