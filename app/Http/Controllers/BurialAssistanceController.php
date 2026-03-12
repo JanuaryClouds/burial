@@ -33,6 +33,7 @@ class BurialAssistanceController extends Controller
     public function tracker($uuid, ProcessLogService $processLogService)
     {
         $burialAssistance = BurialAssistance::where('id', $uuid)->first();
+        $this->authorize('view', $burialAssistance);
 
         $updateAverage = $processLogService->getAvgProcessingTime($burialAssistance)->avg();
 
