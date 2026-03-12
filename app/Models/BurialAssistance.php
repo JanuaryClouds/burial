@@ -29,12 +29,6 @@ class BurialAssistance extends Model
         'initial_checker',
     ];
 
-    // TODO use ClientBeneficiary Model instead
-    public function deceased()
-    {
-        return $this->hasOne(Deceased::class, 'burial_assistance_id', 'id');
-    }
-
     public function claimant()
     {
         return $this->hasOne(Claimant::class, 'burial_assistance_id', 'id')->latestOfMany('created_at');

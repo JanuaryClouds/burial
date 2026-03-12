@@ -28,11 +28,6 @@ class Sex extends Model
 
     public function clientFamily()
     {
-        return $this->belongsTo(ClientBeneficiaryFamily::class);
-    }
-
-    public function deceased()
-    {
-        return $this->hasMany(Deceased::class, 'gender', 'id');
+        return $this->belongsTo(BeneficiaryFamily::class);
     }
 }

@@ -4,12 +4,12 @@ namespace App\Providers;
 
 use App\Models\BurialAssistance;
 use App\Models\Client;
-use App\Models\ClientBeneficiary;
 use App\Models\FuneralAssistance;
 use App\Models\Handler;
 use App\Models\Permission;
 use App\Models\User;
 use App\Models\WorkflowStep;
+use App\Policies\BurialAssistancePolicy;
 use App\Policies\RolePolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
@@ -24,6 +24,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         // Role::class => RolePolicy::class
+        BurialAssistance::class => BurialAssistancePolicy::class,
     ];
 
     /**
@@ -54,7 +55,7 @@ class AuthServiceProvider extends ServiceProvider
                 // BurialAssistance::class,
                 // FuneralAssistance::class,
                 // Client::class,
-                // ClientBeneficiary::class,
+                // Beneficiary::class,
                 Permission::class,
                 // WorkflowStep::class,
                 // Handler::class,
@@ -77,7 +78,7 @@ class AuthServiceProvider extends ServiceProvider
                 // BurialAssistance::class,
                 // FuneralAssistance::class,
                 // Client::class,
-                // ClientBeneficiary::class,
+                // Beneficiary::class,
                 Permission::class,
                 // Role::class,
                 // WorkflowStep::class,

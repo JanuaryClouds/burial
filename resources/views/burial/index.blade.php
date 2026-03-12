@@ -11,7 +11,6 @@
                 @include('partials.datatable.index', [
                     'classes' => 'with-status with-actions',
                     'columns' => $columns,
-                    'route' => route('burial.index', ['status' => $status]),
                 ])
             @endif
         </div>

@@ -9,7 +9,7 @@ class FuneralAssistanceService
     public function index(
         string $orderColumn = 'created_at',
         string $orderDirection = 'asc',
-    ){
+    ) {
         $allowedColumns = ['created_at', 'id'];
         $allowedDirections = ['asc', 'desc'];
 
@@ -64,7 +64,6 @@ class FuneralAssistanceService
             });
     }
 
-
     public function columns($data)
     {
         if ($data->isEmpty()) {
@@ -74,7 +73,7 @@ class FuneralAssistanceService
         $columns = collect(array_keys($data->first()))
             ->reject(fn ($key) => in_array($key, ['id', 'status', 'show_route']))
             ->map(fn ($key) => [
-                'data'  => $key,
+                'data' => $key,
             ])
             ->values();
 

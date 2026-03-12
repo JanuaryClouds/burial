@@ -29,7 +29,6 @@
                 @include('partials.datatable.index', [
                     'columns' => $columns,
                     'classes' => 'with-actions',
-                    'route' => Route::currentRouteName(),
                 ])
             @endif
         </div>

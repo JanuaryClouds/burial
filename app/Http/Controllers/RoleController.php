@@ -47,7 +47,7 @@ class RoleController extends Controller
                 ];
             });
         $columns = collect(['name'])->map(fn ($key) => [
-            'data'  => $key,
+            'data' => $key,
         ]);
         $page_title = 'Role';
         $resource = 'role';

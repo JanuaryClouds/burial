@@ -31,8 +31,8 @@
                 value="{{ $client->user?->suffix ?? (session('citizen')['suffix'] ?? null) }}" :readonly="$readonly" />
         </div>
         <div class="col-4 col-md-4 col-lg-1">
-            <x-form-input name="age" label="2. Age" required="true" type="number"
-                value="{{ $client->age() ?? (session('citizen')['age'] ?? null) }}" :readonly="$readonly" />
+            <x-form-input name="age" id="age" label="2. Age" required="true" type="number"
+                value="{{ $client ? $client->age() : session('citizen')['age'] ?? null }}" :readonly="$readonly" />
         </div>
         <div class="col-4 col-md-4 col-lg-1">
             <x-form-select name="sex_id" label="3. Sex" required="true" :selected="$demographic->sex_id ?? ($matched['sex_id'] ?? '')" :options="$genders ?? []"
@@ -84,8 +84,8 @@
                 :selected="$demographic->nationality_id ?? ''" :disabled="$readonly" />
         </div>
         <div class="col-12 col-md-12 col-lg-4">
-            <x-form-select name="education_id" label="10. Educational Attainment" :options="$educations ?? []" :selected="$socialInfo->education_id ?? ''"
-                :disabled="$readonly" />
+            <x-form-select name="education_id" label="10. Educational Attainment" required="true" :options="$educations ?? []"
+                :selected="$socialInfo->education_id ?? ''" :disabled="$readonly" />
         </div>
     </div>
     <div class="row">
@@ -108,3 +108,13 @@
         </div>
     </div>
 </div>
+<script nonce={{ $nonce ?? '' }}>
+    $(document).ready(function() {
+        $('#date_of_birth').on('input', function() {
+            let birthdate = new Date($('#date_of_birth').val());
+            let now = new Date();
+            let age = now.getFullYear() - birthdate.getFullYear();
+            $('#age').val(age);
+        })
+    })
+</script>

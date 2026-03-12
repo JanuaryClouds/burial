@@ -3,14 +3,13 @@
 namespace Database\Factories;
 
 use App\Models\Barangay;
+use App\Models\Beneficiary;
+use App\Models\BeneficiaryFamily;
 use App\Models\Client;
-use App\Models\ClientBeneficiary;
-use App\Models\ClientBeneficiaryFamily;
 use App\Models\ClientDemographic;
 use App\Models\ClientSocialInfo;
 use App\Models\District;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use App\Models\User;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Client>
@@ -28,7 +27,6 @@ class ClientFactory extends Factory
     {
         return [
             'id' => $this->faker->uuid(),
-            'age' => $this->faker->numberBetween(1, 100),
             'date_of_birth' => $this->faker->date('Y-m-d'),
             'house_no' => $this->faker->buildingNumber(),
             'street' => $this->faker->streetName(),
@@ -41,7 +39,7 @@ class ClientFactory extends Factory
     public function configure()
     {
         return $this->afterCreating(function (Client $client) {
-            ClientBeneficiary::factory()->create([
+            Beneficiary::factory()->create([
                 'client_id' => $client->id,
             ]);
 
@@ -53,7 +51,7 @@ class ClientFactory extends Factory
                 'client_id' => $client->id,
             ]);
 
-            ClientBeneficiaryFamily::factory()->count(5)->create([
+            BeneficiaryFamily::factory()->count(5)->create([
                 'client_id' => $client->id,
             ]);
         });

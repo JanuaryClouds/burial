@@ -25,6 +25,7 @@ Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
 require __DIR__.'/guest.php';
 require __DIR__.'/client.php';
+require __DIR__.'/beneficiary.php';
 require __DIR__.'/burial.php';
 require __DIR__.'/funeral.php';
 
@@ -47,6 +48,4 @@ Route::middleware(['auth'])
 
         require __DIR__.'/reports.php';
         require __DIR__.'/superadmin.php';
-        require __DIR__.'/admin.php';
-        require __DIR__.'/user.php';
     });

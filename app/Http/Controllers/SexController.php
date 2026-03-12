@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\DataTables\CmsDataTable;
 use App\Http\Requests\SexRequest;
 use App\Models\Sex;
 use App\Services\SexService;
@@ -38,11 +37,11 @@ class SexController extends Controller
         }
 
         return view('cms.index', compact(
-                'page_title',
-                'resource',
-                'columns',
-                'data'
-            ));
+            'page_title',
+            'resource',
+            'columns',
+            'data'
+        ));
     }
 
     public function store(SexRequest $request)

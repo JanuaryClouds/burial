@@ -1,3 +1,4 @@
+{{-- UNUSED but kept for reference --}}
 @extends('layouts.metronic.guest')
 <title>Login</title>
 @section('content')

@@ -9,7 +9,6 @@
             <div class="card-body">
                 @include('partials.datatable.index', [
                     'columns' => $columns,
-                    'route' => Request::route()->getName(),
                 ])
             </div>
         </div>

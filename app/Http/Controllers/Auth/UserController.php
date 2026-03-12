@@ -16,6 +16,7 @@ use Spatie\Permission\Models\Role;
 class UserController extends Controller
 {
     protected $userServices;
+
     protected $datatableServices;
 
     public function __construct(UserService $userServices, DatatableService $datatableService)
@@ -37,22 +38,36 @@ class UserController extends Controller
             }
 
             $user = Auth::user();
-            $token = $user->createToken('fileserver')->plainTextToken;
 
             if (! $user->is_active) {
                 Auth::logout();
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
-                
+
                 activity()
-                ->causedBy($user)
-                ->withProperties(['ip' => $ip, 'browser' => $browser])
-                ->log('Inactive account login attempt');
+                    ->causedBy($user)
+                    ->withProperties(['ip' => $ip, 'browser' => $browser])
+                    ->log('Inactive account login attempt');
 
                 return redirect()->back()->with('warning', 'Your account is inactive. Please contact the superadmin.');
             }
+
+            if ($user->roles()->count() == 0) {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                activity()
+                    ->causedBy($user)
+                    ->withProperties(['ip' => $ip, 'browser' => $browser])
+                    ->log('Client attempted to access admin panel');
+
+                return redirect()->back()->with('warning', 'You do not have permission to access this page. Please return to the landing page.');
+            }
+
             $token = $user->createToken('fileserver')->plainTextToken;
             session(['api_token' => $token]);
+
             return redirect()
                 ->route('dashboard');
         } catch (Exception $e) {
@@ -69,7 +84,7 @@ class UserController extends Controller
     {
         $user = Auth::user();
         $user->tokens()->delete();
-        
+
         activity()
             ->performedOn($user)
             ->causedBy($user)

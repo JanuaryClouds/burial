@@ -5,10 +5,10 @@ namespace App\Services;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 
-
 class ImageService
 {
     protected $serverUrl;
+
     protected $serverApi;
 
     public function __construct()
@@ -16,14 +16,14 @@ class ImageService
         $this->serverUrl = config('services.fileserver.url');
         $this->serverApi = config('services.fileserver.api');
     }
-    
+
     public function get(string $filename)
     {
         $filename = basename($filename);
         if (app()->environment('local')) {
             $filename = 'test-'.$filename;
         }
-        $url = $this->serverUrl . '/burial/' . $filename;
+        $url = $this->serverUrl.'/burial/'.$filename;
         $request = Http::get($url);
         if ($request->failed()) {
             return null;
@@ -35,26 +35,26 @@ class ImageService
     public function post(string $filename, $file)
     {
         if (! $file->isValid()) {
-            throw new \RuntimeException($filename . ' is not a valid file.');
+            throw new \RuntimeException($filename.' is not a valid file.');
         }
 
         $extension = $file->getClientOriginalExtension();
         $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-        if (!in_array(strtolower($extension), $allowedExtensions, true)) {
-            throw new \RuntimeException('Invalid file extension: ' . $extension);
+        if (! in_array(strtolower($extension), $allowedExtensions, true)) {
+            throw new \RuntimeException('Invalid file extension: '.$extension);
         }
         if (app()->environment('local')) {
             $filename = 'test-'.$filename;
         }
-        $filename = $filename . '.' . $extension;
+        $filename = $filename.'.'.$extension;
 
         $url = $this->serverUrl;
-        $duplicateCheck = Http::get($url . '/burial/' . $filename);
+        $duplicateCheck = Http::get($url.'/burial/'.$filename);
         if ($duplicateCheck->successful()) {
-            throw new \RuntimeException($filename . ' already exists.');
+            throw new \RuntimeException($filename.' already exists.');
         }
 
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             throw new \RuntimeException('You are not logged in.');
         }
 
@@ -67,17 +67,13 @@ class ImageService
             ->timeout(15)
             ->retry(3, 200)
             ->attach('file', file_get_contents($file), $filename)
-            ->post($this->serverUrl . $this->serverApi, [
-                'token' => Auth::user()->tokens()->first()->token . now()->format('Ymd'),
+            ->post($this->serverUrl.$this->serverApi, [
+                'token' => Auth::user()->tokens()->first()->token.now()->format('Ymd'),
             ]);
 
         if ($response->failed() || (isset($response->json()['status']) && $response->json()['status'] === 'error')) {
-            throw new \RuntimeException("{$response->status()}: Failed to upload file: " . $filename);
+            throw new \RuntimeException("{$response->status()}: Failed to upload file: ".$filename);
         }
-
-        return true;
-    }
-}
 
         return true;
     }

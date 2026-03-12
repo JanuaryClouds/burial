@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\DataTables\CmsDataTable;
 use App\Http\Requests\BarangayRequest;
 use App\Models\Barangay;
 use App\Models\District;
@@ -10,11 +9,11 @@ use App\Services\BarangayService;
 use App\Services\DatatableService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Throwable;
 
 class BarangayController extends Controller
 {
     protected $BarangayServices;
+
     protected $datatableServices;
 
     public function __construct(BarangayService $BarangayServices, DatatableService $datatableService)
@@ -33,11 +32,12 @@ class BarangayController extends Controller
                 'name' => $barangay->name,
                 'district' => $barangay->district?->name ?? '',
                 'remarks' => $barangay->remarks,
+                'show_route' => route('barangay.edit', $barangay->id),
             ];
         });
         $columns = $this->datatableServices->getColumns($data, ['id']);
         // $subRecords = District::getAllDistricts();
-        
+
         if (request()->expectsJson()) {
             return response()->json([
                 'data' => $data->values(),
@@ -45,12 +45,12 @@ class BarangayController extends Controller
         }
 
         return view('cms.index', compact(
-                'page_title',
-                'resource',
-                'columns',
-                'data',
-                // 'subRecords'
-            ));
+            'page_title',
+            'resource',
+            'columns',
+            'data',
+            // 'subRecords'
+        ));
     }
 
     public function show(Barangay $barangay)
@@ -89,8 +89,8 @@ class BarangayController extends Controller
         $barangay = $this->BarangayServices->updateBarangay($request->validate([
             'name' => 'required',
             'remarks' => 'nullable',
-            ]), $Barangay);
-            
+        ]), $Barangay);
+
         activity()
             ->causedBy(Auth::user())
             ->performedOn($barangay)

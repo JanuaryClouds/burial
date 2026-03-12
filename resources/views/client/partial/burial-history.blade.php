@@ -19,19 +19,21 @@
                 }
             @endphp
             @if ($burial != null)
-                <li class="list-group-item {{ $statusClass }}">
-                    <a href="{{ route('burial.tracker', ['uuid' => $burial->id]) }}"
-                        class="d-flex justify-content-between">
-                        <span class="d-flex gap-3 fw-bold">
-                            Burial for {{ $deceased->first_name }} {{ Str::charAt($deceased->middle_name, 0) }}.
-                            {{ $deceased->last_name }} {{ $deceased?->suffix }}
-                            <span class="badge rounded-pill text-bg-info">{{ ucfirst($burial->status) }}</span>
-                        </span>
-                        <span class="d-flex gap-2">
-                            {{ $burial->created_at->format('F j, Y g:i A') }}
-                        </span>
-                    </a>
-                </li>
+                @can('view', $burial)
+                    <li class="list-group-item {{ $statusClass }}">
+                        <a href="{{ route('burial.tracker', ['uuid' => $burial->id]) }}"
+                            class="d-flex justify-content-between">
+                            <span class="d-flex gap-3 fw-bold">
+                                Burial for {{ $deceased->first_name }} {{ Str::charAt($deceased->middle_name, 0) }}.
+                                {{ $deceased->last_name }} {{ $deceased?->suffix }}
+                                <span class="badge rounded-pill text-bg-info">{{ ucfirst($burial->status) }}</span>
+                            </span>
+                            <span class="d-flex gap-2">
+                                {{ $burial->created_at->format('F j, Y g:i A') }}
+                            </span>
+                        </a>
+                    </li>
+                @endcan
             @endif
         @endforeach
     @endif

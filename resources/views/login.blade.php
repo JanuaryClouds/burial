@@ -60,9 +60,8 @@
                                 <hr>
                             </div>
                             <div class="mt-3 d-flex justify-content-between text-sm">
-                                <a href="/" class="text-blue-500 w-50 hover:underline text-center">Go Back</a>
-                                <a href="#" class="text-blue-500 w-50 hover:underline text-center">Forgot
-                                    Password?</a>
+                                <a href="{{ route('landing.page') }}"
+                                    class="text-blue-500 w-50 hover:underline text-center">Go Back</a>
                             </div>
                         </form>
                     </div>

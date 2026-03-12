@@ -28,6 +28,6 @@ class CivilStatus extends Model
 
     public function clientFamily()
     {
-        return $this->hasMany(ClientBeneficiaryFamily::class);
+        return $this->hasMany(BeneficiaryFamily::class);
     }
 }

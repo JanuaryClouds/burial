@@ -12,7 +12,7 @@ class ChequeController extends Controller
     public function generatePdfReport(Request $request, $startDate, $endDate)
     {
         try {
-            if (!strtotime($startDate) || !strtotime($endDate)) {
+            if (! strtotime($startDate) || ! strtotime($endDate)) {
                 return redirect()->back()->with('error', 'Invalid date format.');
             }
 
@@ -62,5 +62,4 @@ class ChequeController extends Controller
             return back()->with('error', 'An error occurred: '.$e->getMessage());
         }
     }
-}
 }

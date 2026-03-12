@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ProcessLog;
 use App\Services\DatatableService;
 use Spatie\Activitylog\Models\Activity;
 
@@ -11,9 +10,10 @@ class ActivityLogController extends Controller
     protected $datatableServices;
 
     public function __construct(DatatableService $datatableService)
-    { 
+    {
         $this->datatableServices = $datatableService;
     }
+
     public function index()
     {
         $logs = Activity::with('causer')
@@ -24,6 +24,7 @@ class ActivityLogController extends Controller
                 $properties = $log->properties?->toArray() ?? [];
                 $ip = $properties['ip'] ?? 'N/A';
                 $browser = $properties['browser'] ?? 'N/A';
+
                 return [
                     'id' => $log->id,
                     'description' => $log->description,

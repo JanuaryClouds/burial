@@ -2,13 +2,12 @@
 
 namespace App\Services;
 
+use App\Models\Beneficiary;
 use App\Models\BurialAssistance;
 use App\Models\Cheque;
 use App\Models\Claimant;
 use App\Models\Client;
-use App\Models\ClientBeneficiary;
 use App\Models\ClientRecommendation;
-use App\Models\Deceased;
 use App\Models\FuneralAssistance;
 use App\Models\User;
 use App\Models\WorkflowStep;
@@ -106,8 +105,6 @@ class ReportService
                 $firstClaimant = $ba->claimant;
             }
 
-            // TODO use client's tracking number
-            // TODO Check if unused
             $sheet->setCellValue("A{$row}", $ba->claimant?->client?->tracking_no);
             $sheet->setCellValue("B{$row}", $ba->application_date);
             $sheet->setCellValue("C{$row}", $ba->swa);
@@ -193,100 +190,9 @@ class ReportService
         ]);
     }
 
-    public function deceasedReport($startDate, $endDate)
-    {
-        $templatePath = storage_path('app/templates/deceased-persons-template.xlsx');
-        $spreadsheet = IOFactory::load($templatePath);
-        $sheet = $spreadsheet->getActiveSheet();
-        $row = 4;
-        $deceased = Deceased::with([
-            'gender',
-            'religion',
-        ])
-            ->where(function ($query) use ($startDate, $endDate) {
-                $query->whereBetween('date_of_death', [$startDate, $endDate]);
-            })->get();
-
-        foreach ($deceased as $d) {
-            $dob = Carbon::parse($d->date_of_birth);
-            $dod = Carbon::parse($d->date_of_death);
-            $age = $dob->diffInYears($dod);
-
-            $sheet->setCellValue("A{$row}", $d->last_name);
-            $sheet->setCellValue("B{$row}", $d->first_name);
-            $sheet->setCellValue("C{$row}", $d->middle_name ?? '');
-            $sheet->setCellValue("D{$row}", $d->suffix ?? '');
-            $sheet->setCellValue("E{$row}", $d->date_of_birth);
-            $sheet->setCellValue("F{$row}", $age);
-            $sheet->setCellValue("G{$row}", $d->gender == 1 ? 'M' : 'F');
-            $sheet->setCellValue("H{$row}", $d->religion->name);
-            $sheet->setCellValue("I{$row}", $d->date_of_death);
-            $row++;
-        }
-
-        $filename = 'deceased-persons-database-export-'.now()->format('YmdHis').'.xlsx';
-
-        return response()->streamDownload(function () use ($spreadsheet) {
-            $writer = new Xlsx($spreadsheet);
-            $writer->save('php://output');
-        }, $filename, [
-            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        ]);
-    }
-
-    public function deceasedPerMonth($startDate, $endDate)
-    {
-        return Deceased::selectRaw('YEAR(date_of_death) as year, MONTH(date_of_death) as month, COUNT(*) as total')
-            ->whereBetween('date_of_death', [$startDate, $endDate])
-            ->groupBy('year', 'month')
-            ->orderBy('year')
-            ->orderBy('month')
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'period' => Carbon::create($item->year, $item->month)->format('F Y'),
-                    'count' => $item->total,
-                ];
-            });
-    }
-
-    public function deceasedPerWeek($startDate, $endDate)
-    {
-        return Deceased::selectRaw('YEAR(date_of_death) as year, WEEK(date_of_death, 1) as week, COUNT(*) as total')
-            ->whereBetween('date_of_death', [$startDate, $endDate])
-            ->groupBy('year', 'week')
-            ->orderBy('year')
-            ->orderBy('week')
-            ->get()
-            ->map(function ($item) {
-                $startOfWeek = Carbon::now()->setISODate($item->year, $item->week)->startOfWeek();
-                $endOfWeek = (clone $startOfWeek)->endOfWeek();
-
-                return [
-                    'period' => $startOfWeek->format('M d, Y').' - '.$endOfWeek->format('M d, Y'),
-                    'count' => $item->total,
-                ];
-            });
-    }
-
-    public function deceasedPerDay($startDate, $endDate)
-    {
-        return Deceased::selectRaw('DATE(date_of_death) as day, COUNT(*) as total')
-            ->whereBetween('date_of_death', [$startDate, $endDate])
-            ->groupBy('day')
-            ->orderBy('day')
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'period' => Carbon::parse($item->day)->format('M d, Y'),
-                    'count' => $item->total,
-                ];
-            });
-    }
-
     public function deceasedPerBarangay($startDate, $endDate)
     {
-        return ClientBeneficiary::selectRaw('barangay_id, COUNT(*) as total')
+        return Beneficiary::selectRaw('barangay_id, COUNT(*) as total')
             ->with('barangay')
             ->groupBy('barangay_id')
             ->whereBetween('date_of_death', [$startDate, $endDate])
@@ -301,7 +207,7 @@ class ReportService
 
     public function deceasedPerReligion($startDate, $endDate)
     {
-        return ClientBeneficiary::selectRaw('religion_id, COUNT(*) as total')
+        return Beneficiary::selectRaw('religion_id, COUNT(*) as total')
             ->with('religion')
             ->groupBy('religion_id')
             ->whereBetween('date_of_death', [$startDate, $endDate])
@@ -316,7 +222,7 @@ class ReportService
 
     public function deceasedPerGender($startDate, $endDate)
     {
-        return Deceased::selectRaw('gender, COUNT(*) as total')
+        return Beneficiary::selectRaw('gender, COUNT(*) as total')
             ->groupBy('gender')
             ->whereBetween('date_of_death', [$startDate, $endDate])
             ->get()

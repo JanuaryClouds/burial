@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\BurialAssistance;
 use App\Models\Cheque;
 use App\Models\Claimant;
-use App\Models\Deceased;
 use App\Models\ProcessLog;
 use Str;
 
@@ -27,7 +26,7 @@ class APIController extends Controller
                     'address' => $burialAssistance->claimant?->client?->address(),
                     'funeraria' => $burialAssistance->funeraria,
                     'amount' => $burialAssistance->amount,
-                    'status' => Str::title($burialAssistance->status)
+                    'status' => Str::title($burialAssistance->status),
                 ];
             })
             ->sortBy('tracking_no')
@@ -36,42 +35,6 @@ class APIController extends Controller
         return response()->json($data);
     }
 
-    // ! Deprecated
-    public function deceased()
-    {
-        $data = Deceased::select(
-            'id',
-            'first_name',
-            'middle_name',
-            'last_name',
-            'suffix',
-            'date_of_birth',
-            'date_of_death',
-            'gender',
-            'barangay_id',
-            'religion_id',
-        )
-            ->with('barangay', 'gender', 'religion')
-            ->get()
-            ->map(function ($deceased) {
-                return [
-                    'id' => $deceased->id,
-                    'firstName' => $deceased->first_name,
-                    'middleName' => $deceased->middle_name ?? null,
-                    'lastName' => $deceased->last_name,
-                    'suffix' => $deceased->suffix ?? null,
-                    'dateOfBirth' => $deceased->date_of_birth,
-                    'dateOfDeath' => $deceased->date_of_death,
-                    'gender' => $deceased->gender == 1 ? 'Male' : 'Female',
-                    'barangay' => $deceased->barangay,
-                    'religion' => $deceased->religion,
-                ];
-            });
-
-        return response()->json($data);
-    }
-
-    // ! Unused
     public function claimants()
     {
         $data = Claimant::select(

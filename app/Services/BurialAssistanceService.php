@@ -9,7 +9,7 @@ class BurialAssistanceService
 {
     public function index(
         ?string $status = null,
-    ){
+    ) {
         return BurialAssistance::where(function ($query) use ($status) {
             if ($status !== null && $status != 'all') {
                 return $query->where('status', $status);
@@ -50,7 +50,7 @@ class BurialAssistanceService
                     'address' => $burialAssistance->claimant?->client?->address(),
                     'funeraria' => $burialAssistance->funeraria,
                     'amount' => $burialAssistance->amount,
-                    'status' => Str::title($burialAssistance->status)
+                    'status' => Str::title($burialAssistance->status),
                 ];
             })
             ->sortBy('tracking_no');
@@ -65,7 +65,7 @@ class BurialAssistanceService
         $columns = collect(array_keys($data->first()))
             ->reject(fn ($key) => in_array($key, ['id', 'status', 'show_route']))
             ->map(fn ($key) => [
-                'data'  => $key,
+                'data' => $key,
             ])
             ->values();
 

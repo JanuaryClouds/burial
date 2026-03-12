@@ -16,6 +16,7 @@ class ExportController extends Controller
 
     public function applications(ProcessLogService $processLogService)
     {
+        // TODO move to export file
         $templatePath = storage_path('app/templates/burial-assistances-template.xlsx');
         $spreadsheet = IOFactory::load($templatePath);
 
@@ -48,7 +49,7 @@ class ExportController extends Controller
             'claimant.burialAssistance.claimantChanges.newClaimant',
             'beneficiary',
         ])
-        ->whereHas('claimant');
+            ->whereHas('claimant');
 
         $clients = $query->orderBy('created_at', 'asc')->get();
         $users = User::select([
@@ -75,7 +76,7 @@ class ExportController extends Controller
             } else {
                 $firstClaimant = $burialAssistance?->claimant;
             }
-            
+
             $sheet->setCellValue("A{$row}", $client->tracking_no);
             $sheet->setCellValue("B{$row}", $burialAssistance?->application_date);
             $sheet->setCellValue("C{$row}", $burialAssistance?->swa);

@@ -14,7 +14,6 @@
                     'data' => $data,
                     'resource' => $resource,
                     'columns' => $columns,
-                    'route' => Request::route()->getName(),
                     'classes' => 'with-status with-actions',
                 ])
             @endif

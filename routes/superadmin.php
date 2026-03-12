@@ -1,12 +1,9 @@
 <?php
 
-use App\Http\Controllers\AssistanceController;
 use App\Http\Controllers\Auth\UserController;
 use App\Http\Controllers\BarangayController;
 use App\Http\Controllers\BurialAssistanceController;
-use App\Http\Controllers\CivilStatusController;
 use App\Http\Controllers\ClientController;
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\EducationController;
 use App\Http\Controllers\FuneralAssistanceController;
@@ -17,17 +14,11 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RelationshipController;
 use App\Http\Controllers\ReligionController;
 use App\Http\Controllers\RoleController;
-use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SexController;
-use App\Http\Controllers\UserRouteRestrictionController;
 use App\Http\Controllers\WorkflowController;
 use Illuminate\Support\Facades\Route;
 
-// super admin role
-Route::get('/tracking-activity', [DashboardController::class, 'trackerEvents']);
-Route::get('/superadmin/search', [SearchController::class, 'superadmin'])
-    ->name('search');
-
+// TODO decide which resource to add
 Route::middleware('permission:manage-content')
     ->group(function () {
         Route::resource('client', ClientController::class)

@@ -22,13 +22,14 @@
 
 <div class="mb-3">
     @if ($label)
-        <label for="{{ $name ?? $id }}"
+        <label for="{{ $id ?? $name }}"
             class="form-label">{{ $label }}{{ $required && !$readonly ? '*' : '' }}</label>
     @endif
     <input type="{{ $type }}" {{ $attributes->merge(['class' => 'form-control' . $isInactive]) }}
-        name="{{ $name ?? $id }}" {{ $id ? 'id=' . $id : '' }} value="{{ old($name, $value) }}" aria-describedby="helpId"
-        {{ $placeholder ? 'placeholder=' . $placeholder : '' }} {{ $required ? 'required' : '' }}
-        {{ $disabled ? 'disabled' : '' }} {{ $readonly ? 'readonly' : '' }} {{ $min ? 'min=' . $min : '' }} />
+        name="{{ $name ?? $id }}" {{ $id ? 'id=' . $id : 'id=' . $name }} value="{{ old($name, $value) }}"
+        aria-describedby="helpId" {{ $placeholder ? 'placeholder=' . $placeholder : '' }}
+        {{ $required ? 'required' : '' }} {{ $disabled ? 'disabled' : '' }} {{ $readonly ? 'readonly' : '' }}
+        {{ $min ? 'min=' . $min : '' }} />
 
     @if ($helpText)
         <small id="helpId" class="form-text text-muted">{{ $helpText }}</small>

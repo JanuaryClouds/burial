@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\BurialAssistance;
 use App\Models\Claimant;
-use App\Models\Deceased;
 use App\Models\ProcessLog;
 use App\Models\WorkflowStep;
 use Carbon\Carbon;
@@ -51,9 +50,8 @@ class ProcessLogService
 
             });
 
-            // TODO point towards the ClientBeneficiary Model
             $claimant = $application->claimant?->fullname();
-            $deceased = $application->claimant?->client?->fullname();
+            $deceased = $application->claimant?->client?->beneficiary?->fullname();
             $dod = Carbon::parse($application->deceased?->date_of_death)->format('F d, Y');
 
             if ($claimant && $deceased) {

@@ -7,6 +7,7 @@
             !Route::is('funeral.*') &&
             !Route::is('burial.*') &&
             !Route::is('client.*') &&
+            !Route::is('beneficiary.*') &&
             !Route::is('user.*') &&
             !Route::is('role.*') &&
             !Route::is('permission.*') &&

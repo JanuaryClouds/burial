@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\DataTables\CmsDataTable;
 use App\Http\Requests\ModeOfAssistanceRequest;
 use App\Models\ModeOfAssistance;
 use App\Services\ModeOfAssistanceService;
@@ -39,11 +38,11 @@ class ModeOfAssistanceController extends Controller
         }
 
         return view('cms.index', compact(
-                'page_title',
-                'resource',
-                'columns',
-                'data'
-            ));
+            'page_title',
+            'resource',
+            'columns',
+            'data'
+        ));
     }
 
     public function store(ModeOfAssistanceRequest $request)

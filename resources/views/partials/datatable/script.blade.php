@@ -21,7 +21,7 @@
                 className: 'text-center',
                 render: (_, __, row) => {
                     const rawStatus = row.status || 'pending';
-                    const status = escapeHtml(rowStatus);
+                    const status = escapeHtml(rawStatus);
                     const badgeClass = rawStatus === 'pending' ? 'bg-danger text-white' :
                         'bg-dark text-white';
                     return `
@@ -45,7 +45,7 @@
                     const isValidPath = routeValue.startsWith('/') && !routeValue.startsWith('//');
                     const isSameOrigin = routeValue.startsWith(window.location.origin);
                     if (!isValidPath && !isSameOrigin) {
-                        console.warn(`Invalid route: ${route}`);
+                        console.warn(`Invalid route: ${routeValue}`);
                         return '';
                     }
                     const safeRoute = encodeURI(routeValue);

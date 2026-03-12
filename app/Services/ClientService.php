@@ -2,14 +2,12 @@
 
 namespace App\Services;
 
+use App\Models\Beneficiary;
 use App\Models\BurialAssistance;
 use App\Models\Claimant;
 use App\Models\Client;
-use App\Models\ClientBeneficiary;
-use App\Models\ClientBeneficiaryFamily;
 use App\Models\ClientDemographic;
 use App\Models\ClientSocialInfo;
-use App\Models\Deceased;
 use App\Models\FuneralAssistance;
 use App\Models\User;
 use Carbon\Carbon;
@@ -66,7 +64,7 @@ class ClientService
                 if ($client?->assessment->count() > 0) {
                     $status = 'Assessed';
                 }
-                
+
                 if (isset($client?->claimant)) {
                     $status = 'For Burial Assistance';
                 }
@@ -74,7 +72,7 @@ class ClientService
                 if (isset($client?->funeralAssistance)) {
                     $status = 'For Libreng Libing';
                 }
-                
+
                 if ($client?->claimant != null) {
                     $show_route = route('burial.show', $client?->claimant?->burialAssistance);
                 }
@@ -86,12 +84,12 @@ class ClientService
                 return [
                     'id' => $client->id,
                     'tracking_no' => $client->tracking_no,
-                    'client' => $client->fullname() . ' (' . $client->socialInfo?->relationship?->name . ')',
+                    'client' => $client->fullname().' ('.$client->socialInfo?->relationship?->name.')',
                     'beneficiary' => $client->beneficiary?->fullname(),
                     'status' => $status ?? 'pending',
                     'created_at' => $client->created_at->format('F d, Y'),
                     'show_route' => $show_route,
-                ]; 
+                ];
             });
     }
 
@@ -104,7 +102,7 @@ class ClientService
             ->map(function ($client) {
                 return [
                     'tracking_no' => $client->tracking_no,
-                    'client' => $client->fullname() . ' (' . $client->socialInfo?->relationship?->name . ')',
+                    'client' => $client->fullname().' ('.$client->socialInfo?->relationship?->name.')',
                     'beneficiary' => $client->beneficiary?->fullname(),
                     'address' => $client->address(),
                     'created_at' => $client->created_at->format('F d, Y H:i'),
@@ -121,7 +119,7 @@ class ClientService
         $columns = collect(array_keys($data->first()))
             ->reject(fn ($key) => in_array($key, ['id', 'status', 'show_route']))
             ->map(fn ($key) => [
-                'data'  => $key,
+                'data' => $key,
             ])
             ->values();
 
@@ -130,9 +128,10 @@ class ClientService
 
     /**
      * Summary of match
-     * @param mixed $value Provided value
-     * @param mixed $options System resource to match from
-     * @param mixed $strict Match strictly
+     *
+     * @param  mixed  $value  Provided value
+     * @param  mixed  $options  System resource to match from
+     * @param  mixed  $strict  Match strictly
      */
     public function match($value, $options, $strict = false)
     {
@@ -187,9 +186,10 @@ class ClientService
 
     /**
      * Summary of storeClient
-     * @param array $data form data
-     * @param User $user client/user submitted the form
-     * @param array $images attached images of documents
+     *
+     * @param  array  $data  form data
+     * @param  User  $user  client/user submitted the form
+     * @param  array  $images  attached images of documents
      */
     public function storeClient(array $data, User $user, array $images): ?Client
     {
@@ -238,7 +238,7 @@ class ClientService
                     throw new \RuntimeException('Failed to create client related records');
                 }
 
-                $beneficiary = ClientBeneficiary::create([
+                $beneficiary = Beneficiary::create([
                     'id' => Str::uuid(),
                     'client_id' => $client->id,
                     'first_name' => $data['ben_first_name'],
@@ -259,7 +259,7 @@ class ClientService
 
                 if (is_array($data['fam_name']) && count($data['fam_name']) > 0) {
                     foreach ($data['fam_name'] as $index => $name) {
-                        ClientBeneficiaryFamily::create([
+                        BeneficiaryFamily::create([
                             'id' => Str::uuid(),
                             'client_id' => $client->id,
                             'name' => $name,
@@ -274,7 +274,7 @@ class ClientService
                 }
 
                 foreach ($images as $fieldName => $uploadedFile) {
-                    $this->imageServices->post($fieldName, $uploadedFile);    
+                    $this->imageServices->post($fieldName, $uploadedFile);
                 }
 
                 return $client;
@@ -293,7 +293,7 @@ class ClientService
             'socialInfo',
             'recommendation',
             'interviews',
-            'barangay'
+            'barangay',
         ])
             ->findOrFail($id);
     }
@@ -309,7 +309,7 @@ class ClientService
             'socialInfo',
             'socialInfo.relationship',
             'recommendation',
-            'barangay'
+            'barangay',
         ])
             ->find($client_id);
         if ($client && $client->beneficiary && $client->assessment->count() > 0 && $client->recommendation->count() > 0) {
@@ -338,22 +338,6 @@ class ClientService
                     'address' => $client->house_no.' '.$client->street,
                     'barangay_id' => $client->barangay_id,
                 ]);
-
-                // TODO use ClientBeneficiary model instead
-                // $deceased = Deceased::create([
-                //     'id' => Str::uuid(),
-                //     'burial_assistance_id' => $burialAssistance->id,
-                //     'first_name' => $client->beneficiary->first_name,
-                //     'middle_name' => $client->beneficiary->middle_name ?? null,
-                //     'last_name' => $client->beneficiary->last_name,
-                //     'suffix' => $client->beneficiary->suffix ?? null,
-                //     'date_of_birth' => $client->beneficiary->date_of_birth,
-                //     'date_of_death' => $client->beneficiary->date_of_death,
-                //     'gender' => $client->beneficiary->sex_id,
-                //     'address' => $client->beneficiary->place_of_birth,
-                //     'religion_id' => $client->beneficiary->religion_id,
-                //     'barangay_id' => $client->beneficiary->barangay_id,
-                // ]);
 
                 return $burialAssistance;
             } elseif ($client->recommendation->first()->type == 'funeral') {

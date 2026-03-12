@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Str;
@@ -64,24 +65,25 @@ class Client extends Model
 
     public function fullname()
     {
-        if (!$this->user) {
+        if (! $this->user) {
             return '';
         }
 
-        return $this->user->first_name . ' ' . 
-            ($this->user->middle_name ? Str::limit($this->user->middle_name, 1, '.') . ' ' : '' ) . 
-            $this->user->last_name . 
-            ($this->user->suffix ? ' ' . $this->user->suffix : '');
+        return $this->user->first_name.' '.
+            ($this->user->middle_name ? Str::limit($this->user->middle_name, 1, '.').' ' : '').
+            $this->user->last_name.
+            ($this->user->suffix ? ' '.$this->user->suffix : '');
     }
 
     public function age()
     {
-        return now()->diffInYears($this->date_of_birth);
+        return Carbon::parse($this->created_at)->diffInYears($this->date_of_birth);
     }
 
     public function address()
     {
-        $address = $this->house_no . ' ' . $this->street . ', ' . $this->barangay?->name;
+        $address = $this->house_no.' '.$this->street.', '.$this->barangay?->name;
+
         return $address;
     }
 
@@ -92,12 +94,12 @@ class Client extends Model
 
     public function beneficiary()
     {
-        return $this->hasOne(ClientBeneficiary::class);
+        return $this->hasOne(Beneficiary::class);
     }
 
     public function family()
     {
-        return $this->hasMany(ClientBeneficiaryFamily::class);
+        return $this->hasMany(BeneficiaryFamily::class);
     }
 
     public function demographic()

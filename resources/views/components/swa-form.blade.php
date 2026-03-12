@@ -10,9 +10,3 @@
     'value' => $application->swa ?? null,
     'readonly' => $application->swa,
 ])
-@if (Request::is('admin/applications/*'))
-    <button class="btn btn-info" type="submit">
-        <i class="fas fa-floppy-disk"></i>
-        Update SWA
-    </button>
-@endif

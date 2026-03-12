@@ -28,12 +28,7 @@ class Relationship extends Model
 
     public function clientFamily()
     {
-        return $this->belongsTo(ClientBeneficiaryFamily::class);
-    }
-
-    public function burialServices()
-    {
-        return $this->hasMany(BurialService::class);
+        return $this->belongsTo(BeneficiaryFamily::class);
     }
 
     public function claimant()

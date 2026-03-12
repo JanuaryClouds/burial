@@ -3,7 +3,6 @@
     $schedule = Carbon\Carbon::parse($interview?->schedule);
     $now = Carbon\Carbon::now();
 @endphp
-{{-- FIXME : incorrect if-else conditions --}}
 @if ($client->interviews->count() > 0)
     @if ($schedule->isToday())
         @php

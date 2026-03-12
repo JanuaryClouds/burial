@@ -5,16 +5,14 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProcessLogRequest;
 use App\Models\BurialAssistance;
 use App\Models\WorkflowStep;
-use App\Services\DatatableService;
 use App\Services\ImageService;
 use App\Services\ProcessLogService;
 use Exception;
-use Illuminate\Support\Facades\Crypt;
-use Storage;
 
 class ProcessLogController extends Controller
 {
     protected $processLogServices;
+
     protected $imageServices;
 
     public function __construct(ProcessLogService $processLogService, ImageService $imageService)
@@ -40,7 +38,7 @@ class ProcessLogController extends Controller
 
                 if ($step->order_no == 13) {
                     $latestCheque = $application->latestCheque();
-                    if (!$latestCheque) {
+                    if (! $latestCheque) {
                         return redirect()->back()->with('error', 'Unable to find latest cheque.');
                     }
                     $latestCheque->update([

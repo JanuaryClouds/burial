@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 class HandlerController extends Controller
 {
     protected $datatableServices;
+
     public function __construct(DatatableService $datatableService)
     {
         $this->datatableServices = $datatableService;
@@ -44,6 +45,7 @@ class HandlerController extends Controller
         $page_title = 'Handler';
         $resource = 'handler';
         $data = Handler::select('id', 'name', 'department')->findOrFail($id);
+
         return view('cms.edit', compact('page_title', 'data', 'resource'));
     }
 
@@ -60,6 +62,7 @@ class HandlerController extends Controller
             ->performedOn($handler)
             ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
             ->log('Updated a handler');
+
         return redirect()->route('handler.index')->with('success', 'Handler updated successfully');
     }
 }

@@ -66,17 +66,18 @@ class CentralClientService
 
     /**
      * Summary of checkIfUser
-     * @param string $citizen_uuid
+     *
      * @return User|null
      */
     public function checkIfUser(string $citizen_uuid)
     {
         $citizenData = $this->fetchCitizen($citizen_uuid);
         if (empty($citizenData)) {
-            return User::where('citizen_id', $citizen_uuid)->first();;
+            return User::where('citizen_id', $citizen_uuid)->first();
         }
 
         session(['citizen' => $this->filterData($citizenData)]);
+
         return User::firstOrCreate([
             'citizen_id' => $citizen_uuid,
         ], [
@@ -93,12 +94,13 @@ class CentralClientService
 
     /**
      * Summary of filterData
-     * @param mixed $citizen citizen data to filter from
+     *
+     * @param  mixed  $citizen  citizen data to filter from
      * @return array
      */
     public function filterData($citizen)
     {
-        if (!is_array($citizen)) {
+        if (! is_array($citizen)) {
             return [];
         }
 
