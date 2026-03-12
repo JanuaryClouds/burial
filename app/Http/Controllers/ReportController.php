@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Cheque;
 use App\Models\Claimant;
+use App\Services\BeneficiaryService;
 use App\Services\BurialAssistanceService;
 use App\Services\ClientService;
 use App\Services\DatatableService;
@@ -18,6 +19,8 @@ class ReportController extends Controller
 
     protected $clientServices;
 
+    protected $beneficiaryServices;
+
     protected $burialAssistanceServices;
 
     protected $funeralAssistanceServices;
@@ -28,12 +31,14 @@ class ReportController extends Controller
         ReportService $reportService,
         DatatableService $datatableService,
         ClientService $clientService,
+        BeneficiaryService $beneficiaryService,
         BurialAssistanceService $burialAssistanceService,
         FuneralAssistanceService $funeralAssistanceService
     ) {
         $this->reportServices = $reportService;
         $this->datatableServices = $datatableService;
         $this->clientServices = $clientService;
+        $this->beneficiaryServices = $beneficiaryService;
         $this->burialAssistanceServices = $burialAssistanceService;
         $this->funeralAssistanceServices = $funeralAssistanceService;
     }
@@ -76,7 +81,32 @@ class ReportController extends Controller
         ));
     }
 
-    // TODO create function to return beneficiaries
+    public function beneficiaries(Request $request)
+    {
+        $model = 'beneficiaries';
+        if ($request->has('start_date') && $request->start_date != '') {
+            $startDate = Carbon::parse($request->start_date);
+        } else {
+            $startDate = Carbon::now()->startOfYear();
+        }
+
+        if ($request->has('end_date') && $request->end_date != '') {
+            $endDate = Carbon::parse($request->end_date);
+        } else {
+            $endDate = Carbon::now()->endOfYear();
+        }
+
+        $data = $this->beneficiaryServices->reportIndex($startDate, $endDate);
+        $columns = $this->datatableServices->getColumns($data, []);
+
+        if (request()->expectsJson()) {
+            return response()->json([
+                'data' => $data->values(),
+            ]);
+        }
+
+        return view('reports.index', compact('data', 'columns', 'model', 'startDate', 'endDate'));
+    }
 
     public function burialAssistances(Request $request)
     {

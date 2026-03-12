@@ -31,6 +31,14 @@
             </a>
         </div>
         <div class="menu-item">
+            <a href="{{ route('beneficiary.index') }}" @class(['active' => Request::is('beneficiary*'), 'menu-link'])>
+                <span class="menu-bullet">
+                    <span class="bullet bullet-dot"></span>
+                </span>
+                <span class="menu-title">Beneficiaries</span>
+            </a>
+        </div>
+        <div class="menu-item">
             <a href="{{ route('funeral.index') }}" @class(['active' => Request::is('funeral*'), 'menu-link'])>
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
@@ -128,6 +136,17 @@
                         <span class="bullet bullet-dot"></span>
                     </span>
                     <span class="menu-title">Clients</span>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="{{ route('reports.beneficiaries') }}" @class([
+                    'active' => Request::is('reports/beneficiaries'),
+                    'menu-link',
+                ])>
+                    <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                    </span>
+                    <span class="menu-title">Beneficiaries</span>
                 </a>
             </div>
             <div class="menu-item">

@@ -6,7 +6,8 @@
             Route::is('burial*') ||
             Route::is('assignments*') ||
             Route::is('funeral*') ||
-            Route::is('client*'),
+            Route::is('client*') ||
+            Route::is('beneficiary*'),
     ])>
     <!--begin:Menu link-->
     <span class="menu-link menu-center d-flex flex-column">
@@ -36,6 +37,20 @@
             </a>
         </div>
         <div class="menu-item">
+            <a href="{{ route('beneficiary.index') }}" @class(['active' => Request::is('beneficiary*'), 'menu-link'])>
+                <span class="menu-icon">
+                    <i class="ki-duotone ki-people fs-2">
+                        <span class="path1"></span>
+                        <span class="path2"></span>
+                        <span class="path3"></span>
+                        <span class="path4"></span>
+                        <span class="path5"></span>
+                    </i>
+                </span>
+                <span class="menu-title">Beneficiaries</span>
+            </a>
+        </div>
+        <div class="menu-item">
             <a href="{{ route('funeral.index') }}" @class(['active' => Request::is('funeral*'), 'menu-link'])>
                 <span class="menu-icon">
                     <i class="ki-duotone ki-file-up fs-2">
@@ -46,18 +61,6 @@
                 <span class="menu-title">Libreng Libing</span>
             </a>
         </div>
-        @can('manage-assignments')
-            <div class="menu-item">
-                <a href="{{ route('assignments') }}" @class(['active' => Request::is('assignments*'), 'menu-link'])>
-                    <span class="menu-icon">
-                        <i class="ki-duotone ki-tablet-text-up fs-2">
-                            <span class="path1"></span><span class="path2"></span>
-                        </i>
-                    </span>
-                    <span class="menu-title">Assignments</span>
-                </a>
-            </div>
-        @endcan
         <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
             <span class="menu-link">
                 <span class="menu-icon">

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BeneficiaryController;
 use App\Http\Controllers\BurialAssistanceController;
 use App\Http\Controllers\ChequeController;
 use App\Http\Controllers\ClientController;
@@ -19,9 +20,14 @@ Route::middleware('permission:view-reports')
             ->name('funerals');
         Route::match(['get', 'post'], '/clients', [ReportController::class, 'clients'])
             ->name('clients');
+        Route::match(['get', 'post'], '/beneficiaries', [ReportController::class, 'beneficiaries'])
+            ->name('beneficiaries');
 
         Route::post('/export/clients/{startDate}/{endDate}', [ClientController::class, 'generatePdfReport'])
             ->name('clients.pdf');
+
+        Route::post('/export/beneficiaries/{startDate}/{endDate}', [BeneficiaryController::class, 'generatePdfReport'])
+            ->name('beneficiaries.pdf');
 
         Route::post('/export/funeral-assistances/{startDate}/{endDate}', [FuneralAssistanceController::class, 'generatePdfReport'])
             ->name('funerals.pdf');

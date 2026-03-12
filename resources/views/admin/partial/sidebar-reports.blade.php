@@ -27,6 +27,17 @@
             </a>
         </div>
         <div class="menu-item">
+            <a href="{{ route('reports.beneficiaries') }}" @class([
+                'active' => Request::is('reports/beneficiaries'),
+                'menu-link',
+            ])>
+                <span class="menu-bullet">
+                    <span class="bullet bullet-dot"></span>
+                </span>
+                <span class="menu-title">Beneficiaries</span>
+            </a>
+        </div>
+        <div class="menu-item">
             <a href="{{ route('reports.funerals') }}" @class(['active' => Request::is('reports/funerals'), 'menu-link'])>
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
