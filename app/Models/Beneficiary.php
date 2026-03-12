@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Str;
@@ -48,7 +49,7 @@ class Beneficiary extends Model
 
     public function age()
     {
-        return \Carbon\Carbon::parse($this->date_of_birth)->age;
+        return Carbon::parse($this->created_at)->diffInYears($this->date_of_birth);
     }
 
     public function assistance()

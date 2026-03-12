@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Str;
@@ -76,7 +77,7 @@ class Client extends Model
 
     public function age()
     {
-        return now()->diffInYears($this->date_of_birth);
+        return Carbon::parse($this->created_at)->diffInYears($this->date_of_birth);
     }
 
     public function address()
