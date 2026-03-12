@@ -1,3 +1,4 @@
+@props(['burialAssistance'])
 <!-- Modal trigger button -->
 <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#changeClaimantModal">
     Change Claimant
@@ -23,7 +24,7 @@
                 <p>Send the link below to the new claimant. Please ask the new claimant to be registered in the Taguig
                     Citizen's Portal in-order for them to receive the assistance.</p>
                 <button id="changeClaimantLink" class="btn btn-primary"
-                    data-link="{{ route('burial.claimant-change', ['uuid' => $burialAssistance->id]) }}">
+                    data-link="{{ route('burial.claimant-change.store', ['id' => $burialAssistance->id]) }}">
                     Copy link to Clipboard
                 </button>
             </div>
