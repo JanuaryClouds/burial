@@ -6,6 +6,7 @@ use App\Http\Requests\StoreBurialAssistanceRequest;
 use App\Models\Barangay;
 use App\Models\BurialAssistance;
 use App\Models\Religion;
+use App\Models\SystemSetting;
 use App\Services\BurialAssistanceService;
 use App\Services\DatatableService;
 use App\Services\ProcessLogService;
@@ -35,6 +36,7 @@ class BurialAssistanceController extends Controller
         $burialAssistance = BurialAssistance::where('id', $uuid)->first();
         $this->authorize('view', $burialAssistance);
 
+        $isMaintenance = SystemSetting::first()?->maintenance_mode ?? false;
         $updateAverage = $processLogService->getAvgProcessingTime($burialAssistance)->avg();
 
         if (! auth()->check()) {
@@ -45,7 +47,7 @@ class BurialAssistanceController extends Controller
             $burialAssistance->claimant->address = Str::mask($burialAssistance->claimant->address, '*', 3);
         }
 
-        return view('burial.tracker', compact('burialAssistance', 'updateAverage'));
+        return view('burial.tracker', compact('burialAssistance', 'updateAverage', 'isMaintenance'));
     }
 
     public function index($status = null)
@@ -81,7 +83,7 @@ class BurialAssistanceController extends Controller
         try {
             $application = BurialAssistance::findOrFail($id);
             $client = $application->claimant->client;
-            $page_title = $client->tracking_no;
+            $page_title = 'Manage ' . $client->tracking_no;
             $page_subtitle = $client->fullname()."'s Burial Assistance Application";
             $readonly = auth()->user()->cannot('manage-content') && $application->status != 'released';
             $path = "clients/{$client->tracking_no}";
@@ -96,7 +98,14 @@ class BurialAssistanceController extends Controller
             });
             $updateAverage = $processLogService->getAvgProcessingTime($application)->avg();
 
-            return view('burial.manage', compact('application', 'files', 'updateAverage', 'page_title', 'readonly'));
+            return view('burial.manage', compact(
+                'application', 
+                'files', 
+                'updateAverage', 
+                'page_title', 
+                'page_subtitle', 
+                'readonly'
+            ));
         } catch (\Throwable $th) {
             return redirect()->back()->with('error', 'Unable to find application.');
         }
