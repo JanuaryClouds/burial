@@ -79,8 +79,8 @@
             </td>
         </tr>
     </table>
-    <h2>Charts</h2>
     @if (!empty($charts))
+        <h2>Charts</h2>
         <table class="no-border" style="width: 100%;">
             @foreach (array_chunk($charts, 2, true) as $chunk)
                 <tr>
