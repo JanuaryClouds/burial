@@ -38,7 +38,6 @@ class UserController extends Controller
             }
 
             $user = Auth::user();
-            $token = $user->createToken('fileserver')->plainTextToken;
 
             if (! $user->is_active) {
                 Auth::logout();
@@ -52,6 +51,20 @@ class UserController extends Controller
 
                 return redirect()->back()->with('warning', 'Your account is inactive. Please contact the superadmin.');
             }
+
+            if ($user->roles()->count() == 0) {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                activity()
+                    ->causedBy($user)
+                    ->withProperties(['ip' => $ip, 'browser' => $browser])
+                    ->log('Client attempted to access admin panel');
+
+                return redirect()->back()->with('warning', 'You do not have permission to access this page. Please return to the landing page.');
+            }
+
             $token = $user->createToken('fileserver')->plainTextToken;
             session(['api_token' => $token]);
 
