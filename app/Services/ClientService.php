@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Beneficiary;
+use App\Models\BeneficiaryFamily;
 use App\Models\BurialAssistance;
 use App\Models\Claimant;
 use App\Models\Client;
