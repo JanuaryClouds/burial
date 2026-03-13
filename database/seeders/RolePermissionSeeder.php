@@ -80,6 +80,8 @@ class RolePermissionSeeder extends Seeder
             'manage-roles',
             'manage-accounts',
             'manage-assignments',
+            // add permission to manage system and view logs
+            // update list of permissions
         ];
 
         foreach ($adminPermissions as $permission) {
