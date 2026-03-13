@@ -2,7 +2,10 @@
     @class([
         'menu-item',
         'here' =>
-            Route::is('permission*') || Route::is('role*') || Route::is('user*'),
+            Route::is('permission*') ||
+            Route::is('role*') ||
+            Route::is('user*') ||
+            Route::is('system.*'),
     ])>
     <span class="menu-link menu-center d-flex flex-column">
         <span class="menu-icon me-0">
@@ -30,7 +33,7 @@
             </a>
         </div>
         <div class="menu-item">
-            <a href="{{ route('permission.index') }}" @class(['active' => Request::is('permission.index'), 'menu-link'])>
+            <a href="{{ route('permission.index') }}" @class(['active' => Request::is('permission.*'), 'menu-link'])>
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                 </span>
@@ -38,11 +41,19 @@
             </a>
         </div>
         <div class="menu-item">
-            <a href="{{ route('role.index') }}" @class(['active' => Request::is('role.index'), 'menu-link'])>
+            <a href="{{ route('role.index') }}" @class(['active' => Request::is('role.*'), 'menu-link'])>
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                 </span>
                 <span class="menu-title">Roles</span>
+            </a>
+        </div>
+        <div class="menu-item">
+            <a href="{{ route('system.index') }}" @class(['active' => Request::is('system.*'), 'menu-link'])>
+                <span class="menu-bullet">
+                    <span class="bullet bullet-dot"></span>
+                </span>
+                <span class="menu-title">Settings</span>
             </a>
         </div>
     </div>

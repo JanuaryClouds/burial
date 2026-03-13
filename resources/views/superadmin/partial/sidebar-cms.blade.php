@@ -9,6 +9,7 @@
             !Route::is('client.*') &&
             !Route::is('beneficiary.*') &&
             !Route::is('user.*') &&
+            !Route::is('system.*') &&
             !Route::is('role.*') &&
             !Route::is('permission.*') &&
             !Route::is('assignments.*'),
