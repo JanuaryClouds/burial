@@ -62,7 +62,7 @@ class UserController extends Controller
                     ->withProperties(['ip' => $ip, 'browser' => $browser])
                     ->log('Client attempted to access admin panel');
 
-                return redirect()->route('landing.page')->with('warning', 'You do not have permission to access this page. Please return to the landing page.');
+                return redirect()->route('landing.page')->with('warning', 'You do not have permission to access this page');
             }
 
             $token = $user->createToken('fileserver')->plainTextToken;
@@ -105,7 +105,20 @@ class UserController extends Controller
 
     public function loginPage()
     {
-        // return view('auth.login');
+        $user = auth()->user();
+
+        if ($user) {
+            if ($user->roles->count() === 0) {
+                Auth::logout();
+                request()->session()->invalidate();
+                request()->session()->regenerateToken();
+
+                return redirect()->route('landing.page');
+            } else {
+                return redirect()->route('dashboard');
+            }
+        }
+
         return view('login');
     }
 
