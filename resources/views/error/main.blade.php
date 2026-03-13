@@ -7,7 +7,8 @@
                 <p class="card-text">Seems like you encountered an error doing your action.</p>
             </div>
             <div class="card-footer">
-                <a href="{{ url()->previous() }}" class="btn btn-primary">
+                <a href="{{ url()->previous() == url()->current() ? route('home') : (parse_url(url()->previous(), PHP_URL_HOST) === request()->getHost() ? url()->previous() : route('home')) }}"
+                    class="btn btn-primary">
                     Go Back
                 </a>
             </div>
