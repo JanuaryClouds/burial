@@ -36,23 +36,21 @@
                     <x-swa-form :application="$burialAssistance" :disabled="true" :readonly="true" />
                 </div>
                 <div class="mb-4">
-                    <x-deceased-form :deceased="$burialAssistance->deceased" disabled="true" readonly="true" />
+                    <x-deceased-form :deceased="$burialAssistance->deceased" :disabled="true" :readonly="true" />
                 </div>
                 <div class="mb-4">
-                    <x-claimant-form :claimant="$burialAssistance->claimant" disabled="true" readonly="true" />
+                    <x-claimant-form :claimant="$burialAssistance->claimant" :disabled="true" :readonly="true" />
                 </div>
                 <div class="mb-4">
-                    <x-burial-assistance-details-form :burialAssistance="$burialAssistance" disabled="true" readonly="true" />
+                    <x-burial-assistance-details-form :burialAssistance="$burialAssistance" :disabled="true" :readonly="true" />
                 </div>
             </div>
         </template>
         @if ($burialAssistance->claimantChanges->count() > 0)
             <template x-if="showClaimantChangeRequest">
-                @if (
-                    $burialAssistance->claimantChanges->last()->status != 'rejected' ||
-                        $burialAssistance->claimantChanges->count() != 0)
+                @if ($burialAssistance->claimantChanges->last()->status != 'rejected')
                     <div class="col-12 col-lg-10 mx-auto mb-4">
-                        <x-claimant-form :claimant="$burialAssistance?->claimantChanges->last()->newclaimant" disabled="true" readonly="true" />
+                        <x-claimant-form :claimant="$burialAssistance->claimantChanges->last()->newclaimant" disabled="true" readonly="true" />
                     </div>
                 @endif
             </template>

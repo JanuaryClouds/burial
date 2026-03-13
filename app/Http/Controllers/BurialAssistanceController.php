@@ -83,7 +83,7 @@ class BurialAssistanceController extends Controller
         try {
             $application = BurialAssistance::findOrFail($id);
             $client = $application->claimant->client;
-            $page_title = 'Manage ' . $client->tracking_no;
+            $page_title = 'Manage '.$client->tracking_no;
             $page_subtitle = $client->fullname()."'s Burial Assistance Application";
             $readonly = auth()->user()->cannot('manage-content') && $application->status != 'released';
             $path = "clients/{$client->tracking_no}";
@@ -99,11 +99,11 @@ class BurialAssistanceController extends Controller
             $updateAverage = $processLogService->getAvgProcessingTime($application)->avg();
 
             return view('burial.manage', compact(
-                'application', 
-                'files', 
-                'updateAverage', 
-                'page_title', 
-                'page_subtitle', 
+                'application',
+                'files',
+                'updateAverage',
+                'page_title',
+                'page_subtitle',
                 'readonly'
             ));
         } catch (\Throwable $th) {

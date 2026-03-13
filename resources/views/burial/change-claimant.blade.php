@@ -1,5 +1,5 @@
 @extends('layouts.metronic.guest')
-<title>{{ $burialAssistance->claimant->client->fullname() }} Burial Assistance
+<title>{{ $burialAssistance->claimant?->client?->fullname() ?? 'Unknown' }} Burial Assistance
 </title>
 @section('content')
     <div class="container-xxl min-vh-100 my-10">

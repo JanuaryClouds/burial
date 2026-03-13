@@ -14,26 +14,20 @@
                 <p class="eyebrow">Funeral Assistance System</p>
                 <h1 class="title">Under Maintenance</h1>
                 <h2 class="quote">City Social Welfare & Development Office</h2>
+                <h4>Submission of applications is temporarily disabled</h4>
+                <h4>Tracking your applications is still allowed below</h4>
                 <div class="actions">
-                    @auth()
-                        @if (auth()->user()->clients()->count() > 0)
-                            <a href="{{ route('client.history') }}" class="btn btn-lg btn-light hover-scale">
-                                History
+                    {{-- TODO add tracker modal form here --}}
+                    @auth
+                        @if (auth()->user()->hasRole('superadmin'))
+                            <a href="{{ route('system.index') }}" class="btn btn-lg btn-primary hover-scale">
+                                Go to Settings
                             </a>
                         @endif
-                        <form action="{{ route('logout') }}" method="POST" class="block mb-0">
-                            @csrf
-                            <button type="submit" class="btn btn-lg btn-danger">
-                                Logout
-                            </button>
-                        </form>
                     @endauth
                 </div>
             </div>
         </div>
-        <button id="scrollArrow" class="hero-arrow" type="button" aria-label="Scroll to top">
-            <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
-        </button>
     </section>
 
     @include('partials.landing-footer')

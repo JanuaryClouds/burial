@@ -5,7 +5,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="assessment-modal">{{ $client->fullname() }}'s Assessment</h5>
+                    <h5 class="modal-title" id="assessment-modal-title">{{ $client->fullname() }}'s Assessment</h5>
                     <button class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal"
                         aria-label="Close">
                         <i class="ki-duotone ki-cross fs-1">
