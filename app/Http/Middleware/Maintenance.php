@@ -20,9 +20,14 @@ class Maintenance
 
         if ($isMaintenance) {
             $user = auth()->user();
-
             if ($user && $user->hasRole('superadmin')) {
                 return $next($request);
+            }
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'error' => 'System is currently under maintenance.',
+                ], 503);
             }
 
             if ($request->routeIs([
@@ -31,8 +36,10 @@ class Maintenance
                 'burial.tracker',
                 'logout',
             ])) {
-                return response()->view('error.maintenance', [], 503);
+                return $next($request);
             }
+
+            return response()->view('error.maintenance', [], 503);
         }
 
         return $next($request);
