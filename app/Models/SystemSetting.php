@@ -21,4 +21,13 @@ class SystemSetting extends Model
         'uuid',
         'maintenance_mode',
     ];
+
+    public static function exceptAttributes()
+    {
+        return [
+            'uuid',
+            'created_at',
+            'updated_at',
+        ];
+    }
 }
