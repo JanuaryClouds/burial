@@ -102,7 +102,7 @@
                 </div>
             @endif
         @empty
-            <li class="list-group-item d-flex justify-content-center align-items-center">
+            <li class="list-group-item d-flex bg-body-secondary justify-content-center align-items-center">
                 <p class="mb-0">No logs yet</p>
             </li>
         @endforelse
