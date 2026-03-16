@@ -21,8 +21,7 @@
             @if ($burial != null)
                 @can('view', $burial)
                     <li class="list-group-item {{ $statusClass }}">
-                        <a href="{{ route('burial.tracker', ['uuid' => $burial->id]) }}"
-                            class="d-flex justify-content-between">
+                        <a href="{{ route('tracker.show', $burial) }}" class="d-flex justify-content-between">
                             <span class="d-flex gap-3 fw-bold">
                                 Burial for {{ $deceased->first_name }} {{ Str::charAt($deceased->middle_name, 0) }}.
                                 {{ $deceased->last_name }} {{ $deceased?->suffix }}

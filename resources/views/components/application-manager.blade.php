@@ -6,7 +6,6 @@
         <div class="bg-body shadow-xs p-4 rounded">
             <div class="d-flex justify-content-between gap-3">
                 <span class="d-flex align-items-center gap-2">
-
                     <a href="{{ route('clients.gis-form', ['id' => $application->claimant->client_id]) }}"
                         class="btn btn-light mr-2" data-no-loader>
                         Generate GIS Form
@@ -15,9 +14,9 @@
                         target="_blank">
                         Download Certificate
                     </a>
-                    @if (env('APP_DEBUG'))
-                        <a href="{{ route('burial.tracker', ['uuid' => $application->id]) }}" class="btn btn-warning mr-2"
-                            target="_blank">
+                    @if (app()->hasDebugModeEnabled())
+                        <a href="{{ route('tracker.show', ['id' => $application->tracker?->uuid]) }}"
+                            class="btn btn-warning mr-2" target="_blank">
                             <i class="fas fa-eye"></i>
                             View as Guest
                         </a>
