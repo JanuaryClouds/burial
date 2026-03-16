@@ -35,6 +35,8 @@ return new class extends Migration
                 ->onDelete('cascade');
 
             $table->timestamps();
+
+            $table->unique(['burial_assistance_id', 'claimant_id', 'loggable_id', 'loggable_type']);
         });
     }
 
