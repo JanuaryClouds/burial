@@ -101,8 +101,8 @@ class ClientController extends Controller
         try {
             $resource = 'client';
             $client = $this->clientServices->get($client->id);
-            $page_title = $client->fullname()."'s Application";
-            $page_subtitle = $client->tracking_no;
+            $page_title = $client->tracking_no;
+            $page_subtitle = $client->fullname()."'s Application";
             $readonly = auth()->user()->cannot('manage-content');
             $released = $client?->claimant?->burialAssistance?->status != 'released' || $client?->funeralAssistance?->forwarded_at != null;
 
