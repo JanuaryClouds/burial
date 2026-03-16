@@ -31,6 +31,7 @@ class BurialAssistanceController extends Controller
         $this->datatableServices = $datatableService;
     }
 
+    // ! Deprecated
     public function tracker($uuid, ProcessLogService $processLogService)
     {
         $burialAssistance = BurialAssistance::where('id', $uuid)->first();
