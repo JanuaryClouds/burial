@@ -1,11 +1,10 @@
 @extends('layouts.metronic.guest')
-{{-- TODO point to Beneficiary --}}
-<title>{{ $burialAssistance->deceased->first_name }} {{ $burialAssistance->deceased->last_name }} Burial Assistance
+<title>{{ $burialAssistance->claimant?->client?->fullname() ?? 'Unknown' }} Burial Assistance
 </title>
 @section('content')
     <div class="container-xxl min-vh-100 my-10">
         <div class="d-flex flex-column gap-4">
-            <form action="{{ route('burial.claimant-change.store', ['uuid' => $burialAssistance->id]) }}" method="post"
+            <form action="{{ route('burial.claimant-change.store', ['id' => $burialAssistance->id]) }}" method="post"
                 id="claimantChangeForm">
                 @csrf
                 <div class="card">

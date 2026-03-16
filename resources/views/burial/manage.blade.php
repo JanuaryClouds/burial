@@ -1,5 +1,4 @@
 @extends('layouts.metronic.admin')
-<title>Manage {{ $application->tracking_no }}</title>
 @section('content')
     <div class="d-flex flex-column gap-5">
         <x-assistance-process-tracker :burialAssistance="$application" :updateAverage="$updateAverage" />

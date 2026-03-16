@@ -186,7 +186,7 @@
                 </div>
             </div>
             <div class="menu-item">
-                <a href="{{ route('activity.logs') }}" @class(['active' => Route::is('user.*'), 'menu-link'])>
+                <a href="{{ route('activity.logs') }}" @class(['active' => Route::is('activity.*'), 'menu-link'])>
                     <span class="menu-bullet">
                         <span class="bullet bullet-dot"></span>
                     </span>
@@ -204,7 +204,7 @@
                 </a>
             </div>
             <div class="menu-item">
-                <a href="{{ route('permission.index') }}" @class(['active' => Request::is('permission.index'), 'menu-link'])>
+                <a href="{{ route('permission.index') }}" @class(['active' => Request::is('permission.*'), 'menu-link'])>
                     <span class="menu-bullet">
                         <span class="bullet bullet-dot"></span>
                     </span>
@@ -212,11 +212,20 @@
                 </a>
             </div>
             <div class="menu-item">
-                <a href="{{ route('role.index') }}" @class(['active' => Request::is('role.index'), 'menu-link'])>
+                <a href="{{ route('role.index') }}" @class(['active' => Request::is('role.*'), 'menu-link'])>
                     <span class="menu-bullet">
                         <span class="bullet bullet-dot"></span>
                     </span>
                     <span class="menu-title">Roles</span>
+                </a>
+            </div>
+            {{-- TODO move to logs --}}
+            <div class="menu-item">
+                <a href="{{ route('system.index') }}" @class(['active' => Request::is('system.*'), 'menu-link'])>
+                    <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                    </span>
+                    <span class="menu-title">System</span>
                 </a>
             </div>
         @endcan

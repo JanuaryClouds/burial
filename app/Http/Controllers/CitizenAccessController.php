@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ApplicationStep;
 use App\Models\DocumentRequirement;
+use App\Models\SystemSetting;
 use App\Services\CentralClientService;
 use App\Services\ImageService;
 use Illuminate\Http\Request;
@@ -25,6 +26,10 @@ class CitizenAccessController extends Controller
 
     public function index(Request $request)
     {
+        if (SystemSetting::first()?->maintenance_mode ?? false) {
+            return response()->view('error.maintenance', [], 503);
+        }
+
         $page_title = 'Funeral Assistance System - Taguig CSWDO';
         $steps = ApplicationStep::steps();
         $burialDocuments = DocumentRequirement::burial();

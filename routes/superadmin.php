@@ -15,6 +15,7 @@ use App\Http\Controllers\RelationshipController;
 use App\Http\Controllers\ReligionController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SexController;
+use App\Http\Controllers\SystemSettingController;
 use App\Http\Controllers\WorkflowController;
 use Illuminate\Support\Facades\Route;
 
@@ -65,4 +66,15 @@ Route::middleware('permission:manage-accounts')
             ->only(['index', 'store', 'edit', 'update']);
         Route::resource('permission', PermissionController::class)
             ->only(['index']);
+    });
+
+Route::middleware('role:superadmin')
+    ->name('system.')
+    ->prefix('system')
+    ->group(function () {
+        Route::get('/', [SystemSettingController::class, 'index'])
+            ->name('index');
+
+        Route::post('/update', [SystemSettingController::class, 'update'])
+            ->name('update');
     });

@@ -22,6 +22,9 @@ Route::name('burial.')
                 Route::get('/{id}', [BurialAssistanceController::class, 'show'])
                     ->name('show');
 
+                Route::post('/{id}/claimant-change/store', [ClaimantChangeController::class, 'store'])
+                    ->name('claimant-change.store');
+
                 Route::post('/{id}/claimant-change/{change}/decision', [ClaimantChangeController::class, 'decide'])
                     ->name('claimant-change.decision');
 

@@ -1,6 +1,5 @@
 <div id="main-header-web" class="header py-6 py-lg-0" data-kt-sticky="true" data-kt-sticky-name="header"
-    data-kt-sticky-offset="{lg: '300px'}"
-    style="background: url('{{ asset('images/banner-light.svg') }}') no-repeat center center / cover; background-color: #071437;">
+    data-kt-sticky-offset="{lg: '300px'}">
     <!--begin::Container-->
     <div class="header-container container-xxl">
         <!--begin::Page title-->
@@ -98,9 +97,20 @@
 </div>
 
 <script nonce="{{ $nonce ?? '' }}">
+    // FIXME banner doesn't default to dark banner if page loads with dark theme
     const header = document.getElementById('main-header-web')
     const darkBanner = @json(asset('images/banner-dark.svg'));
     const lightBanner = @json(asset('images/banner-light.svg'));
+
+    document.addEventListener('DOMContentLoaded', function() {
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            header.style.background = `url('${darkBanner}') no-repeat center center / cover`;
+            header.style.backgroundColor = '#071437';
+        } else {
+            header.style.background = `url('${lightBanner}') no-repeat center center / cover`;
+            header.style.backgroundColor = '#071437';
+        }
+    });
 
     document.querySelectorAll('[data-kt-element="mode"]').forEach(mode => {
         mode.addEventListener('click', () => {
