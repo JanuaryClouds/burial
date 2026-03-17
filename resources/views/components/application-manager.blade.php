@@ -14,8 +14,8 @@
                         target="_blank">
                         Download Certificate
                     </a>
-                    @if (app()->hasDebugModeEnabled())
-                        <a href="{{ route('tracker.show', ['id' => $application->tracker?->uuid]) }}"
+                    @if (app()->hasDebugModeEnabled() && $application->tracker)
+                        <a href="{{ route('tracker.show', ['uuid' => $application->tracker->uuid]) }}"
                             class="btn btn-warning mr-2" target="_blank">
                             <i class="fas fa-eye"></i>
                             View as Guest

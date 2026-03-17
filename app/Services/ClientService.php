@@ -341,7 +341,9 @@ class ClientService
                     'barangay_id' => $client->barangay_id,
                 ]);
 
-                if (app()->hasDebugModeEnabled()) {
+                // only create tracking code during local
+                // In production this will be issued by the client
+                if (app()->isLocal()) {
                     TrackingCode::create([
                         'trackable_id' => $burialAssistance->id,
                         'trackable_type' => get_class($burialAssistance),
@@ -356,7 +358,9 @@ class ClientService
                     'remarks' => $client->recommendation->first()->remarks,
                 ]);
 
-                if (app()->hasDebugModeEnabled()) {
+                // only create tracking code during local
+                // In production this will be issued by the client
+                if (app()->isLocal()) {
                     TrackingCode::create([
                         'trackable_id' => $funeralAssistance->id,
                         'trackable_type' => get_class($funeralAssistance),
