@@ -23,66 +23,72 @@ class ProcessLogService
      */
     public function create(BurialAssistance $burialAssistance, Claimant $claimant, WorkflowStep $step, array $data)
     {
-        $application = $burialAssistance;
-        $application->update(['status' => 'processing']);
-
-        if ($step->order_no == 9) {
-            $application->cheque()->create([
+        return DB::transaction(function () use ($burialAssistance, $claimant, $step, $data) {
+            $application = $burialAssistance;
+            $latestLog = $application->processLogs()->latest()->first();
+            if ($latestLog && $latestLog->loggable && $latestLog->loggable->order_no == $step->order_no) {
+                throw new \RuntimeException('This step already exists. Refreshing the page will update your page.');
+            }
+            $application->update(['status' => 'processing']);
+    
+            if ($step->order_no == 9) {
+                $application->cheque()->create([
+                    'id' => Str::uuid(),
+                    'burial_assistance_id' => $application->id,
+                    'claimant_id' => $application->claimantChanges->where('status', 'approved')->first()->newClaimant->id ?? $application->claimant->id,
+                    'obr_number' => $data['extra_data']['OBR']['oBR_number'],
+                ]);
+            }
+    
+            if ($step->order_no == 10) {
+                $application->latestCheque()->update([
+                    'dv_number' => $data['extra_data']['dv_number'] ?? null,
+                ]);
+            }
+    
+            if ($step->order_no == 11) {
+                DB::transaction(function () use ($application, $data) {
+                    $application->latestCheque()->update([
+                        'cheque_number' => $data['extra_data']['cheque_number'],
+                        'amount' => $data['extra_data']['amount'],
+                    ]);
+    
+                });
+    
+                $claimant = $application->claimant?->fullname();
+                $deceased = $application->claimant?->client?->beneficiary?->fullname();
+                $dod = Carbon::parse($application->deceased?->date_of_death)->format('F d, Y');
+    
+                if ($claimant && $deceased) {
+                    $this->createDisbursement($data, $deceased, $claimant, $dod);
+                }
+            }
+    
+            if ($step->order_no == 12) {
+                $application->latestCheque()->update([
+                    'date_issued' => $data['extra_data']['date_issued'],
+                ]);
+                $application->update(['status' => 'approved']);
+            }
+    
+            if ($application->initial_checker == null) {
+                $application->initial_checker = auth()->user()->id;
+            }
+    
+            $application->processLogs()->create([
                 'id' => Str::uuid(),
+                'loggable_id' => $step->id,
+                'loggable_type' => WorkflowStep::class,
+                'is_progress_step' => true,
                 'burial_assistance_id' => $application->id,
                 'claimant_id' => $application->claimantChanges->where('status', 'approved')->first()->newClaimant->id ?? $application->claimant->id,
-                'obr_number' => $data['extra_data']['OBR']['oBR_number'],
+                'date_in' => $data['date_in'],
+                'date_out' => $data['date_out'],
+                'comments' => $data['comments'],
+                'extra_data' => $data['extra_data'] ?? null,
+                'added_by' => auth()->user()->id,
             ]);
-        }
-
-        if ($step->order_no == 10) {
-            $application->latestCheque()->update([
-                'dv_number' => $data['extra_data']['dv_number'] ?? null,
-            ]);
-        }
-
-        if ($step->order_no == 11) {
-            DB::transaction(function () use ($application, $data) {
-                $application->latestCheque()->update([
-                    'cheque_number' => $data['extra_data']['cheque_number'],
-                    'amount' => $data['extra_data']['amount'],
-                ]);
-
-            });
-
-            $claimant = $application->claimant?->fullname();
-            $deceased = $application->claimant?->client?->beneficiary?->fullname();
-            $dod = Carbon::parse($application->deceased?->date_of_death)->format('F d, Y');
-
-            if ($claimant && $deceased) {
-                $this->createDisbursement($data, $deceased, $claimant, $dod);
-            }
-        }
-
-        if ($step->order_no == 12) {
-            $application->latestCheque()->update([
-                'date_issued' => $data['extra_data']['date_issued'],
-            ]);
-            $application->update(['status' => 'approved']);
-        }
-
-        if ($application->initial_checker == null) {
-            $application->initial_checker = auth()->user()->id;
-        }
-
-        $application->processLogs()->create([
-            'id' => Str::uuid(),
-            'loggable_id' => $step->id,
-            'loggable_type' => WorkflowStep::class,
-            'is_progress_step' => true,
-            'burial_assistance_id' => $application->id,
-            'claimant_id' => $application->claimantChanges->where('status', 'approved')->first()->newClaimant->id ?? $application->claimant->id,
-            'date_in' => $data['date_in'],
-            'date_out' => $data['date_out'],
-            'comments' => $data['comments'],
-            'extra_data' => $data['extra_data'] ?? null,
-            'added_by' => auth()->user()->id,
-        ]);
+        });
     }
 
     /**
