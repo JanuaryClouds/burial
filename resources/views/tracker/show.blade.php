@@ -8,12 +8,23 @@
                 </div>
                 <div class="card-body">
                     @includeWhen(class_basename($data) === 'BurialAssistance', 'tracker.partials.burial')
-                    @includeWhen(class_basename($data) === 'FuneralAssistance', 'funeral.partials.tracker', [
-                        'funeralAssistance' => $data,
-                    ])
+                    @includeWhen(class_basename($data) === 'FuneralAssistance', 'tracker.partials.funeral')
                 </div>
                 <div class="card-footer d-flex justify-content-end gap-2">
-                    {{-- TODO add change claimant modal here --}}
+                    @if (class_basename($data) === 'BurialAssistance')
+                        @auth()
+                            @php
+                                $isOwner = auth()
+                                    ->user()
+                                    ->clients()
+                                    ->whereHas('claimant', function ($q) use ($data) {
+                                        $q->where('id', $data->claimant_id);
+                                    })
+                                    ->exists();
+                            @endphp
+                            @includeWhen($isOwner, 'burial.partials.claimant-change-modal')
+                        @endauth
+                    @endif
                 </div>
             </div>
         </div>
