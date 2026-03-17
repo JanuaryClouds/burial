@@ -9,7 +9,7 @@
                 <div class="card-header collapsible cursor-pointer rotate d-flex align-items-center justify-content-between"
                     data-bs-toggle="collapse" data-bs-target="#client_info_card_body-{{ $loop->index }}">
                     <h4 class="card-title">
-                        Submitted on {{ $client->created_at->format('m/d/Y') }}
+                        {{ $client->tracking_no }} - Submitted on {{ $client->created_at->format('m/d/Y') }}
                     </h4>
                     <i class="ki-duotone ki-down fs-1"></i>
                 </div>
