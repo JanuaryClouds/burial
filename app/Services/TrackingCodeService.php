@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Client;
 use App\Models\TrackingCode;
+use Illuminate\Support\Str;
 
 class TrackingCodeService
 {
@@ -24,9 +25,10 @@ class TrackingCodeService
         $client = Client::where('tracking_no', $tracking_no)->first();
         if ($client === null) return false;
 
-        $tracking_code = TrackingCode::where('code', $code)->first();
+        $parsed_code = Str::upper(Str::replace('-', '', $code));
+        $tracking_code = TrackingCode::where('code', $parsed_code)->first();
         if ($tracking_code === null) return false;
-
+        
         $assistance = $tracking_code->trackable()->first();
         if ($assistance === null) {
             return false;

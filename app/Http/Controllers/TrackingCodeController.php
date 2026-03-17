@@ -6,6 +6,7 @@ use App\Http\Requests\CheckTrackingCodeRequest;
 use App\Models\TrackingCode;
 use App\Services\TrackingCodeService;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class TrackingCodeController extends Controller
 {
@@ -41,12 +42,13 @@ class TrackingCodeController extends Controller
             $validated = $request->validated();
             $match = $this->trackingCodeServices->match($validated['code'], $validated['tracking_no']);
             if ($match) {
-                return redirect()->route('tracker.show', ['uuid' => TrackingCode::where('code', $validated['code'])->firstOrFail()->uuid]);
+                $parsed_code = Str::replace('-', '', $validated['code']);
+                return redirect()->route('tracker.show', ['uuid' => TrackingCode::where('code', $parsed_code)->firstOrFail()->uuid]);
             } else {
-                return redirect()->back()->with('info', 'Invalid Tracking Code or Tracking Number');
+                return redirect()->route('landing.page')->with('info', 'Invalid Tracking Code or Tracking Number');
             }
         } catch (\Throwable $th) {
-            return redirect()->back()->with('error', 'Failed to match Tracking Code');
+            return redirect()->route('landing.page')->with('error', 'Failed to match Tracking Code' . app()->isLocal() ? ' : ' . $th->getMessage() : '');
         }
     }
 

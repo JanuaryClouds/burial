@@ -23,7 +23,7 @@ class CheckTrackingCodeRequest extends FormRequest
     {
         return [
             'tracking_no' => 'required|exists:clients,tracking_no',
-            'tracking_code' => 'required|string|max:255|unique:tracking_codes',
+            'code' => 'required|string|max:255',
         ];
     }
 }
