@@ -21,9 +21,6 @@
                 <div class="col d-flex align-items-center justify-content-end gap-4">
                     @include('components.theme-toggle')
                     @if (!Route::is('general.intake.form'))
-                        <a href="{{ url()->previous() }}" class="btn btn-light">
-                            Back
-                        </a>
                         @auth
                             <div class="dropdown">
                                 <button class="btn btn-light dropdown-toggle" type="button" id="menu"
