@@ -38,6 +38,11 @@ class Handler extends ExceptionHandler
                 ], 404);
             }
 
+            if (auth()->user()->roles()->count() == 0) {
+                return redirect()->route('landing.page')
+                    ->with('error', 'The page you requested could not be found.');
+            }
+
             return redirect()->route(auth()->check() ? 'dashboard' : 'landing.page')
                 ->with('error', 'The page you requested could not be found.');
         }
