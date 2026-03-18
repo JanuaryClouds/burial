@@ -38,7 +38,7 @@ class ClaimantChangeController extends Controller
         if ($validated) {
             $burialAssistance = BurialAssistance::findOrFail($id);
             $validated['burial_assistance_id'] = $burialAssistance->id;
-            $validated['old_claimant_id'] = $burialAssistance->claimant_id;
+            $validated['old_claimant_id'] = $burialAssistance->claimant->id;
             $validated['id'] = Str::uuid();
 
             // $newClaimant = Claimant::create([
@@ -56,12 +56,6 @@ class ClaimantChangeController extends Controller
             $validated['relationship_to_deceased'] = $validated['relationship_id'];
             $validated['address'] = $validated['house_no'].' '.$validated['street'];
             $validated['mobile_number'] = $validated['contact_no'];
-            if (env('APP_DEBUG')) {
-                $validated['client_id'] = '62c2569a-5951-40b7-8d99-ac50d19e5896';
-            } else {
-                $validated['client_id'] = session('citizen')['user_id'];
-            }
-
             $newClaimant = $this->claimantService->store($validated);
 
             $validated['new_claimant_id'] = $newClaimant->id;
@@ -77,7 +71,7 @@ class ClaimantChangeController extends Controller
 
                 return redirect()
                     ->route('landing.page')
-                    ->with('alertSuccess', 'Your request for claimant change has been submitted successfully. Please wait for the approval.');
+                    ->with('success', 'Your request for claimant change has been submitted successfully. Please wait for the approval.');
             } else {
                 return redirect()->back()->with('error', 'Failed to submit claimant change.');
             }
