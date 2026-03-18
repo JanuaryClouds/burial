@@ -1,3 +1,4 @@
+{{-- FIXME returns problems with duplicate field names --}}
 <div class="d-flex flex-column gap-2">
     @if ($records->isEmpty())
         <div class="alert alert-secondary" role="alert">

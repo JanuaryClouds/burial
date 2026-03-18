@@ -3,6 +3,8 @@
         Submitted Application
         <span class="badge badge-pill p-0">{{ $burialAssistance->created_at }}</span>
     </li>
+    {{-- FIXME show old claimant only if no approved claimant change --}}
+    {{-- TODO show old claimant first and new claimant last after approved claimant change --}}
     @foreach ($burialAssistance->claimants as $claimant)
         @forelse ($claimant->processLogs->sortBy('created_at') as $log)
             <li
