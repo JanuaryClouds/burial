@@ -10,23 +10,21 @@
                     @includeWhen(class_basename($data) === 'BurialAssistance', 'tracker.partials.burial')
                     @includeWhen(class_basename($data) === 'FuneralAssistance', 'tracker.partials.funeral')
                 </div>
-                <div class="card-footer d-flex justify-content-end gap-2">
-                    @if (class_basename($data) === 'BurialAssistance')
-                        @auth()
-                            @php
-                                $isOwner = auth()
-                                    ->user()
-                                    ->clients()
-                                    ->whereHas('claimant', function ($q) use ($data) {
-                                        $q->where('id', $data->claimant_id);
-                                    })
-                                    ->exists();
-                            @endphp
-                            @includeWhen($isOwner, 'burial.partials.claimant-change-modal')
-                        @endauth
-                    @endif
-                </div>
             </div>
+            @if (class_basename($data) === 'BurialAssistance' && $data->claimantChanges->count() == 0)
+                @auth()
+                    @php
+                        $isOwner = auth()
+                            ->user()
+                            ->clients()
+                            ->whereHas('claimant', function ($q) use ($data) {
+                                $q->where('id', $data->claimant->id);
+                            })
+                            ->exists();
+                    @endphp
+                    @includeWhen($isOwner, 'burial.partials.claimant-change-form')
+                @endauth
+            @endif
         </div>
     </div>
 @endsection
