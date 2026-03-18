@@ -334,14 +334,13 @@ class ClientController extends Controller
 
     public function history()
     {
-        // ! This does prevent unregistered users from the TLC Portal from tracking clients
         $records = Citizen::records();
         if (! $records) {
             return redirect()->route('landing.page')->with('error', 'You do not have permission to access this page.');
         }
-        $client = Client::where('user_id', Auth()->user()->id)->latest()->first();
 
-        $page_title = session('citizen')['firstname'].' '.session('citizen')['lastname'].' | Client History';
+        $client = $records->first();
+        $page_title = $client->fullname() . '\'s History';
         $readonly = true;
         $disabled = true;
 
