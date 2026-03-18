@@ -1,38 +1,43 @@
-<ul class="list-group list-group-flush fs-4">
+<ul class="list-group list-group-flush fs-4 gap-4">
     @if (!$records->sum(fn($c) => $c->claimant?->count()))
         <li class="list-group-item">No Requested Burial Assistances</li>
     @else
-        @foreach ($records as $client)
+        @php
+            $clients = $records->filter(fn($client) => $client->claimant)->values();
+        @endphp
+        @foreach ($clients as $client)
             @php
-                $burial = $client->claimant->burialAssistance ?? null;
-                $deceased = $burial != null ? $burial->deceased : null;
-                $claimant = $burial != null ? $burial->claimant : null;
+                $claimant = $client->claimant;
+                $burial = $claimant->burialAssistance;
+                $beneficiary = $client != null ? $client->beneficiary : null;
 
-                if ($burial != null) {
+                if ($claimant != null) {
                     if ($burial->status == 'released') {
                         $statusClass = 'list-group-item-success';
                     } elseif ($burial->status == 'rejected') {
                         $statusClass = 'list-group-item-disabled';
                     } else {
-                        $statusClass = '';
+                        $statusClass = 'bg-secondary';
                     }
                 }
             @endphp
             @if ($burial != null)
-                @can('view', $burial)
-                    <li class="list-group-item {{ $statusClass }}">
-                        <a href="{{ route('tracker.show', $burial) }}" class="d-flex justify-content-between">
+                <li class="list-group-item rounded-pill {{ $statusClass }}">
+                    <form action="{{ route('tracker.match') }}" method="post">
+                        @csrf
+                        <input type="hidden" name="tracking_no" value="{{ $client->tracking_no }}">
+                        <input type="hidden" name="code" value="{{ $burial->tracker->code }}">
+                        <button type="submit" class="btn w-100 d-flex justify-content-between">
                             <span class="d-flex gap-3 fw-bold">
-                                Burial for {{ $deceased->first_name }} {{ Str::charAt($deceased->middle_name, 0) }}.
-                                {{ $deceased->last_name }} {{ $deceased?->suffix }}
+                                Burial for {{ $beneficiary->fullname() }}
                                 <span class="badge rounded-pill text-bg-info">{{ ucfirst($burial->status) }}</span>
                             </span>
                             <span class="d-flex gap-2">
                                 {{ $burial->created_at->format('F j, Y g:i A') }}
                             </span>
-                        </a>
-                    </li>
-                @endcan
+                        </button>
+                    </form>
+                </li>
             @endif
         @endforeach
     @endif
