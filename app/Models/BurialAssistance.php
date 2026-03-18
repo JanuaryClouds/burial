@@ -36,7 +36,7 @@ class BurialAssistance extends Model
 
     public function trackingNumber()
     {
-        return $this->claimant->client->tracking_no;
+        return $this->originalClaimant()->client->tracking_no;
     }
     
     public function claimants()
@@ -47,6 +47,20 @@ class BurialAssistance extends Model
     public function claimantChanges()
     {
         return $this->hasMany(ClaimantChange::class, 'burial_assistance_id', 'id');
+    }
+
+    public function originalClaimant()
+    {
+        if (! $this->claimantChanges->count()) {
+            return $this->claimant;
+        }
+        
+        return $this->claimantChanges->first()->oldClaimant;
+    }
+
+    public function beneficiary()
+    {
+        return $this->originalCLaimant()->beneficiary;
     }
 
     public function processLogs()
