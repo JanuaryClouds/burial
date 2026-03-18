@@ -41,6 +41,7 @@ return [
 
     'portal' => [
         'url' => env('CITIZEN_PORTAL', ''),
+        'key' => env('API_KEY_CITIZENS_USERS', ''),
     ],
 
     'fileserver' => [
