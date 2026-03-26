@@ -1,5 +1,2 @@
-{{-- TODO add progressbar --}}
-
-@includeWhen(class_basename($data) === 'BurialAssistance', 'burial.partials.timeline', [
-    'burialAssistance' => $data,
-])
+@include('burial.partials.progress')
+@include('burial.partials.timeline')
