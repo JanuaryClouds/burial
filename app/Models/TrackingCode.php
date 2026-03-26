@@ -27,9 +27,22 @@ class TrackingCode extends Model
     protected static function booted()
     {
         static::creating(function ($code) {
-            $code->uuid = Str::uuid();
-            $code->code = Str::upper(Str::random(6));
+            $code->uuid = (string) Str::uuid();
+            $code->code = self::generateUniqueCode();
         });
+    }
+
+    protected static function generateUniqueCode(int $max_attempts = 10): string
+    {
+        for ($i = 0; $i < $max_attempts; $i++) {
+            $code = Str::upper(Str::random(6));
+
+            if (! static::where('code', $code)->exists()) {
+                return $code;
+            }
+        }
+
+        throw new \RuntimeException('Failed to generate unique code');
     }
 
     public function trackable()
