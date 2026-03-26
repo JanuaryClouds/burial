@@ -23,17 +23,21 @@ Route::name('burial.')
         Route::post('/{id}/claimant-change/{change}/decision', [ClaimantChangeController::class, 'decide'])
             ->name('claimant-change.decision');
 
-        Route::post('/{id}/addLog/{stepId}', [ProcessLogController::class, 'add'])
-            ->middleware('permission:add-updates')
-            ->name('addLog');
-
-        Route::post('/{id}/delete/{stepId}', [ProcessLogController::class, 'delete'])
-            ->middleware('permission:delete-updates')
-            ->name('deleteLog');
-
         Route::post('/{id}/swa/save', [BurialAssistanceController::class, 'saveSwa'])
             ->name('swa.save');
 
         Route::get('/{id}/certificate', [BurialAssistanceController::class, 'certificate'])
             ->name('certificate');
+    });
+
+Route::name('process-logs.')
+    ->prefix('process-logs')
+    ->group(function () {
+        Route::post('/{id}/addLog/{stepId}', [ProcessLogController::class, 'add'])
+            ->middleware('permission:add-updates')
+            ->name('store');
+
+        Route::post('/{id}/delete', [ProcessLogController::class, 'delete'])
+            ->middleware('permission:delete-updates')
+            ->name('delete');
     });
