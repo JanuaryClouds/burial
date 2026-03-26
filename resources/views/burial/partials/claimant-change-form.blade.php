@@ -68,6 +68,8 @@
 
 <script nonce="{{ $nonce ?? '' }}">
     document.getElementById('confirmClaimantChangeBtn').addEventListener('click', function() {
+        this.disabled = true;
+        this.textContent = 'Submitting...';
         document.getElementById('changeClaimantForm').submit();
     });
 </script>

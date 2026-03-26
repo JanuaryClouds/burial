@@ -16,7 +16,6 @@ class ExportController extends Controller
 
     public function applications(ProcessLogService $processLogService)
     {
-        // TODO move to export file
         $templatePath = storage_path('app/templates/burial-assistances-template.xlsx');
         $spreadsheet = IOFactory::load($templatePath);
 
@@ -92,7 +91,7 @@ class ExportController extends Controller
             $sheet->setCellValue("M{$row}", $firstClaimant?->relationship?->name);
             $sheet->setCellValue("N{$row}", $beneficiary?->date_of_birth);
             $sheet->setCellValue("O{$row}", $age);
-            $sheet->setCellValue("P{$row}", $beneficiary?->gender === null ? '' : ($beneficiary?->gender == 1 ? 'M' : 'F'));
+            $sheet->setCellValue("P{$row}", $beneficiary->sex?->name);
             $sheet->setCellValue("Q{$row}", $firstClaimant?->barangay?->name);
             $sheet->setCellValue("R{$row}", $firstClaimant?->address);
             $sheet->setCellValue("S{$row}", $burialAssistance?->funeraria);

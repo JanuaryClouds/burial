@@ -28,7 +28,7 @@ class BurialAssistance extends Model
         'remarks',
         'initial_checker',
     ];
-    
+
     public function claimant()
     {
         return $this->hasOne(Claimant::class, 'burial_assistance_id', 'id')->latestOfMany('created_at');
@@ -36,9 +36,9 @@ class BurialAssistance extends Model
 
     public function trackingNumber()
     {
-        return $this->originalClaimant()->client->tracking_no;
+        return $this->originalClaimant()?->client?->tracking_no;
     }
-    
+
     public function claimants()
     {
         return $this->hasMany(Claimant::class, 'burial_assistance_id', 'id');
@@ -54,13 +54,13 @@ class BurialAssistance extends Model
         if (! $this->claimantChanges->count()) {
             return $this->claimant;
         }
-        
+
         return $this->claimantChanges->first()->oldClaimant;
     }
 
     public function beneficiary()
     {
-        return $this->originalCLaimant()->beneficiary;
+        return $this->originalClaimant()->client->beneficiary;
     }
 
     public function processLogs()

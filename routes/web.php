@@ -42,7 +42,7 @@ Route::middleware(['auth'])
         Route::get('/activity-logs', [ActivityLogController::class, 'index'])
             ->middleware('permission:view-logs')
             ->name('activity.logs');
-            
+
         require __DIR__.'/client.php';
         require __DIR__.'/beneficiary.php';
         require __DIR__.'/burial.php';

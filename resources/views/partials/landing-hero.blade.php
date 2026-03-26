@@ -9,7 +9,7 @@
                     <a href="{{ route('general.intake.form') }}" class="btn btn-primary btn-lg hover-scale">
                         Apply
                     </a>
-                    @if (auth()->user()->clients()->count() > 0)
+                    @if (auth()->user()->clients->count() > 0)
                         <a href="{{ route('client.history') }}" class="btn btn-lg btn-light hover-scale">
                             History
                         </a>

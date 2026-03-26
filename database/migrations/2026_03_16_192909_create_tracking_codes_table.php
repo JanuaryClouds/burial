@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('tracking_codes', function (Blueprint $table) {
             $table->uuid()->primary();
-            $table->string('code')->unique();
+            $table->string('code', 6)->unique();
             $table->uuidMorphs('trackable');
             $table->foreignId('generated_by')->nullable()->constrained('users')->cascadeOnDelete();
             $table->timestamps();
