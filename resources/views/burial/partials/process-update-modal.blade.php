@@ -14,7 +14,7 @@
                 <div class="modal-body d-flex flex-column gap-4">
                     <h6 class="text-muted">
                         Previous Step:
-                        {{ last($timeline)['description'] ?? 'Submitted at ' . $data->application_date }}
+                        {{ last($timeline)['description'] ?? (last($timeline)['comments'] ?? 'Submitted at ' . $data->application_date) }}
                     </h6>
                     @if (isset(last($timeline)['description']))
                         <div class="row mb-4">
@@ -30,7 +30,7 @@
                             @endif
                         </div>
                     @endif
-                    <h6>Next Step: {{ $next_step->description }}</h6>
+                    <h6>Next Step: {{ $next_step->order_no }}: {{ $next_step->description }}</h6>
                     <div class="row">
                         <x-form-input type="date" name="date_out" id="date_out-{{ $data->id }}" label="Date Out"
                             min="{{ isset(last($timeline)['in']) ? Carbon\Carbon::parse(last($timeline)['in'])->format('Y-m-d') : Carbon\Carbon::parse($data->application_date)->format('Y-m-d') }}" />

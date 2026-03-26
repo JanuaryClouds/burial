@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\BurialAssistance;
+use App\Models\ClaimantChange;
 use App\Models\ProcessLog;
 use App\Models\WorkflowStep;
 
@@ -21,10 +22,21 @@ class WorkflowStepService
         }
 
         $latest_log = ProcessLog::where('burial_assistance_id', $application->id)->latest()->first();
-        if ($latest_log && get_class($latest_log->loggable) == WorkflowStep::class) {
+        if ($latest_log && $latest_log->loggable instanceof WorkflowStep) {
             $next_step = WorkflowStep::where('order_no', $latest_log->loggable->order_no + 1)->first();
 
             return $next_step ?? null;
+        } elseif ($latest_log && $latest_log->loggable instanceof ClaimantChange) {
+            if ($latest_log->loggable->status === 'approved') {
+                return WorkflowStep::where('order_no', 1)->first();
+            } else {
+                $second_log = ProcessLog::where('burial_assistance_id', $application->id)->latest()->skip(1)->first();
+                if ($second_log && $second_log->loggable instanceof WorkflowStep) {
+                    return WorkflowStep::where('order_no', $second_log->loggable->order_no + 1)->first();
+                } else {
+                    return WorkflowStep::where('order_no', 1)->first();
+                }
+            }
         } else {
             return WorkflowStep::where('order_no', 1)->first();
         }

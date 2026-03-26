@@ -35,14 +35,14 @@
                     In: {{ $log['in'] }}
                     {{ $log['out'] ? '/ Out: ' . $log['out'] : '' }}
                 </span>
-                @if (auth()->user())
-                    @if (auth()->user()->can('add-updates') && $loop->last)
+                @auth
+                    @if (auth()->user()->can('add-updates') && $loop->last && !$log['loggable'] instanceof ClaimantChange)
                         @include('burial.partials.delete-log', [
                             'id' => $log['id'],
                             'step' => $log['step'],
                         ])
                     @endif
-                @endif
+                @endauth
             </span>
         </li>
         @if (isset($log['comments']))
