@@ -341,14 +341,10 @@ class ClientService
                     'barangay_id' => $client->barangay_id,
                 ]);
 
-                // only create tracking code during local
-                // In production this will be issued by the client
-                if (app()->isLocal()) {
-                    TrackingCode::create([
-                        'trackable_id' => $burialAssistance->id,
-                        'trackable_type' => get_class($burialAssistance),
-                    ]);
-                }
+                TrackingCode::create([
+                    'trackable_id' => $burialAssistance->id,
+                    'trackable_type' => get_class($burialAssistance),
+                ]);
 
                 return $burialAssistance;
             } elseif ($client->recommendation->first()->type == 'funeral') {
@@ -358,14 +354,10 @@ class ClientService
                     'remarks' => $client->recommendation->first()->remarks,
                 ]);
 
-                // only create tracking code during local
-                // In production this will be issued by the client
-                if (app()->isLocal()) {
-                    TrackingCode::create([
-                        'trackable_id' => $funeralAssistance->id,
-                        'trackable_type' => get_class($funeralAssistance),
-                    ]);
-                }
+                TrackingCode::create([
+                    'trackable_id' => $funeralAssistance->id,
+                    'trackable_type' => get_class($funeralAssistance),
+                ]);
 
                 return $funeralAssistance;
             }
