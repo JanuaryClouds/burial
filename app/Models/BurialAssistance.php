@@ -44,6 +44,11 @@ class BurialAssistance extends Model
         return $this->hasMany(Claimant::class, 'burial_assistance_id', 'id');
     }
 
+    public function hasPendingClaimantChange()
+    {
+        return $this->claimantChanges()->where('status', 'pending')->exists();
+    }
+
     public function claimantChanges()
     {
         return $this->hasMany(ClaimantChange::class, 'burial_assistance_id', 'id');
@@ -56,6 +61,11 @@ class BurialAssistance extends Model
         }
 
         return $this->claimantChanges->first()->oldClaimant;
+    }
+
+    public function newClaimant()
+    {
+        return $this->claimantChanges()->first()->newClaimant;
     }
 
     public function beneficiary()
