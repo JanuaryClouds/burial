@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\BurialAssistance;
 use App\Models\Client;
 use App\Models\TrackingCode;
 use Illuminate\Support\Str;
@@ -23,12 +24,16 @@ class TrackingCodeService
     public function match(string $code, string $tracking_no)
     {
         $client = Client::where('tracking_no', $tracking_no)->first();
-        if ($client === null) return false;
+        if ($client === null) {
+            return false;
+        }
 
         $parsed_code = Str::upper(Str::replace('-', '', $code));
         $tracking_code = TrackingCode::where('code', $parsed_code)->first();
-        if ($tracking_code === null) return false;
-        
+        if ($tracking_code === null) {
+            return false;
+        }
+
         $assistance = $tracking_code->trackable()->first();
         if ($assistance === null) {
             return false;
@@ -36,7 +41,7 @@ class TrackingCodeService
 
         if ($client->claimant !== null) {
             $burial_assistance = $client->claimant->burialAssistance;
-            if ($burial_assistance !== null && $burial_assistance->id === $assistance->id) {
+            if ($burial_assistance !== null && $assistance instanceof BurialAssistance && $burial_assistance->id === $assistance->id) {
                 return true;
             }
         }

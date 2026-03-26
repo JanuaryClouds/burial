@@ -30,7 +30,7 @@ class ProcessLogService
                 throw new \RuntimeException('This step already exists. Refreshing the page will update your page.');
             }
             $application->update(['status' => 'processing']);
-    
+
             if ($step->order_no == 9) {
                 $application->cheque()->create([
                     'id' => Str::uuid(),
@@ -39,42 +39,37 @@ class ProcessLogService
                     'obr_number' => $data['extra_data']['OBR']['oBR_number'],
                 ]);
             }
-    
+
             if ($step->order_no == 10) {
                 $application->latestCheque()->update([
                     'dv_number' => $data['extra_data']['dv_number'] ?? null,
                 ]);
             }
-    
+
             if ($step->order_no == 11) {
                 DB::transaction(function () use ($application, $data) {
                     $application->latestCheque()->update([
                         'cheque_number' => $data['extra_data']['cheque_number'],
                         'amount' => $data['extra_data']['amount'],
                     ]);
-    
                 });
-    
+
                 $claimant = $application->claimant?->fullname();
                 $deceased = $application->claimant?->client?->beneficiary?->fullname();
                 $dod = Carbon::parse($application->deceased?->date_of_death)->format('F d, Y');
-    
-                if ($claimant && $deceased) {
-                    $this->createDisbursement($data, $deceased, $claimant, $dod);
-                }
             }
-    
+
             if ($step->order_no == 12) {
                 $application->latestCheque()->update([
                     'date_issued' => $data['extra_data']['date_issued'],
                 ]);
                 $application->update(['status' => 'approved']);
             }
-    
+
             if ($application->initial_checker == null) {
-                $application->initial_checker = auth()->user()->id;
+                $application->update(['initial_checker' => auth()->user()->id]);
             }
-    
+
             $application->processLogs()->create([
                 'id' => Str::uuid(),
                 'loggable_id' => $step->id,
@@ -89,6 +84,10 @@ class ProcessLogService
                 'added_by' => auth()->user()->id,
             ]);
         });
+
+        if ($claimant && $deceased) {
+            $this->createDisbursement($data, $deceased, $claimant, $dod);
+        }
     }
 
     /**
@@ -129,7 +128,7 @@ class ProcessLogService
      */
     public function delete(ProcessLog $log, BurialAssistance $application)
     {
-        if (env('APP_DEBUG')) {
+        if (app()->hasDebugModeEnabled()) {
             if (class_basename($log->loggable) === 'WorkflowStep' && $log->loggable->order_no == 9) {
                 $application->latestCheque()->delete();
                 $application->update(['status' => 'processing']);
@@ -159,6 +158,32 @@ class ProcessLogService
         }
 
         $log->delete();
+    }
+
+    /**
+     * Summary of timeline
+     *
+     * @param  string  $claimant_id  ID of the claimant
+     * @return mixed
+     */
+    public function timeline(string $claimant_id)
+    {
+        return ProcessLog::where('claimant_id', $claimant_id)
+            ->with(['loggable', 'claimant'])
+            ->orderBy('created_at', 'asc')
+            ->get()
+            ->map(function ($log) {
+                return [
+                    'id' => $log->id,
+                    'step' => $log->loggable?->order_no,
+                    'description' => $log->loggable->description ?? null,
+                    'extra_data' => $log->extra_data ?? null,
+                    'comments' => $log->comments ?? null,
+                    'in' => $log->date_in ?? null,
+                    'out' => $log->date_out ?? null,
+                ];
+            })
+            ->toArray();
     }
 
     public function getLog($claimant, $order)

@@ -1,8 +1,7 @@
-<div class="modal fade" id="trackAssistanceModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
+<div class="modal fade" id="trackAssistanceModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="true"
     role="dialog" aria-labelledby="trackAssistanceForm" aria-hidden="true">
     <form action="{{ route('tracker.match') }}" method="post">
         @csrf
-        @method('POST')
         <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">

@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CheckTrackingCodeRequest;
+use App\Models\BurialAssistance;
 use App\Models\TrackingCode;
+use App\Services\ProcessLogService;
 use App\Services\TrackingCodeService;
+use App\Services\WorkflowStepService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
@@ -12,15 +15,24 @@ class TrackingCodeController extends Controller
 {
     protected $trackingCodeServices;
 
-    public function __construct(TrackingCodeService $trackingCodeService)
-    {
+    protected $processLogServices;
+
+    protected $workflowStepServices;
+
+    public function __construct(
+        TrackingCodeService $trackingCodeService,
+        ProcessLogService $processLogService,
+        WorkflowStepService $workflowStepService
+    ) {
         $this->trackingCodeServices = $trackingCodeService;
+        $this->processLogServices = $processLogService;
+        $this->workflowStepServices = $workflowStepService;
     }
 
     /**
      * Summary of store
      *
-     * @param Model $assistance The assistance model instance
+     * @param  Model  $assistance  The assistance model instance
      * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Model $assistance)
@@ -43,29 +55,47 @@ class TrackingCodeController extends Controller
             $match = $this->trackingCodeServices->match($validated['code'], $validated['tracking_no']);
             if ($match) {
                 $parsed_code = Str::replace('-', '', $validated['code']);
-                return redirect()->route('tracker.show', ['uuid' => TrackingCode::where('code', $parsed_code)->firstOrFail()->uuid]);
+
+                return redirect()->route('tracker.show')
+                    ->with('code', TrackingCode::where('code', $parsed_code)->firstOrFail()->uuid);
             } else {
-                return redirect()->route('landing.page')->with('info', 'Invalid Tracking Code or Tracking Number');
+                return redirect()->route('landing.page')->with('info', 'Invalid Tracking Code or Tracking Number'.(app()->hasDebugModeEnabled() ? ' : '.$match : ''));
             }
         } catch (\Throwable $th) {
-            return redirect()->route('landing.page')->with('error', 'Failed to match Tracking Code' . app()->isLocal() ? ' : ' . $th->getMessage() : '');
+            return redirect()->route('landing.page')->with('error', 'Failed to match Tracking Code'.(app()->hasDebugModeEnabled() ? ' : '.$th->getMessage() : ''));
         }
     }
 
-    public function show(string $uuid)
+    public function show()
     {
         try {
-            $tracking_code = TrackingCode::findOrFail($uuid);
+            if (! session()->has('code')) {
+                return redirect()->route('landing.page');
+            }
+
+            $tracking_code = TrackingCode::with('trackable')->findOrFail(session('code'));
+            session()->forget('code');
             $data = $tracking_code->trackable;
 
+            if (get_class($data) === BurialAssistance::class) {
+                $timeline = $this->processLogServices->timeline($data->id);
+                $claimantChange = $data->claimantChanges()->first();
+                if ($claimantChange && $claimantChange->status == 'approved') {
+                    $timeline = array_merge($timeline, $this->processLogServices->timeline($claimantChange->newClaimant->id));
+                }
+            }
+
             return view('tracker.show', [
-                'page_title' => $data->trackingNumber() . ' Progress' ?? 'Track Progress',
+                'page_title' => $data->trackingNumber() ? $data->trackingNumber().' Progress' : 'Track Progress',
                 'data' => $data,
+                'timeline' => $timeline ?? [],
+                'progress' => $data instanceof BurialAssistance ? $this->workflowStepServices->progress($data) : null,
+                'show_tracker_code' => auth()->user()->can('view', $data->tracker),
             ]);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             abort(404, 'Tracker not found');
         } catch (\Throwable $th) {
-            return redirect()->back()->with('error', 'Failed to show tracker' . app()->isLocal() ? ' : ' . $th->getMessage() : '');
+            return redirect()->back()->with('error', 'Failed to show tracker'.(app()->hasDebugModeEnabled() ? ' : '.$th->getMessage() : ''));
         }
     }
 }

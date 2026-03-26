@@ -1,7 +1,7 @@
 @extends('layouts.metronic.admin')
 @section('content')
     <div class="d-flex flex-column gap-5">
-        <x-assistance-process-tracker :burialAssistance="$application" :updateAverage="$updateAverage" />
+        <x-assistance-process-tracker :burialAssistance="$application" />
         <x-application-manager :application="$application" />
         <form action="{{ route('burial.update', $application->id) }}" method="post" id="contentForm"
             class="d-flex flex-column gap-4">
