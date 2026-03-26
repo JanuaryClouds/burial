@@ -10,7 +10,7 @@
 <div class="row">
     <div class="col col-12 col-md-12 col-lg-4">
         <x-form-input name="application_date" readonly="true"
-            value="{{ $data->client ? \Carbon\Carbon::parse($data->client?->created_at)->format('F d, Y') : 'N/A' }}"
+            value="{{ $data->client?->created_at ? \Carbon\Carbon::parse($data->client?->created_at)->format('F d, Y') : 'N/A' }}"
             label="Date of Application" />
     </div>
     <div class="col col-12 col-md-6 col-lg-4">

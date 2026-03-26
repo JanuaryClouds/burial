@@ -38,6 +38,10 @@ class ClaimantChangeController extends Controller
         if ($validated) {
             $burialAssistance = BurialAssistance::findOrFail($id);
             $validated['burial_assistance_id'] = $burialAssistance->id;
+
+            if (! $burialAssistance->claimant) {
+                return redirect()->back()->with('error', 'Unable to find claimant.');
+            }
             $validated['old_claimant_id'] = $burialAssistance->claimant->id;
             $validated['id'] = Str::uuid();
 
@@ -101,7 +105,6 @@ class ClaimantChangeController extends Controller
             return redirect()->back()->withErrors(['error' => 'Claimant Change not found.']);
         }
 
-        dd($change);
         if ($request->decision == 'approved') {
             $change->update([
                 'status' => 'approved',

@@ -32,7 +32,7 @@ class FuneralAssistance extends Model
 
     public function trackingNumber()
     {
-        return $this->client->tracking_no;
+        return $this->client?->tracking_no;
     }
 
     public function tracker()

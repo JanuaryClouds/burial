@@ -8,8 +8,8 @@
         @foreach ($clients as $client)
             @php
                 $claimant = $client->claimant;
-                $burial = $claimant->burialAssistance;
-                $beneficiary = $client != null ? $client->beneficiary : null;
+                $burial = $claimant?->burialAssistance;
+                $beneficiary = $client->beneficiary;
 
                 if ($claimant != null) {
                     if ($burial->status == 'released') {
@@ -23,20 +23,22 @@
             @endphp
             @if ($burial != null)
                 <li class="list-group-item rounded-pill {{ $statusClass }}">
-                    <form action="{{ route('tracker.match') }}" method="post">
-                        @csrf
-                        <input type="hidden" name="tracking_no" value="{{ $client->tracking_no }}">
-                        <input type="hidden" name="code" value="{{ $burial->tracker->code }}">
-                        <button type="submit" class="btn w-100 d-flex justify-content-between">
-                            <span class="d-flex gap-3 fw-bold">
-                                Burial for {{ $beneficiary->fullname() }}
-                                <span class="badge rounded-pill text-bg-info">{{ ucfirst($burial->status) }}</span>
-                            </span>
-                            <span class="d-flex gap-2">
-                                {{ $burial->created_at->format('F j, Y g:i A') }}
-                            </span>
-                        </button>
-                    </form>
+                    @if ($burial->tracker)
+                        <form action="{{ route('tracker.match') }}" method="post">
+                            @csrf
+                            <input type="hidden" name="tracking_no" value="{{ $client->tracking_no }}">
+                            <input type="hidden" name="code" value="{{ $burial->tracker?->code }}">
+                            <button type="submit" class="btn w-100 d-flex justify-content-between">
+                                <span class="d-flex gap-3 fw-bold">
+                                    Burial for {{ $beneficiary->fullname() }}
+                                    <span class="badge rounded-pill text-bg-info">{{ ucfirst($burial->status) }}</span>
+                                </span>
+                                <span class="d-flex gap-2">
+                                    {{ $burial->created_at->format('F j, Y g:i A') }}
+                                </span>
+                            </button>
+                        </form>
+                    @endif
                 </li>
             @endif
         @endforeach

@@ -32,8 +32,9 @@ class CentralClientService
         if ($response->failed()) {
             return null;
         } else {
-            $decodedResponse = json_decode($response, true);
-            $citizen = collect($decodedResponse['data'])->firstWhere($key, $value);
+            $decodedResponse = $response->json();
+            $data = $decodedResponse['data'] ?? [];
+            $citizen = collect($data)->firstWhere($key, $value);
 
             return $citizen;
         }
@@ -52,20 +53,31 @@ class CentralClientService
             if (! empty($citizenData)) {
                 session(['citizen' => $this->filterData($citizenData)]);
             }
+
+            return User::firstOrCreate([
+                'citizen_id' => $citizen_uuid,
+            ], [
+                'first_name' => $citizenData['firstname'] ?? null,
+                'middle_name' => $citizenData['middlename'] ?? null,
+                'last_name' => $citizenData['lastname'] ?? null,
+                'suffix' => $citizenData['suffix'] ?? null,
+                'email' => $citizenData['email'] ?? null,
+                'is_active' => true,
+                'contact_number' => $citizenData['contact_number'] ?? null,
+                'password' => bcrypt(Str::random(32)),
+            ]);
         }
-            
-        return User::firstOrCreate([
-            'citizen_id' => $citizen_uuid,
-        ], [
-            'first_name' => $citizenData['firstname'] ?? null,
-            'middle_name' => $citizenData['middlename'] ?? null,
-            'last_name' => $citizenData['lastname'] ?? null,
-            'suffix' => $citizenData['suffix'] ?? null,
-            'email' => $citizenData['email'] ?? null,
-            'is_active' => true,
-            'contact_number' => $citizenData['contact_number'] ?? null,
-            'password' => bcrypt(Str::random(32)),
-        ]);
+
+        if (app()->isLocal()) {
+            $user = User::where('citizen_id', $citizen_uuid)->first();
+            if (! $user) {
+                $user = User::factory()->create([
+                    'citizen_id' => $citizen_uuid,
+                ]);
+            }
+
+            return $user;
+        }
     }
 
     /**

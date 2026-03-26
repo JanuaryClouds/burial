@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ClientRequest;
 use App\Models\Assistance;
 use App\Models\Barangay;
-use App\Models\Citizen;
 use App\Models\CivilStatus;
 use App\Models\Client;
 use App\Models\Sex;
@@ -334,13 +333,13 @@ class ClientController extends Controller
 
     public function history()
     {
-        $records = Citizen::records();
-        if (! $records) {
+        $records = Client::where('user_id', auth()->user()->id)->get();
+        if (! $records || $records->isEmpty()) {
             return redirect()->route('landing.page')->with('error', 'You do not have permission to access this page.');
         }
 
         $client = $records->first();
-        $page_title = $client->fullname() . '\'s History';
+        $page_title = $client->fullname().'\'s History';
         $readonly = true;
         $disabled = true;
 
