@@ -10,7 +10,8 @@
                 @include('burial.partials.timeline')
             </div>
         </div>
-        @include('burial.partials.menu')
+        @includeWhen($data->hasPendingClaimantChange(), 'burial.partials.claimant-change-request')
+        @includeWhen(!$data->hasPendingClaimantChange(), 'burial.partials.menu')
         @include('burial.partials.process-update-modal')
         @include('burial.partials.reject-modal')
         <form action="{{ route('burial.update', $data->id) }}" method="post" id="contentForm" class="d-flex flex-column gap-4">
