@@ -22,8 +22,26 @@
                 render: (_, __, row) => {
                     const rawStatus = row.status || 'pending';
                     const status = escapeHtml(rawStatus);
-                    const badgeClass = rawStatus === 'pending' ? 'bg-danger text-white' :
-                        'bg-success text-white';
+                    let badgeClass;
+                    switch (rawStatus.toLowerCase()) {
+                        case 'pending':
+                            badgeClass = 'bg-warning text-dark';
+                            break;
+                        case 'processing':
+                            badgeClass = 'bg-primary text-white';
+                            break;
+                        case 'approved':
+                            badgeClass = 'bg-success text-white';
+                            break;
+                        case 'rejected':
+                            badgeClass = 'bg-danger text-white';
+                            break;
+                        case 'released':
+                            badgeClass = 'bg-success text-white';
+                            break;
+                        default:
+                            badgeClass = 'bg-secondary text-white';
+                    }
                     return `
                         <span class="badge ${badgeClass}">
                             ${status.toUpperCase()}
