@@ -20,48 +20,29 @@
 
                 <div class="col d-flex align-items-center justify-content-end gap-4">
                     @include('components.theme-toggle')
-                    @if (Route::is('landing.page'))
-                        @if (session('citizen') && session('citizen')['user_id'])
-                            <a href="{{ route('general.intake.form') }}" class="btn btn-primary hover-scale">
-                                Apply
-                            </a>
-                            <a href="{{ route('landing.page', ['uuid' => 'logout']) }}" class="btn btn-danger">
-                                <i class="fa-solid fa-right-from-bracket pe-0"></i>
-                            </a>
-                            @if ($existingClient)
-                                <a href="{{ route('client.history') }}" class="btn btn-light hover-scale">
-                                    History
-                                </a>
-                            @endif
-                        @else
-                            <a href="https://development-eservices.taguig.info/" class="btn btn-primary hover-scale">
-                                Register
-                            </a>
-                            @if (session('info') && session('info') == 'Unable to fetch citizen details.')
-                                <a href="{{ route('general.intake.form') }}" class="btn btn-light hover-scale">
-                                    Apply without Citizen ID
-                                </a>
-                            @endif
-                        @endif
-                    @elseif (!Route::is('general.intake.form'))
-                        <a href="{{ url()->previous() }}" class="btn btn-light">
-                            Back
-                        </a>
-                        <div class="dropdown">
-                            <button class="btn btn-light dropdown-toggle" type="button" id="menu"
-                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Menu
-                            </button>
-                            <div class="dropdown-menu" aria-labelledby="menu">
-                                <a class="dropdown-item" href="{{ route('landing.page') }}">Home</a>
-                                <a class="dropdown-item" href="{{ route('general.intake.form') }}">Apply</a>
-                                <a class="dropdown-item" href="{{ route('client.history') }}">History</a>
-                                <div class="dropdown-divider"></div>
-                                <a href="{{ route('landing.page', ['uuid' => 'logout']) }}"
-                                    class="dropdown-item">Logout</a>
+                    @if (!Route::is('general.intake.form'))
+                        @auth
+                            <div class="dropdown">
+                                <button class="btn btn-light dropdown-toggle" type="button" id="menu"
+                                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Menu
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="menu">
+                                    <a class="dropdown-item" href="{{ route('landing.page') }}">Home</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="{{ route('general.intake.form') }}">Apply</a>
+                                    <a class="dropdown-item" href="{{ route('client.history') }}">History</a>
+                                </div>
                             </div>
-                        </div>
-
+                        @endauth
+                        @auth
+                            <form action="{{ route('logout') }}" method="POST" class="d-block mb-0">
+                                @csrf
+                                <button type="submit" class="btn btn-lg btn-danger">
+                                    Logout
+                                </button>
+                            </form>
+                        @endauth
                     @endif
                     @includeWhen(Route::is('general.intake.form'), 'client.partial.create-form-buttons')
                 </div>

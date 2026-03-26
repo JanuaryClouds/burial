@@ -1,4 +1,4 @@
-@props(['burialAssistance', 'updateAverage'])
+@props(['burialAssistance'])
 @php
     use App\Models\WorkflowStep;
     $latestStep = $burialAssistance->processLogs->sortBy('created_at')->last() ?? [];

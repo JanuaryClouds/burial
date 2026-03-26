@@ -16,52 +16,28 @@ class CentralClientService
      * @param  bool  $family  get family members
      * @return array|null
      */
-    public function fetchByClient(string $key, string $value)
+    public function fetchFromPortal(string $key, string $value)
     {
-        $apiKey = env('API_KEY_CITIZENS_USERS');
-        $api = env('API_CITIZEN_USERS');
+        $apiKey = config('services.portal.key');
+        $url = config('services.portal.url');
         if (! $apiKey) {
             return null;
         }
 
-        if (config('app.env') === 'local') {
-            // Temporary: Load from local file
-            $path = storage_path('app/clients.json');
-            if (file_exists($path)) {
-                $response = json_decode(file_get_contents($path), true);
-                $citizens = $response['data'];
-                $citizen = collect($citizens)->firstWhere($key, $value);
+        $response = Http::withHeader('X-Secret-Key', $apiKey)
+            ->timeout(15)
+            ->retry(3, 200)
+            ->get($url);
 
-                return $citizen;
-            }
+        if ($response->failed()) {
+            return null;
         } else {
-            $response = Http::withHeader('X-Secret-Key', $apiKey)->get($api); // Temporarily disable to prevent repeated requests
-            if ($response->failed()) {
-                return null;
-            } else {
-                $decodedResponse = json_decode($response, true);
-                $citizen = collect($decodedResponse['data'])->firstWhere($key, $value);
+            $decodedResponse = $response->json();
+            $data = $decodedResponse['data'] ?? [];
+            $citizen = collect($data)->firstWhere($key, $value);
 
-                return $citizen;
-            }
+            return $citizen;
         }
-
-        return null;
-    }
-
-    /**
-     * Fetch Citizen
-     *
-     * @return array
-     */
-    public function fetchCitizen(string $uuid)
-    {
-        $client = $this->fetchByClient('user_id', $uuid);
-        if ($client) {
-            return $client;
-        }
-
-        return [];
     }
 
     /**
@@ -71,25 +47,37 @@ class CentralClientService
      */
     public function checkIfUser(string $citizen_uuid)
     {
-        $citizenData = $this->fetchCitizen($citizen_uuid);
-        if (empty($citizenData)) {
-            return User::where('citizen_id', $citizen_uuid)->first();
+        // Disable for local to prevent unwanted API calls
+        if (app()->isProduction()) {
+            $citizenData = $this->fetchFromPortal('uuid', $citizen_uuid) ?? [];
+            if (! empty($citizenData)) {
+                session(['citizen' => $this->filterData($citizenData)]);
+            }
+
+            return User::firstOrCreate([
+                'citizen_id' => $citizen_uuid,
+            ], [
+                'first_name' => $citizenData['firstname'] ?? null,
+                'middle_name' => $citizenData['middlename'] ?? null,
+                'last_name' => $citizenData['lastname'] ?? null,
+                'suffix' => $citizenData['suffix'] ?? null,
+                'email' => $citizenData['email'] ?? null,
+                'is_active' => true,
+                'contact_number' => $citizenData['contact_number'] ?? null,
+                'password' => bcrypt(Str::random(32)),
+            ]);
         }
 
-        session(['citizen' => $this->filterData($citizenData)]);
+        if (app()->isLocal()) {
+            $user = User::where('citizen_id', $citizen_uuid)->first();
+            if (! $user) {
+                $user = User::factory()->create([
+                    'citizen_id' => $citizen_uuid,
+                ]);
+            }
 
-        return User::firstOrCreate([
-            'citizen_id' => $citizen_uuid,
-        ], [
-            'first_name' => $citizenData['firstname'] ?? null,
-            'middle_name' => $citizenData['middlename'] ?? null,
-            'last_name' => $citizenData['lastname'] ?? null,
-            'suffix' => $citizenData['suffix'] ?? null,
-            'email' => $citizenData['email'] ?? null,
-            'is_active' => true,
-            'contact_number' => $citizenData['contact_number'] ?? null,
-            'password' => bcrypt(Str::random(32)),
-        ]);
+            return $user;
+        }
     }
 
     /**

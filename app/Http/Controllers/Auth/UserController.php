@@ -91,10 +91,10 @@ class UserController extends Controller
             ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
             ->log('Successful logout');
 
+        $user->tokens()->delete();
         Auth::logout();
         request()->session()->invalidate();
         request()->session()->regenerateToken();
-        $user->tokens()->delete();
         if (session()->has('citizen')) {
             session()->forget('citizen');
         }

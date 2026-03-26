@@ -45,11 +45,11 @@ class Citizen extends Model
 
     public static function records()
     {
-        if (! session('citizen')) {
-            return false;
+        if (! auth()->check()) {
+            return collect();
         }
 
-        return Client::where('user_id', Auth()->user()->id)
+        return Client::where('user_id', auth()->user()->id)
             ->with(['interviews', 'claimant', 'funeralAssistance'])
             ->orderBy('created_at', 'desc')
             ->get();

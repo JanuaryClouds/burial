@@ -33,7 +33,8 @@ class Maintenance
             if ($request->routeIs([
                 'landing.page',
                 'client.history',
-                'burial.tracker',
+                'tracker.match',
+                'tracker.show',
                 'logout',
             ])) {
                 return $next($request);

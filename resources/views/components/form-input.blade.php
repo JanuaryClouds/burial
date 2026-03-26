@@ -10,6 +10,7 @@
     'disabled' => false,
     'readonly' => false,
     'min' => null,
+    'autocomplete' => false,
 ])
 
 @php
@@ -29,7 +30,7 @@
         name="{{ $name ?? $id }}" {{ $id ? 'id=' . $id : 'id=' . $name }} value="{{ old($name, $value) }}"
         aria-describedby="helpId" {{ $placeholder ? 'placeholder=' . $placeholder : '' }}
         {{ $required ? 'required' : '' }} {{ $disabled ? 'disabled' : '' }} {{ $readonly ? 'readonly' : '' }}
-        {{ $min ? 'min=' . $min : '' }} />
+        {{ $min ? 'min=' . $min : '' }} autocomplete="{{ $autocomplete ? 'on' : 'off' }}" />
 
     @if ($helpText)
         <small id="helpId" class="form-text text-muted">{{ $helpText }}</small>

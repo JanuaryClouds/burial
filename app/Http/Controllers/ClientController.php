@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ClientRequest;
 use App\Models\Assistance;
 use App\Models\Barangay;
-use App\Models\Citizen;
 use App\Models\CivilStatus;
 use App\Models\Client;
 use App\Models\Sex;
@@ -101,8 +100,8 @@ class ClientController extends Controller
         try {
             $resource = 'client';
             $client = $this->clientServices->get($client->id);
-            $page_title = $client->fullname()."'s Application";
-            $page_subtitle = $client->tracking_no;
+            $page_title = $client->tracking_no;
+            $page_subtitle = $client->fullname()."'s Application";
             $readonly = auth()->user()->cannot('manage-content');
             $released = $client?->claimant?->burialAssistance?->status != 'released' || $client?->funeralAssistance?->forwarded_at != null;
 
@@ -334,14 +333,13 @@ class ClientController extends Controller
 
     public function history()
     {
-        // ! This does prevent unregistered users from the TLC Portal from tracking clients
-        $records = Citizen::records();
-        if (! $records) {
+        $records = Client::where('user_id', auth()->user()->id)->get();
+        if (! $records || $records->isEmpty()) {
             return redirect()->route('landing.page')->with('error', 'You do not have permission to access this page.');
         }
-        $client = Client::where('user_id', Auth()->user()->id)->latest()->first();
 
-        $page_title = session('citizen')['firstname'].' '.session('citizen')['lastname'].' | Client History';
+        $client = $records->first();
+        $page_title = $client->fullname().'\'s History';
         $readonly = true;
         $disabled = true;
 

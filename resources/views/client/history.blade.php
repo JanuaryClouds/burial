@@ -6,10 +6,7 @@
                 <div class="card-header collapsible cursor-pointer rotate d-flex align-items-center justify-content-between"
                     data-bs-toggle="collapse" data-bs-target="#client_info_card_body">
                     <h4 class="card-title">
-                        {{ $client->first_name }}
-                        {{ Str::limit($client->middle_name, 1, '.') ?? null }}
-                        {{ $client->last_name }}
-                        {{ $client?->suffix }}
+                        {{ $client->fullname() }}
                     </h4>
                     <span class="d-flex gap-2">
                         <p class="text-muted mb-0">(Latest record - {{ $client->created_at->format('m/d/Y') }})</p>

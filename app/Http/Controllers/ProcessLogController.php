@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProcessLogRequest;
 use App\Models\BurialAssistance;
+use App\Models\ProcessLog;
 use App\Models\WorkflowStep;
 use App\Services\ImageService;
 use App\Services\ProcessLogService;
@@ -61,24 +62,16 @@ class ProcessLogController extends Controller
         }
     }
 
-    public function delete($id, $stepId)
+    public function delete($id)
     {
         try {
-            $application = BurialAssistance::findOrFail($id);
-            if ($application) {
-                $log = $application->processLogs()
-                    ->whereHasMorph('loggable', [WorkflowStep::class], fn ($q) => $q->where('order_no', $stepId))
-                    ->with('loggable')
-                    ->first();
-                if ($log) {
-                    $this->processLogService->delete($log, $application);
+            $log = ProcessLog::findOrFail($id);
+            if ($log) {
+                $this->processLogServices->delete($log, $log->burialAssistance);
 
-                    return redirect()->back()->with('success', 'Process log deleted successfully.');
-                } else {
-                    return redirect()->back()->with('error', 'Unable to find process log.');
-                }
+                return redirect()->back()->with('success', 'Process log deleted successfully.');
             } else {
-                return redirect()->back()->with('error', 'Unable to find application.');
+                return redirect()->back()->with('error', 'Unable to find process log.');
             }
         } catch (Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());

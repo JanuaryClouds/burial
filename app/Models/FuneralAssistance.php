@@ -29,4 +29,14 @@ class FuneralAssistance extends Model
     {
         return $this->belongsTo(Client::class, 'client_id', 'id');
     }
+
+    public function trackingNumber()
+    {
+        return $this->client?->tracking_no;
+    }
+
+    public function tracker()
+    {
+        return $this->hasOne(TrackingCode::class, 'trackable_id', 'id');
+    }
 }

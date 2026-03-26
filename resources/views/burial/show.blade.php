@@ -1,10 +1,19 @@
 @extends('layouts.metronic.admin')
 @section('content')
-    <div class="d-flex flex-column gap-5">
-        <x-assistance-process-tracker :burialAssistance="$application" />
-        <x-application-manager :application="$application" />
-        <form action="{{ route('burial.update', $application->id) }}" method="post" id="contentForm"
-            class="d-flex flex-column gap-4">
+    <div class="d-flex flex-column gap-4">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Progress of Burial Assistance</h4>
+            </div>
+            <div class="card-body d-flex flex-column gap-4">
+                @include('burial.partials.progress')
+                @include('burial.partials.timeline')
+            </div>
+        </div>
+        @include('burial.partials.menu')
+        @include('burial.partials.process-update-modal')
+        @include('burial.partials.reject-modal')
+        <form action="{{ route('burial.update', $data->id) }}" method="post" id="contentForm" class="d-flex flex-column gap-4">
             @csrf
             @method('PUT')
             <div class="card">
@@ -15,7 +24,7 @@
             <div class="card">
                 <div class="card-body">
                     @include('components.claimant-form', [
-                        'claimant' => $application->claimant,
+                        'claimant' => $data->claimant,
                         'readonly' => $readonly,
                     ])
                 </div>
@@ -23,7 +32,7 @@
             <div class="card">
                 <div class="card-body">
                     @include('components.deceased-form', [
-                        'beneficiary' => $application->claimant?->client?->beneficiary,
+                        'beneficiary' => $data->originalClaimant()?->client?->beneficiary,
                         'readonly' => $readonly,
                     ])
                 </div>
@@ -31,7 +40,7 @@
             <div class="card">
                 <div class="card-body">
                     @include('components.burial-assistance-details-form', [
-                        'burialAssistance' => $application,
+                        'burialAssistance' => $data,
                         'readonly' => $readonly,
                     ])
                 </div>
@@ -40,13 +49,10 @@
         <div class="card">
             <div class="card-body">
                 @include('client.partial.documents', [
-                    'client' => $application->claimant->client,
+                    'client' => $data->claimant?->client,
                     'readonly' => true,
                 ])
             </div>
         </div>
-        @include('components.applications-modal-loader', [
-            'application_id' => $application->id,
-        ])
     </div>
 @endsection

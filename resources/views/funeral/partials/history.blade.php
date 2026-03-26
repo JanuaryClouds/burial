@@ -17,20 +17,22 @@
                 }
             @endphp
             <li class="list-group-item rounded-pill {{ $statusClass }}">
+                @if ($funeral->tracker)
+                    <form action="{{ route('tracker.match') }}" method="post">
+                        @csrf
+                        <input type="hidden" name="tracking_no" value="{{ $client->tracking_no }}">
+                        <input type="hidden" name="code" value="{{ $funeral->tracker?->code }}">
+                        <button type="submit" class="btn w-100 d-flex justify-content-between">
+                            <span class="d-flex gap-3 fw-bold">
+                                Funeral for {{ $beneficiary->fullname() }}
+                            </span>
+                            <span class="d-flex fs-6">
+                                <p class="mb-0">Submitted in {{ $funeral->created_at->format('F j, Y g:i A') }}</p>
+                            </span>
+                        </button>
+                    </form>
+                @endif
                 <div class="d-flex justify-content-between align-items-center">
-                    <span class="d-flex gap-3 fw-bold">
-                        Funeral for {{ $beneficiary->first_name }} {{ Str::charAt($beneficiary->middle_name, 0) }}.
-                        {{ $beneficiary->last_name }} {{ $beneficiary?->suffix }}
-                    </span>
-                    <span class="d-flex fs-6">
-                        <p class="mb-0">Submitted in {{ $funeral->created_at->format('F j, Y g:i A') }}</p>
-                        <p class="text-gray-700 mb-0">
-                            {{ ', approved ' . \Carbon\Carbon::parse($funeral?->approved_at)->diffForHumans($funeral->created_at) ?? '' }}
-                        </p>
-                        <p class="text-success mb-0">
-                            {{ ', forwarded to Taguig Public Cemetery ' . \Carbon\Carbon::parse($funeral?->forwarded_at)->format('F j, Y g:i A') ?? '' }}
-                        </p>
-                    </span>
                 </div>
             </li>
         @endforeach

@@ -10,6 +10,7 @@ use App\Models\Client;
 use App\Models\ClientDemographic;
 use App\Models\ClientSocialInfo;
 use App\Models\FuneralAssistance;
+use App\Models\TrackingCode;
 use App\Models\User;
 use Carbon\Carbon;
 use DB;
@@ -340,12 +341,22 @@ class ClientService
                     'barangay_id' => $client->barangay_id,
                 ]);
 
+                TrackingCode::create([
+                    'trackable_id' => $burialAssistance->id,
+                    'trackable_type' => get_class($burialAssistance),
+                ]);
+
                 return $burialAssistance;
             } elseif ($client->recommendation->first()->type == 'funeral') {
                 $funeralAssistance = FuneralAssistance::create([
                     'id' => Str::uuid(),
                     'client_id' => $client->id,
                     'remarks' => $client->recommendation->first()->remarks,
+                ]);
+
+                TrackingCode::create([
+                    'trackable_id' => $funeralAssistance->id,
+                    'trackable_type' => get_class($funeralAssistance),
                 ]);
 
                 return $funeralAssistance;

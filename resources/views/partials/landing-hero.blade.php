@@ -9,7 +9,7 @@
                     <a href="{{ route('general.intake.form') }}" class="btn btn-primary btn-lg hover-scale">
                         Apply
                     </a>
-                    @if (auth()->user()->clients()->count() > 0)
+                    @if (auth()->user()->clients->count() > 0)
                         <a href="{{ route('client.history') }}" class="btn btn-lg btn-light hover-scale">
                             History
                         </a>
@@ -25,6 +25,10 @@
                         Register
                     </a>
                 @endauth
+                <button type="button" class="btn btn-secondary btn-lg" data-bs-toggle="modal"
+                    data-bs-target="#trackAssistanceModal">
+                    Track Assistance
+                </button>
             </div>
         </div>
     </div>

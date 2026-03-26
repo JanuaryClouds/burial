@@ -24,10 +24,7 @@ Route::post('/login/check', [UserController::class, 'login'])
 Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
 require __DIR__.'/guest.php';
-require __DIR__.'/client.php';
-require __DIR__.'/beneficiary.php';
-require __DIR__.'/burial.php';
-require __DIR__.'/funeral.php';
+require __DIR__.'/tracker.php';
 
 Route::middleware(['auth'])
     ->group(function () {
@@ -46,6 +43,10 @@ Route::middleware(['auth'])
             ->middleware('permission:view-logs')
             ->name('activity.logs');
 
+        require __DIR__.'/client.php';
+        require __DIR__.'/beneficiary.php';
+        require __DIR__.'/burial.php';
+        require __DIR__.'/funeral.php';
         require __DIR__.'/reports.php';
         require __DIR__.'/superadmin.php';
     });

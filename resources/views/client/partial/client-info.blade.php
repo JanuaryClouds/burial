@@ -32,7 +32,7 @@
         </div>
         <div class="col-4 col-md-4 col-lg-1">
             <x-form-input name="age" id="age" label="2. Age" required="true" type="number"
-                value="{{ $client ? $client->age() : session('citizen')['age'] ?? null }}" :readonly="$readonly" />
+                value="{{ isset($client) ? $client->age() : session('citizen')['age'] ?? null }}" :readonly="$readonly" />
         </div>
         <div class="col-4 col-md-4 col-lg-1">
             <x-form-select name="sex_id" label="3. Sex" required="true" :selected="$demographic->sex_id ?? ($matched['sex_id'] ?? '')" :options="$genders ?? []"

@@ -25,11 +25,15 @@
                             </a>
                         @endif
                     @endauth
+                    <button type="button" class="btn btn-secondary btn-lg" data-bs-toggle="modal"
+                        data-bs-target="#trackAssistanceModal">
+                        Track Assistance
+                    </button>
                 </div>
             </div>
         </div>
     </section>
-
+    @include('tracker.partials.form-modal')
     @include('partials.landing-footer')
     @include('partials.landing-js')
 </body>
