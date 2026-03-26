@@ -70,7 +70,7 @@ class CentralClientService
 
         if (app()->isLocal()) {
             $user = User::where('citizen_id', $citizen_uuid)->first();
-            if (! isset($user)) {
+            if ($user === null) {
                 $user = User::factory()->create([
                     'citizen_id' => $citizen_uuid,
                 ]);

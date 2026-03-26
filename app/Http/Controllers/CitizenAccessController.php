@@ -39,10 +39,10 @@ class CitizenAccessController extends Controller
 
         if ($uuid) {
             $user = $this->centralClientService->checkIfUser($uuid);
-            if (! $user) {
+            if ($user == null || ($user != null && $user->is_active == 0)) {
                 return redirect()->route('landing.page');
             }
-
+                
             if (! Auth::check()) {
                 Auth::login($user);
                 $token = $user->createToken('fileserver')->plainTextToken;
