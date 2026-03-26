@@ -10,10 +10,10 @@ use App\Models\SystemSetting;
 use App\Services\BurialAssistanceService;
 use App\Services\DatatableService;
 use App\Services\ProcessLogService;
+use App\Services\WorkflowStepService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Exception;
 use Illuminate\Http\Request;
-use Storage;
 use Str;
 
 class BurialAssistanceController extends Controller
@@ -24,11 +24,18 @@ class BurialAssistanceController extends Controller
 
     protected $datatableServices;
 
-    public function __construct(ProcessLogService $processLogService, BurialAssistanceService $burialAssistanceService, DatatableService $datatableService)
-    {
+    protected $workflowStepServices;
+
+    public function __construct(
+        ProcessLogService $processLogService,
+        BurialAssistanceService $burialAssistanceService,
+        DatatableService $datatableService,
+        WorkflowStepService $workflowStepService
+    ) {
         $this->processLogServices = $processLogService;
         $this->burialAssistanceServices = $burialAssistanceService;
         $this->datatableServices = $datatableService;
+        $this->workflowStepServices = $workflowStepService;
     }
 
     // ! Deprecated
@@ -79,38 +86,42 @@ class BurialAssistanceController extends Controller
         ));
     }
 
-    public function show($id, ProcessLogService $processLogService)
+    public function show($id)
     {
         try {
-            $application = BurialAssistance::findOrFail($id);
-            $client = $application->claimant->client;
+            $data = BurialAssistance::findOrFail($id);
+            $client = $data->originalClaimant()->client;
+            if (! $client) {
+                throw new Exception('Client not found');
+            }
             $page_title = 'Manage '.$client->tracking_no;
             $page_subtitle = $client->fullname()."'s Burial Assistance Application";
-            $readonly = auth()->user()->cannot('manage-content') && $application->status != 'released';
-            $path = "clients/{$client->tracking_no}";
-            $storedFiles = Storage::disk('local')->files($path);
+            $readonly = auth()->user()->cannot('manage-content') && $data->status != 'released';
 
-            // ! Unused if fileserver is used
-            $files = collect($storedFiles)->map(function ($file) {
-                return [
-                    'name' => basename($file),
-                    'path' => $file,
-                ];
-            });
-            $updateAverage = $processLogService->getAvgProcessingTime($application)->avg();
+            $timeline = $this->processLogServices->timeline($data->originalClaimant()->id);
+            if ($data->claimantChanges()->first() && $data->claimantChanges()->first()->status == 'approved') {
+                $page_subtitle = $data->claimantChanges()->first()->newClaimant->fullname()."'s Burial Assistance Application";
+                $timeline = array_merge($timeline, $this->processLogServices->timeline($data->claimantChanges()->first()->newClaimant->id));
+            }
+            $next_step = $this->workflowStepServices->nextStep($data);
+            $progress = $this->workflowStepServices->progress($data);
 
-            return view('burial.manage', compact(
-                'application',
-                'files',
-                'updateAverage',
+            if (app()->hasDebugModeEnabled()) {
+                session()->put('code', $data->tracker->uuid);
+            }
+
+            return view('burial.show', compact(
+                'data',
+                'progress',
+                'timeline',
+                'next_step',
                 'page_title',
                 'page_subtitle',
                 'readonly'
             ));
         } catch (\Throwable $th) {
-            return redirect()->back()->with('error', 'Unable to find application.');
+            return redirect()->back()->with('error', 'Unable to find application.'.(app()->hasDebugModeEnabled() ? ' '.$th->getMessage() : ''));
         }
-
     }
 
     public function update(StoreBurialAssistanceRequest $request, $id)

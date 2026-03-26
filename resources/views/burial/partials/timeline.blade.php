@@ -1,128 +1,89 @@
 <ul class="list-group">
     <li class="list-group-item bg-transparent bg-body-secondary d-flex justify-content-between align-items-center">
         Submitted Application
-        <span class="badge badge-pill p-0">{{ $burialAssistance->created_at }}</span>
+        <span class="badge badge-pill p-0">{{ $data->created_at }}</span>
     </li>
-    {{-- FIXME show old claimant only if no approved claimant change --}}
-    {{-- TODO show old claimant first and new claimant last after approved claimant change --}}
-    @foreach ($burialAssistance->claimants as $claimant)
-        @forelse ($claimant->processLogs->sortBy('created_at') as $log)
-            <li
-                class="list-group-item d-flex justify-content-between align-items-center {{ $loop->last ? 'bg-primary text-white' : 'bg-body-secondary bg-transparent' }}">
-                <p class="mb-0 {{ $loop->last ? 'fw-bold text-white' : '' }} d-flex align-items-baseline gap-3">
-                    <b>{{ class_basename($log->loggable) === 'WorkflowStep' ? $log->loggable?->description : $log->comments }}</b>
-                    @if (class_basename($log->loggable) === 'WorkflowStep' && $log->comments)
-                        <a class="ml-4 {{ $loop->last ? 'text-white' : '' }}"
-                            data-bs-target="#show-comments-{{ $log->id }}" data-bs-toggle="collapse"
-                            aria-expanded="false" aria-controls="show-comments-{{ $log->id }}">
-                            <i class="fa fa-comment-alt"></i>
-                        </a>
-                    @endif
-                    @if (class_basename($log->loggable) === 'WorkflowStep' && $log->extra_data)
-                        <a class="ml-4 {{ $loop->last ? 'text-white' : '' }}"
-                            data-bs-target="#show-extra-data-{{ $log->id }}" data-bs-toggle="collapse"
-                            aria-expanded="false" aria-controls="show-comments-{{ $log->id }}">
-                            <i class="fas fa-circle-info"></i>
-                        </a>
-                    @endif
-                    @if ($burialAssistance->status == 'released' && $log?->loggable?->order_no == 13)
-                        <button class="btn ml-4" type="button" data-bs-toggle="modal"
-                            data-bs-target="#show-cheque-proof-{{ $log->id }}">
-                            <i class="fas fa-image"></i>
-                        </button>
-                    @endif
-                </p>
-                @if (class_basename($log->loggable) === 'WorkflowStep')
-                    <span class="d-flex justify-content-center align-items-center gap-3">
-                        <span
-                            class="badge badge-pill p-0 m-0 d-flex align-items-center {{ $loop->last ? 'text-white fw-bold' : '' }}">
-                            In: {{ $log->date_in }}
-                            {{ $log->date_out ? '/ Out: ' . $log->date_out : '' }}
-                        </span>
-                        @if (auth()->user())
-                            @if (auth()->user()->can('add-updates') && $loop->last)
-                                <!-- An edit function would lose data integrity. To ensure data integrity, CSWDO must delete the log and create a new one -->
-                                <span class="d-flex align-items-center btn-toolbar">
-                                    <x-delete-log :id="$burialAssistance->id" :stepId="$log->loggable->order_no" />
-                                </span>
-                            @endif
-                        @endif
-                    </span>
-                @else
-                    <span
-                        class="badge badge-pill p-0 {{ $loop->last ? 'text-white fw-bold' : 'text-black' }}">{{ $log->date_in }}</span>
+    @foreach ($timeline as $log)
+        <li
+            class="list-group-item d-flex justify-content-between align-items-center {{ $loop->last ? 'bg-primary text-white' : 'bg-body-secondary' }}">
+            <p class="mb-0 {{ $loop->last ? 'fw-bold text-white' : '' }}">
+                {{ $log['step'] ? 'Step ' . $log['step'] . ':' : '' }} {{ $log['description'] ?? 'System Remark' }}
+                @if (isset($log['comments']))
+                    <a class="ms-4 {{ $loop->last ? 'text-white' : '' }}"
+                        data-bs-target="#show-comments-{{ $log['id'] }}" data-bs-toggle="collapse" aria-expanded="false"
+                        aria-controls="show-comments-{{ $log['id'] }}">
+                        <i class="fa fa-comment-alt"></i>
+                    </a>
                 @endif
+                @if (isset($log['extra_data']))
+                    <a class="ms-4 {{ $loop->last ? 'text-white' : '' }}"
+                        data-bs-target="#show-extra-data-{{ $log['id'] }}" data-bs-toggle="collapse"
+                        aria-expanded="false" aria-controls="show-extra-data-{{ $log['id'] }}">
+                        <i class="fas fa-circle-info"></i>
+                    </a>
+                @endif
+                @if ($log['step'] == 13)
+                    <button class="btn ml-4" type="button" data-bs-toggle="modal"
+                        data-bs-target="#show-cheque-proof-{{ $log['id'] }}">
+                        <i class="fas fa-image"></i>
+                    </button>
+                @endif
+            </p>
+            <span class="d-flex justify-content-center align-items-center gap-3">
+                <span
+                    class="badge badge-pill p-0 m-0 d-flex align-items-center {{ $loop->last ? 'text-white fw-bold' : '' }}">
+                    In: {{ $log['in'] }}
+                    {{ $log['out'] ? '/ Out: ' . $log['out'] : '' }}
+                </span>
+                @if (auth()->user())
+                    @if (auth()->user()->can('add-updates') && $loop->last)
+                        @include('burial.partials.delete-log', [
+                            'id' => $log['id'],
+                            'step' => $log['step'],
+                        ])
+                    @endif
+                @endif
+            </span>
+        </li>
+        @if (isset($log['comments']))
+            <li id="show-comments-{{ $log['id'] }}"
+                class="list-group-item border-top-0 collapse {{ $loop->last ? 'bg-primary text-white' : 'bg-body-secondary' }}">
+                <p class="mb-0">{{ $log['comments'] }}</p>
             </li>
-            <div id="show-comments-{{ $log->id }}" class="collapse">
-                <li class="list-group-item border-top-0 {{ $loop->last ? 'bg-primary text-white' : '' }}">
-                    <p class="mb-0">{{ $log->comments }}</p>
+        @endif
+        @if (isset($log['extra_data']))
+            <div id="show-extra-data-{{ $log['id'] }}" class="collapse">
+                <li
+                    class="list-group-item border-top-0 {{ $loop->last ? 'bg-primary text-white' : 'bg-body-secondary' }}">
+                    @foreach ($log['extra_data'] as $key => $subKey)
+                        @if (is_array($subKey))
+                            @foreach ($subKey as $data => $value)
+                                <p class="mb-0">
+                                    <b>{{ ucfirst(str_replace('_', ' ', $data)) }}</b> -
+                                    {{ $value }}
+                                </p>
+                            @endforeach
+                        @elseif (is_string($subKey))
+                            <p class="mb-0">
+                                <b>{{ ucfirst(str_replace('_', ' ', $key)) }}</b> -
+                                {{ $subKey }}
+                            </p>
+                        @endif
+                    @endforeach
                 </li>
             </div>
-            @if (class_basename($log->loggable) === 'WorkflowStep' && $log->extra_data)
-                <div id="show-extra-data-{{ $log->id }}" class="collapse">
-                    <li class="list-group-item border-top-0 {{ $loop->last ? 'bg-primary text-white' : '' }}">
-                        @foreach ($log->extra_data as $key => $subKey)
-                            @if (is_array($subKey))
-                                @foreach ($subKey as $data => $value)
-                                    <p class="mb-0">
-                                        <b>{{ ucfirst(str_replace('_', ' ', $data)) }}</b> -
-                                        {{ $value }}
-                                    </p>
-                                @endforeach
-                            @elseif (is_string($subKey))
-                                <p class="mb-0">
-                                    <b>{{ ucfirst(str_replace('_', ' ', $key)) }}</b> -
-                                    {{ $subKey }}
-                                </p>
-                            @endif
-                        @endforeach
-                    </li>
-                </div>
-            @endif
-            @if (class_basename($log->loggable) === 'WorkflowStep' &&
-                    $log->loggable->order_no == 13 &&
-                    $burialAssistance->status == 'released')
-                <div id="show-cheque-proof-{{ $log->id }}" class="modal fade" tabindex="-1" role="dialog"
-                    aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered" role="document">
-                        <div class="modal-content">
-                            <div class="modal-body">
-                                {{-- TODO use client tracking number --}}
-                                @php
-                                    $encryptedFile = Storage::disk('local')->get(
-                                        "burial-assistance/{$burialAssistance->tracking_no}/{$burialAssistance->latestCheque->id}-cheque-proof.png",
-                                    );
-                                    $file = Crypt::decrypt($encryptedFile);
-                                @endphp
-                                <div class="w-auto">
-                                    <input type="image" src="{{ 'data:image;base64,' . base64_encode($file) }}"
-                                        alt="Proof image of cheque claiming" class="img-fluid rounded">
-                                </div>
-                            </div>
+        @endif
+        @if ($log['step'] == 13)
+            <div id="show-cheque-proof-{{ $log['id'] }}" class="modal fade" tabindex="-1" role="dialog"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            {{-- TODO use fileserver logic --}}
                         </div>
                     </div>
                 </div>
-            @endif
-        @empty
-            <li class="list-group-item d-flex bg-body-secondary justify-content-center align-items-center">
-                <p class="mb-0">No logs yet</p>
-            </li>
-        @endforelse
-
-        @php
-            $lastLogDate = $claimant->processLogs->last()?->date_in;
-            $change = $burialAssistance->claimantChanges->first(function ($c) use ($lastLogDate) {
-                return $lastLogDate === null || $c->changed_at > $lastLogDate;
-            });
-        @endphp
-        @if (
-            !empty($burialAssistance->rejection()) &&
-                $burialAssistance->rejection()->count() > 0 &&
-                $burialAssistance->status == 'rejected')
-            <li class="list-group-item d-flex justify-content-between align-items-center bg-danger">
-                <p class="mb-0 text-white">Rejected: {{ $burialAssistance->rejection->reason }}</p>
-                <span class="badge badge-pill p-0 text-white">{{ $burialAssistance->rejection->created_at }}</span>
-            </li>
+            </div>
         @endif
     @endforeach
 </ul>

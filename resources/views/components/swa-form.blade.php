@@ -1,5 +1,5 @@
 @props([
-    'application' => [],
+    'application' => $data ?? [],
     'disabled' => false,
     'readonly' => false,
 ])
