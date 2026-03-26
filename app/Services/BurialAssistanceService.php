@@ -20,12 +20,19 @@ class BurialAssistanceService
             ])
             ->get()
             ->map(function ($application) {
+                $claimantChange = $application->claimantChanges()->first();
+                if ($claimantChange && $claimantChange->status == 'approved') {
+                    $claimant = $application->claimantChanges()->first()->newClaimant;
+                } else {
+                    $claimant = $application->originalClaimant();
+                }
+
                 return [
                     'id' => $application->id,
-                    'tracking_no' => $application->claimant?->client?->tracking_no,
-                    'client' => $application->claimant?->client?->fullname(),
-                    'contact_number' => $application->claimant?->client?->user?->contact_number,
-                    'funeraria' => $application->funeraria,
+                    'tracking_no' => $application->originalClaimant()->client?->tracking_no,
+                    'claimant' => $claimant?->fullname(),
+                    'contact_number' => $claimant?->mobile_number,
+                    'beneficiary' => $application->beneficiary()?->fullname(),
                     'status' => $application->status,
                     'show_route' => route('burial.show', $application),
                 ];
