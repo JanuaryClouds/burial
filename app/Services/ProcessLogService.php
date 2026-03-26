@@ -76,7 +76,7 @@ class ProcessLogService
                 'loggable_type' => WorkflowStep::class,
                 'is_progress_step' => true,
                 'burial_assistance_id' => $application->id,
-                'claimant_id' => $application->claimantChanges->where('status', 'approved')->first()->newClaimant->id ?? $application->claimant->id,
+                'claimant_id' => $application->claimantChanges->where('status', 'approved')->first()->newClaimant->id ?? $application->originalClaimant()->id,
                 'date_in' => $data['date_in'],
                 'date_out' => $data['date_out'],
                 'comments' => $data['comments'],
@@ -160,21 +160,16 @@ class ProcessLogService
         $log->delete();
     }
 
-    /**
-     * Summary of timeline
-     *
-     * @param  string  $claimant_id  ID of the claimant
-     * @return mixed
-     */
-    public function timeline(string $claimant_id)
+    public function timeline(BurialAssistance $application)
     {
-        return ProcessLog::where('claimant_id', $claimant_id)
+        return ProcessLog::where('burial_assistance_id', $application->id)
             ->with(['loggable', 'claimant'])
             ->orderBy('created_at', 'asc')
             ->get()
             ->map(function ($log) {
                 return [
                     'id' => $log->id,
+                    'loggable' => $log->loggable,
                     'step' => $log->loggable?->order_no,
                     'description' => $log->loggable->description ?? null,
                     'extra_data' => $log->extra_data ?? null,

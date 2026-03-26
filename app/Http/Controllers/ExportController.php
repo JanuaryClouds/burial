@@ -68,12 +68,12 @@ class ExportController extends Controller
             $encoder = $users->get($burialAssistance?->encoder);
             $initialChecker = $users->get($burialAssistance?->initial_checker);
             $age = ($dob && $dod) ? $dob->diffInYears($dod) : null;
-            $approvedChange = $burialAssistance?->claimantChanges?->firstwhere('status', 'approved');
+            $approvedChange = $burialAssistance?->claimantChanges?->where('status', 'approved')->first();
             if ($approvedChange) {
                 $newClaimant = $approvedChange?->newClaimant;
                 $firstClaimant = $approvedChange?->oldClaimant;
             } else {
-                $firstClaimant = $burialAssistance?->claimant;
+                $firstClaimant = $burialAssistance?->originalClaimant();
             }
 
             $sheet->setCellValue("A{$row}", $client->tracking_no);

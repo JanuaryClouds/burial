@@ -121,15 +121,6 @@ class ClaimantChangeController extends Controller
                 'comments' => 'Change of claimant has been approved',
                 'is_progress_step' => false,
             ]);
-
-            // $change->burialAssistace->processLogs::create([
-            //     'burial_assistance_id' => $change->burialAssistance->id,
-            //     'loggable_id' => $change->id,
-            //     'loggable_type' => ClaimantChange::class,
-            //     'date_in' => now(),
-            //     'comments' => 'Claimant change approved by ' . auth()->user()->name,
-            //     'is_progress_step' => false
-            // ]);
         } elseif ($request->decision == 'rejected') {
             $change->update([
                 'status' => 'rejected',
@@ -138,7 +129,7 @@ class ClaimantChangeController extends Controller
             ProcessLog::create([
                 'id' => Str::uuid(),
                 'burial_assistance_id' => $change->burialAssistance->id,
-                'claimant_id' => $change->newClaimant->id,
+                'claimant_id' => $change->oldClaimant->id,
                 'loggable_id' => $change->id,
                 'loggable_type' => ClaimantChange::class,
                 'date_in' => now(),
