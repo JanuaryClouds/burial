@@ -22,6 +22,7 @@ class StoreClaimantChangeRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'reason_for_change' => 'required|string|max:255',
             'first_name' => 'required|string|max:255',
             'middle_name' => 'nullable|string|max:255',
             'last_name' => 'required|string|max:255',
