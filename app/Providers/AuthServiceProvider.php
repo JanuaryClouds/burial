@@ -7,10 +7,12 @@ use App\Models\Client;
 use App\Models\FuneralAssistance;
 use App\Models\Handler;
 use App\Models\Permission;
+use App\Models\TrackingCode;
 use App\Models\User;
 use App\Models\WorkflowStep;
 use App\Policies\BurialAssistancePolicy;
 use App\Policies\RolePolicy;
+use App\Policies\TrackingCodePolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use Spatie\Permission\Models\Role;
@@ -25,6 +27,7 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         // Role::class => RolePolicy::class
         BurialAssistance::class => BurialAssistancePolicy::class,
+        TrackingCode::class => TrackingCodePolicy::class,
     ];
 
     /**
