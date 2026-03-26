@@ -98,11 +98,11 @@ class BurialAssistanceController extends Controller
             $page_subtitle = $client->fullname()."'s Burial Assistance Application";
             $readonly = auth()->user()->cannot('manage-content') && $data->status != 'released';
 
-            $timeline = $this->processLogServices->timeline($data->originalClaimant()->id);
+            $timeline = $this->processLogServices->timeline($data);
             if ($data->claimantChanges()->first() && $data->claimantChanges()->first()->status == 'approved') {
                 $page_subtitle = $data->claimantChanges()->first()->newClaimant->fullname()."'s Burial Assistance Application";
-                $timeline = array_merge($timeline, $this->processLogServices->timeline($data->claimantChanges()->first()->newClaimant->id));
             }
+
             $next_step = $this->workflowStepServices->nextStep($data);
             $progress = $this->workflowStepServices->progress($data);
 

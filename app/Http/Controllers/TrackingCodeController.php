@@ -78,11 +78,7 @@ class TrackingCodeController extends Controller
             $data = $tracking_code->trackable;
 
             if (get_class($data) === BurialAssistance::class) {
-                $timeline = $this->processLogServices->timeline($data->id);
-                $claimantChange = $data->claimantChanges()->first();
-                if ($claimantChange && $claimantChange->status == 'approved') {
-                    $timeline = array_merge($timeline, $this->processLogServices->timeline($claimantChange->newClaimant->id));
-                }
+                $timeline = $this->processLogServices->timeline($data);
             }
 
             return view('tracker.show', [
