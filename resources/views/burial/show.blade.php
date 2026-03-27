@@ -12,7 +12,12 @@
         </div>
         @includeWhen($data->hasPendingClaimantChange(), 'burial.partials.claimant-change-request')
         @includeWhen(!$data->hasPendingClaimantChange(), 'burial.partials.menu')
-        @include('burial.partials.process-update-modal')
+        @includeWhen(
+            $data->status != 'released' &&
+                $data->status != 'rejected' &&
+                !$data->hasPendingClaimantChange() &&
+                $next_step != null,
+            'burial.partials.process-update-modal')
         @include('burial.partials.reject-modal')
         <form action="{{ route('burial.update', $data->id) }}" method="post" id="contentForm" class="d-flex flex-column gap-4">
             @csrf

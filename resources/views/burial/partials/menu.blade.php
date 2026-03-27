@@ -16,7 +16,7 @@
             @endif
         </span>
         <span class="d-flex gap-3 align-items-center">
-            @if ($data->status != 'rejected')
+            @if ($data->status != 'rejected' && $data->status != 'released' && $next_step != null)
                 <button class="btn btn-primary mr-2" type="button" data-bs-toggle="modal"
                     data-bs-target="#addUpdateModal-{{ $data->id }}">
                     Add Progress Update
