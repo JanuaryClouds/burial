@@ -32,7 +32,6 @@ class ClaimantChangeController extends Controller
 
     public function store(StoreClaimantChangeRequest $request, $id)
     {
-        // dd($request->all(), $id);
         $validated = $request->validated();
 
         if ($validated) {
@@ -42,20 +41,13 @@ class ClaimantChangeController extends Controller
             if (! $burialAssistance->claimant) {
                 return redirect()->back()->with('error', 'Unable to find claimant.');
             }
+
+            if ($burialAssistance->status == 'approved' || $burialAssistance->status == 'rejected' || $burialAssistance->status == 'released') {
+                return redirect()->back()->with('error', 'Changing claimant is not allowed in a' . $burialAssistance->status . ' status.');
+            }
+            
             $validated['old_claimant_id'] = $burialAssistance->claimant->id;
             $validated['id'] = Str::uuid();
-
-            // $newClaimant = Claimant::create([
-            //     "id" => Str::uuid(),
-            //     "first_name" => $validated['claimant']['first_name'],
-            //     "middle_name" => $validated['claimant']['middle_name'],
-            //     "last_name" => $validated['claimant']['last_name'],
-            //     "suffix" => $validated['claimant']['suffix'],
-            //     "relationship_to_deceased" => $validated['claimant']['relationship_to_deceased'],
-            //     "mobile_number" => $validated['claimant']['mobile_number'],
-            //     "address" => $validated['claimant']['address'],
-            //     "barangay_id" => $validated['claimant']['barangay_id'],
-            // ]);
 
             $validated['relationship_to_deceased'] = $validated['relationship_id'];
             $validated['address'] = $validated['house_no'].' '.$validated['street'];

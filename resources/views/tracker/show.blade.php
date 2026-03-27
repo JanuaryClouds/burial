@@ -30,7 +30,12 @@
                             })
                             ->exists();
                     @endphp
-                    @includeWhen($isOwner, 'burial.partials.claimant-change-form')
+                    @includeWhen(
+                        $isOwner &&
+                            $data->status != 'approved' &&
+                            $data->status != 'released' &&
+                            $data->status != 'rejected',
+                        'burial.partials.claimant-change-form')
                 @endauth
             @endif
             @auth
