@@ -43,9 +43,11 @@ class WorkflowSeeder extends Seeder
                 'order_no' => 4,
                 'handler_id' => 1,
                 'description' => 'Received by Ms. Maricar',
-                'requires_extra_data' => false,
+                'requires_extra_data' => true,
                 'is_optional' => false,
-                'extra_data_schema' => null,
+                'extra_data_schema' => json_encode([
+                    'inputs_and_recommendations*' => 'string',
+                ]),
             ],
             [
                 'order_no' => 5,

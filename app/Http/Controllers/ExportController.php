@@ -22,21 +22,6 @@ class ExportController extends Controller
         $sheet = $spreadsheet->getActiveSheet();
         $row = 4;
 
-        $query = BurialAssistance::with([
-            'claimant.relationship',
-            'claimant.barangay',
-            'claimant.client.beneficiary',
-            'claimant.client',
-            'deceased',
-            'deceased.gender',
-            'claimant',
-            'processLogs',
-            'cheque',
-            'claimantChanges',
-            'claimantChanges.oldClaimant',
-            'claimantChanges.newClaimant',
-        ]);
-
         $query = Client::with([
             'claimant',
             'claimant.cheque',
@@ -50,7 +35,7 @@ class ExportController extends Controller
         ])
             ->whereHas('claimant');
 
-        $clients = $query->orderBy('created_at', 'asc')->get();
+        $clients = $query->orderBy('tracking_no', 'asc')->get();
         $users = User::select([
             'id',
             'first_name',
@@ -107,7 +92,7 @@ class ExportController extends Controller
             $sheet->setCellValue("AC{$row}", $processLogService->getLog($firstClaimant, 3)?->date_in ?? '');
             $sheet->setCellValue("AD{$row}", $processLogService->getLog($firstClaimant, 4)?->date_out ?? '');
             $sheet->setCellValue("AE{$row}", $processLogService->getLog($firstClaimant, 4)?->date_in ?? '');
-            $sheet->setCellValue("AF{$row}", $processLogService->getLog($firstClaimant, 4)?->comments ?? '');
+            $sheet->setCellValue("AF{$row}", $processLogService->getLog($firstClaimant, 4)?->extra_data['inputs_and_recommendations'] ?? '');
             $sheet->setCellValue("AG{$row}", $processLogService->getLog($firstClaimant, 5)?->date_out ?? '');
             $sheet->setCellValue("AH{$row}", $processLogService->getLog($firstClaimant, 5)?->date_in ?? '');
             $sheet->setCellValue("AI{$row}", $processLogService->getLog($firstClaimant, 6)?->date_out ?? '');
