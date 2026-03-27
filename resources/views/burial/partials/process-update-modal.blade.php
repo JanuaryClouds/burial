@@ -63,7 +63,7 @@
                                         </label>
                                         <input type="{{ $subField }}" class="form-control"
                                             name="extra_data[{{ $key }}][{{ str_replace('*', '', $subkey) }}]"
-                                            {{ str_contains($subKey, '*') ? 'required' : '' }}>
+                                            {{ str_contains($subkey, '*') ? 'required' : '' }}>
                                     </div>
                                 @endforeach
                             @endif
