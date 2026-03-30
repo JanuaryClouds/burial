@@ -5,7 +5,7 @@
         @csrf
         @method('PUT')
         <div class="d-flex flex-column gap-3">
-            @include('client.partial.create-form-body')
+            @include('client.partials.create-form-body')
             <div class="card">
                 <div class="card-body">
                     @include('funeral.partials.approval')
@@ -13,12 +13,12 @@
             </div>
             <div class="card">
                 <div class="card-body">
-                    @include('client.partial.beneficiary-assessment', ['readonly' => true])
+                    @include('client.partials.beneficiary-assessment', ['readonly' => true])
                 </div>
             </div>
             <div class="card">
                 <div class="card-body">
-                    @include('client.partial.recommended-assistance', ['readonly' => true])
+                    @include('client.partials.recommended-assistance', ['readonly' => true])
                 </div>
             </div>
         </div>

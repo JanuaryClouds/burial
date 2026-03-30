@@ -15,7 +15,7 @@
                 </div>
                 <div id="client_info_card_body" class="collapse">
                     <div class="card-body">
-                        @include('client.partial.client-info')
+                        @include('client.partials.client-info')
                     </div>
                 </div>
                 <div class="card-footer pb-0 pt-4">
@@ -56,13 +56,13 @@
                 <div class="card-body">
                     <div class="tab-content" id="tabContent">
                         <div id="applications_tab" class="tab-pane fade" role="tabpanel">
-                            @include('client.partial.application-history')
+                            @include('client.partials.application-history')
                         </div>
                         <div id="interviews_tab" class="tab-pane fade show active" role="tabpanel">
-                            @include('client.partial.interview-history')
+                            @include('client.partials.interview-history')
                         </div>
                         <div id="burials_tab" class="tab-pane fade" role="tabpanel">
-                            @include('client.partial.burial-history')
+                            @include('client.partials.burial-history')
                         </div>
                         <div id="funerals_tab" class="tab-pane fade" role="tabpanel">
                             @include('funeral.partials.history')

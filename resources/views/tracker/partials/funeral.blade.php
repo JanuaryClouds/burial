@@ -1,5 +1,5 @@
 @if (isset($data->client?->beneficiary))
-    @include('client.partial.beneficiary-info', [
+    @include('client.partials.beneficiary-info', [
         'client' => $data->client,
     ])
 @else
