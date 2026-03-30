@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreClaimantChangeRequest;
 use App\Models\BurialAssistance;
-use App\Models\Claimant;
 use App\Models\ClaimantChange;
 use App\Models\ProcessLog;
 use App\Services\CentralClientService;
@@ -43,9 +42,9 @@ class ClaimantChangeController extends Controller
             }
 
             if ($burialAssistance->status == 'approved' || $burialAssistance->status == 'rejected' || $burialAssistance->status == 'released') {
-                return redirect()->back()->with('error', 'Changing claimant is not allowed in a' . $burialAssistance->status . ' status.');
+                return redirect()->back()->with('error', 'Changing claimant is not allowed in a '.$burialAssistance->status.' status.');
             }
-            
+
             $validated['old_claimant_id'] = $burialAssistance->claimant->id;
             $validated['id'] = Str::uuid();
 
@@ -72,20 +71,6 @@ class ClaimantChangeController extends Controller
                 return redirect()->back()->with('error', 'Failed to submit claimant change.');
             }
         }
-    }
-
-    public function form(Request $request, $uuid)
-    {
-        $burialAssistance = BurialAssistance::findOrFail($uuid);
-        $uuid = $request->query('uuid') ?? false;
-
-        if ($uuid) {
-            $citizen = $this->centralClientService->fetchByClient($uuid);
-        } else {
-            return redirect()->route('landing.page');
-        }
-
-        return view('burial.change-claimant', compact('burialAssistance'));
     }
 
     public function decide(Request $request, $uuid, $change)

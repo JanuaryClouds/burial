@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\BurialAssistance;
 use App\Models\Client;
 use App\Models\User;
 use App\Services\ProcessLogService;
