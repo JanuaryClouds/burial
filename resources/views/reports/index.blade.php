@@ -2,15 +2,19 @@
 <title>Reports - {{ $model }}</title>
 @section('content')
     <div class="mb-8">
-        <x-filter-data-form type="{{ $model }}" :startDate="$startDate" :endDate="$endDate" />
+        @include('reports.partials.filter', [
+            'type' => $model,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+        ])
     </div>
-    @include('admin.partial.cards')
+    @include('admin.partials.cards')
     <div class="row mt-8">
-        @includeWhen(Route::is('reports.clients'), 'reports.partial.client-charts')
-        @includeWhen(Route::is('reports.funerals'), 'reports.partial.funeral-charts')
-        @includeWhen(Route::is('reports.burial-assistances'), 'reports.partial.burial-charts')
-        @includeWhen(Route::is('reports.claimants'), 'reports.partial.claimants-charts')
-        @includeWhen(Route::is('reports.cheques'), 'reports.partial.cheques-charts')
+        @includeWhen(Route::is('reports.clients'), 'reports.partials.client-charts')
+        @includeWhen(Route::is('reports.funerals'), 'reports.partials.funeral-charts')
+        @includeWhen(Route::is('reports.burial-assistances'), 'reports.partials.burial-charts')
+        @includeWhen(Route::is('reports.claimants'), 'reports.partials.claimants-charts')
+        @includeWhen(Route::is('reports.cheques'), 'reports.partials.cheques-charts')
         <div class="col-12 mt-8">
             <div class="card">
                 <div class="card-body">
@@ -22,6 +26,10 @@
         </div>
     </div>
     <div class="d-flex justify-content-center mt-8">
-        <x-export-to-pdf-button :startDate="$startDate" :endDate="$endDate" type="{{ $model }}" />
+        @include('reports.partials.export-to-pdf', [
+            'type' => $model,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+        ])
     </div>
 @endsection

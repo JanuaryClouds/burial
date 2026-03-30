@@ -24,12 +24,15 @@
             @method('PUT')
             <div class="card">
                 <div class="card-body">
-                    @include('components.swa-form')
+                    @include('client.partials.swa-form', [
+                        'application' => $data,
+                        'readonly' => $readonly,
+                    ])
                 </div>
             </div>
             <div class="card">
                 <div class="card-body">
-                    @include('components.claimant-form', [
+                    @include('burial.partials.claimant-form', [
                         'claimant' => $data->claimant,
                         'readonly' => $readonly,
                     ])
@@ -37,15 +40,15 @@
             </div>
             <div class="card">
                 <div class="card-body">
-                    @include('components.deceased-form', [
-                        'beneficiary' => $data->originalClaimant()?->client?->beneficiary,
+                    @include('client.partials.beneficiary-info', [
+                        'client' => $data->originalClaimant()?->client,
                         'readonly' => $readonly,
                     ])
                 </div>
             </div>
             <div class="card">
                 <div class="card-body">
-                    @include('components.burial-assistance-details-form', [
+                    @include('burial.partials.details-form', [
                         'burialAssistance' => $data,
                         'readonly' => $readonly,
                     ])
@@ -54,7 +57,7 @@
         </form>
         <div class="card">
             <div class="card-body">
-                @include('client.partial.documents', [
+                @include('client.partials.documents', [
                     'client' => $data->claimant?->client,
                     'readonly' => true,
                 ])
