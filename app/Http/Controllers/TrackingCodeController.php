@@ -55,9 +55,14 @@ class TrackingCodeController extends Controller
             $match = $this->trackingCodeServices->match($validated['code'], $validated['tracking_no']);
             if ($match) {
                 $parsed_code = Str::replace('-', '', $validated['code']);
+                session([
+                    'code' => [
+                        'value' => TrackingCode::where('code', $parsed_code)->firstOrFail()->uuid,
+                        'expires_at' => now()->addMinutes(10),
+                    ],
+                ]);
 
-                return redirect()->route('tracker.show')
-                    ->with('code', TrackingCode::where('code', $parsed_code)->firstOrFail()->uuid);
+                return redirect()->route('tracker.show');
             } else {
                 return redirect()->route('landing.page')->with('info', 'Invalid Tracking Code or Tracking Number'.(app()->hasDebugModeEnabled() ? ' : '.$match : ''));
             }
@@ -69,12 +74,15 @@ class TrackingCodeController extends Controller
     public function show()
     {
         try {
-            if (! session()->has('code')) {
+            $code = session('code');
+
+            if (! $code || now()->greaterThanOrEqualTo($code['expires_at'])) {
+                session()->forget('code');
+
                 return redirect()->route('landing.page');
             }
 
-            $tracking_code = TrackingCode::with('trackable')->findOrFail(session('code'));
-            session()->forget('code');
+            $tracking_code = TrackingCode::with('trackable')->findOrFail($code['value']);
             $data = $tracking_code->trackable;
 
             if (get_class($data) === BurialAssistance::class) {
