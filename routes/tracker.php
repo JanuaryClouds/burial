@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 Route::name('tracker.')
     ->prefix('tracker')
     ->group(function () {
-        Route::get('/show', [TrackingCodeController::class, 'show'])
+        Route::get('', [TrackingCodeController::class, 'show'])
             ->name('show');
 
         Route::post('/store', [TrackingCodeController::class, 'store'])
