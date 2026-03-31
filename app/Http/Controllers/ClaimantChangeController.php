@@ -95,23 +95,12 @@ class ClaimantChangeController extends Controller
                 'loggable_id' => $change->id,
                 'loggable_type' => ClaimantChange::class,
                 'date_in' => now(),
-                'comments' => 'Change of claimant has been approved',
+                'comments' => 'Change of claimant has been approved. Progress has been reset to evaluate the new claimant.',
                 'is_progress_step' => false,
             ]);
         } elseif ($request->decision == 'rejected') {
             $change->update([
                 'status' => 'rejected',
-            ]);
-
-            ProcessLog::create([
-                'id' => Str::uuid(),
-                'burial_assistance_id' => $change->burialAssistance->id,
-                'claimant_id' => $change->oldClaimant->id,
-                'loggable_id' => $change->id,
-                'loggable_type' => ClaimantChange::class,
-                'date_in' => now(),
-                'comments' => 'Change of claimant has been rejected',
-                'is_progress_step' => false,
             ]);
         }
 
