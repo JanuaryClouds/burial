@@ -9,8 +9,7 @@
         $readonly = false;
     }
 @endphp
-
-@if (!$client)
+@if ($client === null)
     @php throw new \InvalidArgumentException('Client is required for documents partial'); @endphp
 @endif
 <h5 class="card-title">SUBMITTED DOCUMENTS</h5>
@@ -18,6 +17,7 @@
     <p><strong>Optionally</strong>, you can upload the following documents to shorten the processing time during the
         interview:</p>
 @endif
+{{-- TODO update this to use file server --}}
 <div class="row flex-column justify-content-center align-items-center g-2">
     @if (count($files) > 0)
         @foreach ($files as $file)

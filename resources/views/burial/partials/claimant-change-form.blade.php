@@ -27,6 +27,7 @@
                     @include('client.partials.client-info')
                     <x-form-textarea name="reason_for_change" required="true" label="Reason for Changing Claimants" />
                 </div>
+                {{-- TODO double check if new claimant needs to upload photos --}}
             </div>
         </div>
         <div class="card-footer d-flex justify-content-end">
