@@ -8,6 +8,7 @@
             <div class="card-body d-flex flex-column gap-4">
                 @include('burial.partials.progress')
                 @include('burial.partials.timeline')
+                @include('burial.partials.claimant-change-status-alert')
             </div>
         </div>
         @includeWhen($data->hasPendingClaimantChange(), 'burial.partials.claimant-change-request')
@@ -58,7 +59,7 @@
         <div class="card">
             <div class="card-body">
                 @include('client.partials.documents', [
-                    'client' => $data->claimant?->client,
+                    'client' => $data->originalClaimant()?->client,
                     'readonly' => true,
                 ])
             </div>

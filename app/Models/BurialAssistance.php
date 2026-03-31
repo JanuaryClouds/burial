@@ -49,6 +49,16 @@ class BurialAssistance extends Model
         return $this->claimantChanges()->where('status', 'pending')->exists();
     }
 
+    public function hasApprovedClaimantChange()
+    {
+        return $this->claimantChanges()->where('status', 'approved')->exists();
+    }
+
+    public function hasRejectedClaimantChange()
+    {
+        return $this->claimantChanges()->where('status', 'rejected')->exists();
+    }
+
     public function claimantChanges()
     {
         return $this->hasMany(ClaimantChange::class, 'burial_assistance_id', 'id');
