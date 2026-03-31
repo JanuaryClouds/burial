@@ -1,9 +1,7 @@
-@php
-    $controller = class_basename(request()->route()->getController());
-    $hasStore = method_exists($controller, 'store');
-@endphp
-@if ($hasStore)
-    <button class="btn btn-primary rounded" type="button" data-bs-toggle="modal" data-bs-target="#newContent">
-        Add New {{ ucfirst($resource) }}
-    </button>
+@if (isset($resource))
+    @if (Route::has($resource . '.store'))
+        <button class="btn btn-primary rounded" type="button" data-bs-toggle="modal" data-bs-target="#newContent">
+            Add New {{ ucfirst($resource) }}
+        </button>
+    @endif
 @endif
