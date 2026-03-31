@@ -204,14 +204,6 @@
                 <a href="{{ route('user.index') }}" @class(['active' => Route::is('user.*'), 'menu-link'])>
                     <span class="menu-bullet">
                         <div class="menu-item">
-                            <a href="{{ route('permission.index') }}" @class(['active' => Route::is('permission.*'), 'menu-link'])>
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">Permissions</span>
-                            </a>
-                        </div>
-                        <div class="menu-item">
                             <a href="{{ route('role.index') }}" @class(['active' => Route::is('role.*'), 'menu-link'])>
                                 <span class="menu-bullet">
                                     <span class="bullet bullet-dot"></span>

@@ -11,7 +11,6 @@
             !Route::is('user.*') &&
             !Route::is('system.*') &&
             !Route::is('role.*') &&
-            !Route::is('permission.*') &&
             !Route::is('assignments.*'),
     ])>
     <!--begin:Menu link-->

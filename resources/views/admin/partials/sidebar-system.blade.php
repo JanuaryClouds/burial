@@ -2,7 +2,6 @@
     @class([
         'menu-item',
         'here' =>
-            Route::is('permission*') ||
             Route::is('role*') ||
             Route::is('user*') ||
             Route::is('system.*'),
@@ -30,14 +29,6 @@
                     <span class="bullet bullet-dot"></span>
                 </span>
                 <span class="menu-title">Users</span>
-            </a>
-        </div>
-        <div class="menu-item">
-            <a href="{{ route('permission.index') }}" @class(['active' => Route::is('permission.*'), 'menu-link'])>
-                <span class="menu-bullet">
-                    <span class="bullet bullet-dot"></span>
-                </span>
-                <span class="menu-title">Permissions</span>
             </a>
         </div>
         <div class="menu-item">
