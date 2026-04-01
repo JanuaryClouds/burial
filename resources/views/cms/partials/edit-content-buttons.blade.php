@@ -1,7 +1,8 @@
 @if (!$readonly)
     <span class="d-flex gap-3">
-        <button class="btn btn-primary" id="saveContentBtn">
-            Save
+        <button class="btn btn-warning" id="saveContentBtn">
+            <i class="fas fa-save"></i>
+            Save Changes to Data
         </button>
     </span>
 
