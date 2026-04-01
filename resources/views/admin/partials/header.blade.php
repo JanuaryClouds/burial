@@ -23,8 +23,6 @@
         <!--begin::Wrapper-->
         <div class="d-flex align-items-center justify-content-end flex-wrap gap-3">
             <!-- begin::Menu wrapper -->
-            @includeWhen(Route::is('funeral.show'), 'funeral.partials.action-buttons')
-            @includeWhen(Route::is('client.show'), 'client.partials.action-buttons')
             @includeWhen(Route::is('*.index') && auth()->user()->can('manage-content'),
                 'superadmin.partials.new-content')
             @includeWhen(Route::is('*.show') && auth()->user()->can('manage-content'),
@@ -39,7 +37,7 @@
                 <!-- begin::User -->
                 <a href="#" class="btn btn-icon btn-custom btn-active-color-primary menu-dropdown"
                     data-kt-menu-trigger="click" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
-                    <i class="ki-duotone ki-user fs-1"><span class="path1"></span><span class="path2"></span></i>
+                    <x-ki-icon :icon_name="'user'" :icon_size="'1'" :paths_count="2" />
                 </a>
 
                 <!--begin::User account menu-->
@@ -96,7 +94,7 @@
     <div class="header-offset"></div>
 </div>
 
-<script {{ $nonce ? 'nonce="' . $nonce . '"' : '' }}>
+<script {{ $nonce ?? null ? 'nonce="' . $nonce . '"' : '' }}>
     const header = document.getElementById('main-header-web')
     const darkBanner = @json(asset('images/banner-dark.svg'));
     const lightBanner = @json(asset('images/banner-light.svg'));

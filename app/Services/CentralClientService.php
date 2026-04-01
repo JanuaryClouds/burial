@@ -71,7 +71,6 @@ class CentralClientService
         if (app()->isLocal()) {
             $user = User::where('citizen_id', $citizen_uuid)->first();
             if ($user === null) {
-                dd('User not found'); // kept here for debugging and stop the system from creating a new account for some reason
                 $user = User::factory()->create([
                     'citizen_id' => $citizen_uuid,
                 ]);
