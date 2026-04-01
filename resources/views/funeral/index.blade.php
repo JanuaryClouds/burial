@@ -1,7 +1,7 @@
 @extends('layouts.metronic.admin')
 <title>{{ $page_title }}</title>
 @section('content')
-    @include('admin.partial.cards')
+    @include('admin.partials.cards')
     <div class="card mt-8">
         <div class="card-header">
             <h1 class="card-title">Manage Libreng Libing Applications</h1>

@@ -2,7 +2,6 @@
     'data' => collect([]),
     'columns' => [],
     'classes' => '',
-    'resource' => '',
     'route' => null,
 ])
 @php

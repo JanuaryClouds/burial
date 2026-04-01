@@ -7,7 +7,11 @@
             claimant for confirmation.</p>
         <x-form-input name="reason_for_change" id="reason_for_change" label="Reason for Change" placeholder=""
             value="{{ $data->claimantChanges()?->first()?->reason_for_change }}" readonly="true" disabled="true" />
-        <x-claimant-form :claimant="$data->claimantChanges()?->first()?->newClaimant" :readonly="true" :disabled="true" />
+        @include('burial.partials.claimant-form', [
+            'claimant' => $data->claimantChanges()?->first()?->newClaimant,
+            'readonly' => true,
+            'disabled' => true,
+        ])
         <form
             action="{{ route('burial.claimant-change.decision', [
                 'id' => $data->id,

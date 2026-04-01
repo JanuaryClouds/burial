@@ -1,13 +1,13 @@
 @extends('layouts.metronic.admin')
 @section('content')
     <div class="d-flex flex-column gap-4">
-        <div class="card bg-danger text-white">
-            <div class="card-header">
-                <h4 class="card-title text-white">Warning</h4>
-            </div>
-            <div class="card-body">
-                <p>This page controls how the system behaves. Please proceed with caution.</p>
-            </div>
+        <div class="alert alert-danger fade show" role="alert">
+            <strong>
+                <i class="fa fa-exclamation-triangle">
+                </i>
+                Warning -
+            </strong>
+            This page manipulates how the system behaves. Please proceed with caution.
         </div>
         <div class="card">
             <form action="{{ route('system.update') }}" method="post">

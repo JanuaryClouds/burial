@@ -8,10 +8,10 @@
     @include('partials.landing-hero')
     <div class="py-10" style="background-color: #f4f6f9;">
         <div class="d-flex flex-column" id="start">
-            @include('guest.partial.services')
-            @include('guest.partial.clients')
-            @include('guest.partial.documents')
-            @include('guest.partial.process')
+            @include('guest.partials.services')
+            @include('guest.partials.clients')
+            @include('guest.partials.documents')
+            @include('guest.partials.process')
         </div>
     </div>
     @include('tracker.partials.form-modal')

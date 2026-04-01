@@ -16,7 +16,7 @@ class ActivityLogController extends Controller
 
     public function index()
     {
-        $logs = Activity::with('causer')
+        $data = Activity::with('causer')
             ->select('id', 'description', 'causer_type', 'causer_id', 'properties', 'created_at')
             ->orderBy('created_at', 'desc')
             ->get()
@@ -34,14 +34,14 @@ class ActivityLogController extends Controller
                     'created_at' => $log->created_at->format('Y-m-d H:i:s'),
                 ];
             });
-        $columns = $this->datatableServices->getColumns($logs, ['id']);
+        $columns = $this->datatableServices->getColumns($data, ['id']);
 
         if (request()->expectsJson()) {
             return response()->json([
-                'data' => $logs->values(),
+                'data' => $data->values(),
             ]);
         }
 
-        return view('logs.index', compact('logs', 'columns'));
+        return view('logs.index', compact('data', 'columns'));
     }
 }

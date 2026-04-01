@@ -5,8 +5,8 @@
         <!--div class="container min-vh-100 d-flex justify-content-center align-items-center"-->
         <div class="row my-10">
             <!--div class="col"-->
-            @include('client.partial.create-form-header')
-            @include('client.partial.create-form-body')
+            @include('client.partials.create-form-header')
+            @include('client.partials.create-form-body')
             <!--/div-->
         </div>
         <!--/div-->

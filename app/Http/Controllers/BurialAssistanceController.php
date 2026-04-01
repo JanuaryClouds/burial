@@ -6,7 +6,6 @@ use App\Http\Requests\StoreBurialAssistanceRequest;
 use App\Models\Barangay;
 use App\Models\BurialAssistance;
 use App\Models\Religion;
-use App\Models\SystemSetting;
 use App\Services\BurialAssistanceService;
 use App\Services\DatatableService;
 use App\Services\ProcessLogService;
@@ -38,26 +37,6 @@ class BurialAssistanceController extends Controller
         $this->workflowStepServices = $workflowStepService;
     }
 
-    // ! Deprecated
-    public function tracker($uuid, ProcessLogService $processLogService)
-    {
-        $burialAssistance = BurialAssistance::where('id', $uuid)->first();
-        $this->authorize('view', $burialAssistance);
-
-        $isMaintenance = SystemSetting::first()?->maintenance_mode ?? false;
-        $updateAverage = $processLogService->getAvgProcessingTime($burialAssistance)->avg();
-
-        if (! auth()->check()) {
-            $burialAssistance->claimant->first_name = Str::mask($burialAssistance->claimant->first_name, '*', 3);
-            $burialAssistance->claimant->middle_name = Str::mask($burialAssistance->claimant->middle_name, '*', 3);
-            $burialAssistance->claimant->last_name = Str::mask($burialAssistance->claimant->last_name, '*', 3);
-            $burialAssistance->claimant->mobile_number = Str::mask($burialAssistance->claimant->mobile_number, '*', 4, 3);
-            $burialAssistance->claimant->address = Str::mask($burialAssistance->claimant->address, '*', 3);
-        }
-
-        return view('burial.tracker', compact('burialAssistance', 'updateAverage', 'isMaintenance'));
-    }
-
     public function index($status = null)
     {
         $page_title = 'Burial Assistance Applications';
@@ -75,15 +54,15 @@ class BurialAssistanceController extends Controller
 
         $barangays = Barangay::select('id', 'name')->get();
 
-        return view('burial.index', compact(
+        return view('burial.index', compact([
             'resource',
             'data',
             'columns',
             'status',
             'barangays',
             'statusOptions',
-            'page_title'
-        ));
+            'page_title',
+        ]));
     }
 
     public function show($id)
@@ -110,15 +89,15 @@ class BurialAssistanceController extends Controller
                 session()->put('code', $data->tracker->uuid);
             }
 
-            return view('burial.show', compact(
+            return view('burial.show', compact([
                 'data',
                 'progress',
                 'timeline',
                 'next_step',
                 'page_title',
                 'page_subtitle',
-                'readonly'
-            ));
+                'readonly',
+            ]));
         } catch (\Throwable $th) {
             return redirect()->back()->with('error', 'Unable to find application.'.(app()->hasDebugModeEnabled() ? ' '.$th->getMessage() : ''));
         }

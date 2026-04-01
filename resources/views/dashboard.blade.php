@@ -1,10 +1,13 @@
 @extends('layouts.metronic.admin')
 @section('content')
     <title>Dashboard</title>
-    @include('admin.partial.cards')
+    @include('admin.partials.cards')
     <div class="row mt-5 mt-xl-8">
         <div class="col-12">
-            <x-latest-clients-table />
+            @include('client.partials.latest-table', [
+                'data' => $data,
+                'columns' => $columns,
+            ])
         </div>
     </div>
 @endsection

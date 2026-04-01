@@ -5,18 +5,26 @@ namespace App\Http\Controllers;
 use App\Models\BurialAssistance;
 use App\Models\Client;
 use App\Models\FuneralAssistance;
-use App\Models\ProcessLog;
+use App\Services\ClientService;
+use App\Services\DatatableService;
 use Carbon\Carbon;
 use Spatie\Activitylog\Models\Activity;
 
 class DashboardController extends Controller
 {
-    protected $processLogService;
+    protected $clientServices;
+
+    protected $datatableServices;
+
+    public function __construct(ClientService $clientService, DatatableService $datatableService)
+    {
+        $this->clientServices = $clientService;
+        $this->datatableServices = $datatableService;
+    }
 
     public function index()
     {
         $page_title = 'Dashboard';
-        $lastLogs = ProcessLog::with('burialAssistance')->where('added_by', auth()->user()->id)->latest()->limit(2)->get();
         $pendingBurialAssistance = BurialAssistance::where(function ($query) {
             $query
                 ->orWhere('status', 'pending')
@@ -26,16 +34,13 @@ class DashboardController extends Controller
             $query->where('approved_at', null);
             $query->where('forwarded_at', null);
         })->count();
-        $processingApplicationsCount = BurialAssistance::where('status', 'processing')->get()->count();
-        $approvedApplicationsCount = BurialAssistance::where('status', 'approved')->get()->count();
-        $totalApplications = BurialAssistance::where(function ($query) {
-            $query->where('status', '!=', 'rejected');
-            $query->where('status', '!=', 'released');
-        })->count();
 
         $pendingClients = Client::where(function ($query) {
             $query->where('created_at', '>=', Carbon::now()->subDays(7));
         })->count();
+
+        $data = $this->clientServices->index('tracking_no', 'asc');
+        $columns = $this->datatableServices->getColumns($data, ['id', 'status', 'show_route']);
 
         $cardData = [
             [
@@ -61,11 +66,12 @@ class DashboardController extends Controller
             ],
         ];
 
-        return view('dashboard', compact(
+        return view('dashboard', compact([
             'cardData',
-            'lastLogs',
-            'page_title'
-        ));
+            'page_title',
+            'data',
+            'columns',
+        ]));
     }
 
     public function user()

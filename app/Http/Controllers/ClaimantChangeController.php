@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreClaimantChangeRequest;
 use App\Models\BurialAssistance;
-use App\Models\Claimant;
 use App\Models\ClaimantChange;
 use App\Models\ProcessLog;
 use App\Services\CentralClientService;
@@ -43,9 +42,9 @@ class ClaimantChangeController extends Controller
             }
 
             if ($burialAssistance->status == 'approved' || $burialAssistance->status == 'rejected' || $burialAssistance->status == 'released') {
-                return redirect()->back()->with('error', 'Changing claimant is not allowed in a' . $burialAssistance->status . ' status.');
+                return redirect()->back()->with('error', 'Changing claimant is not allowed in a '.$burialAssistance->status.' status.');
             }
-            
+
             $validated['old_claimant_id'] = $burialAssistance->claimant->id;
             $validated['id'] = Str::uuid();
 
@@ -74,20 +73,6 @@ class ClaimantChangeController extends Controller
         }
     }
 
-    public function form(Request $request, $uuid)
-    {
-        $burialAssistance = BurialAssistance::findOrFail($uuid);
-        $uuid = $request->query('uuid') ?? false;
-
-        if ($uuid) {
-            $citizen = $this->centralClientService->fetchByClient($uuid);
-        } else {
-            return redirect()->route('landing.page');
-        }
-
-        return view('burial.change-claimant', compact('burialAssistance'));
-    }
-
     public function decide(Request $request, $uuid, $change)
     {
         $change = ClaimantChange::where('burial_assistance_id', $uuid)
@@ -110,23 +95,12 @@ class ClaimantChangeController extends Controller
                 'loggable_id' => $change->id,
                 'loggable_type' => ClaimantChange::class,
                 'date_in' => now(),
-                'comments' => 'Change of claimant has been approved',
+                'comments' => 'Change of claimant has been approved. Progress has been reset to evaluate the new claimant.',
                 'is_progress_step' => false,
             ]);
         } elseif ($request->decision == 'rejected') {
             $change->update([
                 'status' => 'rejected',
-            ]);
-
-            ProcessLog::create([
-                'id' => Str::uuid(),
-                'burial_assistance_id' => $change->burialAssistance->id,
-                'claimant_id' => $change->oldClaimant->id,
-                'loggable_id' => $change->id,
-                'loggable_type' => ClaimantChange::class,
-                'date_in' => now(),
-                'comments' => 'Change of claimant has been rejected',
-                'is_progress_step' => false,
             ]);
         }
 

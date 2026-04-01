@@ -35,69 +35,69 @@ class PermissionController extends Controller
     //         ));
     // }
 
-    public function index()
-    {
-        $data = Permission::getAllPermissions()
-            ->map(function ($permission) {
-                return [
-                    'id' => $permission->id,
-                    'name' => $permission->name,
-                    'guard' => $permission->guard_name,
-                ];
-            });
-        $columns = ['name', 'guard'];
-        $resource = 'permission';
-        $page_title = 'Permission';
+    // public function index()
+    // {
+    //     $data = Permission::getAllPermissions()
+    //         ->map(function ($permission) {
+    //             return [
+    //                 'id' => $permission->id,
+    //                 'name' => $permission->name,
+    //                 'guard' => $permission->guard_name,
+    //             ];
+    //         });
+    //     $columns = ['name', 'guard'];
+    //     $resource = 'permission';
+    //     $page_title = 'Permission';
 
-        if (request()->expectsJson()) {
-            return response()->json([
-                'data' => $data->values(),
-            ]);
-        }
+    //     if (request()->expectsJson()) {
+    //         return response()->json([
+    //             'data' => $data->values(),
+    //         ]);
+    //     }
 
-        return view('cms.index', compact('data', 'resource', 'columns', 'page_title'));
-    }
+    //     return view('cms.index', compact('data', 'resource', 'columns', 'page_title'));
+    // }
 
-    public function store(PermissionRequest $request)
-    {
-        $request['guard_name'] = 'web';
-        $permission = $this->permissionServices->storePermission($request->validated());
+    // public function store(PermissionRequest $request)
+    // {
+    //     $request['guard_name'] = 'web';
+    //     $permission = $this->permissionServices->storePermission($request->validated());
 
-        activity()
-            ->causedBy(Auth::user())
-            ->performedOn($permission)
-            ->log('Created a new permission: '.$permission->name);
+    //     activity()
+    //         ->causedBy(Auth::user())
+    //         ->performedOn($permission)
+    //         ->log('Created a new permission: '.$permission->name);
 
-        return redirect()
-            ->route(Auth::user()->getRoleNames()->first().'.permission.index')
-            ->with('success', 'Permission created successfully.');
-    }
+    //     return redirect()
+    //         ->route(Auth::user()->getRoleNames()->first().'.permission.index')
+    //         ->with('success', 'Permission created successfully.');
+    // }
 
-    public function update(PermissionRequest $request, Permission $permission)
-    {
-        $permission = $this->permissionServices->updatePermission($request->validated(), $permission);
+    // public function update(PermissionRequest $request, Permission $permission)
+    // {
+    //     $permission = $this->permissionServices->updatePermission($request->validated(), $permission);
 
-        activity()
-            ->causedBy(Auth::user())
-            ->performedOn($permission)
-            ->log('Updated the permission: '.$permission->name);
+    //     activity()
+    //         ->causedBy(Auth::user())
+    //         ->performedOn($permission)
+    //         ->log('Updated the permission: '.$permission->name);
 
-        return redirect()
-            ->route(Auth::user()->getRoleNames()->first().'.permission.index')
-            ->with('success', 'Permission updated successfully.');
-    }
+    //     return redirect()
+    //         ->route(Auth::user()->getRoleNames()->first().'.permission.index')
+    //         ->with('success', 'Permission updated successfully.');
+    // }
 
-    public function destroy(Permission $permission)
-    {
-        $permission = $this->permissionServices->deletePermission($permission);
+    // public function destroy(Permission $permission)
+    // {
+    //     $permission = $this->permissionServices->deletePermission($permission);
 
-        activity()
-            ->causedBy(Auth::user())
-            ->performedOn($permission)
-            ->log('Deleted the permission: '.$permission->name);
+    //     activity()
+    //         ->causedBy(Auth::user())
+    //         ->performedOn($permission)
+    //         ->log('Deleted the permission: '.$permission->name);
 
-        return redirect()
-            ->route(Auth::user()->getRoleNames()->first().'.permission.index')
-            ->with('success', 'Permission deleted successfully.');
-    }
+    //     return redirect()
+    //         ->route(Auth::user()->getRoleNames()->first().'.permission.index')
+    //         ->with('success', 'Permission deleted successfully.');
+    // }
 }
