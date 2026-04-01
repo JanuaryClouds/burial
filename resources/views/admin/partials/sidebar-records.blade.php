@@ -12,10 +12,7 @@
     <!--begin:Menu link-->
     <span class="menu-link menu-center d-flex flex-column">
         <span class="menu-icon me-0">
-            <i class="ki-duotone ki-folder fs-2x">
-                <span class="path1"></span>
-                <span class="path2"></span>
-            </i>
+            <x-ki-icon :icon_name="'folder'" :icon_size="'2x'" :paths_count="2" />
         </span>
         <small class="text-center text-gray-400 fw-semibold mt-1">Records</small>
     </span>
@@ -25,13 +22,7 @@
         <div class="menu-item">
             <a href="{{ route('client.index') }}" @class(['active' => Request::is('client*'), 'menu-link'])>
                 <span class="menu-icon">
-                    <i class="ki-duotone ki-people fs-2">
-                        <span class="path1"></span>
-                        <span class="path2"></span>
-                        <span class="path3"></span>
-                        <span class="path4"></span>
-                        <span class="path5"></span>
-                    </i>
+                    <x-ki-icon :icon_name="'people'" :icon_size="'2'" :paths_count="5" />
                 </span>
                 <span class="menu-title">Clients</span>
             </a>
@@ -39,13 +30,7 @@
         <div class="menu-item">
             <a href="{{ route('beneficiary.index') }}" @class(['active' => Request::is('beneficiary*'), 'menu-link'])>
                 <span class="menu-icon">
-                    <i class="ki-duotone ki-people fs-2">
-                        <span class="path1"></span>
-                        <span class="path2"></span>
-                        <span class="path3"></span>
-                        <span class="path4"></span>
-                        <span class="path5"></span>
-                    </i>
+                    <x-ki-icon :icon_name="'people'" :icon_size="'2'" :paths_count="5" />
                 </span>
                 <span class="menu-title">Beneficiaries</span>
             </a>
@@ -53,10 +38,7 @@
         <div class="menu-item">
             <a href="{{ route('funeral.index') }}" @class(['active' => Request::is('funeral*'), 'menu-link'])>
                 <span class="menu-icon">
-                    <i class="ki-duotone ki-file-up fs-2">
-                        <span class="path1"></span>
-                        <span class="path2"></span>
-                    </i>
+                    <x-ki-icon :icon_name="'file-up'" :icon_size="'2'" :paths_count="2" />
                 </span>
                 <span class="menu-title">Libreng Libing</span>
             </a>
@@ -64,10 +46,7 @@
         <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
             <span class="menu-link">
                 <span class="menu-icon">
-                    <i class="ki-duotone ki-file-up fs-2">
-                        <span class="path1"></span>
-                        <span class="path2"></span>
-                    </i>
+                    <x-ki-icon :icon_name="'file-up'" :icon_size="'2'" :paths_count="2" />
                 </span>
                 <span class="menu-title">
                     Burial Assistances

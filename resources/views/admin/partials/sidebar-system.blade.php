@@ -1,17 +1,11 @@
 <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start"
     @class([
         'menu-item',
-        'here' =>
-            Route::is('role*') ||
-            Route::is('user*') ||
-            Route::is('system.*'),
+        'here' => Route::is('role*') || Route::is('user*') || Route::is('system.*'),
     ])>
     <span class="menu-link menu-center d-flex flex-column">
         <span class="menu-icon me-0">
-            <i class="ki-duotone ki-setting-2 fs-2x">
-                <span class="path1"></span>
-                <span class="path2"></span>
-            </i>
+            <x-ki-icon :icon_name="'setting-2'" :icon_size="'2x'" :paths_count="2" />
         </span>
         <small class="text-center text-gray-400 fw-semibold mt-1">System</small>
     </span>

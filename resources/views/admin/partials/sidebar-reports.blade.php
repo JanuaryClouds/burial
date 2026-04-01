@@ -3,10 +3,7 @@
     @class(['menu-item', 'here' => Route::is('reports*')])>
     <span class="menu-link menu-center d-flex flex-column">
         <span class="menu-icon me-0">
-            <i class="ki-duotone ki-file-sheet fs-2x">
-                <span class="path1"></span>
-                <span class="path2"></span>
-            </i>
+            <x-ki-icon :icon_name="'file-sheet'" :icon_size="'2x'" :paths_count="2" />
         </span>
         <small class="text-center text-gray-400 fw-semibold mt-1">Reports</small>
     </span>

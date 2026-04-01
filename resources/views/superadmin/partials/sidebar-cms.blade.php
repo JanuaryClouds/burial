@@ -16,13 +16,7 @@
     <!--begin:Menu link-->
     <span class="menu-link menu-center d-flex flex-column">
         <span class="menu-icon me-0">
-            <i class="ki-duotone ki-data fs-2x">
-                <span class="path1"></span>
-                <span class="path2"></span>
-                <span class="path3"></span>
-                <span class="path4"></span>
-                <span class="path5"></span>
-            </i>
+            <x-ki-icon :icon_name="'data'" :icon_size="'2x'" :paths_count="5" />
         </span>
         <small class="text-center text-gray-400 fw-semibold mt-1">CMS</small>
     </span>
