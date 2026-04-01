@@ -1,5 +1,6 @@
 @extends('layouts.metronic.admin')
 @section('content')
+    @include('client.partials.menu')
     @include('client.partials.interview-alert')
     @include('client.partials.assessment-modal')
     @include('client.partials.schedule')

@@ -1,6 +1,7 @@
 @extends('layouts.metronic.admin')
 @section('content')
     <div class="d-flex flex-column gap-4">
+        @includeWhen(!$data->hasPendingClaimantChange(), 'burial.partials.menu')
         <div class="card">
             <div class="card-header">
                 <h4 class="card-title">Progress of Burial Assistance</h4>
@@ -12,7 +13,6 @@
             </div>
         </div>
         @includeWhen($data->hasPendingClaimantChange(), 'burial.partials.claimant-change-request')
-        @includeWhen(!$data->hasPendingClaimantChange(), 'burial.partials.menu')
         @includeWhen(
             $data->status != 'released' &&
                 $data->status != 'rejected' &&
