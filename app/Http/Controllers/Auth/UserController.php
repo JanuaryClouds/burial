@@ -133,7 +133,7 @@ class UserController extends Controller
             ]);
         }
 
-        $columns = $this->datatableServices->getColumns($data, ['id', 'show_route']);
+        $columns = $this->datatableServices->getColumns($data, ['is_active']);
 
         return view('cms.index', compact('data', 'page_title', 'resource', 'columns'));
     }
