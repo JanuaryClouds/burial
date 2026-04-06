@@ -32,7 +32,7 @@ class UserFactory extends Factory
             'suffix' => $this->faker->optional()->randomElement(['Jr.', 'Sr.', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X']),
             // 'email_verified_at' => now(),
             'contact_number' => $this->faker->regexify('09[0-9]{9}'),
-            'password' => static::$password ??= Hash::make('password'),
+            'password' => static::$password ??= Str::random(8),
             // 'remember_token' => Str::random(10),
         ];
     }
