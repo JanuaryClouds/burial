@@ -20,6 +20,7 @@ class DocumentRequirement extends Model
     {
         return [
             [
+                'key' => 'death-certificate',
                 'name' => 'Certified True Copy of Registered Death Certificate',
                 'description' => null,
                 'source' => 'Local Civil Registry',
@@ -27,6 +28,7 @@ class DocumentRequirement extends Model
                 'is_muslim' => false,
             ],
             [
+                'key' => 'funeral-contract',
                 'name' => 'Original Copy of Funeral Contract',
                 'description' => null,
                 'source' => 'Funeral Establishment',
@@ -34,13 +36,15 @@ class DocumentRequirement extends Model
                 'is_muslim' => false,
             ],
             [
-                'name' => 'Photocopy of Valid Identification Card of Deceased and Claimant',
+                'key' => 'deceased-id-card',
+                'name' => 'Photocopy of Valid Identification Card of Deceased',
                 'description' => null,
                 'source' => 'Local Civil Registry',
                 'is_mandatory' => true,
                 'is_muslim' => false,
             ],
             [
+                'key' => 'relationship-proof',
                 'name' => 'Proof of Relationship',
                 'description' => 'Examples include Marriage Contract, Birth Certificate, Baptismal Certificate.',
                 'source' => 'Local Civil Registry',
@@ -48,6 +52,7 @@ class DocumentRequirement extends Model
                 'is_muslim' => false,
             ],
             [
+                'key' => 'burial-rites',
                 'name' => 'Certificate of Burial Rites (signed by IMAM)',
                 'description' => '',
                 'source' => 'Muslim/Islam Religious Community',
@@ -55,7 +60,8 @@ class DocumentRequirement extends Model
                 'is_muslim' => true,
             ],
             [
-                'name' => 'Certificate of Internment issued by Muslim Cemetery',
+                'key' => 'interment-certificate',
+                'name' => 'Certificate of Interment issued by Muslim Cemetery',
                 'description' => '',
                 'source' => 'Muslim/Islam Religious Community',
                 'is_mandatory' => true,
@@ -68,12 +74,14 @@ class DocumentRequirement extends Model
     {
         return [
             [
+                'key' => 'death-certificate',
                 'name' => 'Certified True Copy of Registered Death Certificate',
                 'description' => null,
                 'source' => 'Local Civil Registry',
                 'is_mandatory' => true,
             ],
             [
+                'key' => 'burial-permit',
                 'name' => 'Burial Permit',
                 'description' => null,
                 'source' => 'Local Civil Registry & Barangay Hall of San Miguel',

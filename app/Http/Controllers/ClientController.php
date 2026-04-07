@@ -7,6 +7,7 @@ use App\Models\Assistance;
 use App\Models\Barangay;
 use App\Models\CivilStatus;
 use App\Models\Client;
+use App\Models\DocumentRequirement;
 use App\Models\Sex;
 use App\Services\CentralClientService;
 use App\Services\ClientService;
@@ -106,15 +107,6 @@ class ClientController extends Controller
             $released = $client?->claimant?->burialAssistance?->status != 'released' || $client?->funeralAssistance?->forwarded_at != null;
 
             if ($client) {
-                // $path = "clients/{$client->tracking_no}";
-                // $storedFiles = Storage::disk('local')->files($path);
-                // $files = collect($storedFiles)->map(function ($file) {
-                //     return [
-                //         'name' => basename($file),
-                //         'path' => $file,
-                //     ];
-                // });
-
                 return view('client.view', compact(
                     'page_title',
                     'page_subtitle',
@@ -134,6 +126,7 @@ class ClientController extends Controller
 
     public function create()
     {
+        $documents = DocumentRequirement::burial();
         $citizen = session('citizen');
         $matched = [];
 
@@ -163,18 +156,24 @@ class ClientController extends Controller
     public function store(ClientRequest $request)
     {
         try {
-            $client = $this->clientServices->storeClient($request->validated(), Auth::user(), $request->file('images', []));
+            $result = $this->clientServices->storeClient($request->validated(), Auth::user(), $request->file('images', []));
+            $client = $result['client'] ?? null;
+
+            if (! $client) {
+                return redirect()->back()->with('error', 'Failed to add client information!');
+            }
+
             $ip = request()->ip();
             $browser = request()->header('User-Agent');
             activity()
                 ->withProperties(['ip' => $ip, 'browser' => $browser])
-                ->log('Added the client details: '.$client?->id);
+                ->log('Added the client details: '.$client?->id.(($result['uploadError'] ?? false) ? ' images failed to upload' : ''));
 
             return redirect()
                 ->route('landing.page')
-                ->with('success', 'Client information added successfully!');
+                ->with('success', 'Client information added successfully!'. (($result['uploadError'] ?? false) ? ' However, some images failed to upload.' : '') .' Please remember to bring hard copies of the submitted documents during the interview at the CSWDO Office.');
         } catch (Exception $e) {
-            return redirect()->back()->with('error', 'Client information added failed! '.$e->getMessage());
+            return redirect()->back()->with('error', 'Failed to add client information!' . (app()->hasDebugModeEnabled() ? ': ' . $e->getMessage() : ''));
         }
     }
 
