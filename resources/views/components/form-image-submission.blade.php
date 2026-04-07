@@ -20,8 +20,8 @@
     @php
         $helpId = $id ? $id . '-help' : 'file-HelpId' . uniqid();
     @endphp
-    <input type="file" class="form-control" name="{{ $name ?? $id }}" {{ $id ? 'id=' . $name : '' }} placeholder=""
-        {{ $helpText ? 'aria-describedby=' . $helpId . '"' : '' }} accept="image/png, image/jpeg"
+    <input type="file" class="form-control" name="{{ $name ?? $id }}" {{ $id ? 'id="' . $id . '"' : '' }} placeholder=""
+        {{ $helpText ? 'aria-describedby="' . $helpId . '"' : '' }} accept="image/jpeg,image/png"
         {{ $required ? 'required' : '' }} />
     @if ($helpText)
         <div id="{{ $helpId }}" class="form-text">{{ $helpText }}</div>
