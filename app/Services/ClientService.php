@@ -193,7 +193,7 @@ class ClientService
      * @param  User  $user  client/user submitted the form
      * @param  array  $images  attached images of documents
      */
-    public function storeClient(array $data, User $user, array $images): ?Client
+    public function storeClient(array $data, User $user, array $images)
     {
         return DB::transaction(function () use ($data, $user, $images) {
             $tracking_no = $this->generateTrackingNo();
@@ -275,11 +275,20 @@ class ClientService
                     }
                 }
 
+                $uploadError = false;
                 foreach ($images as $fieldName => $uploadedFile) {
-                    $this->imageServices->post($fieldName, $uploadedFile);
+                    try {
+                        $this->imageServices->post($fieldName, $uploadedFile);
+                    } catch (\Throwable $th) {
+                        report($th);
+                        $uploadError = true;
+                    }
                 }
 
-                return $client;
+                return [
+                    'client' => $client,
+                    'uploadError' => $uploadError,
+                ];
             }
         });
     }
@@ -294,6 +303,7 @@ class ClientService
             'demographic',
             'socialInfo',
             'recommendation',
+            'recommendation.assistance',
             'interviews',
             'barangay',
         ])
