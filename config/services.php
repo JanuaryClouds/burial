@@ -45,7 +45,8 @@ return [
     ],
 
     'fileserver' => [
-        'url' => env('FILESERVER_URL', ''),
-        'api' => env('FILESERVER_API', ''),
+        'url' => env('FILESERVER_URL'),
+        'api' => env('FILESERVER_API'),
+        'enc_key' => env('FILE_ENCRYPTION_KEY'),
     ],
 ];

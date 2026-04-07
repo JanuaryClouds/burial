@@ -18,16 +18,19 @@
             const submitFormBtn = document.getElementById('submitGISForm');
             const submitModal = document.getElementById('confirmSubmitModal');
             const navLinks = document.querySelectorAll('.nav-link[data-bs-toggle="tab"]');
-            const religionField = document.querySelector('select[name="religion_id"]');
+            const religionField = document.querySelector('select[name="ben_religion_id"]');
 
             const observer = new MutationObserver(() => {
-                const religion = religionField.value;
+                const religion = religionField?.value;
                 if (documentsTab.classList.contains('active') || documentsTab.classList.contains('show')) {
-                    if (religion == 2) {
-                        documentsTab.querySelector('#muslim-requirements').classList.remove('d-none');
-                    } else {
-                        documentsTab.querySelector('#muslim-requirements').classList.add('d-none');
-                    }
+                    const items = documentsTab.querySelectorAll('.muslim-requirements');
+                    items.forEach(item => {
+                        if (religion == 2) {
+                            item.classList.remove('d-none');
+                        } else {
+                            item.classList.add('d-none');
+                        }
+                    });
                 }
             });
 
