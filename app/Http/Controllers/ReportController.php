@@ -41,6 +41,7 @@ class ReportController extends Controller
         $this->beneficiaryServices = $beneficiaryService;
         $this->burialAssistanceServices = $burialAssistanceService;
         $this->funeralAssistanceServices = $funeralAssistanceService;
+        $this->middleware('permission:view-reports');
     }
 
     public function clients(Request $request)
