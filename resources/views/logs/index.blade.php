@@ -7,11 +7,15 @@
                 <h2 class="card-title fs-2">Activity</h2>
             </div>
             <div class="card-body">
-                @include('partials.datatable.index', [
-                    'columns' => $columns,
-                    'data' => $data,
-                    'route' => route('activity.logs'),
-                ])
+                @can('view-logs')
+                    @include('partials.datatable.index', [
+                        'columns' => $columns,
+                        'data' => $data,
+                        'route' => route('activity.logs'),
+                    ])
+                @else
+                    <p class="card-text">You do not have permission to view activity logs</p>
+                @endcan
             </div>
         </div>
     </div>

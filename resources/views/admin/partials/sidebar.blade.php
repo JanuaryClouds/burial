@@ -31,9 +31,9 @@
                 @can('view-logs')
                     @include('admin.partials.sidebar-logs')
                 @endcan
-                @can('manage-roles')
+                @if (auth()->user()->canAny(['view-roles', 'view-users', 'edit-system-settings']))
                     @include('admin.partials.sidebar-system')
-                @endcan
+                @endif
             </div>
         </div>
     </div>

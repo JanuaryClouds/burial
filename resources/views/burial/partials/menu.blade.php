@@ -17,11 +17,11 @@
                     </a>
                 @endif
                 @if ($data->status != 'rejected' && $data->status != 'released' && $next_step != null)
-                    <button class="btn btn-primary mr-2" type="button" data-bs-toggle="modal"
-                        data-bs-target="#addUpdateModal-{{ $data->id }}">
-                        Add Progress Update
-                    </button>
-                    @can('reject-applications')
+                    @can('create-updates')
+                        <button class="btn btn-primary mr-2" type="button" data-bs-toggle="modal"
+                            data-bs-target="#addUpdateModal-{{ $data->id }}">
+                            Add Progress Update
+                        </button>
                         <button class="btn btn-danger" type="button" data-bs-toggle="modal"
                             data-bs-target="#reject-{{ $data->id }}">
                             Reject Application
@@ -29,7 +29,7 @@
                     @endcan
                 @endif
                 @if ($data->status == 'rejected')
-                    @can('reject-applications')
+                    @can('create-updates')
                         <button class="btn btn-success" type="button" data-bs-toggle="modal"
                             data-bs-target="#reject-{{ $data->id }}">
                             Restore Application
