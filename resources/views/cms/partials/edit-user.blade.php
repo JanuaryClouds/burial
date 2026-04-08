@@ -1,20 +1,24 @@
-<div class="d-flex flex-column gap-5">
-    <div class="form-group">
-        <label for="role">Role</label>
-        <select id="role" class="form-control" name="role">
-            <option value="{{ $data->getRoleNames()->first() }}">{{ $data->getRoleNames()->first() }}</option>
-            @foreach ($roles as $role)
-                @if ($data->getRoleNames()->first() != $role->name)
-                    <option value="{{ $role->name }}">{{ $role->name }}</option>
-                @endif
-            @endforeach
-        </select>
+<div class="d-flex flex-column gap-6">
+    <div class="d-flex flex-column gap-4">
+        <h5>Account Status</h5>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="{{ $data->is_active == '1' ? '1' : '0' }}"
+                name="is_active" id="activeCheck" {{ $data->is_active ? 'checked' : '' }} />
+            <label class="form-check-label" for="activeCheck">
+                Active Account
+            </label>
+        </div>
     </div>
-    <div class="form-check">
-        <input class="form-check-input" type="checkbox" value="{{ $data->is_active == '1' ? '1' : '0' }}"
-            name="is_active" id="flexCheckChecked" {{ $data->is_active ? 'checked' : '' }} />
-        <label class="form-check-label" for="flexCheckChecked">
-            Active
-        </label>
+    <div class="d-flex flex-column gap-4">
+        <h5>Roles</h5>
+        @foreach ($roles as $role)
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="{{ $role->id }}" name="roles[]"
+                    id="role{{ $role->id }}Check" {{ $data->roles->contains($role) ? 'checked' : '' }} />
+                <label class="form-check-label" for="role{{ $role->id }}Check">
+                    {{ $role->name }}
+                </label>
+            </div>
+        @endforeach
     </div>
 </div>
