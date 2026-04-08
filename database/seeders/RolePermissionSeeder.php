@@ -10,126 +10,53 @@ class RolePermissionSeeder extends Seeder
 {
     public function run(): void
     {
-        // Legacy Permissions
-        // $permissions = [
-        //     'create',
-        //     'edit',
-        //     'delete',
-        //     'view',
-        //     'view-reports',
-        //     'schedule-interviews',
-        //     'assess-applications',
-        //     'recommend-services',
-        //     'reject-applications',
-        //     'approve-funeral-services',
-        //     'add-updates',
-        //     'remove-updates',
-        //     'view-logs',
-        //     'manage-content',
-        //     'manage-roles',
-        //     'manage-accounts',
-        //     'manage-assignments',
-        // ];
-
-        $adminPermissions = [
-            'create',
-            'edit',
-            'delete',
-            'view',
-            'schedule-interviews',
-            'assess-applications',
-            'recommend-services',
-            'reject-applications',
-            'add-updates',
+        $staffPermissions = [
+            // Client Models
+            'create-clients',
+            'view-clients',
+            'create-interview-schedules',
+            'create-assessments',
+            'create-recommendations',
+            
+            // Burial Assistance Models
+            'create-updates',
+            'create-claimant-change-requests',
+            'edit-claimant-change-requests',
             'delete-updates',
+
+            // Reports
+            'create-reports',
             'view-reports',
         ];
-
-        $deptAdminPermissions = [
-            'create',
-            'edit',
-            'delete',
-            'view',
-            'schedule-interviews',
-            'assess-applications',
-            'recommend-services',
-            'reject-applications',
-            'approve-funeral-services',
-            'add-updates',
-            'delete-updates',
+            
+        $otherPermissions = [
+            // Logs
             'view-logs',
-            'view-reports',
-            'manage-assignments',
-        ];
 
-        $superAdminPermissions = [
-            'create',
-            'edit',
-            'delete',
-            'view',
-            'schedule-interviews',
-            'assess-applications',
-            'recommend-services',
-            'reject-applications',
-            'approve-funeral-services',
-            'add-updates',
-            'delete-updates',
-            'view-logs',
-            'view-reports',
+            // CMS
             'manage-content',
-            'manage-roles',
-            'manage-accounts',
-            'manage-assignments',
-            // add permission to manage system and view logs
-            // update list of permissions
+
+            // System
+            'create-users',
+            'view-users',
+            'edit-users',
+            'create-roles',
+            'view-roles',
+            'edit-roles',
+            'edit-system-settings',
         ];
 
-        foreach ($adminPermissions as $permission) {
-            Permission::firstOrCreate(['name' => $permission]);
-        }
-        foreach ($deptAdminPermissions as $permission) {
+        foreach ($staffPermissions as $permission) {
             Permission::firstOrCreate(['name' => $permission]);
         }
 
-        foreach ($superAdminPermissions as $permission) {
+        foreach ($otherPermissions as $permission) {
             Permission::firstOrCreate(['name' => $permission]);
         }
 
-        foreach ($adminPermissions as $permission) {
-            $role = Role::firstOrCreate(['name' => 'admin']);
-            $role->givePermissionTo($permission);
-        }
-
-        foreach ($deptAdminPermissions as $permission) {
-            $role = Role::firstOrCreate(['name' => 'deptAdmin']);
-            $role->givePermissionTo($permission);
-        }
-
-        foreach ($superAdminPermissions as $permission) {
-            $role = Role::firstOrCreate(['name' => 'superadmin']);
-            $role->givePermissionTo($permission);
-        }
-
-        // $role = [
-        //     'superadmin' => Permission::all(),
-        //     'deptAdmin' => Permission::where(function($query) {
-        //         $query->where('name', '!=', 'manage-content');
-        //         $query->where('name', '!=', 'manage-accounts');
-        //         $query->where('name', '!=', 'manage-roles');
-        //     })->get(),
-        //     'admin' => Permission::where(function($query) {
-        //         $query->where('name', '!=', 'manage-content');
-        //         $query->where('name', '!=', 'manage-accounts');
-        //         $query->where('name', '!=', 'manage-roles');
-        //         $query->where('name', '!=', 'manage-assignments');
-        //     })->get(),
-        //     'user' => 'view'
-        // ];
-
-        // foreach($role as $roleName => $perm)
-        // {
-        //     $role = Role::firstOrCreate(['name' => $roleName]);
-        //     $role->syncPermissions($perm);
-        // }
+        Role::firstOrCreate(['name' => 'superadmin']);
+        
+        $staffRole = Role::firstOrCreate(['name' => 'staff']);
+        $staffRole->givePermissionTo($staffPermissions);
     }
 }
