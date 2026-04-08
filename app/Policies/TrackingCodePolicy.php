@@ -23,7 +23,7 @@ class TrackingCodePolicy
             return false;
         }
 
-        if (get_class($assistance) === BurialAssistance::class) {
+        if ($assistance instanceof BurialAssistance) {
             $isOwner = $user
                 ->clients()
                 ->whereHas('claimant', function ($q) use ($assistance) {
@@ -32,7 +32,7 @@ class TrackingCodePolicy
                 ->exists();
 
             return $isOwner;
-        } elseif (get_class($assistance) === FuneralAssistance::class) {
+        } elseif ($assistance instanceof FuneralAssistance) {
             return $user->clients()->where('id', $assistance->client->id)->exists();
         }
 
