@@ -45,6 +45,24 @@ class Handler extends ExceptionHandler
 
             return redirect()->route(auth()->check() ? 'dashboard' : 'landing.page')
                 ->with('error', 'The page you requested could not be found.');
+        } elseif ($exception instanceof \Illuminate\Auth\AuthenticationException) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'You are not logged in.',
+                ], 401);
+            }
+
+            return redirect()->route('landing.page')
+                ->with('info', 'You are not logged in.');
+        } else if ($exception instanceof \Illuminate\Auth\Access\AuthorizationException) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'You do not have permission to access this page.',
+                ], 403);
+            }
+
+            return redirect()->back()
+                ->with('error', 'You do not have permission to access this page.');
         }
 
         return parent::render($request, $exception);
