@@ -155,7 +155,7 @@ function checkAndRenderCharts() {
 function checkAndRenderDataTables() {
     const cmsTable = $('#cms-table');
 
-    if (!cmsTable) return;
+    if (!cmsTable || !cmsTable.length) return;
     cmsTable.DataTable({
         responsive: true,
         ordering: true,
