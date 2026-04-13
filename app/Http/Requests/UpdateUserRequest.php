@@ -29,7 +29,8 @@ class UpdateUserRequest extends FormRequest
             'contact_number' => 'required|string|max:11',
             'password' => 'nullable|string|min:8',
             'is_active' => 'nullable|boolean',
-            'role' => 'required|string|max:255',
+            'roles' => 'nullable|array',
+            'roles.*' => 'exists:roles,id',
         ];
     }
 }

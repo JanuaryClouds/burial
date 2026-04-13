@@ -13,20 +13,22 @@
 @endphp
 <h5 class="card-title">V. RECOMMENDED SERVICES AND ASSISTANCE</h5>
 <h6 class="mb-2">Nature of Services/Assistance</h6>
-<div class="row">
+<div class="row d-flex flex-column gap-4">
     @foreach ($assistances as $id => $name)
-        <div class="col-6">
-            <label class="form-check form-check-custom form-check-solid mb-4">
-                <input class="form-check-input" type="checkbox" name="assistances[]" value="{{ $id }}"
-                    {{ in_array($name, ['Burial']) ? 'checked disabled' : 'disabled' }} />
-                @if (in_array($name, ['Burial']))
-                    <input type="hidden" name="assistances[]" value="{{ $id }}" />
-                @endif
-                <span class="form-check-label">
-                    {{ Str::title($name) }}
-                </span>
-            </label>
-        </div>
+        @if ($name == 'Burial')
+            <div class="col">
+                <label class="form-check form-check-custom form-check-solid mb-4">
+                    <input class="form-check-input" type="checkbox" name="assistances[]" value="{{ $id }}"
+                        {{ in_array($name, ['Burial']) ? 'checked disabled' : 'disabled' }} />
+                    @if (in_array($name, ['Burial']))
+                        <input type="hidden" name="assistances[]" value="{{ $id }}" />
+                    @endif
+                    <span class="form-check-label">
+                        {{ Str::title($name) }}
+                    </span>
+                </label>
+            </div>
+        @endif
     @endforeach
     <div class="col">
         @include('components.form-select', [
@@ -41,7 +43,7 @@
             @include('components.form-input', [
                 'name' => 'referral',
                 'id' => 'referralField',
-                'label' => 'Referral',
+                'label' => 'Funeraria/Cemetery',
                 'value' => $recommendedAssistance->referral ?? null,
                 'readonly' => $recommendedAssistance,
             ])

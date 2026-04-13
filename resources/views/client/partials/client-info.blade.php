@@ -5,30 +5,39 @@
 @php
     $header = 'Client Information';
     if (isset($client)) {
+        $first_name = $client->user?->first_name;
+        $middle_name = $client->user?->middle_name;
+        $last_name = $client->user?->last_name;
+        $suffix = $client->user?->suffix;
+        $contact_number = $client->user?->contact_number;
+
         $socialInfo = $client?->socialInfo;
         $demographic = $client?->demographic;
+    } else {
+        $first_name = session('citizen')['firstname'] ?? (auth()->user()?->first_name ?? null);
+        $middle_name = session('citizen')['middlename'] ?? (auth()->user()?->middle_name ?? null);
+        $last_name = session('citizen')['lastname'] ?? (auth()->user()?->last_name ?? null);
+        $suffix = session('citizen')['suffix'] ?? (auth()->user()?->suffix ?? null);
+        $contact_number = session('citizen')['contact_number'] ?? (auth()->user()?->contact_number ?? null);
     }
 @endphp
 <h5 class="card-title">I. CLIENT'S IDENTIFYING INFORMATION</h5>
 <div class="d-flex flex-column gap-4">
     <div class="row">
         <div class="col-6 col-md-6 col-lg-3">
-            <x-form-input name="first_name" label="1.1 First Name" required="true"
-                value="{{ $client->user?->first_name ?? (session('citizen')['firstname'] ?? null) }}"
+            <x-form-input name="first_name" label="1.1 First Name" required="true" value="{{ $first_name ?? null }}"
                 :readonly="$readonly" />
         </div>
         <div class="col-6 col-md-6 col-lg-2">
-            <x-form-input name="middle_name" label="1.2 Middle Name"
-                value="{{ $client->user?->middle_name ?? (session('citizen')['middlename'] ?? null) }}"
+            <x-form-input name="middle_name" label="1.2 Middle Name" value="{{ $middle_name ?? null }}"
                 :readonly="$readonly" />
         </div>
         <div class="col-8 col-md-8 col-lg-2">
-            <x-form-input name="last_name" label="1.3 Last Name" required="true"
-                value="{{ $client->user?->last_name ?? (session('citizen')['lastname'] ?? null) }}" :readonly="$readonly" />
+            <x-form-input name="last_name" label="1.3 Last Name" required="true" value="{{ $last_name ?? null }}"
+                :readonly="$readonly" />
         </div>
         <div class="col-4 col-md-4 col-lg-1">
-            <x-form-input name="suffix" label="1.4 Suffix"
-                value="{{ $client->user?->suffix ?? (session('citizen')['suffix'] ?? null) }}" :readonly="$readonly" />
+            <x-form-input name="suffix" label="1.4 Suffix" value="{{ $suffix ?? null }}" :readonly="$readonly" />
         </div>
         <div class="col-4 col-md-4 col-lg-1">
             <x-form-input name="age" id="age" label="2. Age" required="true" type="number"
@@ -103,8 +112,7 @@
         </div>
         <div class="col-12 col-md-6 col-lg-3">
             <x-form-input name="contact_no" label="14. Contact Number" required="true" type="text"
-                value="{{ $client->user?->contact_number ?? (session('citizen')['contact_number'] ?? null) }}"
-                :readonly="$readonly" />
+                value="{{ $contact_number ?? null }}" :readonly="$readonly" />
         </div>
     </div>
 </div>

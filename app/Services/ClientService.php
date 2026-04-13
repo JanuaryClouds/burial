@@ -12,6 +12,7 @@ use App\Models\ClientSocialInfo;
 use App\Models\FuneralAssistance;
 use App\Models\TrackingCode;
 use App\Models\User;
+use App\Services\ImageService;
 use Carbon\Carbon;
 use DB;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -44,6 +45,7 @@ class ClientService
             'beneficiary',
             'claimant.burialAssistance',
             'socialInfo.relationship',
+            'referral',
         ])
             ->whereHas('recommendation')
             ->orWhereHas('funeralAssistance', function ($query) {
@@ -65,6 +67,10 @@ class ClientService
 
                 if ($client?->assessment->count() > 0) {
                     $status = 'Assessed';
+                }
+
+                if (isset($client->referral)) {
+                    $status = 'For Referral';
                 }
 
                 if (isset($client?->claimant)) {

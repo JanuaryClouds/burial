@@ -30,13 +30,13 @@ Route::middleware(['auth'])
     ->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])
             ->name('dashboard');
-        Route::get('/client/latest-tracking', [ClientController::class, 'getLatestTracking'])->name('client.latest-tracking');
 
         Route::get('/applications/export', [ExportController::class, 'applications'])
+            ->middleware('permission:create-reports')
             ->name('applications.export.all');
 
         Route::post('/application/{id}/reject/toggle', [BurialAssistanceController::class, 'toggleReject'])
-            ->middleware('permission:reject-applications')
+        ->middleware('permission:create-updates')
             ->name('application.reject.toggle');
 
         Route::get('/activity-logs', [ActivityLogController::class, 'index'])

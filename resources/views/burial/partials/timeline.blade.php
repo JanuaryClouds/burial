@@ -36,7 +36,7 @@
                     {{ $log['out'] ? '/ Out: ' . $log['out'] : '' }}
                 </span>
                 @auth
-                    @if (auth()->user()->can('add-updates') && $loop->last && !$log['loggable'] instanceof App\Models\ClaimantChange)
+                    @if (auth()->user()->can('delete-updates') && $loop->last && !$log['loggable'] instanceof App\Models\ClaimantChange)
                         @include('burial.partials.delete-log', [
                             'id' => $log['id'],
                             'step' => $log['step'],
@@ -57,9 +57,9 @@
                     class="list-group-item border-top-0 {{ $loop->last ? 'bg-primary text-white rounded-bottom' : 'bg-body-secondary' }}">
                     @foreach ($log['extra_data'] as $key => $subKey)
                         @if (is_array($subKey))
-                            @foreach ($subKey as $data => $value)
+                            @foreach ($subKey as $subKey_key => $value)
                                 <p class="mb-0">
-                                    <b>{{ ucfirst(str_replace('_', ' ', $data)) }}</b> -
+                                    <b>{{ ucfirst(str_replace('_', ' ', $subKey_key)) }}</b> -
                                     {{ $value }}
                                 </p>
                             @endforeach
@@ -79,7 +79,8 @@
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
                         <div class="modal-body">
-                            {{-- TODO use fileserver logic --}}
+                            <img src="{{ route('image', ['filename' => $data->trackingNumber() . '-cheque-proof.jpeg.enc']) }}"
+                                alt="Proof of Claiming Check" class="img-fluid">
                         </div>
                     </div>
                 </div>

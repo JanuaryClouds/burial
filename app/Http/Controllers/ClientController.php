@@ -112,7 +112,6 @@ class ClientController extends Controller
                     'page_subtitle',
                     'resource',
                     'client',
-                    // 'files',
                     'readonly',
                     'released',
                 ));

@@ -59,6 +59,10 @@ class ExportController extends Controller
             } else {
                 $firstClaimant = $burialAssistance?->originalClaimant();
             }
+            $status = $burialAssistance?->status;
+            if ($status == 'approved') {
+                $status = 'For Pickup';
+            }
 
             $sheet->setCellValue("A{$row}", $client->tracking_no);
             $sheet->setCellValue("B{$row}", $burialAssistance?->application_date);
@@ -129,7 +133,7 @@ class ExportController extends Controller
                         ($processLogService->getLog($newClaimant, 10)?->date_in ?? '')
                 );
             }
-            $sheet->setCellValue("BK{$row}", $burialAssistance?->status ?? '');
+            $sheet->setCellValue("BK{$row}", $status ?? '');
             $sheet->setCellValue("BL{$row}", $burialAssistance?->remarks ?? '');
             $sheet->setCellValue("BM{$row}", $initialChecker ? $initialChecker->first_name.' '.$initialChecker->last_name : '');
             $row++;

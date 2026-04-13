@@ -41,6 +41,7 @@ class ReportController extends Controller
         $this->beneficiaryServices = $beneficiaryService;
         $this->burialAssistanceServices = $burialAssistanceService;
         $this->funeralAssistanceServices = $funeralAssistanceService;
+        $this->middleware('permission:view-reports');
     }
 
     public function clients(Request $request)
@@ -130,58 +131,57 @@ class ReportController extends Controller
                 'data' => $data->values(),
             ]);
         }
-
         $columns = $this->datatableServices->getColumns($data, ['status']);
 
         $deceasedPerBarangay = $this->reportServices->deceasedPerBarangay($startDate, $endDate);
         $deceasedPerReligion = $this->reportServices->deceasedPerReligion($startDate, $endDate);
-        $statistics = [
-            $burialAssistanceStatistics = [
-                'type' => 'burial_assistance',
-                'label' => 'Total Applications',
-                'color' => 'primary',
-                'icon' => 'file',
-                'numbers' => [
-                    'total' => $data->count(),
-                    'pending' => $data->where('status', 'pending')->count(),
-                    'processing' => $data->where('status', 'processing')->count(),
-                    'approved' => $data->where('status', 'approved')->count(),
-                    'released' => $data->where('status', 'released')->count(),
-                    'rejected' => $data->where('status', 'rejected')->count(),
-                ],
-            ],
-        ];
 
         $cardData = [
             [
                 'label' => 'Pending',
                 'icon' => 'ki-file',
                 'pathsCount' => 2,
-                'count' => $data->where('status', 'pending')->count(),
+                'count' => count($data->toArray()),
+            ],
+            [
+                'label' => 'Pending',
+                'icon' => 'ki-file',
+                'pathsCount' => 2,
+                'count' => count(array_filter($data->toArray(), function ($item) {
+                    return $item['status'] == 'Pending';
+                })),
             ],
             [
                 'label' => 'Processing',
                 'icon' => 'ki-file-right',
                 'pathsCount' => 2,
-                'count' => $data->where('status', 'processing')->count(),
+                'count' => count(array_filter($data->toArray(), function ($item) {
+                    return $item['status'] == 'Processing';
+                })),
             ],
             [
-                'label' => 'Approved',
+                'label' => 'For Pickup',
                 'icon' => 'ki-file-added',
                 'pathsCount' => 2,
-                'count' => $data->where('status', 'approved')->count(),
+                'count' => count(array_filter($data->toArray(), function ($item) {
+                    return $item['status'] == 'For Pickup';
+                })),
             ],
             [
                 'label' => 'Released',
                 'icon' => 'ki-folder-added',
                 'pathsCount' => 2,
-                'count' => $data->where('status', 'released')->count(),
+                'count' => count(array_filter($data->toArray(), function ($item) {
+                    return $item['status'] == 'Released';
+                })),
             ],
             [
                 'label' => 'Rejected',
                 'icon' => 'ki-delete-folder',
                 'pathsCount' => 2,
-                'count' => $data->where('status', 'rejected')->count(),
+                'count' => count(array_filter($data->toArray(), function ($item) {
+                    return $item['status'] == 'Rejected';
+                })),
             ],
         ];
 
@@ -189,7 +189,6 @@ class ReportController extends Controller
             'data',
             'columns',
             'model',
-            'statistics',
             'deceasedPerBarangay',
             'deceasedPerReligion',
             'startDate',

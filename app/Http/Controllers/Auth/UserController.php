@@ -53,15 +53,14 @@ class UserController extends Controller
             }
 
             if ($user->roles()->count() == 0) {
-                Auth::logout();
-                $request->session()->invalidate();
-                $request->session()->regenerateToken();
-
                 activity()
                     ->causedBy($user)
                     ->withProperties(['ip' => $ip, 'browser' => $browser])
                     ->log('Client attempted to access admin panel');
-
+                
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
                 return redirect()->route('landing.page')->with('warning', 'You do not have permission to access this page');
             }
 
@@ -123,6 +122,7 @@ class UserController extends Controller
 
     public function index()
     {
+        $this->authorize('view-users');
         $page_title = 'Users';
         $resource = 'user';
         $data = $this->userServices->index();
@@ -140,19 +140,18 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
+        $this->authorize('edit-users');
         $page_title = 'Edit User';
         $resource = 'user';
-        $roles = Role::all();
+        $roles = Role::where('name', '!=', 'superadmin')->get();
         $data = User::select('id', 'first_name', 'middle_name', 'last_name', 'email', 'contact_number', 'is_active')->find($user->id);
-        if (in_array($data->id, [1, 2, 3])) {
-            return redirect()->route('user.index')->with('warning', 'You cannot edit this user.');
-        }
 
         return view('cms.edit', compact('data', 'page_title', 'resource', 'roles'));
     }
 
     public function update(UpdateUserRequest $request, User $user)
     {
+        $this->authorize('edit-users');
         try {
             $user = User::find($user->id);
             $user = $this->userServices->update($request->validated(), $user);
@@ -165,6 +164,7 @@ class UserController extends Controller
 
     public function store(CreateUserRequest $request)
     {
+        $this->authorize('create-users');
         try {
             $user = $this->userServices->storeUser($request->validated());
 

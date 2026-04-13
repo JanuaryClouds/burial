@@ -3,15 +3,12 @@
 namespace App\Providers;
 
 use App\Models\BurialAssistance;
-use App\Models\Client;
-use App\Models\FuneralAssistance;
-use App\Models\Handler;
 use App\Models\Permission;
 use App\Models\TrackingCode;
 use App\Models\User;
-use App\Models\WorkflowStep;
 use App\Policies\BurialAssistancePolicy;
 use App\Policies\RolePolicy;
+use App\Policies\UserPolicy;
 use App\Policies\TrackingCodePolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
@@ -25,9 +22,10 @@ class AuthServiceProvider extends ServiceProvider
      * @var array<class-string, class-string>
      */
     protected $policies = [
-        // Role::class => RolePolicy::class
+        Role::class => RolePolicy::class,
         BurialAssistance::class => BurialAssistancePolicy::class,
         TrackingCode::class => TrackingCodePolicy::class,
+        User::class => UserPolicy::class,
     ];
 
     /**
@@ -35,6 +33,17 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Gate::before(function ($user, $ability) {
+            if ($user->hasRole('superadmin')) {
+                if (in_array($ability, ['update', 'delete', 'forceDelete'])) {
+                    return null;
+                }
+                return true;
+            }
+            
+            return null;
+        });
+
         Gate::define('create', function ($user, $resource) {
             $allowedCreateExceptions = [
                 'user',
@@ -69,7 +78,7 @@ class AuthServiceProvider extends ServiceProvider
                 return false;
             }
 
-            if ($resource instanceof Role && in_array($resource->id, [1, 2, 3, 4])) {
+            if ($resource instanceof Role && in_array($resource->id, [1])) {
                 return false;
             }
 
@@ -92,11 +101,11 @@ class AuthServiceProvider extends ServiceProvider
                 return false;
             }
 
-            if ($resource instanceof Role && in_array($resource->id, [1, 2, 3])) {
+            if ($resource instanceof Role && in_array($resource->id, [1])) {
                 return false;
             }
 
-            if ($resource instanceof User && in_array($resource->id, [1, 2, 3])) {
+            if ($resource instanceof User && in_array($resource->id, [1])) {
                 return false;
             }
 

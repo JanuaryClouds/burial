@@ -88,7 +88,7 @@
                 triggerLoading(0.3);
                 setTimeout(() => {
                     this.submit();
-                }, 1000)
+                }, 300)
             })
         });
 
@@ -109,7 +109,7 @@
 
                 setTimeout(() => {
                     window.location.href = url;
-                }, 500)
+                }, 300)
             });
         });
 

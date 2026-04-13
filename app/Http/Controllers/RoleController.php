@@ -38,7 +38,9 @@ class RoleController extends Controller
 
     public function index()
     {
-        $data = Role::select('id', 'name')->get()
+        $data = Role::select('id', 'name')
+            ->where('name', '!=', 'superadmin')
+            ->get()
             ->map(function ($role) {
                 return [
                     'id' => $role->id,
@@ -68,9 +70,6 @@ class RoleController extends Controller
         $page_title = 'Edit Role';
         $resource = 'role';
         $permissions = Permission::select('id', 'name')->get();
-        if (in_array($data->id, [1, 2, 3])) {
-            return redirect()->route('role.index')->with('warning', 'You cannot edit this role.');
-        }
 
         return view('cms.edit', compact('data', 'page_title', 'resource', 'permissions'));
     }
@@ -116,7 +115,7 @@ class RoleController extends Controller
 
     public function destroy(Role $role)
     {
-        $role = $this->roleServices->deleteRole($role);
+        $role = $this->roleServices->destroyRole($role);
 
         activity()
             ->causedBy(Auth::user())

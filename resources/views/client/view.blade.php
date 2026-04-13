@@ -5,6 +5,7 @@
     @include('client.partials.assessment-modal')
     @include('client.partials.schedule')
     @include('client.partials.services-modal')
+    @include('client.partials.referral-modal')
     <div class="row mt-5">
         <form action="{{ route('client.update', $client) }}" method="post" id="contentForm">
             @csrf

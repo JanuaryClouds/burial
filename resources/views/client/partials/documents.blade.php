@@ -10,7 +10,6 @@
     <p><strong>Optionally</strong>, you can upload the following documents to shorten the processing time during the
         interview:</p>
 @endif
-{{-- TODO update this to use file server --}}
 <div class="row flex-column justify-content-center align-items-center g-2">
     @if (Route::is('general.intake.form'))
         @foreach ($documents as $document)

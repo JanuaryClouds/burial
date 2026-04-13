@@ -10,7 +10,6 @@ use App\Http\Controllers\FuneralAssistanceController;
 use App\Http\Controllers\HandlerController;
 use App\Http\Controllers\ModeOfAssistanceController;
 use App\Http\Controllers\NationalityController;
-use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RelationshipController;
 use App\Http\Controllers\ReligionController;
 use App\Http\Controllers\RoleController;
@@ -32,10 +31,6 @@ Route::middleware('permission:manage-content')
             ->only(['index', 'edit', 'update']);
         Route::resource('handler', HandlerController::class)
             ->only(['index', 'edit', 'update']);
-        Route::resource('user', UserController::class)
-            ->only(['index', 'store', 'edit', 'update']);
-        Route::resource('role', RoleController::class)
-            ->only(['index', 'store', 'edit', 'update']);
         // Route::resource('assistance', AssistanceController::class);
         // Route::resource('civil', CivilStatusController::class);
         Route::resource('education', EducationController::class)
@@ -60,13 +55,13 @@ Route::middleware('permission:manage-accounts')
         Route::resource('user', UserController::class)
             ->only(['store', 'update'])
             ->middleware(['throttle:5,1']);
-        Route::resource('role', RoleController::class)
-            ->only(['index', 'store', 'edit', 'update']);
-        Route::resource('permission', PermissionController::class)
-            ->only(['index']);
-    });
+        });
 
-Route::middleware('role:superadmin')
+Route::resource('role', RoleController::class)
+    ->only(['index', 'store', 'edit', 'update'])
+    ->middleware(['permission:edit-roles']);
+            
+Route::middleware('permission:edit-system-settings')
     ->name('system.')
     ->prefix('system')
     ->group(function () {

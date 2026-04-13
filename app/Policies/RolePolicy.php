@@ -2,7 +2,7 @@
 
 namespace App\Policies;
 
-use App\Models\Role;
+use Spatie\Permission\Models\Role;
 use App\Models\User;
 
 class RolePolicy
@@ -12,7 +12,9 @@ class RolePolicy
      */
     public function viewAny(User $user): bool
     {
-        //
+        if ($user->cannot('view-roles')) return false;
+        
+        return true;
     }
 
     /**
@@ -20,7 +22,11 @@ class RolePolicy
      */
     public function view(User $user, Role $role): bool
     {
-        //
+        if ($user->cannot('view-roles')) return false;
+
+        if ($role->id == 1) return false;
+
+        return true;
     }
 
     /**
@@ -28,7 +34,9 @@ class RolePolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('manage-roles');
+        if ($user->cannot('create-roles')) return false;
+
+        return true;
     }
 
     /**
@@ -36,11 +44,11 @@ class RolePolicy
      */
     public function update(User $user, Role $role): bool
     {
-        if (in_array($role->id, [1, 2, 3, 4])) {
-            return false;
-        }
+        if ($user->cannot('edit-roles')) return false;
 
-        return $user->can('manage-roles');
+        if ($role->id == 1) return false;
+
+        return true;
     }
 
     /**
@@ -48,11 +56,11 @@ class RolePolicy
      */
     public function delete(User $user, Role $role): bool
     {
-        if (in_array($role->id, [1, 2, 3, 4])) {
-            return false;
-        }
+        if ($user->cannot('create-roles')) return false;
 
-        return $user->can('manage-roles');
+        if ($role->id == 1) return false;
+
+        return true;
     }
 
     /**
@@ -68,6 +76,10 @@ class RolePolicy
      */
     public function forceDelete(User $user, Role $role): bool
     {
-        //
+        if ($user->cannot('create-roles')) return false;
+
+        if ($role->id == 1) return false;
+        
+        return true;
     }
 }

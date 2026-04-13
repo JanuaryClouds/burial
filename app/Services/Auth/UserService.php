@@ -67,8 +67,12 @@ class UserService
             $user->is_active = 0;
             $user->save();
         }
-        $role = Role::firstOrCreate(['name' => $data['role']]);
-        $user->syncRoles($role);
+        
+        if (!isset($data['roles']) || empty($data['roles']) || $data['roles'] == []) {
+            $user->roles()->detach();
+        } else {
+            $user->roles()->sync($data['roles']);
+        }
 
         return $user;
     }

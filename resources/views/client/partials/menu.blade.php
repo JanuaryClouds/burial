@@ -24,21 +24,42 @@
                             Write an Assessment
                         </button>
                     @endif
-                    @if ($client->assessment?->count() == 0 && $client->recommendation?->count() == 0)
+                    @if ($client->assessment?->count() == 0)
+                        <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip"
+                            data-bs-placement="bottom" title="Client must be assessed before creating a referral">
+                            Referral
+                        </button>
                         <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip"
                             data-bs-placement="bottom" title="Client must be assessed before deciding a service">
-                            Assign a Service
+                            Recommend a Service
                         </button>
                     @else
-                        @if ($client->recommendation?->count() == 0)
+                        @if ($client->recommendation?->count() == 0 && $client->referral?->count() == 0)
+                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
+                                data-bs-target="#referralModal">
+                                Referral
+                            </button>
                             <button class="btn btn-success" type="button" data-bs-toggle="modal"
                                 data-bs-target="#services-modal">
-                                Assign a Service
+                                Recommend a Service
                             </button>
-                        @elseif ($client?->recommendation)
+                        @elseif ($client?->recommendation || $client?->referral)
+                            @php
+                                $title = 'A service cannot be recommended to this client';
+                                if ($client?->recommendation) {
+                                    $title = 'Client has been recommended a service';
+                                }
+                                if ($client?->referral) {
+                                    $title = 'Client has been referred to another department';
+                                }
+                            @endphp
                             <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip"
-                                data-bs-placement="bottom" title="Client has been assessed and given a service">
-                                Assign a Service
+                                data-bs-placement="bottom" title="{{ $title }}">
+                                Referral
+                            </button>
+                            <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip"
+                                data-bs-placement="bottom" title="{{ $title }}">
+                                Recommend a Service
                             </button>
                         @endif
                     @endif

@@ -30,7 +30,7 @@
                         case 'processing':
                             badgeClass = 'bg-primary text-white';
                             break;
-                        case 'approved':
+                        case 'for pickup':
                             badgeClass = 'bg-success text-white';
                             break;
                         case 'rejected':
