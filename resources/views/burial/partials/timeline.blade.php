@@ -57,9 +57,9 @@
                     class="list-group-item border-top-0 {{ $loop->last ? 'bg-primary text-white rounded-bottom' : 'bg-body-secondary' }}">
                     @foreach ($log['extra_data'] as $key => $subKey)
                         @if (is_array($subKey))
-                            @foreach ($subKey as $data => $value)
+                            @foreach ($subKey as $subKey_key => $value)
                                 <p class="mb-0">
-                                    <b>{{ ucfirst(str_replace('_', ' ', $data)) }}</b> -
+                                    <b>{{ ucfirst(str_replace('_', ' ', $subKey_key)) }}</b> -
                                     {{ $value }}
                                 </p>
                             @endforeach
