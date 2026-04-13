@@ -45,6 +45,7 @@ class ClientService
             'beneficiary',
             'claimant.burialAssistance',
             'socialInfo.relationship',
+            'referral',
         ])
             ->whereHas('recommendation')
             ->orWhereHas('funeralAssistance', function ($query) {
@@ -66,6 +67,10 @@ class ClientService
 
                 if ($client?->assessment->count() > 0) {
                     $status = 'Assessed';
+                }
+
+                if (isset($client->referral)) {
+                    $status = 'For Referral';
                 }
 
                 if (isset($client?->claimant)) {

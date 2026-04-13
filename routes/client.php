@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\InterviewController;
+use App\Http\Controllers\ReferralController;
 use Illuminate\Support\Facades\Route;
 
 Route::resource('client', ClientController::class)
@@ -38,4 +39,8 @@ Route::prefix('clients')
         Route::post('/{id}/recommendation', [ClientController::class, 'recommendedService'])
             ->middleware('permission:create-recommendations')
             ->name('recommendation.store');
+
+        Route::post('/{id}/referral', [ReferralController::class, 'store'])
+            ->middleware('permission:create-referrals')
+            ->name('referral.store');
     });

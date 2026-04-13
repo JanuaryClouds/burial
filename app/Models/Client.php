@@ -117,6 +117,11 @@ class Client extends Model
         return $this->hasMany(ClientRecommendation::class);
     }
 
+    public function referral()
+    {
+        return $this->hasOne(Referral::class);
+    }
+
     public function district()
     {
         return $this->belongsTo(District::class, 'district_id');

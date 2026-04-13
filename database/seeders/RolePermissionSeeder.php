@@ -17,6 +17,7 @@ class RolePermissionSeeder extends Seeder
             'create-interview-schedules',
             'create-assessments',
             'create-recommendations',
+            'create-referrals',
             
             // Burial Assistance Models
             'create-updates',
