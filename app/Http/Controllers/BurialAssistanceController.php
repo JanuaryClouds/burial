@@ -41,6 +41,11 @@ class BurialAssistanceController extends Controller
     {
         $page_title = 'Burial Assistance Applications';
         $resource = 'burial';
+        if (!in_array($status, ['all', 'pending', 'processing', 'for_pickup', 'released', 'rejected'])) {
+            abort(404);
+        }
+
+        if ($status == 'for_pickup') $status = 'approved';
         $data = $this->burialAssistanceServices->index($status);
         $columns = $this->datatableServices->getColumns($data, ['id', 'status', 'show_route']);
 

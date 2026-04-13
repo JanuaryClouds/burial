@@ -90,14 +90,14 @@
                     </a>
                 </div>
                 <div class="menu-item">
-                    <a href="{{ route('burial.index', ['status' => 'approved']) }}" @class([
-                        'active' => Request::is('burial.approved'),
+                    <a href="{{ route('burial.index', ['status' => 'for_pickup']) }}" @class([
+                        'active' => Request::is('burial.for_pickup'),
                         'menu-link',
                     ])>
                         <span class="menu-bullet">
                             <span class="bullet bullet-dot"></span>
                         </span>
-                        <span class="menu-title">Approved</span>
+                        <span class="menu-title">For Pickup</span>
                     </a>
                 </div>
                 <div class="menu-item">

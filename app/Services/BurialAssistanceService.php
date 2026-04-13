@@ -27,13 +27,18 @@ class BurialAssistanceService
                     $claimant = $application->originalClaimant();
                 }
 
+                $status = $application->status;
+                if ($status == 'approved') {
+                    $status = 'For Pickup';
+                }
+
                 return [
                     'id' => $application->id,
                     'tracking_no' => $application->originalClaimant()->client?->tracking_no,
                     'claimant' => $claimant?->fullname(),
                     'contact_number' => $claimant?->mobile_number,
                     'beneficiary' => $application->beneficiary()?->fullname(),
-                    'status' => $application->status,
+                    'status' => $status,
                     'show_route' => route('burial.show', $application),
                 ];
             })
@@ -50,6 +55,11 @@ class BurialAssistanceService
             ->whereBetween('application_date', [$startDate, $endDate])
             ->get()
             ->map(function ($burialAssistance) {
+                $status = $burialAssistance->status;
+                if ($status == 'approved') {
+                    $status = 'For Pickup';
+                }
+
                 return [
                     'tracking_no' => $burialAssistance->claimant?->client?->tracking_no,
                     'client' => $burialAssistance->claimant?->client?->fullname(),
@@ -57,7 +67,7 @@ class BurialAssistanceService
                     'address' => $burialAssistance->claimant?->client?->address(),
                     'funeraria' => $burialAssistance->funeraria,
                     'amount' => $burialAssistance->amount,
-                    'status' => Str::title($burialAssistance->status),
+                    'status' => Str::title($status),
                 ];
             })
             ->sortBy('tracking_no');

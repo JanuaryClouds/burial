@@ -21,6 +21,13 @@
             'rejected' => 'danger',
             default => 'info',
         };
+
+        $status = $data->status;
+        if ($data->status == 'approved') {
+            $status = 'For Pickup';
+        }
     @endphp
-    <span class="badge rounded-pill text-bg-{{ $badge_color }}">{{ Str::upper($data->status) }}</span>
+    <span class="badge rounded-pill text-bg-{{ $badge_color }}">
+        {{ Str::upper($status) }}
+    </span>
 </div>
