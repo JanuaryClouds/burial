@@ -194,8 +194,9 @@ class ReportService
     {
         return Beneficiary::selectRaw('barangay_id, COUNT(*) as total')
             ->with('barangay')
-            ->groupBy('barangay_id')
             ->whereBetween('date_of_death', [$startDate, $endDate])
+            ->whereHas('client.claimant')
+            ->groupBy('barangay_id')
             ->get()
             ->map(function ($item) {
                 return [
@@ -209,26 +210,13 @@ class ReportService
     {
         return Beneficiary::selectRaw('religion_id, COUNT(*) as total')
             ->with('religion')
-            ->groupBy('religion_id')
             ->whereBetween('date_of_death', [$startDate, $endDate])
+            ->whereHas('client.claimant')
+            ->groupBy('religion_id')
             ->get()
             ->map(function ($item) {
                 return [
                     'name' => $item->religion->name ?? 'Unknown',
-                    'count' => $item->total,
-                ];
-            });
-    }
-
-    public function deceasedPerGender($startDate, $endDate)
-    {
-        return Beneficiary::selectRaw('gender, COUNT(*) as total')
-            ->groupBy('gender')
-            ->whereBetween('date_of_death', [$startDate, $endDate])
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'name' => $item->gender == 1 ? 'Male' : 'Female',
                     'count' => $item->total,
                 ];
             });
@@ -248,7 +236,7 @@ class ReportService
                 ];
             });
     }
-
+    
     public function claimantPerRelationship($startDate, $endDate)
     {
         return Claimant::selectRaw('relationship_to_deceased, COUNT(*) as total')
