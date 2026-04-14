@@ -4,7 +4,7 @@
             <h1 class="mb-0">Assistance Actions</h1>
             <span class="d-flex align-items-center gap-2">
                 <a href="{{ route('clients.gis-form', ['id' => $data->originalClaimant()?->client?->id]) }}"
-                    class="btn btn-light mr-2" data-no-loader>
+                    class="btn btn-light mr-2" data-no-loader target="_blank">
                     Generate GIS Form
                 </a>
                 <a href="{{ route('burial.certificate', ['id' => $data->id]) }}" class="btn btn-light mr-2"
