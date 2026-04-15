@@ -102,9 +102,7 @@
             sakop ng <strong>Programang Benepisyo sa Pagpapalibing</strong>.
         </p>
         <p style="text-indent: 3em">
-            PINATUTUNAYAN din na si <strong class="underline">{{ $client->first_name }}
-                {{ $client->middle_name ? \Str::limit($client?->middle_name, 1, '.') : '' }}
-                {{ $client->last_name }}</strong>
+            PINATUTUNAYAN din na si <strong class="underline">{{ $client->fullname() }}</strong>
             (<i>aplikante</i>) ay may angkop na ugnayan sa namatay, at karapat-dapat ng tumanggap ng benepisyo.
         </p>
         <p style="text-indent: 3em;">
