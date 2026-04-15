@@ -109,9 +109,8 @@
 
                 setTimeout(() => {
                     window.location.href = url;
-                }, 300)
+                }, 300);
             });
         });
-
     });
 </script>
