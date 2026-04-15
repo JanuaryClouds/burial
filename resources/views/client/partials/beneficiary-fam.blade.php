@@ -44,26 +44,26 @@
             <div>
                 <div class="row">
                     <div class="col-12 col-md-12 col-lg-8">
-                        <x-form-input name="fam_name[]" label="Name" x-model="family.name" x-bind:required="index === 0"
+                        <x-form-input name="fam_name[]" label="Name" x-model="family.name" required="true"
                             :readonly="$readonly" />
                     </div>
                     <div class="col-12 col-md-6 col-lg-2">
                         <x-form-select name="fam_sex_id[]" label="Sex" :options="$genders" x-model="family.sex_id"
-                            x-bind:required="index === 0" :disabled="$readonly" />
+                            required="true" :disabled="$readonly" />
                     </div>
                     <div class="col-12 col-md-6 col-lg-2">
                         <x-form-input name="fam_age[]" label="Age" type="number" x-model="family.age"
-                            x-bind:required="index === 0" :readonly="$readonly" />
+                            required="true" :readonly="$readonly" />
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-6 col-md-6 col-lg-3">
                         <x-form-select name="fam_civil_id[]" label="Civil Status" :options="$civilStatus"
-                            x-model="family.civil_id" x-bind:required="index === 0" :disabled="$readonly" />
+                            x-model="family.civil_id" required="true" :disabled="$readonly" />
                     </div>
                     <div class="col-6 col-md-6 col-lg-3">
                         <x-form-select name="fam_relationship_id[]" label="Relationship" :options="$relationships"
-                            x-model="family.relationship_id" x-bind:required="index === 0" :disabled="$readonly" />
+                            x-model="family.relationship_id" required="true" :disabled="$readonly" />
                     </div>
                     <div class="col-6 col-md-6 col-lg-3">
                         <x-form-input name="fam_occupation[]" label="Occupation" x-model="family.occupation"
