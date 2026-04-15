@@ -7,10 +7,18 @@
     'required' => false,
     'disabled' => false,
     'helpText' => false,
+    'errorname' => null,
 ])
 
 @php
     $isInactive = $disabled ? ' bg-body text-gray-700' : '';
+    if ($errorname == null) {
+        if (str_contains($name, '[')) {
+            $errorname = str_replace('[', '.', str_replace(']', '', $name));
+        } else {
+            $errorname = $name;
+        }
+    }
 @endphp
 
 <div class="mb-3">
@@ -28,7 +36,7 @@
             </option>
         @endforeach
     </select>
-    @error($name)
+    @error($errorname)
         <span class="text-danger">{{ $message }}</span>
     @enderror
 </div>

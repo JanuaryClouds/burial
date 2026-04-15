@@ -11,13 +11,17 @@
     'readonly' => false,
     'min' => null,
     'autocomplete' => false,
+    'errorname' => null,
 ])
 
 @php
     $isInactive = $disabled ? ' bg-body text-gray-700' : '';
-    $errorname = $name;
-    if (str_contains($name, '[')) {
-        $errorname = str_replace('[', '.', str_replace(']', '', $name));
+    if ($errorname == null) {
+        if (str_contains($name, '[')) {
+            $errorname = str_replace('[', '.', str_replace(']', '', $name));
+        } else {
+            $errorname = $name;
+        }
     }
 @endphp
 
