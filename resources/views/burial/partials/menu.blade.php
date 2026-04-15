@@ -7,13 +7,10 @@
                     class="btn btn-light mr-2" data-no-loader target="_blank">
                     Generate GIS Form
                 </a>
-                <a href="{{ route('burial.certificate', ['id' => $data->id]) }}" class="btn btn-light mr-2"
-                    target="_blank">
-                    Download Certificate
-                </a>
-                @if (app()->hasDebugModeEnabled() && $data->tracker)
-                    <a href="{{ route('tracker.show') }}" class="btn btn-warning mr-2" target="_blank">
-                        View in Tracker
+                @if (app()->hasDebugModeEnabled() || $show_certificate)
+                    <a href="{{ route('burial.certificate', ['id' => $data->id]) }}" class="btn btn-secondary mr-2"
+                        target="_blank">
+                        View Certificate
                     </a>
                 @endif
                 @if ($data->status != 'rejected' && $data->status != 'released' && $next_step != null)

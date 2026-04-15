@@ -89,6 +89,7 @@ class BurialAssistanceController extends Controller
 
             $next_step = $this->workflowStepServices->nextStep($data);
             $progress = $this->workflowStepServices->progress($data);
+            $show_certificate = $next_step == null && $data->status == 'approved';
 
             if (app()->hasDebugModeEnabled()) {
                 session()->put('code', $data->tracker->uuid);
@@ -99,6 +100,7 @@ class BurialAssistanceController extends Controller
                 'progress',
                 'timeline',
                 'next_step',
+                'show_certificate',
                 'page_title',
                 'page_subtitle',
                 'readonly',
@@ -232,6 +234,15 @@ class BurialAssistanceController extends Controller
     public function certificate($id)
     {
         $assistance = BurialAssistance::find($id);
+
+        if (! $assistance) {
+            abort(404);
+        }
+
+        if ($assistance->status != 'released') {
+            abort(404);
+        }
+
         $claimant = $assistance->claimant;
         $title = Str::title($claimant->first_name).' '.Str::title($claimant->last_name).'\'s Certificate of Eligibility';
 
