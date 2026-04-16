@@ -64,8 +64,10 @@
                 :disabled="$readonly" />
         </div>
         <div class="col-6 col-md-6 col-lg-2">
+            <input type="hidden" name="district_id" id="district_id"
+                value="{{ $client->district_id ?? ($matched['district_id'] ?? '') }}">
             <x-form-select name="district_id" label="5.4. District" required="true" :options="$districts ?? []"
-                :selected="$client->district_id ?? ''" :disabled="$readonly" />
+                :selected="$client->district_id ?? ''" :disabled="true" id="district_id_display" />
         </div>
         <div class="col-12 col-md-12 col-lg-2">
             <x-form-input name="city" label="5.5. City" type="text" value="Taguig City" readonly="true" />
@@ -127,6 +129,37 @@
                 age--;
             }
             $('#age').val(age);
+        })
+
+        $('#barangay_id').on('change', function() {
+            let barangay = $('#barangay_id option:selected').text().trim();
+            if ([
+                    'Pateros',
+                    'Bagumbayan',
+                    'Bambang',
+                    'Calzada',
+                    'Comembo',
+                    'Hagonoy',
+                    'Ibayo-tipas',
+                    'Ligid-tipas',
+                    'Lower bicutan',
+                    'New lower bicutan',
+                    'Napindan',
+                    'Palingon',
+                    'Pembo',
+                    'Rizal',
+                    'San miguel',
+                    'Sta Ana',
+                    'Tuktukan',
+                    'Ususan',
+                    'Wawa',
+                ].includes(barangay)) {
+                $('#district_id').val(1);
+                $('#district_id_display').val(1);
+            } else {
+                $('#district_id').val(2);
+                $('#district_id_display').val(2);
+            }
         })
     })
 </script>
