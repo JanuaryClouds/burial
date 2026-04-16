@@ -10,7 +10,7 @@
                         Apply
                     </a>
                     @if (auth()->user()->clients->count() > 0)
-                        <a href="{{ route('client.history') }}" class="btn btn-lg btn-light hover-scale">
+                        <a href="{{ route('history') }}" class="btn btn-lg btn-light hover-scale">
                             History
                         </a>
                     @endif

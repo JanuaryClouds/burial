@@ -31,7 +31,7 @@
                                     <a class="dropdown-item" href="{{ route('landing.page') }}">Home</a>
                                     <div class="dropdown-divider"></div>
                                     <a class="dropdown-item" href="{{ route('general.intake.form') }}">Apply</a>
-                                    <a class="dropdown-item" href="{{ route('client.history') }}">History</a>
+                                    <a class="dropdown-item" href="{{ route('history') }}">History</a>
                                 </div>
                             </div>
                         @endauth

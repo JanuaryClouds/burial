@@ -1,19 +1,25 @@
-@extends('layouts.metronic.admin')
+@extends('layouts.app')
 @section('content')
     <title>Dashboard</title>
-    @include('admin.partials.cards')
-    <div class="row mt-5 mt-xl-8">
-        <div class="col-12">
-            @can('view-clients')
+    <div class="row">
+        @can('view-clients')
+            @include('admin.partials.cards')
+        @endcan
+        @cannot('view-clients')
+            <div class="col-12 col-lg-6">
+                @include('user.partials.quick-links')
+            </div>
+            <div class="col-12 col-lg-6">
+                @include('user.partials.notification-panel')
+            </div>
+        @endcannot
+        @can('view-clients')
+            <div class="col-12">
                 @include('client.partials.latest-table', [
                     'data' => $data,
                     'columns' => $columns,
                 ])
-            @else
-                <div class="alert alert-info">
-                    You do not have permission to view client data.
-                </div>
-            @endcan
-        </div>
+            </div>
+        @endcan
     </div>
 @endsection
