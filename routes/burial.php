@@ -3,15 +3,17 @@
 use App\Http\Controllers\BurialAssistanceController;
 use App\Http\Controllers\ClaimantChangeController;
 use App\Http\Controllers\ProcessLogController;
+use App\Models\BurialAssistance;
 use Illuminate\Support\Facades\Route;
 
 Route::name('burial.')
     ->prefix('burial')
     ->group(function () {
-        Route::get('/list/{status}', [BurialAssistanceController::class, 'index'])
+        Route::get('/', [BurialAssistanceController::class, 'index'])
             ->name('index');
 
         Route::get('/{id}', [BurialAssistanceController::class, 'show'])
+            ->can('view', BurialAssistance::class)
             ->name('show');
 
         Route::post('/{id}/claimant-change/store', [ClaimantChangeController::class, 'store'])

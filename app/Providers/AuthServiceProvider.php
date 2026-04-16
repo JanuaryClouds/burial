@@ -2,13 +2,21 @@
 
 namespace App\Providers;
 
+use App\Models\Beneficiary;
 use App\Models\BurialAssistance;
+use App\Models\FuneralAssistance;
+use App\Models\Interview;
 use App\Models\Permission;
 use App\Models\TrackingCode;
 use App\Models\User;
+use App\Models\Client;
+use App\Policies\BeneficiaryPolicy;
 use App\Policies\BurialAssistancePolicy;
+use App\Policies\FuneralAssistancePolicy;
+use App\Policies\InterviewPolicy;
 use App\Policies\RolePolicy;
 use App\Policies\UserPolicy;
+use App\Policies\ClientPolicy;
 use App\Policies\TrackingCodePolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
@@ -23,9 +31,12 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         Role::class => RolePolicy::class,
-        BurialAssistance::class => BurialAssistancePolicy::class,
-        TrackingCode::class => TrackingCodePolicy::class,
         User::class => UserPolicy::class,
+        Client::class => ClientPolicy::class,
+        Beneficiary::class => BeneficiaryPolicy::class,
+        Interview::class => InterviewPolicy::class,
+        BurialAssistance::class => BurialAssistancePolicy::class,
+        FuneralAssistance::class => FuneralAssistancePolicy::class,
     ];
 
     /**
