@@ -4,11 +4,13 @@
     'icon' => null,
     'icon_paths' => 0,
     'text' => null,
+    'active' => true,
 ])
 
-<a href="{{ $route ?? '#' }}" data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start"
-    @class([
+<a href="{{ $active ? $route ?? '#' : '#' }}" data-kt-menu-trigger="{default: 'click', lg: 'hover'}"
+    data-kt-menu-placement="right-start" @class([
         'menu-item',
+        'menu-item-active' => $active,
         'here' => $active_link ? Route::is($active_link) : false,
     ])>
     <span class="menu-link menu-center d-flex flex-column">

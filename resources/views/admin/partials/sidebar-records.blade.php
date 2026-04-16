@@ -19,22 +19,26 @@
     <!--end:Menu link-->
     <!--begin:Menu sub-->
     <div class="menu-sub menu-sub-dropdown menu-sub-indentation px-2 py-4 w-250px mh-75 overflow-auto">
-        <div class="menu-item">
-            <a href="{{ route('client.index') }}" @class(['active' => Request::is('client*'), 'menu-link'])>
-                <span class="menu-icon">
-                    <x-ki-icon :icon_name="'people'" :icon_size="'2'" :paths_count="5" />
-                </span>
-                <span class="menu-title">Clients</span>
-            </a>
-        </div>
-        <div class="menu-item">
-            <a href="{{ route('beneficiary.index') }}" @class(['active' => Request::is('beneficiary*'), 'menu-link'])>
-                <span class="menu-icon">
-                    <x-ki-icon :icon_name="'people'" :icon_size="'2'" :paths_count="5" />
-                </span>
-                <span class="menu-title">Beneficiaries</span>
-            </a>
-        </div>
+        @can('view-clients')
+            <div class="menu-item">
+                <a href="{{ route('client.index') }}" @class(['active' => Request::is('client*'), 'menu-link'])>
+                    <span class="menu-icon">
+                        <x-ki-icon :icon_name="'people'" :icon_size="'2'" :paths_count="5" />
+                    </span>
+                    <span class="menu-title">Clients</span>
+                </a>
+            </div>
+        @endcan
+        @can('view-clients')
+            <div class="menu-item">
+                <a href="{{ route('beneficiary.index') }}" @class(['active' => Request::is('beneficiary*'), 'menu-link'])>
+                    <span class="menu-icon">
+                        <x-ki-icon :icon_name="'people'" :icon_size="'2'" :paths_count="5" />
+                    </span>
+                    <span class="menu-title">Beneficiaries</span>
+                </a>
+            </div>
+        @endcan
         <div class="menu-item">
             <a href="{{ route('funeral.index') }}" @class(['active' => Request::is('funeral*'), 'menu-link'])>
                 <span class="menu-icon">

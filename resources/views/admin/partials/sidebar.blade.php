@@ -21,7 +21,12 @@
                 class="menu menu-column menu-title-gray-600 menu-state-primary menu-state-icon-primary menu-state-bullet-primary menu-icon-gray-500 menu-arrow-gray-500 fw-semibold fs-6 my-auto"
                 data-kt-menu="true">
                 @include('admin.partials.sidebar-common')
-                @include('admin.partials.sidebar-records')
+                @if (auth()->user()->roles()->count() == 0)
+                    @include('client.partials.sidebar')
+                @endif
+                @can('view-clients')
+                    @include('admin.partials.sidebar-records')
+                @endcan
                 @can('manage-content')
                     @include('superadmin.partials.sidebar-cms')
                 @endcan
