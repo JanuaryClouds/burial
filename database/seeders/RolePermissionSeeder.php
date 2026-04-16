@@ -20,10 +20,17 @@ class RolePermissionSeeder extends Seeder
             'create-referrals',
             
             // Burial Assistance Models
+            'view-burial-assistances',
+            'create-burial-assistances',
             'create-updates',
             'create-claimant-change-requests',
             'edit-claimant-change-requests',
             'delete-updates',
+
+            // Libreng Libing
+            'create-libreng-libings',
+            'view-libreng-libings',
+            'update-libreng-libings',
 
             // Reports
             'create-reports',
