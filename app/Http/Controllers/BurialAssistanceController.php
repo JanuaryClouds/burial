@@ -37,16 +37,18 @@ class BurialAssistanceController extends Controller
         $this->workflowStepServices = $workflowStepService;
     }
 
-    public function index($status = null)
+    public function index()
     {
         $page_title = 'Burial Assistance Applications';
         $resource = 'burial';
-        if (!in_array($status, ['all', 'pending', 'processing', 'for_pickup', 'released', 'rejected'])) {
-            abort(404);
-        }
 
-        if ($status == 'for_pickup') $status = 'approved';
-        $data = $this->burialAssistanceServices->index($status);
+        $this->authorize('viewAny', BurialAssistance::class);
+
+        if (auth()->user()->roles()->count() == 0) {
+            $user_id = auth()->user()->id;
+        }
+        
+        $data = $this->burialAssistanceServices->index($user_id ?? null);
         $columns = $this->datatableServices->getColumns($data, ['id', 'status', 'show_route']);
 
         if (request()->expectsJson()) {
@@ -55,17 +57,10 @@ class BurialAssistanceController extends Controller
             ]);
         }
 
-        $statusOptions = $data->pluck('status')->unique()->values()->toArray();
-
-        $barangays = Barangay::select('id', 'name')->get();
-
         return view('burial.index', compact([
             'resource',
             'data',
             'columns',
-            'status',
-            'barangays',
-            'statusOptions',
             'page_title',
         ]));
     }

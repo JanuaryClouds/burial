@@ -4,23 +4,49 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\InterviewRequest;
 use App\Models\Client;
+use App\Models\Interview;
+use App\Services\DatatableService;
 use App\Services\InterviewService;
 use Exception;
 use Illuminate\Http\Request;
 
 class InterviewController extends Controller
 {
-    protected $interviewService;
+    protected $interviewServices;
 
-    public function __construct(InterviewService $interviewService)
+    protected $datatableServices;
+
+    public function __construct(InterviewService $interviewService, DatatableService $datatableService)
     {
-        $this->interviewService = $interviewService;
+        $this->interviewServices = $interviewService;
+        $this->datatableServices = $datatableService;
+    }
+
+    public function index()
+    {
+        $this->authorize('viewAny', Interview::class);
+        if (auth()->user()->roles()->count() == 0) {
+            $user_id = auth()->user()->id;
+        }
+        $data = $this->interviewServices->index($user_id ?? null);
+
+        if (request()->expectsJson()) {
+            return response()->json([
+                'data' => $data->values(),
+            ]);
+        }
+
+        return view('interview.index', [
+            'data' => $data,
+            'columns' => $columns ?? [],
+            'page_title' => 'Interviews',
+        ]);
     }
 
     public function store(InterviewRequest $request, $id)
     {
         try {
-            $interview = $this->interviewService->store($request->validated(), $id);
+            $interview = $this->interviewServices->store($request->validated(), $id);
             if ($interview) {
                 // TODO send SMS message
                 // Unavialable
@@ -38,7 +64,7 @@ class InterviewController extends Controller
             $client = Client::find($id);
             $interview = $client->interviews->first();
 
-            $interview = $this->interviewService->done($interview->id);
+            $interview = $this->interviewServices->done($interview->id);
             if ($interview) {
                 return redirect()->back()->with('success', 'Interview marked as done.');
             }

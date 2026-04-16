@@ -8,16 +8,16 @@ use Str;
 class BurialAssistanceService
 {
     public function index(
-        ?string $status = null,
+        ?int $user_id = null
     ) {
-        return BurialAssistance::where(function ($query) use ($status) {
-            if ($status !== null && $status != 'all') {
-                return $query->where('status', $status);
-            }
-        })
-            ->with([
+        return BurialAssistance::with([
                 'claimant.client.user',
             ])
+            ->when('user_id', function ($query) use ($user_id) {
+                $query->whereHas('claimant.client.user', function ($q) use ($user_id) {
+                    $q->where('id', $user_id);
+                });
+            })
             ->get()
             ->map(function ($application) {
                 $claimantChange = $application->claimantChanges()->first();

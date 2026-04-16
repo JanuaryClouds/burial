@@ -49,7 +49,11 @@ class CitizenAccessController extends Controller
                 session(['api_token' => $token]);
             }
 
-            return redirect()->route('landing.page');
+            if (Auth::user()->clients()->count() == 0) {
+                return redirect()->route('general.intake.form');
+            } else {
+                return redirect()->route('dashboard');
+            }
         }
 
         return view('landing', compact(

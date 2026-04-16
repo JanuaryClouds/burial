@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\BurialAssistance;
 use App\Models\Client;
 use App\Models\FuneralAssistance;
+use App\Models\Notification;
 use App\Services\ClientService;
 use App\Services\DatatableService;
 use Carbon\Carbon;
@@ -13,7 +14,6 @@ use Spatie\Activitylog\Models\Activity;
 class DashboardController extends Controller
 {
     protected $clientServices;
-
     protected $datatableServices;
 
     public function __construct(ClientService $clientService, DatatableService $datatableService)
@@ -23,6 +23,17 @@ class DashboardController extends Controller
     }
 
     public function index()
+    {
+        if (auth()->user()->roles()->count() == 0) {
+            return $this->user();
+        }
+            
+        if (auth()->user()->roles()->count() > 0) {
+            return $this->staff();
+        }
+    }
+                
+    public function staff()
     {
         $page_title = 'Dashboard';
         $pendingBurialAssistance = BurialAssistance::where(function ($query) {
@@ -76,7 +87,29 @@ class DashboardController extends Controller
 
     public function user()
     {
-        return view('user.dashboard');
+        $page_title = 'Dashboard';
+        $latest_record = Client::where('user_id', auth()->user()->id)->orderBy('created_at', 'desc')->first();
+        $raw_notifications = Notification::where('notifiable_id', auth()->user()->id)->orderBy('created_at', 'desc')->limit(10)->get();
+
+        $notifications = $raw_notifications->map(function ($notification) {
+            $payload = json_decode($notification->payload, true);
+            return [
+                'id' => $notification->id,
+                'type' => $notification->type,
+                'subject' => $payload['subject'],
+                'body' => $payload['body'],
+            ];
+        });
+        
+        if ($latest_record) {
+            $latest_record->load(['interviews', 'claimant', 'funeralAssistance']);
+        }
+
+        return view('dashboard', [
+            'page_title' => $page_title,
+            'latest_record' => $latest_record,
+            'notifications' => $notifications,
+        ]);
     }
 
     public function trackerEvents()

@@ -9,6 +9,26 @@ use Str;
 
 class InterviewService
 {
+    public function index(?int $user_id = null)
+    {
+        return Interview::with(['client', 'client.user'])
+            ->when($user_id, function ($query) use ($user_id) {
+                $query->whereHas('client', function ($q) use ($user_id) {
+                    $q->where('user_id', $user_id);
+                });
+            })
+            ->orderBy('created_at', 'desc')    
+            ->get()
+            ->map(function ($interview) {
+                return [
+                    'id' => $interview->id,
+                    'client' => $interview->client->fullname(),
+                    'schedule' => $interview->schedule,
+                    'status' => $interview->status
+                ];
+            });
+    }
+
     public function store(array $data, $id)
     {
         try {

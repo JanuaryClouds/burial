@@ -23,7 +23,10 @@ class BeneficiaryController extends Controller
 
     public function index()
     {
-        $data = $this->beneficiaryServices->index();
+        if (auth()->user()->roles()->count() == 0) {
+            $user_id = auth()->user()->id;
+        }
+        $data = $this->beneficiaryServices->index($user_id ?? null);
         $columns = $this->datatableServices->getColumns($data, []);
 
         if (request()->expectsJson()) {
@@ -31,7 +34,7 @@ class BeneficiaryController extends Controller
                 'data' => $data->values(),
             ]);
         }
-
+        
         return view('beneficiary.index', [
             'data' => $data,
             'columns' => $columns,

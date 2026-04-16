@@ -45,9 +45,44 @@ class ClientController extends Controller
     public function index()
     {
         $page_title = 'Clients';
-        $resource = 'client';
 
-        $data = $this->clientServices->index('tracking_no', 'asc');
+        if (auth()->user()->roles()->count() == 0) {
+            $data = $this->clientServices->index('tracking_no', 'asc', auth()->user()->id);
+        } elseif (auth()->user()->roles()->count() > 0) {
+            $data = $this->clientServices->index('tracking_no', 'asc');
+            
+            $clientsWithInterview = Client::has('interviews')->count();
+            $clientsWithAssessments = Client::has('assessment')->count();
+            $clientsWithRecommendation = Client::has('recommendation')->count();
+                
+            $cardData = [
+                [
+                    'label' => 'Total Clients',
+                    'icon' => 'ki-people',
+                    'pathsCount' => 5,
+                    'count' => Client::count(),
+                ],
+                [
+                    'label' => 'Clients with Interviews',
+                    'icon' => 'ki-note-2',
+                    'pathsCount' => 4,
+                    'count' => $clientsWithInterview,
+                ],
+                [
+                    'label' => 'Clients with Assessments',
+                    'icon' => 'ki-brifecase-tick',
+                    'pathsCount' => 3,
+                    'count' => $clientsWithAssessments,
+                ],
+                [
+                    'label' => 'Clients With Recommendation',
+                    'icon' => 'ki-file-added',
+                    'pathsCount' => 2,
+                    'count' => $clientsWithRecommendation,
+                ],
+            ];
+        }
+
         $columns = $this->datatableServices->getColumns($data, ['id', 'status', 'show_route']);
 
         if (request()->expectsJson()) {
@@ -56,49 +91,18 @@ class ClientController extends Controller
             ]);
         }
 
-        $clientsWithInterview = Client::has('interviews')->count();
-        $clientsWithAssessments = Client::has('assessment')->count();
-        $clientsWithRecommendation = Client::has('recommendation')->count();
-
-        $cardData = [
-            [
-                'label' => 'Total Clients',
-                'icon' => 'ki-people',
-                'pathsCount' => 5,
-                'count' => Client::select('id')->get()->count(),
-            ],
-            [
-                'label' => 'Clients with Interviews',
-                'icon' => 'ki-note-2',
-                'pathsCount' => 4,
-                'count' => $clientsWithInterview,
-            ],
-            [
-                'label' => 'Clients with Assessments',
-                'icon' => 'ki-brifecase-tick',
-                'pathsCount' => 3,
-                'count' => $clientsWithAssessments,
-            ],
-            [
-                'label' => 'Clients With Recommendation',
-                'icon' => 'ki-file-added',
-                'pathsCount' => 2,
-                'count' => $clientsWithRecommendation,
-            ],
-        ];
-
-        return view('client.index', compact(
-            'page_title',
-            'cardData',
-            'resource',
-            'columns',
-            'data'
-        ));
+        return view('client.index', [
+            'page_title' => $page_title,
+            'columns' => $columns,
+            'data' => $data,
+            'cardData' => $cardData ?? null,
+        ]);
     }
 
     public function show(Client $client)
     {
         try {
+            $this->authorize('view', $client);
             $resource = 'client';
             $client = $this->clientServices->get($client->id);
             $page_title = $client->tracking_no;
@@ -126,6 +130,7 @@ class ClientController extends Controller
     public function create()
     {
         $documents = DocumentRequirement::burial();
+        $page_title = 'New Application';
         $citizen = session('citizen');
         $matched = [];
 
@@ -149,6 +154,7 @@ class ClientController extends Controller
 
         return view('client.create', compact(
             'matched',
+            'page_title'
         ));
     }
 

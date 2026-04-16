@@ -12,12 +12,11 @@ use App\Models\ClientSocialInfo;
 use App\Models\FuneralAssistance;
 use App\Models\TrackingCode;
 use App\Models\User;
-use App\Services\ImageService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use DB;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Str;
 
 class ClientService
@@ -30,8 +29,9 @@ class ClientService
     }
 
     public function index(
-        string $orderColumn = 'created_at',
-        string $orderDirection = 'asc',
+        ?string $orderColumn = 'created_at',
+        ?string $orderDirection = 'asc',
+        ?int $user_id = null
     ) {
         $allowedColumns = ['created_at', 'tracking_no', 'id'];
         $orderColumn = in_array($orderColumn, $allowedColumns) ? $orderColumn : 'created_at';
@@ -48,15 +48,21 @@ class ClientService
             'socialInfo.relationship',
             'referral',
         ])
-            ->whereHas('recommendation')
-            ->orWhereHas('funeralAssistance', function ($query) {
-                $query->where('forwarded_at', null);
+            ->where(function ($query) {
+                $query
+                    ->whereHas('recommendation')
+                    ->orWhereHas('funeralAssistance', function ($query) {
+                        $query->where('forwarded_at', null);
+                    })
+                    ->orWhereHas('claimant.burialAssistance', function ($query) {
+                        $query->where('status', '!=', 'released');
+                    })
+                    ->orWhereDoesntHave('claimant.burialAssistance')
+                    ->orWhereDoesntHave('funeralAssistance');
             })
-            ->orWhereHas('claimant.burialAssistance', function ($query) {
-                $query->where('status', '!=', 'released');
+            ->when($user_id, function ($query) use ($user_id) {
+                $query->where('user_id', $user_id);
             })
-            ->orWhereDoesntHave('claimant.burialAssistance')
-            ->orWhereDoesntHave('funeralAssistance')
             ->orderBy($orderColumn, $orderDirection)
             ->get()
             ->map(function ($client) {
@@ -434,24 +440,24 @@ class ClientService
         $client = Client::with([
             'user',
             'assessment',
-            'demographic', 
-            'demographic.sex', 
-            'demographic.religion', 
-            'demographic.nationality', 
-            'socialInfo', 
-            'socialInfo.relationship', 
-            'socialInfo.civil', 
-            'socialInfo.education', 
-            'beneficiary', 
-            'beneficiary.sex', 
-            'beneficiary.barangay', 
-            'family', 
-            'family.sex', 
-            'family.civil', 
-            'family.relationship', 
-            'recommendation.moa', 
-            'referral', 
-            'barangay'
+            'demographic',
+            'demographic.sex',
+            'demographic.religion',
+            'demographic.nationality',
+            'socialInfo',
+            'socialInfo.relationship',
+            'socialInfo.civil',
+            'socialInfo.education',
+            'beneficiary',
+            'beneficiary.sex',
+            'beneficiary.barangay',
+            'family',
+            'family.sex',
+            'family.civil',
+            'family.relationship',
+            'recommendation.moa',
+            'referral',
+            'barangay',
         ])->find($client->id);
         $beneficiary = $client->beneficiary ?? null;
         $family = $client->family ?? [];
@@ -495,12 +501,12 @@ class ClientService
                 ],
                 [
                     '3. Date of Birth' => $beneficiary?->date_of_birth ? Carbon::parse($beneficiary?->date_of_birth)->format('F d, Y') : 'N/A',
-                    '4. Place of Birth' => $beneficiary?->place_of_birth,
+                    '4. Place of Birth' => $beneficiary?->place_of_birth ?? 'N/A',
                 ],
             ],
             'assessment' => [
                 'problem_presented' => $assessment?->problem_presented,
-                'swa' => $assessment?->assessment
+                'swa' => $assessment?->assessment ?? 'N/A',
             ],
         ];
 
@@ -513,7 +519,7 @@ class ClientService
         //     'moa' => \App\Models\ModeOfAssistance::all(),
         //     'referral' => $referral
         // ]);
-            
+
         $pdf = Pdf::loadView('pdf.gis-form', [
             'data' => $data,
             'client' => $client,
@@ -521,7 +527,7 @@ class ClientService
             'assistances' => \App\Models\Assistance::all(),
             'recommendation' => $recommendation,
             'moa' => \App\Models\ModeOfAssistance::all(),
-            'referral' => $referral
+            'referral' => $referral,
         ])
             ->setOption('margin-top', '0')
             ->setPaper('A4', 'portrait');
