@@ -5,14 +5,11 @@
             <h4 class="card-title">{{ $page_title }}</h4>
         </div>
         <div class="card-body">
-            @if (!isset($data) || $data->count() == 0)
-                <p class="text-muted text-center">No Data</p>
-            @else
-                @include('partials.datatable.index', [
-                    'classes' => 'with-status with-actions',
-                    'columns' => $columns,
-                ])
-            @endif
+            @include('partials.datatable.index', [
+                'data' => $data,
+                'classes' => 'with-status with-actions',
+                'columns' => $columns,
+            ])
         </div>
     </div>
     @can('create-reports')
