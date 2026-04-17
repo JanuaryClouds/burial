@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Auth\UserController;
-use App\Http\Controllers\BarangayController;
 use App\Http\Controllers\BurialAssistanceController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DistrictController;
@@ -18,7 +17,6 @@ use App\Http\Controllers\SystemSettingController;
 use App\Http\Controllers\WorkflowController;
 use Illuminate\Support\Facades\Route;
 
-// TODO decide which resource to add
 Route::middleware('permission:manage-content')
     ->group(function () {
         Route::resource('client', ClientController::class)
@@ -43,8 +41,6 @@ Route::middleware('permission:manage-content')
             ->only(['index', 'store', 'edit', 'update']);
         Route::resource('sex', SexController::class);
         Route::resource('district', DistrictController::class);
-        Route::resource('barangay', BarangayController::class)
-            ->only(['index', 'store', 'edit', 'update']);
         Route::resource('moa', ModeOfAssistanceController::class);
     });
 
