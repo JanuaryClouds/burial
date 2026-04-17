@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('content')
     <title>Dashboard</title>
-    <div class="row">
+    <div class="row g-6">
         @can('view-clients')
             @include('admin.partials.cards')
         @endcan

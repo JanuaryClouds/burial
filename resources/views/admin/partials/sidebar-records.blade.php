@@ -47,86 +47,13 @@
                 <span class="menu-title">Libreng Libing</span>
             </a>
         </div>
-        <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
-            <span class="menu-link">
+        <div class="menu-item">
+            <a href="{{ route('burial.index') }}" @class(['active' => Request::is('burial*'), 'menu-link'])>
                 <span class="menu-icon">
                     <x-ki-icon :icon_name="'file-up'" :icon_size="'2'" :paths_count="2" />
                 </span>
-                <span class="menu-title">
-                    Burial Assistances
-                </span>
-                <span class="menu-arrow"></span>
-            </span>
-            <div class="menu-sub menu-sub-accordion" kt-hidden-height="334" style="">
-                <div class="menu-item">
-                    <a href="{{ route('burial.index', ['status' => 'all']) }}" @class([
-                        'active' =>
-                            request('status') === 'all' ||
-                            (Request::is('burial.all') && !request('status')),
-                        'menu-link',
-                    ])>
-                        <span class="menu-bullet">
-                            <span class="bullet bullet-dot"></span>
-                        </span>
-                        <span class="menu-title">All</span>
-                    </a>
-                </div>
-                <div class="menu-item">
-                    <a href="{{ route('burial.index', ['status' => 'pending']) }}" @class([
-                        'active' => Request::is('burial.pending'),
-                        'menu-link',
-                    ])>
-                        <span class="menu-bullet">
-                            <span class="bullet bullet-dot"></span>
-                        </span>
-                        <span class="menu-title">Pending</span>
-                    </a>
-                </div>
-                <div class="menu-item">
-                    <a href="{{ route('burial.index', ['status' => 'processing']) }}" @class([
-                        'active' => Request::is('burial.processing'),
-                        'menu-link',
-                    ])>
-                        <span class="menu-bullet">
-                            <span class="bullet bullet-dot"></span>
-                        </span>
-                        <span class="menu-title">Processing</span>
-                    </a>
-                </div>
-                <div class="menu-item">
-                    <a href="{{ route('burial.index', ['status' => 'for_pickup']) }}" @class([
-                        'active' => Request::is('burial.for_pickup'),
-                        'menu-link',
-                    ])>
-                        <span class="menu-bullet">
-                            <span class="bullet bullet-dot"></span>
-                        </span>
-                        <span class="menu-title">For Pickup</span>
-                    </a>
-                </div>
-                <div class="menu-item">
-                    <a href="{{ route('burial.index', ['status' => 'released']) }}" @class([
-                        'active' => Request::is('burial.released'),
-                        'menu-link',
-                    ])>
-                        <span class="menu-bullet">
-                            <span class="bullet bullet-dot"></span>
-                        </span>
-                        <span class="menu-title">Released</span>
-                    </a>
-                </div>
-                <div class="menu-item">
-                    <a href="{{ route('burial.index', ['status' => 'rejected']) }}" @class([
-                        'active' => Request::is('burial.rejected'),
-                        'menu-link',
-                    ])>
-                        <span class="menu-bullet">
-                            <span class="bullet bullet-dot"></span>
-                        </span>
-                        <span class="menu-title">Rejected</span>
-                    </a>
-                </div>
-            </div>
+                <span class="menu-title">Burial Assistance</span>
+            </a>
         </div>
     </div>
     <!--end:Menu sub-->
