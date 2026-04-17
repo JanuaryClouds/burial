@@ -26,11 +26,11 @@
     <div class="col-12 col-lg-6">
         <x-form-select name="claimant[relationship_to_deceased]" id="relationship"
             label="Relationship of the Deceased to the Claimant" required="true" :options="$relationships" :selected="$claimant->relationship_to_deceased ?? ''"
-            :disabled="$disabled" />
+            :disabled="$readonly" />
     </div>
     <div class="col-12 col-lg-3">
-        <x-form-input name="claimant[mobile_number]" id="mobile_number" label="Mobile Number" required="true"
-            maxlength="11" value="{{ $claimant->mobile_number ?? '' }}" :readonly="$readonly" :disabled="$disabled" />
+        <x-form-input name="claimant[contact_number]" id="contact_number" label="Mobile Number" required="true"
+            maxlength="11" value="{{ $claimant->contact_number ?? '' }}" :readonly="$readonly" :disabled="$disabled" />
     </div>
 </div>
 <div class="row justify-content-start align-items-center g-2">
@@ -40,6 +40,6 @@
     </div>
     <div class="col-12 col-lg-4">
         <x-form-select name="claimant[barangay_id]" id="barangay_id" label="Barangay" required="true" :options="$barangays"
-            :selected="$claimant->barangay_id ?? ''" :disabled="$disabled" />
+            :selected="$claimant->barangay_id ?? ''" :disabled="$readonly" />
     </div>
 </div>

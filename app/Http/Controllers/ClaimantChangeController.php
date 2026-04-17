@@ -6,6 +6,7 @@ use App\Http\Requests\StoreClaimantChangeRequest;
 use App\Models\BurialAssistance;
 use App\Models\ClaimantChange;
 use App\Models\ProcessLog;
+use App\Models\User;
 use App\Services\CentralClientService;
 use App\Services\ClaimantChangeService;
 use App\Services\ClaimantService;
@@ -31,6 +32,11 @@ class ClaimantChangeController extends Controller
 
     public function store(StoreClaimantChangeRequest $request, $id)
     {
+        $new_claimant_email = $request->input('email');
+        if (!User::where('email', $new_claimant_email)->first()->id) {
+            return redirect()->back()->with('error', 'The new claimant does not have an account in the system. Please notify them to access this system once with their TLC Portal account to proceed.');
+        }
+
         $validated = $request->validated();
 
         if ($validated) {
@@ -45,12 +51,12 @@ class ClaimantChangeController extends Controller
                 return redirect()->back()->with('error', 'Changing claimant is not allowed in a '.$burialAssistance->status.' status.');
             }
 
+            // TODO overhaul starts here
             $validated['old_claimant_id'] = $burialAssistance->claimant->id;
             $validated['id'] = Str::uuid();
 
             $validated['relationship_to_deceased'] = $validated['relationship_id'];
             $validated['address'] = $validated['house_no'].' '.$validated['street'];
-            $validated['mobile_number'] = $validated['contact_no'];
             $newClaimant = $this->claimantService->store($validated);
 
             $validated['new_claimant_id'] = $newClaimant->id;

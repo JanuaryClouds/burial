@@ -63,4 +63,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(BurialAssistance::class, 'assigned_to', 'id');
     }
+
+    public function claimantChange()
+    {
+        return $this->hasMany(ClaimantChange::class, 'new_claimant_user_id', 'id');
+    }
 }
