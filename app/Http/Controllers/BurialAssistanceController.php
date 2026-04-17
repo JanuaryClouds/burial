@@ -6,6 +6,7 @@ use App\Http\Requests\StoreBurialAssistanceRequest;
 use App\Models\Barangay;
 use App\Models\BurialAssistance;
 use App\Models\Religion;
+use App\Models\SystemSetting;
 use App\Services\BurialAssistanceService;
 use App\Services\DatatableService;
 use App\Services\ProcessLogService;
@@ -41,8 +42,6 @@ class BurialAssistanceController extends Controller
     {
         $page_title = 'Burial Assistance Applications';
         $resource = 'burial';
-
-        $this->authorize('viewAny', BurialAssistance::class);
 
         if (auth()->user()->roles()->count() == 0) {
             $user_id = auth()->user()->id;
@@ -85,10 +84,6 @@ class BurialAssistanceController extends Controller
             $next_step = $this->workflowStepServices->nextStep($data);
             $progress = $this->workflowStepServices->progress($data);
             $show_certificate = $next_step == null && $data->status == 'approved';
-
-            if (app()->hasDebugModeEnabled()) {
-                session()->put('code', $data->tracker->uuid);
-            }
 
             return view('burial.show', compact([
                 'data',
@@ -240,9 +235,16 @@ class BurialAssistanceController extends Controller
 
         $claimant = $assistance->claimant;
         $title = Str::title($claimant->first_name).' '.Str::title($claimant->last_name).'\'s Certificate of Eligibility';
+        $social_welfare_officer = Str::upper(Str::replace('_', ' ', SystemSetting::first()?->social_welfare_officer));
+        $dept_head = Str::upper(Str::replace('_', ' ', SystemSetting::first()?->dept_head));
 
         $pdf = Pdf::loadView('pdf.certificate-of-eligibility',
-            compact('claimant', 'title'))
+            compact([
+                'claimant', 
+                'title',
+                'social_welfare_officer',
+                'dept_head',
+            ]))
             ->setPaper('letter', 'portrait');
 
         return $pdf->stream("certificate-of-eligibility-{$claimant->first_name}-{$claimant->last_name}.pdf");

@@ -125,7 +125,7 @@
         <br><br>
         ______________________________
         <br>
-        <strong>EMMA B. REANZARES, RSW</strong>
+        <strong>{{ $social_welfare_officer }}</strong>
         <br>
         Social Welfare Officer III
         <br><br><br><br>
@@ -133,7 +133,7 @@
         <br>
         _______________________________
         <br>
-        <strong>NIKKI ROSE H. OPERARIO, RSW</strong>
+        <strong>{{ $dept_head }}</strong>
         <br>
         City Gov't Dept. Head II, CSWDO
     </p>

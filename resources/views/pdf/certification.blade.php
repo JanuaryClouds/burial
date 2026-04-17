@@ -118,7 +118,7 @@
             Nilagdaan:
         </p>
         <p style="margin: 0px 0px 0px 400px;">
-            <strong>EMMA B. REANZARES, RSW</strong>
+            <strong>{{ $social_welfare_officer }}</strong>
             <br>
             Social Welfare Officer III
             <br>
@@ -132,7 +132,7 @@
             Pinagtibay ni:
         </p>
         <p style="margin: 0px 0px 0px 400px;">
-            <strong>NIKKI ROSE H. OPERARIO, RSW</strong>
+            <strong>{{ $dept_head }}</strong>
             <br>
             Department Head II
             <br>

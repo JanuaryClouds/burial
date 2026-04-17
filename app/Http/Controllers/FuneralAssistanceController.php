@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ClientRequest;
 use App\Models\FuneralAssistance;
+use App\Models\SystemSetting;
 use App\Services\DatatableService;
 use App\Services\FuneralAssistanceService;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -145,12 +146,20 @@ class FuneralAssistanceController extends Controller
 
     public function certificate($id)
     {
-        $funeralAssistance = FuneralAssistance::find($id);
+        $funeralAssistance = FuneralAssistance::findOrFail($id);
         $client = $funeralAssistance->client;
         $title = Str::title($client->first_name).' '.Str::title($client->last_name).'\'s Certification';
+        $systemSetting = SystemSetting::first();
+        $social_welfare_officer = Str::upper(Str::replace('_', ' ', $systemSetting?->social_welfare_officer));
+        $dept_head = Str::upper(Str::replace('_', ' ', $systemSetting?->dept_head));
 
         $pdf = Pdf::loadView('pdf.certification',
-            compact('client', 'title'))
+            compact([
+                'client', 
+                'title',
+                'social_welfare_officer', 
+                'dept_head'
+            ]))
             ->setPaper('letter', 'portrait');
 
         return $pdf->stream("certification-{$client->id}.pdf");

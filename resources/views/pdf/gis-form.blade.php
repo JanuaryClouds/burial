@@ -343,7 +343,7 @@
                 <table>
                     <tr class="border-none">
                         <td>Interviewed By:</td>
-                        <td>EMMA B. REANZARES, RSW</td>
+                        <td>{{ $social_welfare_officer }}</td>
                     </tr>
                     <tr class="border-none">
                         <td></td>
@@ -353,7 +353,7 @@
                 <table style="margin-top: 2rem;">
                     <tr class="border-none">
                         <td>Reviewed & Approved By:</td>
-                        <td>NIKKI ROSE H. OPERARIO, RSW</td>
+                        <td>{{ $dept_head }}</td>
                     </tr>
                     <tr class="border-none">
                         <td></td>
