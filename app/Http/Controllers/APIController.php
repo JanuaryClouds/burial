@@ -45,7 +45,7 @@ class APIController extends Controller
             'suffix',
             'address',
             'barangay_id',
-            'mobile_number',
+            'contact_number',
             'relationship_to_deceased',
         )
             ->with('barangay', 'relationship', 'cheque')
@@ -59,7 +59,7 @@ class APIController extends Controller
                     'suffix' => $claimant->suffix ?? null,
                     'address' => $claimant->address,
                     'barangay' => $claimant->barangay,
-                    'mobileNumber' => $claimant->mobile_number,
+                    'contactNumber' => $claimant->contact_number,
                     'relationshipOfDeceasedToClaimant' => $claimant->relationship,
                     'cheque' => $claimant->cheque,
                 ];

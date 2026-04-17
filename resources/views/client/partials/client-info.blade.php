@@ -113,7 +113,7 @@
                 value="{{ $socialInfo->philhealth ?? null }}" :readonly="$readonly" />
         </div>
         <div class="col-12 col-md-6 col-lg-3">
-            <x-form-input name="contact_no" label="14. Contact Number" required="true" type="text"
+            <x-form-input name="contact_number" label="14. Contact Number" required="true" type="text"
                 value="{{ $contact_number ?? null }}" :readonly="$readonly" />
         </div>
     </div>

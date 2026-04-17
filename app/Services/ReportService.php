@@ -126,7 +126,7 @@ class ReportService
             $sheet->setCellValue("S{$row}", $ba->funeraria);
             $sheet->setCellValue("T{$row}", $ba->amount);
             $sheet->setCellValue("U{$row}", $ba->deceased->date_of_death);
-            $sheet->setCellValue("V{$row}", $firstClaimant->mobile_number);
+            $sheet->setCellValue("V{$row}", $firstClaimant->contact_number);
             $sheet->setCellValue("W{$row}", $this->getLog($firstClaimant, 1, $startDate, $endDate)?->date_out);
             $sheet->setCellValue("X{$row}", $this->getLog($firstClaimant, 1, $startDate, $endDate)?->date_in);
             $sheet->setCellValue("Y{$row}", $this->getLog($firstClaimant, 1, $startDate, $endDate)?->comments);

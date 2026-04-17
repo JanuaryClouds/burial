@@ -45,7 +45,7 @@ class StoreBurialAssistanceRequest extends FormRequest
             'claimant.last_name' => 'required|string|max:255',
             'claimant.suffix' => 'nullable|string|max:64',
             'claimant.relationship_to_deceased' => 'required|numeric|exists:relationships,id',
-            'claimant.mobile_number' => 'required|string|digits:11',
+            'claimant.contact_number' => 'required|string|digits:11',
             'claimant.address' => 'required|string|max:255',
             'claimant.barangay_id' => 'required|numeric|exists:barangays,id',
 

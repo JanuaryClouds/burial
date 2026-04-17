@@ -10,6 +10,7 @@ use App\Models\Client;
 use App\Models\ClientDemographic;
 use App\Models\ClientSocialInfo;
 use App\Models\FuneralAssistance;
+use App\Models\SystemSetting;
 use App\Models\TrackingCode;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -214,7 +215,7 @@ class ClientService
                 'district_id' => $data['district_id'],
                 'barangay_id' => $data['barangay_id'],
                 'city' => $data['city'],
-                'contact_no' => $data['contact_no'],
+                'contact_number' => $data['contact_number'],
             ]);
 
             if ($client) {
@@ -351,14 +352,9 @@ class ClientService
                     'last_name' => $client->user?->last_name,
                     'suffix' => $client->user?->suffix ?? null,
                     'relationship_to_deceased' => $client->socialInfo->relationship->id,
-                    'mobile_number' => $client->user?->contact_number,
+                    'contact_number' => $client->user?->contact_number,
                     'address' => $client->house_no.' '.$client->street,
                     'barangay_id' => $client->barangay_id,
-                ]);
-
-                TrackingCode::create([
-                    'trackable_id' => $burialAssistance->id,
-                    'trackable_type' => get_class($burialAssistance),
                 ]);
 
                 return $burialAssistance;
@@ -367,11 +363,6 @@ class ClientService
                     'id' => Str::uuid(),
                     'client_id' => $client->id,
                     'remarks' => $client->recommendation->first()->remarks,
-                ]);
-
-                TrackingCode::create([
-                    'trackable_id' => $funeralAssistance->id,
-                    'trackable_type' => get_class($funeralAssistance),
                 ]);
 
                 return $funeralAssistance;
@@ -519,6 +510,10 @@ class ClientService
         //     'moa' => \App\Models\ModeOfAssistance::all(),
         //     'referral' => $referral
         // ]);
+        
+        $systemSetting = SystemSetting::first();
+        $social_welfare_officer = Str::upper(Str::replace('_', ' ', $systemSetting?->social_welfare_officer ?? ''));
+        $dept_head = Str::upper(Str::replace('_', ' ', $systemSetting?->dept_head ?? ''));
 
         $pdf = Pdf::loadView('pdf.gis-form', [
             'data' => $data,
@@ -528,6 +523,8 @@ class ClientService
             'recommendation' => $recommendation,
             'moa' => \App\Models\ModeOfAssistance::all(),
             'referral' => $referral,
+            'social_welfare_officer' => $social_welfare_officer,
+            'dept_head' => $dept_head
         ])
             ->setOption('margin-top', '0')
             ->setPaper('A4', 'portrait');

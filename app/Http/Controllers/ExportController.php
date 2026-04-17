@@ -85,7 +85,7 @@ class ExportController extends Controller
             $sheet->setCellValue("S{$row}", $burialAssistance?->funeraria);
             $sheet->setCellValue("T{$row}", $burialAssistance?->amount);
             $sheet->setCellValue("U{$row}", $beneficiary?->date_of_death);
-            $sheet->setCellValue("V{$row}", $firstClaimant?->mobile_number);
+            $sheet->setCellValue("V{$row}", $firstClaimant?->contact_number);
             $sheet->setCellValue("W{$row}", $processLogService->getLog($firstClaimant, 1)?->date_out);
             $sheet->setCellValue("X{$row}", $processLogService->getLog($firstClaimant, 1)?->date_in);
             $sheet->setCellValue("Y{$row}", $processLogService->getLog($firstClaimant, 1)?->comments);

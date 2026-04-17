@@ -25,7 +25,7 @@ class ClientRequest extends FormRequest
             'district_id' => 'required|numeric|exists:districts,id',
             'barangay_id' => 'required|numeric|exists:barangays,id',
             'city' => 'required|string|max:50',
-            'contact_no' => 'required|string|max:11',
+            'contact_number' => 'required|string|max:11',
             'sex_id' => 'required|numeric|exists:sexes,id',
             'religion_id' => 'required|numeric|exists:religions,id',
             'nationality_id' => 'required|numeric|exists:nationalities,id',

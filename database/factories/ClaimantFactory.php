@@ -27,7 +27,7 @@ class ClaimantFactory extends Factory
                 'Jr.', 'Sr.', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X',
             ])),
             'relationship_to_deceased' => Relationship::inRandomOrder()->first()->id,
-            'mobile_number' => $this->faker->regexify('09[0-9]{9}'),
+            'contact_number' => $this->faker->regexify('09[0-9]{9}'),
             'address' => $this->faker->address(),
             'barangay_id' => Barangay::inRandomOrder()->first()->id,
         ];

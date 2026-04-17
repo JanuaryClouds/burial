@@ -25,7 +25,7 @@ class Claimant extends Model
         'last_name',
         'suffix',
         'relationship_to_deceased',
-        'mobile_number',
+        'contact_number',
         'address',
         'barangay_id',
     ];

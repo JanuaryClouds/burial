@@ -31,7 +31,7 @@ return new class extends Migration
                 ->constrained('relationships')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
-            $table->string('mobile_number')->nullable();
+            $table->string('contact_number');
             $table->string('address');
             $table->foreignId('barangay_id')
                 ->constrained('barangays')

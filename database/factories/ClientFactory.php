@@ -33,6 +33,7 @@ class ClientFactory extends Factory
             'barangay_id' => Barangay::inRandomOrder()->first()->id,
             'district_id' => District::inRandomOrder()->first()->id,
             'city' => 'Taguig City',
+            'contact_number' => $this->faker->regexify('09[0-9]{9}'),
         ];
     }
 
