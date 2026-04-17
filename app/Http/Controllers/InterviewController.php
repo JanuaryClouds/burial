@@ -24,7 +24,6 @@ class InterviewController extends Controller
 
     public function index()
     {
-        $this->authorize('viewAny', Interview::class);
         if (auth()->user()->roles()->count() == 0) {
             $user_id = auth()->user()->id;
         }

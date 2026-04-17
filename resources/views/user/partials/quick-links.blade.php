@@ -1,5 +1,5 @@
 <div class="row g-6 align-items-stretch">
-    <div class="col-4 col-lg-6 d-flex">
+    <div class="col-12 col-md-6 col-lg-6 d-flex">
         @include('components.card-link', [
             'title' => 'Apply as a Client',
             'route' => route('general.intake.form'),
@@ -9,7 +9,7 @@
             'description' => 'Apply as a client to be given a funeral assistance',
         ])
     </div>
-    <div class="col-4 col-lg-6 d-flex">
+    <div class="col-12 col-md-6 col-lg-6 d-flex">
         @include('components.card-link', [
             'title' => 'Client History',
             'route' => route('client.index'),
@@ -19,7 +19,7 @@
             'description' => 'Check your history as a client',
         ])
     </div>
-    <div class="col-4 col-lg-6 d-flex">
+    <div class="col-12 col-md-6 col-lg-6 d-flex">
         @include('components.card-link', [
             'title' => 'Beneficiaries',
             'route' => route('beneficiary.index'),
@@ -29,7 +29,7 @@
             'description' => 'Family members that you have applied in your applications',
         ])
     </div>
-    <div class="col-4 col-lg-6 d-flex">
+    <div class="col-12 col-md-6 col-lg-6 d-flex">
         @include('components.card-link', [
             'title' => 'Interviews',
             'route' => route('interview.index'),
@@ -41,7 +41,7 @@
             'description' => 'Check your history of interviews',
         ])
     </div>
-    <div class="col-4 col-lg-6 d-flex">
+    <div class="col-12 col-md-6 col-lg-6 d-flex">
         @include('components.card-link', [
             'title' => 'Burial Assistances',
             'route' => route('burial.index'),
@@ -51,7 +51,7 @@
             'description' => 'Burial Assistances you have requested before',
         ])
     </div>
-    <div class="col-4 col-lg-6 d-flex">
+    <div class="col-12 col-md-6 col-lg-6 d-flex">
         @include('components.card-link', [
             'title' => 'Libreng Libing',
             'icon' => 'ki-duotone ki-file-up',

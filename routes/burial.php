@@ -13,7 +13,6 @@ Route::name('burial.')
             ->name('index');
 
         Route::get('/{id}', [BurialAssistanceController::class, 'show'])
-            ->can('view', BurialAssistance::class)
             ->name('show');
 
         Route::post('/{id}/claimant-change/store', [ClaimantChangeController::class, 'store'])

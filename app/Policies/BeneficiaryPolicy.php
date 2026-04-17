@@ -13,11 +13,7 @@ class BeneficiaryPolicy
      */
     public function viewAny(User $user): bool
     {
-        if ($user->roles()->count() > 0) {
-            return true;
-        }
-
-        return false;
+        return true;
     }
 
     /**

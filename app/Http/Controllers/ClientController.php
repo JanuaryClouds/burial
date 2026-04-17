@@ -102,7 +102,6 @@ class ClientController extends Controller
     public function show(Client $client)
     {
         try {
-            $this->authorize('view', $client);
             $resource = 'client';
             $client = $this->clientServices->get($client->id);
             $page_title = $client->tracking_no;
