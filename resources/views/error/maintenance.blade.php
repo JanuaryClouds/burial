@@ -15,9 +15,7 @@
                 <h1 class="title">Under Maintenance</h1>
                 <h2 class="quote">City Social Welfare & Development Office</h2>
                 <h4>Submission of applications is temporarily disabled</h4>
-                <h4>Tracking your applications is still allowed below</h4>
                 <div class="actions">
-                    {{-- TODO add tracker modal form here --}}
                     @auth
                         @if (auth()->user()->hasRole('superadmin'))
                             <a href="{{ route('system.index') }}" class="btn btn-lg btn-primary hover-scale">
@@ -25,15 +23,10 @@
                             </a>
                         @endif
                     @endauth
-                    <button type="button" class="btn btn-secondary btn-lg" data-bs-toggle="modal"
-                        data-bs-target="#trackAssistanceModal">
-                        Track Assistance
-                    </button>
                 </div>
             </div>
         </div>
     </section>
-    @include('tracker.partials.form-modal')
     @include('partials.landing-footer')
     @include('partials.landing-js')
 </body>

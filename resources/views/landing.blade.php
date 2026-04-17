@@ -14,7 +14,6 @@
             @include('guest.partials.process')
         </div>
     </div>
-    @include('tracker.partials.form-modal')
     @include('partials.landing-footer')
     <button id="toTop" class="btn" aria-label="Back to top"><i class="fa-solid fa-arrow-up"></i></button>
     @include('partials.landing-js')
