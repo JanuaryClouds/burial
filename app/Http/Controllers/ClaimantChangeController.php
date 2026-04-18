@@ -32,37 +32,34 @@ class ClaimantChangeController extends Controller
 
     public function store(StoreClaimantChangeRequest $request, $id)
     {
-        $new_claimant_email = $request->input('email');
-        if (!User::where('email', $new_claimant_email)->first()->id) {
-            return redirect()->back()->with('error', 'The new claimant does not have an account in the system. Please notify them to access this system once with their TLC Portal account to proceed.');
-        }
-
-        $validated = $request->validated();
-
-        if ($validated) {
-            $burialAssistance = BurialAssistance::findOrFail($id);
-            $validated['burial_assistance_id'] = $burialAssistance->id;
-
-            if (! $burialAssistance->claimant) {
-                return redirect()->back()->with('error', 'Unable to find claimant.');
+        try {
+            $new_claimant_email = $request->input('email');
+            if (! $new_claimant_id = User::where('email', $new_claimant_email)->first()->id) {
+                return redirect()->back()->with('error', 'The new claimant does not have an account in the system. Please notify them to access this system once with their TLC Portal account to proceed.');
             }
 
-            if ($burialAssistance->status == 'approved' || $burialAssistance->status == 'rejected' || $burialAssistance->status == 'released') {
-                return redirect()->back()->with('error', 'Changing claimant is not allowed in a '.$burialAssistance->status.' status.');
-            }
+            $validated = $request->validated();
 
-            // TODO overhaul starts here
-            $validated['old_claimant_id'] = $burialAssistance->claimant->id;
-            $validated['id'] = Str::uuid();
+            if ($validated) {
+                $burialAssistance = BurialAssistance::findOrFail($id);
+                $validated['burial_assistance_id'] = $burialAssistance->id;
 
-            $validated['relationship_to_deceased'] = $validated['relationship_id'];
-            $validated['address'] = $validated['house_no'].' '.$validated['street'];
-            $newClaimant = $this->claimantService->store($validated);
+                if (! $burialAssistance->claimant) {
+                    return redirect()->back()->with('error', 'Unable to find claimant.');
+                }
 
-            $validated['new_claimant_id'] = $newClaimant->id;
-            $claimantChange = $this->claimantChangeService->store($validated);
+                if ($burialAssistance->status == 'approved' || $burialAssistance->status == 'rejected' || $burialAssistance->status == 'released') {
+                    return redirect()->back()->with('error', 'Changing claimant is not allowed in a '.$burialAssistance->status.' status.');
+                }
 
-            if ($claimantChange) {
+                $validated['old_claimant_id'] = $burialAssistance->claimant->id;
+                $validated['id'] = (string) Str::uuid();
+                $newClaimant = $this->claimantService->store($validated);
+
+                $validated['new_claimant_id'] = $newClaimant->id;
+                $validated['new_claimant_user_id'] = $new_claimant_id;
+                $this->claimantChangeService->store($validated);
+
                 $ip = request()->ip();
                 $browser = request()->header('User-Agent');
                 activity()
@@ -71,11 +68,11 @@ class ClaimantChangeController extends Controller
                     ->log('Request for claimant change submitted by guest');
 
                 return redirect()
-                    ->route('landing.page')
+                    ->route('burial.show', ['id' => $id])
                     ->with('success', 'Your request for claimant change has been submitted successfully. Please wait for the approval.');
-            } else {
-                return redirect()->back()->with('error', 'Failed to submit claimant change.');
             }
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to submit claimant change.'.(app()->hasDebugModeEnabled() ? ': '.$e->getMessage() : ''));
         }
     }
 

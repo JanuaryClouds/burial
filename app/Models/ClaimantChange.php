@@ -17,6 +17,7 @@ class ClaimantChange extends Model
         'changed_at',
         'status',
         'reason_for_change',
+        'new_claimant_user_id',
     ];
 
     protected $table = 'claimant_changes';
