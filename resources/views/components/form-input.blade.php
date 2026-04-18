@@ -36,10 +36,10 @@
         {{ $required ? 'required' : '' }} {{ $disabled ? 'disabled' : '' }} {{ $readonly ? 'readonly' : '' }}
         {{ $min ? 'min=' . $min : '' }} autocomplete="{{ $autocomplete ? 'on' : 'off' }}" />
 
+    @error($errorname)
+        <small class="form-text text-danger me-2">{{ $message }}.</small>
+    @enderror
     @if ($helpText)
         <small id="helpId" class="form-text text-muted">{{ $helpText }}</small>
     @endif
-    @error($errorname)
-        <small class="form-text text-danger">{{ $message }}</small>
-    @enderror
 </div>
