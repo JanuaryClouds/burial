@@ -99,7 +99,7 @@
     <p style="text-align: justify; margin: 0px 10px 0px 10px; line-height: 1.5">
         {{-- FIXME: age is incorrect, results in 0 --}}
         Pinatutunayan nito na si <strong class="bold underline">{{ $claimant->fullname() }}</strong>,
-        edad <strong class="bold underline">{{ $claimant->client->age() }}</strong>, at kasalukuyang may
+        edad <strong class="bold underline">{{ $claimant->age() }}</strong>, at kasalukuyang may
         pahatirang-sulat
         sa
         <strong class="bold underline">{{ $claimant->address }}, {{ $claimant->barangay->name }}</strong>,

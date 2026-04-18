@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreBurialAssistanceRequest;
 use App\Models\Barangay;
 use App\Models\BurialAssistance;
+use App\Models\Relationship;
 use App\Models\Religion;
 use App\Models\SystemSetting;
 use App\Services\BurialAssistanceService;
@@ -70,7 +71,7 @@ class BurialAssistanceController extends Controller
             $data = BurialAssistance::findOrFail($id);
             $client = $data->originalClaimant()->client;
             if (! $client) {
-                throw new Exception('Client not found');
+                abort(404);
             }
             $page_title = 'Manage '.$client->tracking_no;
             $page_subtitle = $client->fullname()."'s Burial Assistance Application";
@@ -84,9 +85,11 @@ class BurialAssistanceController extends Controller
             $next_step = $this->workflowStepServices->nextStep($data);
             $progress = $this->workflowStepServices->progress($data);
             $show_certificate = $next_step == null && $data->status == 'approved';
+            $relationships = Relationship::select('id', 'name')->get();
 
             return view('burial.show', compact([
                 'data',
+                'relationships',
                 'progress',
                 'timeline',
                 'next_step',
@@ -223,17 +226,18 @@ class BurialAssistanceController extends Controller
 
     public function certificate($id)
     {
-        $assistance = BurialAssistance::find($id);
+        $assistance = BurialAssistance::findOrFail($id);
 
-        if (! $assistance) {
+        if ($assistance->status != 'released' && app()->isProduction()) {
             abort(404);
         }
 
-        if ($assistance->status != 'released') {
-            abort(404);
+        if ($assistance->hasApprovedClaimantChange()) {
+            $claimant = $assistance->newClaimant();
+        } else {
+            $claimant = $assistance->originalClaimant();
         }
-
-        $claimant = $assistance->claimant;
+        
         $title = Str::title($claimant->first_name).' '.Str::title($claimant->last_name).'\'s Certificate of Eligibility';
         $social_welfare_officer = Str::upper(Str::replace('_', ' ', SystemSetting::first()?->social_welfare_officer));
         $dept_head = Str::upper(Str::replace('_', ' ', SystemSetting::first()?->dept_head));
