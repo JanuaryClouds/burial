@@ -24,7 +24,7 @@
                 'burial.partials.process-update-modal')
             @include('burial.partials.reject-modal')
         @endcan
-        @include('burial.partials.claimant-change-form')
+        @includeWhen(!$data->claimantChanges()->exists(), 'burial.partials.claimant-change-form')
         @cannot('manage-content')
             <div class="card mt-10">
                 <div class="card-body">
