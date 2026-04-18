@@ -72,7 +72,7 @@ class Client extends Model
 
     public function age()
     {
-        return Carbon::parse($this->created_at)->diffInYears($this->date_of_birth);
+        return Carbon::parse($this->date_of_birth)->age;
     }
 
     public function address()

@@ -18,6 +18,9 @@
                 <strong>Note:</strong>
                 Changing claimants can only be done once.
             </div>
+            @include('burial.partials.claimant-form', [
+                'readonly' => false,
+            ])
             @include('components.form-input', [
                 'name' => 'email',
                 'label' => 'Email of New Claimant',

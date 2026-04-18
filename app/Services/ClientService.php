@@ -343,7 +343,7 @@ class ClientService
                     'initial_checker' => auth()->user()->id, // TODO ask who is the initial checker
                 ]);
 
-                $claimant = Claimant::create([
+                Claimant::create([
                     'id' => Str::uuid(),
                     'client_id' => $client->id,
                     'burial_assistance_id' => $burialAssistance->id,
@@ -351,10 +351,12 @@ class ClientService
                     'middle_name' => $client->user?->middle_name ?? null,
                     'last_name' => $client->user?->last_name,
                     'suffix' => $client->user?->suffix ?? null,
-                    'relationship_to_deceased' => $client->socialInfo->relationship->id,
-                    'contact_number' => $client->user?->contact_number,
+                    'date_of_birth' => $client->date_of_birth,
                     'address' => $client->house_no.' '.$client->street,
                     'barangay_id' => $client->barangay_id,
+                    'city' => 'Taguig City',
+                    'contact_number' => $client->user?->contact_number,
+                    'relationship_id' => $client->socialInfo?->relationship?->id,
                 ]);
 
                 return $burialAssistance;

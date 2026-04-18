@@ -27,14 +27,16 @@ return new class extends Migration
             $table->string('middle_name')->nullable();
             $table->string('last_name');
             $table->string('suffix')->nullable();
-            $table->foreignId('relationship_to_deceased')
-                ->constrained('relationships')
-                ->onDelete('cascade')
-                ->onUpdate('cascade');
-            $table->string('contact_number');
+            $table->date('date_of_birth');
             $table->string('address');
             $table->foreignId('barangay_id')
-                ->constrained('barangays')
+            ->constrained('barangays')
+            ->onDelete('cascade')
+            ->onUpdate('cascade');
+            $table->string('city')->default('Taguig City');
+            $table->string('contact_number');
+            $table->foreignId('relationship_id')
+                ->constrained('relationships')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
             $table->timestamps();

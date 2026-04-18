@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Str;
@@ -24,10 +25,12 @@ class Claimant extends Model
         'middle_name',
         'last_name',
         'suffix',
-        'relationship_to_deceased',
-        'contact_number',
+        'date_of_birth',
         'address',
         'barangay_id',
+        'city',
+        'contact_number',
+        'relationship_id',
     ];
 
     protected $table = 'claimants';
@@ -38,6 +41,11 @@ class Claimant extends Model
             ($this->middle_name ? Str::limit($this->middle_name, 1, '.').' ' : '').
             $this->last_name.
             ($this->suffix ? ' '.$this->suffix : '');
+    }
+
+    public function age()
+    {
+        return Carbon::parse($this->date_of_birth)->age;
     }
 
     public function fullAddress()
