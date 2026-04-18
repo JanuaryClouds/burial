@@ -24,9 +24,7 @@
                 @if (auth()->user()->roles()->count() == 0)
                     @include('client.partials.sidebar')
                 @endif
-                @can('view-clients')
-                    @include('admin.partials.sidebar-records')
-                @endcan
+                @include('admin.partials.sidebar-records')
                 @can('manage-content')
                     @include('superadmin.partials.sidebar-cms')
                 @endcan

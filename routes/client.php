@@ -20,7 +20,6 @@ Route::get('/history', [ClientController::class, 'history'])
     ->name('history');
 
 Route::get('/interviews', [InterviewController::class, 'index'])
-    ->can('view', Interview::class)
     ->name('interview.index');
 
 Route::prefix('clients')
