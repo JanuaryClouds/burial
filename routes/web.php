@@ -4,7 +4,6 @@ use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\Auth\UserController;
 use App\Http\Controllers\BurialAssistanceController;
 use App\Http\Controllers\CitizenAccessController;
-use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\TestController;
@@ -35,7 +34,7 @@ Route::middleware(['auth'])
             ->name('applications.export.all');
 
         Route::post('/application/{id}/reject/toggle', [BurialAssistanceController::class, 'toggleReject'])
-        ->middleware('permission:create-updates')
+            ->middleware('permission:create-updates')
             ->name('application.reject.toggle');
 
         Route::get('/activity-logs', [ActivityLogController::class, 'index'])

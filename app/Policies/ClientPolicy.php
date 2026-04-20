@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\Client;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class ClientPolicy
 {
@@ -27,8 +26,8 @@ class ClientPolicy
     {
         if ($user->roles()->count() > 0) {
             return true;
-        } 
-        
+        }
+
         if ($user->roles()->count() == 0) {
             if ($user->id == $client->user_id) {
                 return true;
@@ -36,7 +35,7 @@ class ClientPolicy
                 return false;
             }
         }
-        
+
         return false;
     }
 
@@ -45,12 +44,14 @@ class ClientPolicy
      */
     public function create(User $user): bool
     {
-        if ($user->cannot('create-clients')) return false;
+        if ($user->cannot('create-clients')) {
+            return false;
+        }
 
         if ($user->roles()->count() > 0) {
             return true;
         }
-        
+
         return false;
     }
 

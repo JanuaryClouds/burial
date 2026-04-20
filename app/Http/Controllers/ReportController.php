@@ -222,7 +222,7 @@ class ReportController extends Controller
                 return [
                     'full_name' => $claimant->fullname(),
                     'contact_number' => $claimant->contact_number,
-                    'address' => $claimant->address. ($claimant->barangay ? ', '.$claimant->barangay->name : ''),
+                    'address' => $claimant->address.($claimant->barangay ? ', '.$claimant->barangay->name : ''),
                     'relationship_to_deceased' => $claimant->relationship?->name,
                 ];
             });

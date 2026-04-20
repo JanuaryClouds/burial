@@ -236,7 +236,7 @@ class ReportService
                 ];
             });
     }
-    
+
     public function claimantPerRelationship($startDate, $endDate)
     {
         return Claimant::selectRaw('relationship_to_deceased, COUNT(*) as total')

@@ -3,7 +3,6 @@
 use App\Http\Controllers\BurialAssistanceController;
 use App\Http\Controllers\ClaimantChangeController;
 use App\Http\Controllers\ProcessLogController;
-use App\Models\BurialAssistance;
 use Illuminate\Support\Facades\Route;
 
 Route::name('burial.')

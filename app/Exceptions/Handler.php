@@ -54,7 +54,7 @@ class Handler extends ExceptionHandler
 
             return redirect()->route('landing.page')
                 ->with('info', 'You are not logged in.');
-        } else if ($exception instanceof \Illuminate\Auth\Access\AuthorizationException) {
+        } elseif ($exception instanceof \Illuminate\Auth\Access\AuthorizationException) {
             if ($request->expectsJson()) {
                 return response()->json([
                     'message' => 'You do not have permission to access this page.',

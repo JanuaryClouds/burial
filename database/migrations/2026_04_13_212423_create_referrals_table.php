@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('referrals', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('client_id')->constrained('clients')->onDelete('CASCADE');
-            $table->foreignUuid('beneficiary_id')->constrained('beneficiaries')->onDelete('CASCADE');
             $table->string('referral_to');
             $table->text('remarks')->nullable();
             $table->timestamps();

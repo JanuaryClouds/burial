@@ -31,11 +31,11 @@ class FuneralAssistanceController extends Controller
 
         if (auth()->user()->roles()->count() == 0) {
             $data = $this->funeralAssistanceServices->index(auth()->user()->id);
-        } else if (auth()->user()->roles()->count() > 0) {
+        } elseif (auth()->user()->roles()->count() > 0) {
             $data = $this->funeralAssistanceServices->index();
             $approvedApplications = FuneralAssistance::where('approved_at', '!=', null)->count();
             $forwardedApplications = FuneralAssistance::where('forwarded_at', '!=', null)->count();
-    
+
             $cardData = [
                 [
                     'label' => 'Total Applications',
@@ -57,8 +57,8 @@ class FuneralAssistanceController extends Controller
                 ],
             ];
         }
-        $columns = $this->datatableServices->getColumns($data,);
-        
+        $columns = $this->datatableServices->getColumns($data);
+
         if (request()->expectsJson()) {
             return response()->json([
                 'data' => $data->values(),
@@ -155,10 +155,10 @@ class FuneralAssistanceController extends Controller
 
         $pdf = Pdf::loadView('pdf.certification',
             compact([
-                'client', 
+                'client',
                 'title',
-                'social_welfare_officer', 
-                'dept_head'
+                'social_welfare_officer',
+                'dept_head',
             ]))
             ->setPaper('letter', 'portrait');
 

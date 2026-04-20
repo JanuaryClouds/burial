@@ -11,7 +11,6 @@ use App\Models\ClientDemographic;
 use App\Models\ClientSocialInfo;
 use App\Models\FuneralAssistance;
 use App\Models\SystemSetting;
-use App\Models\TrackingCode;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
@@ -512,7 +511,7 @@ class ClientService
         //     'moa' => \App\Models\ModeOfAssistance::all(),
         //     'referral' => $referral
         // ]);
-        
+
         $systemSetting = SystemSetting::first();
         $social_welfare_officer = Str::upper(Str::replace('_', ' ', $systemSetting?->social_welfare_officer ?? ''));
         $dept_head = Str::upper(Str::replace('_', ' ', $systemSetting?->dept_head ?? ''));
@@ -526,7 +525,7 @@ class ClientService
             'moa' => \App\Models\ModeOfAssistance::all(),
             'referral' => $referral,
             'social_welfare_officer' => $social_welfare_officer,
-            'dept_head' => $dept_head
+            'dept_head' => $dept_head,
         ])
             ->setOption('margin-top', '0')
             ->setPaper('A4', 'portrait');

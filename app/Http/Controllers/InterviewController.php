@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\InterviewRequest;
 use App\Models\Client;
-use App\Models\Interview;
 use App\Services\DatatableService;
 use App\Services\InterviewService;
 use Exception;

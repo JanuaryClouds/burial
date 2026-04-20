@@ -57,10 +57,11 @@ class UserController extends Controller
                     ->causedBy($user)
                     ->withProperties(['ip' => $ip, 'browser' => $browser])
                     ->log('Client attempted to access admin panel');
-                
+
                 Auth::logout();
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
+
                 return redirect()->route('landing.page')->with('warning', 'You do not have permission to access this page');
             }
 

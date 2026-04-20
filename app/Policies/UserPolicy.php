@@ -3,7 +3,6 @@
 namespace App\Policies;
 
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class UserPolicy
 {
@@ -12,7 +11,9 @@ class UserPolicy
      */
     public function viewAny(User $user): bool
     {
-        if ($user->cannot('view-users')) return false;
+        if ($user->cannot('view-users')) {
+            return false;
+        }
 
         return true;
     }
@@ -22,9 +23,13 @@ class UserPolicy
      */
     public function view(User $user, User $model): bool
     {
-        if ($user->cannot('view-users')) return false;
+        if ($user->cannot('view-users')) {
+            return false;
+        }
 
-        if ($model->id == 1) return false;
+        if ($model->id == 1) {
+            return false;
+        }
 
         return true;
     }
@@ -34,7 +39,9 @@ class UserPolicy
      */
     public function create(User $user): bool
     {
-        if ($user->cannot('create-users')) return false;
+        if ($user->cannot('create-users')) {
+            return false;
+        }
 
         return true;
     }
@@ -44,9 +51,13 @@ class UserPolicy
      */
     public function update(User $user, User $model): bool
     {
-        if ($user->cannot('edit-users')) return false;
+        if ($user->cannot('edit-users')) {
+            return false;
+        }
 
-        if ($model->id == 1) return false;
+        if ($model->id == 1) {
+            return false;
+        }
 
         return true;
     }
@@ -64,9 +75,13 @@ class UserPolicy
      */
     public function restore(User $user, User $model): bool
     {
-        if ($user->cannot('edit-users')) return false;
+        if ($user->cannot('edit-users')) {
+            return false;
+        }
 
-        if ($model->id == 1) return false;
+        if ($model->id == 1) {
+            return false;
+        }
 
         return true;
     }

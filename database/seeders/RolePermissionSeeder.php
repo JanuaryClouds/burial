@@ -18,7 +18,7 @@ class RolePermissionSeeder extends Seeder
             'create-assessments',
             'create-recommendations',
             'create-referrals',
-            
+
             // Burial Assistance Models
             'view-burial-assistances',
             'create-burial-assistances',
@@ -36,7 +36,7 @@ class RolePermissionSeeder extends Seeder
             'create-reports',
             'view-reports',
         ];
-            
+
         $otherPermissions = [
             // Logs
             'view-logs',
@@ -63,7 +63,7 @@ class RolePermissionSeeder extends Seeder
         }
 
         Role::firstOrCreate(['name' => 'superadmin']);
-        
+
         $staffRole = Role::firstOrCreate(['name' => 'staff']);
         $staffRole->givePermissionTo($staffPermissions);
     }

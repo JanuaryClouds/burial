@@ -30,9 +30,9 @@ return new class extends Migration
             $table->date('date_of_birth');
             $table->string('address');
             $table->foreignId('barangay_id')
-            ->constrained('barangays')
-            ->onDelete('cascade')
-            ->onUpdate('cascade');
+                ->constrained('barangays')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
             $table->string('city')->default('Taguig City');
             $table->string('contact_number');
             $table->foreignId('relationship_id')

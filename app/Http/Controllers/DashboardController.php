@@ -14,6 +14,7 @@ use Spatie\Activitylog\Models\Activity;
 class DashboardController extends Controller
 {
     protected $clientServices;
+
     protected $datatableServices;
 
     public function __construct(ClientService $clientService, DatatableService $datatableService)
@@ -27,12 +28,12 @@ class DashboardController extends Controller
         if (auth()->user()->roles()->count() == 0) {
             return $this->user();
         }
-            
+
         if (auth()->user()->roles()->count() > 0) {
             return $this->staff();
         }
     }
-                
+
     public function staff()
     {
         $page_title = 'Dashboard';
@@ -93,6 +94,7 @@ class DashboardController extends Controller
 
         $notifications = $raw_notifications->map(function ($notification) {
             $payload = json_decode($notification->payload, true);
+
             return [
                 'id' => $notification->id,
                 'type' => $notification->type,
@@ -100,7 +102,7 @@ class DashboardController extends Controller
                 'body' => $payload['body'],
             ];
         });
-        
+
         if ($latest_record) {
             $latest_record->load(['interviews', 'claimant', 'funeralAssistance']);
         }

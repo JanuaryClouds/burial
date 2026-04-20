@@ -34,7 +34,7 @@ class BeneficiaryController extends Controller
                 'data' => $data->values(),
             ]);
         }
-        
+
         return view('beneficiary.index', [
             'data' => $data,
             'columns' => $columns,

@@ -51,19 +51,19 @@ Route::middleware('permission:manage-accounts')
         Route::resource('user', UserController::class)
             ->only(['store', 'update'])
             ->middleware(['throttle:5,1']);
-        });
+    });
 
 Route::resource('role', RoleController::class)
     ->only(['index', 'store', 'edit', 'update'])
     ->middleware(['permission:edit-roles']);
-            
-Route::middleware('permission:edit-system-settings')
-    ->name('system.')
-    ->prefix('system')
-    ->group(function () {
-        Route::get('/', [SystemSettingController::class, 'index'])
-            ->name('index');
 
-        Route::post('/update', [SystemSettingController::class, 'update'])
-            ->name('update');
-    });
+Route::middleware('permission:edit-system-settings')
+                ->name('system.')
+                ->prefix('system')
+                ->group(function () {
+                    Route::get('/', [SystemSettingController::class, 'index'])
+                        ->name('index');
+
+                    Route::post('/update', [SystemSettingController::class, 'update'])
+                        ->name('update');
+                });

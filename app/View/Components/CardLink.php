@@ -8,7 +8,6 @@ use Illuminate\View\Component;
 
 class CardLink extends Component
 {
-
     /**
      * Create a new component instance.
      */

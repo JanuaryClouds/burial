@@ -17,14 +17,14 @@ class InterviewService
                     $q->where('user_id', $user_id);
                 });
             })
-            ->orderBy('created_at', 'desc')    
+            ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($interview) {
                 return [
                     'id' => $interview->id,
                     'client' => $interview->client->fullname(),
                     'schedule' => $interview->schedule,
-                    'status' => $interview->status
+                    'status' => $interview->status,
                 ];
             });
     }
