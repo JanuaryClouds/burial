@@ -17,7 +17,6 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Storage;
 use Str;
 
 class ClientController extends Controller
@@ -48,13 +47,15 @@ class ClientController extends Controller
 
         if (auth()->user()->roles()->count() == 0) {
             $data = $this->clientServices->index('tracking_no', 'asc', auth()->user()->id);
+            $columns = $this->datatableServices->getColumns($data, ['client']);
         } elseif (auth()->user()->roles()->count() > 0) {
             $data = $this->clientServices->index('tracking_no', 'asc');
-            
+            $columns = $this->datatableServices->getColumns($data, []);
+
             $clientsWithInterview = Client::has('interviews')->count();
             $clientsWithAssessments = Client::has('assessment')->count();
             $clientsWithRecommendation = Client::has('recommendation')->count();
-                
+
             $cardData = [
                 [
                     'label' => 'Total Clients',
@@ -82,8 +83,6 @@ class ClientController extends Controller
                 ],
             ];
         }
-
-        $columns = $this->datatableServices->getColumns($data, ['id', 'status', 'show_route']);
 
         if (request()->expectsJson()) {
             return response()->json([
@@ -174,10 +173,10 @@ class ClientController extends Controller
                 ->log('Added the client details: '.$client?->id.(($result['uploadError'] ?? false) ? ' images failed to upload' : ''));
 
             return redirect()
-                ->route('landing.page')
-                ->with('success', 'Client information added successfully!'. (($result['uploadError'] ?? false) ? ' However, some images failed to upload.' : '') .' Please remember to bring hard copies of the submitted documents during the interview at the CSWDO Office.');
+                ->route('client.show', $client)
+                ->with('success', 'Client information added successfully!'.(($result['uploadError'] ?? false) ? ' However, some images failed to upload.' : '').' Please remember to bring hard copies of the submitted documents during the interview at the CSWDO Office.');
         } catch (Exception $e) {
-            return redirect()->back()->with('error', 'Failed to add client information!' . (app()->hasDebugModeEnabled() ? ': ' . $e->getMessage() : ''));
+            return redirect()->back()->with('error', 'Failed to add client information!'.(app()->hasDebugModeEnabled() ? ': '.$e->getMessage() : ''));
         }
     }
 
