@@ -34,7 +34,7 @@ class ClaimantChangeController extends Controller
     {
         try {
             $new_claimant_email = $request->input('email');
-            if (! $new_claimant_id = User::where('email', $new_claimant_email)->first()->id) {
+            if (! $new_claimant = User::where('email', $new_claimant_email)->first()) {
                 return redirect()->back()->with('error', 'The new claimant does not have an account in the system. Please notify them to access this system once with their TLC Portal account to proceed.');
             }
 
@@ -54,10 +54,15 @@ class ClaimantChangeController extends Controller
 
                 $validated['old_claimant_id'] = $burialAssistance->claimant->id;
                 $validated['id'] = (string) Str::uuid();
+                $validated['first_name'] = $new_claimant->first_name;
+                $validated['middle_name'] = $new_claimant->middle_name ?? null;
+                $validated['last_name'] = $new_claimant->last_name;
+                $validated['suffix'] = $new_claimant->suffix ?? null;
+                $validated['contact_number'] = $new_claimant->contact_number ?? null;
                 $newClaimant = $this->claimantService->store($validated);
 
                 $validated['new_claimant_id'] = $newClaimant->id;
-                $validated['new_claimant_user_id'] = $new_claimant_id;
+                $validated['new_claimant_user_id'] = $new_claimant->id;
                 $this->claimantChangeService->store($validated);
 
                 $ip = request()->ip();

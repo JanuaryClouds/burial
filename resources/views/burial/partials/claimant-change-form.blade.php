@@ -20,17 +20,9 @@
             </div>
             @include('burial.partials.claimant-form', [
                 'readonly' => false,
+                'claimant_change' => true,
             ])
-            @include('components.form-input', [
-                'name' => 'email',
-                'label' => 'Email of New Claimant',
-                'required' => true,
-                'readonly' => false,
-                'type' => 'email',
-                'autocomplete' => false,
-                'helpText' => 'Please provide the email address of the new claimant',
-            ])
-            <x-form-textarea name="reason_for_change" required="true" label="Reason for Changing Claimants" />
+            <x-form-textarea name="reason_for_change" :required="true" label="Reason for Changing Claimants" />
         </div>
         <div class="card-footer d-flex justify-content-end">
             <button type="button" class="btn btn-primary" data-bs-toggle="modal"
