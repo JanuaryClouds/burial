@@ -30,6 +30,11 @@ class User extends Authenticatable
     ];
 
     protected $casts = [
+        'first_name' => 'encrypted',
+        'middle_name' => 'encrypted',
+        'last_name' => 'encrypted',
+        'suffix' => 'encrypted',
+        'contact_number' => 'encrypted',
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];

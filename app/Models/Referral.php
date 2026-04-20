@@ -8,15 +8,18 @@ use Illuminate\Database\Eloquent\Model;
 class Referral extends Model
 {
     use HasFactory;
+
     protected $table = 'referrals';
+
     protected $primaryKey = 'id';
+
     public $incrementing = false;
+
     protected $keyType = 'string';
 
     protected $fillable = [
         'id',
         'client_id',
-        'beneficiary_id',
         'referral_to',
         'remarks',
     ];

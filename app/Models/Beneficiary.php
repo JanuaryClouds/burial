@@ -34,6 +34,13 @@ class Beneficiary extends Model
         'barangay_id',
     ];
 
+    protected $casts = [
+        'first_name' => 'encrypted',
+        'middle_name' => 'encrypted',
+        'last_name' => 'encrypted',
+        'suffix' => 'encrypted',
+    ];
+
     public function tracking_no()
     {
         return $this->client?->tracking_no;

@@ -33,6 +33,15 @@ class Claimant extends Model
         'relationship_id',
     ];
 
+    protected $casts = [
+        'first_name' => 'encrypted',
+        'middle_name' => 'encrypted',
+        'last_name' => 'encrypted',
+        'suffix' => 'encrypted',
+        'address' => 'encrypted',
+        'contact_number' => 'encrypted',
+    ];
+
     protected $table = 'claimants';
 
     public function fullname()
