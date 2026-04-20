@@ -3,7 +3,9 @@
     <title>Dashboard</title>
     <div class="row g-6">
         @can('view-clients')
-            @include('admin.partials.cards')
+            <div class="col">
+                @include('admin.partials.cards')
+            </div>
         @endcan
         @cannot('view-clients')
             <div class="col-12 col-lg-6">
