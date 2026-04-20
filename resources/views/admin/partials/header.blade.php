@@ -58,9 +58,9 @@
                                     {{ auth()->user()->first_name . ' ' . auth()->user()->last_name }}
                                 </div>
 
-                                <a href="#" class="fw-semibold text-muted text-hover-primary fs-7">
-                                    {{ auth()->user()->email }}
-                                </a>
+                                <p class="fw-semibold text-muted pb-0 text-hover-primary fs-7">
+                                    {{ Str::limit(auth()->user()->email, 20) }}
+                                </p>
                             </div>
                             <!--end::Username-->
                         </div>
