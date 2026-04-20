@@ -24,7 +24,11 @@
                 'burial.partials.process-update-modal')
             @include('burial.partials.reject-modal')
         @endcan
-        @includeWhen(!$data->claimantChanges()->exists(), 'burial.partials.claimant-change-form')
+        @if (
+            !$data->claimantChanges()->exists() &&
+                auth()->user()->can('create', [App\Models\ClaimantChange::class, $data]))
+            @include('burial.partials.claimant-change-form')
+        @endif
         @cannot('manage-content')
             <div class="card mt-10">
                 <div class="card-body">
@@ -37,7 +41,9 @@
             <div class="card">
                 <div class="card-body">
                     @include('burial.partials.claimant-form', [
-                        'claimant' => $data->claimant,
+                        'claimant' => $data->hasApprovedClaimantChange()
+                            ? $data->newClaimant()
+                            : $data->originalClaimant(),
                         'readonly' => $readonly,
                     ])
                 </div>
