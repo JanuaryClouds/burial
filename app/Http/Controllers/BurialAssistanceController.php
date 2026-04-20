@@ -47,7 +47,7 @@ class BurialAssistanceController extends Controller
         if (auth()->user()->roles()->count() == 0) {
             $user_id = auth()->user()->id;
         }
-        
+
         $data = $this->burialAssistanceServices->index($user_id ?? null);
         $columns = $this->datatableServices->getColumns($data, ['id', 'status', 'show_route']);
 
@@ -73,9 +73,9 @@ class BurialAssistanceController extends Controller
             if (! $client) {
                 abort(404);
             }
-            $page_title = 'Manage '.$client->tracking_no;
+            $page_title = $client->tracking_no;
             $page_subtitle = $client->fullname()."'s Burial Assistance Application";
-            $readonly = auth()->user()->cannot('manage-content') && $data->status != 'released';
+            $readonly = auth()->user()->cannot('manage-content') && $data->status == 'released';
 
             $timeline = $this->processLogServices->timeline($data);
             if ($data->claimantChanges()->first() && $data->claimantChanges()->first()->status == 'approved') {
@@ -237,14 +237,14 @@ class BurialAssistanceController extends Controller
         } else {
             $claimant = $assistance->originalClaimant();
         }
-        
+
         $title = Str::title($claimant->first_name).' '.Str::title($claimant->last_name).'\'s Certificate of Eligibility';
         $social_welfare_officer = Str::upper(Str::replace('_', ' ', SystemSetting::first()?->social_welfare_officer));
         $dept_head = Str::upper(Str::replace('_', ' ', SystemSetting::first()?->dept_head));
 
         $pdf = Pdf::loadView('pdf.certificate-of-eligibility',
             compact([
-                'claimant', 
+                'claimant',
                 'title',
                 'social_welfare_officer',
                 'dept_head',
