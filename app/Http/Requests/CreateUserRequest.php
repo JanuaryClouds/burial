@@ -14,6 +14,46 @@ class CreateUserRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'first_name' => $this->clean($this->first_name),
+            'middle_name' => $this->clean($this->middle_name),
+            'last_name' => $this->clean($this->last_name),
+            'email' => $this->normalizeEmail($this->email),
+            'contact_number' => $this->normalizePhone($this->contact_number),
+        ]);
+    }
+
+    private function clean(?string $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+        $value = trim($value);
+        $value = preg_replace('/\s+/u', ' ', $value);
+
+        return $value;
+    }
+
+    private function normalizePhone(?string $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        return preg_replace('/\D+/', '', $value);
+    }
+
+    private function normalizeEmail(?string $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        return mb_strtolower(trim($value));
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *

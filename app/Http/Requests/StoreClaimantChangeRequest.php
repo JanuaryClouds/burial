@@ -14,6 +14,43 @@ class StoreClaimantChangeRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'email' => $this->normalizeEmail($this->email),
+            'address' => $this->clean($this->address),
+        ]);
+    }
+
+    private function clean(?string $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+        $value = trim($value);
+        $value = preg_replace('/\s+/u', ' ', $value);
+
+        return $value;
+    }
+
+    private function normalizePhone(?string $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        return preg_replace('/\D+/', '', $value);
+    }
+
+    private function normalizeEmail(?string $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        return mb_strtolower(trim($value));
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -24,15 +61,10 @@ class StoreClaimantChangeRequest extends FormRequest
         return [
             'reason_for_change' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|exists:users,email',
-            'first_name' => 'required|string|max:255',
-            'middle_name' => 'nullable|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'suffix' => 'nullable|string|max:64',
             'date_of_birth' => 'required|date',
             'address' => 'required|string|max:255',
             'barangay_id' => 'required|numeric|exists:barangays,id',
             'city' => 'required|string|max:50',
-            'contact_number' => 'required|string|max:11',
             'relationship_id' => 'required|numeric|exists:relationships,id',
         ];
     }
