@@ -6,9 +6,9 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Referral>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\FuneralAssistance>
  */
-class ReferralFactory extends Factory
+class FuneralAssistanceFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -19,8 +19,6 @@ class ReferralFactory extends Factory
     {
         return [
             'id' => (string) Str::uuid(),
-            'referral_to' => $this->faker->name(),
-            'remarks' => 'seeder generated',
         ];
     }
 }
