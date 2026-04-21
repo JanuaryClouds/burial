@@ -10,9 +10,9 @@ use App\Models\Client;
 use App\Models\ClientDemographic;
 use App\Models\ClientSocialInfo;
 use App\Models\FuneralAssistance;
-use App\Models\TrackingCode;
+use App\Models\SystemSetting;
 use App\Models\User;
-use App\Services\ImageService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use DB;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -29,8 +29,9 @@ class ClientService
     }
 
     public function index(
-        string $orderColumn = 'created_at',
-        string $orderDirection = 'asc',
+        ?string $orderColumn = 'created_at',
+        ?string $orderDirection = 'asc',
+        ?int $user_id = null
     ) {
         $allowedColumns = ['created_at', 'tracking_no', 'id'];
         $orderColumn = in_array($orderColumn, $allowedColumns) ? $orderColumn : 'created_at';
@@ -47,15 +48,21 @@ class ClientService
             'socialInfo.relationship',
             'referral',
         ])
-            ->whereHas('recommendation')
-            ->orWhereHas('funeralAssistance', function ($query) {
-                $query->where('forwarded_at', null);
+            ->where(function ($query) {
+                $query
+                    ->whereHas('recommendation')
+                    ->orWhereHas('funeralAssistance', function ($query) {
+                        $query->where('forwarded_at', null);
+                    })
+                    ->orWhereHas('claimant.burialAssistance', function ($query) {
+                        $query->where('status', '!=', 'released');
+                    })
+                    ->orWhereDoesntHave('claimant.burialAssistance')
+                    ->orWhereDoesntHave('funeralAssistance');
             })
-            ->orWhereHas('claimant.burialAssistance', function ($query) {
-                $query->where('status', '!=', 'released');
+            ->when($user_id, function ($query) use ($user_id) {
+                $query->where('user_id', $user_id);
             })
-            ->orWhereDoesntHave('claimant.burialAssistance')
-            ->orWhereDoesntHave('funeralAssistance')
             ->orderBy($orderColumn, $orderDirection)
             ->get()
             ->map(function ($client) {
@@ -81,14 +88,6 @@ class ClientService
                     $status = 'For Libreng Libing';
                 }
 
-                if ($client?->claimant != null) {
-                    $show_route = route('burial.show', $client?->claimant?->burialAssistance);
-                }
-
-                if ($client?->funeralAssistance != null) {
-                    $show_route = route('funeral.show', $client->funeralAssistance);
-                }
-
                 return [
                     'id' => $client->id,
                     'tracking_no' => $client->tracking_no,
@@ -96,7 +95,7 @@ class ClientService
                     'beneficiary' => $client->beneficiary?->fullname(),
                     'status' => $status ?? 'pending',
                     'created_at' => $client->created_at->format('F d, Y'),
-                    'show_route' => $show_route,
+                    'show_route' => route('client.show', $client),
                 ];
             });
     }
@@ -215,7 +214,7 @@ class ClientService
                 'district_id' => $data['district_id'],
                 'barangay_id' => $data['barangay_id'],
                 'city' => $data['city'],
-                'contact_no' => $data['contact_no'],
+                'contact_number' => $data['contact_number'],
             ]);
 
             if ($client) {
@@ -343,7 +342,7 @@ class ClientService
                     'initial_checker' => auth()->user()->id, // TODO ask who is the initial checker
                 ]);
 
-                $claimant = Claimant::create([
+                Claimant::create([
                     'id' => Str::uuid(),
                     'client_id' => $client->id,
                     'burial_assistance_id' => $burialAssistance->id,
@@ -351,15 +350,12 @@ class ClientService
                     'middle_name' => $client->user?->middle_name ?? null,
                     'last_name' => $client->user?->last_name,
                     'suffix' => $client->user?->suffix ?? null,
-                    'relationship_to_deceased' => $client->socialInfo->relationship->id,
-                    'mobile_number' => $client->user?->contact_number,
+                    'date_of_birth' => $client->date_of_birth,
                     'address' => $client->house_no.' '.$client->street,
                     'barangay_id' => $client->barangay_id,
-                ]);
-
-                TrackingCode::create([
-                    'trackable_id' => $burialAssistance->id,
-                    'trackable_type' => get_class($burialAssistance),
+                    'city' => 'Taguig City',
+                    'contact_number' => $client->user?->contact_number,
+                    'relationship_id' => $client->socialInfo?->relationship?->id,
                 ]);
 
                 return $burialAssistance;
@@ -368,11 +364,6 @@ class ClientService
                     'id' => Str::uuid(),
                     'client_id' => $client->id,
                     'remarks' => $client->recommendation->first()->remarks,
-                ]);
-
-                TrackingCode::create([
-                    'trackable_id' => $funeralAssistance->id,
-                    'trackable_type' => get_class($funeralAssistance),
                 ]);
 
                 return $funeralAssistance;
@@ -438,116 +429,219 @@ class ClientService
 
     public function exportGIS($client)
     {
-        $templatePath = storage_path('app/templates/general-intake-form.xlsx');
-        $spreadsheet = IOFactory::load($templatePath);
-        $sheet = $spreadsheet->getActiveSheet();
+        $client = Client::with([
+            'user',
+            'assessment',
+            'demographic',
+            'demographic.sex',
+            'demographic.religion',
+            'demographic.nationality',
+            'socialInfo',
+            'socialInfo.relationship',
+            'socialInfo.civil',
+            'socialInfo.education',
+            'beneficiary',
+            'beneficiary.sex',
+            'beneficiary.barangay',
+            'family',
+            'family.sex',
+            'family.civil',
+            'family.relationship',
+            'recommendation.moa',
+            'referral',
+            'barangay',
+        ])->find($client->id);
+        $beneficiary = $client->beneficiary ?? null;
+        $family = $client->family ?? [];
+        $assessment = $client->assessment?->first() ?? null;
+        $recommendation = $client->recommendation?->first() ?? null;
+        $referral = $client->referral ?? null;
 
-        $sheet->setCellValue(
-            'K4',
-            'Date: '.Carbon::parse($client->created_at)->format('m/d/Y')
-        );
-        $sheet->setCellValue(
-            'E7',
-            $client->fullname()
-        );
-        $sheet->setCellValue('J7', $client->age());
-        $sheet->setCellValue(
-            'L7',
-            $client->gender == 2 ? 'Male' : 'Female'
-        );
-        $sheet->setCellValue('E8', Carbon::parse($client->date_of_birth)->format('F j, Y'));
-        $sheet->setCellValue(
-            'I8',
-            $client->house_no.' '.$client->street.' '.$client->barangay->name.' ,Taguig City'
-        );
-        $sheet->setCellValue('F9', $client->socialInfo->relationship->name);
-        $sheet->setCellValue('K9', $client->socialInfo->civil->name);
-        $sheet->setCellValue('D10', $client->demographic->religion->name);
-        $sheet->setCellValue('H10', $client->demographic->nationality->name);
-        $sheet->setCellValue('L10', $client->socialInfo->education->name);
-        $sheet->setCellValue('E11', $client->socialInfo->skill);
-        $sheet->setCellValue('L11', $client->socialInfo->income);
-        $sheet->setCellValue('E12', $client->socialInfo->philhealth);
-        $sheet->setCellValue('J12', $client->user?->contact_number);
-        $sheet->setCellValue(
-            'E16',
-            $client->beneficiary->first_name.' '.Str::limit($client->beneficiary->middle_name, 1, '.').' '.$client->beneficiary->last_name.($client->beneficiary->suffix ? ' '.$client->beneficiary->suffix : '')
-        );
-        $sheet->setCellValue('J16', $client->beneficiary->gender == 2 ? 'Male' : 'Female');
-        $sheet->setCellValue('E17', Carbon::parse($client->beneficiary->date_of_birth)->format('F j, Y'));
-        $sheet->setCellValue('I17', $client->beneficiary->place_of_birth.' '.$client->beneficiary->barangay->name.' ,Taguig City');
+        $data = [
+            'client' => [
+                [
+                    '1. Client\'s Name' => $client->fullname(),
+                    '2. Age' => $client->age(),
+                    '3. Sex' => $client->demographic?->sex?->name ?? 'N/A',
+                ],
+                [
+                    '4. Date of Birth' => Carbon::parse($client->date_of_birth)->format('F d, Y'),
+                    '5. Present Address' => $client->address(),
+                ],
+                [
+                    '6. Relationship to Beneficiary' => $client->socialInfo?->relationship?->name ?? 'N/A',
+                    '7. Civil Status' => $client->socialInfo?->civil?->name ?? 'N/A',
+                ],
+                [
+                    '8. Religion' => $client->demographic?->religion?->name ?? 'N/A',
+                    '9. Nationality' => $client->demographic?->nationality?->name ?? 'N/A',
+                    '10. Educational Attainment' => $client->socialInfo?->education?->name ?? 'N/A',
+                ],
+                [
+                    '11. Skills/Occupation' => $client->socialInfo?->skill ?? 'N/A',
+                    '12. Estimated Monthly Income' => $client->socialInfo?->income ?? 'N/A',
+                ],
+                [
+                    '13. PhilHealth Number' => $client->socialInfo?->philhealth ?? 'N/A',
+                    '14. Contact Number' => $client->user?->contact_number ?? 'N/A',
+                ],
+            ],
+            'beneficiary' => [
+                [
+                    '1. Beneficiary\'s Name' => $beneficiary?->fullname(),
+                    '2. Sex' => $beneficiary?->sex?->name ?? 'N/A',
+                ],
+                [
+                    '3. Date of Birth' => $beneficiary?->date_of_birth ? Carbon::parse($beneficiary?->date_of_birth)->format('F d, Y') : 'N/A',
+                    '4. Place of Birth' => $beneficiary?->place_of_birth ?? 'N/A',
+                ],
+            ],
+            'assessment' => [
+                'problem_presented' => $assessment?->problem_presented,
+                'swa' => $assessment?->assessment ?? 'N/A',
+            ],
+        ];
 
-        $rowStart = 22;
-        foreach ($client->family as $member) {
-            $sheet->setCellValue("B{$rowStart}", $member->name);
-            $sheet->setCellValue("F{$rowStart}", $member->sex->name);
-            $sheet->setCellValue("G{$rowStart}", $member->age);
-            $sheet->setCellValue("H{$rowStart}", $member->civil->name);
-            $sheet->setCellValue("I{$rowStart}", $member->relationship->name);
-            $sheet->setCellValue("K{$rowStart}", $member->occupation);
-            $sheet->setCellValue("N{$rowStart}", $member->income);
-            $rowStart++;
-        }
+        // return view('pdf.gis-form', [
+        //     'data' => $data,
+        //     'client' => $client,
+        //     'family' => $family,
+        //     'assistances' => \App\Models\Assistance::all(),
+        //     'recommendation' => $recommendation,
+        //     'moa' => \App\Models\ModeOfAssistance::all(),
+        //     'referral' => $referral
+        // ]);
 
-        $sheet->setCellValue(
-            'B29', $client->assessment->first()->problem_presented ?? ''
-        );
-        $sheet->setCellValue(
-            'H29', $client->assessment->first()->assessment ?? ''
-        );
+        $systemSetting = SystemSetting::first();
+        $social_welfare_officer = Str::upper(Str::replace('_', ' ', $systemSetting?->social_welfare_officer ?? ''));
+        $dept_head = Str::upper(Str::replace('_', ' ', $systemSetting?->dept_head ?? ''));
 
-        if ($client->recommendation->count() > 0 && $client->recommendation->first()->moa) {
-            if ($client->recommendation->first()->moa->name == 'Cash') {
-                $sheet->setCellValue(
-                    'I37', '✓ Cash'
-                );
-            } elseif ($client->recommendation->first()->moa->name == 'Check') {
-                $sheet->setCellValue(
-                    'J39', '✓ Check'
-                );
-            } elseif ($client->recommendation->first()->moa->name == 'Guarantee Letter') {
-                $sheet->setCellValue(
-                    'K39', '✓ Guarantee Letter'
-                );
-            }
-        }
+        $pdf = Pdf::loadView('pdf.gis-form', [
+            'data' => $data,
+            'client' => $client,
+            'family' => $family,
+            'assistances' => \App\Models\Assistance::all(),
+            'recommendation' => $recommendation,
+            'moa' => \App\Models\ModeOfAssistance::all(),
+            'referral' => $referral,
+            'social_welfare_officer' => $social_welfare_officer,
+            'dept_head' => $dept_head,
+        ])
+            ->setOption('margin-top', '0')
+            ->setPaper('A4', 'portrait');
 
-        if ($client->recommendation->count() > 0) {
-            if ($client->recommendation->first()->type == 'funeral') {
-                $sheet->setCellValue(
-                    'C47', '✓'
-                );
-                $sheet->setCellValue(
-                    'F47', 'Taguig City Public Cemetery'
-                );
-            } elseif ($client->recommendation->first()->type == 'burial') {
-                $sheet->setCellValue(
-                    'C47', '✓'
-                );
-                $sheet->setCellValue(
-                    'F47', $client->recommendation->first()->referral
-                );
-                $sheet->setCellValue(
-                    'J36', $client->recommendation->first()->amount
-                );
-            }
-        }
+        return $pdf->stream("gis-form-{$client->id}.pdf");
 
-        $sheet->setCellValue(
-            'E55', $client->fullname());
+        // $templatePath = storage_path('app/templates/general-intake-form.xlsx');
+        // $spreadsheet = IOFactory::load($templatePath);
+        // $sheet = $spreadsheet->getActiveSheet();
 
-        $sheet->setCellValue(
-            'E56',
-            $client->address()
-        );
+        // $sheet->setCellValue(
+        //     'K4',
+        //     'Date: '.Carbon::parse($client->created_at)->format('m/d/Y')
+        // );
+        // $sheet->setCellValue(
+        //     'E7',
+        //     $client->fullname()
+        // );
+        // $sheet->setCellValue('J7', $client->age());
+        // $sheet->setCellValue(
+        //     'L7',
+        //     $client->gender == 2 ? 'Male' : 'Female'
+        // );
+        // $sheet->setCellValue('E8', Carbon::parse($client->date_of_birth)->format('F j, Y'));
+        // $sheet->setCellValue(
+        //     'I8',
+        //     $client->house_no.' '.$client->street.' '.$client->barangay->name.' ,Taguig City'
+        // );
+        // $sheet->setCellValue('F9', $client->socialInfo->relationship->name);
+        // $sheet->setCellValue('K9', $client->socialInfo->civil->name);
+        // $sheet->setCellValue('D10', $client->demographic->religion->name);
+        // $sheet->setCellValue('H10', $client->demographic->nationality->name);
+        // $sheet->setCellValue('L10', $client->socialInfo->education->name);
+        // $sheet->setCellValue('E11', $client->socialInfo->skill);
+        // $sheet->setCellValue('L11', $client->socialInfo->income);
+        // $sheet->setCellValue('E12', $client->socialInfo->philhealth);
+        // $sheet->setCellValue('J12', $client->user?->contact_number);
+        // $sheet->setCellValue(
+        //     'E16',
+        //     $client->beneficiary->first_name.' '.Str::limit($client->beneficiary->middle_name, 1, '.').' '.$client->beneficiary->last_name.($client->beneficiary->suffix ? ' '.$client->beneficiary->suffix : '')
+        // );
+        // $sheet->setCellValue('J16', $client->beneficiary->gender == 2 ? 'Male' : 'Female');
+        // $sheet->setCellValue('E17', Carbon::parse($client->beneficiary->date_of_birth)->format('F j, Y'));
+        // $sheet->setCellValue('I17', $client->beneficiary->place_of_birth.' '.$client->beneficiary->barangay->name.' ,Taguig City');
 
-        $filename = $client->fullname().'-General-Intake-Sheet.xlsx';
+        // $rowStart = 22;
+        // foreach ($client->family as $member) {
+        //     $sheet->setCellValue("B{$rowStart}", $member->name);
+        //     $sheet->setCellValue("F{$rowStart}", $member->sex->name);
+        //     $sheet->setCellValue("G{$rowStart}", $member->age);
+        //     $sheet->setCellValue("H{$rowStart}", $member->civil->name);
+        //     $sheet->setCellValue("I{$rowStart}", $member->relationship->name);
+        //     $sheet->setCellValue("K{$rowStart}", $member->occupation);
+        //     $sheet->setCellValue("N{$rowStart}", $member->income);
+        //     $rowStart++;
+        // }
 
-        return response()->streamDownload(function () use ($spreadsheet) {
-            $writer = new Xlsx($spreadsheet);
-            $writer->save('php://output');
-        }, $filename, [
-            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        ]);
+        // $sheet->setCellValue(
+        //     'B29', $client->assessment->first()->problem_presented ?? ''
+        // );
+        // $sheet->setCellValue(
+        //     'H29', $client->assessment->first()->assessment ?? ''
+        // );
+
+        // if ($client->recommendation->count() > 0 && $client->recommendation->first()->moa) {
+        //     if ($client->recommendation->first()->moa->name == 'Cash') {
+        //         $sheet->setCellValue(
+        //             'I37', '✓ Cash'
+        //         );
+        //     } elseif ($client->recommendation->first()->moa->name == 'Check') {
+        //         $sheet->setCellValue(
+        //             'J39', '✓ Check'
+        //         );
+        //     } elseif ($client->recommendation->first()->moa->name == 'Guarantee Letter') {
+        //         $sheet->setCellValue(
+        //             'K39', '✓ Guarantee Letter'
+        //         );
+        //     }
+        // }
+
+        // if ($client->recommendation->count() > 0) {
+        //     if ($client->recommendation->first()->type == 'funeral') {
+        //         $sheet->setCellValue(
+        //             'C47', '✓'
+        //         );
+        //         $sheet->setCellValue(
+        //             'F47', 'Taguig City Public Cemetery'
+        //         );
+        //     } elseif ($client->recommendation->first()->type == 'burial') {
+        //         $sheet->setCellValue(
+        //             'C47', '✓'
+        //         );
+        //         $sheet->setCellValue(
+        //             'F47', $client->recommendation->first()->referral
+        //         );
+        //         $sheet->setCellValue(
+        //             'J36', $client->recommendation->first()->amount
+        //         );
+        //     }
+        // }
+
+        // $sheet->setCellValue(
+        //     'E55', $client->fullname());
+
+        // $sheet->setCellValue(
+        //     'E56',
+        //     $client->address()
+        // );
+
+        // $filename = $client->fullname().'-General-Intake-Sheet.xlsx';
+
+        // return response()->streamDownload(function () use ($spreadsheet) {
+        //     $writer = new Xlsx($spreadsheet);
+        //     $writer->save('php://output');
+        // }, $filename, [
+        //     'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        // ]);
     }
 }

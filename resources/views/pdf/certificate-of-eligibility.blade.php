@@ -99,7 +99,7 @@
     <p style="text-align: justify; margin: 0px 10px 0px 10px; line-height: 1.5">
         {{-- FIXME: age is incorrect, results in 0 --}}
         Pinatutunayan nito na si <strong class="bold underline">{{ $claimant->fullname() }}</strong>,
-        edad <strong class="bold underline">{{ $claimant->client->age() }}</strong>, at kasalukuyang may
+        edad <strong class="bold underline">{{ $claimant->age() }}</strong>, at kasalukuyang may
         pahatirang-sulat
         sa
         <strong class="bold underline">{{ $claimant->address }}, {{ $claimant->barangay->name }}</strong>,
@@ -125,7 +125,7 @@
         <br><br>
         ______________________________
         <br>
-        <strong>EMMA B. REANZARES, RSW</strong>
+        <strong>{{ $social_welfare_officer }}</strong>
         <br>
         Social Welfare Officer III
         <br><br><br><br>
@@ -133,7 +133,7 @@
         <br>
         _______________________________
         <br>
-        <strong>NIKKI ROSE H. OPERARIO, RSW</strong>
+        <strong>{{ $dept_head }}</strong>
         <br>
         City Gov't Dept. Head II, CSWDO
     </p>

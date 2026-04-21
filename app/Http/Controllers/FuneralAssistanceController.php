@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ClientRequest;
 use App\Models\FuneralAssistance;
+use App\Models\SystemSetting;
 use App\Services\DatatableService;
 use App\Services\FuneralAssistanceService;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -27,10 +28,36 @@ class FuneralAssistanceController extends Controller
     public function index()
     {
         $page_title = 'Libreng Libing Applications';
-        $resource = 'funeral-assistances';
-        $renderColumns = ['client_id', 'action'];
-        $data = $this->funeralAssistanceServices->index();
-        $columns = $this->datatableServices->getColumns($data, ['id', 'status', 'show_route']);
+
+        if (auth()->user()->roles()->count() == 0) {
+            $data = $this->funeralAssistanceServices->index(auth()->user()->id);
+        } elseif (auth()->user()->roles()->count() > 0) {
+            $data = $this->funeralAssistanceServices->index();
+            $approvedApplications = FuneralAssistance::where('approved_at', '!=', null)->count();
+            $forwardedApplications = FuneralAssistance::where('forwarded_at', '!=', null)->count();
+
+            $cardData = [
+                [
+                    'label' => 'Total Applications',
+                    'icon' => 'ki-document',
+                    'pathsCount' => 2,
+                    'count' => $data->count(),
+                ],
+                [
+                    'label' => 'Approved Applications',
+                    'icon' => 'ki-file-added',
+                    'pathsCount' => 2,
+                    'count' => $approvedApplications,
+                ],
+                [
+                    'label' => 'Forwarded Applications',
+                    'icon' => 'ki-file-right',
+                    'pathsCount' => 2,
+                    'count' => $forwardedApplications,
+                ],
+            ];
+        }
+        $columns = $this->datatableServices->getColumns($data);
 
         if (request()->expectsJson()) {
             return response()->json([
@@ -38,31 +65,12 @@ class FuneralAssistanceController extends Controller
             ]);
         }
 
-        $approvedApplications = FuneralAssistance::where('approved_at', '!=', null)->count();
-        $forwardedApplications = FuneralAssistance::where('forwarded_at', '!=', null)->count();
-
-        $cardData = [
-            [
-                'label' => 'Total Applications',
-                'icon' => 'ki-document',
-                'pathsCount' => 2,
-                'count' => $data->count(),
-            ],
-            [
-                'label' => 'Approved Applications',
-                'icon' => 'ki-file-added',
-                'pathsCount' => 2,
-                'count' => $approvedApplications,
-            ],
-            [
-                'label' => 'Forwarded Applications',
-                'icon' => 'ki-file-right',
-                'pathsCount' => 2,
-                'count' => $forwardedApplications,
-            ],
-        ];
-
-        return view('funeral.index', compact('data', 'page_title', 'resource', 'renderColumns', 'cardData', 'columns'));
+        return view('funeral.index', [
+            'page_title' => $page_title,
+            'data' => $data,
+            'columns' => $columns,
+            'cardData' => $cardData ?? null,
+        ]);
     }
 
     public function show($id)
@@ -138,12 +146,20 @@ class FuneralAssistanceController extends Controller
 
     public function certificate($id)
     {
-        $funeralAssistance = FuneralAssistance::find($id);
+        $funeralAssistance = FuneralAssistance::findOrFail($id);
         $client = $funeralAssistance->client;
         $title = Str::title($client->first_name).' '.Str::title($client->last_name).'\'s Certification';
+        $systemSetting = SystemSetting::first();
+        $social_welfare_officer = Str::upper(Str::replace('_', ' ', $systemSetting?->social_welfare_officer));
+        $dept_head = Str::upper(Str::replace('_', ' ', $systemSetting?->dept_head));
 
         $pdf = Pdf::loadView('pdf.certification',
-            compact('client', 'title'))
+            compact([
+                'client',
+                'title',
+                'social_welfare_officer',
+                'dept_head',
+            ]))
             ->setPaper('letter', 'portrait');
 
         return $pdf->stream("certification-{$client->id}.pdf");

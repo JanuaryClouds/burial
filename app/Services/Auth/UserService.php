@@ -4,7 +4,6 @@ namespace App\Services\Auth;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Spatie\Permission\Models\Role;
 
 class UserService
 {
@@ -67,8 +66,8 @@ class UserService
             $user->is_active = 0;
             $user->save();
         }
-        
-        if (!isset($data['roles']) || empty($data['roles']) || $data['roles'] == []) {
+
+        if (! isset($data['roles']) || empty($data['roles']) || $data['roles'] == []) {
             $user->roles()->detach();
         } else {
             $user->roles()->sync($data['roles']);

@@ -1,16 +1,13 @@
 @props([
     'route' => null,
-    'active_link' => $route ?? null,
+    'active_link' => null,
     'icon' => null,
     'icon_paths' => 0,
     'text' => null,
+    'long_text' => null,
 ])
-
-<a href="{{ $route ?? '#' }}" data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start"
-    @class([
-        'menu-item',
-        'here' => $active_link ? Route::is($active_link) : false,
-    ])>
+<a href="{{ $route ? $route : '#' }}" data-kt-menu-trigger="{default: 'click', lg: 'hover'}"
+    data-kt-menu-placement="right-start" @class(['menu-item', 'here' => Route::is($active_link)])>
     <span class="menu-link menu-center d-flex flex-column">
         <span class="menu-icon me-0">
             <x-ki-icon :icon_name="$icon" :icon_size="'2x'" :paths_count="$icon_paths" />
@@ -22,7 +19,7 @@
     <div class="menu-sub menu-sub-dropdown px-2 py-4 w-250px mh-75 overflow-auto">
         <div class="menu-item">
             <div class="menu-content">
-                <span class="menu-section fs-5 fw-bolder ps-1 py-1">{{ $text }}</span>
+                <span class="menu-section fs-5 fw-bolder py-1">{{ $long_text ?? $text }}</span>
             </div>
         </div>
     </div>

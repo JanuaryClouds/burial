@@ -32,7 +32,7 @@ class Maintenance
 
             if ($request->routeIs([
                 'landing.page',
-                'client.history',
+                'history',
                 'tracker.match',
                 'tracker.show',
                 'logout',

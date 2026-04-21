@@ -6,6 +6,7 @@ use App\Http\Requests\StoreClaimantChangeRequest;
 use App\Models\BurialAssistance;
 use App\Models\ClaimantChange;
 use App\Models\ProcessLog;
+use App\Models\User;
 use App\Services\CentralClientService;
 use App\Services\ClaimantChangeService;
 use App\Services\ClaimantService;
@@ -31,32 +32,39 @@ class ClaimantChangeController extends Controller
 
     public function store(StoreClaimantChangeRequest $request, $id)
     {
-        $validated = $request->validated();
-
-        if ($validated) {
-            $burialAssistance = BurialAssistance::findOrFail($id);
-            $validated['burial_assistance_id'] = $burialAssistance->id;
-
-            if (! $burialAssistance->claimant) {
-                return redirect()->back()->with('error', 'Unable to find claimant.');
+        try {
+            $new_claimant_email = $request->input('email');
+            if (! $new_claimant = User::where('email', $new_claimant_email)->first()) {
+                return redirect()->back()->with('error', 'The new claimant does not have an account in the system. Please notify them to access this system once with their TLC Portal account to proceed.');
             }
 
-            if ($burialAssistance->status == 'approved' || $burialAssistance->status == 'rejected' || $burialAssistance->status == 'released') {
-                return redirect()->back()->with('error', 'Changing claimant is not allowed in a '.$burialAssistance->status.' status.');
-            }
+            $validated = $request->validated();
 
-            $validated['old_claimant_id'] = $burialAssistance->claimant->id;
-            $validated['id'] = Str::uuid();
+            if ($validated) {
+                $burialAssistance = BurialAssistance::findOrFail($id);
+                $validated['burial_assistance_id'] = $burialAssistance->id;
 
-            $validated['relationship_to_deceased'] = $validated['relationship_id'];
-            $validated['address'] = $validated['house_no'].' '.$validated['street'];
-            $validated['mobile_number'] = $validated['contact_no'];
-            $newClaimant = $this->claimantService->store($validated);
+                if (! $burialAssistance->claimant) {
+                    return redirect()->back()->with('error', 'Unable to find claimant.');
+                }
 
-            $validated['new_claimant_id'] = $newClaimant->id;
-            $claimantChange = $this->claimantChangeService->store($validated);
+                if ($burialAssistance->status == 'approved' || $burialAssistance->status == 'rejected' || $burialAssistance->status == 'released') {
+                    return redirect()->back()->with('error', 'Changing claimant is not allowed in a '.$burialAssistance->status.' status.');
+                }
 
-            if ($claimantChange) {
+                $validated['old_claimant_id'] = $burialAssistance->claimant->id;
+                $validated['id'] = (string) Str::uuid();
+                $validated['first_name'] = $new_claimant->first_name;
+                $validated['middle_name'] = $new_claimant->middle_name ?? null;
+                $validated['last_name'] = $new_claimant->last_name;
+                $validated['suffix'] = $new_claimant->suffix ?? null;
+                $validated['contact_number'] = $new_claimant->contact_number ?? null;
+                $newClaimant = $this->claimantService->store($validated);
+
+                $validated['new_claimant_id'] = $newClaimant->id;
+                $validated['new_claimant_user_id'] = $new_claimant->id;
+                $this->claimantChangeService->store($validated);
+
                 $ip = request()->ip();
                 $browser = request()->header('User-Agent');
                 activity()
@@ -65,11 +73,11 @@ class ClaimantChangeController extends Controller
                     ->log('Request for claimant change submitted by guest');
 
                 return redirect()
-                    ->route('landing.page')
+                    ->route('burial.show', ['id' => $id])
                     ->with('success', 'Your request for claimant change has been submitted successfully. Please wait for the approval.');
-            } else {
-                return redirect()->back()->with('error', 'Failed to submit claimant change.');
             }
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to submit claimant change.'.(app()->hasDebugModeEnabled() ? ': '.$e->getMessage() : ''));
         }
     }
 

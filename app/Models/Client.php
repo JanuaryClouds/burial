@@ -24,18 +24,13 @@ class Client extends Model
         'user_id',
         'citizen_id',
         'tracking_no',
-        // 'first_name',
-        // 'middle_name',
-        // 'last_name',
-        // 'suffix',
-        // 'age',
         'date_of_birth',
         'house_no',
         'street',
         'district_id',
         'barangay_id',
         'city',
-        // 'contact_no',
+        'contact_number',
     ];
 
     protected static function booted()
@@ -77,7 +72,7 @@ class Client extends Model
 
     public function age()
     {
-        return Carbon::parse($this->created_at)->diffInYears($this->date_of_birth);
+        return Carbon::parse($this->date_of_birth)->age;
     }
 
     public function address()

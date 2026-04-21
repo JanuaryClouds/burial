@@ -10,7 +10,7 @@
                         Apply
                     </a>
                     @if (auth()->user()->clients->count() > 0)
-                        <a href="{{ route('client.history') }}" class="btn btn-lg btn-light hover-scale">
+                        <a href="{{ route('history') }}" class="btn btn-lg btn-light hover-scale">
                             History
                         </a>
                     @endif
@@ -25,10 +25,6 @@
                         Register
                     </a>
                 @endauth
-                <button type="button" class="btn btn-secondary btn-lg" data-bs-toggle="modal"
-                    data-bs-target="#trackAssistanceModal">
-                    Track Assistance
-                </button>
             </div>
         </div>
     </div>

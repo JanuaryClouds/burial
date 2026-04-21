@@ -48,3 +48,13 @@
         )
     </script>
 @endif
+@if ($errors->any())
+    <script nonce="{{ $nonce ?? '' }}">
+        sweetalert(
+            'Form Error',
+            'error',
+            'The submitted form has missing fields or has invalid data.',
+            true
+        )
+    </script>
+@endif

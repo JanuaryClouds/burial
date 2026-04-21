@@ -24,11 +24,61 @@
                 'burial.partials.process-update-modal')
             @include('burial.partials.reject-modal')
         @endcan
+        @if (
+            !$data->claimantChanges()->exists() &&
+                auth()->user()->can('create', [App\Models\ClaimantChange::class, $data]))
+            @include('burial.partials.claimant-change-form')
+        @endif
+        @cannot('manage-content')
+            <div class="card mt-10">
+                <div class="card-body">
+                    @include('client.partials.swa-form', [
+                        'application' => $data,
+                        'readonly' => $readonly,
+                    ])
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    @include('burial.partials.claimant-form', [
+                        'claimant' => $data->hasApprovedClaimantChange()
+                            ? $data->newClaimant()
+                            : $data->originalClaimant(),
+                        'readonly' => $readonly,
+                    ])
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    @include('client.partials.beneficiary-info', [
+                        'client' => $data->originalClaimant()?->client,
+                        'readonly' => $readonly,
+                    ])
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    @include('burial.partials.details-form', [
+                        'burialAssistance' => $data,
+                        'readonly' => $readonly,
+                    ])
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    @include('client.partials.documents', [
+                        'client' => $data->originalClaimant()?->client,
+                        'readonly' => true,
+                    ])
+                </div>
+            </div>
+        @endcannot
         @can('manage-content')
-            <form action="{{ route('burial.update', $data->id) }}" method="post" id="contentForm" class="d-flex flex-column gap-4">
+            <form action="{{ route('burial.update', $data->id) }}" method="post" id="contentForm"
+                class="d-flex flex-column gap-4">
                 @csrf
                 @method('PUT')
-                <div class="card">
+                <div class="card mt-10">
                     <div class="card-body">
                         @include('client.partials.swa-form', [
                             'application' => $data,

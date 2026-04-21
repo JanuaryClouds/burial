@@ -12,19 +12,15 @@
     <!--begin::Menu-->
     <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-title-gray-700 menu-icon-gray-500 menu-active-bg menu-state-color fw-semibold py-4 fs-base w-100 overflow-y-scroll mt-20"
         data-kt-menu="true" style="">
-        <div class="menu-item px-3 my-0">
+        <div class="menu-item">
             <a href="{{ route('dashboard') }}" @class([
                 'active' => Route::is('dashboard'),
                 'menu-link',
-                'px-3',
-                'py-2',
             ])>
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                 </span>
-                <span class="menu-title">
-                    Dashboard
-                </span>
+                <span class="menu-title">Dashboard</span>
             </a>
         </div>
         <div class="menu-item">
@@ -69,14 +65,6 @@
                         Content Management System
                     </span>
                 </div>
-            </div>
-            <div class="menu-item">
-                <a href="{{ route('barangay.index') }}" @class(['active' => Route::is('barangay.*'), 'menu-link'])>
-                    <span class="menu-bullet">
-                        <span class="bullet bullet-dot"></span>
-                    </span>
-                    <span class="menu-title">Barangays</span>
-                </a>
             </div>
             <div class="menu-item">
                 <a href="{{ route('relationship.index') }}" @class(['active' => Route::is('relationship.*'), 'menu-link'])>

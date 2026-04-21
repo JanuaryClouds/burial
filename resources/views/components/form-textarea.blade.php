@@ -14,7 +14,7 @@
 @endphp
 
 <div class="mb-3">
-    <label for="{{ $name ?? $id }}" class="form-label">{{ $label }}</label>
+    <label for="{{ $name ?? $id }}" class="form-label">{{ $label }}{{ $required ? '*' : '' }}</label>
     <textarea {{ $attributes->merge(['class' => 'form-control' . $isInactive]) }} name="{{ $name }}"
         id="{{ $id ?? $name }}" value="" rows="3" {{ $required ? 'required' : '' }}
         {{ $readonly ? 'readonly' : '' }} {{ $disabled ? 'disabled' : '' }}>{{ old($name, $value) }}</textarea>

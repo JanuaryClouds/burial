@@ -21,6 +21,7 @@ return new class extends Migration
             $table->foreignId('district_id')->constrained('districts');
             $table->foreignId('barangay_id')->constrained('barangays');
             $table->string('city')->default('Taguig City');
+            $table->string('contact_number');
             $table->timestamps();
         });
     }

@@ -18,18 +18,25 @@ class RolePermissionSeeder extends Seeder
             'create-assessments',
             'create-recommendations',
             'create-referrals',
-            
+
             // Burial Assistance Models
+            'view-burial-assistances',
+            'create-burial-assistances',
             'create-updates',
             'create-claimant-change-requests',
             'edit-claimant-change-requests',
             'delete-updates',
 
+            // Libreng Libing
+            'create-libreng-libings',
+            'view-libreng-libings',
+            'update-libreng-libings',
+
             // Reports
             'create-reports',
             'view-reports',
         ];
-            
+
         $otherPermissions = [
             // Logs
             'view-logs',
@@ -56,7 +63,7 @@ class RolePermissionSeeder extends Seeder
         }
 
         Role::firstOrCreate(['name' => 'superadmin']);
-        
+
         $staffRole = Role::firstOrCreate(['name' => 'staff']);
         $staffRole->givePermissionTo($staffPermissions);
     }

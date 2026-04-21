@@ -215,14 +215,14 @@ class ReportController extends Controller
         $data = Claimant::with([
             'relationship',
             'barangay',
-        ])->select('first_name', 'middle_name', 'last_name', 'suffix', 'relationship_to_deceased', 'mobile_number', 'address', 'barangay_id')
+        ])->select('first_name', 'middle_name', 'last_name', 'suffix', 'relationship_to_deceased', 'contact_number', 'address', 'barangay_id')
             ->whereBetween('created_at', [$startDate, $endDate])
             ->get()
             ->map(function ($claimant) {
                 return [
                     'full_name' => $claimant->fullname(),
-                    'mobile_number' => $claimant->mobile_number,
-                    'address' => $claimant->address.$claimant->barangay ? ', '.$claimant->barangay->name : '',
+                    'contact_number' => $claimant->contact_number,
+                    'address' => $claimant->address.($claimant->barangay ? ', '.$claimant->barangay->name : ''),
                     'relationship_to_deceased' => $claimant->relationship?->name,
                 ];
             });

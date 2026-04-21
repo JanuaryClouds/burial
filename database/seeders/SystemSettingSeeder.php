@@ -16,6 +16,8 @@ class SystemSettingSeeder extends Seeder
         SystemSetting::create([
             'uuid' => Str::uuid()->toString(),
             'maintenance_mode' => false,
+            'dept_head' => env('SYSTEM_DEPT_HEAD', ''),
+            'social_welfare_officer' => env('SYSTEM_SOCIAL_WELFARE_OFFICER', ''),
         ]);
     }
 }

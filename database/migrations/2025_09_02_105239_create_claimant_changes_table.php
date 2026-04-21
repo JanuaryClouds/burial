@@ -18,6 +18,8 @@ return new class extends Migration
                 ->constrained('burial_assistances', 'id')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
+
+            // TODO overhaul to use user as new claimant
             $table->foreignUuid('old_claimant_id')
                 ->nullable()
                 ->constrained('claimants', 'id')
@@ -25,6 +27,10 @@ return new class extends Migration
                 ->onUpdate('cascade');
             $table->foreignUuid('new_claimant_id')
                 ->constrained('claimants', 'id')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
+            $table->foreignId('new_claimant_user_id')
+                ->constrained('users', 'id')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
             $table->dateTime('changed_at')->nullable();

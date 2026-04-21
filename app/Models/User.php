@@ -30,6 +30,11 @@ class User extends Authenticatable
     ];
 
     protected $casts = [
+        'first_name' => 'encrypted',
+        'middle_name' => 'encrypted',
+        'last_name' => 'encrypted',
+        'suffix' => 'encrypted',
+        'contact_number' => 'encrypted',
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
@@ -62,5 +67,10 @@ class User extends Authenticatable
     public function assignedTo()
     {
         return $this->hasMany(BurialAssistance::class, 'assigned_to', 'id');
+    }
+
+    public function claimantChange()
+    {
+        return $this->hasMany(ClaimantChange::class, 'new_claimant_user_id', 'id');
     }
 }

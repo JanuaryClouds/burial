@@ -40,7 +40,7 @@ class ChequeController extends Controller
                     return [
                         'tracking_no' => $claimant->client?->tracking_no,
                         'claimant' => $claimant->fullname(),
-                        'mobile_number' => $claimant->mobile_number,
+                        'contact_number' => $claimant->contact_number,
                         'address' => $claimant->address(),
                         'cheque_number' => $claimant->cheque ? $claimant->cheque->cheque_number : 'N/A',
                     ];

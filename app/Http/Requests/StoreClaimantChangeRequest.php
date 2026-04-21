@@ -14,6 +14,43 @@ class StoreClaimantChangeRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'email' => $this->normalizeEmail($this->email),
+            'address' => $this->clean($this->address),
+        ]);
+    }
+
+    private function clean(?string $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+        $value = trim($value);
+        $value = preg_replace('/\s+/u', ' ', $value);
+
+        return $value;
+    }
+
+    private function normalizePhone(?string $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        return preg_replace('/\D+/', '', $value);
+    }
+
+    private function normalizeEmail(?string $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        return mb_strtolower(trim($value));
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -23,27 +60,12 @@ class StoreClaimantChangeRequest extends FormRequest
     {
         return [
             'reason_for_change' => 'required|string|max:255',
-            'first_name' => 'required|string|max:255',
-            'middle_name' => 'nullable|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'suffix' => 'nullable|string|max:64',
+            'email' => 'required|string|email|max:255|exists:users,email',
             'date_of_birth' => 'required|date',
-            'house_no' => 'required|string|max:20',
-            'street' => 'required|string|max:255',
-            'district_id' => 'required|numeric|exists:districts,id',
+            'address' => 'required|string|max:255',
             'barangay_id' => 'required|numeric|exists:barangays,id',
             'city' => 'required|string|max:50',
-            'contact_no' => 'required|string|max:11',
-            'sex_id' => 'required|numeric|exists:sexes,id',
-            'religion_id' => 'required|numeric|exists:religions,id',
-            'nationality_id' => 'required|numeric|exists:nationalities,id',
             'relationship_id' => 'required|numeric|exists:relationships,id',
-            'education_id' => 'nullable|numeric|exists:educations,id',
-            'civil_id' => 'required|numeric|exists:civil_statuses,id',
-            'income' => 'nullable|string|max:255',
-            'philhealth' => 'nullable|string|max:255',
-            'skill' => 'nullable|string|max:255',
-            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ];
     }
 }

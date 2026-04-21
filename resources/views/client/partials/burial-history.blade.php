@@ -1,6 +1,6 @@
 <ul class="list-group list-group-flush fs-4 gap-4">
     @if (!$records->contains(fn($c) => $c->claimant !== null))
-        <li class="list-group-item">No Requested Burial Assistances</li>
+        <li class="list-group-item bg-body-secondary rounded-pill">No Requested Burial Assistances</li>
     @else
         @php
             $clients = $records->filter(fn($client) => $client->claimant)->values();

@@ -11,24 +11,18 @@
             </p>
             <div class="alert alert-danger" role="alert">
                 <strong>Note:</strong>
-                Changing claimants will still register your account as the client. To allow the new claimant to track
-                this
-                assistance. Ensure tracker sharing is enabled.
+                Before submitting, make sure the new claimant has accessed this site once through the TLC portal app and
+                they have logged in.
             </div>
             <div class="alert alert-danger" role="alert">
                 <strong>Note:</strong>
                 Changing claimants can only be done once.
             </div>
-            <div class="card">
-                <div class="card-header">
-                    <h4 class="card-title">New Claimant Information</h4>
-                </div>
-                <div class="card-body">
-                    @include('client.partials.client-info')
-                    <x-form-textarea name="reason_for_change" required="true" label="Reason for Changing Claimants" />
-                </div>
-                {{-- TODO double check if new claimant needs to upload photos --}}
-            </div>
+            @include('burial.partials.claimant-form', [
+                'readonly' => false,
+                'claimant_change' => true,
+            ])
+            <x-form-textarea name="reason_for_change" :required="true" label="Reason for Changing Claimants" />
         </div>
         <div class="card-footer d-flex justify-content-end">
             <button type="button" class="btn btn-primary" data-bs-toggle="modal"
@@ -52,8 +46,8 @@
             <div class="modal-body">
                 <p class="card-text fs-3">Are you sure you want to change claimants of the assistance?
                     You can only request a change of claimants once. Providing insufficient or
-                    incorrect information will lead to rejection of this request. Please double
-                    check your provided information regarding the new claimant before confirming.
+                    incorrect information will lead to rejection of this request. Please make sure the new claimant has
+                    accessed this system through the TLC Portal once.
                 </p>
             </div>
             <div class="modal-footer">
@@ -67,9 +61,9 @@
 </div>
 
 <script nonce="{{ $nonce ?? '' }}">
-    document.getElementById('confirmClaimantChangeBtn').addEventListener('click', function() {
-        this.disabled = true;
-        this.textContent = 'Submitting...';
-        document.getElementById('changeClaimantForm').submit();
+    $('#confirmClaimantChangeBtn').on('click', function() {
+        $(this).prop('disabled', true);
+        $(this).text('Please wait...');
+        $('#changeClaimantForm').submit();
     });
 </script>

@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Referral;
 use App\Http\Requests\StoreReferralRequest;
 use App\Http\Requests\UpdateReferralRequest;
+use App\Models\Referral;
 use App\Services\ReferralService;
 
 class ReferralController extends Controller
@@ -39,9 +39,10 @@ class ReferralController extends Controller
     {
         try {
             $this->referralServices->store($request->validated(), $client_id);
+
             return redirect()->back()->with('success', 'Referral created successfully.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Failed to create a referral.' . (app()->hasDebugModeEnabled() ? ': ' . $e->getMessage() : ''));
+            return redirect()->back()->with('error', 'Failed to create a referral.'.(app()->hasDebugModeEnabled() ? ': '.$e->getMessage() : ''));
         }
     }
 

@@ -7,8 +7,9 @@ use App\Models\FuneralAssistance;
 class FuneralAssistanceService
 {
     public function index(
-        string $orderColumn = 'created_at',
-        string $orderDirection = 'asc',
+        ?int $user_id = null,
+        ?string $orderColumn = 'created_at',
+        ?string $orderDirection = 'asc',
     ) {
         $allowedColumns = ['created_at', 'id'];
         $allowedDirections = ['asc', 'desc'];
@@ -16,7 +17,12 @@ class FuneralAssistanceService
         $orderColumn = in_array($orderColumn, $allowedColumns) ? $orderColumn : 'created_at';
         $orderDirection = in_array(strtolower($orderDirection), $allowedDirections) ? $orderDirection : 'asc';
 
-        return FuneralAssistance::with(['client', 'client.beneficiary'])
+        return FuneralAssistance::with(['client', 'client.beneficiary', 'client.user'])
+            ->when($user_id, function ($query) use ($user_id) {
+                $query->whereHas('client', function ($q) use ($user_id) {
+                    $q->where('user_id', $user_id);
+                });
+            })
             ->orderBy($orderColumn, $orderDirection)
             ->get()
             ->map(function ($application) {

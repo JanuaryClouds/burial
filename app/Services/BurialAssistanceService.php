@@ -8,16 +8,47 @@ use Str;
 class BurialAssistanceService
 {
     public function index(
-        ?string $status = null,
+        ?int $user_id = null
     ) {
-        return BurialAssistance::where(function ($query) use ($status) {
-            if ($status !== null && $status != 'all') {
-                return $query->where('status', $status);
-            }
-        })
-            ->with([
-                'claimant.client.user',
-            ])
+        return BurialAssistance::with([
+            'claimant.client.user',
+            'claimantChanges',
+            'claimantChanges.user',
+            'claimantChanges.oldClaimant.client.user',
+        ])
+            ->when($user_id, function ($query) use ($user_id) {
+                $query->where(function ($q) use ($user_id) {
+                    // CASE A: No claimant change requested
+                    $q->whereDoesntHave('claimantChanges', function () {})
+                        ->whereHas('claimant.client.user', function ($subQ) use ($user_id) {
+                            $subQ->where('id', $user_id);
+                        });
+                })
+                    ->orWhere(function ($q) use ($user_id) {
+                        // CASE B: Claimant change requested
+                        $q->whereHas('claimantChanges', function ($cc) use ($user_id) {
+                            $cc->where(function ($ccInner) use ($user_id) {
+                                // APPROVED → both old and new claimant
+                                $ccInner->where('status', 'approved')
+                                    ->where(function ($approvedUsers) use ($user_id) {
+                                        $approvedUsers
+                                            ->whereHas('oldClaimant.client.user', function ($q) use ($user_id) {
+                                                $q->where('id', $user_id);
+                                            })
+                                            ->orWhereHas('user', function ($q) use ($user_id) {
+                                                $q->where('id', $user_id);
+                                            });
+                                    });
+                            })->orWhere(function ($ccInner) use ($user_id) {
+                                // PENDING / REJECTED → only original claimant
+                                $ccInner->whereIn('status', ['pending', 'rejected'])
+                                    ->whereHas('oldClaimant.client.user', function ($q) use ($user_id) {
+                                        $q->where('id', $user_id);
+                                    });
+                            });
+                        });
+                    });
+            })
             ->get()
             ->map(function ($application) {
                 $claimantChange = $application->claimantChanges()->first();
@@ -36,7 +67,7 @@ class BurialAssistanceService
                     'id' => $application->id,
                     'tracking_no' => $application->originalClaimant()->client?->tracking_no,
                     'claimant' => $claimant?->fullname(),
-                    'contact_number' => $claimant?->mobile_number,
+                    'contact_number' => $claimant?->contact_number,
                     'beneficiary' => $application->beneficiary()?->fullname(),
                     'status' => $status,
                     'show_route' => route('burial.show', $application),

@@ -102,9 +102,7 @@
             sakop ng <strong>Programang Benepisyo sa Pagpapalibing</strong>.
         </p>
         <p style="text-indent: 3em">
-            PINATUTUNAYAN din na si <strong class="underline">{{ $client->first_name }}
-                {{ $client->middle_name ? \Str::limit($client?->middle_name, 1, '.') : '' }}
-                {{ $client->last_name }}</strong>
+            PINATUTUNAYAN din na si <strong class="underline">{{ $client->fullname() }}</strong>
             (<i>aplikante</i>) ay may angkop na ugnayan sa namatay, at karapat-dapat ng tumanggap ng benepisyo.
         </p>
         <p style="text-indent: 3em;">
@@ -120,7 +118,7 @@
             Nilagdaan:
         </p>
         <p style="margin: 0px 0px 0px 400px;">
-            <strong>EMMA B. REANZARES, RSW</strong>
+            <strong>{{ $social_welfare_officer }}</strong>
             <br>
             Social Welfare Officer III
             <br>
@@ -134,7 +132,7 @@
             Pinagtibay ni:
         </p>
         <p style="margin: 0px 0px 0px 400px;">
-            <strong>NIKKI ROSE H. OPERARIO, RSW</strong>
+            <strong>{{ $dept_head }}</strong>
             <br>
             Department Head II
             <br>

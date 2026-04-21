@@ -25,20 +25,20 @@ Route::middleware('permission:view-reports')
 
         Route::prefix('export')
             ->middleware('permission:create-reports')
-            ->group( function () {
+            ->group(function () {
                 Route::post('/clients/{startDate}/{endDate}', [ClientController::class, 'generatePdfReport'])
                     ->name('clients.pdf');
-        
+
                 Route::post('/beneficiaries/{startDate}/{endDate}', [BeneficiaryController::class, 'generatePdfReport'])
                     ->name('beneficiaries.pdf');
-        
+
                 Route::post('/funeral-assistances/{startDate}/{endDate}', [FuneralAssistanceController::class, 'generatePdfReport'])
                     ->name('funerals.pdf');
-        
+
                 Route::post('/burial-assistances/{startDate}/{endDate}', [BurialAssistanceController::class, 'generatePdfReport'])
                     ->name('burial-assistances.pdf');
-        
+
                 Route::post('/cheques/{startDate}/{endDate}', [ChequeController::class, 'generatePdfReport'])
                     ->name('cheques.pdf');
-        });
+            });
     });

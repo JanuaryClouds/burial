@@ -16,6 +16,7 @@ class ClaimantChange extends Model
         'changed_at',
         'status',
         'reason_for_change',
+        'new_claimant_user_id',
     ];
 
     protected $table = 'claimant_changes';
@@ -33,5 +34,10 @@ class ClaimantChange extends Model
     public function newClaimant()
     {
         return $this->belongsTo(Claimant::class, 'new_claimant_id', 'id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'new_claimant_user_id', 'id');
     }
 }

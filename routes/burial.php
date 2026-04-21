@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 Route::name('burial.')
     ->prefix('burial')
     ->group(function () {
-        Route::get('/list/{status}', [BurialAssistanceController::class, 'index'])
+        Route::get('/', [BurialAssistanceController::class, 'index'])
             ->name('index');
 
         Route::get('/{id}', [BurialAssistanceController::class, 'show'])

@@ -17,7 +17,6 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Storage;
 use Str;
 
 class ClientController extends Controller
@@ -45,10 +44,45 @@ class ClientController extends Controller
     public function index()
     {
         $page_title = 'Clients';
-        $resource = 'client';
 
-        $data = $this->clientServices->index('tracking_no', 'asc');
-        $columns = $this->datatableServices->getColumns($data, ['id', 'status', 'show_route']);
+        if (auth()->user()->roles()->count() == 0) {
+            $data = $this->clientServices->index('tracking_no', 'asc', auth()->user()->id);
+            $columns = $this->datatableServices->getColumns($data, ['client']);
+        } elseif (auth()->user()->roles()->count() > 0) {
+            $data = $this->clientServices->index('tracking_no', 'asc');
+            $columns = $this->datatableServices->getColumns($data, []);
+
+            $clientsWithInterview = Client::has('interviews')->count();
+            $clientsWithAssessments = Client::has('assessment')->count();
+            $clientsWithRecommendation = Client::has('recommendation')->count();
+
+            $cardData = [
+                [
+                    'label' => 'Total Clients',
+                    'icon' => 'ki-people',
+                    'pathsCount' => 5,
+                    'count' => Client::count(),
+                ],
+                [
+                    'label' => 'Clients with Interviews',
+                    'icon' => 'ki-note-2',
+                    'pathsCount' => 4,
+                    'count' => $clientsWithInterview,
+                ],
+                [
+                    'label' => 'Clients with Assessments',
+                    'icon' => 'ki-brifecase-tick',
+                    'pathsCount' => 3,
+                    'count' => $clientsWithAssessments,
+                ],
+                [
+                    'label' => 'Clients With Recommendation',
+                    'icon' => 'ki-file-added',
+                    'pathsCount' => 2,
+                    'count' => $clientsWithRecommendation,
+                ],
+            ];
+        }
 
         if (request()->expectsJson()) {
             return response()->json([
@@ -56,44 +90,12 @@ class ClientController extends Controller
             ]);
         }
 
-        $clientsWithInterview = Client::has('interviews')->count();
-        $clientsWithAssessments = Client::has('assessment')->count();
-        $clientsWithRecommendation = Client::has('recommendation')->count();
-
-        $cardData = [
-            [
-                'label' => 'Total Clients',
-                'icon' => 'ki-people',
-                'pathsCount' => 5,
-                'count' => Client::select('id')->get()->count(),
-            ],
-            [
-                'label' => 'Clients with Interviews',
-                'icon' => 'ki-note-2',
-                'pathsCount' => 4,
-                'count' => $clientsWithInterview,
-            ],
-            [
-                'label' => 'Clients with Assessments',
-                'icon' => 'ki-brifecase-tick',
-                'pathsCount' => 3,
-                'count' => $clientsWithAssessments,
-            ],
-            [
-                'label' => 'Clients With Recommendation',
-                'icon' => 'ki-file-added',
-                'pathsCount' => 2,
-                'count' => $clientsWithRecommendation,
-            ],
-        ];
-
-        return view('client.index', compact(
-            'page_title',
-            'cardData',
-            'resource',
-            'columns',
-            'data'
-        ));
+        return view('client.index', [
+            'page_title' => $page_title,
+            'columns' => $columns,
+            'data' => $data,
+            'cardData' => $cardData ?? null,
+        ]);
     }
 
     public function show(Client $client)
@@ -126,6 +128,7 @@ class ClientController extends Controller
     public function create()
     {
         $documents = DocumentRequirement::burial();
+        $page_title = 'New Application';
         $citizen = session('citizen');
         $matched = [];
 
@@ -149,6 +152,7 @@ class ClientController extends Controller
 
         return view('client.create', compact(
             'matched',
+            'page_title'
         ));
     }
 
@@ -169,10 +173,10 @@ class ClientController extends Controller
                 ->log('Added the client details: '.$client?->id.(($result['uploadError'] ?? false) ? ' images failed to upload' : ''));
 
             return redirect()
-                ->route('landing.page')
-                ->with('success', 'Client information added successfully!'. (($result['uploadError'] ?? false) ? ' However, some images failed to upload.' : '') .' Please remember to bring hard copies of the submitted documents during the interview at the CSWDO Office.');
+                ->route('client.show', $client)
+                ->with('success', 'Client information added successfully!'.(($result['uploadError'] ?? false) ? ' However, some images failed to upload.' : '').' Please remember to bring hard copies of the submitted documents during the interview at the CSWDO Office.');
         } catch (Exception $e) {
-            return redirect()->back()->with('error', 'Failed to add client information!' . (app()->hasDebugModeEnabled() ? ': ' . $e->getMessage() : ''));
+            return redirect()->back()->with('error', 'Failed to add client information!'.(app()->hasDebugModeEnabled() ? ': '.$e->getMessage() : ''));
         }
     }
 

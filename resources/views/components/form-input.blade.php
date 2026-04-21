@@ -11,13 +11,17 @@
     'readonly' => false,
     'min' => null,
     'autocomplete' => false,
+    'errorname' => null,
 ])
 
 @php
     $isInactive = $disabled ? ' bg-body text-gray-700' : '';
-    $errorname = $name;
-    if (str_contains($name, '[')) {
-        $errorname = str_replace('[', '.', str_replace(']', '', $name));
+    if ($errorname == null) {
+        if (str_contains($name, '[')) {
+            $errorname = str_replace('[', '.', str_replace(']', '', $name));
+        } else {
+            $errorname = $name;
+        }
     }
 @endphp
 
@@ -32,10 +36,10 @@
         {{ $required ? 'required' : '' }} {{ $disabled ? 'disabled' : '' }} {{ $readonly ? 'readonly' : '' }}
         {{ $min ? 'min=' . $min : '' }} autocomplete="{{ $autocomplete ? 'on' : 'off' }}" />
 
+    @error($errorname)
+        <small class="form-text text-danger me-2">{{ $message }}.</small>
+    @enderror
     @if ($helpText)
         <small id="helpId" class="form-text text-muted">{{ $helpText }}</small>
     @endif
-    @error($errorname)
-        <small class="form-text text-danger">{{ $message }}</small>
-    @enderror
 </div>

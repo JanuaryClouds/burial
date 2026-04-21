@@ -31,14 +31,6 @@
             </div>
         </div>
         <div class="menu-item">
-            <a href="{{ route('barangay.index') }}" @class(['active' => Route::is('barangay.*'), 'menu-link'])>
-                <span class="menu-bullet">
-                    <span class="bullet bullet-dot"></span>
-                </span>
-                <span class="menu-title">Barangays</span>
-            </a>
-        </div>
-        <div class="menu-item">
             <a href="{{ route('relationship.index') }}" @class(['active' => Route::is('relationship.*'), 'menu-link'])>
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>

@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreBurialAssistanceRequest;
 use App\Models\Barangay;
 use App\Models\BurialAssistance;
+use App\Models\Relationship;
 use App\Models\Religion;
+use App\Models\SystemSetting;
 use App\Services\BurialAssistanceService;
 use App\Services\DatatableService;
 use App\Services\ProcessLogService;
@@ -37,16 +39,16 @@ class BurialAssistanceController extends Controller
         $this->workflowStepServices = $workflowStepService;
     }
 
-    public function index($status = null)
+    public function index()
     {
         $page_title = 'Burial Assistance Applications';
         $resource = 'burial';
-        if (!in_array($status, ['all', 'pending', 'processing', 'for_pickup', 'released', 'rejected'])) {
-            abort(404);
+
+        if (auth()->user()->roles()->count() == 0) {
+            $user_id = auth()->user()->id;
         }
 
-        if ($status == 'for_pickup') $status = 'approved';
-        $data = $this->burialAssistanceServices->index($status);
+        $data = $this->burialAssistanceServices->index($user_id ?? null);
         $columns = $this->datatableServices->getColumns($data, ['id', 'status', 'show_route']);
 
         if (request()->expectsJson()) {
@@ -55,17 +57,10 @@ class BurialAssistanceController extends Controller
             ]);
         }
 
-        $statusOptions = $data->pluck('status')->unique()->values()->toArray();
-
-        $barangays = Barangay::select('id', 'name')->get();
-
         return view('burial.index', compact([
             'resource',
             'data',
             'columns',
-            'status',
-            'barangays',
-            'statusOptions',
             'page_title',
         ]));
     }
@@ -76,11 +71,11 @@ class BurialAssistanceController extends Controller
             $data = BurialAssistance::findOrFail($id);
             $client = $data->originalClaimant()->client;
             if (! $client) {
-                throw new Exception('Client not found');
+                abort(404);
             }
-            $page_title = 'Manage '.$client->tracking_no;
+            $page_title = $client->tracking_no;
             $page_subtitle = $client->fullname()."'s Burial Assistance Application";
-            $readonly = auth()->user()->cannot('manage-content') && $data->status != 'released';
+            $readonly = auth()->user()->cannot('manage-content') && $data->status == 'released';
 
             $timeline = $this->processLogServices->timeline($data);
             if ($data->claimantChanges()->first() && $data->claimantChanges()->first()->status == 'approved') {
@@ -89,16 +84,16 @@ class BurialAssistanceController extends Controller
 
             $next_step = $this->workflowStepServices->nextStep($data);
             $progress = $this->workflowStepServices->progress($data);
-
-            if (app()->hasDebugModeEnabled()) {
-                session()->put('code', $data->tracker->uuid);
-            }
+            $show_certificate = $next_step == null && $data->status == 'approved';
+            $relationships = Relationship::select('id', 'name')->get();
 
             return view('burial.show', compact([
                 'data',
+                'relationships',
                 'progress',
                 'timeline',
                 'next_step',
+                'show_certificate',
                 'page_title',
                 'page_subtitle',
                 'readonly',
@@ -231,12 +226,29 @@ class BurialAssistanceController extends Controller
 
     public function certificate($id)
     {
-        $assistance = BurialAssistance::find($id);
-        $claimant = $assistance->claimant;
+        $assistance = BurialAssistance::findOrFail($id);
+
+        if ($assistance->status != 'released' && app()->isProduction()) {
+            abort(404);
+        }
+
+        if ($assistance->hasApprovedClaimantChange()) {
+            $claimant = $assistance->newClaimant();
+        } else {
+            $claimant = $assistance->originalClaimant();
+        }
+
         $title = Str::title($claimant->first_name).' '.Str::title($claimant->last_name).'\'s Certificate of Eligibility';
+        $social_welfare_officer = Str::upper(Str::replace('_', ' ', SystemSetting::first()?->social_welfare_officer));
+        $dept_head = Str::upper(Str::replace('_', ' ', SystemSetting::first()?->dept_head));
 
         $pdf = Pdf::loadView('pdf.certificate-of-eligibility',
-            compact('claimant', 'title'))
+            compact([
+                'claimant',
+                'title',
+                'social_welfare_officer',
+                'dept_head',
+            ]))
             ->setPaper('letter', 'portrait');
 
         return $pdf->stream("certificate-of-eligibility-{$claimant->first_name}-{$claimant->last_name}.pdf");

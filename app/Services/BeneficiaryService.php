@@ -6,7 +6,7 @@ use App\Models\Beneficiary;
 
 class BeneficiaryService
 {
-    public function index()
+    public function index(?int $user_id = null)
     {
         return Beneficiary::with([
             'client',
@@ -14,6 +14,12 @@ class BeneficiaryService
             'client.funeralAssistance',
             'religion',
         ])
+            ->when($user_id, function ($query) use ($user_id) {
+                $query->whereHas('client', function ($q) use ($user_id) {
+                    $q->where('user_id', $user_id);
+                });
+            })
+            ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($beneficiary) {
                 $assistance = 'Pending';

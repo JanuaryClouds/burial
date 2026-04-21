@@ -7,24 +7,17 @@ use App\Models\User;
 
 class BurialAssistancePolicy
 {
-    /**
-     * Create a new policy instance.
-     */
-    public function __construct()
+    public function viewAny(User $user)
     {
-        //
+        return $user->can('view-burial-assistances');
     }
 
     public function view(User $user, BurialAssistance $burialAssistance)
     {
-        if ($user->id === $burialAssistance->claimant->client->user->id) {
+        if ($user->can('view-burial-assistances')) {
             return true;
-        } else {
-            if ($user->hasAnyRole(['admin', 'superadmin'])) {
-                return true;
-            }
         }
 
-        return false;
+        return $user->id == $burialAssistance->originalClaimant()->client->user_id;
     }
 }

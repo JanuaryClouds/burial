@@ -7,7 +7,7 @@
             class="page-title d-flex flex-column align-items-start justify-content-center flex-wrap me-lg-20 py-3 py-lg-0 me-3">
             <!--begin::Heading-->
             <h1 class="d-flex flex-column text-gray-900 fw-bold my-1">
-                <span class="text-white fs-1">
+                <span class="text-white fs-1" id="pageTitle">
                     {{ $page_title ?? 'CSWDO - Funeral Assistance' }}
                     @if (Route::is('*.show') && ($readonly ?? false))
                         <i class="ki-duotone ki-lock-3"></i>
@@ -58,9 +58,9 @@
                                     {{ auth()->user()->first_name . ' ' . auth()->user()->last_name }}
                                 </div>
 
-                                <a href="#" class="fw-semibold text-muted text-hover-primary fs-7">
-                                    {{ auth()->user()->email }}
-                                </a>
+                                <p class="fw-semibold text-muted pb-0 text-hover-primary fs-7">
+                                    {{ Str::limit(auth()->user()->email, 20) }}
+                                </p>
                             </div>
                             <!--end::Username-->
                         </div>
@@ -95,17 +95,22 @@
 </div>
 
 <script {{ $nonce ?? null ? 'nonce="' . $nonce . '"' : '' }}>
-    const header = document.getElementById('main-header-web')
+    const header = document.getElementById('main-header-web');
+    const pageTitle = document.getElementById('pageTitle');
     const darkBanner = @json(asset('images/banner-dark.svg'));
     const lightBanner = @json(asset('images/banner-light.svg'));
 
     document.addEventListener('DOMContentLoaded', function() {
         if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
             header.style.background = `url('${darkBanner}') no-repeat center center / cover`;
-            header.style.backgroundColor = '#071437';
+            header.style.backgroundColor = '#151521';
+            pageTitle.classList.add('text-white');
+            pageTitle.classList.remove('text-black')
         } else {
             header.style.background = `url('${lightBanner}') no-repeat center center / cover`;
-            header.style.backgroundColor = '#071437';
+            header.style.backgroundColor = '#f9fafb';
+            pageTitle.classList.add('text-black');
+            pageTitle.classList.remove('text-white')
         }
     });
 
@@ -113,21 +118,31 @@
         mode.addEventListener('click', () => {
             if (mode.getAttribute('data-kt-value') === 'light') {
                 header.style.background = `url('${lightBanner}') no-repeat center center / cover`;
-                header.style.backgroundColor = '#071437';
+                header.style.backgroundColor = '#f9fafb';
+                pageTitle.classList.add('text-black');
+                pageTitle.classList.remove('text-white')
             } else if (mode.getAttribute('data-kt-value') === 'dark') {
                 header.style.background = `url('${darkBanner}') no-repeat center center / cover`;
-                header.style.backgroundColor = '#071437';
+                header.style.backgroundColor = '#151521';
+                pageTitle.classList.add('text-white');
+                pageTitle.classList.remove('text-black')
             } else if (mode.getAttribute('data-kt-value') === 'system') {
                 if (window.matchMedia('(prefers-color-scheme: light)').matches) {
                     header.style.background = `url('${lightBanner}') no-repeat center center / cover`;
-                    header.style.backgroundColor = '#071437';
+                    header.style.backgroundColor = '#f9fafb';
+                    pageTitle.classList.add('text-black');
+                    pageTitle.classList.remove('text-white')
                 } else {
                     header.style.background = `url('${darkBanner}') no-repeat center center / cover`;
-                    header.style.backgroundColor = '#071437';
+                    header.style.backgroundColor = '#151521';
+                    pageTitle.classList.add('text-white');
+                    pageTitle.classList.remove('text-black')
                 }
             } else {
                 header.style.background = `url('${lightBanner}') no-repeat center center / cover`;
-                header.style.backgroundColor = '#071437';
+                header.style.backgroundColor = '#f9fafb';
+                pageTitle.classList.add('text-black');
+                pageTitle.classList.remove('text-white')
             }
         })
     })

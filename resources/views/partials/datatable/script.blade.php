@@ -132,4 +132,21 @@
             }, 10000);
         }
     });
+
+    $('.data-table').on('click', 'a', function(e) {
+        e.preventDefault();
+        const url = $(this).attr('href');
+        if (url && url !== '#') {
+            const isValidPath = url.startsWith('/') && !url.startsWith('//');
+            const isSameOrigin = url.startsWith(window.location.origin);
+            if (!isValidPath && !isSameOrigin) {
+                return;
+            }
+
+            triggerLoading(0.3);
+            setTimeout(() => {
+                window.location.href = url;
+            }, 300);
+        }
+    })
 </script>

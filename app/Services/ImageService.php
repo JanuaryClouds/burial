@@ -2,12 +2,11 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
-use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\FileExtension;
+use Intervention\Image\ImageManager;
 
 class ImageService
 {
@@ -48,9 +47,9 @@ class ImageService
 
         $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
         if (! in_array($file->getMimeType(), $allowedMimeTypes, true)) {
-            throw new \RuntimeException($filename.' is not a valid image file.');    
+            throw new \RuntimeException($filename.' is not a valid image file.');
         }
-            
+
         $image = ImageManager::usingDriver(Driver::class)->decode($file);
         $file = $image->encodeUsingFileExtension(FileExtension::JPG);
         if (app()->isLocal()) {
@@ -81,7 +80,7 @@ class ImageService
         if (strlen($key) !== 32) {
             throw new \RuntimeException('Encryption key is invalid. It must be 32 bytes.');
         }
-        
+
         $iv = random_bytes(16);
         $cipher = 'AES-256-CBC';
 
@@ -98,9 +97,9 @@ class ImageService
         }
 
         $hmac = hash_hmac('sha256', $encrypted, $key, true);
-        $payload = $iv . $hmac . $encrypted;
+        $payload = $iv.$hmac.$encrypted;
         // This will not work during local because personal_access_tokens from live are the only accepted tokens
-        $token = auth()->user()->tokens()->first()->token . now()->format('Ymd');
+        $token = auth()->user()->tokens()->first()->token.now()->format('Ymd');
         $response = Http::asMultipart()
             ->timeout(15)
             ->retry(3, 200)
@@ -108,7 +107,7 @@ class ImageService
             ->post($this->serverUrl.$this->serverApi, [
                 'token' => $token,
             ]);
-        
+
         if ($response->failed() || (isset($response->json()['status']) && $response->json()['status'] === 'error')) {
             throw new \RuntimeException("{$response->status()}: Failed to upload file: ".$filename);
         }

@@ -11,6 +11,7 @@ class ReferralService
     public function store(array $data, $client_id)
     {
         $client = Client::findOrFail($client_id);
+
         return Referral::create([
             'id' => Str::uuid(),
             'client_id' => $client->id,

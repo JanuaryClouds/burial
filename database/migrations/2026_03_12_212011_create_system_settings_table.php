@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('system_settings', function (Blueprint $table) {
             $table->uuid()->primary();
             $table->boolean('maintenance_mode')->default(false);
+            $table->string('social_welfare_officer')->nullable();
+            $table->string('dept_head')->nullable();
             // Extend more system settings here
 
             $table->timestamps();
