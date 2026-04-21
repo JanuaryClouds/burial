@@ -90,18 +90,6 @@ class DashboardController extends Controller
     {
         $page_title = 'Dashboard';
         $latest_record = Client::where('user_id', auth()->user()->id)->orderBy('created_at', 'desc')->first();
-        $raw_notifications = Notification::where('notifiable_id', auth()->user()->id)->orderBy('created_at', 'desc')->limit(10)->get();
-
-        $notifications = $raw_notifications->map(function ($notification) {
-            $payload = json_decode($notification->payload, true);
-
-            return [
-                'id' => $notification->id,
-                'type' => $notification->type,
-                'subject' => $payload['subject'],
-                'body' => $payload['body'],
-            ];
-        });
 
         if ($latest_record) {
             $latest_record->load(['interviews', 'claimant', 'funeralAssistance']);
@@ -110,7 +98,6 @@ class DashboardController extends Controller
         return view('dashboard', [
             'page_title' => $page_title,
             'latest_record' => $latest_record,
-            'notifications' => $notifications,
         ]);
     }
 

@@ -8,11 +8,11 @@
             </div>
         @endcan
         @cannot('view-clients')
-            <div class="col-12 col-lg-6">
+            <div class="col-12 col-lg-8">
                 @include('user.partials.quick-links')
             </div>
-            <div class="col-12 col-lg-6">
-                @include('user.partials.notification-panel')
+            <div class="col-12 col-lg-4">
+                <livewire:notification.index lazy />
             </div>
         @endcannot
         @can('view-clients')

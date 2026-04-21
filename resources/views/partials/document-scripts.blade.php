@@ -24,3 +24,4 @@
 <script nonce="{{ $nonce ?? '' }}" src="{{ asset('assets/js/app.js') }}"></script>
 
 <script nonce="{{ $nonce ?? '' }}" src="{{ asset('metronic/js/scripts.bundle.js') }}"></script>
+@livewireScripts(['nonce' => $nonce ?? ''])
