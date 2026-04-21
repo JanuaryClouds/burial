@@ -29,6 +29,10 @@ class BeneficiaryFamily extends Model
         'income',
     ];
 
+    protected $casts = [
+        'name' => 'encrypted',
+    ];
+
     public static function getBeneficiaryFamilies($client)
     {
         return self::where('client_id', $client);
