@@ -4,7 +4,7 @@
     @can('view-clients')
         @include('admin.partials.cards')
     @endcan
-    <div class="card mt-8">
+    <div class="card">
         <div class="card-body">
             @include('partials.datatable.index', [
                 'data' => $data,
