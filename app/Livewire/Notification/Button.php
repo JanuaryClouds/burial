@@ -11,14 +11,21 @@ class Button extends Component
 
     public function check()
     {
-        $this->notifications = Notification::where('notifiable_id', auth()->id)
-            ->whereNull('read_at')
-            ->exists();
+        if (auth()->guest()) {
+            $this->notifications = false;
+        }
+
+        if (auth()->user()) {
+            $this->notifications = Notification::where('notifiable_id', auth()->user()->id)
+                ->whereNull('read_at')
+                ->exists();
+        }
     }
 
     public function render()
     {
         $this->check();
+
         return view('livewire.notification.button');
     }
 }
