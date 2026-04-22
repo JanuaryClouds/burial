@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [CitizenAccessController::class, 'index'])
     ->name('landing.page');
 
+Route::get('/sso/callback', [CitizenAccessController::class, 'sso'])
+    ->name('sso');
+
 // Route::get('/test/component/{id}', [TestController::class, 'get'])
 //     ->name('test.component');
 

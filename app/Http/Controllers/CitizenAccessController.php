@@ -35,7 +35,51 @@ class CitizenAccessController extends Controller
         $burialDocuments = DocumentRequirement::burial();
         $funeralDocuments = DocumentRequirement::funeral();
 
-        $uuid = $request->query('uuid');
+        if (app()->isLocal()) {
+            return view('test.zero');
+        }
+
+        return view('landing', compact(
+            'steps',
+            'burialDocuments',
+            'funeralDocuments',
+            'page_title',
+        ));
+    }
+
+    public function sso()
+    {
+        $ssoRequest = request('payload');
+        $signature = request('signature');
+
+        if (empty($ssoRequest) || empty($signature)) {
+            abort(403);
+        }
+
+        $secret = config('services.portal.sso.secret');
+        if (empty($secret)) {
+            abort(500, 'SSO secret is not set.');
+        }
+
+        $expectedSignature = hash_hmac('sha256', $ssoRequest, config('services.portal.sso.secret'));
+
+        if (! hash_equals($expectedSignature, $signature)) {
+            abort(403);
+        }
+
+        $payload = json_decode(base64_decode($ssoRequest), true);
+
+        if (! is_array($payload) || ! isset($payload['time'], $payload['citizen_uuid'])) {
+            abort(403);
+        }
+
+        $expired = time() - $payload['time'];
+
+        if ($expired > 300) {
+            abort(403);
+        }
+
+        $uuid = $payload['citizen_uuid'];
 
         if ($uuid) {
             $user = $this->centralClientService->checkIfUser($uuid);
@@ -54,13 +98,8 @@ class CitizenAccessController extends Controller
             } else {
                 return redirect()->route('dashboard');
             }
+        } else {
+            abort(403);
         }
-
-        return view('landing', compact(
-            'steps',
-            'burialDocuments',
-            'funeralDocuments',
-            'page_title',
-        ));
     }
 }

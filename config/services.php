@@ -42,6 +42,9 @@ return [
     'portal' => [
         'url' => env('CITIZEN_PORTAL', ''),
         'key' => env('API_KEY_CITIZEN_USERS', ''),
+        'sso' => [
+            'secret' => env('SSO_SECRET_KEY', ''),
+        ],
     ],
 
     'fileserver' => [

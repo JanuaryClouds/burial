@@ -13,7 +13,6 @@ class CentralClientService
      *
      * @param  string  $key  array key to filter from
      * @param  string  $value  array value to match
-     * @param  bool  $family  get family members
      * @return array|null
      */
     public function fetchFromPortal(string $key, string $value)
@@ -49,13 +48,13 @@ class CentralClientService
     {
         // Disable for local to prevent unwanted API calls
         if (app()->isProduction()) {
-            $citizenData = $this->fetchFromPortal('uuid', $citizen_uuid) ?? [];
+            $citizenData = $this->fetchFromPortal('user_id', $citizen_uuid) ?? [];
             if (! empty($citizenData)) {
                 session(['citizen' => $this->filterData($citizenData)]);
             }
 
             return User::firstOrCreate([
-                'citizen_id' => $citizen_uuid,
+                'citizen_uuid' => $citizen_uuid,
             ], [
                 'first_name' => $citizenData['firstname'] ?? null,
                 'middle_name' => $citizenData['middlename'] ?? null,
@@ -69,10 +68,10 @@ class CentralClientService
         }
 
         if (app()->isLocal()) {
-            $user = User::where('citizen_id', $citizen_uuid)->first();
+            $user = User::where('citizen_uuid', $citizen_uuid)->first();
             if ($user === null) {
                 $user = User::factory()->create([
-                    'citizen_id' => $citizen_uuid,
+                    'citizen_uuid' => $citizen_uuid,
                 ]);
             }
 
