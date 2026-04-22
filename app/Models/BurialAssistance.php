@@ -122,4 +122,99 @@ class BurialAssistance extends Model
     {
         return $this->hasOne(Rejection::class, 'burial_assistance_id', 'id');
     }
+
+    // Scopes
+    public function scopeAccessibleByUser($query, $userId)
+    {
+        return $query->where(function ($q) use ($userId) {
+            // CASE A: No claimant change requested
+            $q->whereDoesntHave('claimantChanges', function () {})
+                ->whereHas('claimant.client.user', function ($subQ) use ($userId) {
+                    $subQ->where('id', $userId);
+                });
+        })
+            ->orWhere(function ($q) use ($userId) {
+                // CASE B: Claimant change requested
+                $q->whereHas('claimantChanges', function ($cc) use ($userId) {
+                    $cc->where(function ($ccInner) use ($userId) {
+                        // APPROVED → both old and new claimant
+                        $ccInner->where('status', 'approved')
+                            ->where(function ($approvedUsers) use ($userId) {
+                                $approvedUsers
+                                    ->whereHas('oldClaimant.client.user', function ($q) use ($userId) {
+                                        $q->where('id', $userId);
+                                    })
+                                    ->orWhereHas('user', function ($q) use ($userId) {
+                                        $q->where('id', $userId);
+                                    });
+                            });
+                    })->orWhere(function ($ccInner) use ($userId) {
+                        // PENDING / REJECTED → only original claimant
+                        $ccInner->whereIn('status', ['pending', 'rejected'])
+                            ->whereHas('oldClaimant.client.user', function ($q) use ($userId) {
+                                $q->where('id', $userId);
+                            });
+                    });
+                });
+            });
+    }
+
+    public function scopeTotal($query)
+    {
+        if (! auth()->user()) {
+            return $query->whereRaw('1 = 0'); // Return empty result for unauthenticated
+        }
+
+        if (auth()->user()->roles()->count() > 0) {
+            return $query;
+        }
+
+        return $query->accessibleByUser(auth()->user()->id);
+    }
+
+    public function scopePending($query)
+    {
+        if (! auth()->user()) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        if (auth()->user()->roles()->count() > 0) {
+            return $query->where('status', 'pending');
+        }
+
+        return $query->accessibleByUser(auth()->user()->id)
+            ->where('status', 'pending');
+    }
+
+    public function scopeProcessing($query)
+    {
+        if (! auth()->user()) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        if (! auth()->user()) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        if (auth()->user()->roles()->count() > 0) {
+            return $query->whereIn('status', ['processing', 'approved']);
+        }
+
+        return $query->accessibleByUser(auth()->user()->id)
+            ->whereIn('status', ['processing', 'approved']);
+    }
+
+    public function scopeReleased($query)
+    {
+        if (! auth()->user()) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        if (auth()->user()->roles()->count() > 0) {
+            return $query->where('status', 'released');
+        }
+
+        return $query->accessibleByUser(auth()->user()->id)
+            ->where('status', 'released');
+    }
 }
