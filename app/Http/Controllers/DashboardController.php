@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\BurialAssistance;
 use App\Models\Client;
 use App\Models\FuneralAssistance;
-use App\Models\Notification;
 use App\Services\ClientService;
 use App\Services\DatatableService;
 use Carbon\Carbon;
