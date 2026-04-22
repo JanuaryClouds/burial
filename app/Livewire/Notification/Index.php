@@ -2,14 +2,14 @@
 
 namespace App\Livewire\Notification;
 
+use App\Models\Notification;
 use Carbon\Carbon;
 use Livewire\Component;
-use App\Models\Notification;
-use Str;
 
 class Index extends Component
 {
     public ?array $notifications = [];
+
     public ?int $unreadCount = 0;
 
     public function get()
@@ -28,10 +28,10 @@ class Index extends Component
                     'subject' => $payload['subject'] ?? 'No Subject',
                     'body' => $payload['body'] ?? 'No Body',
                     'read_at' => $notification->read_at ? Carbon::parse($notification->read_at)->diffForHumans() : null,
-                    'created_at' =>  $notification->created_at->diffForHumans([
-                        'short' => true, 
-                        'parts' => 1, 
-                        'syntax' => Carbon::DIFF_ABSOLUTE
+                    'created_at' => $notification->created_at->diffForHumans([
+                        'short' => true,
+                        'parts' => 1,
+                        'syntax' => Carbon::DIFF_ABSOLUTE,
                     ]),
                 ];
             })
@@ -74,6 +74,7 @@ class Index extends Component
     {
         $this->get();
         $this->unreadCount();
+
         return view('livewire.notification.index', []);
     }
 }

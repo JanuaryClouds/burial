@@ -23,10 +23,10 @@ class InterviewController extends Controller
 
     public function index()
     {
-        if (auth()->user()->roles()->count() == 0) {
-            $user_id = auth()->user()->id;
-        }
-        $data = $this->interviewServices->index($user_id ?? null);
+        $userId = auth()->user()->roles()->count() == 0 ? auth()->user()->id : null;
+
+        $data = $this->interviewServices->index($userId);
+        $columns = $this->datatableServices->getColumns($data, ['client']);
 
         if (request()->expectsJson()) {
             return response()->json([

@@ -4,17 +4,18 @@ namespace App\Services;
 
 use App\Models\Client;
 use App\Models\Interview;
+use Carbon\Carbon;
 use Exception;
 use Str;
 
 class InterviewService
 {
-    public function index(?int $user_id = null)
+    public function index(?int $userId = null)
     {
         return Interview::with(['client', 'client.user'])
-            ->when($user_id, function ($query) use ($user_id) {
-                $query->whereHas('client', function ($q) use ($user_id) {
-                    $q->where('user_id', $user_id);
+            ->when($userId, function ($query) use ($userId) {
+                $query->whereHas('client', function ($q) use ($userId) {
+                    $q->where('userId', $userId);
                 });
             })
             ->orderBy('created_at', 'desc')
@@ -23,8 +24,9 @@ class InterviewService
                 return [
                     'id' => $interview->id,
                     'client' => $interview->client->fullname(),
-                    'schedule' => $interview->schedule,
+                    'schedule' => $interview->scjhedule ? Carbon::parse($interview->schedule)->format('F j, Y g:i A') : null,
                     'status' => $interview->status,
+                    'remarks' => $interview->remarks,
                 ];
             });
     }

@@ -23,7 +23,7 @@ class ClientSeeder extends Seeder
     public function run(): void
     {
         $users = User::factory()->count(10)->create([
-            'citizen_id' => fn () => Str::uuid()->toString(),
+            'citizen_uuid' => fn () => Str::uuid()->toString(),
         ]);
 
         $clients = Client::factory()->count(10)->create([
@@ -48,7 +48,6 @@ class ClientSeeder extends Seeder
                     'source_id' => $interview->id,
                     'payload' => Notification::defaultPayload(Interview::class),
                 ]);
-
 
                 $assessment = ClientAssessment::factory()->create([
                     'client_id' => $client->id,
@@ -122,7 +121,7 @@ class ClientSeeder extends Seeder
                             'source_id' => $burial_assistance->id,
                             'payload' => Notification::defaultPayload(BurialAssistance::class),
                         ]);
-                        
+
                         break;
                     case 2:
                         // Funeral Assistance
