@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-bs-theme="system" data-bs-theme-mode="system">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-bs-theme="system">
 
 <head>
     @include('partials.document-head')
