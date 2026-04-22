@@ -6,7 +6,7 @@
         </span>
         <p class="text-muted" wire:loading>...</p>
     </div>
-    <div class="card-body" wire:poll.30s='$refresh'>
+    <div class="card-body h-350px overflow-y-scroll" wire:poll.30s='$refresh'>
         @if (count($notifications) > 0)
             @foreach ($notifications as $notification)
                 <div wire:key="notification-{{ $notification['id'] }}">
