@@ -83,7 +83,9 @@
 
                     <!--begin::Menu item-->
                     <div class="menu-item px-5">
-                        <form action="{{ route('logout') }}" method="POST" class="block mb-0">
+                        <form
+                            action="{{ auth()->user()->roles()->count() > 0 ? route('logout') : route('sso.logout') }}"
+                            method="POST" class="block mb-0">
                             @csrf
                             <button type="submit" class="btn w-100 text-left">
                                 <span class="fw-medium">
