@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\ApplicationStep;
 use App\Models\DocumentRequirement;
 use App\Models\SystemSetting;
+use App\Models\User;
 use App\Services\CentralClientService;
 use App\Services\ImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Str;
 
 class CitizenAccessController extends Controller
 {
@@ -35,8 +37,46 @@ class CitizenAccessController extends Controller
         $burialDocuments = DocumentRequirement::burial();
         $funeralDocuments = DocumentRequirement::funeral();
 
-        if (app()->isLocal()) {
-            return view('test.zero');
+        if (config('services.portal.mock')) {
+            $citizens = User::whereNotNull('citizen_uuid')->get();
+            $testLinks = [];
+            foreach ($citizens as $citizen) {
+                $payload = [
+                    'citizen_uuid' => $citizen->citizen_uuid,
+                    'time' => time(),
+                    'nonce' => Str::random(32),
+                ];
+
+                $encoded = rtrim(strtr(base64_encode(json_encode($payload)), '+/', '-_'), '=');
+                $signature = hash_hmac('sha256', $encoded, config('services.portal.sso.secret'));
+
+                $url = url('/sso/callback')."?payload={$encoded}&signature={$signature}";
+
+                $testLinks[] = [
+                    'name' => $citizen->fullname(),
+                    'url' => $url,
+                ];
+            }
+
+            $newUser = [
+                'citizen_uuid' => Str::uuid()->toString(),
+                'time' => time(),
+                'nonce' => Str::uuid()->toString(),
+            ];
+
+            $encoded = rtrim(strtr(base64_encode(json_encode($newUser)), '+/', '-_'), '=');
+            $signature = hash_hmac('sha256', $encoded, config('services.portal.sso.secret'));
+
+            $url = url('/sso/callback')."?payload={$encoded}&signature={$signature}";
+
+            $testLinks[] = [
+                'name' => 'New User',
+                'url' => $url,
+            ];
+
+            return view('test.zero', [
+                'testUsers' => $testLinks,
+            ]);
         }
 
         return view('landing', compact(
@@ -49,6 +89,7 @@ class CitizenAccessController extends Controller
 
     public function sso()
     {
+        // example URL sent from portal: https://funeral.taguig.gov.ph/sso/callback?payload={$payload}&signature={$signature}
         $ssoRequest = request('payload');
         $signature = request('signature');
 
@@ -93,13 +134,34 @@ class CitizenAccessController extends Controller
                 session(['api_token' => $token]);
             }
 
-            if (Auth::user()->clients()->count() == 0) {
-                return redirect()->route('general.intake.form');
-            } else {
-                return redirect()->route('dashboard');
-            }
+            $redirect = auth()->user()->clients()->exists() ? route('dashboard') : route('general.intake.form');
+
+            return redirect()->to($redirect);
         } else {
             abort(403);
         }
+    }
+
+    public function logout()
+    {
+        $payload = [
+            'citizen_uuid' => auth()->user()->citizen_uuid,
+            'time' => time(),
+            'nonce' => Str::random(32),
+        ];
+
+        $encoded = rtrim(strtr(base64_encode(json_encode($payload)), '+/', '-_'), '=');
+        $signature = hash_hmac('sha256', $encoded, config('services.portal.sso.secret'));
+
+        $user = Auth::user();
+        $user->tokens()->delete();
+        Auth::logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+        if (session()->has('citizen')) {
+            session()->forget('citizen');
+        }
+
+        return redirect('/');
     }
 }
