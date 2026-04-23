@@ -42,8 +42,14 @@ return [
     'portal' => [
         'url' => env('CITIZEN_PORTAL', ''),
         'key' => env('API_KEY_CITIZEN_USERS', ''),
+        'fetch' => env('FETCH_FROM_PORTAL', false),
+        'mock' => env('PORTAL_MOCK', false),
         'sso' => [
             'secret' => env('SSO_SECRET_KEY', ''),
+        ],
+        'notification' => [
+            'endpoint' => env('NOTIFICATION_ENDPOINT', ''),
+            'key' => env('NOTIFICATION_KEY', ''),
         ],
     ],
 

@@ -7,6 +7,7 @@ use App\Models\BurialAssistance;
 use App\Models\ProcessLog;
 use App\Models\WorkflowStep;
 use App\Services\ImageService;
+use App\Services\NotificationService;
 use App\Services\ProcessLogService;
 use Exception;
 
@@ -16,10 +17,13 @@ class ProcessLogController extends Controller
 
     protected $imageServices;
 
-    public function __construct(ProcessLogService $processLogService, ImageService $imageService)
+    protected $notificationServices;
+
+    public function __construct(ProcessLogService $processLogService, ImageService $imageService, NotificationService $notificationService)
     {
         $this->processLogServices = $processLogService;
         $this->imageServices = $imageService;
+        $this->notificationServices = $notificationService;
     }
 
     public function add(ProcessLogRequest $request, $id, $stepId)
@@ -36,6 +40,18 @@ class ProcessLogController extends Controller
                     $step,
                     $validated
                 );
+
+                if ($step->order_no == 12) {
+                    $citizenUuid = $application->originalClaimant()?->client?->user?->citizen_uuid;
+                    if ($citizenUuid) {
+                        $this->notificationServices->send(
+                            $citizenUuid,
+                            'cheque',
+                            'Cheque is ready to be picked up',
+                            'A cheque for your burial assistance application is ready to be picked up. Please come to the Taguig City Hall CSWDO Office.'
+                        );
+                    }
+                }
 
                 if ($step->order_no == 13) {
                     $latestCheque = $application->latestCheque();

@@ -7,6 +7,7 @@ use App\Models\FuneralAssistance;
 use App\Models\SystemSetting;
 use App\Services\DatatableService;
 use App\Services\FuneralAssistanceService;
+use App\Services\NotificationService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Exception;
 use Illuminate\Http\Request;
@@ -19,10 +20,13 @@ class FuneralAssistanceController extends Controller
 
     protected $datatableServices;
 
-    public function __construct(FuneralAssistanceService $funeralAssistanceService, DatatableService $datatableService)
+    protected $notificationServices;
+
+    public function __construct(FuneralAssistanceService $funeralAssistanceService, DatatableService $datatableService, NotificationService $notificationService)
     {
         $this->funeralAssistanceServices = $funeralAssistanceService;
         $this->datatableServices = $datatableService;
+        $this->notificationServices = $notificationService;
     }
 
     public function index()
@@ -137,6 +141,16 @@ class FuneralAssistanceController extends Controller
             $data = FuneralAssistance::find($id);
             $data->forwarded_at = now();
             $data->save();
+
+            $citizenUuid = $data->client?->user?->citizen_uuid;
+            if ($citizenUuid) {
+                $this->notificationServices->send(
+                    $citizenUuid,
+                    'libreng libing',
+                    'Libreng Libing Forwarded to Cemetery Staff',
+                    'Your application for Libreng Libing has been forwarded to Cemetery Staff.'
+                );
+            }
 
             return redirect()->back()->with('success', 'Application for Libreng Libing has been forwarded to Cemetery Staff.');
         } catch (Exception $e) {

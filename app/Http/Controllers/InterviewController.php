@@ -6,8 +6,10 @@ use App\Http\Requests\InterviewRequest;
 use App\Models\Client;
 use App\Services\DatatableService;
 use App\Services\InterviewService;
+use App\Services\NotificationService;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class InterviewController extends Controller
 {
@@ -15,10 +17,13 @@ class InterviewController extends Controller
 
     protected $datatableServices;
 
-    public function __construct(InterviewService $interviewService, DatatableService $datatableService)
+    protected $notificationServices;
+
+    public function __construct(InterviewService $interviewService, DatatableService $datatableService, NotificationService $notificationServices)
     {
         $this->interviewServices = $interviewService;
         $this->datatableServices = $datatableService;
+        $this->notificationServices = $notificationServices;
     }
 
     public function index()
@@ -46,6 +51,17 @@ class InterviewController extends Controller
         try {
             $interview = $this->interviewServices->store($request->validated(), $id);
             if ($interview) {
+                $citizen_uuid = $interview->client?->user?->citizen_uuid;
+                if ($citizen_uuid) {
+                    $this->notificationServices->send(
+                        $citizen_uuid,
+                        'interview',
+                        'Interview Scheduled',
+                        'You have an interview scheduled for '.Carbon::parse($interview->schedule)->format('F j, Y g:i A').
+                        ' at the CSWDO Office in the Taguig City Hall at Gen. Luna St., Tuktukan, Taguig City. 
+                        Please arrive earlier than scheduled time and bring hard copies of the required documents.'
+                    );
+                }
                 // TODO send SMS message
                 // Unavialable
 
