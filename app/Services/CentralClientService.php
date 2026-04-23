@@ -42,12 +42,12 @@ class CentralClientService
     /**
      * Summary of checkIfUser
      *
+     * @param  string  $citizen_uuid  UUID or user_id of citizen from the portal
      * @return User|null
      */
     public function checkIfUser(string $citizen_uuid)
     {
-        // Disable for local to prevent unwanted API calls
-        if (app()->isProduction()) {
+        if (config('services.portal.fetch') || app()->isProduction()) {
             $citizenData = $this->fetchFromPortal('user_id', $citizen_uuid) ?? [];
             if (! empty($citizenData)) {
                 session(['citizen' => $this->filterData($citizenData)]);
