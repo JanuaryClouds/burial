@@ -31,7 +31,7 @@ class BurialAssistanceController extends Controller
         ProcessLogService $processLogService,
         BurialAssistanceService $burialAssistanceService,
         DatatableService $datatableService,
-        WorkflowStepService $workflowStepService
+        WorkflowStepService $workflowStepService,
     ) {
         $this->processLogServices = $processLogService;
         $this->burialAssistanceServices = $burialAssistanceService;
