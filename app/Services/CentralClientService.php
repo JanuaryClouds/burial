@@ -57,8 +57,9 @@ class CentralClientService
             if (empty($citizenData)) {
                 abort(403);
             }
-                
+
             session(['citizen' => $this->filterData($citizenData)]);
+
             return User::firstOrCreate([
                 'citizen_uuid' => $citizen_uuid,
             ], [

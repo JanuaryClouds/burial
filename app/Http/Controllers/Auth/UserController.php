@@ -76,7 +76,7 @@ class UserController extends Controller
                 ->withProperties(['ip' => $ip, 'browser' => $browser])
                 ->log('Unsuccessful login attempt');
 
-            return redirect()->back()->with('error', $e->getMessage());
+            return redirect()->back()->with('error', 'Unable to login'.(app()->hasDebugModeEnabled() ? ': '.$e->getMessage() : ''));
         }
     }
 

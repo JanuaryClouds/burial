@@ -95,7 +95,7 @@ class InterviewController extends Controller
                     ->withProperties(['ip' => $ip, 'browser' => $browser])
                     ->performedOn($interview)
                     ->log('Marked an interview as done');
-                    
+
                 return redirect()->back()->with('success', 'Interview marked as done.');
             }
         } catch (Exception $e) {

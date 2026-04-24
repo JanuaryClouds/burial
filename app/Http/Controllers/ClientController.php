@@ -267,7 +267,7 @@ class ClientController extends Controller
             if (! $client) {
                 return redirect()->back()->with('error', 'Client not found.');
             }
-        
+
             $ip = request()->ip();
             $browser = request()->header('User-Agent');
             if ($request['type'] == 'burial') {

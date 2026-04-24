@@ -12,6 +12,7 @@ use App\Services\ReferralService;
 class ReferralController extends Controller
 {
     protected $referralServices;
+
     protected $notificationServices;
 
     public function __construct(ReferralService $referralService, NotificationService $notificationService)
@@ -48,7 +49,7 @@ class ReferralController extends Controller
             if ($referral) {
                 $ip = request()->ip();
                 $browser = request()->header('User-Agent');
-                
+
                 if ($client->user->citizen_uuid) {
                     $this->notificationServices->send(
                         $client->user->citizen_uuid,
@@ -57,15 +58,16 @@ class ReferralController extends Controller
                         'A referral has been given to you by the Taguig City CSWDO.'
                     );
                 }
-    
+
                 activity()
                     ->causedBy(auth()->user())
                     ->performedOn($client)
                     ->withProperties(['ip' => $ip, 'browser' => $browser])
                     ->log('Created a referral');
-    
+
                 return redirect()->back()->with('success', 'Referral created successfully.');
             }
+
             return redirect()->back()->with('error', 'Failed to create a referral.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to create a referral.'.(app()->hasDebugModeEnabled() ? ': '.$e->getMessage() : ''));

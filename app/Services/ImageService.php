@@ -114,7 +114,7 @@ class ImageService
 
         if ($response->failed() || (isset($response->json()['status']) && $response->json()['status'] === 'error')) {
             $ip = request()->ip();
-            $browser = request()->header('User-Agent');    
+            $browser = request()->header('User-Agent');
 
             activity()
                 ->causedBy(auth()->user())
