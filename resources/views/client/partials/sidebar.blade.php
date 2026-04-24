@@ -4,7 +4,7 @@
     'icon' => 'add-files',
     'icon_paths' => 3,
     'text' => 'Apply',
-    'long_text' => 'Apply as a client to be given a funeral assistance',
+    'long_text' => 'Apply as a client',
 ])
 @include('components.sidebar-link', [
     'route' => route('interview.index'),

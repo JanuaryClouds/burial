@@ -21,7 +21,7 @@
                         </button>
                     </form>
                 @else
-                    <a href="{{ config('services.portal.url') }}" class="btn btn-lg btn-primary hover-scale">
+                    <a href="{{ config('services.portal.endpoint') }}" class="btn btn-lg btn-primary hover-scale">
                         Register
                     </a>
                 @endauth

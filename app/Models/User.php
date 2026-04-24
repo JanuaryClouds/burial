@@ -8,13 +8,14 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
+use Str;
 
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, HasRoles, Notifiable;
 
     protected $fillable = [
-        'citizen_id',
+        'citizen_uuid',
         'first_name',
         'middle_name',
         'last_name',
@@ -42,6 +43,18 @@ class User extends Authenticatable
     public function isAdmin()
     {
         return $this->hasRole('admin');
+    }
+
+    public function fullname()
+    {
+        if (! $this) {
+            return '';
+        }
+
+        return $this->first_name.' '.
+            ($this->middle_name ? Str::limit($this->middle_name, 1, '.').' ' : '').
+            $this->last_name.
+            ($this->suffix ? ' '.$this->suffix : '');
     }
 
     public function clients()

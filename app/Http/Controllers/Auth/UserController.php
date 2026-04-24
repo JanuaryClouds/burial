@@ -76,8 +76,29 @@ class UserController extends Controller
                 ->withProperties(['ip' => $ip, 'browser' => $browser])
                 ->log('Unsuccessful login attempt');
 
-            return redirect()->back()->with('error', $e->getMessage());
+            return redirect()->back()->with('error', 'Unable to login'.(app()->hasDebugModeEnabled() ? ': '.$e->getMessage() : ''));
         }
+    }
+
+    public function checkSession()
+    {
+        if (auth()->check()) {
+            $user = auth()->user();
+            $accessLevel = $user->roles()->exists() ? 'Staff' : 'Client';
+            $redirect = $user->clients()->exists() ? route('dashboard') : route('general.intake.form');
+
+            return response()->json([
+                'success' => true,
+                'access_level' => $accessLevel,
+                'message' => 'Session validated',
+                'redirect' => $redirect,
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Session not validated',
+        ], 401);
     }
 
     public function logout()

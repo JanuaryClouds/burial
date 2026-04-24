@@ -8,6 +8,7 @@ use App\Models\Client;
 use App\Models\ClientAssessment;
 use App\Models\ClientRecommendation;
 use App\Models\FuneralAssistance;
+use App\Models\Interview;
 use App\Models\Notification;
 use App\Models\Referral;
 use App\Models\User;
@@ -22,30 +23,58 @@ class ClientSeeder extends Seeder
     public function run(): void
     {
         $users = User::factory()->count(10)->create([
-            'citizen_id' => fn () => Str::uuid()->toString(),
+            'citizen_uuid' => fn () => Str::uuid()->toString(),
         ]);
 
         $clients = Client::factory()->count(10)->create([
             'user_id' => fn () => $users->random()->id,
         ]);
 
-        Notification::factory()->count(10)->create([
-            'notifiable_id' => fn () => $users->random()->id,
-            'notifiable_type' => User::class,
-        ]);
-
         foreach ($clients as $client) {
+            if (! $client) {
+                continue;
+            }
+
             if (rand(0, 1) == 1) {
+                $interview = Interview::factory()->create([
+                    'client_id' => $client->id,
+                    'status' => 'done',
+                ]);
+
+                Notification::factory()->create([
+                    'notifiable_id' => $client->user->id,
+                    'notifiable_type' => User::class,
+                    'source_type' => Interview::class,
+                    'source_id' => $interview->id,
+                    'payload' => Notification::defaultPayload(Interview::class),
+                ]);
+
                 $assessment = ClientAssessment::factory()->create([
                     'client_id' => $client->id,
+                ]);
+
+                Notification::factory()->create([
+                    'notifiable_id' => $client->user->id,
+                    'notifiable_type' => User::class,
+                    'source_type' => ClientAssessment::class,
+                    'source_id' => $assessment->id,
+                    'payload' => Notification::defaultPayload(ClientAssessment::class),
                 ]);
 
                 $random_assistance = rand(0, 2);
                 switch ($random_assistance) {
                     case 0:
                         // Referral
-                        Referral::factory()->create([
+                        $referral = Referral::factory()->create([
                             'client_id' => $client->id,
+                        ]);
+
+                        Notification::factory()->create([
+                            'notifiable_id' => $client->user->id,
+                            'notifiable_type' => User::class,
+                            'source_type' => Referral::class,
+                            'source_id' => $referral->id,
+                            'payload' => Notification::defaultPayload(Referral::class),
                         ]);
                         break;
                     case 1:
@@ -53,6 +82,14 @@ class ClientSeeder extends Seeder
                         $recommendation = ClientRecommendation::factory()->create([
                             'client_id' => $client->id,
                             'type' => 'funeral',
+                        ]);
+
+                        Notification::factory()->create([
+                            'notifiable_id' => $client->user->id,
+                            'notifiable_type' => User::class,
+                            'source_type' => ClientRecommendation::class,
+                            'source_id' => $recommendation->id,
+                            'payload' => Notification::defaultPayload(ClientRecommendation::class),
                         ]);
 
                         $burial_assistance = BurialAssistance::factory()->create([
@@ -76,6 +113,15 @@ class ClientSeeder extends Seeder
                             'contact_number' => $client->user?->contact_number,
                             'relationship_id' => $client->socialInfo?->relationship?->id,
                         ]);
+
+                        Notification::factory()->create([
+                            'notifiable_id' => $client->user->id,
+                            'notifiable_type' => User::class,
+                            'source_type' => BurialAssistance::class,
+                            'source_id' => $burial_assistance->id,
+                            'payload' => Notification::defaultPayload(BurialAssistance::class),
+                        ]);
+
                         break;
                     case 2:
                         // Funeral Assistance
@@ -86,15 +132,40 @@ class ClientSeeder extends Seeder
                             'moa_id' => null,
                         ]);
 
-                        FuneralAssistance::factory()->create([
+                        Notification::factory()->create([
+                            'notifiable_id' => $client->user->id,
+                            'notifiable_type' => User::class,
+                            'source_type' => ClientRecommendation::class,
+                            'source_id' => $recommendation->id,
+                            'payload' => Notification::defaultPayload(ClientRecommendation::class),
+                        ]);
+
+                        $funeralAssistance = FuneralAssistance::factory()->create([
                             'client_id' => $client->id,
                             'remarks' => $recommendation->remarks,
                         ]);
+
+                        Notification::factory()->create([
+                            'notifiable_id' => $client->user->id,
+                            'notifiable_type' => User::class,
+                            'source_type' => FuneralAssistance::class,
+                            'source_id' => $funeralAssistance->id,
+                            'payload' => Notification::defaultPayload(FuneralAssistance::class),
+                        ]);
+
                         break;
                     default:
                         // Referral
-                        Referral::factory()->create([
+                        $referral = Referral::factory()->create([
                             'client_id' => $client->id,
+                        ]);
+
+                        Notification::factory()->create([
+                            'notifiable_id' => $client->user->id,
+                            'notifiable_type' => User::class,
+                            'source_type' => Referral::class,
+                            'source_id' => $referral->id,
+                            'payload' => Notification::defaultPayload(Referral::class),
                         ]);
                 }
             }

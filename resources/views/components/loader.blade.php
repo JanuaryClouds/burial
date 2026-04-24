@@ -75,9 +75,11 @@
         }
 
         window.hideLoading = function(duration = 1) {
-            splash.style.zIndex = "-1";
             splash.style.opacity = "0";
-            splash.style.transition = `opacity ${duration} ease`;
+            splash.style.transition = `opacity ${duration}s ease`;
+            setTimeout(() => {
+                splash.style.zIndex = "-1";
+            }, duration * 1000);
             return;
         }
 

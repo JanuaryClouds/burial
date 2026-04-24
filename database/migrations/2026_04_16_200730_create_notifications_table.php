@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('notifications', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('type')->nullable();
+            $table->nullableUuidMorphs('source');
             $table->morphs('notifiable');
             $table->json('payload');
             $table->timestamp('read_at')->nullable();

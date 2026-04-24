@@ -34,19 +34,45 @@ return [
     'api_keys' => explode(',', env('API_KEYS', '')),
 
     'disbursement' => [
-        'key' => env('API_KEY_DISBURSEMENT_SYSTEM', ''),
-        'url' => env('API_DISBURSEMENT_SYSTEM', ''),
-        'enabled' => env('DISBURSEMENT_SYSTEM_ENABLED', false),
+        'enable' => [
+            'get' => env('DISBURSEMENT_SYSTEM_ENABLE_GET', false),
+            'post' => env('DISBURSEMENT_SYSTEM_ENABLE_POST', false),
+        ],
+        'endpoint' => env('DISBURSEMENT_SYSTEM_ENDPOINT', ''),
+        'key' => env('DISBURSEMENT_SYSTEM_API_KEY', ''),
     ],
 
     'portal' => [
-        'url' => env('CITIZEN_PORTAL', ''),
-        'key' => env('API_KEY_CITIZEN_USERS', ''),
+        'endpoint' => env('PORTAL_ENDPOINT', ''),
+        'users' => [
+            'enable' => [
+                'get' => env('PORTAL_USERS_ENABLE_GET', false),
+                'post' => env('PORTAL_USERS_ENABLE_POST', false),
+            ],
+            'endpoint' => env('PORTAL_USERS_ENDPOINT', ''),
+            'key' => env('PORTAL_USERS_API_KEY', ''),
+            'mock' => env('PORTAL_MOCK', false),
+        ],
+        'sso' => [
+            'secret' => env('SSO_SECRET_KEY', ''),
+        ],
+        'notification' => [
+            'enable' => [
+                'get' => env('PORTAL_NOTIFICATION_ENABLE_GET', false),
+                'post' => env('PORTAL_NOTIFICATION_ENABLE_POST', false),
+            ],
+            'endpoint' => env('PORTAL_NOTIFICATION_ENDPOINT', ''),
+            'key' => env('PORTAL_NOTIFICATION_API_KEY', ''),
+        ],
     ],
 
     'fileserver' => [
-        'url' => env('FILESERVER_URL'),
+        'enable' => [
+            'get' => env('FILESERVER_ENABLE_GET', false),
+            'post' => env('FILESERVER_ENABLE_POST', false),
+        ],
+        'endpoint' => env('FILESERVER_ENDPOINT', ''),
         'api' => env('FILESERVER_API'),
-        'enc_key' => env('FILE_ENCRYPTION_KEY'),
+        'enc_key' => env('FILESERVER_ENCRYPTION_KEY', ''),
     ],
 ];

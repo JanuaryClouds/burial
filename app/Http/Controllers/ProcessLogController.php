@@ -7,6 +7,7 @@ use App\Models\BurialAssistance;
 use App\Models\ProcessLog;
 use App\Models\WorkflowStep;
 use App\Services\ImageService;
+use App\Services\NotificationService;
 use App\Services\ProcessLogService;
 use Exception;
 
@@ -16,10 +17,13 @@ class ProcessLogController extends Controller
 
     protected $imageServices;
 
-    public function __construct(ProcessLogService $processLogService, ImageService $imageService)
+    protected $notificationServices;
+
+    public function __construct(ProcessLogService $processLogService, ImageService $imageService, NotificationService $notificationService)
     {
         $this->processLogServices = $processLogService;
         $this->imageServices = $imageService;
+        $this->notificationServices = $notificationService;
     }
 
     public function add(ProcessLogRequest $request, $id, $stepId)
@@ -30,12 +34,33 @@ class ProcessLogController extends Controller
             $validated = $request->validated();
 
             if ($application) {
+                $ip = request()->ip();
+                $browser = request()->header('User-Agent');
+                $citizenUuid = $application->originalClaimant()?->client?->user?->citizen_uuid;
+
                 $this->processLogServices->create(
                     $application,
                     $application->claimantChanges->where('status', 'approved')->first()->newClaimant ?? $application->claimant,
                     $step,
                     $validated
                 );
+
+                if ($step->order_no == 12) {
+                    activity()
+                        ->causedBy(auth()->user())
+                        ->performedOn($application)
+                        ->withProperties(['ip' => $ip, 'browser' => $browser])
+                        ->log('Cheque is ready to be picked up');
+
+                    if ($citizenUuid) {
+                        $this->notificationServices->send(
+                            $citizenUuid,
+                            'cheque',
+                            'Cheque is ready to be picked up',
+                            'A cheque for your burial assistance application is ready to be picked up. Please come to the Taguig City Hall CSWDO Office.'
+                        );
+                    }
+                }
 
                 if ($step->order_no == 13) {
                     $latestCheque = $application->latestCheque();
@@ -53,6 +78,21 @@ class ProcessLogController extends Controller
                         $application->update(['status' => 'released']);
                     } else {
                         return redirect()->back()->with('info', 'Please upload a photo of the cheque.');
+                    }
+
+                    if ($citizenUuid) {
+                        $this->notificationServices->send(
+                            $citizenUuid,
+                            'cheque',
+                            'Cheque has been claimed',
+                            'A cheque for your burial assistance application has been claimed. If this is a mistake, please contact Taguig City CSWDO immediately.'
+                        );
+
+                        activity()
+                            ->causedBy(auth()->user())
+                            ->withProperties(['ip' => $ip, 'browser' => $browser])
+                            ->performedOn($application)
+                            ->log('Cheque has been claimed');
                     }
                 }
 

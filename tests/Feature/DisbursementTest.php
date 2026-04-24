@@ -20,7 +20,7 @@ class DisbursementTest extends TestCase
     public function test_api_post_to_disbursement(): void
     {
         Http::fake([
-            config('services.disbursement.url').'*' => Http::response(['message' => 'Disbursement created successfully', 'reference' => '2025-0001'], 201),
+            config('services.disbursement.endpoint').'*' => Http::response(['message' => 'Disbursement created successfully', 'reference' => '2025-0001'], 201),
         ]);
 
         $service = app(ProcessLogService::class);
@@ -39,7 +39,7 @@ class DisbursementTest extends TestCase
 
         $this->assertEquals('Disbursement created successfully', $result['message']);
         Http::assertSent(function (Request $request) {
-            return $request->url() === config('services.disbursement.url')
+            return $request->url() === config('services.disbursement.endpoint')
                 && $request->method() === 'POST'
                 && $request->hasHeader('X-Secret-Key')
                 && $request['key'] === 'burial'

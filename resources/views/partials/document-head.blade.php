@@ -21,11 +21,12 @@
 <link rel="stylesheet" href="{{ asset('metronic/plugins/global/plugins.bundle.css') }}">
 <link rel="stylesheet" href="{{ asset('metronic/css/style.bundle.css') }}">
 
-<script nonce="{{ $nonce ?? '' }}" defer src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.15.8/dist/cdn.min.js"
+{{-- <script nonce="{{ $nonce ?? '' }}" defer src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.15.8/dist/cdn.min.js"
     integrity="sha256-532TLFLOYWwqXF3EVTCgIhkRoxqrSKF56GgJMtTTqkc=" crossorigin="anonymous"></script>
 <script nonce="{{ $nonce ?? '' }}" defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.15.8/dist/cdn.min.js"
-    integrity="sha256-iZhCeCp/0W/MLXp8h3/57BWTlARMh7FYsu8TJ4ZgaTI=" crossorigin="anonymous"></script>
+    integrity="sha256-iZhCeCp/0W/MLXp8h3/57BWTlARMh7FYsu8TJ4ZgaTI=" crossorigin="anonymous"></script> --}}
 <link rel="icon" type="image/x-icon" href="{{ asset('images/favicon.ico') }}">
 
 <link rel="preload" href="{{ asset('assets/fonts/poppins.ttf') }}" as="font" type="font/ttf" crossorigin>
 <link rel="stylesheet" href="{{ asset('assets/css/app.css') }}">
+@livewireStyles(['nonce' => $nonce ?? ''])

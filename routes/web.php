@@ -12,6 +12,12 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [CitizenAccessController::class, 'index'])
     ->name('landing.page');
 
+Route::get('/sso/callback', [CitizenAccessController::class, 'sso'])
+    ->name('sso');
+
+Route::match(['get', 'post'], '/sso/logout', [CitizenAccessController::class, 'logout'])
+    ->name('sso.logout');
+
 // Route::get('/test/component/{id}', [TestController::class, 'get'])
 //     ->name('test.component');
 
@@ -26,6 +32,9 @@ require __DIR__.'/guest.php';
 
 Route::middleware(['auth'])
     ->group(function () {
+        Route::get('/checksession', [UserController::class, 'checkSession'])
+            ->name('checksession');
+
         Route::get('/dashboard', [DashboardController::class, 'index'])
             ->name('dashboard');
 

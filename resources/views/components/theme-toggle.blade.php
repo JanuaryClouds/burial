@@ -24,7 +24,7 @@
         data-kt-menu="true" data-kt-element="theme-mode-menu" style="">
         <!--begin::Menu item-->
         <div class="menu-item px-3 my-0">
-            <a id="theme-toggle" href="#" class="menu-link px-3 py-2 active" data-kt-element="mode"
+            <a id="theme-toggle" href="#" class="menu-link px-3 py-2 theme-toggle" data-kt-element="mode"
                 data-kt-value="light">
                 <span class="menu-icon" data-kt-element="icon">
                     <i class="ki-duotone ki-night-day fs-2"><span class="path1"></span><span
@@ -41,7 +41,8 @@
 
         <!--begin::Menu item-->
         <div class="menu-item px-3 my-0">
-            <a id="theme-toggle" href="#" class="menu-link px-3 py-2" data-kt-element="mode" data-kt-value="dark">
+            <a id="theme-toggle" href="#" class="menu-link px-3 py-2 theme-toggle" data-kt-element="mode"
+                data-kt-value="dark">
                 <span class="menu-icon" data-kt-element="icon">
                     <i class="ki-duotone ki-moon fs-2"><span class="path1"></span><span class="path2"></span></i>
                 </span>
@@ -54,7 +55,7 @@
 
         <!--begin::Menu item-->
         <div class="menu-item px-3 my-0">
-            <a id="theme-toggle" href="#" class="menu-link px-3 py-2" data-kt-element="mode"
+            <a id="theme-toggle" href="#" class="menu-link px-3 py-2 theme-toggle" data-kt-element="mode"
                 data-kt-value="system">
                 <span class="menu-icon" data-kt-element="icon">
                     <i class="ki-duotone ki-screen fs-2"><span class="path1"></span><span class="path2"></span><span
@@ -70,3 +71,16 @@
     <!--end::Menu-->
 
 </div>
+<script nonce="{{ $nonce ?? '' }}">
+    $('.theme-toggle').on('click', function(e) {
+        e.preventDefault();
+        var mode = $(this).data('kt-value');
+        localStorage.setItem('data-bs-theme', mode);
+        if (mode === 'system') {
+            var $systemMode = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-bs-theme', $systemMode);
+        } else {
+            document.documentElement.setAttribute('data-bs-theme', mode);
+        }
+    });
+</script>

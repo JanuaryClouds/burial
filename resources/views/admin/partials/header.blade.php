@@ -1,5 +1,5 @@
 <div id="main-header-web" class="header py-6 py-lg-0" data-kt-sticky="true" data-kt-sticky-name="header"
-    data-kt-sticky-offset="{lg: '300px'}">
+    data-kt-sticky-offset="{lg: '300px'}" style="background-color: #00000000;">
     <!--begin::Container-->
     <div class="header-container container-xxl">
         <!--begin::Page title-->
@@ -31,6 +31,16 @@
 
             @include('admin.partials.mobile-nav')
             <!-- begin::Theme mode -->
+            @if (!Route::is('dashboard'))
+                <livewire:notification.button />
+
+                <div class="menu menu-sub menu-sub-dropdown menu-column w-350px w-lg-375px" data-kt-menu="true"
+                    id="kt_menu_notifications" data-popper-placement="bottom-end"
+                    style="z-index: 107; position: fixed; inset: 0px 0px auto auto; margin: 0px; transform: translate3d(-284px, 107.2px, 0px);">
+
+                    <livewire:notification.index />
+                </div>
+            @endif
             @include('components.theme-toggle')
             <!-- end::Theme mode -->
             <div class="">
@@ -73,7 +83,9 @@
 
                     <!--begin::Menu item-->
                     <div class="menu-item px-5">
-                        <form action="{{ route('logout') }}" method="POST" class="block mb-0">
+                        <form
+                            action="{{ auth()->user()->roles()->count() > 0 ? route('logout') : route('sso.logout') }}"
+                            method="POST" class="block mb-0">
                             @csrf
                             <button type="submit" class="btn w-100 text-left">
                                 <span class="fw-medium">
@@ -95,54 +107,59 @@
 </div>
 
 <script {{ $nonce ?? null ? 'nonce="' . $nonce . '"' : '' }}>
-    const header = document.getElementById('main-header-web');
-    const pageTitle = document.getElementById('pageTitle');
-    const darkBanner = @json(asset('images/banner-dark.svg'));
-    const lightBanner = @json(asset('images/banner-light.svg'));
+    function darkMode() {
+        const header = document.getElementById('main-header-web');
+        const pageTitle = document.getElementById('pageTitle');
+        const lightBanner = @json(asset('images/banner-light.svg'));
+        const darkBanner = @json(asset('images/banner-dark.svg'));
+        header.style.background = `url('${darkBanner}') no-repeat center center / cover`;
+        header.style.backgroundColor = '#151521';
+        pageTitle.classList.add('text-white');
+        pageTitle.classList.remove('text-black')
+    }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            header.style.background = `url('${darkBanner}') no-repeat center center / cover`;
-            header.style.backgroundColor = '#151521';
-            pageTitle.classList.add('text-white');
-            pageTitle.classList.remove('text-black')
+    function lightMode() {
+        const header = document.getElementById('main-header-web');
+        const pageTitle = document.getElementById('pageTitle');
+        const lightBanner = @json(asset('images/banner-light.svg'));
+        header.style.background = `url('${lightBanner}') no-repeat center center / cover`;
+        header.style.backgroundColor = '#f9fafb';
+        pageTitle.classList.add('text-black');
+        pageTitle.classList.remove('text-white')
+    }
+
+    if (document.documentElement.hasAttribute("data-bs-theme")) {
+        $mode = document.documentElement.getAttribute("data-bs-theme");
+
+        if ($mode === "system") {
+            if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+                lightMode();
+            } else {
+                darkMode();
+            }
+        } else if ($mode === "dark") {
+            darkMode();
+        } else if ($mode === "light") {
+            lightMode();
         } else {
-            header.style.background = `url('${lightBanner}') no-repeat center center / cover`;
-            header.style.backgroundColor = '#f9fafb';
-            pageTitle.classList.add('text-black');
-            pageTitle.classList.remove('text-white')
+            lightMode();
         }
-    });
+    }
 
     document.querySelectorAll('[data-kt-element="mode"]').forEach(mode => {
         mode.addEventListener('click', () => {
             if (mode.getAttribute('data-kt-value') === 'light') {
-                header.style.background = `url('${lightBanner}') no-repeat center center / cover`;
-                header.style.backgroundColor = '#f9fafb';
-                pageTitle.classList.add('text-black');
-                pageTitle.classList.remove('text-white')
+                lightMode();
             } else if (mode.getAttribute('data-kt-value') === 'dark') {
-                header.style.background = `url('${darkBanner}') no-repeat center center / cover`;
-                header.style.backgroundColor = '#151521';
-                pageTitle.classList.add('text-white');
-                pageTitle.classList.remove('text-black')
+                darkMode();
             } else if (mode.getAttribute('data-kt-value') === 'system') {
                 if (window.matchMedia('(prefers-color-scheme: light)').matches) {
-                    header.style.background = `url('${lightBanner}') no-repeat center center / cover`;
-                    header.style.backgroundColor = '#f9fafb';
-                    pageTitle.classList.add('text-black');
-                    pageTitle.classList.remove('text-white')
+                    lightMode();
                 } else {
-                    header.style.background = `url('${darkBanner}') no-repeat center center / cover`;
-                    header.style.backgroundColor = '#151521';
-                    pageTitle.classList.add('text-white');
-                    pageTitle.classList.remove('text-black')
+                    darkMode();
                 }
             } else {
-                header.style.background = `url('${lightBanner}') no-repeat center center / cover`;
-                header.style.backgroundColor = '#f9fafb';
-                pageTitle.classList.add('text-black');
-                pageTitle.classList.remove('text-white')
+                lightMode();
             }
         })
     })
