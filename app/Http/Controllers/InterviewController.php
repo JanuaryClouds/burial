@@ -61,6 +61,14 @@ class InterviewController extends Controller
                         ' at the CSWDO Office in the Taguig City Hall at Gen. Luna St., Tuktukan, Taguig City. 
                         Please arrive earlier than scheduled time and bring hard copies of the required documents.'
                     );
+
+                    $ip = request()->ip();
+                    $browser = request()->header('User-Agent');
+                    activity()
+                        ->causedBy(auth()->user())
+                        ->withProperties(['ip' => $ip, 'browser' => $browser])
+                        ->performedOn($interview->client)
+                        ->log('Created an interview');
                 }
                 // TODO send SMS message
                 // Unavialable
@@ -80,6 +88,14 @@ class InterviewController extends Controller
 
             $interview = $this->interviewServices->done($interview->id);
             if ($interview) {
+                $ip = request()->ip();
+                $browser = request()->header('User-Agent');
+                activity()
+                    ->causedBy(auth()->user())
+                    ->withProperties(['ip' => $ip, 'browser' => $browser])
+                    ->performedOn($interview)
+                    ->log('Marked an interview as done');
+                    
                 return redirect()->back()->with('success', 'Interview marked as done.');
             }
         } catch (Exception $e) {

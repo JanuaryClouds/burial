@@ -13,6 +13,7 @@ use App\Services\CentralClientService;
 use App\Services\ClientService;
 use App\Services\DatatableService;
 use App\Services\ImageService;
+use App\Services\NotificationService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Exception;
 use Illuminate\Http\Request;
@@ -29,16 +30,20 @@ class ClientController extends Controller
 
     protected $datatableServices;
 
+    protected $notificationServices;
+
     public function __construct(
         ClientService $clientService,
         CentralClientService $citizenService,
         ImageService $imageService,
         DatatableService $datatableService,
+        NotificationService $notificationService
     ) {
         $this->clientServices = $clientService;
         $this->citizenServices = $citizenService;
         $this->imageServices = $imageService;
         $this->datatableServices = $datatableService;
+        $this->notificationServices = $notificationService;
     }
 
     public function index()
@@ -237,6 +242,14 @@ class ClientController extends Controller
                     'assessment' => $request['assessment'],
                 ]);
 
+                $ip = request()->ip();
+                $browser = request()->header('User-Agent');
+                activity()
+                    ->causedBy(auth()->user())
+                    ->performedOn($client)
+                    ->withProperties(['ip' => $ip, 'browser' => $browser])
+                    ->log('Added an assessment for the client');
+
                 return redirect()->back()->with('success', 'Assessment created successfully.');
             } else {
                 return redirect()->back()->with('error', 'Client not found.');
@@ -250,6 +263,13 @@ class ClientController extends Controller
     {
         try {
             $client = Client::find($id);
+
+            if (! $client) {
+                return redirect()->back()->with('error', 'Client not found.');
+            }
+        
+            $ip = request()->ip();
+            $browser = request()->header('User-Agent');
             if ($request['type'] == 'burial') {
                 $request->validate([
                     'referral' => 'nullable|string|max:255',
@@ -270,8 +290,19 @@ class ClientController extends Controller
                 ]);
 
                 $application = $this->clientServices->transferClient($client->id);
+
+                $this->notificationServices->send(
+                    $client->user->citizen_uuid,
+                    'burial_assistance',
+                    'Burial Assistance Application',
+                    'Your application for funeral assistance has been approved. You will receive a burial assistance after our process is complete. Thank you for your patience.'
+                );
+
                 activity()
-                    ->log('Burial Assistance Application created');
+                    ->causedBy(Auth::user())
+                    ->withProperties(['ip' => $ip, 'browser' => $browser])
+                    ->performedOn($client)
+                    ->log('Burial Assistance application created for client');
 
                 return redirect()->back()->with('success', 'Successfuly created burial assistance application for the client!');
             } elseif ($request['type'] == 'funeral') {
@@ -291,8 +322,19 @@ class ClientController extends Controller
                 ]);
 
                 $application = $this->clientServices->transferClient($client->id);
+
+                $this->notificationServices->send(
+                    $client->user->citizen_uuid,
+                    'funeral_assistance',
+                    'Funeral Assistance Application',
+                    'Your application for funeral assistance has been approved. Your beneficiary will be given a Libreng Libing Service after our process is complete. Thank you for your patience.'
+                );
+
                 activity()
-                    ->log('Libreng Libing Application created');
+                    ->causedBy(Auth::user())
+                    ->withProperties(['ip' => $ip, 'browser' => $browser])
+                    ->performedOn($client)
+                    ->log('Created a Libreng Libing application for client');
 
                 return redirect()->back()->with('success', 'Successfuly created funeral assistance application for the client!');
             } else {

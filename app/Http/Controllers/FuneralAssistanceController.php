@@ -146,7 +146,7 @@ class FuneralAssistanceController extends Controller
             if ($citizenUuid) {
                 $this->notificationServices->send(
                     $citizenUuid,
-                    'libreng libing',
+                    'libreng_libing',
                     'Libreng Libing Forwarded to Cemetery Staff',
                     'Your application for Libreng Libing has been forwarded to Cemetery Staff.'
                 );

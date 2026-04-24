@@ -34,6 +34,10 @@ class ProcessLogController extends Controller
             $validated = $request->validated();
 
             if ($application) {
+                $ip = request()->ip();
+                $browser = request()->header('User-Agent');
+                $citizenUuid = $application->originalClaimant()?->client?->user?->citizen_uuid;
+
                 $this->processLogServices->create(
                     $application,
                     $application->claimantChanges->where('status', 'approved')->first()->newClaimant ?? $application->claimant,
@@ -42,7 +46,12 @@ class ProcessLogController extends Controller
                 );
 
                 if ($step->order_no == 12) {
-                    $citizenUuid = $application->originalClaimant()?->client?->user?->citizen_uuid;
+                    activity()
+                        ->causedBy(auth()->user())
+                        ->performedOn($application)
+                        ->withProperties(['ip' => $ip, 'browser' => $browser])
+                        ->log('Cheque is ready to be picked up');
+
                     if ($citizenUuid) {
                         $this->notificationServices->send(
                             $citizenUuid,
@@ -69,6 +78,21 @@ class ProcessLogController extends Controller
                         $application->update(['status' => 'released']);
                     } else {
                         return redirect()->back()->with('info', 'Please upload a photo of the cheque.');
+                    }
+
+                    if ($citizenUuid) {
+                        $this->notificationServices->send(
+                            $citizenUuid,
+                            'cheque',
+                            'Cheque has been claimed',
+                            'A cheque for your burial assistance application has been claimed. If this is a mistake, please contact Taguig City CSWDO immediately.'
+                        );
+
+                        activity()
+                            ->causedBy(auth()->user())
+                            ->withProperties(['ip' => $ip, 'browser' => $browser])
+                            ->performedOn($application)
+                            ->log('Cheque has been claimed');
                     }
                 }
 

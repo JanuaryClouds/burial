@@ -37,7 +37,7 @@ class CitizenAccessController extends Controller
         $burialDocuments = DocumentRequirement::burial();
         $funeralDocuments = DocumentRequirement::funeral();
 
-        if (config('services.portal.mock')) {
+        if (config('services.portal.users.mock')) {
             $citizens = User::whereNotNull('citizen_uuid')->get();
             $testLinks = [];
             foreach ($citizens as $citizen) {

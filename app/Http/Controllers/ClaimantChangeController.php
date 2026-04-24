@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Services\CentralClientService;
 use App\Services\ClaimantChangeService;
 use App\Services\ClaimantService;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Str;
 
@@ -23,11 +24,14 @@ class ClaimantChangeController extends Controller
 
     protected $centralClientService;
 
-    public function __construct(ClaimantChangeService $claimantChangeService, ClaimantService $claimantService, CentralClientService $centralClientService)
+    protected $notificationService;
+
+    public function __construct(ClaimantChangeService $claimantChangeService, ClaimantService $claimantService, CentralClientService $centralClientService, NotificationService $notificationService)
     {
         $this->claimantChangeService = $claimantChangeService;
         $this->claimantService = $claimantService;
         $this->clientService = $centralClientService;
+        $this->notificationService = $notificationService;
     }
 
     public function store(StoreClaimantChangeRequest $request, $id)
@@ -68,9 +72,10 @@ class ClaimantChangeController extends Controller
                 $ip = request()->ip();
                 $browser = request()->header('User-Agent');
                 activity()
-                    ->causedBy(null)
+                    ->causedBy(auth()->user())
+                    ->performedOn($burialAssistance)
                     ->withProperties(['ip' => $ip, 'browser' => $browser])
-                    ->log('Request for claimant change submitted by guest');
+                    ->log('Request for claimant change submitted');
 
                 return redirect()
                     ->route('burial.show', ['id' => $id])
@@ -106,12 +111,42 @@ class ClaimantChangeController extends Controller
                 'comments' => 'Change of claimant has been approved. Progress has been reset to evaluate the new claimant.',
                 'is_progress_step' => false,
             ]);
+
+            $this->notificationService->send(
+                $change->newClaimant->user->citizen_uuid,
+                'claimant_change_approved',
+                'Claimant Change Approved',
+                'You have been set as the new claimant for a burial assistance application.'
+            );
+
+            $ip = request()->ip();
+            $browser = request()->header('User-Agent');
+            activity()
+                ->causedBy(auth()->user())
+                ->performedOn($change)
+                ->withProperties(['ip' => $ip, 'browser' => $browser])
+                ->log('Approved claimant change');
         } elseif ($request->decision == 'rejected') {
             $change->update([
                 'status' => 'rejected',
             ]);
+
+            $this->notificationService->send(
+                $change->oldClaimant->user->citizen_uuid,
+                'claimant_change_rejected',
+                'Claimant Change Rejected',
+                'Your request to change claimants in a burial assistance application has been rejected.'
+            );
+
+            $ip = request()->ip();
+            $browser = request()->header('User-Agent');
+            activity()
+                ->causedBy(auth()->user())
+                ->performedOn($change)
+                ->withProperties(['ip' => $ip, 'browser' => $browser])
+                ->log('Rejected claimant change');
         }
 
-        return back()->with('success', 'Claimant change '.($request->decision === 'approve' ? 'approved' : 'rejected').' successfully.');
+        return back()->with('success', 'Claimant change '.($request->decision === 'approved' ? 'approved' : 'rejected').' successfully.');
     }
 }
