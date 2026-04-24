@@ -6,6 +6,8 @@
                     <span class="footer-meta-item">&copy; <span id="year"></span></span>
                     <span class="footer-dot">&bull;</span>
                     <span class="footer-meta-item">Powered by <b>Information Technology</b></span>
+                    <span class="footer-dot">&bull;</span>
+                    <span class="footer-meta-item">v. 2026w17</span>
                 </p>
                 <nav class="footer-social" aria-label="Social links">
                     <a class="social-link" href="https://www.facebook.com/taguigcity" target="_blank" rel="noopener"
