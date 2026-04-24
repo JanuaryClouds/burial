@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
+use RuntimeException;
 use Str;
 
 class CentralClientService
@@ -17,8 +18,12 @@ class CentralClientService
      */
     public function fetchFromPortal(string $key, string $value)
     {
-        $apiKey = config('services.portal.key');
-        $url = config('services.portal.url');
+        if (config('services.portal.users.enable.get') === false) {
+            throw new RuntimeException('User fetching from portal is disabled.');
+        }
+
+        $apiKey = config('services.portal.users.key');
+        $url = config('services.portal.users.endpoint');
         if (! $apiKey) {
             return null;
         }
@@ -47,12 +52,13 @@ class CentralClientService
      */
     public function checkIfUser(string $citizen_uuid)
     {
-        if (config('services.portal.fetch') || app()->isProduction()) {
+        if (config('services.portal.users.enable.get')) {
             $citizenData = $this->fetchFromPortal('user_id', $citizen_uuid) ?? [];
-            if (! empty($citizenData)) {
-                session(['citizen' => $this->filterData($citizenData)]);
+            if (empty($citizenData)) {
+                abort(403);
             }
-
+                
+            session(['citizen' => $this->filterData($citizenData)]);
             return User::firstOrCreate([
                 'citizen_uuid' => $citizen_uuid,
             ], [
@@ -77,6 +83,8 @@ class CentralClientService
 
             return $user;
         }
+
+        return null;
     }
 
     /**

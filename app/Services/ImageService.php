@@ -16,7 +16,7 @@ class ImageService
 
     public function __construct()
     {
-        $this->serverUrl = config('services.fileserver.url');
+        $this->serverUrl = config('services.fileserver.endpoint');
         $this->serverApi = config('services.fileserver.api');
     }
 
@@ -41,6 +41,10 @@ class ImageService
 
     public function post(string $filename, $file)
     {
+        if (config('services.fileserver.enable.post') === false) {
+            throw new \RuntimeException('Fileserver is not enabled.');
+        }
+
         if (! $file->isValid()) {
             throw new \RuntimeException($filename.' is not a valid file.');
         }
@@ -109,6 +113,14 @@ class ImageService
             ]);
 
         if ($response->failed() || (isset($response->json()['status']) && $response->json()['status'] === 'error')) {
+            $ip = request()->ip();
+            $browser = request()->header('User-Agent');    
+
+            activity()
+                ->causedBy(auth()->user())
+                ->withProperties(['ip' => $ip, 'browser' => $browser])
+                ->log('Failed to upload file: '.$filename);
+
             throw new \RuntimeException("{$response->status()}: Failed to upload file: ".$filename);
         }
 

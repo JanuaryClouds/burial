@@ -99,11 +99,11 @@ class ProcessLogService
     public function createDisbursement(array $data, string $deceased, string $claimant, $dod)
     {
         // TODO API Post to Disbursement System
-        if (config('services.disbursement.enabled')) {
+        if (config('services.disbursement.enable.post')) {
             $response = Http::timeout(10)
                 ->retry(3, 1000)
                 ->withHeader('X-Secret-Key', config('services.disbursement.key'))
-                ->post(config('services.disbursement.url'), [
+                ->post(config('services.disbursement.endpoint'), [
                     'key' => 'burial',
                     'payee' => $claimant,
                     'particulars' => 'For payment of funeral to the
