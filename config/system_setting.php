@@ -15,4 +15,9 @@ return [
         'type' => 'string',
         'label' => 'Department Head',
     ],
+
+    'department_email' => [
+        'type' => 'string',
+        'label' => 'Department Email',
+    ],
 ];

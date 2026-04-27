@@ -18,6 +18,7 @@ class SystemSettingSeeder extends Seeder
             'maintenance_mode' => false,
             'dept_head' => env('SYSTEM_DEPT_HEAD', ''),
             'social_welfare_officer' => env('SYSTEM_SOCIAL_WELFARE_OFFICER', ''),
+            'department_email' => env('SYSTEM_DEPARTMENT_EMAIL', ''),
         ]);
     }
 }
