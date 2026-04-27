@@ -75,4 +75,12 @@ return [
         'api' => env('FILESERVER_API'),
         'enc_key' => env('FILESERVER_ENCRYPTION_KEY', ''),
     ],
+
+    'sms' => [
+        'enable' => [
+            'post' => env('SMS_ENABLE_POST', false),
+        ],
+        'endpoint' => env('SMS_ENDPOINT', ''),
+        'key' => env('SMS_API_KEY', ''),
+    ],
 ];

@@ -11,6 +11,7 @@ use App\Models\SystemSetting;
 use App\Services\BurialAssistanceService;
 use App\Services\DatatableService;
 use App\Services\ProcessLogService;
+use App\Services\SmsService;
 use App\Services\WorkflowStepService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Exception;
@@ -27,16 +28,20 @@ class BurialAssistanceController extends Controller
 
     protected $workflowStepServices;
 
+    protected $smsServices;
+
     public function __construct(
         ProcessLogService $processLogService,
         BurialAssistanceService $burialAssistanceService,
         DatatableService $datatableService,
         WorkflowStepService $workflowStepService,
+        SmsService $smsService
     ) {
         $this->processLogServices = $processLogService;
         $this->burialAssistanceServices = $burialAssistanceService;
         $this->datatableServices = $datatableService;
         $this->workflowStepServices = $workflowStepService;
+        $this->smsServices = $smsService;
     }
 
     public function index()
@@ -134,8 +139,21 @@ class BurialAssistanceController extends Controller
                     'burial_assistance_id' => $application->id,
                 ]);
 
-                // TODO Send notification via SMS
-                // Unavialable
+                $claimant = $application->currentClaimant();
+                $beneficiary = $application->beneficiary();
+
+                if ($claimant && $claimant->contact_number && $beneficiary) {
+                    $department_email = SystemSetting::first()?->department_email;
+
+                    $this->smsServices->send(
+                        $claimant->contact_number,
+                        'Magandang araw! '.$claimant->fullname().', Ito ay abiso mula sa CSWDO ng Lungsod Taguig. Ang inyong aplikasyon para sa Burial Assistance para kay '
+                        .$beneficiary->fullname().' ay tinanggihan sa kadahilanang '
+                        .$validated['reason'].'. Para sa karagdagang detalye, maaaring makipag-ugnayan sa '.$department_email
+                        .'. Maraming salamat po.'
+                    );
+                }
+
             }
 
             if ($application->processLogs()->count() > 0) {

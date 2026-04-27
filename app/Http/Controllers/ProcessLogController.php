@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProcessLogRequest;
 use App\Models\BurialAssistance;
 use App\Models\ProcessLog;
+use App\Models\SystemSetting;
 use App\Models\WorkflowStep;
 use App\Services\ImageService;
 use App\Services\NotificationService;
 use App\Services\ProcessLogService;
+use App\Services\SmsService;
 use Exception;
 
 class ProcessLogController extends Controller
@@ -19,11 +21,14 @@ class ProcessLogController extends Controller
 
     protected $notificationServices;
 
-    public function __construct(ProcessLogService $processLogService, ImageService $imageService, NotificationService $notificationService)
+    protected $smsServices;
+
+    public function __construct(ProcessLogService $processLogService, ImageService $imageService, NotificationService $notificationService, SmsService $smsServices)
     {
         $this->processLogServices = $processLogService;
         $this->imageServices = $imageService;
         $this->notificationServices = $notificationService;
+        $this->smsServices = $smsServices;
     }
 
     public function add(ProcessLogRequest $request, $id, $stepId)
@@ -59,6 +64,19 @@ class ProcessLogController extends Controller
                             'Cheque is ready to be picked up',
                             'A cheque for your burial assistance application is ready to be picked up. Please come to the Taguig City Hall CSWDO Office.'
                         );
+
+                        $claimant = $application->currentClaimant();
+                        $beneficiary = $application->beneficiary();
+
+                        if ($claimant && $claimant?->contact_number && $beneficiary) {
+                            $department_email = SystemSetting::first()?->department_email;
+                            $this->smsServices->send(
+                                $claimant->contact_number,
+                                'Magandang araw! '.$claimant->fullname().', Ang tseke para sa Burial Assistance para kay'
+                                .$beneficiary->fullname().' ay maaari nang kuhain sa opisina ng CSWDO, sa Taguig City Hall, Gen. Luna St., Tuktukan, Taguig City. Magdala ng dalawang valid Government ID para sa beripikasyon. Para sa karagdagang detalye, maaaring makipag-ugnayan sa '
+                                .$department_email.'. Maraming salamat po.'
+                            );
+                        }
                     }
                 }
 

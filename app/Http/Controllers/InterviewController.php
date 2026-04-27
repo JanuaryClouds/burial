@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\InterviewRequest;
 use App\Models\Client;
+use App\Models\SystemSetting;
 use App\Services\DatatableService;
 use App\Services\InterviewService;
 use App\Services\NotificationService;
+use App\Services\SmsService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -19,11 +21,14 @@ class InterviewController extends Controller
 
     protected $notificationServices;
 
-    public function __construct(InterviewService $interviewService, DatatableService $datatableService, NotificationService $notificationServices)
+    protected $smsServices;
+
+    public function __construct(InterviewService $interviewService, DatatableService $datatableService, NotificationService $notificationServices, SmsService $smsServices)
     {
         $this->interviewServices = $interviewService;
         $this->datatableServices = $datatableService;
         $this->notificationServices = $notificationServices;
+        $this->smsServices = $smsServices;
     }
 
     public function index()
@@ -51,7 +56,8 @@ class InterviewController extends Controller
         try {
             $interview = $this->interviewServices->store($request->validated(), $id);
             if ($interview) {
-                $citizen_uuid = $interview->client?->user?->citizen_uuid;
+                $client = $interview->client;
+                $citizen_uuid = $client->user?->citizen_uuid;
                 if ($citizen_uuid) {
                     $this->notificationServices->send(
                         $citizen_uuid,
@@ -62,16 +68,26 @@ class InterviewController extends Controller
                         Please arrive earlier than scheduled time and bring hard copies of the required documents.'
                     );
 
-                    $ip = request()->ip();
-                    $browser = request()->header('User-Agent');
-                    activity()
-                        ->causedBy(auth()->user())
-                        ->withProperties(['ip' => $ip, 'browser' => $browser])
-                        ->performedOn($interview->client)
-                        ->log('Created an interview');
                 }
-                // TODO send SMS message
-                // Unavialable
+
+                $ip = request()->ip();
+                $browser = request()->header('User-Agent');
+                activity()
+                    ->causedBy(auth()->user())
+                    ->withProperties(['ip' => $ip, 'browser' => $browser])
+                    ->performedOn($interview->client)
+                    ->log('Created an interview');
+
+                $department_email = SystemSetting::first()?->department_email;
+                $date = Carbon::parse($interview->schedule)->format('F j, Y');
+                $time = Carbon::parse($interview->schedule)->format('g:i A');
+
+                $this->smsServices->send(
+                    $client->contact_number,
+                    'Magandang araw! '.$client->fullname().', Ikaw ay inaanyayahan para sa panayam kaungay ng inyong aplikasyon sa funeral assistance sa CSWDO ng Pamahalaang Lungsod ng Taguig.
+                        Petsa: '.$date.', Oras: '.$time.', Lugar: CSWDO Office, Taguig City Hall. Sa address na: General Luna St., Tuktukan, Taguig City. 
+                        Dalhin ang mga hard copy ng kinakailangan dokumento at dumating kayo bago sa itinakdang oras. Para sa karagdagang detalye, maaaring makipag-ugnayan sa '.$department_email.'. Maraming salamat po.'
+                );
 
                 return redirect()->back()->with('success', 'Interview created successfully.');
             }
