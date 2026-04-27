@@ -41,9 +41,7 @@
             <div class="card">
                 <div class="card-body">
                     @include('burial.partials.claimant-form', [
-                        'claimant' => $data->hasApprovedClaimantChange()
-                            ? $data->newClaimant()
-                            : $data->originalClaimant(),
+                        'claimant' => $data->currentClaimant(),
                         'readonly' => $readonly,
                     ])
                 </div>

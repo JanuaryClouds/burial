@@ -250,11 +250,7 @@ class BurialAssistanceController extends Controller
             abort(404);
         }
 
-        if ($assistance->hasApprovedClaimantChange()) {
-            $claimant = $assistance->newClaimant();
-        } else {
-            $claimant = $assistance->originalClaimant();
-        }
+        $claimant = $assistance->currentClaimant();
 
         $title = Str::title($claimant->first_name).' '.Str::title($claimant->last_name).'\'s Certificate of Eligibility';
         $social_welfare_officer = Str::upper(Str::replace('_', ' ', SystemSetting::first()?->social_welfare_officer));

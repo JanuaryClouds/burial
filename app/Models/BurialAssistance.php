@@ -78,6 +78,15 @@ class BurialAssistance extends Model
         return $this->claimantChanges()->first()->newClaimant;
     }
 
+    public function currentClaimant()
+    {
+        if ($this->hasApprovedClaimantChange()) {
+            return $this->newClaimant();
+        }
+
+        return $this->originalClaimant();
+    }
+
     public function beneficiary()
     {
         return $this->originalClaimant()->client->beneficiary;
