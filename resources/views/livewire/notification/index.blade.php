@@ -1,7 +1,7 @@
 <div class="card">
     <div class="card-header d-flex align-items-center justify-content-between gap-1">
         <span class="d-flex align-items-center gap-1">
-            <h4 class="card-title">Notifications</h4>
+            <h4 class="card-title">Updates</h4>
             <p class="text-muted fw-bold mb-0">{{ $unreadCount }} unread</p>
         </span>
         <p class="text-muted" wire:loading>...</p>
@@ -36,7 +36,7 @@
                 </div>
             @endforeach
         @else
-            <p class="text-muted text-center">No Notifications</p>
+            <p class="text-muted text-center">No Updates</p>
         @endif
     </div>
     <div class="card-footer d-flex justify-content-end align-items-center gap-2">
