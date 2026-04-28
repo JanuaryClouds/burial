@@ -61,8 +61,7 @@ class ReferralController extends Controller
 
                 activity()
                     ->causedBy(auth()->user())
-                    ->performedOn($client)
-                    ->withProperties(['ip' => $ip, 'browser' => $browser])
+                    ->withProperties(['ip' => $ip, 'browser' => $browser, 'client' => $client->id])
                     ->log('Created a referral');
 
                 return redirect()->back()->with('success', 'Referral created successfully.');

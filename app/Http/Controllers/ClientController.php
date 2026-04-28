@@ -202,8 +202,9 @@ class ClientController extends Controller
     {
         $client = $this->clientServices->updateClient($request->validated(), $client);
         activity()
-            ->performedOn($client)
-            ->causedBy(Auth::user());
+            ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
+            ->causedBy(Auth::user())
+            ->log('Updated the client details: '.$client->id);
 
         return redirect()
             ->route('client.show', $client)
@@ -215,7 +216,6 @@ class ClientController extends Controller
         $client = $this->clientServices->deleteClient($client);
 
         activity()
-            ->performedOn($client)
             ->causedBy(Auth::user())
             ->log('Deleted a client details: '.$client->id);
 
@@ -246,8 +246,7 @@ class ClientController extends Controller
                 $browser = request()->header('User-Agent');
                 activity()
                     ->causedBy(auth()->user())
-                    ->performedOn($client)
-                    ->withProperties(['ip' => $ip, 'browser' => $browser])
+                    ->withProperties(['ip' => $ip, 'browser' => $browser, 'client' => $client->id])
                     ->log('Added an assessment for the client');
 
                 return redirect()->back()->with('success', 'Assessment created successfully.');
@@ -300,8 +299,7 @@ class ClientController extends Controller
 
                 activity()
                     ->causedBy(Auth::user())
-                    ->withProperties(['ip' => $ip, 'browser' => $browser])
-                    ->performedOn($client)
+                    ->withProperties(['ip' => $ip, 'browser' => $browser, 'client' => $client->id])
                     ->log('Burial Assistance application created for client');
 
                 return redirect()->back()->with('success', 'Successfuly created burial assistance application for the client!');
@@ -332,8 +330,7 @@ class ClientController extends Controller
 
                 activity()
                     ->causedBy(Auth::user())
-                    ->withProperties(['ip' => $ip, 'browser' => $browser])
-                    ->performedOn($client)
+                    ->withProperties(['ip' => $ip, 'browser' => $browser, 'client' => $client->id])
                     ->log('Created a Libreng Libing application for client');
 
                 return redirect()->back()->with('success', 'Successfuly created funeral assistance application for the client!');

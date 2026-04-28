@@ -74,13 +74,20 @@ class InterviewController extends Controller
                 $browser = request()->header('User-Agent');
                 activity()
                     ->causedBy(auth()->user())
-                    ->withProperties(['ip' => $ip, 'browser' => $browser])
-                    ->performedOn($interview->client)
+                    ->withProperties([
+                        'ip' => $ip,
+                        'browser' => $browser,
+                        'client_id' => $client->id,
+                    ])
                     ->log('Created an interview');
 
                 $department_email = SystemSetting::first()?->department_email;
                 $date = Carbon::parse($interview->schedule)->format('F j, Y');
                 $time = Carbon::parse($interview->schedule)->format('g:i A');
+
+                if (! $client->contact_number) {
+                    return redirect()->back()->with('info', 'Contact number is required.');
+                }
 
                 $this->smsServices->send(
                     $client->contact_number,
@@ -108,8 +115,7 @@ class InterviewController extends Controller
                 $browser = request()->header('User-Agent');
                 activity()
                     ->causedBy(auth()->user())
-                    ->withProperties(['ip' => $ip, 'browser' => $browser])
-                    ->performedOn($interview)
+                    ->withProperties(['ip' => $ip, 'browser' => $browser, 'interview' => $interview->id])
                     ->log('Marked an interview as done');
 
                 return redirect()->back()->with('success', 'Interview marked as done.');

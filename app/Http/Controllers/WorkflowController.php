@@ -57,8 +57,7 @@ class WorkflowController extends Controller
         $workflow->update($request->only(['description']));
         activity()
             ->causedBy(auth()->user())
-            ->performedOn($workflow)
-            ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
+            ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent'), 'workflow' => $workflow->id])
             ->log('Updated a workflow');
 
         return redirect()->route('workflowstep.index')->with('success', 'Workflow updated successfully');
