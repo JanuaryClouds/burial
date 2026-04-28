@@ -19,8 +19,15 @@
                         </div>
                         <div class="col-9">
                             <div class="d-flex flex-column gap-1">
-                                <span class="fw-bold">{{ $notification['subject'] }}</span>
-                                <span class="text-muted">{{ $notification['source_class'] }}</span>
+                                <p class="mb-0">
+                                    <a class="" data-bs-toggle="collapse" href="#body-{{ $notification['id'] }}"
+                                        aria-expanded="false" aria-controls="body-{{ $notification['id'] }}">
+                                        {{ $notification['subject'] }}
+                                    </a>
+                                </p>
+                                <div class="collapse" id="body-{{ $notification['id'] }}" wire:ignore.self>
+                                    {{ $notification['body'] }}
+                                </div>
                             </div>
                         </div>
                         <div class="col-1" wire:loading.remove>
