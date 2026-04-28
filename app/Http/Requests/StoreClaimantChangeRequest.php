@@ -60,7 +60,7 @@ class StoreClaimantChangeRequest extends FormRequest
     {
         return [
             'reason_for_change' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|exists:users,email',
+            'email' => 'required|string|email|max:255',
             'date_of_birth' => 'required|date',
             'address' => 'required|string|max:255',
             'barangay_id' => 'required|numeric|exists:barangays,id',
