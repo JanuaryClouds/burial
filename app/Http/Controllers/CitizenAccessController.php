@@ -38,7 +38,9 @@ class CitizenAccessController extends Controller
         $funeralDocuments = DocumentRequirement::funeral();
 
         if (config('services.portal.users.mock')) {
-            $citizens = User::whereNotNull('citizen_uuid')->get();
+            $citizens = User::whereNotNull('citizen_uuid')
+                ->orderBy('created_at')
+                ->get();
             $testLinks = [];
             foreach ($citizens as $citizen) {
                 $payload = [
@@ -53,16 +55,30 @@ class CitizenAccessController extends Controller
                 $url = url('/sso/callback')."?payload={$encoded}&signature={$signature}";
 
                 $testLinks[] = [
-                    'name' => $citizen->fullname(),
+                    'label' => $citizen->citizen_uuid,
                     'url' => $url,
                 ];
             }
 
-            $newUser = [
-                'citizen_uuid' => Str::uuid()->toString(),
-                'time' => time(),
-                'nonce' => Str::uuid()->toString(),
-            ];
+            if (! config('services.portal.users.enable.get')) {
+                $newUser = [
+                    'citizen_uuid' => Str::uuid()->toString(),
+                    'time' => time(),
+                    'nonce' => Str::uuid()->toString(),
+                ];
+            } else {
+                $sampleUserUuid = config('services.portal.users.sampleUuid');
+
+                if (! $sampleUserUuid) {
+                    throw new \RuntimeException('Sample user is not configured');
+                }
+
+                $newUser = [
+                    'citizen_uuid' => $sampleUserUuid,
+                    'time' => time(),
+                    'nonce' => Str::uuid()->toString(),
+                ];
+            }
 
             $encoded = rtrim(strtr(base64_encode(json_encode($newUser)), '+/', '-_'), '=');
             $signature = hash_hmac('sha256', $encoded, config('services.portal.sso.secret'));
@@ -70,7 +86,7 @@ class CitizenAccessController extends Controller
             $url = url('/sso/callback')."?payload={$encoded}&signature={$signature}";
 
             $testLinks[] = [
-                'name' => 'New User',
+                'label' => 'New User',
                 'url' => $url,
             ];
 
@@ -124,8 +140,12 @@ class CitizenAccessController extends Controller
 
         if ($uuid) {
             $user = $this->centralClientService->checkIfUser($uuid);
-            if ($user == null || ($user != null && $user->is_active == 0)) {
+            if ($user === null) {
                 return redirect()->route('landing.page');
+            }
+
+            if (! $user->is_active) {
+                return redirect()->back()->with('warning', 'Your account is inactive. Please contact the superadmin.');
             }
 
             if (! Auth::check()) {
