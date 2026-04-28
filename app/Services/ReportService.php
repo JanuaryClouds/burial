@@ -92,8 +92,11 @@ class ReportService
         $burialAssistances = $query->get();
 
         foreach ($burialAssistances as $ba) {
-            $dob = Carbon::parse($ba->claimant?->client?->beneficiary?->date_of_birth ?? null);
-            $dod = Carbon::parse($ba->claimant?->client?->beneficiary?->date_of_death ?? null);
+            $beneficiary = $ba->beneficiary();
+            $dobRaw = $beneficiary?->date_of_birth;
+            $dodRaw = $beneficiary?->date_of_death;
+            $dob = $dobRaw ? Carbon::parse($dobRaw) : null;
+            $dod = $dodRaw ? Carbon::parse($dodRaw) : null;
             $encoder = User::find($ba->encoder);
             $initialChecker = User::find($ba->initial_checker);
             $age = ($dob && $dod) ? $dob->diffInYears($dod) : null;
@@ -102,10 +105,16 @@ class ReportService
                 $newClaimant = $approvedChange?->newClaimant;
                 $firstClaimant = $approvedChange?->oldClaimant;
             } else {
-                $firstClaimant = $ba->claimant;
+                $firstClaimant = $ba->originalClaimant();
+
+                if (! $firstClaimant) {
+                    $row++;
+
+                    continue;
+                }
             }
 
-            $sheet->setCellValue("A{$row}", $ba->claimant?->client?->tracking_no);
+            $sheet->setCellValue("A{$row}", $ba->originalClaimant()?->client?->tracking_no);
             $sheet->setCellValue("B{$row}", $ba->application_date);
             $sheet->setCellValue("C{$row}", $ba->swa);
             $sheet->setCellValue("D{$row}", $encoder ? $encoder->first_name.' '.$encoder->last_name : '');
