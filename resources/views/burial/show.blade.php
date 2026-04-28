@@ -87,7 +87,7 @@
                 <div class="card">
                     <div class="card-body">
                         @include('burial.partials.claimant-form', [
-                            'claimant' => $data->claimant,
+                            'claimant' => $data->currentClaimant(),
                             'readonly' => $readonly,
                         ])
                     </div>

@@ -45,7 +45,7 @@ class ProcessLogController extends Controller
 
                 $this->processLogServices->create(
                     $application,
-                    $application->claimantChanges->where('status', 'approved')->first()->newClaimant ?? $application->claimant,
+                    $application->currentClaimant(),
                     $step,
                     $validated
                 );
@@ -53,8 +53,7 @@ class ProcessLogController extends Controller
                 if ($step->order_no == 12) {
                     activity()
                         ->causedBy(auth()->user())
-                        ->performedOn($application)
-                        ->withProperties(['ip' => $ip, 'browser' => $browser])
+                        ->withProperties(['ip' => $ip, 'browser' => $browser, 'burialAssistance' => $application->id])
                         ->log('Cheque is ready to be picked up');
 
                     if ($citizenUuid) {
@@ -92,7 +91,7 @@ class ProcessLogController extends Controller
                     $application->update(['status' => 'released']);
                     if ($request->file('cheque-image-proof') && app()->isProduction()) {
                         $extension = $request->file('cheque-image-proof')->getClientOriginalExtension();
-                        $this->imageServices->post($application->claimant->client->tracking_no.'-cheque-proof', $request->file('cheque-image-proof'));
+                        $this->imageServices->post($application->originalClaimant()?->client?->tracking_no.'-cheque-proof', $request->file('cheque-image-proof'));
                         $application->update(['status' => 'released']);
                     } else {
                         return redirect()->back()->with('info', 'Please upload a photo of the cheque.');
@@ -108,8 +107,7 @@ class ProcessLogController extends Controller
 
                         activity()
                             ->causedBy(auth()->user())
-                            ->withProperties(['ip' => $ip, 'browser' => $browser])
-                            ->performedOn($application)
+                            ->withProperties(['ip' => $ip, 'browser' => $browser, 'burialAssistance' => $application->id])
                             ->log('Cheque has been claimed');
                     }
                 }

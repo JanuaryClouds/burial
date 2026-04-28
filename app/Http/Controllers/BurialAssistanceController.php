@@ -74,11 +74,11 @@ class BurialAssistanceController extends Controller
     {
         try {
             $data = BurialAssistance::findOrFail($id);
-            $client = $data->originalClaimant()->client;
+            $client = $data->currentClaimant();
             if (! $client) {
                 abort(404);
             }
-            $page_title = $client->tracking_no;
+            $page_title = $data->originalClaimant()?->client?->tracking_no;
             $page_subtitle = $client->fullname()."'s Burial Assistance Application";
             $readonly = auth()->user()->cannot('manage-content') && $data->status == 'released';
 
@@ -251,6 +251,10 @@ class BurialAssistanceController extends Controller
         }
 
         $claimant = $assistance->currentClaimant();
+
+        if (! $claimant) {
+            abort(404);
+        }
 
         $title = Str::title($claimant->first_name).' '.Str::title($claimant->last_name).'\'s Certificate of Eligibility';
         $social_welfare_officer = Str::upper(Str::replace('_', ' ', SystemSetting::first()?->social_welfare_officer));

@@ -11,6 +11,7 @@ use App\Services\CentralClientService;
 use App\Services\ClaimantChangeService;
 use App\Services\ClaimantService;
 use App\Services\NotificationService;
+use DB;
 use Illuminate\Http\Request;
 use Str;
 
@@ -42,13 +43,17 @@ class ClaimantChangeController extends Controller
                 return redirect()->back()->with('error', 'The new claimant does not have an account in the system. Please notify them to access this system once with their TLC Portal account to proceed.');
             }
 
+            if ($new_claimant->roles()->exists()) {
+                return redirect()->back()->with('error', 'Users with system roles cannot be set as claimants, Please select a different user.');
+            }
+
             $validated = $request->validated();
 
             if ($validated) {
                 $burialAssistance = BurialAssistance::findOrFail($id);
                 $validated['burial_assistance_id'] = $burialAssistance->id;
 
-                if (! $burialAssistance->claimant) {
+                if (! $burialAssistance->oldClaimant()) {
                     return redirect()->back()->with('error', 'Unable to find claimant.');
                 }
 
@@ -56,7 +61,7 @@ class ClaimantChangeController extends Controller
                     return redirect()->back()->with('error', 'Changing claimant is not allowed in a '.$burialAssistance->status.' status.');
                 }
 
-                $validated['old_claimant_id'] = $burialAssistance->claimant->id;
+                $validated['old_claimant_id'] = $burialAssistance->originalClaimant()?->id;
                 $validated['id'] = (string) Str::uuid();
                 $validated['first_name'] = $new_claimant->first_name;
                 $validated['middle_name'] = $new_claimant->middle_name ?? null;
@@ -73,8 +78,11 @@ class ClaimantChangeController extends Controller
                 $browser = request()->header('User-Agent');
                 activity()
                     ->causedBy(auth()->user())
-                    ->performedOn($burialAssistance)
-                    ->withProperties(['ip' => $ip, 'browser' => $browser])
+                    ->withProperties([
+                        'ip' => $ip,
+                        'browser' => $browser,
+                        'burialAssistance' => $burialAssistance->id,
+                    ])
                     ->log('Request for claimant change submitted');
 
                 return redirect()
@@ -88,64 +96,78 @@ class ClaimantChangeController extends Controller
 
     public function decide(Request $request, $uuid, $change)
     {
-        $change = ClaimantChange::where('burial_assistance_id', $uuid)
-            ->where('id', $change)
-            ->firstOrFail();
-        if (! $change) {
-            return redirect()->back()->withErrors(['error' => 'Claimant Change not found.']);
-        }
+        DB::transaction(function () use ($request, $uuid, $change) {
+            $change = ClaimantChange::where('burial_assistance_id', $uuid)
+                ->where('id', $change)
+                ->firstOrFail();
 
-        if ($request->decision == 'approved') {
-            $change->update([
-                'status' => 'approved',
-                'changed_at' => now(),
+            $request->validate([
+                'decision' => 'required|in:approved,rejected',
             ]);
 
-            ProcessLog::create([
-                'id' => Str::uuid(),
-                'burial_assistance_id' => $change->burialAssistance->id,
-                'claimant_id' => $change->newClaimant->id,
-                'loggable_id' => $change->id,
-                'loggable_type' => ClaimantChange::class,
-                'date_in' => now(),
-                'comments' => 'Change of claimant has been approved. Progress has been reset to evaluate the new claimant.',
-                'is_progress_step' => false,
-            ]);
+            if ($request->decision == 'approved') {
+                $change->update([
+                    'status' => 'approved',
+                    'changed_at' => now(),
+                ]);
 
-            $this->notificationService->send(
-                $change->newClaimant->user->citizen_uuid,
-                'claimant_change_approved',
-                'Claimant Change Approved',
-                'You have been set as the new claimant for a burial assistance application.'
-            );
+                ProcessLog::create([
+                    'id' => Str::uuid(),
+                    'burial_assistance_id' => $change->burialAssistance->id,
+                    'claimant_id' => $change->newClaimant->id,
+                    'loggable_id' => $change->id,
+                    'loggable_type' => ClaimantChange::class,
+                    'date_in' => now(),
+                    'comments' => 'Change of claimant has been approved. Progress has been reset to evaluate the new claimant.',
+                    'is_progress_step' => false,
+                ]);
 
-            $ip = request()->ip();
-            $browser = request()->header('User-Agent');
-            activity()
-                ->causedBy(auth()->user())
-                ->performedOn($change)
-                ->withProperties(['ip' => $ip, 'browser' => $browser])
-                ->log('Approved claimant change');
-        } elseif ($request->decision == 'rejected') {
-            $change->update([
-                'status' => 'rejected',
-            ]);
+                $citizen_uuid = $change->newUserClaimant?->citizen_uuid;
 
-            $this->notificationService->send(
-                $change->oldClaimant->user->citizen_uuid,
-                'claimant_change_rejected',
-                'Claimant Change Rejected',
-                'Your request to change claimants in a burial assistance application has been rejected.'
-            );
+                if (! $citizen_uuid) {
+                    return redirect()->back()->with('error', 'New claimant does not have an account in the system.');
+                }
 
-            $ip = request()->ip();
-            $browser = request()->header('User-Agent');
-            activity()
-                ->causedBy(auth()->user())
-                ->performedOn($change)
-                ->withProperties(['ip' => $ip, 'browser' => $browser])
-                ->log('Rejected claimant change');
-        }
+                $this->notificationService->send(
+                    $citizen_uuid,
+                    'claimant_change_approved',
+                    'Claimant Change Approved',
+                    'You have been set as the new claimant for a burial assistance application.'
+                );
+
+                $ip = request()->ip();
+                $browser = request()->header('User-Agent');
+                activity()
+                    ->causedBy(auth()->user())
+                    ->withProperties(['ip' => $ip, 'browser' => $browser, 'claimantChange' => $change->id])
+                    ->log('Approved claimant change');
+            } elseif ($request->decision == 'rejected') {
+                $change->update([
+                    'status' => 'rejected',
+                ]);
+
+                $citizen_uuid = $change->oldClaimant?->client?->user?->citizen_uuid;
+
+                if (! $citizen_uuid) {
+                    return redirect()->back()->with('error', 'Old claimant does not have an account in the system.');
+                }
+
+                $this->notificationService->send(
+                    $citizen_uuid,
+                    'claimant_change_rejected',
+                    'Claimant Change Rejected',
+                    'Your request to change claimants in a burial assistance application has been rejected.'
+                );
+
+                $ip = request()->ip();
+                $browser = request()->header('User-Agent');
+                activity()
+                    ->causedBy(auth()->user())
+                    ->withProperties(['ip' => $ip, 'browser' => $browser, 'claimantChange' => $change->id])
+                    ->log('Rejected claimant change');
+            }
+
+        });
 
         return back()->with('success', 'Claimant change '.($request->decision === 'approved' ? 'approved' : 'rejected').' successfully.');
     }

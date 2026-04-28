@@ -13,7 +13,7 @@ class BurialAssistanceService
         return BurialAssistance::with([
             'claimant.client.user',
             'claimantChanges',
-            'claimantChanges.user',
+            'claimantChanges.newUserClaimant',
             'claimantChanges.oldClaimant.client.user',
         ])
             ->when($user_id, function ($query) use ($user_id) {
@@ -62,10 +62,10 @@ class BurialAssistanceService
                 }
 
                 return [
-                    'tracking_no' => $burialAssistance->claimant?->client?->tracking_no,
-                    'client' => $burialAssistance->claimant?->client?->fullname(),
-                    'beneficiary' => $burialAssistance->claimant?->client?->beneficiary?->fullname(),
-                    'address' => $burialAssistance->claimant?->client?->address(),
+                    'tracking_no' => $burialAssistance->originalClaimant()?->client?->tracking_no,
+                    'client' => $burialAssistance->originalClaimant()?->client?->fullname(),
+                    'beneficiary' => $burialAssistance->beneficiary()?->fullname(),
+                    'address' => $burialAssistance->currentClaimant()?->fullAddress(),
                     'funeraria' => $burialAssistance->funeraria,
                     'amount' => $burialAssistance->amount,
                     'status' => Str::title($status),
@@ -103,11 +103,11 @@ class BurialAssistanceService
     {
         $application->update($data);
         if (isset($data['claimant'])) {
-            $application->claimant?->update($data['claimant']);
+            $application->currentClaimant()?->update($data['claimant']);
         }
 
         if (isset($data['beneficiary'])) {
-            $application->claimant?->client?->beneficiary->update($data['beneficiary']);
+            $application->beneficiary()?->update($data['beneficiary']);
         }
 
         // $client = $application->claimant->client;

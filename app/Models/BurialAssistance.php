@@ -153,7 +153,7 @@ class BurialAssistance extends Model
                                     ->whereHas('oldClaimant.client.user', function ($q) use ($userId) {
                                         $q->where('id', $userId);
                                     })
-                                    ->orWhereHas('user', function ($q) use ($userId) {
+                                    ->orWhereHas('newUserClaimant', function ($q) use ($userId) {
                                         $q->where('id', $userId);
                                     });
                             });
