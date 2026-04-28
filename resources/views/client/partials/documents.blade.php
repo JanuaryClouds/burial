@@ -35,7 +35,7 @@
                         $filename = 'test-' . $filename;
                     }
 
-                    if (app()->hasDebugModeEnabled()) {
+                    if (!config('services.fileserver.enable.get')) {
                         $filename = 'test.png';
                     }
                 @endphp

@@ -79,8 +79,14 @@
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
                         <div class="modal-body">
-                            <img src="{{ route('image', ['filename' => $data->trackingNumber() . '-cheque-proof.jpeg.enc']) }}"
-                                alt="Proof of Claiming Check" class="img-fluid">
+                            @php
+                                $filename = $data->trackingNumber() . '-cheque-proof.jpeg.enc';
+                                if (!config('services.fileserver.enable.get')) {
+                                    $filename = 'test.png';
+                                }
+                            @endphp
+                            <img src="{{ route('image', ['filename' => $filename]) }}" alt="Proof of Claiming Cheque"
+                                class="img-fluid">
                         </div>
                     </div>
                 </div>
