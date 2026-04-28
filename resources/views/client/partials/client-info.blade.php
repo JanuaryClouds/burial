@@ -14,9 +14,9 @@
         $socialInfo = $client?->socialInfo;
         $demographic = $client?->demographic;
     } else {
-        $first_name = session('citizen')['firstname'] ?? (auth()->user()?->first_name ?? null);
-        $middle_name = session('citizen')['middlename'] ?? (auth()->user()?->middle_name ?? null);
-        $last_name = session('citizen')['lastname'] ?? (auth()->user()?->last_name ?? null);
+        $first_name = session('citizen')['first_name'] ?? (auth()->user()?->first_name ?? null);
+        $middle_name = session('citizen')['middle_name'] ?? (auth()->user()?->middle_name ?? null);
+        $last_name = session('citizen')['last_name'] ?? (auth()->user()?->last_name ?? null);
         $suffix = session('citizen')['suffix'] ?? (auth()->user()?->suffix ?? null);
         $contact_number = session('citizen')['contact_number'] ?? (auth()->user()?->contact_number ?? null);
     }
@@ -131,8 +131,7 @@
             $('#age').val(age);
         })
 
-        $('#barangay_id').on('change', function() {
-            let barangay = $('#barangay_id option:selected').text().trim();
+        function updateDistrict(barangay) {
             if ([
                     'Pateros',
                     'Bagumbayan',
@@ -160,6 +159,12 @@
                 $('#district_id').val(2);
                 $('#district_id_display').val(2);
             }
+        }
+
+        $('#barangay_id').on('change', function() {
+            updateDistrict($(this).find('option:selected').text());
         })
+
+        updateDistrict($('#barangay_id option:selected').text());
     })
 </script>

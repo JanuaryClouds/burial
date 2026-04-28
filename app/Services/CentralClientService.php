@@ -101,15 +101,15 @@ class CentralClientService
         }
 
         return [
-            'firstname' => $citizen['firstname'] ?? null,
-            'middlename' => $citizen['middlename'] ?? null,
-            'lastname' => $citizen['lastname'] ?? null,
+            'first_name' => $citizen['firstname'] ?? null,
+            'middle_name' => $citizen['middlename'] ?? null,
+            'last_name' => $citizen['lastname'] ?? null,
             'suffix' => $citizen['suffix'] ?? null,
             'age' => $citizen['age'] ?? null,
             'birthday' => $citizen['birthday'] ?? null,
             'sex' => isset($citizen['gender']) ? Str::ucfirst($citizen['gender']) : null,
-            'street' => $citizen['latest_address']['street'] ?? null,
-            'barangay' => $citizen['latest_address']['barangay'] ?? null,
+            'street' => $citizen['street'] ?? null,
+            'barangay' => $citizen['barangay'] ?? null,
             'civil_status' => $citizen['civil_status'] ?? null,
             'contact_number' => $citizen['contact_number'] ?? null,
         ];
