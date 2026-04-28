@@ -81,6 +81,7 @@ class FuneralAssistanceController extends Controller
     {
         try {
             $data = FuneralAssistance::findOrFail($id);
+            $this->authorize('view', $data);
             $client = $data->client;
             if (! $client) {
                 return redirect()->back()->with('error', 'Client not found for this application.');
@@ -114,6 +115,7 @@ class FuneralAssistanceController extends Controller
     {
         try {
             $funeralAssistance = FuneralAssistance::findOrFail($id);
+            $this->authorize('update', $funeralAssistance);
             $funeralAssistance = $this->funeralAssistanceServices->update($request->all(), $funeralAssistance);
 
             return redirect()->back()->with('success', 'Successfully updated Libreng Libing Application.');
@@ -125,7 +127,8 @@ class FuneralAssistanceController extends Controller
     public function approve($id)
     {
         try {
-            $data = FuneralAssistance::find($id);
+            $data = FuneralAssistance::findOrFail($id);
+            $this->authorize('update', $data);
             $data->approved_at = now();
             $data->save();
 
@@ -139,6 +142,7 @@ class FuneralAssistanceController extends Controller
     {
         try {
             $data = FuneralAssistance::find($id);
+            $this->authorize('update', $data);
             $data->forwarded_at = now();
             $data->save();
 
