@@ -15,6 +15,7 @@
                             @if (
                                 !in_array($field, [
                                     'id',
+                                    'citizen_uuid',
                                     'created_at',
                                     'updated_at',
                                     'handler_id',
@@ -28,6 +29,24 @@
                                     'remember_token',
                                     'is_active',
                                 ]))
+                                @php
+                                    if ($data instanceof \App\Models\User) {
+                                        $encryptedFields = [
+                                            'last_name',
+                                            'first_name',
+                                            'middle_name',
+                                            'suffix',
+                                            'contact_number',
+                                        ];
+                                        if (in_array($field, $encryptedFields)) {
+                                            try {
+                                                $value = Crypt::decryptString($value);
+                                            } catch (\Throwable $th) {
+                                                \Log::warning('Failed to decrypt ' . $field);
+                                            }
+                                        }
+                                    }
+                                @endphp
                                 <div class="col">
                                     @include('components.form-input', [
                                         'name' => $field,
@@ -39,8 +58,8 @@
                             @endif
                         </div>
                     @endforeach
-                    @includeWhen(class_basename($data) === 'User', 'cms.partials.edit-user')
-                    @includeWhen(class_basename($data) === 'Role', 'cms.partials.edit-role')
+                    @includeWhen($data instanceof \App\Models\User, 'cms.partials.edit-user')
+                    @includeWhen($data instanceof \App\Models\Role, 'cms.partials.edit-role')
                 </div>
             </div>
             <div class="card-footer d-flex gap-2 justify-content-end">
