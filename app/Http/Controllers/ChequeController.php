@@ -41,7 +41,7 @@ class ChequeController extends Controller
                         'tracking_no' => $claimant->client?->tracking_no,
                         'claimant' => $claimant->fullname(),
                         'contact_number' => $claimant->contact_number,
-                        'address' => $claimant->address(),
+                        'address' => $claimant->fullAddress(),
                         'cheque_number' => $claimant->cheque ? $claimant->cheque->cheque_number : 'N/A',
                     ];
                 });
