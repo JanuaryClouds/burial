@@ -89,7 +89,9 @@ class ProcessLogController extends Controller
                         'date_claimed' => $request['date_in'],
                     ]);
                     $application->update(['status' => 'released']);
-                    if ($request->file('cheque-image-proof') && app()->isProduction()) {
+                    if (! config('services.fileserver.enable.post')) {
+                        return redirect()->back()->with('info', 'File Upload skipped.');
+                    } elseif ($request->file('cheque-image-proof') && config('services.fileserver.enable.post')) {
                         $extension = $request->file('cheque-image-proof')->getClientOriginalExtension();
                         $this->imageServices->post($application->originalClaimant()?->client?->tracking_no.'-cheque-proof', $request->file('cheque-image-proof'));
                         $application->update(['status' => 'released']);
