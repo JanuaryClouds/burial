@@ -34,7 +34,7 @@
                 <div class="card-body">
                     @include('client.partials.swa-form', [
                         'application' => $data,
-                        'readonly' => $readonly,
+                        'readonly' => true,
                     ])
                 </div>
             </div>
@@ -42,7 +42,7 @@
                 <div class="card-body">
                     @include('burial.partials.claimant-form', [
                         'claimant' => $data->currentClaimant(),
-                        'readonly' => $readonly,
+                        'readonly' => true,
                     ])
                 </div>
             </div>
@@ -50,7 +50,7 @@
                 <div class="card-body">
                     @include('client.partials.beneficiary-info', [
                         'client' => $data->originalClaimant()?->client,
-                        'readonly' => $readonly,
+                        'readonly' => true,
                     ])
                 </div>
             </div>
@@ -58,7 +58,7 @@
                 <div class="card-body">
                     @include('burial.partials.details-form', [
                         'burialAssistance' => $data,
-                        'readonly' => $readonly,
+                        'readonly' => true,
                     ])
                 </div>
             </div>
