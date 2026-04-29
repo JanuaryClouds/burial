@@ -196,12 +196,11 @@ class BurialAssistanceController extends Controller
                 ->select('id', 'name')
                 ->withCount([
                     'beneficiary as beneficiary_count' => function ($query) use ($startDate, $endDate) {
-                        $query->whereBetween('date_of_death', [$startDate, $endDate]);
+                        $query->whereHas('client.claimant', function ($q) use ($startDate, $endDate) {
+                            $q->whereBetween('date_of_death', [$startDate, $endDate]);
+                        });
                     },
                 ])
-                ->whereHas('beneficiary', function ($query) use ($startDate, $endDate) {
-                    $query->whereBetween('date_of_death', [$startDate, $endDate]);
-                })
                 ->get()
                 ->mapWithKeys(function ($barangay) {
                     return [$barangay->name => $barangay->beneficiary_count];
@@ -212,12 +211,11 @@ class BurialAssistanceController extends Controller
                 ->select('id', 'name')
                 ->withCount([
                     'beneficiary as beneficiary_count' => function ($query) use ($startDate, $endDate) {
-                        $query->whereBetween('date_of_death', [$startDate, $endDate]);
+                        $query->whereHas('client.claimant', function ($q) use ($startDate, $endDate) {
+                            $q->whereBetween('date_of_death', [$startDate, $endDate]);
+                        });
                     },
                 ])
-                ->whereHas('beneficiary', function ($query) use ($startDate, $endDate) {
-                    $query->whereBetween('date_of_death', [$startDate, $endDate]);
-                })
                 ->get()
                 ->mapWithKeys(function ($religion) {
                     return [$religion->name => $religion->beneficiary_count];
@@ -257,8 +255,8 @@ class BurialAssistanceController extends Controller
         }
 
         $title = Str::title($claimant->first_name).' '.Str::title($claimant->last_name).'\'s Certificate of Eligibility';
-        $social_welfare_officer = Str::upper(Str::replace('_', ' ', SystemSetting::first()?->social_welfare_officer));
-        $dept_head = Str::upper(Str::replace('_', ' ', SystemSetting::first()?->dept_head));
+        $social_welfare_officer = Str::upper(SystemSetting::first()?->social_welfare_officer);
+        $dept_head = Str::upper(SystemSetting::first()?->dept_head);
 
         $pdf = Pdf::loadView('pdf.certificate-of-eligibility',
             compact([
