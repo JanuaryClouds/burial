@@ -53,7 +53,7 @@ class ClaimantChangeController extends Controller
                 $burialAssistance = BurialAssistance::findOrFail($id);
                 $validated['burial_assistance_id'] = $burialAssistance->id;
 
-                if (! $burialAssistance->oldClaimant()) {
+                if (! $burialAssistance->originalClaimant()) {
                     return redirect()->back()->with('error', 'Unable to find claimant.');
                 }
 
