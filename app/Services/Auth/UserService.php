@@ -51,7 +51,7 @@ class UserService
     {
         $data['password'] = config('app.admin_password');
         $user = User::create($data);
-        $user->assignRole('admin');
+        $user->assignRole('staff');
 
         return $user;
     }
