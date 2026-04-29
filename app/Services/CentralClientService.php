@@ -54,8 +54,8 @@ class CentralClientService
     {
         if (config('services.portal.users.enable.get')) {
             $citizenData = $this->fetchFromPortal('user_id', $citizen_uuid) ?? [];
-            if (empty($citizenData)) {
-                abort(403);
+            if (empty($citizenData) && ! app()->isLocal()) {
+                throw new RuntimeException('Citizen data not found.');
             }
 
             session(['citizen' => $this->filterData($citizenData)]);
