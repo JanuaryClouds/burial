@@ -14,7 +14,7 @@
                 <div class="card-header">
                     <h4 class="card-title">System Settings</h4>
                 </div>
-                <div class="card-body">
+                <div class="card-body d-flex flex-column gap-2">
                     @csrf
                     @include('system.partials.setting')
                 </div>
