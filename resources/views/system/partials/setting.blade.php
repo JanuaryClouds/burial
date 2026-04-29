@@ -14,7 +14,12 @@
             @isset($setting['min']) min="{{ $setting['min'] }}" @endisset
             @isset($setting['max']) max="{{ $setting['max'] }}" @endisset>
     @elseif($setting['type'] === 'string')
-        <label for="{{ $key }}">{{ ucfirst(str_replace('_', ' ', $key)) }}</label>
-        <input type="text" name="{{ $key }}" id="{{ $key }}" value="{{ $settings->$key }}">
+        @include('components.form-input', [
+            'label' => ucfirst(str_replace('_', ' ', $key)),
+            'name' => $key,
+            'value' => $settings->$key,
+            'id' => $key,
+            'type' => 'text',
+        ])
     @endif
 @endforeach
