@@ -1,7 +1,9 @@
 @extends('layouts.metronic.admin')
 @section('content')
     <div class="d-flex flex-column gap-4">
-        @includeWhen(!$data->hasPendingClaimantChange(), 'burial.partials.menu')
+        @includeWhen(
+            $claimantChange == null || ($claimantChange != null && $claimantChange->status != 'pending'),
+            'burial.partials.menu')
         <div class="card">
             <div class="card-header">
                 <h4 class="card-title">Progress of Burial Assistance</h4>
@@ -13,19 +15,25 @@
             </div>
         </div>
         @can('edit-claimant-change-requests')
-            @includeWhen($data->hasPendingClaimantChange(), 'burial.partials.claimant-change-request')
+            @includeWhen(
+                $claimantChange != null &&
+                    $claimantChange->status == 'pending' &&
+                    ($data->status != 'released' && $data->status != 'rejected' && $data->status != 'approved'),
+                'burial.partials.claimant-change-request')
         @endcan
         @can('create-updates')
             @includeWhen(
                 $data->status != 'released' &&
                     $data->status != 'rejected' &&
-                    !$data->hasPendingClaimantChange() &&
+                    ($claimantChange == null ||
+                        ($claimantChange != null && $claimantChange->status != 'pending')) &&
                     $next_step != null,
                 'burial.partials.process-update-modal')
             @include('burial.partials.reject-modal')
         @endcan
         @if (
-            !$data->claimantChanges()->exists() &&
+            $claimantChange == null &&
+                ($data->status != 'released' && $data->status != 'rejected' && $data->status != 'approved') &&
                 auth()->user()->can('create', [App\Models\ClaimantChange::class, $data]))
             @include('burial.partials.claimant-change-form')
         @endif
@@ -41,7 +49,7 @@
             <div class="card">
                 <div class="card-body">
                     @include('burial.partials.claimant-form', [
-                        'claimant' => $data->currentClaimant(),
+                        'claimant' => $currentClaimant,
                         'readonly' => true,
                     ])
                 </div>
@@ -87,7 +95,7 @@
                 <div class="card">
                     <div class="card-body">
                         @include('burial.partials.claimant-form', [
-                            'claimant' => $data->currentClaimant(),
+                            'claimant' => $currentClaimant,
                             'readonly' => $readonly,
                         ])
                     </div>

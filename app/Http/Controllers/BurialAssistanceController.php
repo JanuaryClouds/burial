@@ -8,6 +8,7 @@ use App\Models\BurialAssistance;
 use App\Models\Relationship;
 use App\Models\Religion;
 use App\Models\SystemSetting;
+use App\Models\WorkflowStep;
 use App\Services\BurialAssistanceService;
 use App\Services\DatatableService;
 use App\Services\ProcessLogService;
@@ -74,29 +75,47 @@ class BurialAssistanceController extends Controller
     {
         try {
             $data = BurialAssistance::findOrFail($id);
-            $client = $data->currentClaimant();
-            if (! $client) {
+
+            $currentClaimant = $data->currentClaimant();
+            $claimantChange = $data->claimantChanges()->first();
+
+            if (! $currentClaimant) {
                 abort(404);
             }
+
             $page_title = $data->originalClaimant()?->client?->tracking_no;
-            $page_subtitle = $client->fullname()."'s Burial Assistance Application";
+            $page_subtitle = $currentClaimant->fullname()."'s Burial Assistance Application";
             $readonly = auth()->user()->cannot('manage-content') && $data->status == 'released';
 
             $timeline = $this->processLogServices->timeline($data);
-            if ($data->claimantChanges()->first() && $data->claimantChanges()->first()->status == 'approved') {
-                $page_subtitle = $data->claimantChanges()->first()->newClaimant->fullname()."'s Burial Assistance Application";
+
+            $totalSteps = WorkflowStep::count();
+            $next_step = $this->workflowStepServices->nextStep($data);
+            if ($next_step == null) {
+                if ($data->status == 'approved') {
+                    $current_step = 13;
+                } elseif ($data->status == 'released') {
+                    $current_step = 13;
+                } else {
+                    $current_step = 0;
+                }
+            } else {
+                $current_step = $next_step->order_no - 1;
             }
 
-            $next_step = $this->workflowStepServices->nextStep($data);
-            $progress = $this->workflowStepServices->progress($data);
+            $progress = $this->workflowStepServices->progress($data, $next_step, $totalSteps);
             $show_certificate = $next_step == null && $data->status == 'approved';
             $relationships = Relationship::select('id', 'name')->get();
 
             return view('burial.show', compact([
                 'data',
+                'currentClaimant',
+                'claimantChange',
                 'relationships',
                 'progress',
                 'timeline',
+                'totalSteps',
+                'current_step',
                 'next_step',
                 'show_certificate',
                 'page_title',

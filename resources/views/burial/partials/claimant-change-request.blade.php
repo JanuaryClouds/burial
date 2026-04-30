@@ -6,16 +6,16 @@
         <p>A change of claimants have been requested for this application. Please contact the original
             claimant for confirmation.</p>
         <x-form-input name="reason_for_change" id="reason_for_change" label="Reason for Change" placeholder=""
-            value="{{ $data->claimantChanges()?->first()?->reason_for_change }}" readonly="true" disabled="true" />
+            value="{{ $claimantChange->reason_for_change }}" readonly="true" disabled="true" />
         @include('burial.partials.claimant-form', [
-            'claimant' => $data->claimantChanges()?->first()?->newClaimant,
+            'claimant' => $claimantChange->newClaimant,
             'readonly' => true,
             'disabled' => true,
         ])
         <form
             action="{{ route('burial.claimant-change.decision', [
                 'id' => $data->id,
-                'change' => $data->claimantChanges()?->first()?->id,
+                'change' => $claimantChange->id,
             ]) }}"
             method="post">
             @csrf
