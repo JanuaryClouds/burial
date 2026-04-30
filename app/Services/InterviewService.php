@@ -14,8 +14,8 @@ class InterviewService
     {
         return Interview::with(['client', 'client.user'])
             ->when($userId, function ($query) use ($userId) {
-                $query->whereHas('client', function ($q) use ($userId) {
-                    $q->where('userId', $userId);
+                $query->whereHas('client.user', function ($q) use ($userId) {
+                    $q->where('id', $userId);
                 });
             })
             ->orderBy('created_at', 'desc')
@@ -24,7 +24,7 @@ class InterviewService
                 return [
                     'id' => $interview->id,
                     'client' => $interview->client->fullname(),
-                    'schedule' => $interview->scjhedule ? Carbon::parse($interview->schedule)->format('F j, Y g:i A') : null,
+                    'schedule' => $interview->schedule ? Carbon::parse($interview->schedule)->format('F j, Y g:i A') : null,
                     'status' => $interview->status,
                     'remarks' => $interview->remarks,
                 ];
