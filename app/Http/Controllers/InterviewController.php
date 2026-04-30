@@ -33,7 +33,7 @@ class InterviewController extends Controller
 
     public function index()
     {
-        $userId = auth()->user()->roles()->count() == 0 ? auth()->user()->id : null;
+        $userId = auth()->user()->roles()->exists() ? null : auth()->user()->id;
 
         $data = $this->interviewServices->index($userId);
         $columns = $this->datatableServices->getColumns($data, ['client']);
@@ -57,6 +57,9 @@ class InterviewController extends Controller
             $interview = $this->interviewServices->store($request->validated(), $id);
             if ($interview) {
                 $client = $interview->client;
+                if (! $client->contact_number) {
+                    return redirect()->back()->with('info', 'Contact number is required.');
+                }
                 $citizen_uuid = $client->user?->citizen_uuid;
                 if ($citizen_uuid) {
                     $this->notificationServices->send(
@@ -65,9 +68,8 @@ class InterviewController extends Controller
                         'Interview Scheduled',
                         'You have an interview scheduled for '.Carbon::parse($interview->schedule)->format('F j, Y g:i A').
                         ' at the CSWDO Office in the Taguig City Hall at Gen. Luna St., Tuktukan, Taguig City. 
-                        Please arrive earlier than scheduled time and bring hard copies of the required documents.'
+                        Please arrive earlier than scheduled time.'
                     );
-
                 }
 
                 $ip = request()->ip();
@@ -84,10 +86,6 @@ class InterviewController extends Controller
                 $department_email = SystemSetting::first()?->department_email;
                 $date = Carbon::parse($interview->schedule)->format('F j, Y');
                 $time = Carbon::parse($interview->schedule)->format('g:i A');
-
-                if (! $client->contact_number) {
-                    return redirect()->back()->with('info', 'Contact number is required.');
-                }
 
                 $this->smsServices->send(
                     $client->contact_number,
