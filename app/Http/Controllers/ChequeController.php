@@ -21,7 +21,7 @@ class ChequeController extends Controller
                 ->get()
                 ->map(function ($cheque) {
                     return [
-                        'tracking_no' => $cheque->burialAssistance?->claimant?->client?->tracking_no,
+                        'tracking_no' => $cheque->burialAssistance?->originalClaimant()?->client?->tracking_no,
                         'check_number' => $cheque->cheque_number ?? 'N/A',
                         'obr_number' => $cheque->obr_number ?? 'N/A',
                         'dv_number' => $cheque->dv_number ?? 'N/A',
@@ -31,12 +31,25 @@ class ChequeController extends Controller
                     ];
                 });
 
-            $claimants = Claimant::with(['cheque', 'client', 'barangay'])
+            $claimants = Claimant::with([
+                'cheque',
+                'client',
+                'barangay',
+                'burialAssistance',
+                'burialAssistance.claimantChanges',
+                'burialAssistance.claimantChanges.newUserClaimant',
+            ])
                 ->whereHas('cheque', function ($query) use ($startDate, $endDate) {
                     $query->whereBetween('date_issued', [$startDate, $endDate]);
                 })
                 ->get()
                 ->map(function ($claimant) {
+                    $burialAssistance = $claimant->burialAssistance;
+                    if ($burialAssistance->hasApprovedClaimantChange()) {
+                        $claimantChange = $burialAssistance->claimantChanges()?->where('status', 'approved')?->get()->first();
+                        $claimant = $claimantChange?->newUserClaimant;
+                    }
+
                     return [
                         'tracking_no' => $claimant->client?->tracking_no,
                         'claimant' => $claimant->fullname(),

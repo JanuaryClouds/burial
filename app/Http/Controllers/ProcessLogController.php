@@ -42,6 +42,10 @@ class ProcessLogController extends Controller
                 $ip = request()->ip();
                 $browser = request()->header('User-Agent');
                 $citizenUuid = $application->originalClaimant()?->client?->user?->citizen_uuid;
+                if ($application->hasApprovedClaimantChange()) {
+                    $claimantChange = $application->claimantChanges()->where('status', 'approved')->first();
+                    $citizenUuid = $claimantChange?->newUserClaimant?->citizen_uuid;
+                }
 
                 $this->processLogServices->create(
                     $application,
