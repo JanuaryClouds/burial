@@ -60,13 +60,7 @@ class CitizenAccessController extends Controller
                 ];
             }
 
-            if (! config('services.portal.users.enable.get')) {
-                $newUser = [
-                    'citizen_uuid' => Str::uuid()->toString(),
-                    'time' => time(),
-                    'nonce' => Str::uuid()->toString(),
-                ];
-            } else {
+            if (config('services.portal.users.enable.get') && ! in_array(config('services.portal.users.sampleUuid'), $citizens->pluck('citizen_uuid')->toArray())) {
                 $sampleUserUuid = config('services.portal.users.sampleUuid');
 
                 if (! $sampleUserUuid) {
@@ -78,17 +72,17 @@ class CitizenAccessController extends Controller
                     'time' => time(),
                     'nonce' => Str::uuid()->toString(),
                 ];
+
+                $encoded = rtrim(strtr(base64_encode(json_encode($newUser)), '+/', '-_'), '=');
+                $signature = hash_hmac('sha256', $encoded, config('services.portal.sso.secret'));
+
+                $url = url('/sso/callback')."?payload={$encoded}&signature={$signature}";
+
+                $testLinks[] = [
+                    'label' => 'Sample User (John Doe)',
+                    'url' => $url,
+                ];
             }
-
-            $encoded = rtrim(strtr(base64_encode(json_encode($newUser)), '+/', '-_'), '=');
-            $signature = hash_hmac('sha256', $encoded, config('services.portal.sso.secret'));
-
-            $url = url('/sso/callback')."?payload={$encoded}&signature={$signature}";
-
-            $testLinks[] = [
-                'label' => 'New User',
-                'url' => $url,
-            ];
 
             return view('test.zero', [
                 'testUsers' => $testLinks,
@@ -105,7 +99,6 @@ class CitizenAccessController extends Controller
 
     public function sso()
     {
-        // example URL sent from portal: https://funeral.taguig.gov.ph/sso/callback?payload={$payload}&signature={$signature}
         $ssoRequest = request('payload');
         $signature = request('signature');
 

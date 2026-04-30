@@ -53,12 +53,16 @@ class CentralClientService
     public function checkIfUser(string $citizen_uuid)
     {
         if (config('services.portal.users.enable.get')) {
-            $citizenData = $this->fetchFromPortal('user_id', $citizen_uuid) ?? [];
-            if (empty($citizenData) && ! app()->isLocal()) {
-                throw new RuntimeException('Citizen data not found.');
-            }
+            $user = User::where('citizen_uuid', $citizen_uuid)->first();
 
-            session(['citizen' => $this->filterData($citizenData)]);
+            if (! str_contains($user->email, 'example')) {
+                $citizenData = $this->fetchFromPortal('user_id', $citizen_uuid) ?? [];
+                if (empty($citizenData)) {
+                    throw new RuntimeException('Citizen data not found.');
+                }
+
+                session(['citizen' => $this->filterData($citizenData)]);
+            }
 
             return User::firstOrCreate([
                 'citizen_uuid' => $citizen_uuid,
@@ -72,17 +76,6 @@ class CentralClientService
                 'contact_number' => $citizenData['contact_number'] ?? null,
                 'password' => bcrypt(Str::random(32)),
             ]);
-        }
-
-        if (app()->isLocal()) {
-            $user = User::where('citizen_uuid', $citizen_uuid)->first();
-            if ($user === null) {
-                $user = User::factory()->create([
-                    'citizen_uuid' => $citizen_uuid,
-                ]);
-            }
-
-            return $user;
         }
 
         return null;
