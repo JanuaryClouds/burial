@@ -59,7 +59,7 @@
                         </div>
                     @endforeach
                     @includeWhen($data instanceof \App\Models\User, 'cms.partials.edit-user')
-                    @includeWhen($data instanceof \App\Models\Role, 'cms.partials.edit-role')
+                    @includeWhen($data instanceof \Spatie\Permission\Models\Role, 'cms.partials.edit-role')
                 </div>
             </div>
             <div class="card-footer d-flex gap-2 justify-content-end">
