@@ -3,10 +3,12 @@
         <div class="d-flex justify-content-between align-items-center">
             <h1 class="mb-0">Assistance Actions</h1>
             <span class="d-flex align-items-center gap-2">
-                <a href="{{ route('client.show', ['client' => $data->originalClaimant()?->client]) }}"
-                    class="btn btn-secondary mr-2" data-no-loader>
-                    Go to Client Record
-                </a>
+                @if (auth()->user()?->id == $data->originalClaimant()?->client?->user_id || auth()->user()->roles()->exists())
+                    <a href="{{ route('client.show', ['client' => $data->originalClaimant()?->client]) }}"
+                        class="btn btn-secondary mr-2" data-no-loader>
+                        Go to Client Record
+                    </a>
+                @endif
                 @if (auth()->user()->roles()->exists())
                     @if (app()->hasDebugModeEnabled() || $show_certificate)
                         <a href="{{ route('burial.certificate', ['id' => $data->id]) }}" class="btn btn-secondary mr-2"

@@ -3,10 +3,12 @@
         <div class="d-flex justify-content-between align-items-center">
             <h1 class="mb-0">Client Actions</h1>
             <span class="d-flex align-items-center gap-3">
-                <a href="{{ route('clients.gis-form', ['id' => $client->id]) }}" class="btn btn-light" data-no-loader
-                    target="_blank" rel="noopener noreferrer">
-                    Generate GIS Form
-                </a>
+                @if (auth()->user()?->roles()->exists())
+                    <a href="{{ route('clients.gis-form', ['id' => $client->id]) }}" class="btn btn-light" data-no-loader
+                        target="_blank" rel="noopener noreferrer">
+                        Generate GIS Form
+                    </a>
+                @endif
                 @if ($released)
                     @if ($client->interviews?->count() == 0)
                         <button class="btn btn-primary" type="button" data-bs-toggle="modal"
