@@ -71,7 +71,8 @@ class BurialAssistanceService
                     'status' => Str::title($status),
                 ];
             })
-            ->sortBy('tracking_no');
+            ->sortBy('tracking_no')
+            ->values();
     }
 
     public function columns($data)

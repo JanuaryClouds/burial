@@ -54,13 +54,22 @@ class ReportService
 
     public function clientsPerAssistance($startDate, $endDate)
     {
-        return ClientRecommendation::selectRaw('type, COUNT(*) as total')
-            ->whereBetween('created_at', [$startDate, $endDate])
+        return ClientRecommendation::with('client')
+            ->selectRaw('type, COUNT(*) as total')
+            ->whereHas('client', function ($q) use ($startDate, $endDate) {
+                $q->whereBetween('created_at', [$startDate, $endDate]);
+            })
             ->groupBy('type')
             ->get()
             ->map(function ($item) {
+                if ($item->type == 'funeral') {
+                    $type = 'Libreng Libing';
+                } else {
+                    $type = 'Burial';
+                }
+
                 return [
-                    'name' => $item->type,
+                    'name' => $type,
                     'count' => $item->total,
                 ];
             });
