@@ -51,16 +51,24 @@ class ClaimantChangeController extends Controller
 
             if ($validated) {
                 $burialAssistance = BurialAssistance::findOrFail($id);
-                $validated['burial_assistance_id'] = $burialAssistance->id;
 
                 if (! $burialAssistance->originalClaimant()) {
                     return redirect()->back()->with('error', 'Unable to find claimant.');
+                }
+
+                if (auth()->user()->id != $burialAssistance->originalClaimant()?->client?->user_id) {
+                    return redirect()->back()->with('error', 'You are not authorized to change the claimant.');
+                }
+
+                if ($new_claimant->id == $burialAssistance->originalClaimant()?->client?->user_id) {
+                    return redirect()->back()->with('info', 'You are already the current claimant of this assistance.');
                 }
 
                 if ($burialAssistance->status == 'approved' || $burialAssistance->status == 'rejected' || $burialAssistance->status == 'released') {
                     return redirect()->back()->with('error', 'Changing claimant is not allowed in a '.$burialAssistance->status.' status.');
                 }
 
+                $validated['burial_assistance_id'] = $burialAssistance->id;
                 $validated['old_claimant_id'] = $burialAssistance->originalClaimant()?->id;
                 $validated['id'] = (string) Str::uuid();
                 $validated['first_name'] = $new_claimant->first_name;
