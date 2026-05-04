@@ -5,6 +5,7 @@
 
         let columns = datatable.data('columns') || [];
         let route = datatable.data('route') ?? null;
+        let dataset = datatable.data('rows') || [];
 
         const escapeHtml = (str) => {
             const div = document.createElement('div');
@@ -85,7 +86,8 @@
             ordering: true,
             columns: columns,
             order: [],
-            ajax: route ? {
+            data: route === '#' ? dataset : undefined,
+            ajax: route !== '#' ? {
                 url: route,
                 type: 'GET',
                 dataSrc: 'data',
@@ -122,7 +124,7 @@
             }
         });
 
-        if (route) {
+        if (route && route !== '#') {
             if (window.datatableRefreshInterval) {
                 clearInterval(window.datatableRefreshInterval);
             }

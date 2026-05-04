@@ -277,7 +277,7 @@
                         @foreach ($moa as $mode)
                             <td style="text-decoration: underline;">
                                 @if (isset($recommendation))
-                                    @if ($recommendation->moa == $mode->id)
+                                    @if ($recommendation->moa->id == $mode->id)
                                         &nbsp;
                                         /
                                         &nbsp;
@@ -335,6 +335,7 @@
                     <tr>
                         <td style="border: none;">Address:</td>
                         <td style="border: none; border-bottom: 1px solid #000000; width: 300px;">
+                            {{ $client->address() }}
                         </td>
                     </tr>
                 </table>
