@@ -138,7 +138,7 @@ class ReportController extends Controller
 
         $cardData = [
             [
-                'label' => 'Pending',
+                'label' => 'All',
                 'icon' => 'ki-file',
                 'pathsCount' => 2,
                 'count' => count($data->toArray()),

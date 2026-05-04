@@ -315,7 +315,7 @@ class ClientController extends Controller
                     'client_id' => $client->id,
                     'assistance_id' => $funeralAssistance->id,
                     'referral' => $request['referral'],
-                    'type' => $request['type'],
+                    'type' => 'libreng_libing',
                     'remarks' => $request['remarks'],
                 ]);
 

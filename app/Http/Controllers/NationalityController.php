@@ -70,7 +70,7 @@ class NationalityController extends Controller
 
         return redirect()
             ->route('nationality.index')
-            ->with('success', 'You have successfully create a nationality!');
+            ->with('success', 'You have successfully created a nationality!');
     }
 
     public function update($id, Request $request)

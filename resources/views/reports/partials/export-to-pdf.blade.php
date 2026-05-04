@@ -12,10 +12,10 @@
 
     // List all chart IDs you want to include in the PDF
     const chartIds = [
-        'deceased-per-gender',
-        'deceased-per-month',
-        'deceased-per-religion',
-        'deceased-per-barangay',
+        'beneficiary-per-gender',
+        'beneficiary-per-month',
+        'beneficiary-per-religion',
+        'beneficiary-per-barangay',
         'claimant-per-barangay',
         'claimant-per-relationship',
         'cheques-per-status',

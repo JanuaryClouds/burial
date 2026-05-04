@@ -5,7 +5,7 @@
         </div>
         <div class="card-body">
             <div>
-                <canvas id="deceased-per-religion" data-chart-data='@json($deceasedPerReligion->pluck('count'))'
+                <canvas id="beneficiary-per-religion" data-chart-data='@json($deceasedPerReligion->pluck('count'))'
                     data-chart-labels='@json($deceasedPerReligion->pluck('name'))' data-chart-type="bar"
                     data-empty="{{ $deceasedPerReligion->isEmpty() ? 'true' : 'false' }}"></canvas>
             </div>
@@ -19,7 +19,7 @@
         </div>
         <div class="card-body">
             <div>
-                <canvas id="deceased-per-barangay" data-chart-data='@json($deceasedPerBarangay->pluck('count'))'
+                <canvas id="beneficiary-per-barangay" data-chart-data='@json($deceasedPerBarangay->pluck('count'))'
                     data-chart-labels='@json($deceasedPerBarangay->pluck('name'))' data-chart-type="bar"
                     data-empty="{{ $deceasedPerBarangay->isEmpty() ? 'true' : 'false' }}"></canvas>
             </div>
