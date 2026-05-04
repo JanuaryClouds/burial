@@ -16,8 +16,8 @@ Route::post('/general-intake-form/store', [ClientController::class, 'store'])
     ->middleware('throttle:5,1')
     ->name('general.intake.form.store');
 
-Route::get('/history', [ClientController::class, 'history'])
-    ->name('history');
+Route::get('/referral', [ReferralController::class, 'index'])
+    ->name('referral.index');
 
 Route::get('/interviews', [InterviewController::class, 'index'])
     ->name('interview.index');

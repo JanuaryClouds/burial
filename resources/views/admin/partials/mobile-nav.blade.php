@@ -24,6 +24,22 @@
             </a>
         </div>
         <div class="menu-item">
+            <a href="{{ route('general.intake.form') }}" @class(['active' => Request::is('general.intake.form'), 'menu-link'])>
+                <span class="menu-bullet">
+                    <span class="bullet bullet-dot"></span>
+                </span>
+                <span class="menu-title">Apply</span>
+            </a>
+        </div>
+        <div class="menu-item">
+            <a href="{{ route('interview.index') }}" @class(['active' => Request::is('interview*'), 'menu-link'])>
+                <span class="menu-bullet">
+                    <span class="bullet bullet-dot"></span>
+                </span>
+                <span class="menu-title">Interview</span>
+            </a>
+        </div>
+        <div class="menu-item">
             <a href="{{ route('client.index') }}" @class(['active' => Request::is('client*'), 'menu-link'])>
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
@@ -37,6 +53,14 @@
                     <span class="bullet bullet-dot"></span>
                 </span>
                 <span class="menu-title">Beneficiaries</span>
+            </a>
+        </div>
+        <div class="menu-item">
+            <a href="{{ route('referral.index') }}" @class(['active' => Request::is('referral*'), 'menu-link'])>
+                <span class="menu-bullet">
+                    <span class="bullet bullet-dot"></span>
+                </span>
+                <span class="menu-title">Referrals</span>
             </a>
         </div>
         <div class="menu-item">
@@ -187,26 +211,30 @@
                 </a>
             </div>
         @endcan
-        @can('manage-roles')
+        @can('view-users')
             <div class="menu-item">
-                <a href="{{ route('user.index') }}" @class(['active' => Route::is('user.*'), 'menu-link'])>
+                <a href="{{ route('user.index') }}" @class(['active' => Request::is('user*'), 'menu-link'])>
                     <span class="menu-bullet">
-                        <div class="menu-item">
-                            <a href="{{ route('role.index') }}" @class(['active' => Route::is('role.*'), 'menu-link'])>
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">Roles</span>
-                            </a>
-                        </div>
-                        <div class="menu-item">
-                            <a href="{{ route('system.index') }}" @class(['active' => Route::is('system.*'), 'menu-link'])>
-                                <span class="menu-bullet">
-                                    <span class="bullet bullet-dot"></span>
-                                </span>
-                                <span class="menu-title">System</span>
-                            </a>
-                        </div>
+                        <span class="bullet bullet-dot"></span>
+                    </span>
+                    <span class="menu-title">Users</span>
+                </a>
+            </div>
+        @endcan
+        @can('view-roles')
+            <div class="menu-item">
+                <a href="{{ route('role.index') }}" @class(['active' => Route::is('role.*'), 'menu-link'])>
+                    <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                    </span>
+                    <span class="menu-title">Roles</span>
+                </a>
+            </div>
+        @endcan
+        @can('edit-system-settings')
+            <div class="menu-item">
+                <a href="{{ route('system.index') }}" @class(['active' => Route::is('system.*'), 'menu-link'])>
+                    <span class="menu-bullet">
                         <span class="bullet bullet-dot"></span>
                     </span>
                     <span class="menu-title">System</span>
