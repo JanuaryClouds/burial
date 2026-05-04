@@ -45,13 +45,10 @@ class ChequeController extends Controller
                 ->get()
                 ->map(function ($claimant) {
                     $burialAssistance = $claimant->burialAssistance;
-                    if ($burialAssistance->hasApprovedClaimantChange()) {
-                        $claimantChange = $burialAssistance->claimantChanges()?->where('status', 'approved')?->get()->first();
-                        $claimant = $claimantChange?->newUserClaimant;
-                    }
+                    $claimant = $burialAssistance->currentClaimant();
 
                     return [
-                        'tracking_no' => $claimant->client?->tracking_no,
+                        'tracking_no' => $burialAssistance->originalClaimant()->client?->tracking_no,
                         'claimant' => $claimant->fullname(),
                         'contact_number' => $claimant->contact_number,
                         'address' => $claimant->fullAddress(),
