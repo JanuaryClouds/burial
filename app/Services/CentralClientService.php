@@ -52,33 +52,29 @@ class CentralClientService
      */
     public function checkIfUser(string $citizen_uuid)
     {
-        if (config('services.portal.users.enable.get')) {
-            $user = User::where('citizen_uuid', $citizen_uuid)->first();
-
-            if (! str_contains($user->email, 'example')) {
-                $citizenData = $this->fetchFromPortal('user_id', $citizen_uuid) ?? [];
-                if (empty($citizenData)) {
-                    throw new RuntimeException('Citizen data not found.');
-                }
-
-                session(['citizen' => $this->filterData($citizenData)]);
-            }
-
-            return User::firstOrCreate([
-                'citizen_uuid' => $citizen_uuid,
-            ], [
-                'first_name' => $citizenData['firstname'] ?? null,
-                'middle_name' => $citizenData['middlename'] ?? null,
-                'last_name' => $citizenData['lastname'] ?? null,
-                'suffix' => $citizenData['suffix'] ?? null,
-                'email' => $citizenData['email'] ?? null,
-                'is_active' => true,
-                'contact_number' => $citizenData['contact_number'] ?? null,
-                'password' => bcrypt(Str::random(32)),
-            ]);
+        if (! $citizen_uuid) {
+            return null;
         }
 
-        return null;
+        $citizenData = [];
+        if (config('services.portal.users.enable.get')) {
+            $citizenData = $this->fetchFromPortal('user_id', $citizen_uuid) ?? [];
+
+            session(['citizen' => $this->filterData($citizenData)]);
+        }
+
+        return User::firstOrCreate([
+            'citizen_uuid' => $citizen_uuid,
+        ], [
+            'first_name' => $citizenData['firstname'] ?? null,
+            'middle_name' => $citizenData['middlename'] ?? null,
+            'last_name' => $citizenData['lastname'] ?? null,
+            'suffix' => $citizenData['suffix'] ?? null,
+            'email' => $citizenData['email'] ?? null,
+            'is_active' => true,
+            'contact_number' => $citizenData['contact_number'] ?? null,
+            'password' => bcrypt(Str::random(32)),
+        ]);
     }
 
     /**
