@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\BurialAssistance;
+use App\Models\Cheque;
 use App\Models\Claimant;
 use App\Models\ProcessLog;
 use App\Models\WorkflowStep;
@@ -32,6 +33,10 @@ class ProcessLogService
             $application->update(['status' => 'processing']);
 
             if ($step->order_no == 9) {
+                if (Cheque::where('obr_number', $data['extra_data']['OBR']['oBR_number'])->exists()) {
+                    throw new \RuntimeException('This OBR number already exists.');
+                }
+
                 $application->cheque()->create([
                     'id' => Str::uuid(),
                     'burial_assistance_id' => $application->id,
@@ -41,12 +46,20 @@ class ProcessLogService
             }
 
             if ($step->order_no == 10) {
+                if (Cheque::where('dv_number', $data['extra_data']['dv_number'])->exists()) {
+                    throw new \RuntimeException('This DV number already exists.');
+                }
+
                 $application->latestCheque()->update([
                     'dv_number' => $data['extra_data']['dv_number'] ?? null,
                 ]);
             }
 
             if ($step->order_no == 11) {
+                if (Cheque::where('cheque_number', $data['extra_data']['cheque_number'])->exists()) {
+                    throw new \RuntimeException('This cheque number already exists.');
+                }
+
                 DB::transaction(function () use ($application, $data) {
                     $application->latestCheque()->update([
                         'cheque_number' => $data['extra_data']['cheque_number'],

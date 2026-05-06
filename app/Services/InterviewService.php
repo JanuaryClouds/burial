@@ -52,7 +52,7 @@ class InterviewService
 
             return $interview;
         } catch (Exception $e) {
-            return redirect()->back()->with('info', $e->getMessage());
+            throw new \RuntimeException($e->getMessage());
         }
     }
 }
