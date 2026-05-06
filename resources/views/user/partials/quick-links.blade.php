@@ -31,14 +31,14 @@
     </div>
     <div class="col-12 col-md-6 col-lg-6 d-flex">
         @include('components.card-link', [
-            'title' => 'Interviews',
+            'title' => 'Appointment Interviews',
             'route' => route('interview.index'),
             'active' =>
                 auth()->user()->clients()->whereHas('interviews')->exists() || app()->hasDebugModeEnabled(),
             'active_link' => route('interview.index'),
             'icon' => 'ki-duotone ki-message-question',
             'icon_paths' => 3,
-            'description' => 'Check your history of interviews',
+            'description' => 'Check your history of appointment interviews',
         ])
     </div>
     <div class="col-12 col-md-6 col-lg-6 d-flex">

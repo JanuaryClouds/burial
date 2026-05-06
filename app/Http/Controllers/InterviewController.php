@@ -47,7 +47,7 @@ class InterviewController extends Controller
         return view('interview.index', [
             'data' => $data,
             'columns' => $columns ?? [],
-            'page_title' => 'Interviews',
+            'page_title' => 'Appointment Interviews',
         ]);
     }
 
