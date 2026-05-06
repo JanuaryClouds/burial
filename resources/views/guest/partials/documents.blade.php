@@ -73,10 +73,11 @@
                         <li class="">
                             Your prescribed reading glasses
                         </li>
-                        Drinking Water
+                        <li class="">
+                            Drinking Water
                         </li>
                         <li class="">
-                            Vacant time allotted for interview
+                            Vacant time allotted for the appointment interview
                         </li>
                     </ol>
                 </div>
