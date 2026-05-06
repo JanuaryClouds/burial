@@ -2,27 +2,27 @@
     <form action="{{ route('burial.claimant-change.store', ['id' => $data->id]) }}" method="post" id="changeClaimantForm">
         @csrf
         <div class="card-header">
-            <h4 class="card-title">Change Claimants of Assistance</h4>
+            <h4 class="card-title">Change Claimant of Assistance</h4>
         </div>
         <div class="card-body">
             <p class="card-text">
-                If you are unable to receive the assistance, you can change the claimants of the assistance by providing
-                their information
+                If the current claimant is unable to receive the assistance, you can change the claimant of the
+                assistance by providing
+                their information below.
             </p>
             <div class="alert alert-danger" role="alert">
                 <strong>Note:</strong>
-                Before submitting, make sure the new claimant has accessed this site once through the TLC portal app and
-                they have logged in.
+                Only clients with application history can be assigned as the new claimant.
             </div>
             <div class="alert alert-danger" role="alert">
                 <strong>Note:</strong>
-                Changing claimants can only be done once.
+                Changing claimant can only be done once.
             </div>
             @include('burial.partials.claimant-form', [
                 'readonly' => false,
                 'claimant_change' => true,
             ])
-            <x-form-textarea name="reason_for_change" :required="true" label="Reason for Changing Claimants" />
+            <x-form-textarea name="reason_for_change" :required="true" label="Reason for Changing Claimant" />
         </div>
         <div class="card-footer d-flex justify-content-end">
             <button type="button" class="btn btn-primary" data-bs-toggle="modal"
@@ -45,9 +45,7 @@
             </div>
             <div class="modal-body">
                 <p class="card-text fs-3">Are you sure you want to change claimants of the assistance?
-                    You can only request a change of claimants once. Providing insufficient or
-                    incorrect information will lead to rejection of this request. Please make sure the new claimant has
-                    accessed this system through the TLC Portal once.
+                    You can only request a change of claimant once.
                 </p>
             </div>
             <div class="modal-footer">
@@ -64,6 +62,7 @@
     $('#confirmClaimantChangeBtn').on('click', function() {
         $(this).prop('disabled', true);
         $(this).text('Please wait...');
+        triggerLoading(0.3);
         $('#changeClaimantForm').submit();
     });
 </script>

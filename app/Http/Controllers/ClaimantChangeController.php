@@ -38,12 +38,12 @@ class ClaimantChangeController extends Controller
     public function store(StoreClaimantChangeRequest $request, $id)
     {
         try {
-            $new_claimant_email = $request->input('email');
-            if (! $new_claimant = User::where('email', $new_claimant_email)->first()) {
-                return redirect()->back()->with('error', 'The new claimant does not have an account in the system. Please notify them to access this system once with their TLC Portal account to proceed.');
+            $newClaimantUserId = $request->input('new_claimant_user_id');
+            if (! $newClaimantUser = User::where('id', $newClaimantUserId)->first()) {
+                return redirect()->back()->with('error', 'Couldn\'t find the new claimant as a user in this system. Please ensure they are a previous client using their TLC Portal account.');
             }
 
-            if ($new_claimant->roles()->exists()) {
+            if ($newClaimantUser->roles()->exists()) {
                 return redirect()->back()->with('error', 'Users with system roles cannot be set as claimants, Please select a different user.');
             }
 
@@ -56,11 +56,13 @@ class ClaimantChangeController extends Controller
                     return redirect()->back()->with('error', 'Unable to find claimant.');
                 }
 
-                if (auth()->user()->id != $burialAssistance->originalClaimant()?->client?->user_id) {
-                    return redirect()->back()->with('error', 'You are not authorized to change the claimant.');
+                if (! app()->isLocal()) {
+                    if (auth()->user()->id != $burialAssistance->originalClaimant()?->client?->user_id) {
+                        return redirect()->back()->with('error', 'You are not authorized to change the claimant.');
+                    }
                 }
 
-                if ($new_claimant->id == $burialAssistance->originalClaimant()?->client?->user_id) {
+                if ($newClaimantUser->id == $burialAssistance->originalClaimant()?->client?->user_id) {
                     return redirect()->back()->with('info', 'You are already the current claimant of this assistance.');
                 }
 
@@ -71,16 +73,45 @@ class ClaimantChangeController extends Controller
                 $validated['burial_assistance_id'] = $burialAssistance->id;
                 $validated['old_claimant_id'] = $burialAssistance->originalClaimant()?->id;
                 $validated['id'] = (string) Str::uuid();
-                $validated['first_name'] = $new_claimant->first_name;
-                $validated['middle_name'] = $new_claimant->middle_name ?? null;
-                $validated['last_name'] = $new_claimant->last_name;
-                $validated['suffix'] = $new_claimant->suffix ?? null;
-                $validated['contact_number'] = $new_claimant->contact_number ?? null;
+                $validated['first_name'] = $newClaimantUser->first_name;
+                $validated['middle_name'] = $newClaimantUser->middle_name ?? null;
+                $validated['last_name'] = $newClaimantUser->last_name;
+                $validated['suffix'] = $newClaimantUser->suffix ?? null;
+                $validated['contact_number'] = $newClaimantUser->contact_number ?? null;
                 $newClaimant = $this->claimantService->store($validated);
 
                 $validated['new_claimant_id'] = $newClaimant->id;
-                $validated['new_claimant_user_id'] = $new_claimant->id;
-                $this->claimantChangeService->store($validated);
+                $validated['new_claimant_user_id'] = $newClaimantUser->id;
+                $claimantChange = $this->claimantChangeService->store($validated);
+                
+                // After a meeting regarding how changing claimants is done, only admins can change claimants that are automatically approved.
+                $claimantChange->status = 'approved';
+                $claimantChange->changed_at = now();
+                $claimantChange->save();
+
+                ProcessLog::create([
+                    'id' => Str::uuid(),
+                    'burial_assistance_id' => $claimantChange->burialAssistance->id,
+                    'claimant_id' => $newClaimant->id,
+                    'loggable_id' => $claimantChange->id,
+                    'loggable_type' => ClaimantChange::class,
+                    'date_in' => now(),
+                    'comments' => 'Burial Assistance claimant has been changed. Progress has been reset to evaluate the new claimant.',
+                    'is_progress_step' => false,
+                ]);
+
+                $citizen_uuid = $newClaimantUser->citizen_uuid;
+
+                if (! $citizen_uuid) {
+                    return redirect()->back()->with('error', 'New claimant does not have an account in the system.');
+                }
+
+                $this->notificationService->send(
+                    $citizen_uuid,
+                    'claimant_change_approved',
+                    'Claimant Change Approved',
+                    'You have been set as the new claimant for a burial assistance application.'
+                );
 
                 $ip = request()->ip();
                 $browser = request()->header('User-Agent');
@@ -91,11 +122,11 @@ class ClaimantChangeController extends Controller
                         'browser' => $browser,
                         'burialAssistance' => $burialAssistance->id,
                     ])
-                    ->log('Request for claimant change submitted');
+                    ->log('Changed claimants to a burial assistance');
 
                 return redirect()
                     ->route('burial.show', ['id' => $id])
-                    ->with('success', 'Your request for claimant change has been submitted successfully. Please wait for the approval.');
+                    ->with('success', 'Claimants have been changed.');
             }
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to submit claimant change.'.(app()->hasDebugModeEnabled() ? ': '.$e->getMessage() : ''));

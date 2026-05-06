@@ -8,6 +8,7 @@ use App\Models\BurialAssistance;
 use App\Models\Relationship;
 use App\Models\Religion;
 use App\Models\SystemSetting;
+use App\Models\User;
 use App\Models\WorkflowStep;
 use App\Services\BurialAssistanceService;
 use App\Services\DatatableService;
@@ -78,11 +79,23 @@ class BurialAssistanceController extends Controller
 
             $currentClaimant = $data->currentClaimant();
             $claimantChange = $data->claimantChanges()->first();
+            $newClaimants = [];
 
             if (! $currentClaimant) {
                 abort(404);
             }
-
+                
+            if (! $claimantChange) {
+                $currentClaimantUserId = $currentClaimant->client?->user_id;
+                $newClaimants = User::whereHas('clients')
+                    ->where('id', '!=', $currentClaimantUserId)
+                    ->get()
+                    ->mapWithKeys(function ($user) {
+                        return [$user->id => $user->fullname()];
+                    })
+                    ->toArray();
+            }
+    
             $page_title = $data->originalClaimant()?->client?->tracking_no;
             $page_subtitle = $currentClaimant->fullname()."'s Burial Assistance Application";
             $readonly = auth()->user()->cannot('manage-content') && $data->status == 'released';
@@ -111,6 +124,7 @@ class BurialAssistanceController extends Controller
                 'data',
                 'currentClaimant',
                 'claimantChange',
+                'newClaimants',
                 'relationships',
                 'progress',
                 'timeline',

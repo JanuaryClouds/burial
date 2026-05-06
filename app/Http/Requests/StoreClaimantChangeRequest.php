@@ -17,7 +17,7 @@ class StoreClaimantChangeRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->merge([
-            'email' => $this->normalizeEmail($this->email),
+            // 'email' => $this->normalizeEmail($this->email),
             'address' => $this->clean($this->address),
         ]);
     }
@@ -60,7 +60,8 @@ class StoreClaimantChangeRequest extends FormRequest
     {
         return [
             'reason_for_change' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255',
+            // 'email' => 'required|string|email|max:255',
+            'new_claimant_user_id' => 'required|numeric|exists:users,id',
             'date_of_birth' => 'required|date',
             'address' => 'required|string|max:255',
             'barangay_id' => 'required|numeric|exists:barangays,id',

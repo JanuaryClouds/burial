@@ -27,8 +27,8 @@
 <div class="row justify-content-start align-items-center">
     @if ($claimant_change)
         <div class="col-12 col-lg-4">
-            <x-form-input name="email" id="email" label="Email Address of New Claimant" required="true"
-                type="email" value="{{ $claimant->email ?? '' }}" :readonly="false" :autocomplete="false" />
+            <x-form-select name="new_claimant_user_id" id="new_claimant_user_id" label="Name of New Claimant"
+                required="true" :options="$newClaimants" :disabled="$readonly" />
         </div>
     @endif
     <div class="col-12 col-lg-3">

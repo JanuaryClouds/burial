@@ -28,9 +28,9 @@
         <strong>
             <i class="fa fa-exclamation-triangle">
             </i>
-            Approved Claimant Change -
+            Claimant Change -
         </strong>
-        This application has been approved to change claimants,
+        This application has changed claimants,
         updates are provided for the new claimant.
     </div>
 @endif
