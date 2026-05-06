@@ -166,7 +166,7 @@ class FuneralAssistanceController extends Controller
     {
         $funeralAssistance = FuneralAssistance::findOrFail($id);
         $client = $funeralAssistance->client;
-        $title = Str::title($client->first_name).' '.Str::title($client->last_name).'\'s Certification';
+        $title = Str::title($client->fullname()).'\'s Certification';
         $systemSetting = SystemSetting::first();
         $social_welfare_officer = Str::upper($systemSetting?->social_welfare_officer);
         $dept_head = Str::upper($systemSetting?->dept_head);
