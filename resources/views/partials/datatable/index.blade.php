@@ -18,26 +18,22 @@
         }
     }
 @endphp
-@if ($data->count() > 0)
-    <div class="table-responsive overflow-x-hidden">
-        <div class="dataTables_wrapper">
-            <table class="table data-table {{ $classes }}" style="width:100%"
-                data-route="{{ $route ?? request()->url() }}" data-columns='@json($columns)'
-                data-rows='@json($data)'>
-                <thead class="border-bottom border-bottom-1 border-gray-200 fw-bold">
-                    @include('partials.datatable.head', [
-                        'columns' => $columns,
-                    ])
-                </thead>
-                <tbody>
-                    @include('partials.datatable.body', [
-                        'columns' => $columns,
-                    ])
-                </tbody>
-            </table>
-        </div>
+<div class="table-responsive overflow-x-hidden">
+    <div class="dataTables_wrapper">
+        <table class="table data-table {{ $classes }}" style="width:100%"
+            data-route="{{ $route ?? request()->url() }}" data-columns='@json($columns)'
+            data-rows='@json($data)'>
+            <thead class="border-bottom border-bottom-1 border-gray-200 fw-bold">
+                @include('partials.datatable.head', [
+                    'columns' => $columns,
+                ])
+            </thead>
+            <tbody>
+                @include('partials.datatable.body', [
+                    'columns' => $columns,
+                ])
+            </tbody>
+        </table>
     </div>
-    @include('partials.datatable.script')
-@else
-    <p class="text-muted text-center mb-0">No Data</p>
-@endif
+</div>
+@include('partials.datatable.script')
