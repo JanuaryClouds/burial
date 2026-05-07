@@ -57,15 +57,33 @@ class CentralClientService
         }
 
         $citizenData = [];
-        if (config('services.portal.users.enable.get')) {
-            $citizenData = $this->fetchFromPortal('user_id', $citizen_uuid) ?? [];
 
-            session(['citizen' => $this->filterData($citizenData)]);
+        $user = User::where('citizen_uuid', $citizen_uuid)->first();
+        $userEmail = $user?->email ?? '';
+        if (config('services.portal.users.enable.get')) {
+            if (! Str::endsWith($userEmail, [
+                '@example.com',
+                '@example.org',
+                '@example.net'
+            ])) {
+                $citizenData = $this->fetchFromPortal('user_id', $citizen_uuid) ?? [];
+            }
+
+            if (! empty($citizenData)) {
+                session(['citizen' => $this->filterData($citizenData)]);
+            }
         }
 
-        return User::firstOrCreate([
+        if ($user) {
+            return $user;
+        }
+
+        if (empty($citizenData) && ! $user) {
+            return null;
+        }
+
+        return User::create([
             'citizen_uuid' => $citizen_uuid,
-        ], [
             'first_name' => $citizenData['firstname'] ?? null,
             'middle_name' => $citizenData['middlename'] ?? null,
             'last_name' => $citizenData['lastname'] ?? null,
