@@ -1,0 +1,23 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    volumes:
+      - .:/var/www
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "8000:80"
+    volumes:
+      - .:/var/www
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+
+  mysql:
+    image: mysql:8
+    environment:
+      MYSQL_DATABASE: burial
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
