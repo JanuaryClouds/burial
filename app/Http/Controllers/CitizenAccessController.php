@@ -60,12 +60,12 @@ class CitizenAccessController extends Controller
                 ];
             }
 
-            if (config('services.portal.users.enable.get') && ! in_array(config('services.portal.users.sampleUuid'), $citizens->pluck('citizen_uuid')->toArray())) {
+            if (
+                config('services.portal.users.enable.get') &&
+                config('services.portal.users.sampleUuid') && 
+                ! in_array(config('services.portal.users.sampleUuid'), $citizens->pluck('citizen_uuid')->toArray())
+            ) {
                 $sampleUserUuid = config('services.portal.users.sampleUuid');
-
-                if (! $sampleUserUuid) {
-                    throw new \RuntimeException('Sample user is not configured');
-                }
 
                 $newUser = [
                     'citizen_uuid' => $sampleUserUuid,
