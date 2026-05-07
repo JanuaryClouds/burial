@@ -56,10 +56,8 @@ class ClaimantChangeController extends Controller
                     return redirect()->back()->with('error', 'Unable to find claimant.');
                 }
 
-                if (! app()->isLocal()) {
-                    if (auth()->user()->id != $burialAssistance->originalClaimant()?->client?->user_id) {
-                        return redirect()->back()->with('error', 'You are not authorized to change the claimant.');
-                    }
+                if (auth()->user()->cannot('create-claimant-change-requests')) {
+                    return redirect()->back()->with('error', 'You are not authorized to change the claimant.');
                 }
 
                 if ($newClaimantUser->id == $burialAssistance->originalClaimant()?->client?->user_id) {
