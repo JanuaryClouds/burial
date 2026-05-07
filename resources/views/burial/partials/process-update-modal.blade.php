@@ -90,7 +90,8 @@
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         Cancel
                     </button>
-                    <button type="submit" class="btn btn-success">Submit</button>
+                    <button type="submit" id="submit-update-{{ $data->id }}"
+                        class="btn btn-success">Submit</button>
                 </div>
             </form>
         </div>
@@ -100,8 +101,15 @@
 <script nonce="{{ $nonce ?? '' }}">
     document.addEventListener('DOMContentLoaded', () => {
         const modal = document.getElementById('addUpdateModal-{{ $data->id }}');
+        const updateForm = document.getElementById('addLogForm-{{ $data->id }}');
+        const submitBtn = document.getElementById('submit-update-{{ $data->id }}');
         const dateIn = modal.querySelector('#date_in-{{ $data->id }}');
         const dateOut = modal.querySelector('#date_out-{{ $data->id }}');
+
+        updateForm.addEventListener('submit', (e) => {
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+        });
 
         if (dateOut && !dateOut.dataset.listenerAttached) {
             dateOut.dataset.listenerAttached = 'true';

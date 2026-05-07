@@ -16,6 +16,7 @@ return new class extends Migration
             $table->boolean('maintenance_mode')->default(false);
             $table->string('social_welfare_officer')->nullable();
             $table->string('dept_head')->nullable();
+            $table->string('department_email')->nullable();
             // Extend more system settings here
 
             $table->timestamps();

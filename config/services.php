@@ -51,6 +51,7 @@ return [
             ],
             'endpoint' => env('PORTAL_USERS_ENDPOINT', ''),
             'key' => env('PORTAL_USERS_API_KEY', ''),
+            'sampleUuid' => env('PORTAL_USERS_SAMPLE_UUID', false),
             'mock' => env('PORTAL_MOCK', false),
         ],
         'sso' => [
@@ -74,5 +75,13 @@ return [
         'endpoint' => env('FILESERVER_ENDPOINT', ''),
         'api' => env('FILESERVER_API'),
         'enc_key' => env('FILESERVER_ENCRYPTION_KEY', ''),
+    ],
+
+    'sms' => [
+        'enable' => [
+            'post' => env('SMS_ENABLE_POST', false),
+        ],
+        'endpoint' => env('SMS_ENDPOINT', ''),
+        'key' => env('SMS_API_KEY', ''),
     ],
 ];

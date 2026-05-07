@@ -138,7 +138,7 @@ class ReportController extends Controller
 
         $cardData = [
             [
-                'label' => 'Pending',
+                'label' => 'All',
                 'icon' => 'ki-file',
                 'pathsCount' => 2,
                 'count' => count($data->toArray()),
@@ -284,8 +284,8 @@ class ReportController extends Controller
             ->get()
             ->map(function ($cheque) {
                 return [
-                    'tracking_no' => $cheque->burialAssistance?->claimant?->client?->tracking_no,
-                    'claimant' => $cheque->burialAssistance?->claimant?->fullname(),
+                    'tracking_no' => $cheque->burialAssistance?->originalClaimant()?->client?->tracking_no,
+                    'claimant' => $cheque->claimant?->fullname(),
                     'obr_number' => $cheque->obr_number,
                     'cheque_number' => $cheque->cheque_number,
                     'dv_number' => $cheque->dv_number,

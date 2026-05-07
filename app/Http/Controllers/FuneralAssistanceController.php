@@ -81,6 +81,7 @@ class FuneralAssistanceController extends Controller
     {
         try {
             $data = FuneralAssistance::findOrFail($id);
+            $this->authorize('view', $data);
             $client = $data->client;
             if (! $client) {
                 return redirect()->back()->with('error', 'Client not found for this application.');
@@ -114,6 +115,7 @@ class FuneralAssistanceController extends Controller
     {
         try {
             $funeralAssistance = FuneralAssistance::findOrFail($id);
+            $this->authorize('update', $funeralAssistance);
             $funeralAssistance = $this->funeralAssistanceServices->update($request->all(), $funeralAssistance);
 
             return redirect()->back()->with('success', 'Successfully updated Libreng Libing Application.');
@@ -125,7 +127,8 @@ class FuneralAssistanceController extends Controller
     public function approve($id)
     {
         try {
-            $data = FuneralAssistance::find($id);
+            $data = FuneralAssistance::findOrFail($id);
+            $this->authorize('update', $data);
             $data->approved_at = now();
             $data->save();
 
@@ -139,6 +142,7 @@ class FuneralAssistanceController extends Controller
     {
         try {
             $data = FuneralAssistance::find($id);
+            $this->authorize('update', $data);
             $data->forwarded_at = now();
             $data->save();
 
@@ -162,10 +166,10 @@ class FuneralAssistanceController extends Controller
     {
         $funeralAssistance = FuneralAssistance::findOrFail($id);
         $client = $funeralAssistance->client;
-        $title = Str::title($client->first_name).' '.Str::title($client->last_name).'\'s Certification';
+        $title = Str::title($client->fullname()).'\'s Certification';
         $systemSetting = SystemSetting::first();
-        $social_welfare_officer = Str::upper(Str::replace('_', ' ', $systemSetting?->social_welfare_officer));
-        $dept_head = Str::upper(Str::replace('_', ' ', $systemSetting?->dept_head));
+        $social_welfare_officer = Str::upper($systemSetting?->social_welfare_officer);
+        $dept_head = Str::upper($systemSetting?->dept_head);
 
         $pdf = Pdf::loadView('pdf.certification',
             compact([

@@ -7,7 +7,8 @@
             Route::is('assignments*') ||
             Route::is('funeral*') ||
             Route::is('client*') ||
-            Route::is('beneficiary*'),
+            Route::is('beneficiary*') ||
+            Route::is('referral*'),
     ])>
     <!--begin:Menu link-->
     <span class="menu-link menu-center d-flex flex-column">
@@ -33,6 +34,14 @@
                     <x-ki-icon :icon_name="'people'" :icon_size="'2'" :paths_count="5" />
                 </span>
                 <span class="menu-title">Beneficiaries</span>
+            </a>
+        </div>
+        <div class="menu-item">
+            <a href="{{ route('referral.index') }}" @class(['active' => Request::is('referral*'), 'menu-link'])>
+                <span class="menu-icon">
+                    <x-ki-icon :icon_name="'route'" :icon_size="'2'" :paths_count="4" />
+                </span>
+                <span class="menu-title">Referrals</span>
             </a>
         </div>
         <div class="menu-item">

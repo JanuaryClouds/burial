@@ -1,4 +1,4 @@
-@if ($data->hasPendingClaimantChange())
+@if ($claimantChange != null && $claimantChange->status == 'pending')
     <div class="alert alert-warning alert-dismissible fade show" role="alert">
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         <strong>
@@ -10,7 +10,7 @@
         below. Updates are disabled until the request has been addressed.
     </div>
 @endif
-@if ($data->hasRejectedClaimantChange())
+@if ($claimantChange != null && $claimantChange->status == 'rejected')
     <div class="alert alert-info alert-dismissible fade show" role="alert">
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         <strong>
@@ -22,15 +22,15 @@
         Updates are only provided for the original claimant.
     </div>
 @endif
-@if ($data->hasApprovedClaimantChange())
+@if ($claimantChange != null && $claimantChange->status == 'approved')
     <div class="alert alert-info alert-dismissible fade show" role="alert">
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         <strong>
             <i class="fa fa-exclamation-triangle">
             </i>
-            Approved Claimant Change -
+            Claimant Change -
         </strong>
-        This application has been approved to change claimants,
+        This application has changed claimants,
         updates are provided for the new claimant.
     </div>
 @endif

@@ -1,11 +1,7 @@
 <div class="d-flex gap-6 justify-content-center align-items-center">
-    @php
-        $totalSteps = \App\Models\WorkflowStep::count();
-        $currentStep = (int) round(($progress / 100) * $totalSteps);
-    @endphp
     <div class="d-flex gap-6 justify-content-center align-items-center">
         <p class="mb-0 text-nowrap">
-            Step {{ $currentStep . ' / ' . $totalSteps }}
+            Step {{ $current_step . ' / ' . $totalSteps }}
         </p>
     </div>
     <div class="progress w-100">

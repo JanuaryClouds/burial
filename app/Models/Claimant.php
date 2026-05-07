@@ -74,7 +74,7 @@ class Claimant extends Model
 
     public function relationship()
     {
-        return $this->belongsTo(Relationship::class, 'relationship_to_deceased', 'id');
+        return $this->belongsTo(Relationship::class, 'relationship_id', 'id');
     }
 
     public function oldClaimantChanges()

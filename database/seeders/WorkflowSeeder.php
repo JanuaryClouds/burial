@@ -19,7 +19,9 @@ class WorkflowSeeder extends Seeder
                 'description' => 'Reviewed by Ms. Maricar',
                 'requires_extra_data' => false,
                 'is_optional' => false,
-                'extra_data_schema' => null,
+                'extra_data_schema' => json_encode([
+                    'comments/recommendation*' => 'string'
+                ]),
             ],
             [
                 'order_no' => 2,

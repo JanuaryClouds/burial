@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Notification;
 use App\Models\User;
 use Http;
+use Illuminate\Support\Str;
 
 class NotificationService
 {
@@ -52,6 +53,7 @@ class NotificationService
         }
 
         Notification::create([
+            'id' => (string) Str::uuid(),
             'notifiable_id' => $user->id,
             'notifiable_type' => User::class,
             'payload' => json_encode([

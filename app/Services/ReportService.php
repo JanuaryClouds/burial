@@ -54,13 +54,22 @@ class ReportService
 
     public function clientsPerAssistance($startDate, $endDate)
     {
-        return ClientRecommendation::selectRaw('type, COUNT(*) as total')
-            ->whereBetween('created_at', [$startDate, $endDate])
+        return ClientRecommendation::with('client')
+            ->selectRaw('type, COUNT(*) as total')
+            ->whereHas('client', function ($q) use ($startDate, $endDate) {
+                $q->whereBetween('created_at', [$startDate, $endDate]);
+            })
             ->groupBy('type')
             ->get()
             ->map(function ($item) {
+                if ($item->type == 'funeral') {
+                    $type = 'Libreng Libing';
+                } else {
+                    $type = 'Burial';
+                }
+
                 return [
-                    'name' => $item->type,
+                    'name' => $type,
                     'count' => $item->total,
                 ];
             });
@@ -92,8 +101,11 @@ class ReportService
         $burialAssistances = $query->get();
 
         foreach ($burialAssistances as $ba) {
-            $dob = Carbon::parse($ba->claimant?->client?->beneficiary?->date_of_birth ?? null);
-            $dod = Carbon::parse($ba->claimant?->client?->beneficiary?->date_of_death ?? null);
+            $beneficiary = $ba->beneficiary();
+            $dobRaw = $beneficiary?->date_of_birth;
+            $dodRaw = $beneficiary?->date_of_death;
+            $dob = $dobRaw ? Carbon::parse($dobRaw) : null;
+            $dod = $dodRaw ? Carbon::parse($dodRaw) : null;
             $encoder = User::find($ba->encoder);
             $initialChecker = User::find($ba->initial_checker);
             $age = ($dob && $dod) ? $dob->diffInYears($dod) : null;
@@ -102,10 +114,16 @@ class ReportService
                 $newClaimant = $approvedChange?->newClaimant;
                 $firstClaimant = $approvedChange?->oldClaimant;
             } else {
-                $firstClaimant = $ba->claimant;
+                $firstClaimant = $ba->originalClaimant();
+
+                if (! $firstClaimant) {
+                    $row++;
+
+                    continue;
+                }
             }
 
-            $sheet->setCellValue("A{$row}", $ba->claimant?->client?->tracking_no);
+            $sheet->setCellValue("A{$row}", $ba->originalClaimant()?->client?->tracking_no);
             $sheet->setCellValue("B{$row}", $ba->application_date);
             $sheet->setCellValue("C{$row}", $ba->swa);
             $sheet->setCellValue("D{$row}", $encoder ? $encoder->first_name.' '.$encoder->last_name : '');

@@ -16,7 +16,7 @@ class UserService
             return $user;
         }
 
-        return redirect()->back()->with('error', 'Invalid login credentials.');
+        throw new \RuntimeException('Invalid login credentials.');
     }
 
     public function logout(): void
@@ -51,7 +51,7 @@ class UserService
     {
         $data['password'] = config('app.admin_password');
         $user = User::create($data);
-        $user->assignRole('admin');
+        $user->assignRole('staff');
 
         return $user;
     }

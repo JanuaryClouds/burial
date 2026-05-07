@@ -23,14 +23,17 @@ class ImageService
     public function get(string $filename)
     {
         $filename = basename($filename);
-        if (app()->isLocal()) {
-            $filename = 'test-'.$filename.'.jpg.enc';
-        }
-        if (app()->hasDebugModeEnabled() && app()->isLocal()) {
+
+        if (! config('services.fileserver.enable.get')) {
             $filename = 'test.png';
         }
 
+        if (empty($this->serverUrl)) {
+            throw new \RuntimeException('File server is not configured');
+        }
+
         $url = $this->serverUrl.'/burial/'.$filename;
+
         $request = Http::get($url);
         if ($request->failed()) {
             return null;
@@ -41,8 +44,20 @@ class ImageService
 
     public function post(string $filename, $file)
     {
-        if (config('services.fileserver.enable.post') === false) {
-            throw new \RuntimeException('Fileserver is not enabled.');
+        if (! config('services.fileserver.enable.post')) {
+            $ip = request()->ip();
+            $browser = request()->header('User-Agent');
+
+            activity()
+                ->causedBy(auth()->user())
+                ->withProperties([
+                    'ip' => $ip,
+                    'browser' => $browser,
+                    'filename' => $filename,
+                ])
+                ->log('File upload service skipped');
+
+            return true;
         }
 
         if (! $file->isValid()) {
@@ -62,6 +77,11 @@ class ImageService
         $filename = Str::slug($filename).'.jpg.enc';
 
         $url = $this->serverUrl;
+
+        if (empty($url)) {
+            throw new \RuntimeException('File server is not configured');
+        }
+
         $duplicateCheck = Http::get($url.'/burial/'.$filename);
         if ($duplicateCheck->successful()) {
             throw new \RuntimeException($filename.' already exists.');
@@ -80,6 +100,7 @@ class ImageService
         if (empty($encKey)) {
             throw new \RuntimeException('Encryption key is empty.');
         }
+
         $key = base64_decode(str_replace('base64:', '', $encKey));
         if (strlen($key) !== 32) {
             throw new \RuntimeException('Encryption key is invalid. It must be 32 bytes.');

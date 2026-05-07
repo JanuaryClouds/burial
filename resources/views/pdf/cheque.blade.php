@@ -105,7 +105,7 @@
             <thead>
                 <tr>
                     @foreach ($cheques[0] as $key => $value)
-                        <th>{{ $key }}</th>
+                        <th>{{ Str::title(Str::replace(['-', '_'], ' ', $key)) }}</th>
                     @endforeach
                 </tr>
             </thead>

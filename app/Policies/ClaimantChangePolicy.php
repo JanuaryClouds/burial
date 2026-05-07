@@ -37,7 +37,7 @@ class ClaimantChangePolicy
      */
     public function create(User $user, BurialAssistance $burialAssistance): bool
     {
-        if ($user->id == $burialAssistance->originalClaimant()?->client?->user_id) {
+        if ($user->roles()->exists() && $user->can('create-claimant-change-requests')) {
             return true;
         }
 

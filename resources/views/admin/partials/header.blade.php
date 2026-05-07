@@ -31,15 +31,17 @@
 
             @include('admin.partials.mobile-nav')
             <!-- begin::Theme mode -->
-            @if (!Route::is('dashboard'))
-                <livewire:notification.button />
+            @if (!auth()->user()->roles()->exists())
+                @if (!Route::is('dashboard'))
+                    <livewire:notification.button />
 
-                <div class="menu menu-sub menu-sub-dropdown menu-column w-350px w-lg-375px" data-kt-menu="true"
-                    id="kt_menu_notifications" data-popper-placement="bottom-end"
-                    style="z-index: 107; position: fixed; inset: 0px 0px auto auto; margin: 0px; transform: translate3d(-284px, 107.2px, 0px);">
+                    <div class="menu menu-sub menu-sub-dropdown menu-column w-350px w-lg-375px" data-kt-menu="true"
+                        id="kt_menu_notifications" data-popper-placement="bottom-end"
+                        style="z-index: 107; position: fixed; inset: 0px 0px auto auto; margin: 0px; transform: translate3d(-284px, 107.2px, 0px);">
 
-                    <livewire:notification.index />
-                </div>
+                        <livewire:notification.index />
+                    </div>
+                @endif
             @endif
             @include('components.theme-toggle')
             <!-- end::Theme mode -->

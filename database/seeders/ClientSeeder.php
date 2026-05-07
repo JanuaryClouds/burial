@@ -81,7 +81,7 @@ class ClientSeeder extends Seeder
                         // Burial Assistance
                         $recommendation = ClientRecommendation::factory()->create([
                             'client_id' => $client->id,
-                            'type' => 'funeral',
+                            'type' => 'libreng_libing',
                         ]);
 
                         Notification::factory()->create([

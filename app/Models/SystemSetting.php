@@ -20,6 +20,9 @@ class SystemSetting extends Model
     protected $fillable = [
         'uuid',
         'maintenance_mode',
+        'social_welfare_officer',
+        'dept_head',
+        'department_email',
     ];
 
     public static function exceptAttributes()

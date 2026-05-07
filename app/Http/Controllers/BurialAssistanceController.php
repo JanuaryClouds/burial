@@ -8,9 +8,12 @@ use App\Models\BurialAssistance;
 use App\Models\Relationship;
 use App\Models\Religion;
 use App\Models\SystemSetting;
+use App\Models\User;
+use App\Models\WorkflowStep;
 use App\Services\BurialAssistanceService;
 use App\Services\DatatableService;
 use App\Services\ProcessLogService;
+use App\Services\SmsService;
 use App\Services\WorkflowStepService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Exception;
@@ -27,16 +30,20 @@ class BurialAssistanceController extends Controller
 
     protected $workflowStepServices;
 
+    protected $smsServices;
+
     public function __construct(
         ProcessLogService $processLogService,
         BurialAssistanceService $burialAssistanceService,
         DatatableService $datatableService,
         WorkflowStepService $workflowStepService,
+        SmsService $smsService
     ) {
         $this->processLogServices = $processLogService;
         $this->burialAssistanceServices = $burialAssistanceService;
         $this->datatableServices = $datatableService;
         $this->workflowStepServices = $workflowStepService;
+        $this->smsServices = $smsService;
     }
 
     public function index()
@@ -69,29 +76,60 @@ class BurialAssistanceController extends Controller
     {
         try {
             $data = BurialAssistance::findOrFail($id);
-            $client = $data->originalClaimant()->client;
-            if (! $client) {
+
+            $currentClaimant = $data->currentClaimant();
+            $claimantChange = $data->claimantChanges()->first();
+            $newClaimants = [];
+
+            if (! $currentClaimant) {
                 abort(404);
             }
-            $page_title = $client->tracking_no;
-            $page_subtitle = $client->fullname()."'s Burial Assistance Application";
+                
+            if (! $claimantChange) {
+                $currentClaimantUserId = $currentClaimant->client?->user_id;
+                $newClaimants = User::whereHas('clients')
+                    ->where('id', '!=', $currentClaimantUserId)
+                    ->get()
+                    ->mapWithKeys(function ($user) {
+                        return [$user->id => $user->fullname()];
+                    })
+                    ->toArray();
+            }
+    
+            $page_title = $data->originalClaimant()?->client?->tracking_no;
+            $page_subtitle = $currentClaimant->fullname()."'s Burial Assistance Application";
             $readonly = auth()->user()->cannot('manage-content') && $data->status == 'released';
 
             $timeline = $this->processLogServices->timeline($data);
-            if ($data->claimantChanges()->first() && $data->claimantChanges()->first()->status == 'approved') {
-                $page_subtitle = $data->claimantChanges()->first()->newClaimant->fullname()."'s Burial Assistance Application";
+
+            $totalSteps = WorkflowStep::count();
+            $next_step = $this->workflowStepServices->nextStep($data);
+            if ($next_step == null) {
+                if ($data->status == 'approved') {
+                    $current_step = 13;
+                } elseif ($data->status == 'released') {
+                    $current_step = 13;
+                } else {
+                    $current_step = 0;
+                }
+            } else {
+                $current_step = $next_step->order_no - 1;
             }
 
-            $next_step = $this->workflowStepServices->nextStep($data);
-            $progress = $this->workflowStepServices->progress($data);
+            $progress = $this->workflowStepServices->progress($data, $next_step, $totalSteps);
             $show_certificate = $next_step == null && $data->status == 'approved';
             $relationships = Relationship::select('id', 'name')->get();
 
             return view('burial.show', compact([
                 'data',
+                'currentClaimant',
+                'claimantChange',
+                'newClaimants',
                 'relationships',
                 'progress',
                 'timeline',
+                'totalSteps',
+                'current_step',
                 'next_step',
                 'show_certificate',
                 'page_title',
@@ -134,8 +172,21 @@ class BurialAssistanceController extends Controller
                     'burial_assistance_id' => $application->id,
                 ]);
 
-                // TODO Send notification via SMS
-                // Unavialable
+                $claimant = $application->currentClaimant();
+                $beneficiary = $application->beneficiary();
+
+                if ($claimant && $claimant->contact_number && $beneficiary) {
+                    $department_email = SystemSetting::first()?->department_email;
+
+                    $this->smsServices->send(
+                        $claimant->contact_number,
+                        'Magandang araw! '.$claimant->fullname().', Ito ay abiso mula sa CSWDO ng Lungsod Taguig. Ang inyong aplikasyon para sa Burial Assistance para kay '
+                        .$beneficiary->fullname().' ay tinanggihan sa kadahilanang '
+                        .$validated['reason'].'. Para sa karagdagang detalye, maaaring makipag-ugnayan sa '.$department_email
+                        .'. Maraming salamat po.'
+                    );
+                }
+
             }
 
             if ($application->processLogs()->count() > 0) {
@@ -178,12 +229,11 @@ class BurialAssistanceController extends Controller
                 ->select('id', 'name')
                 ->withCount([
                     'beneficiary as beneficiary_count' => function ($query) use ($startDate, $endDate) {
-                        $query->whereBetween('date_of_death', [$startDate, $endDate]);
+                        $query->whereHas('client.claimant', function ($q) use ($startDate, $endDate) {
+                            $q->whereBetween('date_of_death', [$startDate, $endDate]);
+                        });
                     },
                 ])
-                ->whereHas('beneficiary', function ($query) use ($startDate, $endDate) {
-                    $query->whereBetween('date_of_death', [$startDate, $endDate]);
-                })
                 ->get()
                 ->mapWithKeys(function ($barangay) {
                     return [$barangay->name => $barangay->beneficiary_count];
@@ -194,12 +244,11 @@ class BurialAssistanceController extends Controller
                 ->select('id', 'name')
                 ->withCount([
                     'beneficiary as beneficiary_count' => function ($query) use ($startDate, $endDate) {
-                        $query->whereBetween('date_of_death', [$startDate, $endDate]);
+                        $query->whereHas('client.claimant', function ($q) use ($startDate, $endDate) {
+                            $q->whereBetween('date_of_death', [$startDate, $endDate]);
+                        });
                     },
                 ])
-                ->whereHas('beneficiary', function ($query) use ($startDate, $endDate) {
-                    $query->whereBetween('date_of_death', [$startDate, $endDate]);
-                })
                 ->get()
                 ->mapWithKeys(function ($religion) {
                     return [$religion->name => $religion->beneficiary_count];
@@ -232,15 +281,15 @@ class BurialAssistanceController extends Controller
             abort(404);
         }
 
-        if ($assistance->hasApprovedClaimantChange()) {
-            $claimant = $assistance->newClaimant();
-        } else {
-            $claimant = $assistance->originalClaimant();
+        $claimant = $assistance->currentClaimant();
+
+        if (! $claimant) {
+            abort(404);
         }
 
         $title = Str::title($claimant->first_name).' '.Str::title($claimant->last_name).'\'s Certificate of Eligibility';
-        $social_welfare_officer = Str::upper(Str::replace('_', ' ', SystemSetting::first()?->social_welfare_officer));
-        $dept_head = Str::upper(Str::replace('_', ' ', SystemSetting::first()?->dept_head));
+        $social_welfare_officer = Str::upper(SystemSetting::first()?->social_welfare_officer);
+        $dept_head = Str::upper(SystemSetting::first()?->dept_head);
 
         $pdf = Pdf::loadView('pdf.certificate-of-eligibility',
             compact([

@@ -59,7 +59,7 @@ class Index extends Component
         return <<<'HTML'
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title">Notifications</h4>
+                    <h4 class="card-title">Updates</h4>
                 </div>
                 <div class="card-body d-flex justify-content-center">
                     @include('partials.loader.bar')

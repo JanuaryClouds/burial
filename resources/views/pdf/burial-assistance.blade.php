@@ -100,7 +100,7 @@
             @endforeach
         </table>
     @endif
-    @if ($burialAssistance->count() > 0)
+    @if (count($burialAssistance) > 0)
         <h2>Details</h2>
         <table>
             <thead>
@@ -120,11 +120,11 @@
                 @endforeach
             </tbody>
         </table>
-        <strong>Total: </strong> {{ $burialAssistance->count() }}
+        <strong>Total: </strong> {{ count($burialAssistance) }}
     @else
         <p>No burial assistance records found.</p>
     @endif
-    @if ($deceasedPerBarangay->count() > 0)
+    @if (count($deceasedPerBarangay) > 0)
         <h2>Deceased</h2>
         <table style="margin-top: 20px;">
             <thead>
@@ -142,9 +142,9 @@
                 @endforeach
             </tbody>
         </table>
-        <strong>Total: </strong> {{ $deceasedPerBarangay->sum() }}
+        <strong>Total: </strong> {{ array_sum($deceasedPerBarangay) }}
     @endif
-    @if ($deceasedPerReligion->count() > 0)
+    @if (count($deceasedPerReligion) > 0)
         <h2>Religion</h2>
         <table style="margin-top: 20px;">
             <thead>
@@ -162,7 +162,7 @@
                 @endforeach
             </tbody>
         </table>
-        <strong>Total: </strong>{{ $deceasedPerReligion->sum() }}
+        <strong>Total: </strong>{{ array_sum($deceasedPerReligion) }}
     @endif
     <table>
         <tbody>

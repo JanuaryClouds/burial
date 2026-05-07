@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProcessLogRequest;
 use App\Models\BurialAssistance;
 use App\Models\ProcessLog;
+use App\Models\SystemSetting;
 use App\Models\WorkflowStep;
 use App\Services\ImageService;
 use App\Services\NotificationService;
 use App\Services\ProcessLogService;
+use App\Services\SmsService;
 use Exception;
 
 class ProcessLogController extends Controller
@@ -19,11 +21,14 @@ class ProcessLogController extends Controller
 
     protected $notificationServices;
 
-    public function __construct(ProcessLogService $processLogService, ImageService $imageService, NotificationService $notificationService)
+    protected $smsServices;
+
+    public function __construct(ProcessLogService $processLogService, ImageService $imageService, NotificationService $notificationService, SmsService $smsServices)
     {
         $this->processLogServices = $processLogService;
         $this->imageServices = $imageService;
         $this->notificationServices = $notificationService;
+        $this->smsServices = $smsServices;
     }
 
     public function add(ProcessLogRequest $request, $id, $stepId)
@@ -37,10 +42,14 @@ class ProcessLogController extends Controller
                 $ip = request()->ip();
                 $browser = request()->header('User-Agent');
                 $citizenUuid = $application->originalClaimant()?->client?->user?->citizen_uuid;
+                if ($application->hasApprovedClaimantChange()) {
+                    $claimantChange = $application->claimantChanges()->where('status', 'approved')->first();
+                    $citizenUuid = $claimantChange?->newUserClaimant?->citizen_uuid;
+                }
 
                 $this->processLogServices->create(
                     $application,
-                    $application->claimantChanges->where('status', 'approved')->first()->newClaimant ?? $application->claimant,
+                    $application->currentClaimant(),
                     $step,
                     $validated
                 );
@@ -48,8 +57,7 @@ class ProcessLogController extends Controller
                 if ($step->order_no == 12) {
                     activity()
                         ->causedBy(auth()->user())
-                        ->performedOn($application)
-                        ->withProperties(['ip' => $ip, 'browser' => $browser])
+                        ->withProperties(['ip' => $ip, 'browser' => $browser, 'burialAssistance' => $application->id])
                         ->log('Cheque is ready to be picked up');
 
                     if ($citizenUuid) {
@@ -59,6 +67,19 @@ class ProcessLogController extends Controller
                             'Cheque is ready to be picked up',
                             'A cheque for your burial assistance application is ready to be picked up. Please come to the Taguig City Hall CSWDO Office.'
                         );
+
+                        $claimant = $application->currentClaimant();
+                        $beneficiary = $application->beneficiary();
+
+                        if ($claimant && $claimant?->contact_number && $beneficiary) {
+                            $department_email = SystemSetting::first()?->department_email;
+                            $this->smsServices->send(
+                                $claimant->contact_number,
+                                'Magandang araw! '.$claimant->fullname().', Ang tseke para sa Burial Assistance para kay'
+                                .$beneficiary->fullname().' ay maaari nang kuhain sa opisina ng CSWDO, sa Taguig City Hall, Gen. Luna St., Tuktukan, Taguig City. Magdala ng dalawang valid Government ID para sa beripikasyon. Para sa karagdagang detalye, maaaring makipag-ugnayan sa '
+                                .$department_email.'. Maraming salamat po.'
+                            );
+                        }
                     }
                 }
 
@@ -72,9 +93,11 @@ class ProcessLogController extends Controller
                         'date_claimed' => $request['date_in'],
                     ]);
                     $application->update(['status' => 'released']);
-                    if ($request->file('cheque-image-proof') && app()->isProduction()) {
+                    if (! config('services.fileserver.enable.post')) {
+                        return redirect()->back()->with('info', 'File Upload skipped.');
+                    } elseif ($request->file('cheque-image-proof') && config('services.fileserver.enable.post')) {
                         $extension = $request->file('cheque-image-proof')->getClientOriginalExtension();
-                        $this->imageServices->post($application->claimant->client->tracking_no.'-cheque-proof', $request->file('cheque-image-proof'));
+                        $this->imageServices->post($application->originalClaimant()?->client?->tracking_no.'-cheque-proof', $request->file('cheque-image-proof'));
                         $application->update(['status' => 'released']);
                     } else {
                         return redirect()->back()->with('info', 'Please upload a photo of the cheque.');
@@ -90,8 +113,7 @@ class ProcessLogController extends Controller
 
                         activity()
                             ->causedBy(auth()->user())
-                            ->withProperties(['ip' => $ip, 'browser' => $browser])
-                            ->performedOn($application)
+                            ->withProperties(['ip' => $ip, 'browser' => $browser, 'burialAssistance' => $application->id])
                             ->log('Cheque has been claimed');
                     }
                 }

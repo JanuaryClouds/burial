@@ -52,6 +52,9 @@ class BeneficiaryService
             'religion',
         ])
             ->whereBetween('created_at', [$startDate, $endDate])
+            ->whereHas('client', function ($q) {
+                $q->orderBy('tracking_no', 'asc');
+            })
             ->get()
             ->map(function ($beneficiary) {
                 $assistance = 'Pending';
@@ -71,7 +74,6 @@ class BeneficiaryService
                     'religion' => $beneficiary->religion?->name,
                     'assistance' => $assistance,
                 ];
-            })
-            ->sortBy('client_tracking_no');
+            });
     }
 }

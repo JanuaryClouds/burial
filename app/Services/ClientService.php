@@ -497,7 +497,7 @@ class ClientService
                 ],
             ],
             'assessment' => [
-                'problem_presented' => $assessment?->problem_presented,
+                'problem_presented' => $assessment?->problem_presented ?? 'N/A',
                 'swa' => $assessment?->assessment ?? 'N/A',
             ],
         ];

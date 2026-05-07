@@ -88,7 +88,7 @@ class ExportController extends Controller
             $sheet->setCellValue("V{$row}", $firstClaimant?->contact_number);
             $sheet->setCellValue("W{$row}", $processLogService->getLog($firstClaimant, 1)?->date_out);
             $sheet->setCellValue("X{$row}", $processLogService->getLog($firstClaimant, 1)?->date_in);
-            $sheet->setCellValue("Y{$row}", $processLogService->getLog($firstClaimant, 1)?->comments);
+            $sheet->setCellValue("Y{$row}", $processLogService->getLog($firstClaimant, 1)?->extra_data['comments/recommendation'] ?? '');
             $sheet->setCellValue("Z{$row}", $processLogService->getLog($firstClaimant, 2)?->date_in);
             $sheet->setCellValue("AA{$row}", $processLogService->getLog($firstClaimant, 3)?->extra_data['compiled_documents'] ?? '');
             $sheet->setCellValue("AB{$row}", $processLogService->getLog($firstClaimant, 3)?->date_out ?? '');
@@ -120,7 +120,7 @@ class ExportController extends Controller
                 $sheet->setCellValue("AZ{$row}", $approvedChange->reason_for_change);
                 $sheet->setCellValue("BA{$row}", $processLogService->getLog($newClaimant, 4)?->date_out ?? '');
                 $sheet->setCellValue("BB{$row}", $processLogService->getLog($newClaimant, 4)?->date_in ?? '');
-                $sheet->setCellValue("BC{$row}", $processLogService->getLog($newClaimant, 4)?->comments ?? '');
+                $sheet->setCellValue("BC{$row}", $processLogService->getLog($newClaimant, 4)?->extra_data['inputs_and_recommendations'] ?? '');
                 $sheet->setCellValue("BD{$row}", $processLogService->getLog($newClaimant, 5)?->date_out ?? '');
                 $sheet->setCellValue("BE{$row}", $processLogService->getLog($newClaimant, 5)?->date_in ?? '');
                 $sheet->setCellValue("BF{$row}", $processLogService->getLog($newClaimant, 6)?->date_out ?? '');

@@ -36,7 +36,7 @@ class ClaimantChange extends Model
         return $this->belongsTo(Claimant::class, 'new_claimant_id', 'id');
     }
 
-    public function user()
+    public function newUserClaimant()
     {
         return $this->belongsTo(User::class, 'new_claimant_user_id', 'id');
     }

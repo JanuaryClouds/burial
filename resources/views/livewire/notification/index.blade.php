@@ -1,7 +1,7 @@
 <div class="card">
     <div class="card-header d-flex align-items-center justify-content-between gap-1">
         <span class="d-flex align-items-center gap-1">
-            <h4 class="card-title">Notifications</h4>
+            <h4 class="card-title">Updates</h4>
             <p class="text-muted fw-bold mb-0">{{ $unreadCount }} unread</p>
         </span>
         <p class="text-muted" wire:loading>...</p>
@@ -19,8 +19,15 @@
                         </div>
                         <div class="col-9">
                             <div class="d-flex flex-column gap-1">
-                                <span class="fw-bold">{{ $notification['subject'] }}</span>
-                                <span class="text-muted">{{ $notification['source_class'] }}</span>
+                                <p class="mb-0">
+                                    <a class="" data-bs-toggle="collapse" href="#body-{{ $notification['id'] }}"
+                                        aria-expanded="false" aria-controls="body-{{ $notification['id'] }}">
+                                        {{ $notification['subject'] }}
+                                    </a>
+                                </p>
+                                <div class="collapse" id="body-{{ $notification['id'] }}" wire:ignore.self>
+                                    {{ $notification['body'] }}
+                                </div>
                             </div>
                         </div>
                         <div class="col-1" wire:loading.remove>
@@ -36,7 +43,7 @@
                 </div>
             @endforeach
         @else
-            <p class="text-muted text-center">No Notifications</p>
+            <p class="text-muted text-center">No Updates</p>
         @endif
     </div>
     <div class="card-footer d-flex justify-content-end align-items-center gap-2">

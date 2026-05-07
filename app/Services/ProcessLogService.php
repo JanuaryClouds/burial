@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\BurialAssistance;
+use App\Models\Cheque;
 use App\Models\Claimant;
 use App\Models\ProcessLog;
 use App\Models\WorkflowStep;
@@ -17,7 +18,7 @@ class ProcessLogService
     /**
      * @param  BurialAssistance  $burialAssistance  Application
      * @param  Claimant  $claimant  Assigned claimant of the assistance
-     * @param  WorkflowStep  $workflowStep  Step indicator
+     * @param  WorkflowStep  $step  Step indicator
      * @param  array  $data  Data to save
      * @return void
      */
@@ -32,21 +33,33 @@ class ProcessLogService
             $application->update(['status' => 'processing']);
 
             if ($step->order_no == 9) {
+                if (Cheque::where('obr_number', $data['extra_data']['OBR']['oBR_number'])->exists()) {
+                    throw new \RuntimeException('This OBR number already exists.');
+                }
+
                 $application->cheque()->create([
                     'id' => Str::uuid(),
                     'burial_assistance_id' => $application->id,
-                    'claimant_id' => $application->claimantChanges->where('status', 'approved')->first()->newClaimant->id ?? $application->claimant->id,
+                    'claimant_id' => $claimant->id,
                     'obr_number' => $data['extra_data']['OBR']['oBR_number'],
                 ]);
             }
 
             if ($step->order_no == 10) {
+                if (Cheque::where('dv_number', $data['extra_data']['dv_number'])->exists()) {
+                    throw new \RuntimeException('This DV number already exists.');
+                }
+
                 $application->latestCheque()->update([
                     'dv_number' => $data['extra_data']['dv_number'] ?? null,
                 ]);
             }
 
             if ($step->order_no == 11) {
+                if (Cheque::where('cheque_number', $data['extra_data']['cheque_number'])->exists()) {
+                    throw new \RuntimeException('This cheque number already exists.');
+                }
+
                 DB::transaction(function () use ($application, $data) {
                     $application->latestCheque()->update([
                         'cheque_number' => $data['extra_data']['cheque_number'],
@@ -54,9 +67,14 @@ class ProcessLogService
                     ]);
                 });
 
-                $claimant = $application->claimant?->fullname();
-                $deceased = $application->claimant?->client?->beneficiary?->fullname();
-                $dod = Carbon::parse($application->deceased?->date_of_death)->format('F d, Y');
+                $claimantName = $claimant->fullname();
+                $deceased = $application->beneficiary()?->fullname();
+                $beneficiary = $application->beneficiary();
+                $dod = $beneficiary?->date_of_death
+                    ? Carbon::parse($beneficiary->date_of_death)->format('F d, Y')
+                    : null;
+
+                // TODO Disbursement Service here
             }
 
             if ($step->order_no == 12) {
@@ -76,7 +94,7 @@ class ProcessLogService
                 'loggable_type' => WorkflowStep::class,
                 'is_progress_step' => true,
                 'burial_assistance_id' => $application->id,
-                'claimant_id' => $application->claimantChanges->where('status', 'approved')->first()->newClaimant->id ?? $application->originalClaimant()->id,
+                'claimant_id' => $claimant->id,
                 'date_in' => $data['date_in'],
                 'date_out' => $data['date_out'],
                 'comments' => $data['comments'],

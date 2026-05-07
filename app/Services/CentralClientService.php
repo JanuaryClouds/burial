@@ -52,40 +52,47 @@ class CentralClientService
      */
     public function checkIfUser(string $citizen_uuid)
     {
-        if (config('services.portal.users.enable.get')) {
-            $citizenData = $this->fetchFromPortal('user_id', $citizen_uuid) ?? [];
-            if (empty($citizenData)) {
-                abort(403);
-            }
-
-            session(['citizen' => $this->filterData($citizenData)]);
-
-            return User::firstOrCreate([
-                'citizen_uuid' => $citizen_uuid,
-            ], [
-                'first_name' => $citizenData['firstname'] ?? null,
-                'middle_name' => $citizenData['middlename'] ?? null,
-                'last_name' => $citizenData['lastname'] ?? null,
-                'suffix' => $citizenData['suffix'] ?? null,
-                'email' => $citizenData['email'] ?? null,
-                'is_active' => true,
-                'contact_number' => $citizenData['contact_number'] ?? null,
-                'password' => bcrypt(Str::random(32)),
-            ]);
+        if (! $citizen_uuid) {
+            return null;
         }
 
-        if (app()->isLocal()) {
-            $user = User::where('citizen_uuid', $citizen_uuid)->first();
-            if ($user === null) {
-                $user = User::factory()->create([
-                    'citizen_uuid' => $citizen_uuid,
-                ]);
+        $citizenData = [];
+
+        $user = User::where('citizen_uuid', $citizen_uuid)->first();
+        $userEmail = $user?->email ?? '';
+        if (config('services.portal.users.enable.get')) {
+            if (! Str::endsWith($userEmail, [
+                '@example.com',
+                '@example.org',
+                '@example.net'
+            ])) {
+                $citizenData = $this->fetchFromPortal('user_id', $citizen_uuid) ?? [];
             }
 
+            if (! empty($citizenData)) {
+                session(['citizen' => $this->filterData($citizenData)]);
+            }
+        }
+
+        if ($user) {
             return $user;
         }
 
-        return null;
+        if (empty($citizenData) && ! $user) {
+            return null;
+        }
+
+        return User::create([
+            'citizen_uuid' => $citizen_uuid,
+            'first_name' => $citizenData['firstname'] ?? null,
+            'middle_name' => $citizenData['middlename'] ?? null,
+            'last_name' => $citizenData['lastname'] ?? null,
+            'suffix' => $citizenData['suffix'] ?? null,
+            'email' => $citizenData['email'] ?? null,
+            'is_active' => true,
+            'contact_number' => $citizenData['contact_number'] ?? null,
+            'password' => bcrypt(Str::random(32)),
+        ]);
     }
 
     /**
@@ -101,15 +108,15 @@ class CentralClientService
         }
 
         return [
-            'firstname' => $citizen['firstname'] ?? null,
-            'middlename' => $citizen['middlename'] ?? null,
-            'lastname' => $citizen['lastname'] ?? null,
+            'first_name' => $citizen['firstname'] ?? null,
+            'middle_name' => $citizen['middlename'] ?? null,
+            'last_name' => $citizen['lastname'] ?? null,
             'suffix' => $citizen['suffix'] ?? null,
             'age' => $citizen['age'] ?? null,
             'birthday' => $citizen['birthday'] ?? null,
             'sex' => isset($citizen['gender']) ? Str::ucfirst($citizen['gender']) : null,
-            'street' => $citizen['latest_address']['street'] ?? null,
-            'barangay' => $citizen['latest_address']['barangay'] ?? null,
+            'street' => $citizen['street'] ?? null,
+            'barangay' => $citizen['barangay'] ?? null,
             'civil_status' => $citizen['civil_status'] ?? null,
             'contact_number' => $citizen['contact_number'] ?? null,
         ];

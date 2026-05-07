@@ -27,7 +27,7 @@
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         Cancel
                     </button>
-                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="submit" class="btn btn-primary">Submit Referral</button>
                 </div>
             </div>
         </div>
