@@ -21,16 +21,19 @@ class ActivityLogController extends Controller
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($log) {
-                $properties = $log->properties?->toArray() ?? [];
-                $ip = $properties['ip'] ?? 'N/A';
-                $browser = $properties['browser'] ?? 'N/A';
-
                 return [
                     'id' => $log->id,
                     'description' => $log->description,
                     'caused_by' => $log->causer?->first_name ?? '',
-                    'IP_address' => $ip,
-                    'browser' => $browser,
+                    'properties' => collect($log->properties->toArray())
+                        ->map(function ($value, $key) {
+                            if (is_array($value)) {
+                                $value = json_encode($value);
+                            }
+
+                            return "{$key}: {$value}";
+                        })
+                        ->implode(', '),
                     'created_at' => $log->created_at->format('Y-m-d H:i:s'),
                 ];
             });
