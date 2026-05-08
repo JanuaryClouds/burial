@@ -12,11 +12,10 @@ class CentralClientService
     /**
      * Fetch client details by UUID from the central database.
      *
-     * @param  string  $key  array key to filter from
      * @param  string  $value  array value to match
      * @return array|null
      */
-    public function fetchFromPortal(string $key, string $value)
+    public function fetchFromPortal(string $value)
     {
         if (config('services.portal.users.enable.get') === false) {
             throw new RuntimeException('User fetching from portal is disabled.');
@@ -24,11 +23,19 @@ class CentralClientService
 
         $apiKey = config('services.portal.users.key');
         $url = config('services.portal.users.endpoint');
+
+        if (! $url) {
+            throw new RuntimeException('User fetching from portal is not configured.');
+        }
+
         if (! $apiKey) {
-            return null;
+            throw new RuntimeException('User fetching from portal is not configured.');
         }
 
         $response = Http::withHeader('X-Secret-Key', $apiKey)
+            ->withQueryParameters([
+                'user_id' => $value
+            ])
             ->timeout(15)
             ->retry(3, 200)
             ->get($url);
@@ -37,10 +44,9 @@ class CentralClientService
             return null;
         } else {
             $decodedResponse = $response->json();
-            $data = $decodedResponse['data'] ?? [];
-            $citizen = collect($data)->firstWhere($key, $value);
+            $data = $decodedResponse['data'][0] ?? [];
 
-            return $citizen;
+            return $data;
         }
     }
 
@@ -53,7 +59,7 @@ class CentralClientService
     public function checkIfUser(string $citizen_uuid)
     {
         if (! $citizen_uuid) {
-            return null;
+            throw new RuntimeException('Missing citizen UUID');
         }
 
         $citizenData = [];
@@ -66,7 +72,7 @@ class CentralClientService
                 '@example.org',
                 '@example.net'
             ])) {
-                $citizenData = $this->fetchFromPortal('user_id', $citizen_uuid) ?? [];
+                $citizenData = $this->fetchFromPortal($citizen_uuid) ?? [];
             }
 
             if (! empty($citizenData)) {
