@@ -32,9 +32,6 @@ class Maintenance
 
             if ($request->routeIs([
                 'landing.page',
-                'history',
-                'tracker.match',
-                'tracker.show',
                 'logout',
             ])) {
                 return $next($request);
