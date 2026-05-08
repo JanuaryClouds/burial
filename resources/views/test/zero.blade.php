@@ -1,7 +1,7 @@
 @extends('layouts.metronic.guest')
 @section('content')
     @php
-        if (!app()->environment('local', 'testing')) {
+        if (!app()->isLocal() || config('services.portal.users.mock') === false) {
             abort(404);
         }
     @endphp
