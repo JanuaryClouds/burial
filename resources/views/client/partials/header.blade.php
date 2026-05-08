@@ -20,31 +20,16 @@
 
                 <div class="col d-flex align-items-center justify-content-end gap-4">
                     @include('components.theme-toggle')
-                    @if (!Route::is('general.intake.form'))
-                        @auth
-                            <div class="dropdown">
-                                <button class="btn btn-light dropdown-toggle" type="button" id="menu"
-                                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Menu
-                                </button>
-                                <div class="dropdown-menu" aria-labelledby="menu">
-                                    <a class="dropdown-item" href="{{ route('landing.page') }}">Home</a>
-                                    <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="{{ route('general.intake.form') }}">Apply</a>
-                                    <a class="dropdown-item" href="{{ route('history') }}">History</a>
-                                </div>
-                            </div>
-                        @endauth
-                        @auth
-                            <form action="{{ route('logout') }}" method="POST" class="d-block mb-0">
-                                @csrf
-                                <button type="submit" class="btn btn-lg btn-danger">
-                                    Logout
-                                </button>
-                            </form>
-                        @endauth
-                    @endif
-                    @includeWhen(Route::is('general.intake.form'), 'client.partials.create-form-buttons')
+                    @auth
+                        <a name="" id="" class="btn btn-primary" href="{{ route('dashboard') }}"
+                            role="button">Dashboard</a>
+                        <form action="{{ route('logout') }}" method="POST" class="d-block mb-0">
+                            @csrf
+                            <button type="submit" class="btn btn-lg btn-danger">
+                                Logout
+                            </button>
+                        </form>
+                    @endauth
                 </div>
             </div>
         </div>

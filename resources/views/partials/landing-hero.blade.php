@@ -9,11 +9,6 @@
                     <a href="{{ route('general.intake.form') }}" class="btn btn-primary btn-lg hover-scale">
                         Apply
                     </a>
-                    @if (auth()->user()->clients->count() > 0)
-                        <a href="{{ route('history') }}" class="btn btn-lg btn-light hover-scale">
-                            History
-                        </a>
-                    @endif
                     <form action="{{ route('logout') }}" method="POST" class="block mb-0">
                         @csrf
                         <button type="submit" class="btn btn-lg btn-danger">
