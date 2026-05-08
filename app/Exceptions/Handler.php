@@ -29,18 +29,13 @@ class Handler extends ExceptionHandler
                 ], 403);
             }
 
-            return redirect()->back()
+            return redirect()->route(auth()->check() ? 'dashboard' : 'landing.page')
                 ->with('error', 'You do not have permission to access this page.');
         } elseif ($exception instanceof NotFoundHttpException) {
             if ($request->expectsJson()) {
                 return response()->json([
                     'message' => 'The page you requested could not be found.',
                 ], 404);
-            }
-
-            if (auth()->check() && auth()->user()->roles()->count() == 0) {
-                return redirect()->route('landing.page')
-                    ->with('error', 'The page you requested could not be found.');
             }
 
             return redirect()->route(auth()->check() ? 'dashboard' : 'landing.page')
@@ -63,6 +58,21 @@ class Handler extends ExceptionHandler
 
             return redirect()->back()
                 ->with('error', 'You do not have permission to access this page.');
+        }
+
+        if (!($exception instanceof \Symfony\Component\HttpKernel\Exception\HttpExceptionInterface)) {
+            activity()
+                ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
+                ->log('Internal server error occurred. Exception: ' . get_class($exception));
+            
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Something went wrong.',
+                ], 500);
+            }
+
+            return redirect()->back()
+                ->with('error', 'Something went wrong.');
         }
 
         return parent::render($request, $exception);
