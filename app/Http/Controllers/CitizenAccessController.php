@@ -39,13 +39,13 @@ class CitizenAccessController extends Controller
 
         if (config('services.portal.users.mock')) {
             $citizens = User::whereNotNull('citizen_uuid')
+                ->where('citizen_uuid', '!=', config('services.portal.users.sampleUuid'))
                 ->orderBy('created_at')
                 ->get();
             $testLinks = [];
             foreach ($citizens as $citizen) {
                 $payload = [
                     'citizen_uuid' => $citizen->citizen_uuid,
-                    'time' => time(),
                     'nonce' => Str::random(32),
                 ];
 
@@ -69,7 +69,6 @@ class CitizenAccessController extends Controller
 
                 $newUser = [
                     'citizen_uuid' => $sampleUserUuid,
-                    'time' => time(),
                     'nonce' => Str::uuid()->toString(),
                 ];
 
@@ -79,7 +78,7 @@ class CitizenAccessController extends Controller
                 $url = url('/sso/callback')."?payload={$encoded}&signature={$signature}";
 
                 $testLinks[] = [
-                    'label' => 'Sample User (John Doe)',
+                    'label' => 'Sample User',
                     'url' => $url,
                 ];
             }
@@ -103,30 +102,35 @@ class CitizenAccessController extends Controller
         $signature = request('signature');
 
         if (empty($ssoRequest) || empty($signature)) {
-            abort(403);
+            activity()
+                ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
+                ->log('Missing SSO parameters.');
+            return redirect()->back()->with('error', 'Login failed.');
         }
 
         $secret = config('services.portal.sso.secret');
         if (empty($secret)) {
-            abort(500, 'SSO secret is not set.');
+            activity()
+                ->log('SSO secret is not set.');
+            abort(500, 'Login failed.');
         }
 
         $expectedSignature = hash_hmac('sha256', $ssoRequest, config('services.portal.sso.secret'));
 
         if (! hash_equals($expectedSignature, $signature)) {
-            abort(403);
+            activity()
+                ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
+                ->log('Invalid SSO signature.');
+            return redirect()->back()->with('error', 'Login Failed.');
         }
 
         $payload = json_decode(base64_decode($ssoRequest), true);
 
-        if (! is_array($payload) || ! isset($payload['time'], $payload['citizen_uuid'])) {
-            abort(403);
-        }
-
-        $expired = time() - $payload['time'];
-
-        if ($expired > 300) {
-            abort(403);
+        if (! is_array($payload) || empty($payload['citizen_uuid'])) {
+            activity()
+                ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
+                ->log('Incomplete SSO payload.');
+            return redirect()->back()->with('error', 'Login failed.');
         }
 
         $uuid = $payload['citizen_uuid'];
@@ -134,7 +138,7 @@ class CitizenAccessController extends Controller
         if ($uuid) {
             $user = $this->centralClientService->checkIfUser($uuid);
             if ($user === null) {
-                return redirect()->route('landing.page');
+                return redirect()->route('landing.page')->with('error', 'User not found.');
             }
 
             if (! $user->is_active) {
@@ -151,7 +155,7 @@ class CitizenAccessController extends Controller
 
             return redirect()->to($redirect);
         } else {
-            abort(403);
+            return redirect()->back()->with('error', 'Login failed.');
         }
     }
 
@@ -159,7 +163,6 @@ class CitizenAccessController extends Controller
     {
         $payload = [
             'citizen_uuid' => auth()->user()->citizen_uuid,
-            'time' => time(),
             'nonce' => Str::random(32),
         ];
 
