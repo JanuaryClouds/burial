@@ -62,7 +62,15 @@ class Handler extends ExceptionHandler
 
         if (!($exception instanceof \Symfony\Component\HttpKernel\Exception\HttpExceptionInterface) && app()->isProduction()) {
             activity()
-                ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
+                ->causedBy(auth()->user())
+                ->withProperties([
+                    'ip' => request()->ip(), 
+                    'browser' => request()->header('User-Agent'),
+                    'message' => $exception->getMessage(),
+                    'file' => $exception->getFile(),
+                    'line' => $exception->getLine(),
+                    'trace' => $exception->getTraceAsString(),
+                ])
                 ->log('Internal server error occurred. Exception: ' . get_class($exception));
             
             if ($request->expectsJson()) {
