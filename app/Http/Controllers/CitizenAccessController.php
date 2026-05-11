@@ -178,6 +178,11 @@ class CitizenAccessController extends Controller
             session()->forget('citizen');
         }
 
-        return redirect('/');
+        $endpoint = config('services.portal.endpoint');
+
+        if (empty($endpoint)) {
+            return redirect('/');
+        }
+        return redirect($endpoint);
     }
 }
