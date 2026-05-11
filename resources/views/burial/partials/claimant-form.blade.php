@@ -27,8 +27,26 @@
 <div class="row justify-content-start align-items-center">
     @if ($claimant_change)
         <div class="col-12 col-lg-4">
-            <x-form-select name="new_claimant_user_id" id="new_claimant_user_id" label="Name of New Claimant"
-                required="true" :options="$newClaimants" :disabled="$readonly" />
+            <div class="mb-3">
+                <label for="new_claimant_display" class="form-label required">New Claimant</label>
+                <input list="new_claimant_users" id="new_claimant_display" class="form-control" required />
+                <input type="hidden" id="new_claimant_user_id" name="new_claimant_user_id" class="form-control" />
+                <datalist id="new_claimant_users">
+                    @foreach ($newClaimants as $id => $newClaimantName)
+                        <option data-id="{{ $id }}" value="{{ $newClaimantName }}"></option>
+                    @endforeach
+                </datalist>
+                <script nonce="{{ $nonce ?? '' }}">
+                    $('#new_claimant_display').on('input', function() {
+                        let value = $(this).val();
+                        let match = $('#new_claimant_users option').filter(function() {
+                            return $(this).val() === value;
+                        }).first();
+
+                        $('#new_claimant_user_id').val(match.data('id') || '');
+                    });
+                </script>
+            </div>
         </div>
     @endif
     <div class="col-12 col-lg-3">
