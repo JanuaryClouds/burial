@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
 use RuntimeException;
-use Str;
+use Illuminate\Support\Str;
 
 class CentralClientService
 {
@@ -13,7 +13,7 @@ class CentralClientService
      * Fetch client details by UUID from the central database.
      *
      * @param  string  $value  array value to match
-     * @return array|null
+     * @return array Citizen Data if successfully fetched one citizen, empty array if not
      */
     public function fetchFromPortal(string $value)
     {
@@ -34,20 +34,28 @@ class CentralClientService
 
         $response = Http::withHeader('X-Secret-Key', $apiKey)
             ->withQueryParameters([
-                'user_id' => $value
+                'uuid' => $value
             ])
             ->timeout(15)
             ->retry(3, 200)
             ->get($url);
 
         if ($response->failed()) {
-            return null;
-        } else {
-            $decodedResponse = $response->json();
-            $data = $decodedResponse['data'][0] ?? [];
+            return [];
+        } 
 
-            return $data;
+        $decodedResponse = $response->json();
+        $data = $decodedResponse['data'] ?? [];
+
+        if (count($data) !== 1) {
+            activity()
+                ->withProperties(['citizen_uuid' => $value, 'count' => count($data)])
+                ->log('Invalid record count returned for UUID');
+
+            return [];
         }
+
+        return $data[0];
     }
 
     /**
@@ -64,7 +72,7 @@ class CentralClientService
 
         $citizenData = [];
 
-        $user = User::where('citizen_uuid', $citizen_uuid)->first();
+        $user = User::firstWhere('citizen_uuid', $citizen_uuid);
         $userEmail = $user?->email ?? '';
         if (config('services.portal.users.enable.get')) {
             if (! Str::endsWith($userEmail, [
@@ -72,7 +80,7 @@ class CentralClientService
                 '@example.org',
                 '@example.net'
             ])) {
-                $citizenData = $this->fetchFromPortal($citizen_uuid) ?? [];
+                $citizenData = $this->fetchFromPortal($citizen_uuid);
             }
 
             if (! empty($citizenData)) {
@@ -84,21 +92,37 @@ class CentralClientService
             return $user;
         }
 
-        if (empty($citizenData) && ! $user) {
+        if (empty($citizenData)) {
+            return null;
+        }
+        
+        if ($citizen_uuid !== ($citizenData['user_id'] ?? null)) {
             return null;
         }
 
-        return User::create([
-            'citizen_uuid' => $citizen_uuid,
-            'first_name' => $citizenData['firstname'] ?? null,
-            'middle_name' => $citizenData['middlename'] ?? null,
-            'last_name' => $citizenData['lastname'] ?? null,
-            'suffix' => $citizenData['suffix'] ?? null,
-            'email' => $citizenData['email'] ?? null,
-            'is_active' => true,
-            'contact_number' => $citizenData['contact_number'] ?? null,
-            'password' => bcrypt(Str::random(32)),
-        ]);
+        if (User::where('email', $citizenData['email'])->exists()) {
+            return null;
+        }
+
+        try {
+            return User::create([
+                'citizen_uuid' => $citizenData['user_id'] ?? null,
+                'first_name' => $citizenData['firstname'] ?? null,
+                'middle_name' => $citizenData['middlename'] ?? null,
+                'last_name' => $citizenData['lastname'] ?? null,
+                'suffix' => $citizenData['suffix'] ?? null,
+                'email' => $citizenData['email'] ?? null,
+                'is_active' => true,
+                'contact_number' => $citizenData['contact_number'] ?? null,
+                'password' => bcrypt(Str::random(32)),
+            ]);
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() !== '23000') {
+                throw $e;
+            }
+
+            return null;
+        }
     }
 
     /**
@@ -114,6 +138,7 @@ class CentralClientService
         }
 
         return [
+            'citizen_uuid' => $citizen['user_id'] ?? null,
             'first_name' => $citizen['firstname'] ?? null,
             'middle_name' => $citizen['middlename'] ?? null,
             'last_name' => $citizen['lastname'] ?? null,

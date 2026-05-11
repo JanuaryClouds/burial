@@ -60,7 +60,7 @@ class Handler extends ExceptionHandler
                 ->with('error', 'You do not have permission to access this page.');
         }
 
-        if (!($exception instanceof \Symfony\Component\HttpKernel\Exception\HttpExceptionInterface)) {
+        if (!($exception instanceof \Symfony\Component\HttpKernel\Exception\HttpExceptionInterface) && app()->isProduction()) {
             activity()
                 ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
                 ->log('Internal server error occurred. Exception: ' . get_class($exception));
