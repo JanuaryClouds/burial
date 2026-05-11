@@ -354,7 +354,7 @@ class ClientService
                     'address' => $client->house_no.' '.$client->street,
                     'barangay_id' => $client->barangay_id,
                     'city' => 'Taguig City',
-                    'contact_number' => $client->user?->contact_number,
+                    'contact_number' => $client->contact_number ?? $client->user?->contact_number,
                     'relationship_id' => $client->socialInfo?->relationship?->id,
                 ]);
 

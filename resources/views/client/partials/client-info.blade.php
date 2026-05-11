@@ -9,7 +9,7 @@
         $middle_name = $client->user?->middle_name;
         $last_name = $client->user?->last_name;
         $suffix = $client->user?->suffix;
-        $contact_number = $client->user?->contact_number;
+        $contact_number = $client->contact_number;
 
         $socialInfo = $client?->socialInfo;
         $demographic = $client?->demographic;
