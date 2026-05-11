@@ -15,7 +15,7 @@
 
 <div class="custom-file">
     @if ($label)
-        <label for="{{ $name }}" class="form-label">{{ $label }}{{ $required ? '*' : '' }}</label>
+        <label for="{{ $id ?? $name }}" class="form-label">{{ $label }}{{ $required ? ' *' : '' }}</label>
     @endif
     @php
         $helpId = $id ? $id . '-help' : 'file-HelpId' . uniqid();

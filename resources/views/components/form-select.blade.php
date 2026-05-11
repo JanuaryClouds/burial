@@ -23,8 +23,7 @@
 
 <div class="mb-3">
     @if ($label)
-        <label for="{{ $name ?? $id }}"
-            class="form-label">{{ $label }}{{ $required && !$disabled ? '*' : '' }}</label>
+        <label for="{{ $id ?? $name }}" class="form-label">{{ $label }}{{ $required ? ' *' : '' }}</label>
     @endif
 
     <select {{ $attributes->merge(['class' => 'form-control' . $isInactive]) }} name="{{ $name }}"

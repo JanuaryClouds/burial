@@ -27,8 +27,7 @@
 
 <div class="mb-3">
     @if ($label)
-        <label for="{{ $id ?? $name }}"
-            class="form-label">{{ $label }}{{ $required && !$readonly ? '*' : '' }}</label>
+        <label for="{{ $id ?? $name }}" class="form-label">{{ $label }}{{ $required ? ' *' : '' }}</label>
     @endif
     <input type="{{ $type }}" {{ $attributes->merge(['class' => 'form-control' . $isInactive]) }}
         name="{{ $name ?? $id }}" {{ $id ? 'id=' . $id : 'id=' . $name }} value="{{ old($name, $value) }}"
