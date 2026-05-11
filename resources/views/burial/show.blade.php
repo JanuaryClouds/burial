@@ -54,10 +54,25 @@
                     ])
                 </div>
             </div>
+            @if ($claimantChange != null)
+                @if ($claimantChange->status == 'approved')
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">Original Claimant</h4>
+                        </div>
+                        <div class="card-body">
+                            @include('burial.partials.claimant-form', [
+                                'claimant' => $originalClaimant,
+                                'readonly' => true,
+                            ])
+                        </div>
+                    </div>
+                @endif
+            @endif
             <div class="card">
                 <div class="card-body">
                     @include('client.partials.beneficiary-info', [
-                        'client' => $data->originalClaimant()?->client,
+                        'client' => $originalClaimant?->client,
                         'readonly' => true,
                     ])
                 </div>
@@ -73,7 +88,7 @@
             <div class="card">
                 <div class="card-body">
                     @include('client.partials.documents', [
-                        'client' => $data->originalClaimant()?->client,
+                        'client' => $originalClaimant?->client,
                         'readonly' => true,
                     ])
                 </div>
@@ -100,10 +115,25 @@
                         ])
                     </div>
                 </div>
+                @if ($claimantChange != null)
+                    @if ($claimantChange->status == 'approved')
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">Original Claimant</h4>
+                            </div>
+                            <div class="card-body">
+                                @include('burial.partials.claimant-form', [
+                                    'claimant' => $originalClaimant,
+                                    'readonly' => true,
+                                ])
+                            </div>
+                        </div>
+                    @endif
+                @endif
                 <div class="card">
                     <div class="card-body">
                         @include('client.partials.beneficiary-info', [
-                            'client' => $data->originalClaimant()?->client,
+                            'client' => $originalClaimant?->client,
                             'readonly' => $readonly,
                         ])
                     </div>
@@ -119,7 +149,7 @@
                 <div class="card">
                     <div class="card-body">
                         @include('client.partials.documents', [
-                            'client' => $data->originalClaimant()?->client,
+                            'client' => $originalClaimant->client,
                             'readonly' => true,
                         ])
                     </div>

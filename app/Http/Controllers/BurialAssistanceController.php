@@ -78,6 +78,7 @@ class BurialAssistanceController extends Controller
             $data = BurialAssistance::findOrFail($id);
 
             $currentClaimant = $data->currentClaimant();
+            $originalClaimant = $data->originalClaimant();
             $claimantChange = $data->claimantChanges()->first();
             $newClaimants = [];
 
@@ -123,6 +124,7 @@ class BurialAssistanceController extends Controller
             return view('burial.show', compact([
                 'data',
                 'currentClaimant',
+                'originalClaimant',
                 'claimantChange',
                 'newClaimants',
                 'relationships',
