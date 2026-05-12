@@ -58,13 +58,13 @@ class ProcessLogController extends Controller
                     activity()
                         ->causedBy(auth()->user())
                         ->withProperties(['ip' => $ip, 'browser' => $browser, 'burialAssistance' => $application->id])
-                        ->log('Cheque is ready to be picked up');
+                        ->log('Check is ready to be picked up');
 
                     if ($citizenUuid) {
                         $this->notificationServices->send(
                             $citizenUuid,
-                            'cheque',
-                            'Cheque is ready to be picked up',
+                            'check',
+                            'Check is ready to be picked up',
                             'A cheque for your burial assistance application is ready to be picked up. Please come to the Taguig City Hall CSWDO Office.'
                         );
 
