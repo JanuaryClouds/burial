@@ -85,7 +85,7 @@ class BurialAssistanceController extends Controller
             if (! $currentClaimant) {
                 abort(404);
             }
-                
+
             if (! $claimantChange) {
                 $currentClaimantUserId = $currentClaimant->client?->user_id;
                 $newClaimants = User::whereHas('clients')
@@ -96,7 +96,7 @@ class BurialAssistanceController extends Controller
                     })
                     ->toArray();
             }
-    
+
             $page_title = $data->originalClaimant()?->client?->tracking_no;
             $page_subtitle = $currentClaimant->fullname()."'s Burial Assistance Application";
             $readonly = auth()->user()->cannot('manage-content') && $data->status == 'released';
@@ -118,7 +118,7 @@ class BurialAssistanceController extends Controller
             }
 
             $progress = $this->workflowStepServices->progress($data, $next_step, $totalSteps);
-            $show_certificate = $next_step == null && $data->status == 'approved';
+            $show_certificate = $data->status != 'rejected' && $data->status != 'pending' && $data->status != 'processing';
             $relationships = Relationship::select('id', 'name')->get();
 
             return view('burial.show', compact([
@@ -279,7 +279,7 @@ class BurialAssistanceController extends Controller
     {
         $assistance = BurialAssistance::findOrFail($id);
 
-        if ($assistance->status != 'released' && app()->isProduction()) {
+        if ($assistance->status != 'released') {
             abort(404);
         }
 
