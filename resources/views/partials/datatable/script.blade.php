@@ -107,11 +107,11 @@
                     text: 'Export to Excel',
                     className: 'btn btn-primary py-1 px-3',
                 },
-                {
-                    extend: 'print',
-                    text: 'Print',
-                    className: 'btn btn-secondary py-1 px-3 ml-2',
-                },
+                // {
+                //     extend: 'print',
+                //     text: 'Print',
+                //     className: 'btn btn-secondary py-1 px-3 ml-2',
+                // },
                 // 'copy', 
                 // 'csv', 
                 // 'pdf',
