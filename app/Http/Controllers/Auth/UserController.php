@@ -106,12 +106,6 @@ class UserController extends Controller
         $user = Auth::user();
         $user->tokens()->delete();
 
-        activity()
-            ->performedOn($user)
-            ->causedBy($user)
-            ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
-            ->log('Successful logout');
-
         Auth::logout();
         request()->session()->invalidate();
         request()->session()->regenerateToken();
