@@ -1,24 +1,16 @@
-@props([
-    'cardData' => [],
-])
-<div class="row g-5 g-xl-8">
-    @foreach ($cardData as $statistic)
-        <div class="col">
-            <a href="{{ $statistic['link'] ?? '#' }}"
-                class="card w-100 p-10 hover-elevate-up parent-hover overflow-hidden position-relative">
-                <div class="d-flex justify-content-between align-items-center">
-                    <span class="parent-hover-primary">
-                        <p class="fw-bold fs-1">{{ $statistic['count'] }}</p>
-                        <p class="fs-5 mb-0">{{ $statistic['label'] }}</p>
-                    </span>
-                </div>
-                <i class="ki-duotone {{ $statistic['icon'] }} position-absolute top-50 end-0 translate-middle-y opacity-25 parent-hover-primary"
-                    style="z-index: 0; right: 10rem; font-size: 15rem; rotate: 15deg">
-                    @for ($index = 0; $index < $statistic['pathsCount']; $index++)
-                        <span class="path{{ $index + 1 }}"></span>
-                    @endfor
-                </i>
-            </a>
-        </div>
-    @endforeach
+<div class="row">
+    <div class="col-6 col-lg-3">
+        <livewire:counter :model="'App\Models\Client'" :label="'Total Clients'" :scope="'Total'" :iconName="'people'" :iconPathsCount="5" />
+    </div>
+    <div class="col-6 col-lg-3">
+        <livewire:counter :model="'App\Models\Client'" :label="'Referred Clients'" :scope="'Referral'" :iconName="'route'" :iconPathsCount="4" />
+    </div>
+    <div class="col-6 col-lg-3">
+        <livewire:counter :model="'App\Models\Client'" :label="'With Burial Assistance'" :scope="'BurialAssistance'" :iconName="'file-up'" :iconPathsCount="2"
+            :route="route('burial.index')" />
+    </div>
+    <div class="col-6 col-lg-3">
+        <livewire:counter :model="'App\Models\Client'" :label="'With Libreng Libing'" :scope="'FuneralAssistance'" :iconName="'file-up'" :iconPathsCount="2"
+            :route="route('funeral.index')" />
+    </div>
 </div>

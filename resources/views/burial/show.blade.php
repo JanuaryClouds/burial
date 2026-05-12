@@ -1,4 +1,4 @@
-@extends('layouts.metronic.admin')
+@extends('layouts.app')
 @section('content')
     <div class="d-flex flex-column gap-4">
         @includeWhen(

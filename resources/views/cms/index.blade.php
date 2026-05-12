@@ -1,5 +1,4 @@
-@extends('layouts.metronic.admin')
-<title>CMS - {{ $resource }}</title>
+@extends('layouts.app')
 @php
     $routeName = 'superadmin.cms.update';
     if ($resource === 'barangays') {
