@@ -96,4 +96,82 @@ class Beneficiary extends Model
     {
         return $this->belongsTo(Barangay::class, 'barangay_id');
     }
+
+    // Scopes
+
+    public function scopeTotal($query)
+    {
+        $user = auth()->user();
+        
+        if (! $user) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        if ($user->roles()->exists()) {
+            return $query;
+        }
+
+        if (! $user->client) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        return $query->where('client_id', $user->client->id);
+    }
+
+    public function scopeReferral($query)
+    {
+        $user = auth()->user();
+
+        if (! $user) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        if ($user->roles()->exists()) {
+            return $query->whereHas('client.referral');
+        }
+
+        if (! $user->client) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        return $query->where('client_id', $user->client->id)->whereHas('client.referral');
+    }
+
+    public function scopeBurialAssistance($query)
+    {
+        $user = auth()->user();
+
+        if (! $user) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        if ($user->roles()->exists()) {
+            return $query->whereHas('client.claimant');
+        }
+
+        if (! $user->client) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        return $query->where('client_id', $user->client->id)->whereHas('client.claimant');
+    }
+
+    public function scopeFuneralAssistance($query)
+    {
+        $user = auth()->user();
+
+        if (! $user) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        if ($user->roles()->count() > 0) {
+            return $query->whereHas('client.funeralAssistance');
+        }
+
+        if (! $user->client) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        return $query->where('client_id', $user->client->id)->whereHas('client.funeralAssistance');
+    }
 }
