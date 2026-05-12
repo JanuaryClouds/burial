@@ -247,7 +247,7 @@ class ClientController extends Controller
                 activity()
                     ->causedBy(auth()->user())
                     ->withProperties(['ip' => $ip, 'browser' => $browser, 'client' => $client->id])
-                    ->log('Added an assessment for the client');
+                    ->log('Added an assessment for a client');
 
                 return redirect()->back()->with('success', 'Assessment created successfully.');
             } else {
@@ -288,7 +288,7 @@ class ClientController extends Controller
                     'moa_id' => $request['moa_id'],
                 ]);
 
-                $application = $this->clientServices->transferClient($client->id);
+                $this->clientServices->transferClient($client->id);
 
                 $this->notificationServices->send(
                     $client->user->citizen_uuid,
@@ -303,7 +303,7 @@ class ClientController extends Controller
                     ->log('Burial Assistance application created for client');
 
                 return redirect()->back()->with('success', 'Successfuly created burial assistance application for the client!');
-            } elseif ($request['type'] == 'funeral') {
+            } elseif ($request['type'] == 'libreng_libing') {
                 $request->validate([
                     'referral' => 'nullable|string|max:255',
                     'type' => 'string|required',
@@ -319,7 +319,7 @@ class ClientController extends Controller
                     'remarks' => $request['remarks'],
                 ]);
 
-                $application = $this->clientServices->transferClient($client->id);
+                $this->clientServices->transferClient($client->id);
 
                 $this->notificationServices->send(
                     $client->user->citizen_uuid,
@@ -370,26 +370,5 @@ class ClientController extends Controller
         } catch (Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
-    }
-
-    public function history()
-    {
-        $records = Client::where('user_id', auth()->user()->id)->get();
-        if (! $records || $records->isEmpty()) {
-            return redirect()->route('landing.page')->with('error', 'You do not have permission to access this page.');
-        }
-
-        $client = $records->first();
-        $page_title = $client->fullname().'\'s History';
-        $readonly = true;
-        $disabled = true;
-
-        return view('client.history', compact(
-            'records',
-            'client',
-            'page_title',
-            'readonly',
-            'disabled',
-        ));
     }
 }

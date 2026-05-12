@@ -62,7 +62,7 @@ class CitizenAccessController extends Controller
 
             if (
                 config('services.portal.users.enable.get') &&
-                config('services.portal.users.sampleUuid') && 
+                config('services.portal.users.sampleUuid') &&
                 ! in_array(config('services.portal.users.sampleUuid'), $citizens->pluck('citizen_uuid')->toArray())
             ) {
                 $sampleUserUuid = config('services.portal.users.sampleUuid');
@@ -105,6 +105,7 @@ class CitizenAccessController extends Controller
             activity()
                 ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
                 ->log('Missing SSO parameters.');
+
             return redirect()->back()->with('error', 'Login failed.');
         }
 
@@ -121,6 +122,7 @@ class CitizenAccessController extends Controller
             activity()
                 ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
                 ->log('Invalid SSO signature.');
+
             return redirect()->back()->with('error', 'Login Failed.');
         }
 
@@ -130,6 +132,7 @@ class CitizenAccessController extends Controller
             activity()
                 ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
                 ->log('Incomplete SSO payload.');
+
             return redirect()->back()->with('error', 'Login failed.');
         }
 
@@ -183,6 +186,7 @@ class CitizenAccessController extends Controller
         if (empty($endpoint)) {
             return redirect('/');
         }
+
         return redirect($endpoint);
     }
 }

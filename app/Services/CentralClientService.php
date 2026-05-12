@@ -4,8 +4,8 @@ namespace App\Services;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
-use RuntimeException;
 use Illuminate\Support\Str;
+use RuntimeException;
 
 class CentralClientService
 {
@@ -34,7 +34,7 @@ class CentralClientService
 
         $response = Http::withHeader('X-Secret-Key', $apiKey)
             ->withQueryParameters([
-                'uuid' => $value
+                'uuid' => $value,
             ])
             ->timeout(15)
             ->retry(3, 200)
@@ -42,7 +42,7 @@ class CentralClientService
 
         if ($response->failed()) {
             return [];
-        } 
+        }
 
         $decodedResponse = $response->json();
         $data = $decodedResponse['data'] ?? [];
@@ -78,7 +78,7 @@ class CentralClientService
             if (! Str::endsWith($userEmail, [
                 '@example.com',
                 '@example.org',
-                '@example.net'
+                '@example.net',
             ])) {
                 $citizenData = $this->fetchFromPortal($citizen_uuid);
             }
@@ -95,7 +95,7 @@ class CentralClientService
         if (empty($citizenData)) {
             return null;
         }
-        
+
         if ($citizen_uuid !== ($citizenData['user_id'] ?? null)) {
             return null;
         }

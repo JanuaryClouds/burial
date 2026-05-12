@@ -81,7 +81,7 @@ class ClaimantChangeController extends Controller
                 $validated['new_claimant_id'] = $newClaimant->id;
                 $validated['new_claimant_user_id'] = $newClaimantUser->id;
                 $claimantChange = $this->claimantChangeService->store($validated);
-                
+
                 // After a meeting regarding how changing claimants is done, only admins can change claimants that are automatically approved.
                 $claimantChange->status = 'approved';
                 $claimantChange->changed_at = now();

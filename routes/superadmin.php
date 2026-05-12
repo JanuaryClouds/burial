@@ -58,12 +58,12 @@ Route::resource('role', RoleController::class)
     ->middleware(['permission:edit-roles']);
 
 Route::middleware('permission:edit-system-settings')
-                ->name('system.')
-                ->prefix('system')
-                ->group(function () {
-                    Route::get('/', [SystemSettingController::class, 'index'])
-                        ->name('index');
+    ->name('system.')
+    ->prefix('system')
+    ->group(function () {
+        Route::get('/', [SystemSettingController::class, 'index'])
+            ->name('index');
 
-                    Route::post('/update', [SystemSettingController::class, 'update'])
-                        ->name('update');
-                });
+        Route::post('/update', [SystemSettingController::class, 'update'])
+            ->name('update');
+    });

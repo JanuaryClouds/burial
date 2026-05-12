@@ -97,11 +97,6 @@ class BurialAssistance extends Model
         return $this->hasMany(ProcessLog::class, 'burial_assistance_id', 'id');
     }
 
-    public function tracker()
-    {
-        return $this->hasOne(TrackingCode::class, 'trackable_id', 'id');
-    }
-
     public function cheque()
     {
         return $this->hasMany(Cheque::class, 'burial_assistance_id', 'id');
