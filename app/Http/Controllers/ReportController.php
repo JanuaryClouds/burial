@@ -293,7 +293,7 @@ class ReportController extends Controller
                     'date_issued' => $cheque->date_issued,
                     'date_claimed' => $cheque->date_claimed,
                     'status' => $cheque->status,
-                    'created_at' => $cheque->created_at,
+                    'created_at' => $cheque->created_at->format('M d, Y'),
                 ];
             });
 
