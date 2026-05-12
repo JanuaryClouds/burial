@@ -1,5 +1,4 @@
-@extends('layouts.metronic.admin')
-<title>Reports - {{ $model }}</title>
+@extends('layouts.app')
 @section('content')
     <div class="mb-8">
         @can('create-reports')
@@ -10,7 +9,6 @@
             ])
         @endcan
     </div>
-    @include('admin.partials.cards')
     <div class="row mt-8">
         @includeWhen(Route::is('reports.clients'), 'reports.partials.client-charts')
         @includeWhen(Route::is('reports.funerals'), 'reports.partials.funeral-charts')

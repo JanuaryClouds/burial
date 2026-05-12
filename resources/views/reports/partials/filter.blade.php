@@ -2,8 +2,10 @@
 <form action="{{ route('reports.' . $type) }}" method="POST">
     @csrf
     <div class="card">
+        <div class="card-header">
+            <h4 class="card-title">Filter Data</h4>
+        </div>
         <div class="card-body">
-            <h5 class="card-title">Filter Data</h5>
             <div class="row">
                 <div class="col-12 col-lg-6">
                     <x-form-input type="datetime-local" name="start_date" label="Start Date"
