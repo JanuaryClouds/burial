@@ -127,17 +127,19 @@ class ProcessLogController extends Controller
 
     public function delete($id)
     {
-        try {
-            $log = ProcessLog::findOrFail($id);
-            if ($log) {
-                $this->processLogServices->delete($log, $log->burialAssistance);
-
-                return redirect()->back()->with('success', 'Process log deleted successfully.');
-            } else {
-                return redirect()->back()->with('error', 'Unable to find process log.');
+        if (app()->hasDebugModeEnabled()) {
+            try {
+                $log = ProcessLog::findOrFail($id);
+                if ($log) {
+                    $this->processLogServices->delete($log, $log->burialAssistance);
+    
+                    return redirect()->back()->with('success', 'Process log deleted successfully.');
+                } else {
+                    return redirect()->back()->with('error', 'Unable to find process log.');
+                }
+            } catch (Exception $e) {
+                return redirect()->back()->with('error', $e->getMessage());
             }
-        } catch (Exception $e) {
-            return redirect()->back()->with('error', $e->getMessage());
         }
     }
 }

@@ -35,14 +35,16 @@
                     In: {{ $log['in'] }}
                     {{ $log['out'] ? '/ Out: ' . $log['out'] : '' }}
                 </span>
-                @auth
-                    @if (auth()->user()->can('delete-updates') && $loop->last && !$log['loggable'] instanceof App\Models\ClaimantChange)
-                        @include('burial.partials.delete-log', [
-                            'id' => $log['id'],
-                            'step' => $log['step'],
-                        ])
-                    @endif
-                @endauth
+                @if (app()->hasDebugModeEnabled())
+                    @auth
+                        @if (auth()->user()->can('delete-updates') && $loop->last && !$log['loggable'] instanceof App\Models\ClaimantChange)
+                            @include('burial.partials.delete-log', [
+                                'id' => $log['id'],
+                                'step' => $log['step'],
+                            ])
+                        @endif
+                    @endauth
+                @endif
             </span>
         </li>
         @if (isset($log['comments']))
