@@ -35,9 +35,47 @@ class BeneficiaryController extends Controller
             ]);
         }
 
+        if (auth()->user()->roles()->exists()) {
+            $cardData = [
+                [
+                    'model' => 'App\Models\Beneficiary',
+                    'label' => 'Total Beneficiaries',
+                    'scope' => 'Total',
+                    'iconName' => 'people',
+                    'iconPathsCount' => 5,
+                    'route' => route('beneficiary.index')
+                ],
+                [
+                    'model' => 'App\Models\Beneficiary',
+                    'label' => 'Referred',
+                    'scope' => 'Referral',
+                    'iconName' => 'route',
+                    'iconPathsCount' => 4,
+                    'route' => route('referral.index')
+                ],
+                [
+                    'model' => 'App\Models\Beneficiary',
+                    'label' => 'With Burial Assistances',
+                    'scope' => 'BurialAssistance',
+                    'iconName' => 'file-up',
+                    'iconPathsCount' => 2,
+                    'route' => route('burial.index')
+                ],
+                [
+                    'model' => 'App\Models\Beneficiary',
+                    'label' => 'With Libreng Libing',
+                    'scope' => 'FuneralAssistance',
+                    'iconName' => 'file-up',
+                    'iconPathsCount' => 2,
+                    'route' => route('funeral.index')
+                ],
+            ];
+        }
+
         return view('beneficiary.index', [
             'data' => $data,
             'columns' => $columns,
+            'cardData' => $cardData ?? null,
             'page_title' => 'Beneficiaries',
         ]);
     }

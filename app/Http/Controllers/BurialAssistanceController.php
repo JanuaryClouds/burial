@@ -64,12 +64,47 @@ class BurialAssistanceController extends Controller
             ]);
         }
 
-        return view('burial.index', compact([
+        $cardData = null;
+        if (auth()->user()->roles()->exists()) {
+            $cardData = [
+                [
+                    'model' => 'App\Models\BurialAssistance',
+                    'label' => 'Total Applications',
+                    'scope' => 'Total',
+                    'iconName' => 'some-files',
+                    'iconPathsCount' => 2,
+                ],
+                [
+                    'model' => 'App\Models\BurialAssistance',
+                    'label' => 'Pending',
+                    'scope' => 'Pending',
+                    'iconName' => 'document',
+                    'iconPathsCount' => 2,
+                ],
+                [
+                    'model' => 'App\Models\BurialAssistance',
+                    'label' => 'Processing',
+                    'scope' => 'Processing',
+                    'iconName' => 'file-right',
+                    'iconPathsCount' => 2,
+                ],
+                [
+                    'model' => 'App\Models\BurialAssistance',
+                    'label' => 'Released',
+                    'scope' => 'Released',
+                    'iconName' => 'file-added',
+                    'iconPathsCount' => 2,
+                ],
+            ];
+        }
+
+        return view('burial.index', compact(
             'resource',
             'data',
+            'cardData',
             'columns',
             'page_title',
-        ]));
+        ));
     }
 
     public function show($id)
@@ -121,7 +156,7 @@ class BurialAssistanceController extends Controller
             $show_certificate = $data->status != 'rejected' && $data->status != 'pending' && $data->status != 'processing';
             $relationships = Relationship::select('id', 'name')->get();
 
-            return view('burial.show', compact([
+            return view('burial.show', compact(
                 'data',
                 'currentClaimant',
                 'originalClaimant',
@@ -137,7 +172,7 @@ class BurialAssistanceController extends Controller
                 'page_title',
                 'page_subtitle',
                 'readonly',
-            ]));
+            ));
         } catch (\Throwable $th) {
             return redirect()->back()->with('error', 'Unable to find application.'.(app()->hasDebugModeEnabled() ? ' '.$th->getMessage() : ''));
         }
@@ -294,12 +329,12 @@ class BurialAssistanceController extends Controller
         $dept_head = Str::upper(SystemSetting::first()?->dept_head);
 
         $pdf = Pdf::loadView('pdf.certificate-of-eligibility',
-            compact([
+            compact(
                 'claimant',
                 'title',
                 'social_welfare_officer',
                 'dept_head',
-            ]))
+            ))
             ->setPaper('letter', 'portrait');
 
         return $pdf->stream("certificate-of-eligibility-{$claimant->first_name}-{$claimant->last_name}.pdf");

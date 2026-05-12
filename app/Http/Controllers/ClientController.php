@@ -56,35 +56,38 @@ class ClientController extends Controller
         } elseif (auth()->user()->roles()->count() > 0) {
             $data = $this->clientServices->index('tracking_no', 'asc');
             $columns = $this->datatableServices->getColumns($data, []);
-
-            $clientsWithInterview = Client::has('interviews')->count();
-            $clientsWithAssessments = Client::has('assessment')->count();
-            $clientsWithRecommendation = Client::has('recommendation')->count();
-
             $cardData = [
                 [
-                    'label' => 'Total Clients',
-                    'icon' => 'ki-people',
-                    'pathsCount' => 5,
-                    'count' => Client::count(),
+                    'model' => 'App\Models\Client',
+                    'label' => 'Total Beneficiaries',
+                    'scope' => 'Total',
+                    'iconName' => 'people',
+                    'iconPathsCount' => 5,
+                    'route' => route('beneficiary.index')
                 ],
                 [
-                    'label' => 'Clients with Interviews',
-                    'icon' => 'ki-note-2',
-                    'pathsCount' => 4,
-                    'count' => $clientsWithInterview,
+                    'model' => 'App\Models\Client',
+                    'label' => 'Referred',
+                    'scope' => 'Referral',
+                    'iconName' => 'route',
+                    'iconPathsCount' => 4,
+                    'route' => route('referral.index')
                 ],
                 [
-                    'label' => 'Clients with Assessments',
-                    'icon' => 'ki-brifecase-tick',
-                    'pathsCount' => 3,
-                    'count' => $clientsWithAssessments,
+                    'model' => 'App\Models\Client',
+                    'label' => 'With Burial Assistances',
+                    'scope' => 'BurialAssistance',
+                    'iconName' => 'file-up',
+                    'iconPathsCount' => 2,
+                    'route' => route('burial.index')
                 ],
                 [
-                    'label' => 'Clients With Recommendation',
-                    'icon' => 'ki-file-added',
-                    'pathsCount' => 2,
-                    'count' => $clientsWithRecommendation,
+                    'model' => 'App\Models\Client',
+                    'label' => 'With Libreng Libing',
+                    'scope' => 'FuneralAssistance',
+                    'iconName' => 'file-up',
+                    'iconPathsCount' => 2,
+                    'route' => route('funeral.index')
                 ],
             ];
         }
@@ -97,9 +100,9 @@ class ClientController extends Controller
 
         return view('client.index', [
             'page_title' => $page_title,
+            'cardData' => $cardData ?? null,
             'columns' => $columns,
             'data' => $data,
-            'cardData' => $cardData ?? null,
         ]);
     }
 

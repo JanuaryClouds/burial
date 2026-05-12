@@ -1,24 +1,17 @@
-@extends('layouts.metronic.admin')
+@extends('layouts.app')
 @section('content')
     <div class="d-flex flex-column gap-4">
-        <div class="row">
-            <div class="col-6 col-lg-3">
-                <livewire:counter :model="'App\Models\BurialAssistance'" :label="'Total Burial Assistance Records'" :iconName="'abstract-29'" :iconPathsCount="2"
-                    :scope="'Total'" />
-            </div>
-            <div class="col-6 col-lg-3">
-                <livewire:counter :model="'App\Models\BurialAssistance'" :label="'Pending Burial Assistances'" :iconName="'watch'" :iconPathsCount="2"
-                    :scope="'Pending'" />
-            </div>
-            <div class="col-6 col-lg-3">
-                <livewire:counter :model="'App\Models\BurialAssistance'" :label="'Processing Burial Assistances'" :iconName="'timer'" :iconPathsCount="3"
-                    :scope="'Processing'" />
-            </div>
-            <div class="col-6 col-lg-3">
-                <livewire:counter :model="'App\Models\BurialAssistance'" :label="'Released Burial Assistances'" :iconName="'check-circle'" :iconPathsCount="2"
-                    :scope="'Released'" />
-            </div>
-        </div>
+        @role('staff')
+            @if (isset($cardData) && count($cardData) > 0)
+                <div class="row">
+                    @foreach ($cardData as $card)
+                        <div class="col-6 col-lg-3">
+                            <livewire:counter :model="$card['model']" :label="$card['label']" :scope="$card['scope']" :iconName="$card['iconName']" />
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+        @endrole
         <div class="card">
             <div class="card-body">
                 @include('partials.datatable.index', [
