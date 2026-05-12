@@ -127,7 +127,7 @@ class ProcessLogController extends Controller
 
     public function delete($id)
     {
-        if (app()->hasDebugModeEnabled()) {
+        if (app()->isLocal()) {
             try {
                 $log = ProcessLog::findOrFail($id);
                 if ($log) {

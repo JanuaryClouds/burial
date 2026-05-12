@@ -35,7 +35,7 @@
                     In: {{ $log['in'] }}
                     {{ $log['out'] ? '/ Out: ' . $log['out'] : '' }}
                 </span>
-                @if (app()->hasDebugModeEnabled())
+                @if (app()->isLocal())
                     @auth
                         @if (auth()->user()->can('delete-updates') && $loop->last && !$log['loggable'] instanceof App\Models\ClaimantChange)
                             @include('burial.partials.delete-log', [

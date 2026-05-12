@@ -146,7 +146,7 @@ class ProcessLogService
      */
     public function delete(ProcessLog $log, BurialAssistance $application)
     {
-        if (app()->hasDebugModeEnabled()) {
+        if (app()->isLocal()) {
             if (! $log) {
                 return;
             }
