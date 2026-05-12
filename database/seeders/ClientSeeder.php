@@ -110,7 +110,7 @@ class ClientSeeder extends Seeder
                             'date_of_birth' => $client->date_of_birth,
                             'address' => $client->house_no.' '.$client->street,
                             'barangay_id' => $client->barangay_id,
-                            'contact_number' => $client->user?->contact_number,
+                            'contact_number' => $client->user?->contact_number ?? 'N/A',
                             'relationship_id' => $client->socialInfo?->relationship?->id,
                         ]);
 

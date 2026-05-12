@@ -21,6 +21,11 @@
     <!--begin:Menu sub-->
     <div class="menu-sub menu-sub-dropdown menu-sub-indentation px-2 py-4 w-250px mh-75 overflow-auto">
         <div class="menu-item">
+            <div class="menu-content">
+                <span class="menu-section fs-5 fw-bolder ps-1 py-1">Records</span>
+            </div>
+        </div>
+        <div class="menu-item">
             <a href="{{ route('client.index') }}" @class(['active' => Request::is('client*'), 'menu-link'])>
                 <span class="menu-icon">
                     <x-ki-icon :icon_name="'people'" :icon_size="'2'" :paths_count="5" />

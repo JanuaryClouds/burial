@@ -37,10 +37,10 @@ class UserService
                 return [
                     'id' => $user->id,
                     'first_name' => $user->first_name,
-                    'middle_name' => $user->middle_name,
+                    'middle_name' => $user->middle_name ?? '',
                     'last_name' => $user->last_name,
                     'email' => $user->email,
-                    'contact_number' => $user->contact_number,
+                    'contact_number' => $user->contact_number ?? 'N/A',
                     'is_active' => $user->is_active,
                     'show_route' => route('user.edit', $user->id),
                 ];

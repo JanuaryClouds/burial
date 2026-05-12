@@ -37,7 +37,7 @@ class BurialAssistanceService
                     'id' => $application->id,
                     'tracking_no' => $application->originalClaimant()->client?->tracking_no,
                     'claimant' => $claimant?->fullname(),
-                    'contact_number' => $claimant?->contact_number,
+                    'contact_number' => $claimant?->contact_number ?? 'N/A',
                     'beneficiary' => $application->beneficiary()?->fullname(),
                     'status' => $status,
                     'show_route' => route('burial.show', $application),
