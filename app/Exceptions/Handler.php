@@ -60,19 +60,16 @@ class Handler extends ExceptionHandler
                 ->with('error', 'You do not have permission to access this page.');
         }
 
-        if (!($exception instanceof \Symfony\Component\HttpKernel\Exception\HttpExceptionInterface) && app()->isProduction()) {
+        if (! ($exception instanceof \Symfony\Component\HttpKernel\Exception\HttpExceptionInterface) && app()->isProduction()) {
             activity()
                 ->causedBy(auth()->user())
                 ->withProperties([
-                    'ip' => request()->ip(), 
-                    'browser' => request()->header('User-Agent'),
                     'message' => $exception->getMessage(),
                     'file' => $exception->getFile(),
                     'line' => $exception->getLine(),
-                    'trace' => $exception->getTraceAsString(),
                 ])
-                ->log('Internal server error occurred. Exception: ' . get_class($exception));
-            
+                ->log('Internal server error occurred. Exception: '.get_class($exception));
+
             if ($request->expectsJson()) {
                 return response()->json([
                     'message' => 'Something went wrong.',
