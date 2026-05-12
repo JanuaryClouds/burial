@@ -159,7 +159,7 @@ class UserController extends Controller
         $this->authorize('edit-users');
         $page_title = 'Edit User';
         $resource = 'user';
-        $roles = Role::where('name', '!=', 'superadmin')->get();
+        $roles = Role::whereNotIn('name', ['superadmin'])->get();
         $data = User::find($user->id);
 
         return view('cms.edit', compact('data', 'page_title', 'resource', 'roles'));

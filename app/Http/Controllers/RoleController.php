@@ -39,7 +39,7 @@ class RoleController extends Controller
     public function index()
     {
         $data = Role::select('id', 'name')
-            ->where('name', '!=', 'superadmin')
+            ->whereNotIn('name', ['superadmin', 'staff'])
             ->get()
             ->map(function ($role) {
                 return [
