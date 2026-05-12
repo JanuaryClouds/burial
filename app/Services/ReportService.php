@@ -56,17 +56,17 @@ class ReportService
     {
         return ClientRecommendation::with('client')
             ->selectRaw('type, COUNT(*) as total')
+            ->whereIn('type', ['libreng_libing', 'burial'])
             ->whereHas('client', function ($q) use ($startDate, $endDate) {
                 $q->whereBetween('created_at', [$startDate, $endDate]);
             })
             ->groupBy('type')
             ->get()
             ->map(function ($item) {
-                if ($item->type == 'funeral') {
-                    $type = 'Libreng Libing';
-                } else {
-                    $type = 'Burial';
-                }
+                $type = match ($item->type) {
+                    'libreng_libing' => 'Libreng Libing',
+                    'burial' => 'Burial Assistance',
+                };
 
                 return [
                     'name' => $type,

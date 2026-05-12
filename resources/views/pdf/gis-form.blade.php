@@ -191,7 +191,7 @@
                             <td style="text-decoration: underline;">
                                 @if ($assistance == 'Burial')
                                     &nbsp;
-                                    /
+                                    {{ isset($referral) ? '' : '/' }}
                                     &nbsp;
                                 @else
                                     &nbsp;
