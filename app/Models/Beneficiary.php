@@ -102,7 +102,7 @@ class Beneficiary extends Model
     public function scopeTotal($query)
     {
         $user = auth()->user();
-        
+
         if (! $user) {
             return $query->whereRaw('1 = 0');
         }

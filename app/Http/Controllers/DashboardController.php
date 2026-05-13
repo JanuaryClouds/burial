@@ -2,12 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\BurialAssistance;
 use App\Models\Client;
-use App\Models\FuneralAssistance;
 use App\Services\ClientService;
 use App\Services\DatatableService;
-use Carbon\Carbon;
 use Spatie\Activitylog\Models\Activity;
 
 class DashboardController extends Controller
@@ -47,7 +44,7 @@ class DashboardController extends Controller
                 'scope' => 'Total',
                 'iconName' => 'people',
                 'iconPathsCount' => 5,
-                'route' => route('client.index')
+                'route' => route('client.index'),
             ],
             [
                 'model' => 'App\Models\Client',
@@ -55,7 +52,7 @@ class DashboardController extends Controller
                 'scope' => 'Referral',
                 'iconName' => 'route',
                 'iconPathsCount' => 4,
-                'route' => route('referral.index')
+                'route' => route('referral.index'),
             ],
             [
                 'model' => 'App\Models\Client',
@@ -63,7 +60,7 @@ class DashboardController extends Controller
                 'scope' => 'BurialAssistance',
                 'iconName' => 'file-up',
                 'iconPathsCount' => 2,
-                'route' => route('burial.index')
+                'route' => route('burial.index'),
             ],
             [
                 'model' => 'App\Models\Client',
@@ -71,7 +68,7 @@ class DashboardController extends Controller
                 'scope' => 'FuneralAssistance',
                 'iconName' => 'file-up',
                 'iconPathsCount' => 2,
-                'route' => route('funeral.index')
+                'route' => route('funeral.index'),
             ],
         ];
 

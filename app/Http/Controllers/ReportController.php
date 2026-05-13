@@ -107,10 +107,10 @@ class ReportController extends Controller
         }
 
         return view('reports.index', compact(
-            'data', 
-            'columns', 
+            'data',
+            'columns',
             'model',
-            'startDate', 
+            'startDate',
             'endDate'
         ));
     }

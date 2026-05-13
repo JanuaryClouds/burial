@@ -150,7 +150,7 @@ class ProcessLogService
             if (! $log) {
                 return;
             }
-            
+
             if (! $application) {
                 return;
             }
@@ -161,21 +161,21 @@ class ProcessLogService
                     $latestCheque->delete();
                     $application->update(['status' => 'processing']);
                 }
-        
+
                 if (class_basename($log->loggable) === 'WorkflowStep' && $log->loggable->order_no == 10) {
                     $latestCheque->update(['dv_number' => null]);
                 }
-        
+
                 if (class_basename($log->loggable) === 'WorkflowStep' && $log->loggable->order_no == 11) {
                     $latestCheque->update(['cheque_number' => null]);
                     $latestCheque->update(['amount' => null]);
                 }
-        
+
                 if (class_basename($log->loggable) === 'WorkflowStep' && $log->loggable->order_no == 12) {
                     $latestCheque->update(['date_issued' => null]);
                     $application->update(['status' => 'processing']);
                 }
-        
+
                 if (class_basename($log->loggable) === 'WorkflowStep' && $log->loggable->order_no == 13) {
                     $latestCheque->update([
                         'status' => 'issued',
@@ -184,7 +184,7 @@ class ProcessLogService
                     $application->update(['status' => 'approved']);
                 }
             }
-    
+
             $log->delete();
         }
     }

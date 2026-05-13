@@ -132,7 +132,7 @@ class ProcessLogController extends Controller
                 $log = ProcessLog::findOrFail($id);
                 if ($log) {
                     $this->processLogServices->delete($log, $log->burialAssistance);
-    
+
                     return redirect()->back()->with('success', 'Process log deleted successfully.');
                 } else {
                     return redirect()->back()->with('error', 'Unable to find process log.');

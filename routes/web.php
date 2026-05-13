@@ -6,7 +6,6 @@ use App\Http\Controllers\BurialAssistanceController;
 use App\Http\Controllers\CitizenAccessController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExportController;
-use App\Http\Controllers\TestController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [CitizenAccessController::class, 'index'])

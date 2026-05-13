@@ -63,7 +63,7 @@ class ClientController extends Controller
                     'scope' => 'Total',
                     'iconName' => 'people',
                     'iconPathsCount' => 5,
-                    'route' => route('beneficiary.index')
+                    'route' => route('beneficiary.index'),
                 ],
                 [
                     'model' => 'App\Models\Client',
@@ -71,7 +71,7 @@ class ClientController extends Controller
                     'scope' => 'Referral',
                     'iconName' => 'route',
                     'iconPathsCount' => 4,
-                    'route' => route('referral.index')
+                    'route' => route('referral.index'),
                 ],
                 [
                     'model' => 'App\Models\Client',
@@ -79,7 +79,7 @@ class ClientController extends Controller
                     'scope' => 'BurialAssistance',
                     'iconName' => 'file-up',
                     'iconPathsCount' => 2,
-                    'route' => route('burial.index')
+                    'route' => route('burial.index'),
                 ],
                 [
                     'model' => 'App\Models\Client',
@@ -87,7 +87,7 @@ class ClientController extends Controller
                     'scope' => 'FuneralAssistance',
                     'iconName' => 'file-up',
                     'iconPathsCount' => 2,
-                    'route' => route('funeral.index')
+                    'route' => route('funeral.index'),
                 ],
             ];
         }
