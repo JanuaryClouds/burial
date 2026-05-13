@@ -18,9 +18,6 @@ Route::get('/sso/callback', [CitizenAccessController::class, 'sso'])
 Route::match(['get', 'post'], '/sso/logout', [CitizenAccessController::class, 'logout'])
     ->name('sso.logout');
 
-// Route::get('/test/component/{id}', [TestController::class, 'get'])
-//     ->name('test.component');
-
 Route::get('/login', [UserController::class, 'loginPage'])
     ->name('login');
 Route::post('/login/check', [UserController::class, 'login'])

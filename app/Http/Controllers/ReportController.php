@@ -207,7 +207,7 @@ class ReportController extends Controller
 
     public function cheques(Request $request)
     {
-        $model = 'cheques';
+        $model = 'checks';
         if ($request->has('start_date') && $request->start_date != '') {
             $startDate = Carbon::parse($request->start_date);
         } else {

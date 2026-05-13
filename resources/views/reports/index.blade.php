@@ -14,7 +14,7 @@
         @includeWhen(Route::is('reports.funerals'), 'reports.partials.funeral-charts')
         @includeWhen(Route::is('reports.burial-assistances'), 'reports.partials.burial-charts')
         @includeWhen(Route::is('reports.claimants'), 'reports.partials.claimants-charts')
-        @includeWhen(Route::is('reports.cheques'), 'reports.partials.cheques-charts')
+        @includeWhen(Route::is('reports.checks'), 'reports.partials.cheques-charts')
         <div class="col-12 mt-8">
             <div class="card">
                 <div class="card-body">
