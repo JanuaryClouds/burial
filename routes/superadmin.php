@@ -17,7 +17,7 @@ use App\Http\Controllers\SystemSettingController;
 use App\Http\Controllers\WorkflowController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('permission:manage-content')
+Route::middleware('role:superadmin')
     ->group(function () {
         Route::resource('client', ClientController::class)
             ->only(['update']);

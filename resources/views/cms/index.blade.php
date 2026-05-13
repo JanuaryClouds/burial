@@ -32,7 +32,7 @@
             @endif
         </div>
     </div>
-    @can('manage-content')
+    @role('superadmin')
         @if (Route::has(str_replace('.index', '', Route::currentRouteName()) . '.store'))
             <div id="newContent" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="newContent" aria-hidden="true">
                 <form action="{{ route(str_replace('.index', '', Route::currentRouteName()) . '.store') }}" method="post">
@@ -78,5 +78,5 @@
                 </form>
             </div>
         @endif
-    @endcan
+    @endrole
 @endsection

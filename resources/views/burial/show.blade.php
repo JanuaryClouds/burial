@@ -37,7 +37,7 @@
                 auth()->user()->can('create', [App\Models\ClaimantChange::class, $data]))
             @include('burial.partials.claimant-change-form')
         @endif
-        @cannot('manage-content')
+        @unlessrole('superadmin')
             <div class="card mt-10">
                 <div class="card-body">
                     @include('client.partials.swa-form', [
@@ -93,8 +93,8 @@
                     ])
                 </div>
             </div>
-        @endcannot
-        @can('manage-content')
+        @endunlessrole
+        @role('superadmin')
             <form action="{{ route('burial.update', $data->id) }}" method="post" id="contentForm"
                 class="d-flex flex-column gap-4">
                 @csrf
@@ -155,6 +155,6 @@
                     </div>
                 </div>
             </form>
-        @endcan
+        @endrole
     </div>
 @endsection

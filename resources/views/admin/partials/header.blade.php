@@ -23,9 +23,9 @@
         <!--begin::Wrapper-->
         <div class="d-flex align-items-center justify-content-end flex-wrap gap-3">
             <!-- begin::Menu wrapper -->
-            @includeWhen(Route::is('*.index') && auth()->user()->can('manage-content'),
+            @includeWhen(Route::is('*.index') && auth()->user()->hasRole('superadmin'),
                 'superadmin.partials.new-content')
-            @includeWhen(Route::is('*.show') && auth()->user()->can('manage-content'),
+            @includeWhen(Route::is('*.show') && auth()->user()->hasRole('superadmin'),
                 'cms.partials.edit-content-buttons')
             <!-- end::Menu wrapper -->
 

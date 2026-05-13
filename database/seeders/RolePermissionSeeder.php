@@ -12,7 +12,7 @@ class RolePermissionSeeder extends Seeder
     {
         $staffPermissions = [
             // Client Models
-            'create-clients',
+            // 'create-clients',
             'view-clients',
             'create-interview-schedules',
             'create-assessments',
@@ -41,8 +41,8 @@ class RolePermissionSeeder extends Seeder
             // Logs
             'view-logs',
 
-            // CMS
-            'manage-content',
+            // CMS only for superadmin
+            // 'manage-content',
 
             // System
             'create-users',
@@ -51,7 +51,7 @@ class RolePermissionSeeder extends Seeder
             'create-roles',
             'view-roles',
             'edit-roles',
-            'edit-system-settings',
+            // 'edit-system-settings', // Only for superadmin
         ];
 
         foreach ($staffPermissions as $permission) {

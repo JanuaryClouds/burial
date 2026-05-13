@@ -84,7 +84,7 @@
                 <span class="menu-title">Burial Assistances</span>
             </a>
         </div>
-        @can('manage-content')
+        @role('superadmin')
             <div class="menu-item">
                 <div class="menu-content">
                     <span class="menu-section fs-5 fw-bolder ps-1 py-1">
@@ -140,7 +140,7 @@
                     <span class="menu-title">Nationality</span>
                 </a>
             </div>
-        @endcan
+        @endrole
         @can('view-reports')
             <div class="menu-item">
                 <div class="menu-content">

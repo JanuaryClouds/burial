@@ -113,7 +113,7 @@ class ClientController extends Controller
             $client = $this->clientServices->get($client->id);
             $page_title = $client->tracking_no;
             $page_subtitle = $client->fullname()."'s Application";
-            $readonly = auth()->user()->cannot('manage-content');
+            $readonly = auth()->user()->hasRole('superadmin');
             $released = $client?->claimant?->burialAssistance?->status != 'released' || $client?->funeralAssistance?->forwarded_at != null;
 
             if ($client) {

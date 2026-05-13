@@ -25,9 +25,9 @@
                     @include('client.partials.sidebar')
                 @endif
                 @include('admin.partials.sidebar-records')
-                @can('manage-content')
+                @role('superadmin')
                     @include('superadmin.partials.sidebar-cms')
-                @endcan
+                @endrole
                 @can('view-reports')
                     @include('admin.partials.sidebar-reports')
                 @endcan
