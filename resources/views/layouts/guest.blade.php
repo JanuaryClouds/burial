@@ -7,7 +7,7 @@
 </head>
 
 <body id="kt_body" class="app-blank"
-    style="background: url('{{ asset('images/white_bg_city.png') }}') no-repeat center center / cover; overflow-x: hidden; background-attachment: fixed; max-width: 100vw;">
+    style="background: url('{{ asset('images/white_bg_city.png') }}') no-repeat center center / cover; background-attachment: fixed; max-width: 100vw;">
     @include('partials.theme-script')
     <div class="d-flex flex-column flex-root" id="kt_app_root">
         <x-loader />

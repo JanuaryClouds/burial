@@ -1,4 +1,4 @@
-<!--begin:client-->
+<!--begin:records-->
 <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start"
     @class([
         'menu-item',
@@ -68,4 +68,4 @@
     </div>
     <!--end:Menu sub-->
 </div>
-<!--end:client-->
+<!--end:records-->

@@ -4,7 +4,7 @@
     data-kt-drawer-toggle="#kt_aside_toggle">
     <!--begin::Logo-->
     <div class="aside-logo flex-column-auto pt-10 pt-lg-7" id="kt_aside_logo">
-        <a href="{{ route('dashboard') }}">
+        <a href="{{ route('dashboard') }}" aria-label="Go to dashboard">
             <img alt="Logo" src="{{ asset('images/CSWDO.webp') }}" class="h-60px bg-white rounded-circle">
         </a>
     </div>
@@ -20,22 +20,22 @@
             <div id="kt_aside_menu"
                 class="menu menu-column menu-title-gray-600 menu-state-primary menu-state-icon-primary menu-state-bullet-primary menu-icon-gray-500 menu-arrow-gray-500 fw-semibold fs-6 my-auto"
                 data-kt-menu="true">
-                @include('admin.partials.sidebar-common')
-                @if (auth()->user()->roles()->count() == 0)
+                @include('partials.sidebar.common')
+                @if (!auth()->user()->roles()->exists())
                     @include('client.partials.sidebar')
                 @endif
-                @include('admin.partials.sidebar-records')
+                @include('partials.sidebar.records')
                 @role('superadmin')
-                    @include('superadmin.partials.sidebar-cms')
+                    @include('partials.sidebar.cms')
                 @endrole
                 @can('view-reports')
-                    @include('admin.partials.sidebar-reports')
+                    @include('partials.sidebar.reports')
                 @endcan
                 @can('view-logs')
-                    @include('admin.partials.sidebar-logs')
+                    @include('partials.sidebar.logs')
                 @endcan
                 @if (auth()->user()->canAny(['view-roles', 'view-users', 'edit-system-settings']))
-                    @include('admin.partials.sidebar-system')
+                    @include('partials.sidebar.system')
                 @endif
             </div>
         </div>

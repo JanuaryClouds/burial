@@ -25,7 +25,7 @@
         </div>
         @if (!auth()->user()->roles()->exists())
             <div class="menu-item">
-                <a href="{{ route('general.intake.form') }}" @class(['active' => Request::is('general.intake.form'), 'menu-link'])>
+                <a href="{{ route('general.intake.form') }}" @class(['active' => Route::is('general.intake.form'), 'menu-link'])>
                     <span class="menu-bullet">
                         <span class="bullet bullet-dot"></span>
                     </span>
@@ -188,7 +188,7 @@
                 </a>
             </div>
             <div class="menu-item">
-                <a href="{{ route('reports.cheques') }}" @class(['active' => Request::is('reports/cheques'), 'menu-link'])>
+                <a href="{{ route('reports.checks') }}" @class(['active' => Route::is('reports.checks'), 'menu-link'])>
                     <span class="menu-bullet">
                         <span class="bullet bullet-dot"></span>
                     </span>

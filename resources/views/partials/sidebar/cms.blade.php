@@ -3,16 +3,12 @@
     @class([
         'menu-item',
         'here' =>
-            (Route::is('*.index') || Route::is('*.edit')) &&
-            !Route::is('funeral.*') &&
-            !Route::is('burial.*') &&
-            !Route::is('client.*') &&
-            !Route::is('beneficiary.*') &&
-            !Route::is('user.*') &&
-            !Route::is('system.*') &&
-            !Route::is('role.*') &&
-            !Route::is('referral.*') &&
-            !Route::is('assignments.*'),
+            Route::is('relationship.*') ||
+            Route::is('workflowstep.*') ||
+            Route::is('handler.*') ||
+            Route::is('religion.*') ||
+            Route::is('education.*') ||
+            Route::is('nationality.*'),
     ])>
     <!--begin:Menu link-->
     <span class="menu-link menu-center d-flex flex-column">

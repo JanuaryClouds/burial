@@ -29,7 +29,7 @@
                 'cms.partials.edit-content-buttons')
             <!-- end::Menu wrapper -->
 
-            @include('admin.partials.mobile-nav')
+            @include('partials.mobile-nav')
             <!-- begin::Theme mode -->
             @if (!auth()->user()->roles()->exists())
                 @if (!Route::is('dashboard'))
@@ -67,7 +67,7 @@
                             <!--begin::Username-->
                             <div class="d-flex flex-column">
                                 <div class="fw-bold d-flex align-items-center fs-5">
-                                    {{ auth()->user()->first_name . ' ' . auth()->user()->last_name }}
+                                    {{ auth()->user()->fullname() }}
                                 </div>
 
                                 <p class="fw-semibold text-muted pb-0 text-hover-primary fs-7">
@@ -85,8 +85,7 @@
 
                     <!--begin::Menu item-->
                     <div class="menu-item px-5">
-                        <form
-                            action="{{ auth()->user()->roles()->count() > 0 ? route('logout') : route('sso.logout') }}"
+                        <form action="{{ auth()->user()->roles()->exists() ? route('logout') : route('sso.logout') }}"
                             method="POST" class="block mb-0">
                             @csrf
                             <button type="submit" class="btn w-100 text-left">
@@ -108,7 +107,7 @@
     <div class="header-offset"></div>
 </div>
 
-<script {{ $nonce ?? null ? 'nonce="' . $nonce . '"' : '' }}>
+<script nonce={{ $nonce ?? '' }}>
     function darkMode() {
         const header = document.getElementById('main-header-web');
         const pageTitle = document.getElementById('pageTitle');
