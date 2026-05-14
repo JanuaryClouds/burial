@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Models\Notification;
 use App\Models\User;
-use Http;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 
 class NotificationService

@@ -6,26 +6,34 @@ use App\Models\Relationship;
 
 class RelationshipService
 {
+    /**
+     * Summary of storeRelationship
+     * @param array $data information to store
+     * @return Relationship created model
+     */
     public function storeRelationship(array $data): Relationship
     {
         return Relationship::create($data);
     }
 
+    /**
+     * Summary of updateRelationship
+     * @param array $data information to update to
+     * @param mixed $relationship model to update
+     * @return Relationship updated model
+     */
     public function updateRelationship(array $data, $relationship): Relationship
     {
-        if ($relationship->update($data)) {
-            return $relationship;
-        }
-
-        return null;
+        return $relationship->update($data);
     }
 
-    public function deleteRelationship($relationship): Relationship
+    /**
+     * Summary of deleteRelationship
+     * @param mixed $relationship model to delete
+     * @return void if successful
+     */
+    public function deleteRelationship($relationship): void
     {
-        if ($relationship->delete()) {
-            return $relationship;
-        }
-
-        return null;
+        $relationship->delete();
     }
 }

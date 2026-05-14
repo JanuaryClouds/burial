@@ -11,8 +11,7 @@ use App\Services\NotificationService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Exception;
 use Illuminate\Http\Request;
-use Storage;
-use Str;
+use Illuminate\Support\Str;
 
 class FuneralAssistanceController extends Controller
 {
@@ -32,10 +31,16 @@ class FuneralAssistanceController extends Controller
     public function index()
     {
         $page_title = 'Libreng Libing Applications';
+        $user = auth()->user();
+        $roleCount = $user->roles()->count();
 
-        if (auth()->user()->roles()->count() == 0) {
+        $data = [];
+        $columns = [];
+        $cardData = null;
+
+        if ($roleCount == 0) {
             $data = $this->funeralAssistanceServices->index(auth()->user()->id);
-        } elseif (auth()->user()->roles()->count() > 0) {
+        } elseif ($roleCount > 0) {
             $data = $this->funeralAssistanceServices->index();
 
             $cardData = [
@@ -84,20 +89,9 @@ class FuneralAssistanceController extends Controller
             $data = FuneralAssistance::findOrFail($id);
             $this->authorize('view', $data);
             $client = $data->client;
-            if (! $client) {
-                return redirect()->back()->with('error', 'Client not found for this application.');
-            }
             $page_title = $client->tracking_no;
             $page_subtitle = $client->fullname()."'s Funeral Assistance Application";
-            $readonly = auth()->user()->hasRole('superadmin') || $data?->forwarded_at != null;
-            $path = "clients/{$client->tracking_no}";
-            $storedFiles = Storage::disk('local')->files($path);
-            $files = collect($storedFiles)->map(function ($file) {
-                return [
-                    'name' => basename($file),
-                    'path' => $file,
-                ];
-            });
+            $readonly = auth()->user()->hasRole('superadmin') || $data->forwarded_at != null;
 
             return view('funeral.view', compact(
                 'data',
@@ -105,7 +99,6 @@ class FuneralAssistanceController extends Controller
                 'page_title',
                 'page_subtitle',
                 'readonly',
-                'files'
             ));
         } catch (Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());

@@ -6,7 +6,7 @@ use App\Models\Client;
 use App\Models\Interview;
 use Carbon\Carbon;
 use Exception;
-use Str;
+use Illuminate\Support\Str;
 
 class InterviewService
 {

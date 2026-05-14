@@ -11,9 +11,9 @@ use App\Services\CentralClientService;
 use App\Services\ClaimantChangeService;
 use App\Services\ClaimantService;
 use App\Services\NotificationService;
-use DB;
 use Illuminate\Http\Request;
-use Str;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class ClaimantChangeController extends Controller
 {
@@ -52,15 +52,11 @@ class ClaimantChangeController extends Controller
             if ($validated) {
                 $burialAssistance = BurialAssistance::findOrFail($id);
 
-                if (! $burialAssistance->originalClaimant()) {
-                    return redirect()->back()->with('error', 'Unable to find claimant.');
-                }
-
                 if (auth()->user()->cannot('create-claimant-change-requests')) {
                     return redirect()->back()->with('error', 'You are not authorized to change the claimant.');
                 }
 
-                if ($newClaimantUser->id == $burialAssistance->originalClaimant()?->client?->user_id) {
+                if ($newClaimantUser->id == $burialAssistance->originalClaimant()->client->user_id) {
                     return redirect()->back()->with('info', 'You are already the current claimant of this assistance.');
                 }
 
@@ -69,7 +65,7 @@ class ClaimantChangeController extends Controller
                 }
 
                 $validated['burial_assistance_id'] = $burialAssistance->id;
-                $validated['old_claimant_id'] = $burialAssistance->originalClaimant()?->id;
+                $validated['old_claimant_id'] = $burialAssistance->originalClaimant()->id;
                 $validated['id'] = (string) Str::uuid();
                 $validated['first_name'] = $newClaimantUser->first_name;
                 $validated['middle_name'] = $newClaimantUser->middle_name ?? null;

@@ -6,26 +6,34 @@ use App\Models\Nationality;
 
 class NationalityService
 {
+    /**
+     * Summary of storeNationality
+     * @param array $data data to store
+     * @return Nationality
+     */
     public function storeNationality(array $data): Nationality
     {
         return Nationality::create($data);
     }
 
+    /**
+     * Summary of updateNationality
+     * @param array $data data to update
+     * @param mixed $nationality model to update
+     * @return Nationality updated model
+     */
     public function updateNationality(array $data, $nationality): Nationality
     {
-        if ($nationality->update($data)) {
-            return $nationality;
-        }
-
-        return null;
+        return $nationality->update($data);
     }
 
-    public function deleteNationality($nationality): Nationality
+    /**
+     * Summary of deleteNationality
+     * @param mixed $nationality model to delete
+     * @return void
+     */
+    public function deleteNationality($nationality): void
     {
-        if ($nationality->delete()) {
-            return $nationality;
-        }
-
-        return null;
+        $nationality->delete();
     }
 }

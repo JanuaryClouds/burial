@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use Http;
+use Illuminate\Support\Facades\Http;
 use RuntimeException;
 
 class SmsService

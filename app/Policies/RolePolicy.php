@@ -84,7 +84,7 @@ class RolePolicy
      */
     public function restore(User $user, Role $role): bool
     {
-        //
+        return false;
     }
 
     /**

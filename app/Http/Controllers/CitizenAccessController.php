@@ -10,7 +10,7 @@ use App\Services\CentralClientService;
 use App\Services\ImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Str;
+use Illuminate\Support\Str;
 
 class CitizenAccessController extends Controller
 {
@@ -138,7 +138,7 @@ class CitizenAccessController extends Controller
 
         $uuid = $payload['citizen_uuid'];
 
-        if ($uuid) {
+        try {
             $user = $this->centralClientService->checkIfUser($uuid);
             if ($user === null) {
                 return redirect()->route('landing.page')->with('error', 'User not found.');
@@ -157,7 +157,7 @@ class CitizenAccessController extends Controller
             $redirect = auth()->user()->clients()->exists() ? route('dashboard') : route('general.intake.form');
 
             return redirect()->to($redirect);
-        } else {
+        } catch (\Throwable $th) {
             return redirect()->back()->with('error', 'Login failed.');
         }
     }

@@ -2,12 +2,16 @@
 
 namespace App\Services;
 
-// use App\Models\Role;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\Contracts\Role as RoleContract;
 
 class RoleService
 {
-    public function storeRole(array $data): Role
+    /**
+     * Summary of storeRole
+     * @param array $data data to store
+     */
+    public function storeRole(array $data): RoleContract
     {
         if (empty($data['guard_name'])) {
             $data['guard_name'] = 'web';
@@ -16,21 +20,24 @@ class RoleService
         return Role::create($data);
     }
 
+    /**
+     * Summary of updateRole
+     * @param array $data data to update
+     * @param mixed $role model to update
+     * @return Role updated model
+     */
     public function updateRole(array $data, $role): Role
     {
-        if ($role->update($data)) {
-            return $role;
-        }
-
-        return null;
+        return $role->update($data);
     }
 
-    public function destroyRole($role): Role
+    /**
+     * Summary of destroyRole
+     * @param mixed $role model to delete
+     * @return void
+     */
+    public function destroyRole($role): void
     {
-        if ($role->delete()) {
-            return $role;
-        }
-
-        return null;
+        $role->delete();
     }
 }

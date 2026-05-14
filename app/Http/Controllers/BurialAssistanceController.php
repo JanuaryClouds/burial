@@ -18,7 +18,7 @@ use App\Services\WorkflowStepService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Exception;
 use Illuminate\Http\Request;
-use Str;
+use Illuminate\Support\Str;
 
 class BurialAssistanceController extends Controller
 {
@@ -117,10 +117,6 @@ class BurialAssistanceController extends Controller
             $claimantChange = $data->claimantChanges()->first();
             $newClaimants = [];
 
-            if (! $currentClaimant) {
-                abort(404);
-            }
-
             if (! $claimantChange) {
                 $currentClaimantUserId = $currentClaimant->client?->user_id;
                 $newClaimants = User::whereHas('clients')
@@ -132,7 +128,7 @@ class BurialAssistanceController extends Controller
                     ->toArray();
             }
 
-            $page_title = $data->originalClaimant()?->client?->tracking_no;
+            $page_title = $data->originalClaimant()->client->tracking_no;
             $page_subtitle = $currentClaimant->fullname()."'s Burial Assistance Application";
             $readonly = auth()->user()->hasRole('superadmin') && $data->status == 'released';
 
@@ -212,7 +208,7 @@ class BurialAssistanceController extends Controller
                 $claimant = $application->currentClaimant();
                 $beneficiary = $application->beneficiary();
 
-                if ($claimant && $claimant->contact_number && $beneficiary) {
+                if ($claimant->contact_number) {
                     $department_email = SystemSetting::first()?->department_email;
 
                     $this->smsServices->send(
@@ -262,6 +258,7 @@ class BurialAssistanceController extends Controller
         try {
             $burialAssistance = $this->burialAssistanceServices->reportIndex($startDate, $endDate);
 
+            /** @var \Illuminate\Database\Eloquent\Collection<int, Barangay> $deceasedPerBarangay */
             $deceasedPerBarangay = Barangay::query()
                 ->select('id', 'name')
                 ->withCount([
@@ -272,11 +269,16 @@ class BurialAssistanceController extends Controller
                     },
                 ])
                 ->get()
-                ->mapWithKeys(function ($barangay) {
-                    return [$barangay->name => $barangay->beneficiary_count];
+                ->mapWithKeys(function (Barangay $barangay) {
+                    $count = (int) $barangay->getAttribute('beneficiary_count');
+
+                    return [$barangay->name => $count];
                 })
                 ->toArray();
 
+            /**
+             * @var \Illuminate\Database\Eloquent\Collection<int, Religion> $deceasedPerReligion
+             */
             $deceasedPerReligion = Religion::query()
                 ->select('id', 'name')
                 ->withCount([
@@ -287,8 +289,10 @@ class BurialAssistanceController extends Controller
                     },
                 ])
                 ->get()
-                ->mapWithKeys(function ($religion) {
-                    return [$religion->name => $religion->beneficiary_count];
+                ->mapWithKeys(function (Religion $religion) {
+                    $count = (int) $religion->getAttribute('beneficiary_count');
+
+                    return [$religion->name => $count];
                 })
                 ->toArray();
 
@@ -319,10 +323,6 @@ class BurialAssistanceController extends Controller
         }
 
         $claimant = $assistance->currentClaimant();
-
-        if (! $claimant) {
-            abort(404);
-        }
 
         $title = Str::title($claimant->first_name).' '.Str::title($claimant->last_name).'\'s Certificate of Eligibility';
         $social_welfare_officer = Str::upper(SystemSetting::first()?->social_welfare_officer);

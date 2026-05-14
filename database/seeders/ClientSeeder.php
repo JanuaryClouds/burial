@@ -13,7 +13,7 @@ use App\Models\Notification;
 use App\Models\Referral;
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Str;
+use Illuminate\Support\Str;
 
 class ClientSeeder extends Seeder
 {
@@ -31,10 +31,6 @@ class ClientSeeder extends Seeder
         ]);
 
         foreach ($clients as $client) {
-            if (! $client) {
-                continue;
-            }
-
             if (rand(0, 1) == 1) {
                 $interview = Interview::factory()->create([
                     'client_id' => $client->id,

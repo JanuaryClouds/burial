@@ -8,10 +8,10 @@ use App\Models\Claimant;
 use App\Models\ProcessLog;
 use App\Models\WorkflowStep;
 use Carbon\Carbon;
-use DB;
-use Http;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\RequestException;
-use Str;
+use Illuminate\Support\Str;
 
 class ProcessLogService
 {
@@ -20,11 +20,10 @@ class ProcessLogService
      * @param  Claimant  $claimant  Assigned claimant of the assistance
      * @param  WorkflowStep  $step  Step indicator
      * @param  array  $data  Data to save
-     * @return void
      */
     public function create(BurialAssistance $burialAssistance, Claimant $claimant, WorkflowStep $step, array $data)
     {
-        return DB::transaction(function () use ($burialAssistance, $claimant, $step, $data) {
+        DB::transaction(function () use ($burialAssistance, $claimant, $step, $data) {
             $application = $burialAssistance;
             $latestLog = $application->processLogs()->latest()->first();
             if ($latestLog && $latestLog->loggable && $latestLog->loggable->order_no == $step->order_no) {
@@ -68,13 +67,15 @@ class ProcessLogService
                 });
 
                 $claimantName = $claimant->fullname();
-                $deceased = $application->beneficiary()?->fullname();
+                $deceased = $application->beneficiary()->fullname();
                 $beneficiary = $application->beneficiary();
-                $dod = $beneficiary?->date_of_death
+                $dod = $beneficiary->date_of_death
                     ? Carbon::parse($beneficiary->date_of_death)->format('F d, Y')
                     : null;
 
-                // TODO Disbursement Service here
+                if ($deceased) {
+                    $this->createDisbursement($data, $deceased, $claimantName, $dod);
+                }
             }
 
             if ($step->order_no == 12) {
@@ -102,10 +103,6 @@ class ProcessLogService
                 'added_by' => auth()->user()->id,
             ]);
         });
-
-        if ($claimant && $deceased) {
-            $this->createDisbursement($data, $deceased, $claimant, $dod);
-        }
     }
 
     /**
@@ -144,19 +141,11 @@ class ProcessLogService
      * @param  BurialAssistance  $application  Application to update
      * @return void
      */
-    public function delete(ProcessLog $log, BurialAssistance $application)
+    public function delete(ProcessLog $log, BurialAssistance $application): void
     {
         if (app()->isLocal()) {
-            if (! $log) {
-                return;
-            }
-
-            if (! $application) {
-                return;
-            }
-
             $latestCheque = $application->latestCheque();
-            if ($latestCheque && $log->loggable) {
+            if ($log->loggable) {
                 if (class_basename($log->loggable) === 'WorkflowStep' && $log->loggable->order_no == 9) {
                     $latestCheque->delete();
                     $application->update(['status' => 'processing']);

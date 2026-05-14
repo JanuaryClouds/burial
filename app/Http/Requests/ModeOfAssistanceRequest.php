@@ -14,7 +14,7 @@ class ModeOfAssistanceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255|unique:mode_of_assistances,name,'.$this->route('moa')?->id,
+            'name' => 'required|string|max:255|unique:mode_of_assistances,name',
             'remarks' => 'nullable|string|max:255',
         ];
     }

@@ -48,7 +48,7 @@ class InterviewPolicy
      */
     public function update(User $user, Interview $interview): bool
     {
-        //
+        return false;
     }
 
     /**
@@ -56,7 +56,7 @@ class InterviewPolicy
      */
     public function delete(User $user, Interview $interview): bool
     {
-        //
+        return false;
     }
 
     /**
@@ -64,7 +64,7 @@ class InterviewPolicy
      */
     public function restore(User $user, Interview $interview): bool
     {
-        //
+        return false;
     }
 
     /**
@@ -72,6 +72,6 @@ class InterviewPolicy
      */
     public function forceDelete(User $user, Interview $interview): bool
     {
-        //
+        return false;
     }
 }

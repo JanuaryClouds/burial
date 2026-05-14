@@ -12,7 +12,7 @@ class ReferralPolicy
      */
     public function viewAny(User $user): bool
     {
-        //
+        return false;
     }
 
     /**
@@ -20,7 +20,7 @@ class ReferralPolicy
      */
     public function view(User $user, Referral $referral): bool
     {
-        //
+        return false;
     }
 
     /**
@@ -28,7 +28,7 @@ class ReferralPolicy
      */
     public function create(User $user): bool
     {
-        //
+        return false;
     }
 
     /**
@@ -36,7 +36,7 @@ class ReferralPolicy
      */
     public function update(User $user, Referral $referral): bool
     {
-        //
+        return false;
     }
 
     /**
@@ -44,7 +44,7 @@ class ReferralPolicy
      */
     public function delete(User $user, Referral $referral): bool
     {
-        //
+        return false;
     }
 
     /**
@@ -52,7 +52,7 @@ class ReferralPolicy
      */
     public function restore(User $user, Referral $referral): bool
     {
-        //
+        return false;
     }
 
     /**
@@ -60,6 +60,6 @@ class ReferralPolicy
      */
     public function forceDelete(User $user, Referral $referral): bool
     {
-        //
+        return false;
     }
 }

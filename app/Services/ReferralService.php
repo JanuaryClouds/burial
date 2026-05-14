@@ -21,7 +21,7 @@ class ReferralService
             ->map(function ($referral) {
                 return [
                     'id' => $referral->id,
-                    'client' => $referral->client?->fullname() ?? '',
+                    'client' => $referral->client->fullname(),
                     'referral_to' => $referral->referral_to,
                     'remarks' => $referral->remarks,
                 ];

@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Models\BurialAssistance;
-use Str;
+use Illuminate\Support\Str;
 
 class BurialAssistanceService
 {
@@ -36,9 +36,9 @@ class BurialAssistanceService
                 return [
                     'id' => $application->id,
                     'tracking_no' => $application->originalClaimant()->client?->tracking_no,
-                    'claimant' => $claimant?->fullname(),
-                    'contact_number' => $claimant?->contact_number ?? 'N/A',
-                    'beneficiary' => $application->beneficiary()?->fullname(),
+                    'claimant' => $claimant->fullname(),
+                    'contact_number' => $claimant->contact_number ?? 'N/A',
+                    'beneficiary' => $application->beneficiary()->fullname(),
                     'status' => $status,
                     'show_route' => route('burial.show', $application),
                 ];
@@ -62,10 +62,10 @@ class BurialAssistanceService
                 }
 
                 return [
-                    'tracking_no' => $burialAssistance->originalClaimant()?->client?->tracking_no,
-                    'client' => $burialAssistance->originalClaimant()?->client?->fullname(),
-                    'beneficiary' => $burialAssistance->beneficiary()?->fullname(),
-                    'address' => $burialAssistance->currentClaimant()?->fullAddress(),
+                    'tracking_no' => $burialAssistance->originalClaimant()?->client?->tracking_no ?? 'N/A',
+                    'client' => $burialAssistance->originalClaimant()?->client?->fullname() ?? 'N/A',
+                    'beneficiary' => $burialAssistance->beneficiary()?->fullname() ?? 'N/A',
+                    'address' => $burialAssistance->currentClaimant()?->fullAddress() ?? 'N/A',
                     'funeraria' => $burialAssistance->funeraria,
                     'amount' => $burialAssistance->amount,
                     'status' => Str::title($status),
@@ -91,7 +91,12 @@ class BurialAssistanceService
         return $columns;
     }
 
-    public function store(array $data)
+    /**
+     * Summary of store
+     * @param array $data data to store
+     * @return BurialAssistance
+     */
+    public function store(array $data): BurialAssistance
     {
         return BurialAssistance::create($data);
     }
@@ -99,16 +104,17 @@ class BurialAssistanceService
     /**
      * @param  array  $data  data to update
      * @param  BurialAssistance  $application  original application
+     * @return BurialAssistance updated model
      */
-    public function update(array $data, $application)
+    public function update(array $data, $application): BurialAssistance
     {
         $application->update($data);
         if (isset($data['claimant'])) {
-            $application->currentClaimant()?->update($data['claimant']);
+            $application->currentClaimant()->update($data['claimant']);
         }
 
         if (isset($data['beneficiary'])) {
-            $application->beneficiary()?->update($data['beneficiary']);
+            $application->beneficiary()->update($data['beneficiary']);
         }
 
         // $client = $application->claimant->client;
@@ -157,13 +163,14 @@ class BurialAssistanceService
         return $application;
     }
 
-    public function delete(int $id)
+    /**
+     * Summary of delete
+     * @param int $id id to delete
+     * @return void
+     */
+    public function delete(int $id): void
     {
-        $assistance = BurialAssistance::find($id);
-        if ($assistance && $assistance->delete()) {
-            return true;
-        }
-
-        return false;
+        $assistance = BurialAssistance::findOrFail($id);
+        $assistance->delete();
     }
 }

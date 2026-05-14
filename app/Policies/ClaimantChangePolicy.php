@@ -21,11 +21,7 @@ class ClaimantChangePolicy
      */
     public function view(User $user, ClaimantChange $claimantChange): bool
     {
-        if ($user->id == $claimantChange->originalClient()?->client?->user_id) {
-            return true;
-        }
-
-        if ($user->can('edit-claimant-changes')) {
+        if ($user->can('create-claimant-changes')) {
             return true;
         }
 

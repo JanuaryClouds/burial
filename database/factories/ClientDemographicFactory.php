@@ -6,7 +6,7 @@ use App\Models\Nationality;
 use App\Models\Religion;
 use App\Models\Sex;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Str;
+use Illuminate\Support\Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ClientDemographic>

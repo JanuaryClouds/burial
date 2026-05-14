@@ -4,12 +4,16 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
-use Str;
+use Illuminate\Support\Str;
 
+/**
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Laravel\Sanctum\PersonalAccessToken> $tokens
+ */
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, HasRoles, Notifiable;
@@ -48,42 +52,62 @@ class User extends Authenticatable
 
     public function fullname()
     {
-        if (! $this) {
-            return '';
-        }
-
         return $this->first_name.' '.
             ($this->middle_name ? Str::limit($this->middle_name, 1, '.').' ' : '').
             $this->last_name.
             ($this->suffix ? ' '.$this->suffix : '');
     }
 
-    public function clients()
+    /**
+     * Summary of clients
+     * @return HasMany<Client>
+     */
+    public function clients(): HasMany
     {
         return $this->hasMany(Client::class, 'user_id', 'id');
     }
 
-    public function processLogs()
+    /**
+     * Summary of processLogs
+     * @return HasMany<ProcessLog>
+     */
+    public function processLogs(): HasMany
     {
         return $this->hasMany(ProcessLog::class, 'added_by', 'id');
     }
 
-    public function encoder()
+    /**
+     * Summary of encoder
+     * @return HasMany<BurialAssistance>
+     */
+    public function encoder(): HasMany
     {
         return $this->hasMany(BurialAssistance::class, 'encoder', 'id');
     }
 
-    public function initialChecker()
+    /**
+     * Summary of initialChecker
+     * @return HasMany<BurialAssistance>
+     */
+    public function initialChecker(): HasMany
     {
         return $this->hasMany(BurialAssistance::class, 'initial_checker', 'id');
     }
 
-    public function assignedTo()
+    /**
+     * Summary of assignedTo
+     * @return HasMany<BurialAssistance>
+     */
+    public function assignedTo(): HasMany
     {
         return $this->hasMany(BurialAssistance::class, 'assigned_to', 'id');
     }
 
-    public function claimantChange()
+    /**
+     * Summary of claimantChange
+     * @return HasMany<ClaimantChange>
+     */
+    public function claimantChange(): HasMany
     {
         return $this->hasMany(ClaimantChange::class, 'new_claimant_user_id', 'id');
     }

@@ -6,26 +6,34 @@ use App\Models\Barangay;
 
 class BarangayService
 {
+    /**
+     * Summary of storeBarangay
+     * @param array $data information to store
+     * @return Barangay
+     */
     public function storeBarangay(array $data): Barangay
     {
         return Barangay::create($data);
     }
 
+    /**
+     * Summary of updateBarangay
+     * @param array $data information to store
+     * @param mixed $barangay model to update
+     * @return Barangay updated model
+     */
     public function updateBarangay(array $data, $barangay): Barangay
     {
-        if ($barangay->update($data)) {
-            return $barangay;
-        }
-
-        return null;
+        return $barangay->update($data);
     }
 
-    public function deleteBarangay($barangay): Barangay
+    /**
+     * Summary of deleteBarangay
+     * @param mixed $barangay model to delete
+     * @return void if successful
+     */
+    public function deleteBarangay($barangay): void
     {
-        if ($barangay->delete()) {
-            return $barangay;
-        }
-
-        return null;
+        $barangay->delete();
     }
 }

@@ -6,26 +6,34 @@ use App\Models\CivilStatus;
 
 class CivilStatusService
 {
+    /**
+     * Summary of storeCivilStatus
+     * @param array $data information to store
+     * @return CivilStatus
+     */
     public function storeCivilStatus(array $data): CivilStatus
     {
         return CivilStatus::create($data);
     }
 
+    /**
+     * Summary of updateCivilStatus
+     * @param array $data data to update
+     * @param mixed $civil model to update
+     * @return CivilStatus updated model
+     */
     public function updateCivilStatus(array $data, $civil): CivilStatus
     {
-        if ($civil->update($data)) {
-            return $civil;
-        }
-
-        return null;
+        return $civil->update($data);
     }
 
-    public function deleteCivilStatus($civil): CivilStatus
+    /**
+     * Summary of deleteCivilStatus
+     * @param mixed $civil model to delete
+     * @return void
+     */
+    public function deleteCivilStatus($civil): void
     {
-        if ($civil->delete()) {
-            return $civil;
-        }
-
-        return null;
+        $civil->delete();
     }
 }

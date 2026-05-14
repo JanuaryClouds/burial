@@ -9,7 +9,8 @@ class DatatableService
      *
      * @param \Illuminate\Support\Collection $data Collected Data
      * @param array $reject Columns not to show
-     * @return \Illuminate\Support\Collection<int, array{data: string}>     */
+     * @return \Illuminate\Support\Collection     
+    */
     public function getColumns(\Illuminate\Support\Collection $data, array $reject = [])
     {
         if ($data->isEmpty()) {

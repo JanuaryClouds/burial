@@ -2,8 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use LogicException;
 
 class BurialAssistance extends Model
 {
@@ -29,56 +34,96 @@ class BurialAssistance extends Model
         'initial_checker',
     ];
 
-    public function claimant()
+    /**
+     * Summary of claimant
+     * @return HasOne<Claimant>
+     */
+    public function claimant(): HasOne
     {
         return $this->hasOne(Claimant::class, 'burial_assistance_id', 'id')->latestOfMany('created_at');
     }
 
-    public function trackingNumber()
+    /**
+     * Summary of trackingNumber
+     * @return string Tracking number of the client
+     */
+    public function trackingNumber(): ?string
     {
         return $this->originalClaimant()?->client?->tracking_no;
     }
 
-    public function claimants()
+    /**
+     * Summary of claimants
+     * @return HasMany<Claimant>
+     */
+    public function claimants(): HasMany
     {
         return $this->hasMany(Claimant::class, 'burial_assistance_id', 'id');
     }
 
-    public function hasPendingClaimantChange()
+    /**
+     * Summary of hasPendingClaimantChange
+     * @return bool checks if the burial assistance has a pending claimant change
+     */
+    public function hasPendingClaimantChange(): bool
     {
         return $this->claimantChanges()->where('status', 'pending')->exists();
     }
 
-    public function hasApprovedClaimantChange()
+    /**
+     * Summary of hasApprovedClaimantChange
+     * @return bool checks if the burial assistance has an approved claimant change
+     */
+    public function hasApprovedClaimantChange(): bool
     {
         return $this->claimantChanges()->where('status', 'approved')->exists();
     }
 
-    public function hasRejectedClaimantChange()
+    /**
+     * Summary of hasRejectedClaimantChange
+     * @return bool checks if the burial assistance has a rejected claimant change
+     */
+    public function hasRejectedClaimantChange(): bool
     {
         return $this->claimantChanges()->where('status', 'rejected')->exists();
     }
 
-    public function claimantChanges()
+    /**
+     * Summary of claimantChanges
+     * @return HasMany<ClaimantChange>
+     */
+    public function claimantChanges(): HasMany
     {
         return $this->hasMany(ClaimantChange::class, 'burial_assistance_id', 'id');
     }
 
-    public function originalClaimant()
+    /**
+     * Summary of originalClaimant
+     * @return Claimant returns the original claimant of the burial assistance, or the current claimant if there is no claimant change
+     */
+    public function originalClaimant(): Claimant
     {
         if (! $this->claimantChanges->count()) {
-            return $this->claimant;
+            return $this->claimant ?? throw new LogicException('Claimant not found');
         }
 
-        return $this->claimantChanges->first()->oldClaimant;
+        return $this->claimantChanges->first()->oldClaimant ?? throw new LogicException('Claimant not found');
     }
 
-    public function newClaimant()
+    /**
+     * Summary of newClaimant
+     * @return Claimant returns the new claimant of the burial assistance
+     */
+    public function newClaimant(): ?Claimant
     {
-        return $this->claimantChanges()->first()->newClaimant;
+        return $this->claimantChanges()?->first()->newClaimant;
     }
 
-    public function currentClaimant()
+    /**
+     * Summary of currentClaimant
+     * @return Claimant returns the current claimant of the burial assistance
+     */
+    public function currentClaimant(): Claimant
     {
         if ($this->hasApprovedClaimantChange()) {
             return $this->newClaimant();
@@ -87,48 +132,77 @@ class BurialAssistance extends Model
         return $this->originalClaimant();
     }
 
-    public function beneficiary()
+    /**
+     * Summary of beneficiary
+     * @return Beneficiary returns the beneficiary of the burial assistance
+     */
+    public function beneficiary(): Beneficiary
     {
-        return $this->originalClaimant()->client->beneficiary;
+        return $this->originalClaimant()->client->beneficiary ?? throw new LogicException('Beneficiary not found');
     }
 
-    public function processLogs()
+    /**
+     * Summary of processLogs
+     * @return HasMany<ProcessLog>
+     */
+    public function processLogs(): HasMany
     {
         return $this->hasMany(ProcessLog::class, 'burial_assistance_id', 'id');
     }
 
-    public function cheque()
+    /**
+     * Summary of cheque
+     * @return HasMany<Cheque>
+     */
+    public function cheque(): HasMany
     {
         return $this->hasMany(Cheque::class, 'burial_assistance_id', 'id');
     }
 
-    public function latestCheque()
+    /**
+     * Summary of latestCheque
+     * @return HasOne<Cheque> returns the latest cheque created
+     */
+    public function latestCheque(): HasOne
     {
         return $this->hasOne(Cheque::class, 'burial_assistance_id', 'id')->latestOfMany();
     }
 
-    public function encoder()
+    /**
+     * Summary of encoder
+     * @return BelongsTo<User, BurialAssistance>
+     */
+    public function encoder(): BelongsTo
     {
         return $this->belongsTo(User::class, 'encoder', 'id');
     }
 
-    public function initialChecker()
+    /**
+     * Summary of initialChecker
+     * @return BelongsTo<User, BurialAssistance>
+     */
+    public function initialChecker(): BelongsTo
     {
         return $this->belongsTo(User::class, 'initial_checker', 'id');
     }
 
-    public function assignedTo()
-    {
-        return $this->belongsTo(User::class, 'assigned_to', 'id');
-    }
-
-    public function rejection()
+    /**
+     * Summary of rejection
+     * @return HasOne<Rejection>
+     */
+    public function rejection(): HasOne
     {
         return $this->hasOne(Rejection::class, 'burial_assistance_id', 'id');
     }
 
     // Scopes
-    public function scopeAccessibleByUser($query, $userId)
+    /**
+     * Summary of scopeAccessibleByUser
+     * @param mixed $query
+     * @param mixed $userId Filter to only show to one user
+     * @return Builder
+     */
+    public function scopeAccessibleByUser($query, $userId): Builder
     {
         return $query->where(function ($q) use ($userId) {
             // CASE A: No claimant change requested
@@ -163,7 +237,12 @@ class BurialAssistance extends Model
             });
     }
 
-    public function scopeTotal($query)
+    /**
+     * Summary of scopeTotal
+     * @param mixed $query
+     * @return Builder
+     */
+    public function scopeTotal($query): Builder
     {
         if (! auth()->user()) {
             return $query->whereRaw('1 = 0'); // Return empty result for unauthenticated
@@ -176,7 +255,12 @@ class BurialAssistance extends Model
         return $query->accessibleByUser(auth()->user()->id);
     }
 
-    public function scopePending($query)
+    /**
+     * Summary of scopePending
+     * @param mixed $query
+     * @return Builder
+     */
+    public function scopePending($query): Builder
     {
         if (! auth()->user()) {
             return $query->whereRaw('1 = 0');
@@ -190,12 +274,13 @@ class BurialAssistance extends Model
             ->where('status', 'pending');
     }
 
-    public function scopeProcessing($query)
+    /**
+     * Summary of scopeProcessing
+     * @param mixed $query
+     * @return Builder
+     */
+    public function scopeProcessing($query): Builder
     {
-        if (! auth()->user()) {
-            return $query->whereRaw('1 = 0');
-        }
-
         if (! auth()->user()) {
             return $query->whereRaw('1 = 0');
         }
@@ -208,7 +293,12 @@ class BurialAssistance extends Model
             ->whereIn('status', ['processing', 'approved']);
     }
 
-    public function scopeReleased($query)
+    /**
+     * Summary of scopeReleased
+     * @param mixed $query
+     * @return Builder
+     */
+    public function scopeReleased($query): Builder
     {
         if (! auth()->user()) {
             return $query->whereRaw('1 = 0');

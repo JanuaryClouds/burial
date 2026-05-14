@@ -17,21 +17,9 @@ class AssistanceController extends Controller
         $this->assistanceServices = $assistanceServices;
     }
 
-    public function index(CmsDataTable $dataTable)
+    public function index()
     {
-        $page_title = 'Assistance';
-        $resource = 'assistance';
-        $columns = ['id', 'name', 'remarks', 'action'];
-        $data = Assistance::getAllAssistances();
-
-        return $dataTable
-            ->render('cms.index', compact(
-                'dataTable',
-                'page_title',
-                'resource',
-                'columns',
-                'data'
-            ));
+        //
     }
 
     public function store(AssistanceRequest $request)

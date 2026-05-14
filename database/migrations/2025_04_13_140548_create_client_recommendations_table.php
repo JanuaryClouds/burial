@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('amount')->nullable();
             $table->foreignId('moa_id')->nullable()->constrained('mode_of_assistances');
             $table->enum('type', ['burial', 'libreng_libing'])->nullable();
-            $table->string('remarks')->nullable()->max(255);
+            $table->string('remarks', 255)->nullable();
             $table->string('others')->nullable();
             $table->timestamps();
         });

@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class ProcessLog extends Model
 {
@@ -35,22 +37,38 @@ class ProcessLog extends Model
 
     protected $table = 'process_logs';
 
-    public function burialAssistance()
+    /**
+     * Summary of burialAssistance
+     * @return BelongsTo<BurialAssistance, ProcessLog>
+     */
+    public function burialAssistance(): BelongsTo
     {
         return $this->belongsTo(BurialAssistance::class, 'burial_assistance_id', 'id');
     }
 
-    public function claimant()
+    /**
+     * Summary of claimant
+     * @return BelongsTo<Claimant, ProcessLog>
+     */
+    public function claimant(): BelongsTo
     {
         return $this->belongsTo(Claimant::class, 'claimant_id', 'id');
     }
 
-    public function addedBy()
+    /**
+     * Summary of addedBy
+     * @return BelongsTo<User, ProcessLog>
+     */
+    public function addedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'added_by', 'id');
     }
 
-    public function loggable()
+    /**
+     * Summary of loggable
+     * @return MorphTo
+     */
+    public function loggable(): MorphTo
     {
         return $this->morphTo();
     }

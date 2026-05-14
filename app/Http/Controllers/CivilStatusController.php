@@ -17,21 +17,9 @@ class CivilStatusController extends Controller
         $this->civilStatusServices = $civilStatusServices;
     }
 
-    public function index(CmsDataTable $dataTable)
+    public function index()
     {
-        $page_title = 'Civil Status';
-        $resource = 'civil';
-        $columns = ['id', 'name', 'remarks', 'action'];
-        $data = CivilStatus::getAllCivilStatuses();
-
-        return $dataTable
-            ->render('cms.index', compact(
-                'page_title',
-                'resource',
-                'columns',
-                'data',
-                'dataTable'
-            ));
+        //
     }
 
     public function store(CivilStatusRequest $request)

@@ -18,7 +18,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Str;
+use Illuminate\Support\Str;
 
 class ClientController extends Controller
 {
@@ -49,11 +49,17 @@ class ClientController extends Controller
     public function index()
     {
         $page_title = 'Clients';
+        $user = auth()->user();
+        $roleCount = $user->roles()->count();
 
-        if (auth()->user()->roles()->count() == 0) {
+        $data = [];
+        $columns = [];
+        $cardData = null;
+
+        if ($roleCount == 0) {
             $data = $this->clientServices->index('tracking_no', 'asc', auth()->user()->id);
             $columns = $this->datatableServices->getColumns($data, ['client']);
-        } elseif (auth()->user()->roles()->count() > 0) {
+        } elseif ($roleCount > 0) {
             $data = $this->clientServices->index('tracking_no', 'asc');
             $columns = $this->datatableServices->getColumns($data, []);
             $cardData = [
@@ -172,13 +178,13 @@ class ClientController extends Controller
 
             if (! $client) {
                 return redirect()->back()->with('error', 'Failed to add client information!');
-            }
+            }   
 
             $ip = request()->ip();
             $browser = request()->header('User-Agent');
             activity()
                 ->withProperties(['ip' => $ip, 'browser' => $browser])
-                ->log('Added the client details: '.$client?->id.(($result['uploadError'] ?? false) ? ' images failed to upload' : ''));
+                ->log('Added the client details: '.$client->id.(($result['uploadError'] ?? false) ? ' images failed to upload' : ''));
 
             return redirect()
                 ->route('client.show', $client)

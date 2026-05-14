@@ -6,26 +6,34 @@ use App\Models\District;
 
 class DistrictService
 {
+    /**
+     * Summary of storeDistrict
+     * @param array $data information to store
+     * @return District
+     */
     public function storeDistrict(array $data): District
     {
         return District::create($data);
     }
 
+    /**
+     * Summary of updateDistrict
+     * @param array $data information to update
+     * @param mixed $district model to update
+     * @return District
+     */
     public function updateDistrict(array $data, $district): District
     {
-        if ($district->update($data)) {
-            return $district;
-        }
-
-        return null;
+        return $district->update($data);
     }
 
-    public function deleteDistrict($district): District
+    /**
+     * Summary of deleteDistrict
+     * @param mixed $district model to delete
+     * @return void if succesful
+     */
+    public function deleteDistrict($district): void
     {
-        if ($district->delete()) {
-            return $district;
-        }
-
-        return null;
+        $district->delete();
     }
 }
