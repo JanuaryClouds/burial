@@ -44,7 +44,7 @@ class AssistanceController extends Controller
             ->log('Created a new assistance: '.$assistance->name);
 
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first().'.assistance.index')
+            ->route('assistance.index')
             ->with('success', 'Assistance created successfully.');
     }
 
@@ -58,7 +58,7 @@ class AssistanceController extends Controller
             ->log('Updated assistance: '.$assistance->name);
 
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first().'.assistance.index')
+            ->route('assistance.index')
             ->with('success', 'Assistance updated successfully.');
     }
 
@@ -72,7 +72,7 @@ class AssistanceController extends Controller
             ->log('Deleted assistance: '.$assistance->name);
 
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first().'.assistance.index')
+            ->route('assistance.index')
             ->with('success', 'Assistance deleted successfully.');
     }
 }

@@ -55,7 +55,7 @@ class DistrictController extends Controller
             ->log('District created:'.$district->name);
 
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first().'.district.index')
+            ->route('district.index')
             ->with('success', 'District created successfully!');
     }
 
@@ -69,7 +69,7 @@ class DistrictController extends Controller
             ->log('District updated:'.$district->name);
 
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first().'.district.index')
+            ->route('district.index')
             ->with('success', 'District updated successfully!');
     }
 
@@ -83,7 +83,7 @@ class DistrictController extends Controller
             ->log('District deleted:'.$district->name);
 
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first().'.district.index')
+            ->route('district.index')
             ->with('success', 'District deleted successfully!');
     }
 }

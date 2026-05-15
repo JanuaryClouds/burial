@@ -69,7 +69,7 @@ class PermissionController extends Controller
     //         ->log('Created a new permission: '.$permission->name);
 
     //     return redirect()
-    //         ->route(Auth::user()->getRoleNames()->first().'.permission.index')
+    //         ->route('permission.index')
     //         ->with('success', 'Permission created successfully.');
     // }
 
@@ -83,7 +83,7 @@ class PermissionController extends Controller
     //         ->log('Updated the permission: '.$permission->name);
 
     //     return redirect()
-    //         ->route(Auth::user()->getRoleNames()->first().'.permission.index')
+    //         ->route('permission.index')
     //         ->with('success', 'Permission updated successfully.');
     // }
 
@@ -97,7 +97,7 @@ class PermissionController extends Controller
     //         ->log('Deleted the permission: '.$permission->name);
 
     //     return redirect()
-    //         ->route(Auth::user()->getRoleNames()->first().'.permission.index')
+    //         ->route('permission.index')
     //         ->with('success', 'Permission deleted successfully.');
     // }
 }
