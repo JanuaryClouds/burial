@@ -59,7 +59,7 @@ class ClientController extends Controller
             $cardData = [
                 [
                     'model' => 'App\Models\Client',
-                    'label' => 'Total Beneficiaries',
+                    'label' => 'Total Clients',
                     'scope' => 'Total',
                     'iconName' => 'people',
                     'iconPathsCount' => 5,
@@ -113,7 +113,7 @@ class ClientController extends Controller
             $client = $this->clientServices->get($client->id);
             $page_title = $client->tracking_no;
             $page_subtitle = $client->fullname()."'s Application";
-            $readonly = auth()->user()->hasRole('superadmin');
+            $readonly = ! auth()->user()->hasRole('superadmin');
             $released = $client?->claimant?->burialAssistance?->status != 'released' || $client?->funeralAssistance?->forwarded_at != null;
 
             if ($client) {
@@ -223,7 +223,7 @@ class ClientController extends Controller
             ->log('Deleted a client details: '.$client->id);
 
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first().'.client.index')
+            ->route('client.index')
             ->with('success', 'Client information deleted successfully!');
     }
 

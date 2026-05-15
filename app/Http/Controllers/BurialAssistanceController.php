@@ -134,7 +134,7 @@ class BurialAssistanceController extends Controller
 
             $page_title = $data->originalClaimant()?->client?->tracking_no;
             $page_subtitle = $currentClaimant->fullname()."'s Burial Assistance Application";
-            $readonly = auth()->user()->hasRole('superadmin') && $data->status == 'released';
+            $readonly = ! auth()->user()->hasRole('superadmin') && $data->status == 'released';
 
             $timeline = $this->processLogServices->timeline($data);
 

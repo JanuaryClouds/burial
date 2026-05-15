@@ -32,6 +32,10 @@ class CitizenAccessController extends Controller
             return response()->view('error.maintenance', [], 503);
         }
 
+        if (auth()->user()) {
+            return redirect()->route('dashboard');
+        }
+
         $page_title = 'Funeral Assistance System - Taguig CSWDO';
         $steps = ApplicationStep::steps();
         $burialDocuments = DocumentRequirement::burial();
