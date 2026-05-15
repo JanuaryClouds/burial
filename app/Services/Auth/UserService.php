@@ -49,7 +49,6 @@ class UserService
 
     public function storeUser(array $data)
     {
-        $data['password'] = config('app.admin_password');
         $user = User::create($data);
         $user->assignRole('staff');
 
@@ -58,6 +57,10 @@ class UserService
 
     public function update(array $data, $user)
     {
+        if (isset($data['password']) && $data['password'] === null) {
+            unset($data['password']);
+        }
+
         $user->update($data);
         if (isset($data['is_active'])) {
             $user->is_active = 1;
