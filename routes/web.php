@@ -28,6 +28,9 @@ require __DIR__.'/guest.php';
 
 Route::middleware(['auth'])
     ->group(function () {
+        Route::resource('/user', UserController::class)
+            ->only(['edit', 'update']);
+
         Route::get('/checksession', [UserController::class, 'checkSession'])
             ->name('checksession');
 

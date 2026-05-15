@@ -42,23 +42,19 @@ Route::middleware('role:superadmin')
         Route::resource('sex', SexController::class);
         Route::resource('district', DistrictController::class);
         Route::resource('moa', ModeOfAssistanceController::class);
-    });
-
-Route::middleware('permission:manage-accounts')
-    ->group(function () {
         Route::resource('user', UserController::class)
-            ->only(['index', 'edit']);
+            ->only(['index']);
         Route::resource('user', UserController::class)
-            ->only(['store', 'update'])
+            ->only(['store'])
             ->middleware(['throttle:5,1']);
     });
+
 
 Route::resource('role', RoleController::class)
     ->only(['index', 'store', 'edit', 'update'])
     ->middleware(['permission:edit-roles']);
 
-Route::middleware('permission:edit-system-settings')
-    ->name('system.')
+Route::name('system.')
     ->prefix('system')
     ->group(function () {
         Route::get('/', [SystemSettingController::class, 'index'])

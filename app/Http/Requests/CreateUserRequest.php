@@ -65,7 +65,9 @@ class CreateUserRequest extends FormRequest
             'first_name' => 'required|string|max:255',
             'middle_name' => 'nullable|string|max:255',
             'last_name' => 'required|string|max:255',
+            'suffix' => 'nullable|string|max:64',
             'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
             'contact_number' => 'required|string|max:11',
         ];
     }

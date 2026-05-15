@@ -84,11 +84,16 @@
                     <!--end::Menu separator-->
 
                     <!--begin::Menu item-->
-                    <div class="menu-item px-5">
+                    <div class="menu-item px-5 d-flex justify-content-between gap-2 align-items-center">
+                        @if (auth()->user()->roles()->exists() &&
+                                auth()->user()->can('view', auth()->user()))
+                            <a name="" id="" class="btn"
+                                href="{{ route('user.edit', ['user' => auth()->user()]) }}" role="button">Profile</a>
+                        @endif
                         <form action="{{ auth()->user()->roles()->exists() ? route('logout') : route('sso.logout') }}"
                             method="POST" class="block mb-0">
                             @csrf
-                            <button type="submit" class="btn w-100 text-left">
+                            <button type="submit" class="btn">
                                 <span class="fw-medium">
                                     <i class="fa-solid fa-right-from-bracket me-2"></i> Logout
                                 </span>

@@ -138,7 +138,6 @@ class UserController extends Controller
 
     public function index()
     {
-        $this->authorize('view-users');
         $page_title = 'Users';
         $resource = 'user';
         $data = $this->userServices->index();
@@ -156,7 +155,10 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        $this->authorize('edit-users');
+        if (auth()->user()->cannot('edit', $user)) {
+            abort(403);
+        }
+
         $page_title = 'Edit User';
         $resource = 'user';
         $roles = Role::whereNotIn('name', ['superadmin'])->get();
@@ -167,7 +169,10 @@ class UserController extends Controller
 
     public function update(UpdateUserRequest $request, User $user)
     {
-        $this->authorize('edit-users');
+        if (auth()->user()->cannot('update', $user)) {
+            abort(403);
+        }
+
         try {
             $user = User::find($user->id);
             $user = $this->userServices->update($request->validated(), $user);
@@ -180,7 +185,6 @@ class UserController extends Controller
 
     public function store(CreateUserRequest $request)
     {
-        $this->authorize('create-users');
         try {
             $user = $this->userServices->storeUser($request->validated());
 
