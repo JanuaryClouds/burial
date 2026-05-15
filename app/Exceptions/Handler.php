@@ -56,7 +56,7 @@ class Handler extends ExceptionHandler
                 ], 403);
             }
 
-            return redirect()->back()
+            return redirect()->route(auth()->check() ? 'dashboard' : 'landing.page')
                 ->with('error', 'You do not have permission to access this page.');
         }
 
