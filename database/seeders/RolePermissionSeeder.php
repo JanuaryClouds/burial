@@ -45,9 +45,9 @@ class RolePermissionSeeder extends Seeder
             // 'manage-content',
 
             // System
-            'create-users',
-            'view-users',
-            'edit-users',
+            // 'create-users',
+            // 'view-users',
+            // 'edit-users',
             'create-roles',
             'view-roles',
             'edit-roles',
