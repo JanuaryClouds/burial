@@ -49,7 +49,7 @@ class BurialAssistance extends Model
      */
     public function trackingNumber(): ?string
     {
-        return $this->originalClaimant()?->client?->tracking_no;
+        return $this->originalClaimant()->client->tracking_no;
     }
 
     /**
@@ -116,7 +116,7 @@ class BurialAssistance extends Model
      */
     public function newClaimant(): ?Claimant
     {
-        return $this->claimantChanges()?->first()->newClaimant;
+        return $this->claimantChanges()->first()->newClaimant;
     }
 
     /**

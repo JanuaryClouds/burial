@@ -34,8 +34,8 @@ class BurialAssistanceService
                 }
 
                 return [
-                    'id' => $application->id,
                     'tracking_no' => $application->originalClaimant()->client?->tracking_no,
+                    'id' => $application->id,
                     'claimant' => $claimant->fullname(),
                     'contact_number' => $claimant->contact_number ?? 'N/A',
                     'beneficiary' => $application->beneficiary()->fullname(),
@@ -62,10 +62,10 @@ class BurialAssistanceService
                 }
 
                 return [
-                    'tracking_no' => $burialAssistance->originalClaimant()?->client?->tracking_no ?? 'N/A',
-                    'client' => $burialAssistance->originalClaimant()?->client?->fullname() ?? 'N/A',
-                    'beneficiary' => $burialAssistance->beneficiary()?->fullname() ?? 'N/A',
-                    'address' => $burialAssistance->currentClaimant()?->fullAddress() ?? 'N/A',
+                    'tracking_no' => $burialAssistance->originalClaimant()->client->tracking_no,
+                    'client' => $burialAssistance->originalClaimant()->client->fullname(),
+                    'beneficiary' => $burialAssistance->beneficiary()->fullname(),
+                    'address' => $burialAssistance->currentClaimant()->fullAddress(),
                     'funeraria' => $burialAssistance->funeraria,
                     'amount' => $burialAssistance->amount,
                     'status' => Str::title($status),
