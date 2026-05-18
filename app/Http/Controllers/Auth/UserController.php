@@ -155,7 +155,7 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        if (auth()->user()->cannot('edit', $user)) {
+        if (auth()->user()->cannot('update', $user)) {
             abort(403);
         }
 

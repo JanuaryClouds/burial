@@ -27,7 +27,7 @@ class UserPolicy
             return true;
         }
 
-        if ($model->id === 1) {
+        if ($model->hasRole('superadmin')) {
             return false;
         }
 
@@ -59,7 +59,7 @@ class UserPolicy
             return true;
         }
     
-        if ($model->id === 1) {
+        if ($model->hasRole('superadmin')) {
             return false;
         }
 
@@ -87,7 +87,7 @@ class UserPolicy
             return false;
         }
 
-        if ($model->id === 1) {
+        if ($model->hasRole('superadmin')) {
             return false;
         }
 
