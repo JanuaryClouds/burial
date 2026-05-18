@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreClaimantChangeRequest;
 use App\Models\BurialAssistance;
 use App\Models\ClaimantChange;
+use App\Models\Client;
 use App\Models\ProcessLog;
 use App\Models\User;
 use App\Services\CentralClientService;
@@ -75,7 +76,13 @@ class ClaimantChangeController extends Controller
                 $validated['middle_name'] = $newClaimantUser->middle_name ?? null;
                 $validated['last_name'] = $newClaimantUser->last_name;
                 $validated['suffix'] = $newClaimantUser->suffix ?? null;
-                $validated['contact_number'] = $newClaimantUser->contact_number ?? null;
+
+                $contactNumber = $newClaimantUser->contact_number;
+                if (! $contactNumber) {
+                    $contactNumber = Client::where('user_id', $newClaimantUser->id)->latest()->first()?->contact_number;
+                }
+
+                $validated['contact_number'] = $contactNumber;
                 $newClaimant = $this->claimantService->store($validated);
 
                 $validated['new_claimant_id'] = $newClaimant->id;
