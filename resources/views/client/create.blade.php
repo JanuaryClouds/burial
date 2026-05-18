@@ -188,6 +188,9 @@
                         modal.show();
                         const confirmButton = submitModal.querySelector('#confirmSubmit');
                         confirmButton.addEventListener('click', () => {
+                            confirmButton.disabled = true;
+                            confirmButton.classList.add('disabled');
+                            confirmButton.innerText = 'Submitting...';
                             gisForm.submit();
                         }, {
                             once: true
