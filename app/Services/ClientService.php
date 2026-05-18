@@ -357,7 +357,7 @@ class ClientService
                         'relationship_id' => $client->socialInfo?->relationship?->id,
                     ]);
                 });
-            } elseif ($client->recommendation->first()->type == 'funeral') {
+            } elseif ($client->recommendation->first()->type == 'libreng_libing') {
                 return DB::transaction(function () use ($client) {
                     FuneralAssistance::create([
                         'id' => Str::uuid(),
