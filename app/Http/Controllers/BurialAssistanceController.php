@@ -153,7 +153,7 @@ class BurialAssistanceController extends Controller
             }
 
             $progress = $this->workflowStepServices->progress($data, $next_step, $totalSteps);
-            $show_certificate = $data->status != 'rejected' && $data->status != 'pending' && $data->status != 'processing';
+            $show_certificate = in_array($data->status, ['approved', 'released']);
             $relationships = Relationship::select('id', 'name')->get();
 
             return view('burial.show', compact(
@@ -314,14 +314,14 @@ class BurialAssistanceController extends Controller
     {
         $assistance = BurialAssistance::findOrFail($id);
 
-        if ($assistance->status != 'released') {
-            abort(404);
+        if (!app()->isLocal() && !in_array($assistance->status, ['released', 'approved'])) {
+            return redirect()->back()->with('error', 'Certificate is not yet available.');
         }
 
         $claimant = $assistance->currentClaimant();
 
         if (! $claimant) {
-            abort(404);
+            return back()->with('error', 'Claimant not found.');
         }
 
         $title = Str::title($claimant->first_name).' '.Str::title($claimant->last_name).'\'s Certificate of Eligibility';
