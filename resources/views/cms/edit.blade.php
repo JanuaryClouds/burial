@@ -69,7 +69,7 @@
                 </button>
             </div>
         </form>
-        @if (!class_basename($data) === 'User')
+        @if (class_basename($data) !== 'User')
             @can('delete', $data)
                 <form action="{{ route($resource . '.destroy', [$resource => $data]) }}" method="post" class="m-0 p-0">
                     @csrf

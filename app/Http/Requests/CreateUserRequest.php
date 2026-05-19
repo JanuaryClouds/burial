@@ -20,6 +20,7 @@ class CreateUserRequest extends FormRequest
             'first_name' => $this->clean($this->first_name),
             'middle_name' => $this->clean($this->middle_name),
             'last_name' => $this->clean($this->last_name),
+            'suffix' => $this->clean($this->suffix),
             'email' => $this->normalizeEmail($this->email),
             'contact_number' => $this->normalizePhone($this->contact_number),
         ]);

@@ -6,7 +6,7 @@
             <x-form-input name="password_confirmation" label="Confirm Password" type="password" />
         @endcan
         <h5>Account Status</h5>
-        @if (auth()->user()->can('edit-users') && !auth()->user()->hasRole('superadmin'))
+        @if (auth()->user()->can('edit-users') && !$data->hasRole('superadmin'))
             <div class="form-check">
                 <input class="form-check-input" type="checkbox" value="{{ $data->is_active == '1' ? '1' : '0' }}"
                     name="is_active" id="activeCheck" {{ $data->is_active ? 'checked' : '' }} />
@@ -51,7 +51,7 @@
                                 </label>
                             @else
                                 @if ($data->roles->contains($role))
-                                    <input type="hidden" names="roles[]" value="{{ $role->id }}">
+                                    <input type="hidden" name="roles[]" value="{{ $role->id }}">
                                 @endif
                                 <input class="form-check-input" type="checkbox" value="{{ $role->id }}"
                                     id="role{{ $role->id }}Check" {{ $data->roles->contains($role) ? 'checked' : '' }}

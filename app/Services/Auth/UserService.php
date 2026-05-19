@@ -57,18 +57,19 @@ class UserService
 
     public function update(array $data, $user)
     {
-        if (isset($data['password']) && $data['password'] === null) {
-            unset($data['password']);
+        if (!empty($data['password'])) {
+            $data['password'] = bcrypt($data['password']);
+        } else {
+            $data['password'] = $user->password;
         }
 
         $user->update($data);
         if (isset($data['is_active'])) {
-            $user->is_active = 1;
-            $user->save();
+            $user->is_active = (bool) $data['is_active'];
         } else {
             $user->is_active = 0;
-            $user->save();
         }
+        $user->save();
 
         if (! isset($data['roles']) || empty($data['roles']) || $data['roles'] == []) {
             $user->roles()->detach();
