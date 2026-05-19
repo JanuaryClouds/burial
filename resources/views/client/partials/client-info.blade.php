@@ -60,8 +60,8 @@
                 value="{{ $client->street ?? (session('citizen')['street'] ?? null) }}" :readonly="$readonly" />
         </div>
         <div class="col-6 col-md-6 col-lg-2">
-            <x-form-select name="barangay_id" label="5.3 Barangay" required="true" :options="$barangays ?? []" :selected="$client->barangay_id ?? ($matched['barangay_id'] ?? '')"
-                :disabled="$readonly" />
+            <x-form-select id="barangay_id" name="barangay_id" label="5.3 Barangay" required="true" :options="$barangays ?? []"
+                :selected="$client->barangay_id ?? ($matched['barangay_id'] ?? '')" :disabled="$readonly" />
         </div>
         <div class="col-6 col-md-6 col-lg-2">
             <input type="hidden" name="district_id" id="district_id"
@@ -121,7 +121,7 @@
 <script {{ $nonce ? 'nonce="' . $nonce . '"' : '' }}>
     $(document).ready(function() {
         $('#date_of_birth').on('input', function() {
-            let birthdate = new Date($('#date_of_birth').val());
+            let birthdate = new Date($(this).val());
             let now = new Date();
             let age = now.getFullYear() - birthdate.getFullYear();
             let monthDiff = now.getMonth() - birthdate.getMonth();
@@ -155,16 +155,39 @@
                 ].includes(barangay)) {
                 $('#district_id').val(1);
                 $('#district_id_display').val(1);
-            } else {
+            } else if ([
+                    'Bagong Tanyag',
+                    'Cembo',
+                    'Central bicutan',
+                    'Central signal village',
+                    'East rembo',
+                    'Fort bonifacio',
+                    'Katuparan',
+                    'Maharlika village',
+                    'North daang hari',
+                    'North signal village',
+                    'Pinagsama',
+                    'Pitogo',
+                    'Post proper northside',
+                    'Post proper southside',
+                    'South cembo',
+                    'South daang hari',
+                    'South signal village',
+                    'West rembo',
+                ].includes(barangay)) {
                 $('#district_id').val(2);
                 $('#district_id_display').val(2);
+            } else {
+                $('#district_id').val("");
+                $('#district_id_display').val("");
             }
         }
 
         $('#barangay_id').on('change', function() {
-            updateDistrict($(this).find('option:selected').text());
+            let text = $(this).find('option:selected').text();
+            updateDistrict(text.trim());
         })
 
-        updateDistrict($('#barangay_id option:selected').text());
+        updateDistrict($('#barangay_id option:selected').text().trim());
     })
 </script>
