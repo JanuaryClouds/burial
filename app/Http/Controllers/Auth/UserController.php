@@ -161,7 +161,7 @@ class UserController extends Controller
 
         $page_title = 'Edit User';
         $resource = 'user';
-        $roles = Role::whereNotIn('name', ['superadmin'])->get();
+        $roles = Role::all();
         $data = User::find($user->id);
 
         return view('cms.edit', compact('data', 'page_title', 'resource', 'roles'));

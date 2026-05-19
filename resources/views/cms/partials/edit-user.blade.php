@@ -31,7 +31,7 @@
                 <h5>Roles</h5>
                 @foreach ($roles as $role)
                     <div class="form-check">
-                        @if ($role->name == 'staff')
+                        @if ($role->name == 'staff' || $role->name == 'superadmin')
                             @if ($data->roles->contains($role))
                                 <input type="hidden" name="roles[]" value="{{ $role->id }}" />
                             @endif
