@@ -21,6 +21,13 @@
                         <a class="nav-link" data-bs-toggle="tab" href="#documents_tab" role="tab"
                             aria-controls="documents_tab" aria-selected="false">Documents</a>
                     </li>
+                    @if (request()->routeIs('general.intake.form'))
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#review_tab" role="tab"
+                                aria-controls="review_tab" aria-selected="false" id="review_tab_link">Review &
+                                Submit</a>
+                        </li>
+                    @endif
                 </ul>
             </div>
         </div>
@@ -40,6 +47,11 @@
                 <div class="tab-pane fade" id="documents_tab" role="tabpanel" aria-labelledby="documents_tab_link">
                     @include('client.partials.documents')
                 </div>
+                @if (request()->routeIs('general.intake.form'))
+                    <div class="tab-pane fade" id="review_tab" role="tabpanel" aria-labelledby="review_tab_link">
+                        @include('client.partials.review')
+                    </div>
+                @endif
             </div>
         </div>
     </form>
