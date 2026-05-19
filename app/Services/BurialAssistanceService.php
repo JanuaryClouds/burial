@@ -21,12 +21,7 @@ class BurialAssistanceService
             })
             ->get()
             ->map(function ($application) {
-                $claimantChange = $application->claimantChanges()->first();
-                if ($claimantChange && $claimantChange->status == 'approved') {
-                    $claimant = $application->claimantChanges()->first()->newClaimant;
-                } else {
-                    $claimant = $application->originalClaimant();
-                }
+                $claimant = $application->currentClaimant();
 
                 $status = $application->status;
                 if ($status == 'approved') {
