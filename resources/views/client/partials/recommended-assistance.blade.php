@@ -2,7 +2,7 @@
 @php
     $types = [
         'burial' => 'Burial Assistance',
-        'funeral' => 'Libreng Libing',
+        'libreng_libing' => 'Libreng Libing',
     ];
 
     if (isset($client)) {
@@ -90,8 +90,10 @@
     const moaField = document.getElementById('moaField');
 
     typeField?.addEventListener('change', function() {
-        if (typeField.value == 'funeral') {
-            referralField.value = "Taguig City Public Cemetery";
+        if (typeField.value == 'libreng_libing') {
+            if (referralField) {
+                referralField.value = "Taguig City Public Cemetery";
+            }
             amountContainer.classList.add('d-none');
             moaContainer.classList.add('d-none');
             amountField?.removeAttribute('required');
@@ -99,7 +101,9 @@
         }
 
         if (typeField.value == 'burial') {
-            referralField.value = "";
+            if (referralField) {
+                referralField.value = "";
+            }
             amountContainer.classList.remove('d-none');
             moaContainer.classList.remove('d-none');
             amountField?.setAttribute('required', 'true');

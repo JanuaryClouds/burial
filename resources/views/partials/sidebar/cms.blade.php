@@ -3,15 +3,12 @@
     @class([
         'menu-item',
         'here' =>
-            (Route::is('*.index') || Route::is('*.edit')) &&
-            !Route::is('funeral.*') &&
-            !Route::is('burial.*') &&
-            !Route::is('client.*') &&
-            !Route::is('beneficiary.*') &&
-            !Route::is('user.*') &&
-            !Route::is('system.*') &&
-            !Route::is('role.*') &&
-            !Route::is('assignments.*'),
+            Route::is('relationship.*') ||
+            Route::is('workflowstep.*') ||
+            Route::is('handler.*') ||
+            Route::is('religion.*') ||
+            Route::is('education.*') ||
+            Route::is('nationality.*'),
     ])>
     <!--begin:Menu link-->
     <span class="menu-link menu-center d-flex flex-column">
@@ -25,9 +22,7 @@
     <div class="menu-sub menu-sub-dropdown menu-sub-indentation px-2 py-4 w-250px mh-75 overflow-auto">
         <div class="menu-item">
             <div class="menu-content">
-                <span class="menu-section fs-5 fw-bolder ps-1 py-1">
-                    Content Management System
-                </span>
+                <span class="menu-section fs-5 fw-bolder ps-1 py-1">Content Management System</span>
             </div>
         </div>
         <div class="menu-item">

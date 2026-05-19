@@ -146,36 +146,47 @@ class ProcessLogService
      */
     public function delete(ProcessLog $log, BurialAssistance $application)
     {
-        if (app()->hasDebugModeEnabled()) {
-            if (class_basename($log->loggable) === 'WorkflowStep' && $log->loggable->order_no == 9) {
-                $application->latestCheque()->delete();
-                $application->update(['status' => 'processing']);
+        if (app()->isLocal()) {
+            if (! $log) {
+                return;
             }
 
-            if (class_basename($log->loggable) === 'WorkflowStep' && $log->loggable->order_no == 10) {
-                $application->latestCheque()->update(['dv_number' => null]);
+            if (! $application) {
+                return;
             }
 
-            if (class_basename($log->loggable) === 'WorkflowStep' && $log->loggable->order_no == 11) {
-                $application->latestCheque()->update(['cheque_number' => null]);
-                $application->latestCheque()->update(['amount' => null]);
+            $latestCheque = $application->latestCheque();
+            if ($latestCheque && $log->loggable) {
+                if (class_basename($log->loggable) === 'WorkflowStep' && $log->loggable->order_no == 9) {
+                    $latestCheque->delete();
+                    $application->update(['status' => 'processing']);
+                }
+
+                if (class_basename($log->loggable) === 'WorkflowStep' && $log->loggable->order_no == 10) {
+                    $latestCheque->update(['dv_number' => null]);
+                }
+
+                if (class_basename($log->loggable) === 'WorkflowStep' && $log->loggable->order_no == 11) {
+                    $latestCheque->update(['cheque_number' => null]);
+                    $latestCheque->update(['amount' => null]);
+                }
+
+                if (class_basename($log->loggable) === 'WorkflowStep' && $log->loggable->order_no == 12) {
+                    $latestCheque->update(['date_issued' => null]);
+                    $application->update(['status' => 'processing']);
+                }
+
+                if (class_basename($log->loggable) === 'WorkflowStep' && $log->loggable->order_no == 13) {
+                    $latestCheque->update([
+                        'status' => 'issued',
+                        'date_claimed' => null,
+                    ]);
+                    $application->update(['status' => 'approved']);
+                }
             }
 
-            if (class_basename($log->loggable) === 'WorkflowStep' && $log->loggable->order_no == 12) {
-                $application->latestCheque()->update(['date_issued' => null]);
-                $application->update(['status' => 'processing']);
-            }
-
-            if (class_basename($log->loggable) === 'WorkflowStep' && $log->loggable->order_no == 13) {
-                $application->latestCheque()->update([
-                    'status' => 'issued',
-                    'date_claimed' => null,
-                ]);
-                $application->update(['status' => 'approved']);
-            }
+            $log->delete();
         }
-
-        $log->delete();
     }
 
     public function timeline(BurialAssistance $application)

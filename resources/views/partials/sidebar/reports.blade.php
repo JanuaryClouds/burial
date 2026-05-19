@@ -54,7 +54,7 @@
             </a>
         </div>
         <div class="menu-item">
-            <a href="{{ route('reports.cheques') }}" @class(['active' => Request::is('reports/cheques'), 'menu-link'])>
+            <a href="{{ route('reports.checks') }}" @class(['active' => Route::is('reports.checks'), 'menu-link'])>
                 <span class="menu-bullet">
                     <span class="bullet bullet-dot"></span>
                 </span>

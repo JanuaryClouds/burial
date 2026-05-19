@@ -23,6 +23,12 @@
                             </a>
                         @endif
                     @endauth
+                    @guest
+                        <a href="{{ config('services.portal.endpoint') ?: '#' }}"
+                            class="btn btn-lg btn-primary hover-scale">
+                            Return to Portal
+                        </a>
+                    @endguest
                 </div>
             </div>
         </div>

@@ -55,7 +55,7 @@ class ModeOfAssistanceController extends Controller
             ->log('Created a new assistance: '.$moa->name);
 
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first().'.moa.index')
+            ->route('moa.index')
             ->with('success', 'Mode of assistance created successfully.');
     }
 
@@ -69,7 +69,7 @@ class ModeOfAssistanceController extends Controller
             ->log('Updated the Mode of assistance: '.$moa->name);
 
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first().'.moa.index')
+            ->route('moa.index')
             ->with('success', 'Mode of assistance updated successfully.');
     }
 
@@ -83,7 +83,7 @@ class ModeOfAssistanceController extends Controller
             ->log('Deleted the Mode of assistance: '.$moa->name);
 
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first().'.moa.index')
+            ->route('moa.index')
             ->with('success', 'Mode of assistance deleted successfully.');
     }
 }

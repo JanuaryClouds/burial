@@ -37,10 +37,10 @@ class UserService
                 return [
                     'id' => $user->id,
                     'first_name' => $user->first_name,
-                    'middle_name' => $user->middle_name,
+                    'middle_name' => $user->middle_name ?? '',
                     'last_name' => $user->last_name,
                     'email' => $user->email,
-                    'contact_number' => $user->contact_number,
+                    'contact_number' => $user->contact_number ?? 'N/A',
                     'is_active' => $user->is_active,
                     'show_route' => route('user.edit', $user->id),
                 ];
@@ -49,7 +49,6 @@ class UserService
 
     public function storeUser(array $data)
     {
-        $data['password'] = config('app.admin_password');
         $user = User::create($data);
         $user->assignRole('staff');
 
@@ -58,14 +57,19 @@ class UserService
 
     public function update(array $data, $user)
     {
+        if (!empty($data['password'])) {
+            $data['password'] = bcrypt($data['password']);
+        } else {
+            $data['password'] = $user->password;
+        }
+
         $user->update($data);
         if (isset($data['is_active'])) {
-            $user->is_active = 1;
-            $user->save();
+            $user->is_active = (bool) $data['is_active'];
         } else {
             $user->is_active = 0;
-            $user->save();
         }
+        $user->save();
 
         if (! isset($data['roles']) || empty($data['roles']) || $data['roles'] == []) {
             $user->roles()->detach();

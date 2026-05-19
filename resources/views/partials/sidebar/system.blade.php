@@ -1,7 +1,8 @@
 <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="right-start"
     @class([
         'menu-item',
-        'here' => Route::is('role*') || Route::is('user*') || Route::is('system.*'),
+        'here' =>
+            Route::is('role.*') || Route::is('user.*') || Route::is('system.*'),
     ])>
     <span class="menu-link menu-center d-flex flex-column">
         <span class="menu-icon me-0">

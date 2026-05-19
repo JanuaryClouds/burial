@@ -35,11 +35,6 @@ class FuneralAssistance extends Model
         return $this->client?->tracking_no;
     }
 
-    public function tracker()
-    {
-        return $this->hasOne(TrackingCode::class, 'trackable_id', 'id');
-    }
-
     // Scopes
     public function scopeTotal($query)
     {

@@ -44,19 +44,9 @@ class BurialAssistance extends Model
         return $this->hasMany(Claimant::class, 'burial_assistance_id', 'id');
     }
 
-    public function hasPendingClaimantChange()
+    public function hasClaimantChange()
     {
-        return $this->claimantChanges()->where('status', 'pending')->exists();
-    }
-
-    public function hasApprovedClaimantChange()
-    {
-        return $this->claimantChanges()->where('status', 'approved')->exists();
-    }
-
-    public function hasRejectedClaimantChange()
-    {
-        return $this->claimantChanges()->where('status', 'rejected')->exists();
+        return $this->claimantChanges()->exists();
     }
 
     public function claimantChanges()
@@ -80,7 +70,7 @@ class BurialAssistance extends Model
 
     public function currentClaimant()
     {
-        if ($this->hasApprovedClaimantChange()) {
+        if ($this->hasClaimantChange()) {
             return $this->newClaimant();
         }
 
@@ -95,11 +85,6 @@ class BurialAssistance extends Model
     public function processLogs()
     {
         return $this->hasMany(ProcessLog::class, 'burial_assistance_id', 'id');
-    }
-
-    public function tracker()
-    {
-        return $this->hasOne(TrackingCode::class, 'trackable_id', 'id');
     }
 
     public function cheque()
@@ -137,30 +122,20 @@ class BurialAssistance extends Model
     {
         return $query->where(function ($q) use ($userId) {
             // CASE A: No claimant change requested
-            $q->whereDoesntHave('claimantChanges', function () {})
+            $q->whereDoesntHave('claimantChanges')
                 ->whereHas('claimant.client.user', function ($subQ) use ($userId) {
                     $subQ->where('id', $userId);
                 });
         })
             ->orWhere(function ($q) use ($userId) {
-                // CASE B: Claimant change requested
+                // CASE B: Claimant change requested (automatically approved)
                 $q->whereHas('claimantChanges', function ($cc) use ($userId) {
-                    $cc->where(function ($ccInner) use ($userId) {
-                        // APPROVED → both old and new claimant
-                        $ccInner->where('status', 'approved')
-                            ->where(function ($approvedUsers) use ($userId) {
-                                $approvedUsers
-                                    ->whereHas('oldClaimant.client.user', function ($q) use ($userId) {
-                                        $q->where('id', $userId);
-                                    })
-                                    ->orWhereHas('newUserClaimant', function ($q) use ($userId) {
-                                        $q->where('id', $userId);
-                                    });
-                            });
-                    })->orWhere(function ($ccInner) use ($userId) {
-                        // PENDING / REJECTED → only original claimant
-                        $ccInner->whereIn('status', ['pending', 'rejected'])
+                    $cc->where(function ($approvedUsers) use ($userId) {
+                        $approvedUsers
                             ->whereHas('oldClaimant.client.user', function ($q) use ($userId) {
+                                $q->where('id', $userId);
+                            })
+                            ->orWhereHas('newUserClaimant', function ($q) use ($userId) {
                                 $q->where('id', $userId);
                             });
                     });

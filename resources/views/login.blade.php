@@ -1,4 +1,4 @@
-@extends('layouts.metronic.guest')
+@extends('layouts.guest')
 <title>Login</title>
 @section('content')
     <section class="section d-flex justify-content-center align-items-center min-vh-100">

@@ -1,4 +1,4 @@
-@extends('layouts.metronic.guest')
+@extends('layouts.guest')
 @section('content')
     <div class="container d-flex justify-content-center align-items-center min-vh-100 min-vw-100">
         <div class="card">

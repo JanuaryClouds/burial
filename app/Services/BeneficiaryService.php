@@ -23,12 +23,17 @@ class BeneficiaryService
             ->get()
             ->map(function ($beneficiary) {
                 $assistance = 'Pending';
-                if ($beneficiary->client?->claimant?->count() > 0) {
+                $client = $beneficiary->client;
+                if ($client?->claimant?->count() > 0) {
                     $assistance = 'Burial Assistance';
                 }
 
-                if ($beneficiary->client?->funeralAssistance?->count() > 0) {
-                    $assistance = 'Funeral Assistance';
+                if ($client?->funeralAssistance?->count() > 0) {
+                    $assistance = 'Libreng Libing';
+                }
+
+                if ($client?->referral?->count() > 0) {
+                    $assistance = 'Referral';
                 }
 
                 return [
@@ -58,12 +63,18 @@ class BeneficiaryService
             ->get()
             ->map(function ($beneficiary) {
                 $assistance = 'Pending';
-                if ($beneficiary->client?->claimant?->count() > 0) {
+                $client = $beneficiary->client;
+
+                if ($client?->claimant?->count() > 0) {
                     $assistance = 'Burial Assistance';
                 }
 
-                if ($beneficiary->client?->funeralAssistance?->count() > 0) {
-                    $assistance = 'Funeral Assistance';
+                if ($client?->funeralAssistance?->count() > 0) {
+                    $assistance = 'Libreng Libing';
+                }
+
+                if ($client?->referral?->count() > 0) {
+                    $assistance = 'Referral';
                 }
 
                 return [

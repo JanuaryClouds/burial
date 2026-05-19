@@ -1,9 +1,7 @@
-@extends('layouts.metronic.admin')
+@extends('layouts.app')
 @section('content')
     <div class="d-flex flex-column gap-4">
-        @includeWhen(
-            $claimantChange == null || ($claimantChange != null && $claimantChange->status != 'pending'),
-            'burial.partials.menu')
+        @include('burial.partials.menu')
         <div class="card">
             <div class="card-header">
                 <h4 class="card-title">Progress of Burial Assistance</h4>
@@ -14,19 +12,10 @@
                 @include('burial.partials.claimant-change-status-alert')
             </div>
         </div>
-        @can('edit-claimant-change-requests')
-            @includeWhen(
-                $claimantChange != null &&
-                    $claimantChange->status == 'pending' &&
-                    ($data->status != 'released' && $data->status != 'rejected' && $data->status != 'approved'),
-                'burial.partials.claimant-change-request')
-        @endcan
         @can('create-updates')
             @includeWhen(
                 $data->status != 'released' &&
                     $data->status != 'rejected' &&
-                    ($claimantChange == null ||
-                        ($claimantChange != null && $claimantChange->status != 'pending')) &&
                     $next_step != null,
                 'burial.partials.process-update-modal')
             @include('burial.partials.reject-modal')
@@ -37,7 +26,7 @@
                 auth()->user()->can('create', [App\Models\ClaimantChange::class, $data]))
             @include('burial.partials.claimant-change-form')
         @endif
-        @cannot('manage-content')
+        @unlessrole('superadmin')
             <div class="card mt-10">
                 <div class="card-body">
                     @include('client.partials.swa-form', [
@@ -55,19 +44,17 @@
                 </div>
             </div>
             @if ($claimantChange != null)
-                @if ($claimantChange->status == 'approved')
-                    <div class="card">
-                        <div class="card-header">
-                            <h4 class="card-title">Original Claimant</h4>
-                        </div>
-                        <div class="card-body">
-                            @include('burial.partials.claimant-form', [
-                                'claimant' => $originalClaimant,
-                                'readonly' => true,
-                            ])
-                        </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Original Claimant</h4>
                     </div>
-                @endif
+                    <div class="card-body">
+                        @include('burial.partials.claimant-form', [
+                            'claimant' => $originalClaimant,
+                            'readonly' => true,
+                        ])
+                    </div>
+                </div>
             @endif
             <div class="card">
                 <div class="card-body">
@@ -93,8 +80,8 @@
                     ])
                 </div>
             </div>
-        @endcannot
-        @can('manage-content')
+        @endunlessrole
+        @role('superadmin')
             <form action="{{ route('burial.update', $data->id) }}" method="post" id="contentForm"
                 class="d-flex flex-column gap-4">
                 @csrf
@@ -116,19 +103,17 @@
                     </div>
                 </div>
                 @if ($claimantChange != null)
-                    @if ($claimantChange->status == 'approved')
-                        <div class="card">
-                            <div class="card-header">
-                                <h4 class="card-title">Original Claimant</h4>
-                            </div>
-                            <div class="card-body">
-                                @include('burial.partials.claimant-form', [
-                                    'claimant' => $originalClaimant,
-                                    'readonly' => true,
-                                ])
-                            </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">Original Claimant</h4>
                         </div>
-                    @endif
+                        <div class="card-body">
+                            @include('burial.partials.claimant-form', [
+                                'claimant' => $originalClaimant,
+                                'readonly' => true,
+                            ])
+                        </div>
+                    </div>
                 @endif
                 <div class="card">
                     <div class="card-body">
@@ -155,6 +140,6 @@
                     </div>
                 </div>
             </form>
-        @endcan
+        @endrole
     </div>
 @endsection

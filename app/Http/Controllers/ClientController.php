@@ -56,35 +56,38 @@ class ClientController extends Controller
         } elseif (auth()->user()->roles()->count() > 0) {
             $data = $this->clientServices->index('tracking_no', 'asc');
             $columns = $this->datatableServices->getColumns($data, []);
-
-            $clientsWithInterview = Client::has('interviews')->count();
-            $clientsWithAssessments = Client::has('assessment')->count();
-            $clientsWithRecommendation = Client::has('recommendation')->count();
-
             $cardData = [
                 [
+                    'model' => 'App\Models\Client',
                     'label' => 'Total Clients',
-                    'icon' => 'ki-people',
-                    'pathsCount' => 5,
-                    'count' => Client::count(),
+                    'scope' => 'Total',
+                    'iconName' => 'people',
+                    'iconPathsCount' => 5,
+                    'route' => route('beneficiary.index'),
                 ],
                 [
-                    'label' => 'Clients with Interviews',
-                    'icon' => 'ki-note-2',
-                    'pathsCount' => 4,
-                    'count' => $clientsWithInterview,
+                    'model' => 'App\Models\Client',
+                    'label' => 'Referred',
+                    'scope' => 'Referral',
+                    'iconName' => 'route',
+                    'iconPathsCount' => 4,
+                    'route' => route('referral.index'),
                 ],
                 [
-                    'label' => 'Clients with Assessments',
-                    'icon' => 'ki-brifecase-tick',
-                    'pathsCount' => 3,
-                    'count' => $clientsWithAssessments,
+                    'model' => 'App\Models\Client',
+                    'label' => 'With Burial Assistances',
+                    'scope' => 'BurialAssistance',
+                    'iconName' => 'file-up',
+                    'iconPathsCount' => 2,
+                    'route' => route('burial.index'),
                 ],
                 [
-                    'label' => 'Clients With Recommendation',
-                    'icon' => 'ki-file-added',
-                    'pathsCount' => 2,
-                    'count' => $clientsWithRecommendation,
+                    'model' => 'App\Models\Client',
+                    'label' => 'With Libreng Libing',
+                    'scope' => 'FuneralAssistance',
+                    'iconName' => 'file-up',
+                    'iconPathsCount' => 2,
+                    'route' => route('funeral.index'),
                 ],
             ];
         }
@@ -97,9 +100,9 @@ class ClientController extends Controller
 
         return view('client.index', [
             'page_title' => $page_title,
+            'cardData' => $cardData ?? null,
             'columns' => $columns,
             'data' => $data,
-            'cardData' => $cardData ?? null,
         ]);
     }
 
@@ -110,7 +113,7 @@ class ClientController extends Controller
             $client = $this->clientServices->get($client->id);
             $page_title = $client->tracking_no;
             $page_subtitle = $client->fullname()."'s Application";
-            $readonly = auth()->user()->cannot('manage-content');
+            $readonly = ! auth()->user()->hasRole('superadmin');
             $released = $client?->claimant?->burialAssistance?->status != 'released' || $client?->funeralAssistance?->forwarded_at != null;
 
             if ($client) {
@@ -220,7 +223,7 @@ class ClientController extends Controller
             ->log('Deleted a client details: '.$client->id);
 
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first().'.client.index')
+            ->route('client.index')
             ->with('success', 'Client information deleted successfully!');
     }
 
@@ -247,7 +250,7 @@ class ClientController extends Controller
                 activity()
                     ->causedBy(auth()->user())
                     ->withProperties(['ip' => $ip, 'browser' => $browser, 'client' => $client->id])
-                    ->log('Added an assessment for the client');
+                    ->log('Added an assessment for a client');
 
                 return redirect()->back()->with('success', 'Assessment created successfully.');
             } else {
@@ -288,7 +291,7 @@ class ClientController extends Controller
                     'moa_id' => $request['moa_id'],
                 ]);
 
-                $application = $this->clientServices->transferClient($client->id);
+                $this->clientServices->transferClient($client->id);
 
                 $this->notificationServices->send(
                     $client->user->citizen_uuid,
@@ -303,7 +306,7 @@ class ClientController extends Controller
                     ->log('Burial Assistance application created for client');
 
                 return redirect()->back()->with('success', 'Successfuly created burial assistance application for the client!');
-            } elseif ($request['type'] == 'funeral') {
+            } elseif ($request['type'] == 'libreng_libing') {
                 $request->validate([
                     'referral' => 'nullable|string|max:255',
                     'type' => 'string|required',
@@ -319,7 +322,7 @@ class ClientController extends Controller
                     'remarks' => $request['remarks'],
                 ]);
 
-                $application = $this->clientServices->transferClient($client->id);
+                $this->clientServices->transferClient($client->id);
 
                 $this->notificationServices->send(
                     $client->user->citizen_uuid,
@@ -370,26 +373,5 @@ class ClientController extends Controller
         } catch (Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
-    }
-
-    public function history()
-    {
-        $records = Client::where('user_id', auth()->user()->id)->get();
-        if (! $records || $records->isEmpty()) {
-            return redirect()->route('landing.page')->with('error', 'You do not have permission to access this page.');
-        }
-
-        $client = $records->first();
-        $page_title = $client->fullname().'\'s History';
-        $readonly = true;
-        $disabled = true;
-
-        return view('client.history', compact(
-            'records',
-            'client',
-            'page_title',
-            'readonly',
-            'disabled',
-        ));
     }
 }

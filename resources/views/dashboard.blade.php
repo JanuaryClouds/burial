@@ -1,27 +1,36 @@
 @extends('layouts.app')
 @section('content')
     <title>Dashboard</title>
-    <div class="row g-6">
-        @can('view-clients')
-            <div class="col">
-                @include('admin.partials.cards')
+    <div class="d-flex flex-column gap-4">
+        @role('staff')
+            @if (count($cardData) > 0)
+                <div class="row">
+                    @foreach ($cardData as $card)
+                        <div class="col-6 col-lg-3">
+                            <livewire:counter :model="$card['model']" :label="$card['label']" :scope="$card['scope']" :iconName="$card['iconName']"
+                                :iconPathsCount="$card['iconPathsCount']" :route="$card['route']" />
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+        @endrole
+        @unlessrole('staff')
+            <div class="row">
+                <div class="col-12 col-lg-8">
+                    @include('user.partials.quick-links')
+                </div>
+                <div class="col-12 col-lg-4">
+                    <livewire:notification.index lazy />
+                </div>
             </div>
-        @endcan
-        @cannot('view-clients')
-            <div class="col-12 col-lg-8">
-                @include('user.partials.quick-links')
-            </div>
-            <div class="col-12 col-lg-4">
-                <livewire:notification.index lazy />
-            </div>
-        @endcannot
-        @can('view-clients')
-            <div class="col-12">
+        @endunlessrole
+        @role('staff')
+            <div>
                 @include('client.partials.latest-table', [
                     'data' => $data,
                     'columns' => $columns,
                 ])
             </div>
-        @endcan
+        @endrole
     </div>
 @endsection

@@ -10,16 +10,16 @@
         @endif
         @include('client.partials.interview-alert')
         <div class="row">
-            @can('manage-content')
+            @role('superadmin')
                 <form action="{{ route('client.update', $client) }}" method="post" id="contentForm">
                     @csrf
                     @method('put')
                     @include('client.partials.create-form-body')
                 </form>
-            @endcan
-            @cannot('manage-content')
+            @endrole
+            @unlessrole('superadmin')
                 @include('client.partials.create-form-body')
-            @endcannot
+            @endunlessrole
         </div>
     </div>
 @endsection

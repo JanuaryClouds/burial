@@ -14,8 +14,8 @@ Route::middleware('permission:view-reports')
     ->group(function () {
         Route::match(['get', 'post'], '/burial-assistances', [ReportController::class, 'burialAssistances'])
             ->name('burial-assistances');
-        Route::match(['get', 'post'], '/cheques', [ReportController::class, 'cheques'])
-            ->name('cheques');
+        Route::match(['get', 'post'], '/checks', [ReportController::class, 'cheques'])
+            ->name('checks');
         Route::match(['get', 'post'], '/funerals', [ReportController::class, 'funerals'])
             ->name('funerals');
         Route::match(['get', 'post'], '/clients', [ReportController::class, 'clients'])
@@ -38,7 +38,7 @@ Route::middleware('permission:view-reports')
                 Route::post('/burial-assistances/{startDate}/{endDate}', [BurialAssistanceController::class, 'generatePdfReport'])
                     ->name('burial-assistances.pdf');
 
-                Route::post('/cheques/{startDate}/{endDate}', [ChequeController::class, 'generatePdfReport'])
-                    ->name('cheques.pdf');
+                Route::post('/checks/{startDate}/{endDate}', [ChequeController::class, 'generatePdfReport'])
+                    ->name('checks.pdf');
             });
     });

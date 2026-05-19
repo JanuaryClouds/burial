@@ -1,5 +1,4 @@
-@extends('layouts.metronic.admin')
-<title>{{ $page_title }}</title>
+@extends('layouts.app')
 @section('content')
     <form action="{{ route($type . '.update', [$type => $data]) }}" method="post" id="contentForm">
         @csrf

@@ -1,4 +1,4 @@
-@extends('layouts.metronic.guest')
+@extends('layouts.guest')
 @section('content')
     @php
         if (!app()->isLocal() || config('services.portal.users.mock') === false) {

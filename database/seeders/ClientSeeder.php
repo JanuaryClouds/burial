@@ -81,7 +81,7 @@ class ClientSeeder extends Seeder
                         // Burial Assistance
                         $recommendation = ClientRecommendation::factory()->create([
                             'client_id' => $client->id,
-                            'type' => 'libreng_libing',
+                            'type' => 'burial',
                         ]);
 
                         Notification::factory()->create([
@@ -110,7 +110,7 @@ class ClientSeeder extends Seeder
                             'date_of_birth' => $client->date_of_birth,
                             'address' => $client->house_no.' '.$client->street,
                             'barangay_id' => $client->barangay_id,
-                            'contact_number' => $client->user?->contact_number,
+                            'contact_number' => $client->user?->contact_number ?? 'N/A',
                             'relationship_id' => $client->socialInfo?->relationship?->id,
                         ]);
 
@@ -127,6 +127,7 @@ class ClientSeeder extends Seeder
                         // Funeral Assistance
                         $recommendation = ClientRecommendation::factory()->create([
                             'client_id' => $client->id,
+                            'type' => 'libreng_libing',
                             'referral' => 'Taguig City Public Cemetery',
                             'amount' => null,
                             'moa_id' => null,

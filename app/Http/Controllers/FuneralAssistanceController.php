@@ -37,27 +37,28 @@ class FuneralAssistanceController extends Controller
             $data = $this->funeralAssistanceServices->index(auth()->user()->id);
         } elseif (auth()->user()->roles()->count() > 0) {
             $data = $this->funeralAssistanceServices->index();
-            $approvedApplications = FuneralAssistance::where('approved_at', '!=', null)->count();
-            $forwardedApplications = FuneralAssistance::where('forwarded_at', '!=', null)->count();
 
             $cardData = [
                 [
+                    'model' => 'App\Models\FuneralAssistance',
                     'label' => 'Total Applications',
-                    'icon' => 'ki-document',
-                    'pathsCount' => 2,
-                    'count' => $data->count(),
+                    'scope' => 'Total',
+                    'iconName' => 'some-files',
+                    'iconPathsCount' => 2,
                 ],
                 [
+                    'model' => 'App\Models\FuneralAssistance',
                     'label' => 'Approved Applications',
-                    'icon' => 'ki-file-added',
-                    'pathsCount' => 2,
-                    'count' => $approvedApplications,
+                    'scope' => 'Approved',
+                    'iconName' => 'file-added',
+                    'iconPathsCount' => 2,
                 ],
                 [
+                    'model' => 'App\Models\FuneralAssistance',
                     'label' => 'Forwarded Applications',
-                    'icon' => 'ki-file-right',
-                    'pathsCount' => 2,
-                    'count' => $forwardedApplications,
+                    'scope' => 'Forwarded',
+                    'iconName' => 'file-right',
+                    'iconPathsCount' => 2,
                 ],
             ];
         }
@@ -88,7 +89,7 @@ class FuneralAssistanceController extends Controller
             }
             $page_title = $client->tracking_no;
             $page_subtitle = $client->fullname()."'s Funeral Assistance Application";
-            $readonly = auth()->user()->cannot('manage-content') || $data?->forwarded_at != null;
+            $readonly = ! auth()->user()->hasRole('superadmin') || $data?->forwarded_at != null;
             $path = "clients/{$client->tracking_no}";
             $storedFiles = Storage::disk('local')->files($path);
             $files = collect($storedFiles)->map(function ($file) {
@@ -172,12 +173,12 @@ class FuneralAssistanceController extends Controller
         $dept_head = Str::upper($systemSetting?->dept_head);
 
         $pdf = Pdf::loadView('pdf.certification',
-            compact([
+            compact(
                 'client',
                 'title',
                 'social_welfare_officer',
                 'dept_head',
-            ]))
+            ))
             ->setPaper('letter', 'portrait');
 
         return $pdf->stream("certification-{$client->id}.pdf");

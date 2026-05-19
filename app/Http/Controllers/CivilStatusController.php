@@ -44,7 +44,7 @@ class CivilStatusController extends Controller
             ->log('Created a new civil status: '.$civil->name);
 
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first().'.civil.index')
+            ->route('civil.index')
             ->with('success', 'Civil Status Created Successfully');
     }
 
@@ -58,7 +58,7 @@ class CivilStatusController extends Controller
             ->log('Updated the civil status: '.$civil->name);
 
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first().'.civil.index')
+            ->route('civil.index')
             ->with('success', 'Civil Status Updated Successfully');
     }
 
@@ -72,7 +72,7 @@ class CivilStatusController extends Controller
             ->log('Deleted the civil status: '.$civil->name);
 
         return redirect()
-            ->route(Auth::user()->getRoleNames()->first().'.civil.index')
+            ->route('civil.index')
             ->with('success', 'Civil Status Deleted Successfully');
     }
 }

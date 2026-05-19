@@ -12,7 +12,7 @@ class RolePermissionSeeder extends Seeder
     {
         $staffPermissions = [
             // Client Models
-            'create-clients',
+            // 'create-clients',
             'view-clients',
             'create-interview-schedules',
             'create-assessments',
@@ -41,17 +41,17 @@ class RolePermissionSeeder extends Seeder
             // Logs
             'view-logs',
 
-            // CMS
-            'manage-content',
+            // CMS only for superadmin
+            // 'manage-content',
 
             // System
-            'create-users',
-            'view-users',
-            'edit-users',
+            // 'create-users',
+            // 'view-users',
+            // 'edit-users',
             'create-roles',
             'view-roles',
             'edit-roles',
-            'edit-system-settings',
+            // 'edit-system-settings', // Only for superadmin
         ];
 
         foreach ($staffPermissions as $permission) {
@@ -65,6 +65,6 @@ class RolePermissionSeeder extends Seeder
         Role::firstOrCreate(['name' => 'superadmin']);
 
         $staffRole = Role::firstOrCreate(['name' => 'staff']);
-        $staffRole->givePermissionTo($staffPermissions);
+        // $staffRole->givePermissionTo($staffPermissions);
     }
 }

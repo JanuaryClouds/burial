@@ -25,6 +25,7 @@ class AdminSeeder extends Seeder
         );
 
         $superadmin->assignRole($superAdminRole);
+        $superadmin->assignRole($staffRole);
 
         $staffFactories = User::factory()->count(5)->create([
             'password' => config('app.admin_password'),

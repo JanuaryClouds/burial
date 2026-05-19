@@ -1,5 +1,4 @@
-@extends('layouts.metronic.admin')
-<title>{{ $page_title }}</title>
+@extends('layouts.app')
 @section('content')
     <div class="d-flex flex-column gap-5">
         @include('funeral.partials.menu')

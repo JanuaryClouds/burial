@@ -106,12 +106,6 @@ class UserController extends Controller
         $user = Auth::user();
         $user->tokens()->delete();
 
-        activity()
-            ->performedOn($user)
-            ->causedBy($user)
-            ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
-            ->log('Successful logout');
-
         Auth::logout();
         request()->session()->invalidate();
         request()->session()->regenerateToken();
@@ -144,7 +138,6 @@ class UserController extends Controller
 
     public function index()
     {
-        $this->authorize('view-users');
         $page_title = 'Users';
         $resource = 'user';
         $data = $this->userServices->index();
@@ -162,10 +155,13 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        $this->authorize('edit-users');
+        if (auth()->user()->cannot('update', $user)) {
+            abort(403);
+        }
+
         $page_title = 'Edit User';
         $resource = 'user';
-        $roles = Role::where('name', '!=', 'superadmin')->get();
+        $roles = Role::all();
         $data = User::find($user->id);
 
         return view('cms.edit', compact('data', 'page_title', 'resource', 'roles'));
@@ -173,7 +169,10 @@ class UserController extends Controller
 
     public function update(UpdateUserRequest $request, User $user)
     {
-        $this->authorize('edit-users');
+        if (auth()->user()->cannot('update', $user)) {
+            abort(403);
+        }
+
         try {
             $user = User::find($user->id);
             $user = $this->userServices->update($request->validated(), $user);
@@ -186,7 +185,6 @@ class UserController extends Controller
 
     public function store(CreateUserRequest $request)
     {
-        $this->authorize('create-users');
         try {
             $user = $this->userServices->storeUser($request->validated());
 

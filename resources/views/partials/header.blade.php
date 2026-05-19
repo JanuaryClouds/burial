@@ -23,13 +23,13 @@
         <!--begin::Wrapper-->
         <div class="d-flex align-items-center justify-content-end flex-wrap gap-3">
             <!-- begin::Menu wrapper -->
-            @includeWhen(Route::is('*.index') && auth()->user()->can('manage-content'),
+            @includeWhen(Route::is('*.index') && auth()->user()->hasRole('superadmin'),
                 'superadmin.partials.new-content')
-            @includeWhen(Route::is('*.show') && auth()->user()->can('manage-content'),
+            @includeWhen(Route::is('*.show') && auth()->user()->hasRole('superadmin'),
                 'cms.partials.edit-content-buttons')
             <!-- end::Menu wrapper -->
 
-            @include('admin.partials.mobile-nav')
+            @include('partials.mobile-nav')
             <!-- begin::Theme mode -->
             @if (!auth()->user()->roles()->exists())
                 @if (!Route::is('dashboard'))
@@ -67,7 +67,7 @@
                             <!--begin::Username-->
                             <div class="d-flex flex-column">
                                 <div class="fw-bold d-flex align-items-center fs-5">
-                                    {{ auth()->user()->first_name . ' ' . auth()->user()->last_name }}
+                                    {{ auth()->user()->fullname() }}
                                 </div>
 
                                 <p class="fw-semibold text-muted pb-0 text-hover-primary fs-7">
@@ -84,12 +84,16 @@
                     <!--end::Menu separator-->
 
                     <!--begin::Menu item-->
-                    <div class="menu-item px-5">
-                        <form
-                            action="{{ auth()->user()->roles()->count() > 0 ? route('logout') : route('sso.logout') }}"
+                    <div class="menu-item px-5 d-flex justify-content-between gap-2 align-items-center">
+                        @if (auth()->user()->roles()->exists() &&
+                                auth()->user()->can('view', auth()->user()))
+                            <a name="" id="" class="btn"
+                                href="{{ route('user.edit', ['user' => auth()->user()]) }}" role="button">Profile</a>
+                        @endif
+                        <form action="{{ auth()->user()->roles()->exists() ? route('logout') : route('sso.logout') }}"
                             method="POST" class="block mb-0">
                             @csrf
-                            <button type="submit" class="btn w-100 text-left">
+                            <button type="submit" class="btn">
                                 <span class="fw-medium">
                                     <i class="fa-solid fa-right-from-bracket me-2"></i> Logout
                                 </span>
@@ -108,7 +112,7 @@
     <div class="header-offset"></div>
 </div>
 
-<script {{ $nonce ?? null ? 'nonce="' . $nonce . '"' : '' }}>
+<script nonce={{ $nonce ?? '' }}>
     function darkMode() {
         const header = document.getElementById('main-header-web');
         const pageTitle = document.getElementById('pageTitle');

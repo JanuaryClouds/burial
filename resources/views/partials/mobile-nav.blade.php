@@ -23,22 +23,24 @@
                 <span class="menu-title">Dashboard</span>
             </a>
         </div>
-        <div class="menu-item">
-            <a href="{{ route('general.intake.form') }}" @class(['active' => Request::is('general.intake.form'), 'menu-link'])>
-                <span class="menu-bullet">
-                    <span class="bullet bullet-dot"></span>
-                </span>
-                <span class="menu-title">Apply</span>
-            </a>
-        </div>
-        <div class="menu-item">
-            <a href="{{ route('interview.index') }}" @class(['active' => Request::is('interview*'), 'menu-link'])>
-                <span class="menu-bullet">
-                    <span class="bullet bullet-dot"></span>
-                </span>
-                <span class="menu-title">Appointment Interviews</span>
-            </a>
-        </div>
+        @if (!auth()->user()->roles()->exists())
+            <div class="menu-item">
+                <a href="{{ route('general.intake.form') }}" @class(['active' => Route::is('general.intake.form'), 'menu-link'])>
+                    <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                    </span>
+                    <span class="menu-title">Apply</span>
+                </a>
+            </div>
+            <div class="menu-item">
+                <a href="{{ route('interview.index') }}" @class(['active' => Request::is('interview*'), 'menu-link'])>
+                    <span class="menu-bullet">
+                        <span class="bullet bullet-dot"></span>
+                    </span>
+                    <span class="menu-title">Appointment Interviews</span>
+                </a>
+            </div>
+        @endif
         <div class="menu-item">
             <a href="{{ route('client.index') }}" @class(['active' => Request::is('client*'), 'menu-link'])>
                 <span class="menu-bullet">
@@ -82,7 +84,7 @@
                 <span class="menu-title">Burial Assistances</span>
             </a>
         </div>
-        @can('manage-content')
+        @role('superadmin')
             <div class="menu-item">
                 <div class="menu-content">
                     <span class="menu-section fs-5 fw-bolder ps-1 py-1">
@@ -138,7 +140,7 @@
                     <span class="menu-title">Nationality</span>
                 </a>
             </div>
-        @endcan
+        @endrole
         @can('view-reports')
             <div class="menu-item">
                 <div class="menu-content">
@@ -186,7 +188,7 @@
                 </a>
             </div>
             <div class="menu-item">
-                <a href="{{ route('reports.cheques') }}" @class(['active' => Request::is('reports/cheques'), 'menu-link'])>
+                <a href="{{ route('reports.checks') }}" @class(['active' => Route::is('reports.checks'), 'menu-link'])>
                     <span class="menu-bullet">
                         <span class="bullet bullet-dot"></span>
                     </span>

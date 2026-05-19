@@ -1,5 +1,4 @@
-@extends('layouts.metronic.admin')
-<title>{{ $page_title }}</title>
+@extends('layouts.app')
 @section('content')
     <div class="card">
         <div class="card-header">
@@ -12,6 +11,7 @@
                 <div class="d-flex flex-column gap-3">
                     @foreach ($data->getAttributes() as $field => $value)
                         <div class="row">
+                            {{-- List of skipped fields --}}
                             @if (
                                 !in_array($field, [
                                     'id',
@@ -24,6 +24,7 @@
                                     'requires_extra_data',
                                     'extra_data_schema',
                                     'order_no',
+                                    'email',
                                     'email_verified_at',
                                     'password',
                                     'remember_token',
@@ -63,14 +64,12 @@
                 </div>
             </div>
             <div class="card-footer d-flex gap-2 justify-content-end">
-                <a href="{{ route($resource . '.index') }}" class="btn btn-light">
-                    Back
-                </a>
                 <button type="submit" class="btn btn-primary" x-on:click="submitForm('editForm')">
                     Save
                 </button>
+            </div>
         </form>
-        @if (!class_basename($data) === 'User')
+        @if (class_basename($data) !== 'User')
             @can('delete', $data)
                 <form action="{{ route($resource . '.destroy', [$resource => $data]) }}" method="post" class="m-0 p-0">
                     @csrf

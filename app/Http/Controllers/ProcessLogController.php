@@ -42,8 +42,8 @@ class ProcessLogController extends Controller
                 $ip = request()->ip();
                 $browser = request()->header('User-Agent');
                 $citizenUuid = $application->originalClaimant()?->client?->user?->citizen_uuid;
-                if ($application->hasApprovedClaimantChange()) {
-                    $claimantChange = $application->claimantChanges()->where('status', 'approved')->first();
+                if ($application->hasClaimantChange()) {
+                    $claimantChange = $application->claimantChanges()->first();
                     $citizenUuid = $claimantChange?->newUserClaimant?->citizen_uuid;
                 }
 
@@ -58,13 +58,13 @@ class ProcessLogController extends Controller
                     activity()
                         ->causedBy(auth()->user())
                         ->withProperties(['ip' => $ip, 'browser' => $browser, 'burialAssistance' => $application->id])
-                        ->log('Cheque is ready to be picked up');
+                        ->log('Check is ready to be picked up');
 
                     if ($citizenUuid) {
                         $this->notificationServices->send(
                             $citizenUuid,
-                            'cheque',
-                            'Cheque is ready to be picked up',
+                            'check',
+                            'Check is ready to be picked up',
                             'A cheque for your burial assistance application is ready to be picked up. Please come to the Taguig City Hall CSWDO Office.'
                         );
 
@@ -127,17 +127,19 @@ class ProcessLogController extends Controller
 
     public function delete($id)
     {
-        try {
-            $log = ProcessLog::findOrFail($id);
-            if ($log) {
-                $this->processLogServices->delete($log, $log->burialAssistance);
+        if (app()->isLocal()) {
+            try {
+                $log = ProcessLog::findOrFail($id);
+                if ($log) {
+                    $this->processLogServices->delete($log, $log->burialAssistance);
 
-                return redirect()->back()->with('success', 'Process log deleted successfully.');
-            } else {
-                return redirect()->back()->with('error', 'Unable to find process log.');
+                    return redirect()->back()->with('success', 'Process log deleted successfully.');
+                } else {
+                    return redirect()->back()->with('error', 'Unable to find process log.');
+                }
+            } catch (Exception $e) {
+                return redirect()->back()->with('error', $e->getMessage());
             }
-        } catch (Exception $e) {
-            return redirect()->back()->with('error', $e->getMessage());
         }
     }
 }

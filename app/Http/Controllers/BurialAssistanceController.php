@@ -64,12 +64,47 @@ class BurialAssistanceController extends Controller
             ]);
         }
 
-        return view('burial.index', compact([
+        $cardData = null;
+        if (auth()->user()->roles()->exists()) {
+            $cardData = [
+                [
+                    'model' => 'App\Models\BurialAssistance',
+                    'label' => 'Total Applications',
+                    'scope' => 'Total',
+                    'iconName' => 'some-files',
+                    'iconPathsCount' => 2,
+                ],
+                [
+                    'model' => 'App\Models\BurialAssistance',
+                    'label' => 'Pending',
+                    'scope' => 'Pending',
+                    'iconName' => 'document',
+                    'iconPathsCount' => 2,
+                ],
+                [
+                    'model' => 'App\Models\BurialAssistance',
+                    'label' => 'Processing',
+                    'scope' => 'Processing',
+                    'iconName' => 'file-right',
+                    'iconPathsCount' => 2,
+                ],
+                [
+                    'model' => 'App\Models\BurialAssistance',
+                    'label' => 'Released',
+                    'scope' => 'Released',
+                    'iconName' => 'file-added',
+                    'iconPathsCount' => 2,
+                ],
+            ];
+        }
+
+        return view('burial.index', compact(
             'resource',
             'data',
+            'cardData',
             'columns',
             'page_title',
-        ]));
+        ));
     }
 
     public function show($id)
@@ -85,7 +120,7 @@ class BurialAssistanceController extends Controller
             if (! $currentClaimant) {
                 abort(404);
             }
-                
+
             if (! $claimantChange) {
                 $currentClaimantUserId = $currentClaimant->client?->user_id;
                 $newClaimants = User::whereHas('clients')
@@ -96,10 +131,10 @@ class BurialAssistanceController extends Controller
                     })
                     ->toArray();
             }
-    
+
             $page_title = $data->originalClaimant()?->client?->tracking_no;
             $page_subtitle = $currentClaimant->fullname()."'s Burial Assistance Application";
-            $readonly = auth()->user()->cannot('manage-content') && $data->status == 'released';
+            $readonly = ! auth()->user()->hasRole('superadmin') && $data->status == 'released';
 
             $timeline = $this->processLogServices->timeline($data);
 
@@ -118,10 +153,10 @@ class BurialAssistanceController extends Controller
             }
 
             $progress = $this->workflowStepServices->progress($data, $next_step, $totalSteps);
-            $show_certificate = $next_step == null && $data->status == 'approved';
+            $show_certificate = in_array($data->status, ['approved', 'released']);
             $relationships = Relationship::select('id', 'name')->get();
 
-            return view('burial.show', compact([
+            return view('burial.show', compact(
                 'data',
                 'currentClaimant',
                 'originalClaimant',
@@ -137,7 +172,7 @@ class BurialAssistanceController extends Controller
                 'page_title',
                 'page_subtitle',
                 'readonly',
-            ]));
+            ));
         } catch (\Throwable $th) {
             return redirect()->back()->with('error', 'Unable to find application.'.(app()->hasDebugModeEnabled() ? ' '.$th->getMessage() : ''));
         }
@@ -279,14 +314,14 @@ class BurialAssistanceController extends Controller
     {
         $assistance = BurialAssistance::findOrFail($id);
 
-        if ($assistance->status != 'released' && app()->isProduction()) {
-            abort(404);
+        if (!app()->isLocal() && !in_array($assistance->status, ['released', 'approved'])) {
+            return redirect()->back()->with('error', 'Certificate is not yet available.');
         }
 
         $claimant = $assistance->currentClaimant();
 
         if (! $claimant) {
-            abort(404);
+            return back()->with('error', 'Claimant not found.');
         }
 
         $title = Str::title($claimant->first_name).' '.Str::title($claimant->last_name).'\'s Certificate of Eligibility';
@@ -294,12 +329,12 @@ class BurialAssistanceController extends Controller
         $dept_head = Str::upper(SystemSetting::first()?->dept_head);
 
         $pdf = Pdf::loadView('pdf.certificate-of-eligibility',
-            compact([
+            compact(
                 'claimant',
                 'title',
                 'social_welfare_officer',
                 'dept_head',
-            ]))
+            ))
             ->setPaper('letter', 'portrait');
 
         return $pdf->stream("certificate-of-eligibility-{$claimant->first_name}-{$claimant->last_name}.pdf");

@@ -20,7 +20,7 @@ class WorkflowSeeder extends Seeder
                 'requires_extra_data' => false,
                 'is_optional' => false,
                 'extra_data_schema' => json_encode([
-                    'comments/recommendation*' => 'string'
+                    'comments/recommendation*' => 'string',
                 ]),
             ],
             [

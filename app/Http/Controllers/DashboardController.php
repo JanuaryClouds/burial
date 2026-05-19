@@ -2,12 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\BurialAssistance;
 use App\Models\Client;
-use App\Models\FuneralAssistance;
 use App\Services\ClientService;
 use App\Services\DatatableService;
-use Carbon\Carbon;
 use Spatie\Activitylog\Models\Activity;
 
 class DashboardController extends Controller
@@ -36,53 +33,51 @@ class DashboardController extends Controller
     public function staff()
     {
         $page_title = 'Dashboard';
-        $pendingBurialAssistance = BurialAssistance::where(function ($query) {
-            $query
-                ->orWhere('status', 'pending')
-                ->orWhere('status', 'processing');
-        })->count();
-        $pendingFuneralAssistance = FuneralAssistance::where(function ($query) {
-            $query->where('approved_at', null);
-            $query->where('forwarded_at', null);
-        })->count();
-
-        $pendingClients = Client::where(function ($query) {
-            $query->where('created_at', '>=', Carbon::now()->subDays(7));
-        })->count();
 
         $data = $this->clientServices->index('tracking_no', 'asc');
         $columns = $this->datatableServices->getColumns($data, ['id', 'status', 'show_route']);
 
         $cardData = [
             [
-                'label' => 'Clients this week',
-                'icon' => 'ki-chart-line',
-                'pathsCount' => 2,
-                'link' => route('client.index'),
-                'count' => $pendingClients,
+                'model' => 'App\Models\Client',
+                'label' => 'Total Clients',
+                'scope' => 'Total',
+                'iconName' => 'people',
+                'iconPathsCount' => 5,
+                'route' => route('client.index'),
             ],
             [
-                'label' => 'Pending Burial Assistance',
-                'icon' => 'ki-timer',
-                'pathsCount' => 2,
-                'link' => route('burial.index', ['status' => 'pending']),
-                'count' => $pendingBurialAssistance,
+                'model' => 'App\Models\Client',
+                'label' => 'Referred',
+                'scope' => 'Referral',
+                'iconName' => 'route',
+                'iconPathsCount' => 4,
+                'route' => route('referral.index'),
             ],
             [
-                'label' => 'Pending Libreng Libing Applications',
-                'icon' => 'ki-watch',
-                'pathsCount' => 2,
-                'link' => route('funeral.index'),
-                'count' => $pendingFuneralAssistance,
+                'model' => 'App\Models\Client',
+                'label' => 'With Burial Assistances',
+                'scope' => 'BurialAssistance',
+                'iconName' => 'file-up',
+                'iconPathsCount' => 2,
+                'route' => route('burial.index'),
+            ],
+            [
+                'model' => 'App\Models\Client',
+                'label' => 'With Libreng Libing',
+                'scope' => 'FuneralAssistance',
+                'iconName' => 'file-up',
+                'iconPathsCount' => 2,
+                'route' => route('funeral.index'),
             ],
         ];
 
-        return view('dashboard', compact([
-            'cardData',
+        return view('dashboard', compact(
             'page_title',
+            'cardData',
             'data',
             'columns',
-        ]));
+        ));
     }
 
     public function user()

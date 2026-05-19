@@ -106,7 +106,13 @@ class ReportController extends Controller
             ]);
         }
 
-        return view('reports.index', compact('data', 'columns', 'model', 'startDate', 'endDate'));
+        return view('reports.index', compact(
+            'data',
+            'columns',
+            'model',
+            'startDate',
+            'endDate'
+        ));
     }
 
     public function burialAssistances(Request $request)
@@ -136,55 +142,6 @@ class ReportController extends Controller
         $deceasedPerBarangay = $this->reportServices->deceasedPerBarangay($startDate, $endDate);
         $deceasedPerReligion = $this->reportServices->deceasedPerReligion($startDate, $endDate);
 
-        $cardData = [
-            [
-                'label' => 'All',
-                'icon' => 'ki-file',
-                'pathsCount' => 2,
-                'count' => count($data->toArray()),
-            ],
-            [
-                'label' => 'Pending',
-                'icon' => 'ki-file',
-                'pathsCount' => 2,
-                'count' => count(array_filter($data->toArray(), function ($item) {
-                    return $item['status'] == 'Pending';
-                })),
-            ],
-            [
-                'label' => 'Processing',
-                'icon' => 'ki-file-right',
-                'pathsCount' => 2,
-                'count' => count(array_filter($data->toArray(), function ($item) {
-                    return $item['status'] == 'Processing';
-                })),
-            ],
-            [
-                'label' => 'For Pickup',
-                'icon' => 'ki-file-added',
-                'pathsCount' => 2,
-                'count' => count(array_filter($data->toArray(), function ($item) {
-                    return $item['status'] == 'For Pickup';
-                })),
-            ],
-            [
-                'label' => 'Released',
-                'icon' => 'ki-folder-added',
-                'pathsCount' => 2,
-                'count' => count(array_filter($data->toArray(), function ($item) {
-                    return $item['status'] == 'Released';
-                })),
-            ],
-            [
-                'label' => 'Rejected',
-                'icon' => 'ki-delete-folder',
-                'pathsCount' => 2,
-                'count' => count(array_filter($data->toArray(), function ($item) {
-                    return $item['status'] == 'Rejected';
-                })),
-            ],
-        ];
-
         return view('reports.index', compact(
             'data',
             'columns',
@@ -193,7 +150,6 @@ class ReportController extends Controller
             'deceasedPerReligion',
             'startDate',
             'endDate',
-            'cardData',
         ));
     }
 
@@ -251,7 +207,7 @@ class ReportController extends Controller
 
     public function cheques(Request $request)
     {
-        $model = 'cheques';
+        $model = 'checks';
         if ($request->has('start_date') && $request->start_date != '') {
             $startDate = Carbon::parse($request->start_date);
         } else {
@@ -293,7 +249,7 @@ class ReportController extends Controller
                     'date_issued' => $cheque->date_issued,
                     'date_claimed' => $cheque->date_claimed,
                     'status' => $cheque->status,
-                    'created_at' => $cheque->created_at,
+                    'created_at' => $cheque->created_at->format('M d, Y'),
                 ];
             });
 

@@ -7,7 +7,7 @@
                 <div class="modal-header">
                     <h5 class="modal-title" id="assessment-modal-title">Assessment for {{ $client->fullname() }}</h5>
                     <button class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal"
-                        aria-label="Close">
+                        aria-label="Close" type="button">
                         <i class="ki-duotone ki-cross fs-1">
                             <span class="path1"></span><span class="path2"></span>
                         </i>

@@ -23,15 +23,19 @@ class UserPolicy
      */
     public function view(User $user, User $model): bool
     {
-        if ($user->cannot('view-users')) {
+        if ($user->id === $model->id) {
+            return true;
+        }
+
+        if ($model->hasRole('superadmin')) {
             return false;
         }
 
-        if ($model->id == 1) {
-            return false;
+        if ($user->can('view-users')) {
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     /**
@@ -39,11 +43,11 @@ class UserPolicy
      */
     public function create(User $user): bool
     {
-        if ($user->cannot('create-users')) {
-            return false;
+        if ($user->can('create-users')) {
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     /**
@@ -51,15 +55,19 @@ class UserPolicy
      */
     public function update(User $user, User $model): bool
     {
-        if ($user->cannot('edit-users')) {
+        if ($user->id === $model->id) {
+            return true;
+        }
+    
+        if ($model->hasRole('superadmin')) {
             return false;
         }
 
-        if ($model->id == 1) {
-            return false;
+        if ($user->can('edit-users')) {
+            return true;
         }
-
-        return true;
+            
+        return false;
     }
 
     /**
@@ -79,7 +87,7 @@ class UserPolicy
             return false;
         }
 
-        if ($model->id == 1) {
+        if ($model->hasRole('superadmin')) {
             return false;
         }
 

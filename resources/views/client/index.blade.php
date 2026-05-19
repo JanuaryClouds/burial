@@ -1,25 +1,18 @@
-@extends('layouts.metronic.admin')
-<title>{{ $page_title }}</title>
+@extends('layouts.app')
 @section('content')
     <div class="d-flex flex-column gap-4">
-        <div class="row">
-            <div class="col-6 col-lg-3">
-                <livewire:counter :model="'App\Models\Client'" :label="'Total Client Records'" :scope="'Total'" :iconName="'people'"
-                    :iconPathsCount="5" />
-            </div>
-            <div class="col-6 col-lg-3">
-                <livewire:counter :model="'App\Models\Client'" :label="'Referrals'" :scope="'Referral'" :iconName="'route'"
-                    :iconPathsCount="4" />
-            </div>
-            <div class="col-6 col-lg-3">
-                <livewire:counter :model="'App\Models\Client'" :label="'With Burial Assistances'" :scope="'BurialAssistance'" :iconName="'file-up'"
-                    :iconPathsCount="2" :route="route('burial.index')" />
-            </div>
-            <div class="col-6 col-lg-3">
-                <livewire:counter :model="'App\Models\Client'" :label="'With Libreng Libing'" :scope="'FuneralAssistance'" :iconName="'file-up'"
-                    :iconPathsCount="2" :route="route('funeral.index')" />
-            </div>
-        </div>
+        @role('staff')
+            @if (isset($cardData) && is_array($cardData) && count($cardData) > 0)
+                <div class="row">
+                    @foreach ($cardData as $card)
+                        <div class="col-6 col-lg-3">
+                            <livewire:counter :model="$card['model']" :label="$card['label']" :scope="$card['scope']" :iconName="$card['iconName']"
+                                :iconPathsCount="$card['iconPathsCount']" :route="$card['route']" />
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+        @endrole
         <div class="card">
             <div class="card-body">
                 @include('partials.datatable.index', [

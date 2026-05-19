@@ -1,5 +1,4 @@
-@extends('layouts.metronic.admin')
-<title>CMS - {{ $resource }}</title>
+@extends('layouts.app')
 @php
     $routeName = 'superadmin.cms.update';
     if ($resource === 'barangays') {
@@ -33,7 +32,7 @@
             @endif
         </div>
     </div>
-    @can('manage-content')
+    @role('superadmin')
         @if (Route::has(str_replace('.index', '', Route::currentRouteName()) . '.store'))
             <div id="newContent" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="newContent" aria-hidden="true">
                 <form action="{{ route(str_replace('.index', '', Route::currentRouteName()) . '.store') }}" method="post">
@@ -57,12 +56,17 @@
                                                 <label
                                                     for="{{ $field }}">{{ ucfirst(str_replace('_', ' ', $field)) }}</label>
                                                 <input type="text" name="{{ $field }}" id="{{ $field }}"
-                                                    class="form-control">
+                                                    class="form-control" autocomplete="off">
                                             </div>
                                         @endforeach
                                     @endforeach
                                     @if (Route::getCurrentRoute()->getName() === 'role.index')
                                         @include('cms.partials.create-role')
+                                    @endif
+                                    @if (Route::getCurrentRoute()->getName() === 'user.index')
+                                        <x-form-input name="password" label="Password" type="password" :required="true" />
+                                        <x-form-input name="password_confirmation" label="Confirm Password" type="password"
+                                            :required="true" />
                                     @endif
                                 </div>
                             </div>
@@ -79,5 +83,5 @@
                 </form>
             </div>
         @endif
-    @endcan
+    @endrole
 @endsection

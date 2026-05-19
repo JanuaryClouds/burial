@@ -12,48 +12,48 @@
 @endif
 <div class="row flex-column justify-content-center align-items-center g-2">
     @if (Route::is('general.intake.form'))
-        @foreach ($documents as $document)
-            @php
-                $displayName = $document['name'];
-                if ($document['is_muslim']) {
-                    $displayName .= ' (For Muslim Citizen Only)';
-                }
-            @endphp
-            <div class="col mb-4 {{ $document['is_muslim'] ? 'muslim-requirements' : '' }}">
-                <x-form-image-submission name="images[{{ $document['key'] }}]" label="{{ $displayName }}"
-                    helpText="From {{ $document['source'] }}" />
-                <hr>
-            </div>
-        @endforeach
-    @else
-        @if ($client)
+        @if (config('services.fileserver.enable.post'))
             @foreach ($documents as $document)
                 @php
-                    $filename = $client->tracking_no . '-' . Str::slug($document['key']) . '.jpeg.enc';
-
-                    if (app()->isLocal()) {
-                        $filename = 'test-' . $filename;
-                    }
-
-                    if (!config('services.fileserver.enable.get')) {
-                        $filename = 'test.png';
+                    $displayName = $document['name'];
+                    if ($document['is_muslim']) {
+                        $displayName .= ' (For Muslim Citizen Only)';
                     }
                 @endphp
-                <div class="col mb-4">
-                    <h6>{{ $document['name'] }}</h6>
-                    @if (app()->hasDebugModeEnabled())
-                        <p class="text-muted">Key: {{ $document['key'] }} / Slugged Key:
-                            {{ Str::slug($document['key']) }} /
-                            Full filename:
-                            {{ $filename }}</p>
-                    @endif
-                    <img src="{{ route('image', ['filename' => $filename]) }}" alt="{{ $document['name'] }}"
-                        class="img-fluid">
+                <div class="col mb-4 {{ $document['is_muslim'] ? 'muslim-requirements' : '' }}">
+                    <x-form-image-submission name="images[{{ $document['key'] }}]" label="{{ $displayName }}"
+                        helpText="From {{ $document['source'] }}" />
                     <hr>
                 </div>
             @endforeach
-        @else
-            <p class="text-muted">No documents found.</p>
+        @endif
+    @else
+        @if (config('services.fileserver.enable.get'))
+            @if ($client)
+                @foreach ($documents as $document)
+                    @php
+                        $filename = $client->tracking_no . '-' . Str::slug($document['key']) . '.jpeg.enc';
+
+                        if (app()->isLocal()) {
+                            $filename = 'test-' . $filename;
+                        }
+                    @endphp
+                    <div class="col mb-4">
+                        <h6>{{ $document['name'] }}</h6>
+                        @if (app()->hasDebugModeEnabled())
+                            <p class="text-muted">Key: {{ $document['key'] }} / Slugged Key:
+                                {{ Str::slug($document['key']) }} /
+                                Full filename:
+                                {{ $filename }}</p>
+                        @endif
+                        <img src="{{ route('image', ['filename' => $filename]) }}" alt="{{ $document['name'] }}"
+                            class="img-fluid">
+                        <hr>
+                    </div>
+                @endforeach
+            @else
+                <p class="text-muted">No documents found.</p>
+            @endif
         @endif
     @endif
 </div>
