@@ -185,11 +185,11 @@
         </tr>
         <tr class="border-none">
             <td>
-                @foreach ($assistances as $assistance)
+                @foreach ($assistances as $id => $name)
                     <table>
                         <tr class="">
                             <td style="text-decoration: underline;">
-                                @if ($assistance == 'Burial')
+                                @if ($name == 'Burial' && isset($recommendation))
                                     &nbsp;
                                     {{ isset($referral) ? '' : '/' }}
                                     &nbsp;
@@ -201,7 +201,7 @@
                                 @endif
                             </td>
                             <td>
-                                {{ $assistance }}
+                                {{ $name }}
                             </td>
                         </tr>
                     </table>
@@ -267,7 +267,7 @@
                     <tr>
                         <td>Php</td>
                         <td class="field-input">
-                            {{ $recommendation->amount ?? 'N/A' }}
+                            {{ $recommendation?->amount ?? 'N/A' }}
                         </td>
                     </tr>
                 </table>
@@ -277,7 +277,7 @@
                         @foreach ($moa as $mode)
                             <td style="text-decoration: underline;">
                                 @if (isset($recommendation))
-                                    @if ($recommendation->moa->id == $mode->id)
+                                    @if ($recommendation->moa?->id == $mode->id)
                                         &nbsp;
                                         /
                                         &nbsp;
