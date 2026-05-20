@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ClientRequest;
+use App\Http\Requests\UpdateClientRequest;
 use App\Models\Assistance;
 use App\Models\Barangay;
 use App\Models\CivilStatus;
@@ -201,17 +202,21 @@ class ClientController extends Controller
         ));
     }
 
-    public function update(ClientRequest $request, Client $client)
+    public function update(UpdateClientRequest $request, Client $client)
     {
-        $client = $this->clientServices->updateClient($request->validated(), $client);
-        activity()
-            ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
-            ->causedBy(Auth::user())
-            ->log('Updated the client details: '.$client->id);
-
-        return redirect()
-            ->route('client.show', $client)
-            ->with('success', 'Client information updated successfully!');
+        try {
+            $this->clientServices->updateClient($request->validated(), $client);
+            activity()
+                ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
+                ->causedBy(Auth::user())
+                ->log('Updated the client details: '.$client->id);
+    
+            return redirect()
+                ->route('client.show', $client)
+                ->with('success', 'Client information updated successfully!');
+        } catch (\Throwable $th) {
+            return redirect()->back()->with('error', 'Failed to update client information!'.(app()->hasDebugModeEnabled() ? ': '.$th->getMessage() : ''));
+        }
     }
 
     public function destroy(Client $client)

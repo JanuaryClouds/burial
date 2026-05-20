@@ -25,8 +25,6 @@
             <!-- begin::Menu wrapper -->
             @includeWhen(Route::is('*.index') && auth()->user()->hasRole('superadmin'),
                 'superadmin.partials.new-content')
-            @includeWhen(Route::is('*.show') && auth()->user()->hasRole('superadmin'),
-                'cms.partials.edit-content-buttons')
             <!-- end::Menu wrapper -->
 
             @include('partials.mobile-nav')
