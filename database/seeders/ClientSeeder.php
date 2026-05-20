@@ -22,11 +22,11 @@ class ClientSeeder extends Seeder
      */
     public function run(): void
     {
-        $users = User::factory()->count(10)->create([
+        $users = User::factory()->count(20)->create([
             'citizen_uuid' => fn () => Str::uuid()->toString(),
         ]);
 
-        $clients = Client::factory()->count(10)->create([
+        $clients = Client::factory()->count(20)->create([
             'user_id' => fn () => $users->random()->id,
         ]);
 
