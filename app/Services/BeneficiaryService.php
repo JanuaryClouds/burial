@@ -43,9 +43,47 @@ class BeneficiaryService
                     'date_of_death' => $beneficiary->date_of_death,
                     'religion' => $beneficiary->religion?->name,
                     'assistance' => $assistance,
+                    'show_route' => route('beneficiary.show', $beneficiary->id),
                 ];
             })
             ->sortBy('client_tracking_no');
+    }
+
+    /**
+     * @param string $id
+     * @return Beneficiary
+     */
+    public function show(string $id): Beneficiary
+    {
+        return Beneficiary::with([
+            'client',
+            'client.claimant',
+            'religion',
+            'barangay',
+        ])->findOrFail($id);
+    }
+
+    /**
+     * @param string $id
+     * @param array $data
+     * @return void
+     */
+    public function update(string $id, array $data): void
+    {
+        $beneficiary = Beneficiary::findOrFail($id);
+        $data = [
+            'first_name' => $data['ben_first_name'],
+            'middle_name' => $data['ben_middle_name'],
+            'last_name' => $data['ben_last_name'],
+            'suffix' => $data['ben_suffix'],
+            'sex_id' => $data['ben_sex_id'],
+            'religion_id' => $data['ben_religion_id'],
+            'date_of_birth' => $data['ben_date_of_birth'],
+            'date_of_death' => $data['ben_date_of_death'],
+            'place_of_birth' => $data['ben_place_of_birth'],
+            'barangay_id' => $data['ben_barangay_id'],
+        ];
+        $beneficiary->update($data);
     }
 
     public function reportIndex($startDate, $endDate)

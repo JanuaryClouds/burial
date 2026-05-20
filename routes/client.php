@@ -29,6 +29,10 @@ Route::prefix('clients')
             ->middleware('permission:view-clients')
             ->name('gis-form');
 
+        Route::put('/{id}/update', [ClientController::class, 'update'])
+            ->middleware('role:superadmin')
+            ->name('update');
+
         Route::post('/{id}/schedule', [InterviewController::class, 'store'])
             ->can('create', Interview::class)
             ->name('interview.schedule.store');

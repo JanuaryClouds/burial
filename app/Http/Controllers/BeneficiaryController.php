@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateBeneficiaryRequest;
 use App\Services\BeneficiaryService;
 use App\Services\DatatableService;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -78,6 +79,36 @@ class BeneficiaryController extends Controller
             'cardData' => $cardData ?? null,
             'page_title' => 'Beneficiaries',
         ]);
+    }
+
+    public function show(string $id)
+    {
+        $beneficiary = $this->beneficiaryServices->show($id);
+        $readonly = !auth()->user()->hasRole('superadmin');
+
+        return view('beneficiary.view', [
+            'page_title' => $beneficiary->fullname(),
+            'readonly' => $readonly,
+            'beneficiary' => $beneficiary,
+        ]);
+    }
+
+    public function update(string $id, UpdateBeneficiaryRequest $request)
+    {
+        try {
+            $data = $request->validated();
+            $this->beneficiaryServices->update($id, $data);
+
+            activity()
+                ->withProperties(['ip' => $request->ip(), 'beneficiary' => $id])
+                ->causedBy(auth()->user())
+                ->log('Updated beneficiary');
+
+            return redirect()->route('beneficiary.show', $id)
+                ->with('success', 'Beneficiary updated successfully');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to update beneficiary. ' . (app()->hasDebugModeEnabled() ? $e->getMessage() : ''));
+        }
     }
 
     public function generatePdfReport(Request $request, $startDate, $endDate)
