@@ -55,7 +55,7 @@
     </div>
     <div class="col-12 col-lg-4">
         <x-form-select name="relationship_id" id="relationship" label="Relationship of the Deceased to the Claimant"
-            required="true" :options="$relationships" :selected="$claimant->relationship_to_deceased ?? ''" :disabled="$readonly" />
+            required="true" :options="$relationships" :selected="$claimant->relationship_id ?? ''" :disabled="$readonly" />
     </div>
     @if (!$claimant_change)
         <div class="col-12 col-lg-3">
