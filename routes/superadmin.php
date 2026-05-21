@@ -32,16 +32,27 @@ Route::middleware('role:superadmin')
         // Route::resource('assistance', AssistanceController::class);
         // Route::resource('civil', CivilStatusController::class);
         Route::resource('education', EducationController::class)
-            ->only(['index', 'store', 'edit', 'update']);
+            ->only(['index', 'store', 'edit', 'update', 'destroy']);
+        Route::post('/education/{id}/restore', [EducationController::class, 'restore'])
+            ->name('education.restore');
+
         Route::resource('nationality', NationalityController::class)
-            ->only(['index', 'store', 'edit', 'update']);
+            ->only(['index', 'store', 'edit', 'update', 'destroy']);
+        Route::post('/nationality/{id}/restore', [NationalityController::class, 'restore'])
+            ->name('nationality.restore');
+
         Route::resource('relationship', RelationshipController::class)
-            ->only(['index', 'store', 'edit', 'update']);
+            ->only(['index', 'store', 'edit', 'update', 'destroy']);
+        Route::post('/relationship/{id}/restore', [RelationshipController::class, 'restore'])
+            ->name('relationship.restore');
+
         Route::resource('religion', ReligionController::class)
-            ->only(['index', 'store', 'edit', 'update']);
-        Route::resource('sex', SexController::class);
-        Route::resource('district', DistrictController::class);
-        Route::resource('moa', ModeOfAssistanceController::class);
+            ->only(['index', 'store', 'edit', 'update', 'destroy']);
+        Route::post('/religion/{id}/restore', [ReligionController::class, 'restore'])
+            ->name('religion.restore');
+        // Route::resource('sex', SexController::class);
+        // Route::resource('district', DistrictController::class);
+        // Route::resource('moa', ModeOfAssistanceController::class);
         Route::resource('user', UserController::class)
             ->only(['index']);
         Route::resource('user', UserController::class)

@@ -1,7 +1,7 @@
 @props(['family' => [], 'readonly' => false])
 @php
     $genders = \App\Models\Sex::pluck('name', 'id');
-    $relationships = \App\Models\Relationship::pluck('name', 'id');
+    $relationships = \App\Models\Relationship::withTrashed()->pluck('name', 'id');
     $civilStatus = \App\Models\CivilStatus::pluck('name', 'id');
 @endphp
 <div class="row">
@@ -34,9 +34,11 @@
     </div>
 </div>
 <div class="d-flex justify-content-end">
-    @if (!Route::is('beneficiary.family.show'))
-        <a name="" id="" class="btn btn-warning btn-sm"
-            href="{{ route('beneficiary.family.show', ['familyId' => $family->id]) }}" role="button">Edit
-            Data</a>
-    @endif
+    @role('superadmin')
+        @if (!Route::is('beneficiary.family.show'))
+            <a name="" id="" class="btn btn-warning btn-sm"
+                href="{{ route('beneficiary.family.show', ['familyId' => $family->id]) }}" role="button">Edit
+                Data</a>
+        @endif
+    @endrole
 </div>

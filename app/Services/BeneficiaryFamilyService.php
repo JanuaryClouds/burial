@@ -16,13 +16,13 @@ class BeneficiaryFamilyService
     {
         $family = BeneficiaryFamily::findOrFail($id);
         $data =  [
-            'fam_name' => $data['fam_name'] ?? null,
-            'fam_sex_id' => $data['fam_sex_id'] ?? null,
-            'fam_age' => $data['fam_age'] ?? null,
-            'fam_civil_id' => $data['fam_civil_id'] ?? null,
-            'fam_relationship_id' => $data['fam_relationship_id'] ?? null,
-            'fam_occupation' => $data['fam_occupation'] ?? null,
-            'fam_income' => $data['fam_income'] ?? null,
+            'name' => $data['fam_name'] ?? null,
+            'sex_id' => $data['fam_sex_id'] ?? null,
+            'age' => $data['fam_age'] ?? null,
+            'civil_id' => $data['fam_civil_id'] ?? null,
+            'relationship_id' => $data['fam_relationship_id'] ?? null,
+            'occupation' => $data['fam_occupation'] ?? null,
+            'income' => $data['fam_income'] ?? null,
         ];
         $family->update($data);
     }

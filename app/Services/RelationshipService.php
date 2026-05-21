@@ -11,21 +11,18 @@ class RelationshipService
         return Relationship::create($data);
     }
 
-    public function updateRelationship(array $data, $relationship): Relationship
+    public function updateRelationship(array $data, Relationship $relationship): void
     {
-        if ($relationship->update($data)) {
-            return $relationship;
-        }
-
-        return null;
+        $relationship->update($data);
     }
 
-    public function deleteRelationship($relationship): Relationship
+    public function deleteRelationship(Relationship $relationship): void
     {
-        if ($relationship->delete()) {
-            return $relationship;
-        }
+        $relationship->delete();
+    }
 
-        return null;
+    public function restoreRelationship(Relationship $relationship): void
+    {
+        $relationship->restore();
     }
 }

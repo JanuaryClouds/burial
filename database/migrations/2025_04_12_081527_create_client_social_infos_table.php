@@ -13,10 +13,22 @@ return new class extends Migration
     {
         Schema::create('client_social_infos', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('client_id')->constrained('clients')->onDelete('CASCADE');
-            $table->foreignId('relationship_id')->constrained('relationships');
-            $table->foreignId('civil_id')->constrained('civil_statuses');
-            $table->foreignId('education_id')->constrained('educations');
+            $table->foreignUuid('client_id')
+                ->constrained('clients')
+                ->onDelete('CASCADE')
+                ->onUpdate('CASCADE');
+            $table->foreignId('relationship_id')
+                ->constrained('relationships')
+                ->onDelete('CASCADE')
+                ->onUpdate('CASCADE');
+            $table->foreignId('civil_id')
+                ->constrained('civil_statuses')
+                ->onDelete('CASCADE')
+                ->onUpdate('CASCADE');
+            $table->foreignId('education_id')
+                ->constrained('educations')
+                ->onDelete('CASCADE')
+                ->onUpdate('CASCADE');
             $table->string('income')->nullable();
             $table->string('philhealth')->nullable();
             $table->string('skill')->nullable();

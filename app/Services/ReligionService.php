@@ -11,21 +11,18 @@ class ReligionService
         return Religion::create($data);
     }
 
-    public function updateReligion(array $data, $religion): Religion
+    public function updateReligion(array $data, Religion $religion): void
     {
-        if ($religion->update($data)) {
-            return $religion;
-        }
-
-        return null;
+        $religion->update($data);
     }
 
-    public function deleteReligion($religion): Religion
+    public function deleteReligion(Religion $religion): void
     {
-        if ($religion->delete()) {
-            return $religion;
-        }
+        $religion->delete();
+    }
 
-        return null;
+    public function restoreReligion(Religion $religion): void
+    {
+        $religion->restore();
     }
 }

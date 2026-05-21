@@ -25,14 +25,16 @@ class NationalityController extends Controller
     {
         $page_title = 'Nationality';
         $resource = 'nationality';
-        $data = Nationality::getAllNationalities()->map(function ($nationality) {
-            return [
-                'id' => $nationality->id,
-                'name' => $nationality->name,
-                'remarks' => $nationality->remarks,
-                'show_route' => route('nationality.edit', $nationality->id),
-            ];
-        });
+        $data = Nationality::withTrashed()
+            ->get()
+            ->map(function ($nationality) {
+                return [
+                    'id' => $nationality->id,
+                    'name' => $nationality->name . ($nationality->trashed() ? ' (disabled)' : ''),
+                    'remarks' => $nationality->remarks,
+                    'show_route' => route('nationality.edit', $nationality->id),
+                ];
+            });
         $columns = $this->datatableServices->getColumns($data, ['id', 'show_route']);
 
         if (request()->expectsJson()) {
@@ -49,11 +51,11 @@ class NationalityController extends Controller
         ));
     }
 
-    public function edit(Nationality $nationality)
+    public function edit($id)
     {
         $page_title = 'Nationality';
         $type = 'nationality';
-        $data = $nationality;
+        $data = Nationality::withTrashed()->findOrFail($id);
         $resource = 'nationality';
 
         return view('cms.edit', compact('page_title', 'data', 'type', 'resource'));
@@ -75,8 +77,8 @@ class NationalityController extends Controller
 
     public function update($id, Request $request)
     {
-        $nationality = Nationality::findOrFail($id);
-        $nationality = $this->nationalityServices->updateNationality($request->validate([
+        $nationality = Nationality::withTrashed()->findOrFail($id);
+        $this->nationalityServices->updateNationality($request->validate([
             'name' => 'required',
             'remarks' => 'nullable',
         ]), $nationality);
@@ -92,9 +94,10 @@ class NationalityController extends Controller
             ->with('success', 'You have successfully updated a nationality!');
     }
 
-    public function destroy(Nationality $nationality)
+    public function destroy($id)
     {
-        $nationality = $this->nationalityServices->deleteNationality($nationality);
+        $nationality = Nationality::withTrashed()->findOrFail($id);
+        $this->nationalityServices->deleteNationality($nationality);
 
         activity()
             ->causedBy(Auth::user())
@@ -103,6 +106,22 @@ class NationalityController extends Controller
 
         return redirect()
             ->route('nationality.index')
-            ->with('success', 'You have successfully deleted a nationality!');
+            ->with('success', 'Nationality soft deleted successfully');
+    }
+
+    public function restore($id)
+    {
+        $nationality = Nationality::withTrashed()->findOrFail($id);
+        $this->nationalityServices->restoreNationality($nationality);
+        
+        activity()
+            ->performedOn($nationality)
+            ->causedBy(Auth::user())
+            ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
+            ->log('Restored the nationality: '.$nationality->name);
+
+        return redirect()
+            ->route('nationality.index')
+            ->with('success', 'Nationality restored successfully.');
     }
 }

@@ -35,7 +35,7 @@ class ClientSocialInfo extends Model
 
     public function relationship()
     {
-        return $this->belongsTo(Relationship::class, 'relationship_id');
+        return $this->belongsTo(Relationship::class, 'relationship_id')->withTrashed();
     }
 
     public function education()

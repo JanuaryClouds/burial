@@ -25,11 +25,12 @@ class EducationController extends Controller
     {
         $page_title = 'Education';
         $resource = 'education';
-        $data = Education::get()
+        $data = Education::withTrashed()
+            ->get()
             ->map(function ($education) {
                 return [
                     'id' => $education->id,
-                    'name' => $education->name,
+                    'name' => $education->name . ($education->trashed() ? ' (disabled)' : ''),
                     'remarks' => $education->remarks,
                     'show_route' => route('education.edit', $education->id),
                 ];
@@ -50,11 +51,11 @@ class EducationController extends Controller
         ));
     }
 
-    public function edit(Education $education)
+    public function edit($id)
     {
         $page_title = 'Education';
         $resource = 'education';
-        $data = $education;
+        $data = Education::withTrashed()->findOrFail($id);
 
         return view('cms.edit', compact(
             'data',
@@ -79,8 +80,8 @@ class EducationController extends Controller
 
     public function update($id, Request $request)
     {
-        $education = Education::findOrFail($id);
-        $education = $this->educationServices->updateEducation($request->validate([
+        $education = Education::withTrashed()->findOrFail($id);
+        $this->educationServices->updateEducation($request->validate([
             'name' => 'required',
             'remarks' => 'nullable',
         ]), $education);
@@ -96,17 +97,35 @@ class EducationController extends Controller
             ->with('success', 'Education updated successfully.');
     }
 
-    public function destroy(Education $education)
+    public function destroy($id)
     {
-        $education = $this->educationServices->deleteEducation($education);
-
+        $education = Education::withTrashed()->findOrFail($id);
+        $this->educationServices->deleteEducation($education);
+        
         activity()
             ->performedOn($education)
             ->causedBy(Auth::user())
+            ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
             ->log('Deleted the education: '.$education->name);
 
         return redirect()
             ->route('education.index')
-            ->with('success', 'Education deleted successfully.');
+            ->with('success', 'Education soft deleted successfully.');
+    }
+
+    public function restore($id)
+    {
+        $education = Education::withTrashed()->findOrFail($id);
+        $this->educationServices->restoreEducation($education);
+        
+        activity()
+            ->performedOn($education)
+            ->causedBy(Auth::user())
+            ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
+            ->log('Restored the education: '.$education->name);
+
+        return redirect()
+            ->route('education.index')
+            ->with('success', 'Education restored successfully.');
     }
 }

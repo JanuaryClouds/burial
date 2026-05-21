@@ -25,13 +25,15 @@ class ReligionController extends Controller
     {
         $page_title = 'Religion';
         $resource = 'religion';
-        $data = Religion::getAllReligions()->map(function ($religion) {
-            return [
-                'id' => $religion->id,
-                'name' => $religion->name,
-                'remarks' => $religion->remarks,
-                'show_route' => route('religion.edit', $religion->id),
-            ];
+        $data = Religion::withTrashed()
+            ->get()
+            ->map(function ($religion) {
+                return [
+                    'id' => $religion->id,
+                    'name' => $religion->name. ($religion->trashed() ? ' (disabled)' : ''),
+                    'remarks' => $religion->remarks,
+                    'show_route' => route('religion.edit', $religion->id),
+                ];
         });
         $columns = $this->datatableServices->getColumns($data, ['id', 'show_route']);
 
@@ -63,19 +65,19 @@ class ReligionController extends Controller
             ->with('success', 'You have successfully created a religion!');
     }
 
-    public function edit(Religion $religion)
+    public function edit($id)
     {
         $page_title = 'Religion';
         $resource = 'religion';
-        $data = $religion;
+        $data = Religion::withTrashed()->findOrFail($id);
 
         return view('cms.edit', compact('page_title', 'data', 'resource'));
     }
 
     public function update($id, Request $request)
     {
-        $religion = Religion::findOrFail($id);
-        $religion = $this->religionServices->updateReligion($request->validate([
+        $religion = Religion::withTrashed()->findOrFail($id);
+        $this->religionServices->updateReligion($request->validate([
             'name' => 'required',
             'remarks' => 'nullable',
         ]), $religion);
@@ -91,17 +93,34 @@ class ReligionController extends Controller
             ->with('success', 'Religion updated successfully.');
     }
 
-    public function destroy(Religion $religion)
+    public function destroy($id)
     {
-        $religion = $this->religionServices->deleteReligion($religion);
-
+        $religion = Religion::withTrashed()->findOrFail($id);
         activity()
             ->causedBy(Auth::user())
             ->performedOn($religion)
-            ->log('Created the religion: '.$religion->name);
+            ->log('Deleted the religion: '.$religion->name);
+
+        $this->religionServices->deleteReligion($religion);
+        
+        return redirect()
+            ->route('religion.index')
+            ->with('success', 'Religion soft deleted successfully');
+    }
+
+    public function restore($id)
+    {
+        $religion = Religion::withTrashed()->findOrFail($id);
+        $this->religionServices->restoreReligion($religion);
+        
+        activity()
+            ->performedOn($religion)
+            ->causedBy(Auth::user())
+            ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
+            ->log('Restored the religion: '.$religion->name);
 
         return redirect()
             ->route('religion.index')
-            ->with('success', 'You have successfully deleted a religion!');
+            ->with('success', 'Religion restored successfully.');
     }
 }

@@ -16,8 +16,14 @@ return new class extends Migration
             $table->string('name');
             $table->foreignId('sex_id')->constrained('sexes');
             $table->integer('age');
-            $table->foreignId('civil_id')->constrained('civil_statuses');
-            $table->foreignId('relationship_id')->constrained('relationships');
+            $table->foreignId('civil_id')
+                ->constrained('civil_statuses')
+                ->onDelete('CASCADE')
+                ->onUpdate('CASCADE');
+            $table->foreignId('relationship_id')
+                ->constrained('relationships')
+                ->onDelete('CASCADE')
+                ->onUpdate('CASCADE');
             $table->string('occupation')->nullable();
             $table->string('income')->nullable();
             $table->timestamps();

@@ -24,11 +24,12 @@ class RelationshipController extends Controller
     {
         $page_title = 'Relationship';
         $resource = 'relationship';
-        $data = Relationship::getAllRelationships()
+        $data = Relationship::withTrashed()
+            ->get()
             ->map(function ($relationship) {
                 return [
                     'id' => $relationship->id,
-                    'name' => $relationship->name,
+                    'name' => $relationship->name. ($relationship->deleted_at ? ' (disabled)' : ''),
                     'remarks' => $relationship->remarks,
                     'show_route' => route('relationship.edit', $relationship->id),
                 ];
@@ -63,19 +64,21 @@ class RelationshipController extends Controller
             ->with('success', 'Relationship created successfully.');
     }
 
-    public function edit(Relationship $relationship)
+    public function edit($id)
     {
         $page_title = 'Relationship';
         $resource = 'relationship';
-        $data = $relationship;
+        $data = Relationship::withTrashed()->findOrFail($id);
 
         return view('cms.edit', compact('data', 'page_title', 'resource'));
     }
 
-    public function update(RelationshipRequest $request, Relationship $relationship)
+    public function update(RelationshipRequest $request, $id)
     {
         try {
-            $relationship = $this->relationshipServices->updateRelationship($request->validated(), $relationship);
+            $relationship = Relationship::withTrashed()->findOrFail($id);
+            $this->relationshipServices->updateRelationship($request->validated(), $relationship);
+            
             activity()
                 ->causedBy(Auth::user())
                 ->performedOn($relationship)
@@ -92,16 +95,35 @@ class RelationshipController extends Controller
         }
     }
 
-    public function destroy(Relationship $relationship)
+    public function destroy($id)
     {
-        $relationship = $this->relationshipServices->deleteRelationship($relationship);
+        $relationship = Relationship::withTrashed()->findOrFail($id);
+        
         activity()
             ->causedBy(Auth::user())
             ->performedOn($relationship)
             ->log('Deleted the relationship: '.$relationship->name);
+        
+        $this->relationshipServices->deleteRelationship($relationship);
+        
+        return redirect()
+            ->route('relationship.index')
+            ->with('success', 'Relationship soft deleted successfully.');
+    }
+
+    public function restore($id)
+    {
+        $relationship = Relationship::withTrashed()->findOrFail($id);
+        $this->relationshipServices->restoreRelationship($relationship);
+        
+        activity()
+            ->performedOn($relationship)
+            ->causedBy(Auth::user())
+            ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
+            ->log('Restored the relationship: '.$relationship->name);
 
         return redirect()
             ->route('relationship.index')
-            ->with('success', 'Relationship deleted successfully.');
+            ->with('success', 'Relationship restored successfully.');
     }
 }

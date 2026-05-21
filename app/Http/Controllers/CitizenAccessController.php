@@ -187,7 +187,7 @@ class CitizenAccessController extends Controller
 
         $endpoint = config('services.portal.endpoint');
 
-        if (empty($endpoint)) {
+        if (empty($endpoint) || app()->isLocal()) {
             return redirect('/');
         }
 
