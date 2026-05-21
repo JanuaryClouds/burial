@@ -8,14 +8,13 @@ class BeneficiaryFamilyService
 {
     /**
      * Update beneficiary family data.
-     * @param array $data
-     * @param int $id
-     * @return void
+     *
+     * @param  int  $id
      */
     public function update(array $data, $id): void
     {
         $family = BeneficiaryFamily::findOrFail($id);
-        $data =  [
+        $data = [
             'name' => $data['fam_name'] ?? null,
             'sex_id' => $data['fam_sex_id'] ?? null,
             'age' => $data['fam_age'] ?? null,

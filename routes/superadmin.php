@@ -60,7 +60,6 @@ Route::middleware('role:superadmin')
             ->middleware(['throttle:5,1']);
     });
 
-
 Route::resource('role', RoleController::class)
     ->only(['index', 'store', 'edit', 'update'])
     ->middleware(['permission:edit-roles']);

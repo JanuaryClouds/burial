@@ -57,7 +57,7 @@ class UserService
 
     public function update(array $data, $user)
     {
-        if (!empty($data['password'])) {
+        if (! empty($data['password'])) {
             $data['password'] = bcrypt($data['password']);
         } else {
             $data['password'] = $user->password;

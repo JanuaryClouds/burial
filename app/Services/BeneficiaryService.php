@@ -49,10 +49,6 @@ class BeneficiaryService
             ->sortBy('client_tracking_no');
     }
 
-    /**
-     * @param string $id
-     * @return Beneficiary
-     */
     public function show(string $id): Beneficiary
     {
         return Beneficiary::with([
@@ -63,11 +59,6 @@ class BeneficiaryService
         ])->findOrFail($id);
     }
 
-    /**
-     * @param string $id
-     * @param array $data
-     * @return void
-     */
     public function update(string $id, array $data): void
     {
         $beneficiary = Beneficiary::findOrFail($id);

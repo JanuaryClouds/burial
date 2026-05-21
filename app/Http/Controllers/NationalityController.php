@@ -30,7 +30,7 @@ class NationalityController extends Controller
             ->map(function ($nationality) {
                 return [
                     'id' => $nationality->id,
-                    'name' => $nationality->name . ($nationality->trashed() ? ' (disabled)' : ''),
+                    'name' => $nationality->name.($nationality->trashed() ? ' (disabled)' : ''),
                     'remarks' => $nationality->remarks,
                     'show_route' => route('nationality.edit', $nationality->id),
                 ];
@@ -113,7 +113,7 @@ class NationalityController extends Controller
     {
         $nationality = Nationality::withTrashed()->findOrFail($id);
         $this->nationalityServices->restoreNationality($nationality);
-        
+
         activity()
             ->performedOn($nationality)
             ->causedBy(Auth::user())

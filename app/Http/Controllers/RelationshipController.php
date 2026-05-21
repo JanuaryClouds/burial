@@ -29,7 +29,7 @@ class RelationshipController extends Controller
             ->map(function ($relationship) {
                 return [
                     'id' => $relationship->id,
-                    'name' => $relationship->name. ($relationship->deleted_at ? ' (disabled)' : ''),
+                    'name' => $relationship->name.($relationship->deleted_at ? ' (disabled)' : ''),
                     'remarks' => $relationship->remarks,
                     'show_route' => route('relationship.edit', $relationship->id),
                 ];
@@ -78,7 +78,7 @@ class RelationshipController extends Controller
         try {
             $relationship = Relationship::withTrashed()->findOrFail($id);
             $this->relationshipServices->updateRelationship($request->validated(), $relationship);
-            
+
             activity()
                 ->causedBy(Auth::user())
                 ->performedOn($relationship)
@@ -98,14 +98,14 @@ class RelationshipController extends Controller
     public function destroy($id)
     {
         $relationship = Relationship::withTrashed()->findOrFail($id);
-        
+
         activity()
             ->causedBy(Auth::user())
             ->performedOn($relationship)
             ->log('Deleted the relationship: '.$relationship->name);
-        
+
         $this->relationshipServices->deleteRelationship($relationship);
-        
+
         return redirect()
             ->route('relationship.index')
             ->with('success', 'Relationship soft deleted successfully.');
@@ -115,7 +115,7 @@ class RelationshipController extends Controller
     {
         $relationship = Relationship::withTrashed()->findOrFail($id);
         $this->relationshipServices->restoreRelationship($relationship);
-        
+
         activity()
             ->performedOn($relationship)
             ->causedBy(Auth::user())

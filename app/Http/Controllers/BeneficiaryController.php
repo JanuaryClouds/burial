@@ -84,7 +84,7 @@ class BeneficiaryController extends Controller
     public function show(string $id)
     {
         $beneficiary = $this->beneficiaryServices->show($id);
-        $readonly = !auth()->user()->hasRole('superadmin');
+        $readonly = ! auth()->user()->hasRole('superadmin');
 
         return view('beneficiary.view', [
             'page_title' => $beneficiary->fullname(),
@@ -107,7 +107,7 @@ class BeneficiaryController extends Controller
             return redirect()->route('beneficiary.show', $id)
                 ->with('success', 'Beneficiary updated successfully');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Failed to update beneficiary. ' . (app()->hasDebugModeEnabled() ? $e->getMessage() : ''));
+            return redirect()->back()->with('error', 'Failed to update beneficiary. '.(app()->hasDebugModeEnabled() ? $e->getMessage() : ''));
         }
     }
 

@@ -30,11 +30,11 @@ class ReligionController extends Controller
             ->map(function ($religion) {
                 return [
                     'id' => $religion->id,
-                    'name' => $religion->name. ($religion->trashed() ? ' (disabled)' : ''),
+                    'name' => $religion->name.($religion->trashed() ? ' (disabled)' : ''),
                     'remarks' => $religion->remarks,
                     'show_route' => route('religion.edit', $religion->id),
                 ];
-        });
+            });
         $columns = $this->datatableServices->getColumns($data, ['id', 'show_route']);
 
         if (request()->expectsJson()) {
@@ -102,7 +102,7 @@ class ReligionController extends Controller
             ->log('Deleted the religion: '.$religion->name);
 
         $this->religionServices->deleteReligion($religion);
-        
+
         return redirect()
             ->route('religion.index')
             ->with('success', 'Religion soft deleted successfully');
@@ -112,7 +112,7 @@ class ReligionController extends Controller
     {
         $religion = Religion::withTrashed()->findOrFail($id);
         $this->religionServices->restoreReligion($religion);
-        
+
         activity()
             ->performedOn($religion)
             ->causedBy(Auth::user())

@@ -314,7 +314,7 @@ class BurialAssistanceController extends Controller
     {
         $assistance = BurialAssistance::findOrFail($id);
 
-        if (!app()->isLocal() && !in_array($assistance->status, ['released', 'approved'])) {
+        if (! app()->isLocal() && ! in_array($assistance->status, ['released', 'approved'])) {
             return redirect()->back()->with('error', 'Certificate is not yet available.');
         }
 

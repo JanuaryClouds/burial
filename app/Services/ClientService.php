@@ -373,9 +373,6 @@ class ClientService
 
     /**
      * Summary of updateClient
-     * @param array $data
-     * @param \App\Models\Client $client
-     * @return void
      */
     public function updateClient(array $data, Client $client): void
     {

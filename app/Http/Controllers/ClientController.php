@@ -210,7 +210,7 @@ class ClientController extends Controller
                 ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
                 ->causedBy(Auth::user())
                 ->log('Updated the client details: '.$client->id);
-    
+
             return redirect()
                 ->route('client.show', $client)
                 ->with('success', 'Client information updated successfully!');

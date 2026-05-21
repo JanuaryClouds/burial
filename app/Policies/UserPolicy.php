@@ -58,7 +58,7 @@ class UserPolicy
         if ($user->id === $model->id) {
             return true;
         }
-    
+
         if ($model->hasRole('superadmin')) {
             return false;
         }
@@ -66,7 +66,7 @@ class UserPolicy
         if ($user->can('edit-users')) {
             return true;
         }
-            
+
         return false;
     }
 

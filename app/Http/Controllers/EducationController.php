@@ -30,7 +30,7 @@ class EducationController extends Controller
             ->map(function ($education) {
                 return [
                     'id' => $education->id,
-                    'name' => $education->name . ($education->trashed() ? ' (disabled)' : ''),
+                    'name' => $education->name.($education->trashed() ? ' (disabled)' : ''),
                     'remarks' => $education->remarks,
                     'show_route' => route('education.edit', $education->id),
                 ];
@@ -101,7 +101,7 @@ class EducationController extends Controller
     {
         $education = Education::withTrashed()->findOrFail($id);
         $this->educationServices->deleteEducation($education);
-        
+
         activity()
             ->performedOn($education)
             ->causedBy(Auth::user())
@@ -117,7 +117,7 @@ class EducationController extends Controller
     {
         $education = Education::withTrashed()->findOrFail($id);
         $this->educationServices->restoreEducation($education);
-        
+
         activity()
             ->performedOn($education)
             ->causedBy(Auth::user())
