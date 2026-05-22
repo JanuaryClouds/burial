@@ -90,14 +90,6 @@ class FuneralAssistanceController extends Controller
             $page_title = $client->tracking_no;
             $page_subtitle = $client->fullname()."'s Funeral Assistance Application";
             $readonly = ! auth()->user()->hasRole('superadmin') || $data?->forwarded_at != null;
-            $path = "clients/{$client->tracking_no}";
-            $storedFiles = Storage::disk('local')->files($path);
-            $files = collect($storedFiles)->map(function ($file) {
-                return [
-                    'name' => basename($file),
-                    'path' => $file,
-                ];
-            });
 
             return view('funeral.view', compact(
                 'data',
@@ -105,7 +97,6 @@ class FuneralAssistanceController extends Controller
                 'page_title',
                 'page_subtitle',
                 'readonly',
-                'files'
             ));
         } catch (Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
