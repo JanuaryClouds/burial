@@ -13,11 +13,14 @@ Route::prefix('funeral')
             ->name('show');
 
         Route::get('/{id}/approved', [FuneralAssistanceController::class, 'approve'])
+            ->middleware('permission:update-libreng-libings')
             ->name('approved');
 
         Route::get('/{id}/forwarded', [FuneralAssistanceController::class, 'forward'])
+            ->middleware('permission:update-libreng-libings')
             ->name('forwarded');
 
         Route::get('/{id}/certificate', [FuneralAssistanceController::class, 'certificate'])
+            ->middleware('permission:create-certificates')
             ->name('certificate');
     });

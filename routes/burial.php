@@ -15,6 +15,7 @@ Route::name('burial.')
             ->name('show');
 
         Route::post('/{id}/claimant-change/store', [ClaimantChangeController::class, 'store'])
+            ->middleware('permission:create-claimant-change-requests')
             ->name('claimant-change.store');
 
         Route::post('/{id}/claimant-change/{change}/decision', [ClaimantChangeController::class, 'decide'])
@@ -22,6 +23,7 @@ Route::name('burial.')
             ->name('claimant-change.decision');
 
         Route::get('/{id}/certificate', [BurialAssistanceController::class, 'certificate'])
+            ->middleware('permission:create-certificates')
             ->name('certificate');
     });
 

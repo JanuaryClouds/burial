@@ -9,7 +9,7 @@
                         Go to Client Record
                     </a>
                 @endif
-                @if (auth()->user()->roles()->exists())
+                @if (auth()->user()->roles()->exists() && auth()->user()->can('create-certificates'))
                     <a href="{{ route('funeral.certificate', ['id' => $data->id]) }}" class="btn btn-info mr-2"
                         target="_blank">
                         View Certificate

@@ -6,12 +6,14 @@ use App\Http\Controllers\BurialAssistanceController;
 use App\Http\Controllers\CitizenAccessController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExportController;
+use App\Http\Controllers\ImageController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [CitizenAccessController::class, 'index'])
     ->name('landing.page');
 
 Route::get('/sso/callback', [CitizenAccessController::class, 'sso'])
+    ->middleware('throttle:5,1')
     ->name('sso');
 
 Route::match(['get', 'post'], '/sso/logout', [CitizenAccessController::class, 'logout'])
@@ -20,11 +22,9 @@ Route::match(['get', 'post'], '/sso/logout', [CitizenAccessController::class, 'l
 Route::get('/login', [UserController::class, 'loginPage'])
     ->name('login');
 Route::post('/login/check', [UserController::class, 'login'])
-    ->middleware('throttle:5,1')
+    ->middleware('throttle:3,1')
     ->name('login.check');
 Route::post('/logout', [UserController::class, 'logout'])->name('logout');
-
-require __DIR__.'/guest.php';
 
 Route::middleware(['auth'])
     ->group(function () {
@@ -48,6 +48,10 @@ Route::middleware(['auth'])
         Route::get('/activity-logs', [ActivityLogController::class, 'index'])
             ->middleware('permission:view-logs')
             ->name('activity.logs');
+
+        Route::get('/image/{filename}', [ImageController::class, 'get'])
+            ->where('filename', '[a-zA-Z0-9_\-\.]+')
+            ->name('image');
 
         require __DIR__.'/client.php';
         require __DIR__.'/beneficiary.php';

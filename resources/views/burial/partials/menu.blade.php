@@ -10,7 +10,7 @@
                     </a>
                 @endif
                 @if (auth()->user()->roles()->exists())
-                    @if (app()->hasDebugModeEnabled() || $show_certificate)
+                    @if (app()->hasDebugModeEnabled() || ($show_certificate && auth()->user()->can('create-certificates')))
                         <a href="{{ route('burial.certificate', ['id' => $data->id]) }}" class="btn btn-secondary mr-2"
                             target="_blank">
                             View Certificate

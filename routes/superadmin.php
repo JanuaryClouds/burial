@@ -56,8 +56,7 @@ Route::middleware('role:superadmin')
         Route::resource('user', UserController::class)
             ->only(['index']);
         Route::resource('user', UserController::class)
-            ->only(['store'])
-            ->middleware(['throttle:5,1']);
+            ->only(['store']);
     });
 
 Route::resource('role', RoleController::class)
@@ -66,6 +65,7 @@ Route::resource('role', RoleController::class)
 
 Route::name('system.')
     ->prefix('system')
+    ->middleware('role:superadmin')
     ->group(function () {
         Route::get('/', [SystemSettingController::class, 'index'])
             ->name('index');

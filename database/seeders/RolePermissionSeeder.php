@@ -13,22 +13,20 @@ class RolePermissionSeeder extends Seeder
         $staffPermissions = [
             // Client Models
             // 'create-clients',
-            'view-clients',
             'create-interview-schedules',
             'create-assessments',
             'create-recommendations',
             'create-referrals',
+            'create-certificates',
 
             // Burial Assistance Models
             'view-burial-assistances',
-            'create-burial-assistances',
             'create-updates',
             'create-claimant-change-requests',
             'edit-claimant-change-requests',
-            'delete-updates',
+            // 'delete-updates',
 
             // Libreng Libing
-            'create-libreng-libings',
             'view-libreng-libings',
             'update-libreng-libings',
 
@@ -64,7 +62,37 @@ class RolePermissionSeeder extends Seeder
 
         Role::firstOrCreate(['name' => 'superadmin']);
 
-        $staffRole = Role::firstOrCreate(['name' => 'staff']);
-        // $staffRole->givePermissionTo($staffPermissions);
+        // Default Role to all
+        Role::firstOrCreate(['name' => 'staff']);
+        
+        $reporterRole = Role::firstOrCreate(['name' => 'reporter']);
+        $reporterRole->givePermissionTo([
+            'create-reports',
+            'view-reports'
+        ]);
+        
+        $interviewerRole = Role::firstOrCreate(['name' => 'interviewer']);
+        $interviewerRole->givePermissionTo([
+            'create-interview-schedules',
+            'create-assessments',
+            'create-recommendations',
+            'create-referrals',
+        ]);
+
+        $burialStaffRole = Role::firstOrCreate(['name' => 'burial-staff']);
+        $burialStaffRole->givePermissionTo([
+            'view-burial-assistances',
+            'create-updates',
+            'create-claimant-change-requests',
+            'edit-claimant-change-requests',
+            'create-certificates'
+        ]);
+        
+        $librengLibingStaffRole = Role::firstOrCreate(['name' => 'libreng-libing-staff']);
+        $librengLibingStaffRole->givePermissionTo([
+            'view-libreng-libings',
+            'update-libreng-libings',
+            'create-certificates',
+        ]);
     }
 }

@@ -35,5 +35,14 @@ class AdminSeeder extends Seeder
             $staffFactory->assignRole($staffRole);
         }
 
+        foreach ($staffFactories as $staff) {
+            $allRoles = Role::where('name', '!=', 'superadmin')->pluck('name')->toArray();
+            $existingRoles = $staff->roles()->pluck('name')->toArray();
+            while (rand(0, 1) === 1 && count($existingRoles) < count($allRoles)) {
+                $randomRole = Role::whereNotIn('name', $existingRoles)->inRandomOrder()->first();
+                $staff->assignRole($randomRole);
+                $existingRoles[] = $randomRole->name;
+            }
+        }
     }
 }

@@ -26,7 +26,6 @@ Route::prefix('clients')
     ->name('clients.')
     ->group(function () {
         Route::get('/{id}/gis-form', [ClientController::class, 'generateGISForm'])
-            ->middleware('permission:view-clients')
             ->name('gis-form');
 
         Route::put('/{id}/update', [ClientController::class, 'update'])
