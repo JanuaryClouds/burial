@@ -2,27 +2,73 @@
 @section('content')
     <div class="d-flex flex-column gap-5">
         @include('funeral.partials.menu')
-        <form action="{{ route('funeral.update', $data->id) }}" method="post" id="contentForm">
+        <div class="card">
+            <div class="card-body">
+                @include('funeral.partials.approval')
+            </div>
+        </div>
+        <form action="{{ route('client.update', $client->id) }}" method="post">
             @csrf
-            @method('PUT')
-            <div class="d-flex flex-column gap-3">
-                <div class="card">
-                    <div class="card-body">
-                        @include('funeral.partials.approval')
-                    </div>
+            @method('put')
+            <div class="card">
+                <div class="card-body">
+                    @include('client.partials.client-info', [
+                        'client' => $client,
+                        'readonly' => $readonly,
+                    ])
                 </div>
-                @include('client.partials.create-form-body')
-                <div class="card">
-                    <div class="card-body">
-                        @include('client.partials.beneficiary-assessment', ['readonly' => true])
+                @role('superadmin')
+                    <div class="card-footer d-flex justify-content-end">
+                        <button class="btn btn-warning btn-sm" id="saveContentBtn">
+                            <i class="fas fa-save"></i>
+                            Save Changes to Data
+                        </button>
                     </div>
-                </div>
-                <div class="card">
-                    <div class="card-body">
-                        @include('client.partials.recommended-assistance', ['readonly' => true])
-                    </div>
-                </div>
+                @endrole
             </div>
         </form>
+        <div class="card">
+            <div class="card-body">
+                @include('client.partials.beneficiary-info', [
+                    'client' => $client,
+                    'readonly' => true,
+                ])
+            </div>
+            @role('superadmin')
+                <div class="card-footer d-flex justify-content-end">
+                    <a name="" id="" class="btn btn-warning btn-sm"
+                        href="{{ route('beneficiary.show', $client->beneficiary->id) }}" role="button">Edit Data</a>
+                </div>
+            @endrole
+        </div>
+        <div class="card">
+            <div class="card-body d-flex flex-column gap-2">
+                <h5 class="card-title">III. BENEFICIARY'S FAMILY COMPOSITION</h5>
+                @foreach ($client->family as $family)
+                    @include('beneficiary.family.partials.info', [
+                        'family' => $family,
+                        'readonly' => true,
+                    ])
+                    <hr>
+                @endforeach
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                @include('client.partials.beneficiary-assessment', ['readonly' => true])
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                @include('client.partials.recommended-assistance', ['readonly' => true])
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                @include('client.partials.documents', [
+                    'client' => $client,
+                ])
+            </div>
+        </div>
     </div>
 @endsection
