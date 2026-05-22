@@ -20,17 +20,4 @@ class ImageController extends Controller
     {
         return $this->imageService->get($filename);
     }
-
-    public function stream($tracking_no, $filename)
-    {
-        $path = "clients/{$tracking_no}/{$filename}";
-        abort_unless(Storage::disk('local')->exists($path), 404);
-        $encrypted = Storage::disk('local')->get($path);
-        $decrypted = Crypt::decrypt($encrypted);
-        $mime = (new \finfo(FILEINFO_MIME_TYPE))->buffer($decrypted);
-
-        return response($decrypted)
-            ->header('Content-Type', $mime)
-            ->header('Content-Disposition', 'inline; filename="'.$filename.'"');
-    }
 }

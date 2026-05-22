@@ -14,8 +14,8 @@ use App\Models\SystemSetting;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
-use DB;
-use Str;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class ClientService
 {
