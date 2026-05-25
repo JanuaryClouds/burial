@@ -3,23 +3,37 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use Exception;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
+use App\Services\CentralClientService;
+use RuntimeException;
 
 class AdminSeeder extends Seeder
 {
     public function run(): void
     {
+        $centralClientService = new CentralClientService();
         $superAdminRole = Role::firstOrCreate(['name' => 'superadmin']);
         $staffRole = Role::firstOrCreate(['name' => 'staff']);
 
-        $superadmin = User::firstOrCreate(
-            ['email' => 'superadmin@email.com'],
+        $superadminData = $centralClientService->fetchFromPortal('search', 'user1_uat');
+        if (count($superadminData) === 0) {
+            throw new RuntimeException('No data found for user1_uat');
+        } else {
+            $superadminData = $superadminData[0];
+        }
+
+        $superadmin = User::create(
             [
-                'first_name' => 'Super',
-                'middle_name' => 'System',
-                'last_name' => 'Admin',
-                'contact_number' => '09123456789',
+                'email' => $superadminData['email'],
+                'citizen_uuid' => $superadminData['user_id'],
+                'first_name' => $superadminData['firstname'],
+                'middle_name' => $superadminData['middlename'],
+                'last_name' => $superadminData['lastname'],
+                'suffix' => $superadminData['suffix'] ?? null,
+                'is_active' => true,
+                'contact_number' => $superadminData['contact_number'],
                 'password' => config('app.admin_password'),
             ]
         );
@@ -27,9 +41,29 @@ class AdminSeeder extends Seeder
         $superadmin->assignRole($superAdminRole);
         $superadmin->assignRole($staffRole);
 
-        $staffFactories = User::factory()->count(5)->create([
-            'password' => config('app.admin_password'),
-        ]);
+        for ($staffCount = 2; $staffCount < 6; $staffCount++) {
+            $staffDataArray = $centralClientService->fetchFromPortal('search', 'user' . $staffCount . '_uat');
+            if (count($staffDataArray) === 0) {
+                throw new RuntimeException('No user data found');
+            } else {
+                $staffData = $staffDataArray[0];
+            
+            }
+            $staff = User::firstOrCreate([
+                'citizen_uuid' => $staffData['user_id'],
+                'email' => $staffData['email'],
+                'first_name' => $staffData['firstname'],
+                'middle_name' => $staffData['middlename'] ?? null,
+                'last_name' => $staffData['lastname'],
+                'suffix' => $staffData['suffix'] ?? null,
+                'is_active' => true,
+                'contact_number' => $staffData['contact_number'],
+                'password' => config('app.admin_password'),
+            ]);
+
+            $staff->assignRole($staffRole);
+            $staffFactories[] = $staff;
+        }
 
         foreach ($staffFactories as $staffFactory) {
             $staffFactory->assignRole($staffRole);

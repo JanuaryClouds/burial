@@ -42,8 +42,7 @@ class CitizenAccessController extends Controller
         $funeralDocuments = DocumentRequirement::funeral();
 
         if (config('services.portal.users.mock')) {
-            $citizens = User::whereNotNull('citizen_uuid')
-                ->where('citizen_uuid', '!=', config('services.portal.users.sampleUuid'))
+            $citizens = User::whereDoesntHave('roles')
                 ->orderBy('created_at')
                 ->get();
             $testLinks = [];

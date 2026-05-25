@@ -15,7 +15,7 @@ class CentralClientService
      * @param  string  $value  array value to match
      * @return array Citizen Data if successfully fetched one citizen, empty array if not
      */
-    public function fetchFromPortal(string $value)
+    public function fetchFromPortal(string $key, string $value)
     {
         if (config('services.portal.users.enable.get') === false) {
             throw new RuntimeException('User fetching from portal is disabled.');
@@ -34,7 +34,7 @@ class CentralClientService
 
         $response = Http::withHeader('X-Secret-Key', $apiKey)
             ->withQueryParameters([
-                'uuid' => $value,
+                $key => $value,
             ])
             ->timeout(15)
             ->retry(3, 200)
@@ -55,7 +55,7 @@ class CentralClientService
             return [];
         }
 
-        return $data[0];
+        return $data;
     }
 
     /**
@@ -80,7 +80,7 @@ class CentralClientService
                 '@example.org',
                 '@example.net',
             ])) {
-                $citizenData = $this->fetchFromPortal($citizen_uuid);
+                $citizenData = $this->fetchFromPortal('uuid', $citizen_uuid);
             }
 
             if (! empty($citizenData)) {
