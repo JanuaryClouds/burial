@@ -6,16 +6,22 @@ use App\Models\Beneficiary;
 use App\Models\BurialAssistance;
 use App\Models\ClaimantChange;
 use App\Models\Client;
+use App\Models\ClientAssessment;
+use App\Models\ClientRecommendation;
 use App\Models\FuneralAssistance;
 use App\Models\Interview;
 use App\Models\Permission;
+use App\Models\Referral;
 use App\Models\User;
+use App\Policies\AssessmentPolicy;
 use App\Policies\BeneficiaryPolicy;
 use App\Policies\BurialAssistancePolicy;
 use App\Policies\ClaimantChangePolicy;
 use App\Policies\ClientPolicy;
 use App\Policies\FuneralAssistancePolicy;
 use App\Policies\InterviewPolicy;
+use App\Policies\RecommendationPolicy;
+use App\Policies\ReferralPolicy;
 use App\Policies\RolePolicy;
 use App\Policies\UserPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
@@ -35,6 +41,9 @@ class AuthServiceProvider extends ServiceProvider
         Client::class => ClientPolicy::class,
         Beneficiary::class => BeneficiaryPolicy::class,
         Interview::class => InterviewPolicy::class,
+        ClientAssessment::class => AssessmentPolicy::class,
+        ClientRecommendation::class => RecommendationPolicy::class,
+        Referral::class => ReferralPolicy::class,
         BurialAssistance::class => BurialAssistancePolicy::class,
         FuneralAssistance::class => FuneralAssistancePolicy::class,
         ClaimantChange::class => ClaimantChangePolicy::class,
@@ -45,7 +54,34 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Gate::before(function ($user, $ability) {
+        Gate::before(function ($user, $ability, $arguments) {
+            // Block any user (including superadmin) from modifying/creating their own application details
+            if (in_array($ability, ['create', 'update', 'delete', 'forceDelete'])) {
+                foreach ((array) $arguments as $argument) {
+                    if ($argument instanceof Client && $argument->user_id === $user->id) {
+                        return false;
+                    }
+                    if ($argument instanceof Interview && $argument->client && $argument->client->user_id === $user->id) {
+                        return false;
+                    }
+                    if ($argument instanceof ClientAssessment && $argument->client && $argument->client->user_id === $user->id) {
+                        return false;
+                    }
+                    if ($argument instanceof ClientRecommendation && $argument->client && $argument->client->user_id === $user->id) {
+                        return false;
+                    }
+                    if ($argument instanceof Referral && $argument->client && $argument->client->user_id === $user->id) {
+                        return false;
+                    }
+                    if ($argument instanceof BurialAssistance && $argument->originalClaimant() && $argument->originalClaimant()->client && $argument->originalClaimant()->client->user_id === $user->id) {
+                        return false;
+                    }
+                    if ($argument instanceof FuneralAssistance && $argument->client && $argument->client->user_id === $user->id) {
+                        return false;
+                    }
+                }
+            }
+
             if ($user->hasRole('superadmin')) {
                 if (in_array($ability, ['update', 'delete', 'forceDelete'])) {
                     return null;
@@ -55,74 +91,6 @@ class AuthServiceProvider extends ServiceProvider
             }
 
             return null;
-        });
-
-        Gate::define('create', function ($user, $resource) {
-            $allowedCreateExceptions = [
-                'user',
-                'role',
-                'barangay',
-                'relationship',
-                'religion',
-                'education',
-                'nationality',
-            ];
-
-            if (in_array($resource, $allowedCreateExceptions)) {
-                return true;
-            }
-
-            return false;
-        });
-
-        Gate::define('delete', function ($user, $resource) {
-            $globalDeleteExceptions = [
-                // BurialAssistance::class,
-                // FuneralAssistance::class,
-                // Client::class,
-                // Beneficiary::class,
-                Permission::class,
-                // WorkflowStep::class,
-                // Handler::class,
-                User::class,
-            ];
-
-            if (in_array(get_class($resource), $globalDeleteExceptions)) {
-                return false;
-            }
-
-            if ($resource instanceof Role && in_array($resource->id, [1])) {
-                return false;
-            }
-
-            return true;
-        });
-
-        Gate::define('update', function ($user, $resource) {
-            $globalUpdateExceptions = [
-                // BurialAssistance::class,
-                // FuneralAssistance::class,
-                // Client::class,
-                // Beneficiary::class,
-                Permission::class,
-                // Role::class,
-                // WorkflowStep::class,
-                // Handler::class,
-            ];
-
-            if (in_array(get_class($resource), $globalUpdateExceptions)) {
-                return false;
-            }
-
-            if ($resource instanceof Role && in_array($resource->id, [1])) {
-                return false;
-            }
-
-            if ($resource instanceof User && in_array($resource->id, [1])) {
-                return false;
-            }
-
-            return true;
-        });
+        });;
     }
 }

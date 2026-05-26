@@ -2,33 +2,22 @@
 
 namespace App\Policies;
 
+use App\Models\Client;
 use App\Models\Referral;
 use App\Models\User;
 
 class ReferralPolicy
 {
     /**
-     * Determine whether the user can view any models.
-     */
-    public function viewAny(User $user): bool
-    {
-        //
-    }
-
-    /**
-     * Determine whether the user can view the model.
-     */
-    public function view(User $user, Referral $referral): bool
-    {
-        //
-    }
-
-    /**
      * Determine whether the user can create models.
      */
-    public function create(User $user): bool
+    public function create(User $user, Client $client): bool
     {
-        //
+        if ($user->id === $client->user_id) {
+            return false;
+        }
+
+        return $user->can('create-referrals');
     }
 
     /**

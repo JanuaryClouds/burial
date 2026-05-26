@@ -44,6 +44,10 @@ class FuneralAssistancePolicy
      */
     public function update(User $user, FuneralAssistance $funeralAssistance): bool
     {
+        if ($user->id === $funeralAssistance->client->user_id) {
+            return false;
+        }
+
         return $user->can('update-libreng-libing');
     }
 
