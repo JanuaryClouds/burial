@@ -2,8 +2,8 @@
     <div class="d-flex flex-column gap-4">
         @can('update', $data)
             <h5>Update Password</h5>
-            <x-form-input name="password" label="Password" type="password" />
-            <x-form-input name="password_confirmation" label="Confirm Password" type="password" />
+            <x-form-input name="password" label="Password" type="password" :autocomplete="false" />
+            <x-form-input name="password_confirmation" label="Confirm Password" type="password" :autocomplete="false" />
         @endcan
         <h5>Account Status</h5>
         @if (auth()->user()->can('edit-users') && !$data->hasRole('superadmin'))

@@ -9,7 +9,7 @@
             'name' => 'problem_presented',
             'label' => 'a. Problem Presented',
             'value' => $assessment?->problem_presented,
-            'readonly' => $readonly || isset($assessment),
+            'readonly' => isset($assessment),
             'required' => true,
         ])
     </div>
@@ -20,7 +20,7 @@
             'name' => 'assessment',
             'label' => 'b. Social Worker\'s Assessment',
             'value' => $assessment?->assessment,
-            'readonly' => $readonly || isset($assessment),
+            'readonly' => isset($assessment),
             'required' => true,
         ])
     </div>

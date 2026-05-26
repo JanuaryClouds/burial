@@ -15,21 +15,23 @@
                         View Certificate
                     </a>
                 @endif
-                @if ($data->approved_at == null)
-                    <a href="{{ route('funeral.approved', ['id' => $data->id]) }}" class="btn btn-success mr-2">
-                        Approved
-                    </a>
-                @endif
-                @if ($data->approved_at !== null && $data->forwarded_at === null)
-                    <a href="{{ route('funeral.forwarded', ['id' => $data->id]) }}" class="btn btn-primary">
-                        Forwarded
-                    </a>
-                @elseif ($data->approved_at !== null && $data->forwarded_at !== null)
-                    <button type="button" class="btn btn-secondary" disabled data-bs-toggle="tooltip"
-                        data-bs-placement="bottom" title="Libreng Libing has been provided">
-                        Forwarded
-                    </button>
-                @endif
+                @can('create', [App\Models\FuneralAssistance::class, $data])
+                    @if ($data->approved_at == null)
+                        <a href="{{ route('funeral.approved', ['id' => $data->id]) }}" class="btn btn-success mr-2">
+                            Approved
+                        </a>
+                    @endif
+                    @if ($data->approved_at !== null && $data->forwarded_at === null)
+                        <a href="{{ route('funeral.forwarded', ['id' => $data->id]) }}" class="btn btn-primary">
+                            Forwarded
+                        </a>
+                    @elseif ($data->approved_at !== null && $data->forwarded_at !== null)
+                        <button type="button" class="btn btn-secondary" disabled data-bs-toggle="tooltip"
+                            data-bs-placement="bottom" title="Libreng Libing has been provided">
+                            Forwarded
+                        </button>
+                    @endif
+                @endcan
             </div>
         </div>
     </div>

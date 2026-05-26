@@ -6,7 +6,8 @@
     </div>
     <div class="card-body pt-0">
         <p class="text-muted fs-5 mb-6">
-            Please take a moment to review all the information you have entered. You can click on the tabs above to return to any section and correct any mistakes.
+            Please take a moment to review all the information you have entered. You can click on the tabs above to
+            return to any section and correct any mistakes.
         </p>
 
         <!-- SECTION I: CLIENT'S IDENTIFYING INFORMATION -->
@@ -65,7 +66,8 @@
                     </div>
 
                     <div class="col-md-4 col-sm-6">
-                        <span class="d-block text-gray-500 fw-bold fs-7 text-uppercase mb-1">Relationship to Beneficiary</span>
+                        <span class="d-block text-gray-500 fw-bold fs-7 text-uppercase mb-1">Relationship to
+                            Beneficiary</span>
                         <span id="rev_relationship" class="fw-bolder text-gray-800 fs-6">-</span>
                     </div>
                     <div class="col-md-4 col-sm-6">
@@ -82,7 +84,8 @@
                         <span id="rev_nationality" class="fw-bolder text-gray-800 fs-6">-</span>
                     </div>
                     <div class="col-md-4 col-sm-6">
-                        <span class="d-block text-gray-500 fw-bold fs-7 text-uppercase mb-1">Educational Attainment</span>
+                        <span class="d-block text-gray-500 fw-bold fs-7 text-uppercase mb-1">Educational
+                            Attainment</span>
                         <span id="rev_education" class="fw-bolder text-gray-800 fs-6">-</span>
                     </div>
                     <div class="col-md-4 col-sm-12">
@@ -91,7 +94,8 @@
                     </div>
 
                     <div class="col-md-6 col-sm-6">
-                        <span class="d-block text-gray-500 fw-bold fs-7 text-uppercase mb-1">Estimated Monthly Income</span>
+                        <span class="d-block text-gray-500 fw-bold fs-7 text-uppercase mb-1">Estimated Monthly
+                            Income</span>
                         <span id="rev_income" class="fw-bolder text-gray-800 fs-6">-</span>
                     </div>
                     <div class="col-md-6 col-sm-6">
@@ -159,7 +163,9 @@
         <!-- SECTION III: BENEFICIARY'S FAMILY COMPOSITION -->
         <div class="mb-8">
             <h4 class="text-primary mb-4 d-flex align-items-center">
-                <i class="ki-duotone ki-people fs-2 me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i>
+                <i class="ki-duotone ki-people fs-2 me-2"><span class="path1"></span><span
+                        class="path2"></span><span class="path3"></span><span class="path4"></span><span
+                        class="path5"></span></i>
                 III. BENEFICIARY'S FAMILY COMPOSITION
             </h4>
             <div class="bg-light bg-opacity-50 rounded p-5 border border-dashed border-gray-300">
@@ -189,7 +195,8 @@
         <!-- SECTION IV: SUBMITTED DOCUMENTS (IMAGE PREVIEWS) -->
         <div class="mb-8">
             <h4 class="text-primary mb-4 d-flex align-items-center">
-                <i class="ki-duotone ki-files fs-2 me-2"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i>
+                <i class="ki-duotone ki-some-files fs-2 me-2"><span class="path1"></span><span
+                        class="path2"></span></i>
                 IV. SUBMITTED DOCUMENTS & IMAGE ATTACHMENTS
             </h4>
             <div class="bg-light bg-opacity-50 rounded p-5 border border-dashed border-gray-300">
@@ -204,7 +211,8 @@
         <!-- BOTTOM CONFIRMATION BUTTONS -->
         <div class="d-flex justify-content-end align-items-center gap-4 mt-10">
             <span class="text-muted me-3">Make sure all details are accurate before submitting.</span>
-            <button type="button" class="btn btn-success hover-elevate-up btn-lg px-8 fw-bold" id="confirmSubmitFromReview">
+            <button type="button" class="btn btn-success hover-elevate-up btn-lg px-8 fw-bold"
+                id="confirmSubmitFromReview">
                 <i class="fa fa-check-circle me-2"></i> Confirm & Submit Application
             </button>
         </div>
