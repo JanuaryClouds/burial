@@ -9,7 +9,7 @@
                         Go to Client Record
                     </a>
                 @endif
-                @if (auth()->user()->roles()->exists())
+                @if (auth()->user()->hasRole('staff'))
                     @if (app()->hasDebugModeEnabled() || ($show_certificate && auth()->user()->can('create-certificates')))
                         <a href="{{ route('burial.certificate', ['id' => $data->id]) }}" class="btn btn-secondary mr-2"
                             target="_blank">
@@ -17,7 +17,7 @@
                         </a>
                     @endif
                     @if ($data->status != 'rejected' && $data->status != 'released' && $next_step != null)
-                        @can('create-updates')
+                        @can('update', [App\Models\BurialAssistance::class, $data])
                             <button class="btn btn-primary mr-2" type="button" data-bs-toggle="modal"
                                 data-bs-target="#addUpdateModal-{{ $data->id }}">
                                 Add Progress Update

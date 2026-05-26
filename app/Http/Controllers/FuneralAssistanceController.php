@@ -32,12 +32,15 @@ class FuneralAssistanceController extends Controller
     public function index()
     {
         $page_title = 'Libreng Libing Applications';
-
-        if (auth()->user()->roles()->count() == 0) {
-            $data = $this->funeralAssistanceServices->index(auth()->user()->id);
-        } elseif (auth()->user()->roles()->count() > 0) {
-            $data = $this->funeralAssistanceServices->index();
-
+        $personalData = $this->funeralAssistanceServices->index(auth()->user()->id);
+        $personalDataColumns = $this->datatableServices->getColumns($personalData);
+        
+        $allData = [];
+        $allDataColumns = [];
+        $cardData = [];
+        if (auth()->user()->hasRole('staff')) {
+            $allData = $this->funeralAssistanceServices->index();
+            $allDataColumns = $this->datatableServices->getColumns($allData);
             $cardData = [
                 [
                     'model' => 'App\Models\FuneralAssistance',
@@ -62,20 +65,22 @@ class FuneralAssistanceController extends Controller
                 ],
             ];
         }
-        $columns = $this->datatableServices->getColumns($data);
 
         if (request()->expectsJson()) {
             return response()->json([
-                'data' => $data->values(),
+                'personalData' => $personalData->values(),
+                'allData' => $allData->values() ?? [],
             ]);
         }
 
-        return view('funeral.index', [
-            'page_title' => $page_title,
-            'data' => $data,
-            'columns' => $columns,
-            'cardData' => $cardData ?? null,
-        ]);
+        return view('funeral.index', compact(
+            'page_title',
+            'personalData',
+            'personalDataColumns',
+            'allData',
+            'allDataColumns',
+            'cardData'
+        ));
     }
 
     public function show($id)

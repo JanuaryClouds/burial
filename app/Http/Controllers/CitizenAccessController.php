@@ -42,8 +42,7 @@ class CitizenAccessController extends Controller
         $funeralDocuments = DocumentRequirement::funeral();
 
         if (config('services.portal.users.mock')) {
-            $citizens = User::whereDoesntHave('roles')
-                ->orderBy('created_at')
+            $citizens = User::orderBy('created_at')
                 ->get();
             $testLinks = [];
             foreach ($citizens as $citizen) {
@@ -58,7 +57,7 @@ class CitizenAccessController extends Controller
                 $url = url('/sso/callback')."?payload={$encoded}&signature={$signature}";
 
                 $testLinks[] = [
-                    'label' => $citizen->citizen_uuid,
+                    'label' => $citizen->fullname(),
                     'url' => $url,
                 ];
             }

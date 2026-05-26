@@ -19,7 +19,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Str;
+use Illuminate\Support\Str;
 
 class ClientController extends Controller
 {
@@ -50,13 +50,15 @@ class ClientController extends Controller
     public function index()
     {
         $page_title = 'Clients';
+        $personalData = $this->clientServices->index('tracking_no', 'asc', auth()->user()->id);
+        $personalDataColumns = $this->datatableServices->getColumns($personalData, ['client']);
 
-        if (auth()->user()->roles()->count() == 0) {
-            $data = $this->clientServices->index('tracking_no', 'asc', auth()->user()->id);
-            $columns = $this->datatableServices->getColumns($data, ['client']);
-        } elseif (auth()->user()->roles()->count() > 0) {
-            $data = $this->clientServices->index('tracking_no', 'asc');
-            $columns = $this->datatableServices->getColumns($data, []);
+        $cardData = [];
+        $allData = [];
+        $allDataColumns = [];
+        if (auth()->user()->hasRole('staff')) {
+            $allData = $this->clientServices->index('tracking_no', 'asc');
+            $allDataColumns = $this->datatableServices->getColumns($allData, []);
             $cardData = [
                 [
                     'model' => 'App\Models\Client',
@@ -64,7 +66,7 @@ class ClientController extends Controller
                     'scope' => 'Total',
                     'iconName' => 'people',
                     'iconPathsCount' => 5,
-                    'route' => route('beneficiary.index'),
+                    'route' => route('client.index'),
                 ],
                 [
                     'model' => 'App\Models\Client',
@@ -95,16 +97,19 @@ class ClientController extends Controller
 
         if (request()->expectsJson()) {
             return response()->json([
-                'data' => $data->values(),
+                'personalData' => $personalData->values(),
+                'allData' => $allData->values() ?? [],
             ]);
         }
 
-        return view('client.index', [
-            'page_title' => $page_title,
-            'cardData' => $cardData ?? null,
-            'columns' => $columns,
-            'data' => $data,
-        ]);
+        return view('client.index', compact(
+            'page_title',
+            'cardData',
+            'personalData',
+            'personalDataColumns',
+            'allData',
+            'allDataColumns',
+        ));
     }
 
     public function show(Client $client)
@@ -235,12 +240,13 @@ class ClientController extends Controller
     public function assessment(Request $request, $id)
     {
         try {
+            $client = Client::findOrFail($id);
+            $this->authorize('create', [\App\Models\ClientAssessment::class, $client]);
+
             $request->validate([
                 'problem_presented' => 'required|string|max:255',
                 'assessment' => 'required|string|max:255',
             ]);
-
-            $client = Client::find($id);
 
             if ($client) {
                 $client->assessment()->create([
@@ -269,11 +275,8 @@ class ClientController extends Controller
     public function recommendedService(Request $request, $id)
     {
         try {
-            $client = Client::find($id);
-
-            if (! $client) {
-                return redirect()->back()->with('error', 'Client not found.');
-            }
+            $client = Client::findOrFail($id);
+            $this->authorize('create', [\App\Models\ClientRecommendation::class, $client]);
 
             $ip = request()->ip();
             $browser = request()->header('User-Agent');

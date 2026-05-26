@@ -4,12 +4,19 @@ This task focuses on handling the scenario where a staff applies as a client to 
 
 # Tasks
 - [x] Use UAT TLC portal for generating staff accounts
+- [x] Update sidebar to allow staff to access client links
 - [ ] Update backend code to divide client data and staff's data
     - [ ] Controllers
     - [ ] Services
 - [ ] Make role-based UI elements available to staff
     - [ ] Views
+        - [x] Index
+        - [ ] Show
     - [ ] Partials
+        - [ ] Menus
+            - [ ] Client
+            - [ ] Libreng Libing
+            - [ ] Burial
     - [ ] Components
 - [ ] Update policies to where staff cannot process their own applications
     - [ ] Client Policy

@@ -13,7 +13,7 @@ use App\Models\Notification;
 use App\Models\Referral;
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Str;
+use Illuminate\Support\Str;
 
 class ClientSeeder extends Seeder
 {
@@ -22,9 +22,11 @@ class ClientSeeder extends Seeder
      */
     public function run(): void
     {
-        $users = User::factory()->count(20)->create([
+        User::factory()->count(20)->create([
             'citizen_uuid' => fn () => Str::uuid()->toString(),
         ]);
+
+        $users = User::all();
 
         $clients = Client::factory()->count(20)->create([
             'user_id' => fn () => $users->random()->id,

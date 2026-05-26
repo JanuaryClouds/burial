@@ -24,19 +24,26 @@ class BeneficiaryController extends Controller
 
     public function index()
     {
-        if (auth()->user()->roles()->count() == 0) {
-            $user_id = auth()->user()->id;
+        $page_title = "Beneficiaries";
+        $personalData = $this->beneficiaryServices->index(auth()->user()->id);
+        $personalDataColumns = $this->datatableServices->getColumns($personalData, []);
+
+        $allData = [];
+        $allDataColumns = [];
+
+        if (auth()->user()->hasRole('staff')) {
+            $allData = $this->beneficiaryServices->index();
+            $allDataColumns = $this->datatableServices->getColumns($allData, []);
         }
-        $data = $this->beneficiaryServices->index($user_id ?? null);
-        $columns = $this->datatableServices->getColumns($data, []);
 
         if (request()->expectsJson()) {
             return response()->json([
-                'data' => $data->values(),
+                'personalData' => $personalData->values() ?? [],
+                'allData' => $allData->values() ?? [],
             ]);
         }
 
-        if (auth()->user()->roles()->exists()) {
+        if (auth()->user()->hasRole('staff')) {
             $cardData = [
                 [
                     'model' => 'App\Models\Beneficiary',
@@ -73,12 +80,14 @@ class BeneficiaryController extends Controller
             ];
         }
 
-        return view('beneficiary.index', [
-            'data' => $data,
-            'columns' => $columns,
-            'cardData' => $cardData ?? null,
-            'page_title' => 'Beneficiaries',
-        ]);
+        return view('beneficiary.index', compact(
+            'page_title',
+            'allData',
+            'allDataColumns',
+            'cardData',
+            'personalData',
+            'personalDataColumns'
+        ));
     }
 
     public function show(string $id)
