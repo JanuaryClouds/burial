@@ -1,6 +1,6 @@
 <div id="set-schedule-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="set-schedule-modal-title"
     aria-hidden="true">
-    <form action="{{ route('clients.interview.schedule.store', ['id' => $client->id]) }}" method="post">
+    <form action="{{ route('client.interview.schedule.store', ['id' => $client->id]) }}" method="post">
         @csrf
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">

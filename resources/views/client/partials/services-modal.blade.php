@@ -1,6 +1,6 @@
 <div id="services-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="services-modal-title"
     aria-hidden="true">
-    <form action="{{ route('clients.recommendation.store', ['id' => $client->id]) }}" method="post">
+    <form action="{{ route('client.recommendation.store', ['id' => $client->id]) }}" method="post">
         @csrf
         <div class="modal-dialog" role="document">
             <div class="modal-content">
