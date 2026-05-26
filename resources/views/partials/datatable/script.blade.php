@@ -1,11 +1,14 @@
+@props(['dataTableId'])
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        let datatable = $('.data-table');
-        if (datatable.length == 0) return;
+        let dataTable = $(`#dataTable-{{ $dataTableId }}`);
+        if (dataTable.length == 0) return;
 
-        let columns = datatable.data('columns') || [];
-        let route = datatable.data('route') ?? null;
-        let dataset = datatable.data('rows') || [];
+        let columns = dataTable.data('columns') || [];
+        let route = dataTable.data('route') ?? null;
+        let dataset = dataTable.data('rows') || [];
+        let dataSrc = dataTable.data('src') || null;
 
         const escapeHtml = (str) => {
             const div = document.createElement('div');
@@ -13,7 +16,7 @@
             return div.innerHTML;
         }
 
-        if (datatable.hasClass('with-status')) {
+        if (dataTable.hasClass('with-status')) {
             columns.push({
                 data: null,
                 title: 'Status',
@@ -52,7 +55,7 @@
             })
         }
 
-        if (datatable.hasClass('with-actions')) {
+        if (dataTable.hasClass('with-actions')) {
             columns.push({
                 data: null,
                 title: 'Actions',
@@ -81,16 +84,16 @@
             })
         }
 
-        $('.data-table').DataTable({
+        dataTable.DataTable({
             responsive: true,
             ordering: true,
             columns: columns,
             order: [],
-            data: route === '#' ? dataset : undefined,
-            ajax: route !== '#' ? {
+            data: route === '#' || !dataSrc ? dataset : undefined,
+            ajax: route !== '#' && dataSrc ? {
                 url: route,
                 type: 'GET',
-                dataSrc: 'data',
+                dataSrc: dataSrc,
                 headers: {
                     'Accept': 'application/json'
                 }
@@ -120,7 +123,7 @@
             classes: {
                 sortAsc: '', // override ascending class
                 sortDesc: '', // override descending class
-                sortable: '' // override neutral sortable class 
+                sortable: '' // override neutral sortable class
             }
         });
 
@@ -130,7 +133,7 @@
             }
 
             window.datatableRefreshInterval = setInterval(() => {
-                datatable.DataTable().ajax.reload(null, false);
+                dataTable.DataTable().ajax.reload(null, false);
             }, 10000);
         }
     });
