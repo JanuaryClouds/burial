@@ -21,22 +21,21 @@
                 class="menu menu-column menu-title-gray-600 menu-state-primary menu-state-icon-primary menu-state-bullet-primary menu-icon-gray-500 menu-arrow-gray-500 fw-semibold fs-6 my-auto"
                 data-kt-menu="true">
                 @include('partials.sidebar.common')
-                @if (!auth()->user()->roles()->exists())
-                    @include('client.partials.sidebar')
-                @endif
+                @include('components.sidebar-link', [
+                    'route' => route('general.intake.form'),
+                    'active_link' => 'general.intake.form',
+                    'icon' => 'add-files',
+                    'icon_paths' => 3,
+                    'text' => 'Apply',
+                    'long_text' => 'Apply as a client',
+                ])
                 @include('partials.sidebar.records')
-                @role('superadmin')
-                    @include('partials.sidebar.cms')
-                @endrole
                 @can('view-reports')
                     @include('partials.sidebar.reports')
                 @endcan
-                @can('view-logs')
-                    @include('partials.sidebar.logs')
-                @endcan
-                @if (auth()->user()->canAny(['view-roles', 'view-users', 'edit-system-settings']))
+                @role('superadmin')
                     @include('partials.sidebar.system')
-                @endif
+                @endrole
             </div>
         </div>
     </div>

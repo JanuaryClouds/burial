@@ -3,6 +3,7 @@
     @class([
         'menu-item',
         'here' =>
+            Route::is('interview.*') ||
             Route::is('burial*') ||
             Route::is('assignments*') ||
             Route::is('funeral*') ||
@@ -39,6 +40,14 @@
                     <x-ki-icon :icon_name="'people'" :icon_size="'2'" :paths_count="5" />
                 </span>
                 <span class="menu-title">Beneficiaries</span>
+            </a>
+        </div>
+        <div class="menu-item">
+            <a href="{{ route('interview.index') }}" @class(['active' => Route::is('interview.*'), 'menu-link']) aria-label="Go to client intakes">
+                <span class="menu-icon">
+                    <x-ki-icon :icon_name="'message-question'" :icon_size="'2'" :paths_count="3" />
+                </span>
+                <span class="menu-title">Interviews</span>
             </a>
         </div>
         <div class="menu-item">

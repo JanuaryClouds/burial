@@ -22,8 +22,8 @@ Route::get('/referral', [ReferralController::class, 'index'])
 Route::get('/interviews', [InterviewController::class, 'index'])
     ->name('interview.index');
 
-Route::prefix('clients')
-    ->name('clients.')
+Route::prefix('client')
+    ->name('client.')
     ->group(function () {
         Route::get('/{id}/gis-form', [ClientController::class, 'generateGISForm'])
             ->name('gis-form');
@@ -33,7 +33,6 @@ Route::prefix('clients')
             ->name('update');
 
         Route::post('/{id}/schedule', [InterviewController::class, 'store'])
-            ->can('create', Interview::class)
             ->name('interview.schedule.store');
 
         Route::post('/{id}/schedule/done', [InterviewController::class, 'done'])
