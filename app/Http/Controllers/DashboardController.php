@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Client;
 use App\Services\ClientService;
 use App\Services\DatatableService;
-use Spatie\Activitylog\Models\Activity;
 
 class DashboardController extends Controller
 {
@@ -71,6 +69,12 @@ class DashboardController extends Controller
                 'route' => route('funeral.index'),
             ],
         ];
+
+        if (request()->expectsJson()) {
+            return response()->json([
+                'clients' => $data ? $data->values() : [],
+            ]);
+        }
 
         return view('dashboard', compact(
             'page_title',
