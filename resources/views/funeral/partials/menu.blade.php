@@ -4,7 +4,7 @@
             <h1 class="mb-0">Assistance Actions</h1>
             <div class="d-flex align-items-center gap-3">
                 @if (auth()->user()?->id == $data->client?->user_id || auth()->user()?->roles()->exists())
-                    <a href="{{ route('client.show', ['client' => $data->client]) }}" class="btn btn-secondary mr-2"
+                    <a href="{{ route('client.show', ['client' => $data->client]) }}" class="btn btn-light mr-2"
                         data-no-loader>
                         Go to Client Record
                     </a>
