@@ -10,15 +10,22 @@
                     </a>
                 @endif
                 @if ($released)
-                    @can('createSchedule', [App\Models\Interview::class, $client])
-                        <button class="btn btn-primary" type="button" data-bs-toggle="modal"
-                            data-bs-target="#set-schedule-modal">
-                            Schedule an Interview
-                        </button>
+                    @can('create', [App\Models\Interview::class, $client])
+                        @if ($client?->interviews?->count() > 0)
+                            <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip"
+                                data-bs-placement="bottom" title="Client has been scheduled for an interview">
+                                Schedule an Interview
+                            </button>
+                        @else
+                            <button class="btn btn-primary" type="button" data-bs-toggle="modal"
+                                data-bs-target="#set-schedule-modal">
+                                Schedule an Interview
+                            </button>
+                        @endif
                     @endcan
                     @can('create', [App\Models\ClientAssessment::class, $client])
                         @if ($client?->assessment?->count() == 0)
-                            <button class="btn btn-light" type="button" data-bs-toggle="modal"
+                            <button class="btn btn-primary" type="button" data-bs-toggle="modal"
                                 data-bs-target="#assessment-modal">
                                 Write an Assessment
                             </button>
@@ -45,7 +52,7 @@
                     @else
                         @if ($client->recommendation?->count() == 0 && $client->referral?->count() == 0)
                             @can('create', [App\Models\Referral::class, $client])
-                                <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                     data-bs-target="#referralModal">
                                     Referral
                                 </button>

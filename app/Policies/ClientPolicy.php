@@ -55,7 +55,7 @@ class ClientPolicy
         return false;
     }
 
-    public function createInterview(User $user, Client $client): bool
+    public function interview(User $user, Client $client): bool
     {
         if ($user->id === $client->user_id) {
             return false;
