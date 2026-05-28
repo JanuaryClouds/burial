@@ -156,7 +156,9 @@ class CitizenAccessController extends Controller
                 session(['api_token' => $token]);
             }
 
-            $redirect = auth()->user()->clients()->exists() ? route('dashboard') : route('general.intake.form');
+            $redirect = auth()->user()->hasRole('staff')
+                ? route('dashboard')
+                : (auth()->user()->clients()->exists() ? route('dashboard') : route('general.intake.form'));
 
             return redirect()->to($redirect);
         } else {
