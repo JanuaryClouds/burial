@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\ClientDemographic;
 use App\Models\Nationality;
 use App\Models\Religion;
 use App\Models\Sex;
@@ -9,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ClientDemographic>
+ * @extends Factory<ClientDemographic>
  */
 class ClientDemographicFactory extends Factory
 {

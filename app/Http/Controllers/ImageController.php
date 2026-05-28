@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Services\ImageService;
-use Crypt;
-use Storage;
 
 class ImageController extends Controller
 {

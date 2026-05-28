@@ -2,8 +2,11 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Spatie\Permission\Exceptions\UnauthorizedException;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
@@ -40,7 +43,7 @@ class Handler extends ExceptionHandler
 
             return redirect()->route(auth()->check() ? 'dashboard' : 'landing.page')
                 ->with('error', 'The page you requested could not be found.');
-        } elseif ($exception instanceof \Illuminate\Auth\AuthenticationException) {
+        } elseif ($exception instanceof AuthenticationException) {
             if ($request->expectsJson()) {
                 return response()->json([
                     'message' => 'You are not logged in.',
@@ -49,7 +52,7 @@ class Handler extends ExceptionHandler
 
             return redirect()->route('landing.page')
                 ->with('info', 'You are not logged in.');
-        } elseif ($exception instanceof \Illuminate\Auth\Access\AuthorizationException) {
+        } elseif ($exception instanceof AuthorizationException) {
             if ($request->expectsJson()) {
                 return response()->json([
                     'message' => 'You do not have permission to access this page.',
@@ -60,7 +63,7 @@ class Handler extends ExceptionHandler
                 ->with('error', 'You do not have permission to access this page.');
         }
 
-        if (! ($exception instanceof \Symfony\Component\HttpKernel\Exception\HttpExceptionInterface) && app()->isProduction()) {
+        if (! ($exception instanceof HttpExceptionInterface) && app()->isProduction()) {
             activity()
                 ->causedBy(auth()->user())
                 ->withProperties([

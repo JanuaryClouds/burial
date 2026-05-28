@@ -2,15 +2,17 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Collection;
+
 class DatatableService
 {
     /**
      * Summary of getColumns
      *
-     * @param \Illuminate\Support\Collection $data Collected Data
+     * @param Collection $data Collected Data
      * @param array $reject Columns not to show
-     * @return \Illuminate\Support\Collection<int, array{data: string}>     */
-    public function getColumns(\Illuminate\Support\Collection $data, array $reject = [])
+     * @return Collection<int, array{data: string}>     */
+    public function getColumns(Collection $data, array $reject = [])
     {
         if ($data->isEmpty()) {
             return collect();

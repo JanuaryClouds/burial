@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\User;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use RuntimeException;
@@ -116,7 +117,7 @@ class CentralClientService
                 'contact_number' => $citizenData['contact_number'] ?? null,
                 'password' => bcrypt(Str::random(32)),
             ]);
-        } catch (\Illuminate\Database\QueryException $e) {
+        } catch (QueryException $e) {
             if ($e->getCode() !== '23000') {
                 throw $e;
             }

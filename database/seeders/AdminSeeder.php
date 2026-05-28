@@ -3,17 +3,16 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Exception;
-use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
 use App\Services\CentralClientService;
+use Illuminate\Database\Seeder;
 use RuntimeException;
+use Spatie\Permission\Models\Role;
 
 class AdminSeeder extends Seeder
 {
     public function run(): void
     {
-        $centralClientService = new CentralClientService();
+        $centralClientService = new CentralClientService;
         $superAdminRole = Role::firstOrCreate(['name' => 'superadmin']);
         $staffRole = Role::firstOrCreate(['name' => 'staff']);
 
@@ -42,12 +41,12 @@ class AdminSeeder extends Seeder
         $superadmin->assignRole($staffRole);
 
         for ($staffCount = 2; $staffCount < 6; $staffCount++) {
-            $staffDataArray = $centralClientService->fetchFromPortal('search', 'user' . $staffCount . '_uat');
+            $staffDataArray = $centralClientService->fetchFromPortal('search', 'user'.$staffCount.'_uat');
             if (count($staffDataArray) === 0) {
                 throw new RuntimeException('No user data found');
             } else {
                 $staffData = $staffDataArray[0];
-            
+
             }
             $staff = User::firstOrCreate([
                 'citizen_uuid' => $staffData['user_id'],

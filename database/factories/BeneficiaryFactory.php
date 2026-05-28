@@ -3,12 +3,13 @@
 namespace Database\Factories;
 
 use App\Models\Barangay;
+use App\Models\Beneficiary;
 use App\Models\Religion;
 use App\Models\Sex;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Beneficiary>
+ * @extends Factory<Beneficiary>
  */
 class BeneficiaryFactory extends Factory
 {

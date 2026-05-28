@@ -2,11 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Models\Interview;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Interview>
+ * @extends Factory<Interview>
  */
 class InterviewFactory extends Factory
 {

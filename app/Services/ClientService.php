@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Assistance;
 use App\Models\Beneficiary;
 use App\Models\BeneficiaryFamily;
 use App\Models\BurialAssistance;
@@ -10,6 +11,7 @@ use App\Models\Client;
 use App\Models\ClientDemographic;
 use App\Models\ClientSocialInfo;
 use App\Models\FuneralAssistance;
+use App\Models\ModeOfAssistance;
 use App\Models\SystemSetting;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -509,9 +511,9 @@ class ClientService
             'data' => $data,
             'client' => $client,
             'family' => $family,
-            'assistances' => \App\Models\Assistance::all(),
+            'assistances' => Assistance::all(),
             'recommendation' => $recommendation,
-            'moa' => \App\Models\ModeOfAssistance::all(),
+            'moa' => ModeOfAssistance::all(),
             'referral' => $referral,
             'social_welfare_officer' => $social_welfare_officer,
             'dept_head' => $dept_head,

@@ -3,7 +3,6 @@
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\InterviewController;
 use App\Http\Controllers\ReferralController;
-use App\Models\Interview;
 use Illuminate\Support\Facades\Route;
 
 Route::resource('client', ClientController::class)

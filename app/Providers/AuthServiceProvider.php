@@ -10,7 +10,6 @@ use App\Models\ClientAssessment;
 use App\Models\ClientRecommendation;
 use App\Models\FuneralAssistance;
 use App\Models\Interview;
-use App\Models\Permission;
 use App\Models\Referral;
 use App\Models\User;
 use App\Policies\AssessmentPolicy;
@@ -91,6 +90,6 @@ class AuthServiceProvider extends ServiceProvider
             }
 
             return null;
-        });;
+        });
     }
 }

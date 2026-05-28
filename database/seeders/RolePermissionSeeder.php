@@ -64,13 +64,13 @@ class RolePermissionSeeder extends Seeder
 
         // Default Role to all
         Role::firstOrCreate(['name' => 'staff']);
-        
+
         $reporterRole = Role::firstOrCreate(['name' => 'reporter']);
         $reporterRole->givePermissionTo([
             'create-reports',
-            'view-reports'
+            'view-reports',
         ]);
-        
+
         $interviewerRole = Role::firstOrCreate(['name' => 'interviewer']);
         $interviewerRole->givePermissionTo([
             'create-interview-schedules',
@@ -85,9 +85,9 @@ class RolePermissionSeeder extends Seeder
             'create-updates',
             'create-claimant-change-requests',
             'edit-claimant-change-requests',
-            'create-certificates'
+            'create-certificates',
         ]);
-        
+
         $librengLibingStaffRole = Role::firstOrCreate(['name' => 'libreng-libing-staff']);
         $librengLibingStaffRole->givePermissionTo([
             'view-libreng-libings',

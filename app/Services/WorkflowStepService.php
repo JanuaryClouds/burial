@@ -6,6 +6,7 @@ use App\Models\BurialAssistance;
 use App\Models\ClaimantChange;
 use App\Models\ProcessLog;
 use App\Models\WorkflowStep;
+use Illuminate\Database\Eloquent\Model;
 
 class WorkflowStepService
 {
@@ -13,7 +14,7 @@ class WorkflowStepService
      * Summary of nextStep
      *
      * @param  BurialAssistance  $application  Burial Assistance Application to check the next step of
-     * @return object|WorkflowStep|\Illuminate\Database\Eloquent\Model|null
+     * @return object|WorkflowStep|Model|null
      */
     public function nextStep(BurialAssistance $application)
     {

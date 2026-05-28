@@ -1,7 +1,16 @@
 <?php
 
+use App\Providers\AppServiceProvider;
+use App\Providers\AuthServiceProvider;
+use App\Providers\EventServiceProvider;
+use App\Providers\RouteServiceProvider;
+use App\Providers\ViewServiceProvider;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\ServiceProvider;
+use Maatwebsite\Excel\ExcelServiceProvider;
+use Maatwebsite\Excel\Facades\Excel;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Yajra\DataTables\DataTablesServiceProvider;
 
 return [
 
@@ -164,14 +173,14 @@ return [
         /*
          * Application Service Providers...
          */
-        App\Providers\AppServiceProvider::class,
-        App\Providers\AuthServiceProvider::class,
+        AppServiceProvider::class,
+        AuthServiceProvider::class,
         // App\Providers\BroadcastServiceProvider::class,
-        App\Providers\EventServiceProvider::class,
-        App\Providers\RouteServiceProvider::class,
-        Maatwebsite\Excel\ExcelServiceProvider::class,
-        Yajra\DataTables\DataTablesServiceProvider::class,
-        App\Providers\ViewServiceProvider::class,
+        EventServiceProvider::class,
+        RouteServiceProvider::class,
+        ExcelServiceProvider::class,
+        DataTablesServiceProvider::class,
+        ViewServiceProvider::class,
     ])->toArray(),
 
     /*
@@ -187,8 +196,8 @@ return [
 
     'aliases' => Facade::defaultAliases()->merge([
         // 'Example' => App\Facades\Example::class,
-        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
-        'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class,
+        'Excel' => Excel::class,
+        'QrCode' => QrCode::class,
     ])->toArray(),
 
 ];
