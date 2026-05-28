@@ -418,6 +418,7 @@
                                 confirmButton.classList.add('disabled');
                                 confirmButton.disabled = true;
                                 confirmButton.innerHTML = 'Submitting...';
+                                triggerLoading(0.3);
                                 gisForm.submit();
                             }, {
                                 once: true
