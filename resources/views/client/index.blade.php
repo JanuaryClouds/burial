@@ -12,7 +12,7 @@
                     @endforeach
                 </div>
             @endif
-            <div class="card">
+            <div class="card multicolor-border">
                 <div class="card-body">
                     @include('partials.datatable.index', [
                         'data' => $allData,
@@ -22,7 +22,7 @@
                 </div>
             </div>
         @endrole
-        <div class="card">
+        <div class="card multicolor-border">
             <div class="card-header">
                 <h5 class="card-title">My History</h5>
             </div>

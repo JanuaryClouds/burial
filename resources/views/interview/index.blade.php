@@ -2,7 +2,7 @@
 @section('content')
     <div class="d-flex flex-column gap-4">
         @role('staff')
-            <div class="card">
+            <div class="card multicolor-border">
                 <div class="card-header">
                     <h5 class="card-title">All Interviews</h5>
                 </div>
@@ -15,7 +15,7 @@
                 </div>
             </div>
         @endrole
-        <div class="card">
+        <div class="card multicolor-border">
             <div class="card-header">
                 <h5 class="card-title">My Interviews</h5>
             </div>

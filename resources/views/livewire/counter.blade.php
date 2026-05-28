@@ -1,5 +1,6 @@
 <div wire:poll.10s="loadCount">
-    <a href="{{ $route ?? '#' }}" class="card w-100 p-10 hover-elevate-up parent-hover overflow-hidden position-relative">
+    <a href="{{ $route ?? '#' }}"
+        class="card multicolor-border w-100 p-10 hover-elevate-up parent-hover overflow-hidden position-relative">
         <div class="d-flex justify-content-between align-items-center">
             <span class="parent-hover-primary">
                 <p class="fw-bold fs-1">{{ $count ?? 0 }}</p>

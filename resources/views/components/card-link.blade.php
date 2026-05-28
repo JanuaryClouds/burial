@@ -9,7 +9,7 @@
 ])
 
 <a href="{{ $active ? $route : '#' }}"
-    class="card w-100 p-10 h-100 {{ $active && $route !== '#' ? 'hover-elevate-up parent-hover' : 'cursor-default' }} {{ $classes }} overflow-hidden position-relative">
+    class="card multicolor-border w-100 p-10 h-100 {{ $active && $route !== '#' ? 'hover-elevate-up parent-hover' : 'cursor-default' }} {{ $classes }} overflow-hidden position-relative">
     <div class="d-flex justify-content-between align-items-center">
         <span class="parent-hover-primary">
             <p class="fw-bold fs-1 {{ $active && $route !== '#' ? '' : 'text-muted' }}">{{ $title }}</p>

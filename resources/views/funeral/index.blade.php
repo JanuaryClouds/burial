@@ -11,7 +11,7 @@
                     @endforeach
                 </div>
             @endif
-            <div class="card">
+            <div class="card multicolor-border">
                 <div class="card-header">
                     <h5 class="card-title">All Applications</h5>
                 </div>
@@ -25,7 +25,7 @@
                 </div>
             </div>
         @endrole
-        <div class="card">
+        <div class="card multicolor-border">
             <div class="card-header">
                 <h5 class="card-title">My Applications</h5>
             </div>
