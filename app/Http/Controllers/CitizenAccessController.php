@@ -10,7 +10,7 @@ use App\Services\CentralClientService;
 use App\Services\ImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Str;
+use Illuminate\Support\Str;
 
 class CitizenAccessController extends Controller
 {
@@ -58,29 +58,6 @@ class CitizenAccessController extends Controller
 
                 $testLinks[] = [
                     'label' => $citizen->fullname(),
-                    'url' => $url,
-                ];
-            }
-
-            if (
-                config('services.portal.users.enable.get') &&
-                config('services.portal.users.sampleUuid') &&
-                ! in_array(config('services.portal.users.sampleUuid'), $citizens->pluck('citizen_uuid')->toArray())
-            ) {
-                $sampleUserUuid = config('services.portal.users.sampleUuid');
-
-                $newUser = [
-                    'citizen_uuid' => $sampleUserUuid,
-                    'nonce' => Str::uuid()->toString(),
-                ];
-
-                $encoded = rtrim(strtr(base64_encode(json_encode($newUser)), '+/', '-_'), '=');
-                $signature = hash_hmac('sha256', $encoded, config('services.portal.sso.secret'));
-
-                $url = url('/sso/callback')."?payload={$encoded}&signature={$signature}";
-
-                $testLinks[] = [
-                    'label' => 'Sample User',
                     'url' => $url,
                 ];
             }
