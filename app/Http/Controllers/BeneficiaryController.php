@@ -24,13 +24,13 @@ class BeneficiaryController extends Controller
 
     public function index()
     {
-        $page_title = "Beneficiaries";
+        $page_title = 'Beneficiaries';
         $personalData = $this->beneficiaryServices->index(auth()->user()->id);
         $personalDataColumns = $this->datatableServices->getColumns($personalData, []);
 
         $allData = [];
         $allDataColumns = [];
-
+        $cardData = [];
         if (auth()->user()->hasRole('staff')) {
             $allData = $this->beneficiaryServices->index();
             $allDataColumns = $this->datatableServices->getColumns($allData, []);
@@ -38,8 +38,8 @@ class BeneficiaryController extends Controller
 
         if (request()->expectsJson()) {
             return response()->json([
-                'personalData' => $personalData->values() ?? [],
-                'allData' => $allData->values() ?? [],
+                'personalData' => $personalData ? $personalData->values() : [],
+                'allData' => $allData ? $allData->values() : [],
             ]);
         }
 

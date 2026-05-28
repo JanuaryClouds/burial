@@ -42,19 +42,18 @@ class ReferralController extends Controller
             $allDataColumns = $this->datatableServices->getColumns($allData);
         }
 
-        
         if (request()->expectsJson()) {
             return response()->json([
-                'personalData' => $personalData->values(),
-                'allData' => $allData->values() ?? [],
+                'personalData' => $personalData ? $personalData->values() : [],
+                'allData' => $allData ? $allData->values() : [],
             ]);
         }
 
         return view('referral.index', compact(
             'allData',
             'allDataColumns',
-            'personalData', 
-            'personalDataColumns', 
+            'personalData',
+            'personalDataColumns',
             'page_title'
         ));
     }

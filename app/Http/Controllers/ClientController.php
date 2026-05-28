@@ -8,6 +8,8 @@ use App\Models\Assistance;
 use App\Models\Barangay;
 use App\Models\CivilStatus;
 use App\Models\Client;
+use App\Models\ClientAssessment;
+use App\Models\ClientRecommendation;
 use App\Models\DocumentRequirement;
 use App\Models\Sex;
 use App\Services\CentralClientService;
@@ -97,8 +99,8 @@ class ClientController extends Controller
 
         if (request()->expectsJson()) {
             return response()->json([
-                'personalData' => $personalData->values(),
-                'allData' => $allData->values() ?? [],
+                'personalData' => $personalData ? $personalData->values() : [],
+                'allData' => $allData ? $allData->values() : [],
             ]);
         }
 
@@ -241,7 +243,7 @@ class ClientController extends Controller
     {
         try {
             $client = Client::findOrFail($id);
-            $this->authorize('create', [\App\Models\ClientAssessment::class, $client]);
+            $this->authorize('create', [ClientAssessment::class, $client]);
 
             $request->validate([
                 'problem_presented' => 'required|string|max:255',
@@ -276,7 +278,7 @@ class ClientController extends Controller
     {
         try {
             $client = Client::findOrFail($id);
-            $this->authorize('create', [\App\Models\ClientRecommendation::class, $client]);
+            $this->authorize('create', [ClientRecommendation::class, $client]);
 
             $ip = request()->ip();
             $browser = request()->header('User-Agent');

@@ -54,7 +54,6 @@ class BurialAssistanceController extends Controller
         $personalData = $this->burialAssistanceServices->index(auth()->user()->id);
         $personalDataColumns = $this->datatableServices->getColumns($personalData, ['id', 'status', 'show_route']);
 
-        
         $cardData = [];
         $allData = [];
         $allDataColumns = [];
@@ -92,11 +91,11 @@ class BurialAssistanceController extends Controller
                 ],
             ];
         }
-        
+
         if (request()->expectsJson()) {
             return response()->json([
-                'personalData' => $personalData->values(),
-                'allData' => $allData->values() ?? [],
+                'personalData' => $personalData ? $personalData->values() : [],
+                'allData' => $allData ? $allData->values() : [],
             ]);
         }
 

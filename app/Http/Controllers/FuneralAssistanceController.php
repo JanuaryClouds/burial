@@ -11,7 +11,6 @@ use App\Services\NotificationService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Exception;
 use Illuminate\Http\Request;
-use Storage;
 use Str;
 
 class FuneralAssistanceController extends Controller
@@ -34,7 +33,7 @@ class FuneralAssistanceController extends Controller
         $page_title = 'Libreng Libing Applications';
         $personalData = $this->funeralAssistanceServices->index(auth()->user()->id);
         $personalDataColumns = $this->datatableServices->getColumns($personalData);
-        
+
         $allData = [];
         $allDataColumns = [];
         $cardData = [];
@@ -68,8 +67,8 @@ class FuneralAssistanceController extends Controller
 
         if (request()->expectsJson()) {
             return response()->json([
-                'personalData' => $personalData->values(),
-                'allData' => $allData->values() ?? [],
+                'personalData' => $personalData ? $personalData->values() : [],
+                'allData' => $allData ? $allData->values() : [],
             ]);
         }
 

@@ -48,8 +48,8 @@ class InterviewController extends Controller
 
         if (request()->ajax()) {
             return response()->json([
-                'personalData' => $personalData->values(),
-                'allData' => $allData->values() ?? [],
+                'personalData' => $personalData ? $personalData->values() : [],
+                'allData' => $allData ? $allData->values() : [],
             ]);
         }
 
@@ -66,7 +66,7 @@ class InterviewController extends Controller
     {
         try {
             $client = Client::findOrFail($id);
-            $this->authorize('createInterview', $client);
+            $this->authorize('interview', $client);
 
             $interview = $this->interviewServices->store($request->validated(), $id);
             if ($interview) {
