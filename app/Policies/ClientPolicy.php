@@ -55,6 +55,15 @@ class ClientPolicy
         return false;
     }
 
+    public function interview(User $user, Client $client): bool
+    {
+        if ($user->id === $client->user_id) {
+            return false;
+        }
+
+        return $user->can('create-interview-schedules');
+    }
+
     /**
      * Determine whether the user can update the model.
      */

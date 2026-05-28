@@ -31,21 +31,31 @@ class ReferralController extends Controller
     public function index()
     {
         $page_title = 'Referrals';
-        if (auth()->user()->roles()->exists()) {
-            $data = $this->referralServices->index();
-            $columns = $this->datatableServices->getColumns($data);
-        } else {
-            $data = $this->referralServices->index(auth()->user()->id);
-            $columns = $this->datatableServices->getColumns($data, ['client']);
+
+        $personalData = $this->referralServices->index(auth()->user()->id);
+        $personalDataColumns = $this->datatableServices->getColumns($personalData, ['client']);
+
+        $allData = [];
+        $allDataColumns = [];
+        if (auth()->user()->hasRole('staff')) {
+            $allData = $this->referralServices->index();
+            $allDataColumns = $this->datatableServices->getColumns($allData);
         }
 
         if (request()->expectsJson()) {
             return response()->json([
-                'data' => $data->values(),
+                'personalData' => $personalData ? $personalData->values() : [],
+                'allData' => $allData ? $allData->values() : [],
             ]);
         }
 
-        return view('referral.index', compact('data', 'columns', 'page_title'));
+        return view('referral.index', compact(
+            'allData',
+            'allDataColumns',
+            'personalData',
+            'personalDataColumns',
+            'page_title'
+        ));
     }
 
     /**
@@ -63,6 +73,8 @@ class ReferralController extends Controller
     {
         try {
             $client = Client::findOrFail($client_id);
+            $this->authorize('create', [Referral::class, $client]);
+
             $referral = $this->referralServices->store($request->validated(), $client->id);
 
             if ($referral) {

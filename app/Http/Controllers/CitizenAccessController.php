@@ -10,7 +10,7 @@ use App\Services\CentralClientService;
 use App\Services\ImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Str;
+use Illuminate\Support\Str;
 
 class CitizenAccessController extends Controller
 {
@@ -42,9 +42,7 @@ class CitizenAccessController extends Controller
         $funeralDocuments = DocumentRequirement::funeral();
 
         if (config('services.portal.users.mock')) {
-            $citizens = User::whereNotNull('citizen_uuid')
-                ->where('citizen_uuid', '!=', config('services.portal.users.sampleUuid'))
-                ->orderBy('created_at')
+            $citizens = User::orderBy('created_at')
                 ->get();
             $testLinks = [];
             foreach ($citizens as $citizen) {
@@ -59,30 +57,7 @@ class CitizenAccessController extends Controller
                 $url = url('/sso/callback')."?payload={$encoded}&signature={$signature}";
 
                 $testLinks[] = [
-                    'label' => $citizen->citizen_uuid,
-                    'url' => $url,
-                ];
-            }
-
-            if (
-                config('services.portal.users.enable.get') &&
-                config('services.portal.users.sampleUuid') &&
-                ! in_array(config('services.portal.users.sampleUuid'), $citizens->pluck('citizen_uuid')->toArray())
-            ) {
-                $sampleUserUuid = config('services.portal.users.sampleUuid');
-
-                $newUser = [
-                    'citizen_uuid' => $sampleUserUuid,
-                    'nonce' => Str::uuid()->toString(),
-                ];
-
-                $encoded = rtrim(strtr(base64_encode(json_encode($newUser)), '+/', '-_'), '=');
-                $signature = hash_hmac('sha256', $encoded, config('services.portal.sso.secret'));
-
-                $url = url('/sso/callback')."?payload={$encoded}&signature={$signature}";
-
-                $testLinks[] = [
-                    'label' => 'Sample User',
+                    'label' => $citizen->fullname(),
                     'url' => $url,
                 ];
             }
@@ -158,7 +133,9 @@ class CitizenAccessController extends Controller
                 session(['api_token' => $token]);
             }
 
-            $redirect = auth()->user()->clients()->exists() ? route('dashboard') : route('general.intake.form');
+            $redirect = auth()->user()->hasRole('staff')
+                ? route('dashboard')
+                : (auth()->user()->clients()->exists() ? route('dashboard') : route('general.intake.form'));
 
             return redirect()->to($redirect);
         } else {

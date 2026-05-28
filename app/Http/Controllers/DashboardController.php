@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Client;
 use App\Services\ClientService;
 use App\Services\DatatableService;
-use Spatie\Activitylog\Models\Activity;
 
 class DashboardController extends Controller
 {
@@ -72,6 +70,12 @@ class DashboardController extends Controller
             ],
         ];
 
+        if (request()->expectsJson()) {
+            return response()->json([
+                'clients' => $data ? $data->values() : [],
+            ]);
+        }
+
         return view('dashboard', compact(
             'page_title',
             'cardData',
@@ -82,30 +86,8 @@ class DashboardController extends Controller
 
     public function user()
     {
-        $page_title = 'Dashboard';
-        $latest_record = Client::where('user_id', auth()->user()->id)->orderBy('created_at', 'desc')->first();
-
-        if ($latest_record) {
-            $latest_record->load(['interviews', 'claimant', 'funeralAssistance']);
-        }
-
         return view('dashboard', [
-            'page_title' => $page_title,
-            'latest_record' => $latest_record,
+            'page_title' => 'Dashboard',
         ]);
-    }
-
-    public function trackerEvents()
-    {
-        $logs = Activity::where('description', 'like', 'Burial Assistance Request tracked by guest')->get();
-
-        $events = $logs->map(function ($log) {
-            return [
-                'title' => $log->properties,
-                'date' => $log->created_at->toDateString(),
-            ];
-        });
-
-        return response()->json($events);
     }
 }

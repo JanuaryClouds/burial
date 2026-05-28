@@ -11,6 +11,7 @@
                         'columns' => $columns,
                         'data' => $data,
                         'route' => route('activity.logs'),
+                        'src' => 'data',
                     ])
                 @else
                     <p class="card-text">You do not have permission to view activity logs</p>

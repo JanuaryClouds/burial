@@ -23,24 +23,22 @@
                 <span class="menu-title">Dashboard</span>
             </a>
         </div>
-        @if (!auth()->user()->roles()->exists())
-            <div class="menu-item">
-                <a href="{{ route('general.intake.form') }}" @class(['active' => Route::is('general.intake.form'), 'menu-link'])>
-                    <span class="menu-bullet">
-                        <span class="bullet bullet-dot"></span>
-                    </span>
-                    <span class="menu-title">Apply</span>
-                </a>
-            </div>
-            <div class="menu-item">
-                <a href="{{ route('interview.index') }}" @class(['active' => Request::is('interview*'), 'menu-link'])>
-                    <span class="menu-bullet">
-                        <span class="bullet bullet-dot"></span>
-                    </span>
-                    <span class="menu-title">Appointment Interviews</span>
-                </a>
-            </div>
-        @endif
+        <div class="menu-item">
+            <a href="{{ route('general.intake.form') }}" @class(['active' => Route::is('general.intake.form'), 'menu-link'])>
+                <span class="menu-bullet">
+                    <span class="bullet bullet-dot"></span>
+                </span>
+                <span class="menu-title">Apply</span>
+            </a>
+        </div>
+        <div class="menu-item">
+            <a href="{{ route('interview.index') }}" @class(['active' => Request::is('interview*'), 'menu-link'])>
+                <span class="menu-bullet">
+                    <span class="bullet bullet-dot"></span>
+                </span>
+                <span class="menu-title">Appointment Interviews</span>
+            </a>
+        </div>
         <div class="menu-item">
             <a href="{{ route('client.index') }}" @class(['active' => Request::is('client*'), 'menu-link'])>
                 <span class="menu-bullet">

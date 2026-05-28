@@ -11,13 +11,30 @@
                     @endforeach
                 </div>
             @endif
+            <div class="card multicolor-border">
+                <div class="card-header">
+                    <h5 class="card-title">All Applications</h5>
+                </div>
+                <div class="card-body">
+                    @include('partials.datatable.index', [
+                        'data' => $allData,
+                        'columns' => $allDataColumns,
+                        'classes' => 'with-status with-actions',
+                        'src' => 'allData',
+                    ])
+                </div>
+            </div>
         @endrole
-        <div class="card">
+        <div class="card multicolor-border">
+            <div class="card-header">
+                <h5 class="card-title">My Applications</h5>
+            </div>
             <div class="card-body">
                 @include('partials.datatable.index', [
-                    'data' => $data,
-                    'columns' => $columns,
+                    'data' => $personalData,
+                    'columns' => $personalDataColumns,
                     'classes' => 'with-status with-actions',
+                    'src' => 'personalData',
                 ])
             </div>
         </div>

@@ -5,34 +5,22 @@
             <span class="d-flex align-items-center gap-2">
                 @if (auth()->user()?->id == $data->originalClaimant()?->client?->user_id || auth()->user()->roles()->exists())
                     <a href="{{ route('client.show', ['client' => $data->originalClaimant()?->client]) }}"
-                        class="btn btn-secondary mr-2" data-no-loader>
+                        class="btn btn-light mr-2" data-no-loader>
                         Go to Client Record
                     </a>
                 @endif
-                @if (auth()->user()->roles()->exists())
+                @if (auth()->user()->hasRole('staff'))
                     @if (app()->hasDebugModeEnabled() || ($show_certificate && auth()->user()->can('create-certificates')))
-                        <a href="{{ route('burial.certificate', ['id' => $data->id]) }}" class="btn btn-secondary mr-2"
+                        <a href="{{ route('burial.certificate', ['id' => $data->id]) }}" class="btn btn-light mr-2"
                             target="_blank">
                             View Certificate
                         </a>
                     @endif
                     @if ($data->status != 'rejected' && $data->status != 'released' && $next_step != null)
-                        @can('create-updates')
+                        @can('update', [App\Models\BurialAssistance::class, $data])
                             <button class="btn btn-primary mr-2" type="button" data-bs-toggle="modal"
                                 data-bs-target="#addUpdateModal-{{ $data->id }}">
                                 Add Progress Update
-                            </button>
-                            <button class="btn btn-danger" type="button" data-bs-toggle="modal"
-                                data-bs-target="#reject-{{ $data->id }}">
-                                Reject Application
-                            </button>
-                        @endcan
-                    @endif
-                    @if ($data->status == 'rejected')
-                        @can('create-updates')
-                            <button class="btn btn-success" type="button" data-bs-toggle="modal"
-                                data-bs-target="#reject-{{ $data->id }}">
-                                Restore Application
                             </button>
                         @endcan
                     @endif

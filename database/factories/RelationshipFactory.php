@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\Relationship;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Relationship>
+ * @extends Factory<Relationship>
  */
 class RelationshipFactory extends Factory
 {

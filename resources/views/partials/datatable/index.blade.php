@@ -3,6 +3,7 @@
     'columns' => [],
     'classes' => '',
     'route' => null,
+    'src' => null,
 ])
 @php
     if ($data->isNotEmpty()) {
@@ -17,12 +18,20 @@
             $classes .= ' with-status';
         }
     }
+
+    $dataTableId = (string) Str::uuid();
+
+    if ($src === null && $route && $route !== '#' && $route !== '' && $data->isNotEmpty()) {
+        throw new RuntimeException(
+            'Src is required when data is present and route is present. Please provide a src or route.',
+        );
+    }
 @endphp
 <div class="table-responsive overflow-x-hidden">
     <div class="dataTables_wrapper">
-        <table class="table data-table {{ $classes }}" style="width:100%"
+        <table class="table data-table {{ $classes }}" id="dataTable-{{ $dataTableId }}" style="width:100%"
             data-route="{{ $route ?? request()->url() }}" data-columns='@json($columns)'
-            data-rows='@json($data)'>
+            data-rows='@json($data)' data-src="{{ $src }}">
             <thead class="border-bottom border-bottom-1 border-gray-200 fw-bold">
                 @include('partials.datatable.head', [
                     'columns' => $columns,

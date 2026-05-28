@@ -1,6 +1,6 @@
 <div class="modal fade" id="referralModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog"
     aria-labelledby="referralForm" aria-hidden="true">
-    <form action="{{ route('clients.referral.store', ['id' => $client->id]) }}" method="post">
+    <form action="{{ route('client.referral.store', ['id' => $client->id]) }}" method="post">
         @csrf
         <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
             <div class="modal-content">
@@ -16,11 +16,13 @@
                         'label' => 'Referral To',
                         'type' => 'text',
                         'required' => true,
+                        'readonly' => isset($client->referral),
                     ])
                     @include('components.form-textarea', [
                         'name' => 'remarks',
                         'label' => 'Remarks',
                         'required' => true,
+                        'readonly' => isset($client->referral),
                     ])
                 </div>
                 <div class="modal-footer">

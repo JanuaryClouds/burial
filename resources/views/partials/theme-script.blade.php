@@ -2,7 +2,6 @@
     var defaultThemeMode = "system";
     var themeMode;
 
-
     if (document.documentElement) {
         if (document.documentElement.hasAttribute("data-bs-theme")) {
             themeMode = document.documentElement.getAttribute("data-bs-theme");

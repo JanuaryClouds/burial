@@ -106,7 +106,7 @@ After submission, this will create a burial assistance application or libreng li
 4. Provide updates by clicking the `Add Progress Update` button and fill out the form it will display
 It will take 13 steps (as of May 18, 2026) to finish the application. 
 
-During the application, the client may request a change of claimants. For this, the new claimant must be an existing client in the system. Or one that has applied before. This is to ensure accountability with the clients.
+During the application, the client may request a change of claimants. For this, the new claimant must be an existing client in the system. Or one that has applied before. This is to ensure accountability with the client.
 #### B.9.1. Changing claimants
 1. Go through flow B.9.
 2. Scroll below to fill out the claimant change form. Only previous clients will be displayed in the selection.

@@ -12,7 +12,7 @@ use App\Models\District;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Client>
+ * @extends Factory<Client>
  */
 class ClientFactory extends Factory
 {
@@ -52,7 +52,8 @@ class ClientFactory extends Factory
                 'client_id' => $client->id,
             ]);
 
-            BeneficiaryFamily::factory()->count(5)->create([
+            $familyCount = rand(1, 5);
+            BeneficiaryFamily::factory()->count($familyCount)->create([
                 'client_id' => $client->id,
             ]);
         });

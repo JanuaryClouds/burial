@@ -3,12 +3,13 @@
 namespace Database\Factories;
 
 use App\Models\Assistance;
+use App\Models\ClientRecommendation;
 use App\Models\ModeOfAssistance;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ClientRecommendation>
+ * @extends Factory<ClientRecommendation>
  */
 class ClientRecommendationFactory extends Factory
 {

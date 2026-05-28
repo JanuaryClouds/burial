@@ -28,6 +28,7 @@
                 @include('partials.datatable.index', [
                     'columns' => $columns,
                     'classes' => 'with-actions',
+                    'src' => 'data',
                 ])
             @endif
         </div>

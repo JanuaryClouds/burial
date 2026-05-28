@@ -2,13 +2,14 @@
 
 namespace Database\Factories;
 
+use App\Models\BeneficiaryFamily;
 use App\Models\CivilStatus;
 use App\Models\Relationship;
 use App\Models\Sex;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\BeneficiaryFamily>
+ * @extends Factory<BeneficiaryFamily>
  */
 class BeneficiaryFamilyFactory extends Factory
 {

@@ -2,11 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Models\BurialAssistance;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\BurialAssistance>
+ * @extends Factory<BurialAssistance>
  */
 class BurialAssistanceFactory extends Factory
 {

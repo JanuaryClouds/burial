@@ -56,6 +56,7 @@
                                             'value' => $value,
                                             'type' => 'text',
                                             'label' => Str::replace('_', ' ', ucfirst($field)),
+                                            'autocomplete' => false,
                                         ])
                                     </div>
                                 @endif

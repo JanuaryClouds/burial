@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Models\Client;
 use App\Models\Interview;
 use App\Models\User;
 
@@ -34,13 +35,13 @@ class InterviewPolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user): bool
+    public function create(User $user, Client $client): bool
     {
-        if ($user->can('create-interviews')) {
-            return true;
+        if ($user->id === $client->user_id) {
+            return false;
         }
 
-        return false;
+        return $user->can('create-interview-schedules');
     }
 
     /**

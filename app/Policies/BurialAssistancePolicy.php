@@ -20,4 +20,13 @@ class BurialAssistancePolicy
 
         return $user->id == $burialAssistance->originalClaimant()->client->user_id;
     }
+
+    public function update(User $user, BurialAssistance $burialAssistance): bool
+    {
+        if ($user->id === $burialAssistance->originalClaimant()->client->user_id) {
+            return false;
+        }
+
+        return $user->can('create-updates');
+    }
 }

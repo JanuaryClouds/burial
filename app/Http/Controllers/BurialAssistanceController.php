@@ -51,21 +51,15 @@ class BurialAssistanceController extends Controller
         $page_title = 'Burial Assistance Applications';
         $resource = 'burial';
 
-        if (auth()->user()->roles()->count() == 0) {
-            $user_id = auth()->user()->id;
-        }
+        $personalData = $this->burialAssistanceServices->index(auth()->user()->id);
+        $personalDataColumns = $this->datatableServices->getColumns($personalData, ['id', 'status', 'show_route']);
 
-        $data = $this->burialAssistanceServices->index($user_id ?? null);
-        $columns = $this->datatableServices->getColumns($data, ['id', 'status', 'show_route']);
-
-        if (request()->expectsJson()) {
-            return response()->json([
-                'data' => $data->values(),
-            ]);
-        }
-
-        $cardData = null;
-        if (auth()->user()->roles()->exists()) {
+        $cardData = [];
+        $allData = [];
+        $allDataColumns = [];
+        if (auth()->user()->hasRole('staff')) {
+            $allData = $this->burialAssistanceServices->index();
+            $allDataColumns = $this->datatableServices->getColumns($allData, ['id', 'status', 'show_route']);
             $cardData = [
                 [
                     'model' => 'App\Models\BurialAssistance',
@@ -98,11 +92,20 @@ class BurialAssistanceController extends Controller
             ];
         }
 
+        if (request()->expectsJson()) {
+            return response()->json([
+                'personalData' => $personalData ? $personalData->values() : [],
+                'allData' => $allData ? $allData->values() : [],
+            ]);
+        }
+
         return view('burial.index', compact(
             'resource',
-            'data',
+            'personalData',
+            'personalDataColumns',
+            'allData',
+            'allDataColumns',
             'cardData',
-            'columns',
             'page_title',
         ));
     }
@@ -111,6 +114,7 @@ class BurialAssistanceController extends Controller
     {
         try {
             $data = BurialAssistance::findOrFail($id);
+            $this->authorize('view', $data);
 
             $currentClaimant = $data->currentClaimant();
             $originalClaimant = $data->originalClaimant();
@@ -181,6 +185,7 @@ class BurialAssistanceController extends Controller
     public function update(StoreBurialAssistanceRequest $request, $id)
     {
         $burialAssistance = BurialAssistance::where('id', $id)->with('claimant', 'deceased')->first();
+        $this->authorize('update', $burialAssistance);
         $burialAssistance = $this->burialAssistanceServices->update($request->validated(), $burialAssistance);
 
         return redirect()->back()->with('success', 'Successfully updated application.');
@@ -193,6 +198,7 @@ class BurialAssistanceController extends Controller
             if (! $application) {
                 return back()->with('error', 'Application not found.');
             }
+            $this->authorize('update', $application);
 
             if (! empty($application->rejection)) {
                 $application->rejection()->delete();
@@ -250,6 +256,7 @@ class BurialAssistanceController extends Controller
         if (! $application) {
             return back()->with('error', 'Application not found.');
         }
+        $this->authorize('update', $application);
 
         $application->assigned_to = $request->assigned_to;
         $application->update();

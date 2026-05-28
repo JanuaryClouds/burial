@@ -7,6 +7,16 @@
 
 "use strict";
 
+function randomizeMulticolorBorder() {
+    document.querySelectorAll('.card.multicolor-border').forEach(card => {
+        const redEnd = Math.floor(Math.random() * 40) + 20;
+        const yellowEnd = Math.floor(Math.random() * (90 - redEnd)) + redEnd;
+
+        card.style.setProperty('--red-end', `${redEnd}%`);
+        card.style.setProperty('--yellow-end', `${yellowEnd}%`);
+    });
+}
+
 function checkAndRenderCharts() {
     window.renderedCharts = window.renderedCharts || {};
     const canvases = document.querySelectorAll('canvas')
@@ -363,8 +373,15 @@ function checkAndRenderDataTables() {
 
 document.addEventListener('DOMContentLoaded', () => {
     checkAndRenderCharts();
+    randomizeMulticolorBorder();
     checkAndRenderDataTables();
-})
+});
+
+document.addEventListener('livewire:init', () => {
+    Livewire.hook('commit', () => {
+        randomizeMulticolorBorder();
+    });
+});
 
 $(document).ready(function () {
     $(".nav-link.has-dropdown").each(function () {

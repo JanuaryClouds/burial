@@ -8,8 +8,8 @@
 <body id="kt_body"
     class="header-fixed header-mobile-fixed aside-enabled aside-fixed aside-secondary-disabled overflow-x-hidden">
     @include('partials.theme-script')
+    <x-loader />
     <div class="d-flex flex-column flex-root min-vh-100">
-        <x-loader />
         <div class="page d-flex flex-row flex-column-fluid">
             @include('partials.sidebar.index')
             <div class="wrapper d-flex flex-column flex-row-fluid">

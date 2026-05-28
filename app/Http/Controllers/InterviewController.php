@@ -33,27 +33,41 @@ class InterviewController extends Controller
 
     public function index()
     {
-        $userId = auth()->user()->roles()->exists() ? null : auth()->user()->id;
+        $page_title = 'Appointment Interviews';
 
-        $data = $this->interviewServices->index($userId);
-        $columns = $this->datatableServices->getColumns($data, ['client']);
+        $personalData = $this->interviewServices->index(auth()->user()->id);
+        $personalDataColumns = $this->datatableServices->getColumns($personalData, ['client']);
 
-        if (request()->expectsJson()) {
+        $allData = [];
+        $allDataColumns = [];
+
+        if (auth()->user()->hasRole('staff')) {
+            $allData = $this->interviewServices->index(null);
+            $allDataColumns = $this->datatableServices->getColumns($allData);
+        }
+
+        if (request()->ajax()) {
             return response()->json([
-                'data' => $data->values(),
+                'personalData' => $personalData ? $personalData->values() : [],
+                'allData' => $allData ? $allData->values() : [],
             ]);
         }
 
-        return view('interview.index', [
-            'data' => $data,
-            'columns' => $columns ?? [],
-            'page_title' => 'Appointment Interviews',
-        ]);
+        return view('interview.index', compact(
+            'page_title',
+            'personalDataColumns',
+            'personalData',
+            'allDataColumns',
+            'allData',
+        ));
     }
 
     public function store(InterviewRequest $request, $id)
     {
         try {
+            $client = Client::findOrFail($id);
+            $this->authorize('interview', $client);
+
             $interview = $this->interviewServices->store($request->validated(), $id);
             if ($interview) {
                 $client = $interview->client;
