@@ -3,7 +3,7 @@
 <style>
     .loader-container {
         --uib-size: 80px;
-        --uib-color: white;
+        --uib-color: var(--bs-primary);
         --uib-speed: 1.4s;
         --uib-stroke: 5px;
         --uib-bg-opacity: .1;
