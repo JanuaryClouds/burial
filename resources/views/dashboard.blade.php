@@ -17,6 +17,7 @@
                                 'columns' => $columns,
                                 'data' => $data,
                                 'src' => 'clients',
+                                'countPerPage' => 5,
                             ])
                         </div>
                     </div>

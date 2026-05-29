@@ -9,6 +9,7 @@
         let route = dataTable.data('route') ?? null;
         let dataset = dataTable.data('rows') || [];
         let dataSrc = dataTable.data('src') || null;
+        let countPerPage = dataTable.data('count-per-page') || 10;
 
         const escapeHtml = (str) => {
             const div = document.createElement('div');
@@ -71,6 +72,8 @@
                         return '';
                     }
                     const safeRoute = encodeURI(routeValue);
+                    if (safeRoute === '#' || safeRoute === '' || safeRoute === undefined ||
+                        safeRoute === null) return '';
                     return ` 
                         <a href="${safeRoute}" class="btn btn-sm btn-primary">
                             <i class="ki-duotone ki-eye pe-0">
@@ -89,6 +92,8 @@
             ordering: true,
             columns: columns,
             order: [],
+            pageLength: countPerPage,
+            lengthMenu: [...new Set([countPerPage, 10, 25, 50, 100])].sort((a, b) => a - b),
             data: route === '#' || !dataSrc ? dataset : undefined,
             ajax: route !== '#' && dataSrc ? {
                 url: route,
