@@ -34,6 +34,11 @@ class FuneralAssistanceService
                     $status = 'Forwarded';
                 }
 
+                $showRoute = null;
+                if (auth()->user()->can('view', [$application])) {
+                    $showRoute = route('funeral.show', $application);
+                }
+
                 return [
                     'id' => $application->id,
                     'tracking_no' => $application->client?->tracking_no,
@@ -41,7 +46,7 @@ class FuneralAssistanceService
                     'beneficiary' => $application->client?->beneficiary?->fullname(),
                     'status' => $status ?? 'Pending',
                     'created_at' => $application->created_at->format('M d, Y'),
-                    'show_route' => route('funeral.show', $application),
+                    'show_route' => $showRoute,
                 ];
             });
     }
@@ -68,22 +73,6 @@ class FuneralAssistanceService
                     'forwarded_at' => $funeral->forwarded_at ?? 'N/A',
                 ];
             });
-    }
-
-    public function columns($data)
-    {
-        if ($data->isEmpty()) {
-            return collect();
-        }
-
-        $columns = collect(array_keys($data->first()))
-            ->reject(fn ($key) => in_array($key, ['id', 'status', 'show_route']))
-            ->map(fn ($key) => [
-                'data' => $key,
-            ])
-            ->values();
-
-        return $columns;
     }
 
     /**

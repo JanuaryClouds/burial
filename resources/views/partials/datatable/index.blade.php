@@ -4,17 +4,20 @@
     'classes' => '',
     'route' => null,
     'src' => null,
+    'countPerPage' => 10,
 ])
 @php
     if ($data->isNotEmpty()) {
-        $firstItem = $data->first();
+        $hasActions = $data->contains(
+            fn($item) => array_key_exists('show_route', $item) && $item['show_route'] !== null,
+        );
+        $hasStatus = $data->contains(fn($item) => array_key_exists('status', $item));
 
-        $firstItemArray = is_array($firstItem) ? $firstItem : $firstItem->toArray();
-        if (array_key_exists('show_route', $firstItemArray)) {
+        if ($hasActions) {
             $classes .= ' with-actions';
         }
 
-        if (array_key_exists('status', $firstItemArray)) {
+        if ($hasStatus) {
             $classes .= ' with-status';
         }
     }
@@ -31,7 +34,8 @@
     <div class="dataTables_wrapper">
         <table class="table data-table {{ $classes }}" id="dataTable-{{ $dataTableId }}" style="width:100%"
             data-route="{{ $route ?? request()->url() }}" data-columns='@json($columns)'
-            data-rows='@json($data)' data-src="{{ $src }}">
+            data-rows='@json($data)' data-src="{{ $src }}"
+            data-count-per-page="{{ $countPerPage }}">
             <thead class="border-bottom border-bottom-1 border-gray-200 fw-bold">
                 @include('partials.datatable.head', [
                     'columns' => $columns,

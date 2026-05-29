@@ -19,7 +19,6 @@
                     @include('partials.datatable.index', [
                         'data' => $allData,
                         'columns' => $allDataColumns,
-                        'classes' => 'with-status with-actions',
                         'src' => 'allData',
                     ])
                 </div>
@@ -33,7 +32,6 @@
                 @include('partials.datatable.index', [
                     'data' => $personalData,
                     'columns' => $personalDataColumns,
-                    'classes' => 'with-status with-actions',
                     'src' => 'personalData',
                 ])
             </div>

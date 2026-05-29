@@ -18,7 +18,6 @@
                 <div class="card-body">
                     @include('partials.datatable.index', [
                         'data' => $allData,
-                        'classes' => 'with-status with-actions',
                         'columns' => $allDataColumns,
                         'src' => 'allData',
                     ])
@@ -32,7 +31,6 @@
             <div class="card-body">
                 @include('partials.datatable.index', [
                     'data' => $personalData,
-                    'classes' => 'with-status with-actions',
                     'columns' => $personalDataColumns,
                     'src' => 'personalData',
                 ])

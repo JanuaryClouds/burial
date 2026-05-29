@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Models\BurialAssistance;
-use Str;
+use Illuminate\Support\Str;
 
 class BurialAssistanceService
 {
@@ -28,6 +28,11 @@ class BurialAssistanceService
                     $status = 'For Pickup';
                 }
 
+                $showRoute = null;
+                if (auth()->user()->can('view', [$application])) {
+                    $showRoute = route('burial.show', $application);
+                }
+
                 return [
                     'id' => $application->id,
                     'tracking_no' => $application->originalClaimant()->client?->tracking_no,
@@ -35,7 +40,7 @@ class BurialAssistanceService
                     'contact_number' => $claimant?->contact_number ?? 'N/A',
                     'beneficiary' => $application->beneficiary()?->fullname(),
                     'status' => $status,
-                    'show_route' => route('burial.show', $application),
+                    'show_route' => $showRoute,
                 ];
             })
             ->sortBy('tracking_no');
@@ -68,22 +73,6 @@ class BurialAssistanceService
             })
             ->sortBy('tracking_no')
             ->values();
-    }
-
-    public function columns($data)
-    {
-        if ($data->isEmpty()) {
-            return collect();
-        }
-
-        $columns = collect(array_keys($data->first()))
-            ->reject(fn ($key) => in_array($key, ['id', 'status', 'show_route']))
-            ->map(fn ($key) => [
-                'data' => $key,
-            ])
-            ->values();
-
-        return $columns;
     }
 
     public function store(array $data)

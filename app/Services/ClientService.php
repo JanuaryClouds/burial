@@ -21,7 +21,7 @@ use Illuminate\Support\Str;
 
 class ClientService
 {
-    protected $imageServices;
+    protected ImageService $imageServices;
 
     public function __construct(ImageService $imageService)
     {
@@ -115,22 +115,6 @@ class ClientService
                     'created_at' => $client->created_at->format('F d, Y H:i'),
                 ];
             });
-    }
-
-    public function columns($data)
-    {
-        if ($data->isEmpty()) {
-            return collect();
-        }
-
-        $columns = collect(array_keys($data->first()))
-            ->reject(fn ($key) => in_array($key, ['id', 'status', 'show_route']))
-            ->map(fn ($key) => [
-                'data' => $key,
-            ])
-            ->values();
-
-        return $columns;
     }
 
     /**
