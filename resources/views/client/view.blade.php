@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('content')
     <div class="d-flex flex-column gap-4">
-        @if (auth()->check() && auth()->user()->roles()->count() > 0)
+        @if (auth()->check() && auth()->user()->hasRole('staff'))
             @include('client.partials.menu')
             @include('client.partials.assessment-modal')
             @include('client.partials.schedule')

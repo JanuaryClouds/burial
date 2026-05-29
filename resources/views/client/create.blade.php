@@ -30,7 +30,7 @@
                         <h5 class="modal-title" id="confirmExitModalLabel">Cancel Application</h5>
                     </div>
                     <div class="modal-body">
-                        <p class="fs-5">
+                        <p class="fs-3">
                             Are you sure you want to submit your application? Once submitted, you will not be able to
                             edit your information.
                         </p>

@@ -13,6 +13,9 @@
                 </div>
             @endif
             <div class="card multicolor-border">
+                <div class="card-header">
+                    <h4 class="card-title">All Applications</h4>
+                </div>
                 <div class="card-body">
                     @include('partials.datatable.index', [
                         'data' => $allData,
