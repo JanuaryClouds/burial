@@ -15,7 +15,7 @@
                         View Certificate
                     </a>
                 @endif
-                @can('create', [App\Models\FuneralAssistance::class, $data])
+                @can('update', [App\Models\FuneralAssistance::class, $data])
                     @if ($data->approved_at == null)
                         <a href="{{ route('funeral.approved', ['id' => $data->id]) }}" class="btn btn-success mr-2">
                             Approved
@@ -31,6 +31,11 @@
                             Forwarded
                         </button>
                     @endif
+                @else
+                    <button type="button" class="btn btn-secondary" disabled data-bs-toggle="tooltip"
+                        data-bs-placement="bottom" title="You do not have permissions to update this record">
+                        Update
+                    </button>
                 @endcan
             </div>
         </div>

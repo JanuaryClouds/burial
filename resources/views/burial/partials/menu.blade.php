@@ -22,6 +22,11 @@
                                 data-bs-target="#addUpdateModal-{{ $data->id }}">
                                 Add Progress Update
                             </button>
+                        @else
+                            <button type="button" class="btn btn-secondary" disabled data-bs-toggle="tooltip"
+                                data-bs-placement="bottom" title="You do not have permissions to update this record">
+                                Add Progress Update
+                            </button>
                         @endcan
                     @endif
                 @endif
