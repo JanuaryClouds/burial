@@ -40,6 +40,7 @@ class AdminSeeder extends Seeder
         $superadmin->assignRole($superAdminRole);
         $superadmin->assignRole($staffRole);
 
+        $staffFactories = [];
         for ($staffCount = 2; $staffCount < 6; $staffCount++) {
             $staffDataArray = $centralClientService->fetchFromPortal('search', 'user'.$staffCount.'_uat');
             if (count($staffDataArray) === 0) {
@@ -68,13 +69,28 @@ class AdminSeeder extends Seeder
             $staffFactory->assignRole($staffRole);
         }
 
-        foreach ($staffFactories as $staff) {
-            $allRoles = Role::where('name', '!=', 'superadmin')->pluck('name')->toArray();
-            $existingRoles = $staff->roles()->pluck('name')->toArray();
-            while (rand(0, 1) === 1 && count($existingRoles) < count($allRoles)) {
-                $randomRole = Role::whereNotIn('name', $existingRoles)->inRandomOrder()->first();
-                $staff->assignRole($randomRole);
-                $existingRoles[] = $randomRole->name;
+        if (count($staffFactories) > 0) {
+            foreach ($staffFactories as $staff) {
+                $assignedRoles = $staff->roles()->pluck('name')->toArray();
+                $unavailableRoles = array_merge($assignedRoles, ['superadmin', 'staff']);
+
+                $availableRoles = Role::whereNotIn('name', $unavailableRoles)->pluck('name')->toArray();
+                $assignedRolesCount = 0;
+
+                while ($assignedRolesCount < count($availableRoles)) {
+                    if (count($assignedRoles) >= count($availableRoles) || rand(0, 1) === 0) {
+                        break;
+                    }
+
+                    $randomRole = array_rand($availableRoles);
+                    if (in_array($availableRoles[$randomRole], $assignedRoles)) {
+                        continue;
+                    }
+
+                    $staff->assignRole($availableRoles[$randomRole]);
+                    $assignedRoles[] = $availableRoles[$randomRole];
+                    $assignedRolesCount++;
+                }
             }
         }
     }
