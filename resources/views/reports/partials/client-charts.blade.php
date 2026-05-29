@@ -5,13 +5,9 @@
         </div>
         <div class="card-body">
             @if (!$clientsPerBarangay->isEmpty())
-                <canvas 
-                    id="clients-per-barangay"
-                data-chart-data='@json($clientsPerBarangay->pluck('count'))'
-                    data-chart-labels='@json($clientsPerBarangay->pluck('name'))'
-                    data-chart-type="bar"
-                    data-empty="{{ $clientsPerBarangay->isEmpty() ? 'true' : 'false' }}"
-                ></canvas>
+                <canvas id="clients-per-barangay" data-chart-data='@json($clientsPerBarangay->pluck('count'))'
+                    data-chart-labels='@json($clientsPerBarangay->pluck('name'))' data-chart-type="bar"
+                    data-empty="{{ $clientsPerBarangay->isEmpty() ? 'true' : 'false' }}"></canvas>
             @else
                 <p class="text-muted">No Data</p>
             @endif
@@ -25,13 +21,9 @@
         </div>
         <div class="card-body">
             @if (!$clientsPerAssistance->isEmpty())
-                <canvas 
-                    id="clients-per-assistance"
-                data-chart-data='@json($clientsPerAssistance->pluck('count'))'
-                    data-chart-labels='@json($clientsPerAssistance->pluck('name'))'
-                    data-chart-type="bar"
-                    data-empty="{{ $clientsPerAssistance->isEmpty() ? 'true' : 'false' }}"
-                ></canvas>
+                <canvas id="clients-per-assistance" data-chart-data='@json($clientsPerAssistance->pluck('count'))'
+                    data-chart-labels='@json($clientsPerAssistance->pluck('name'))' data-chart-type="bar"
+                    data-empty="{{ $clientsPerAssistance->isEmpty() ? 'true' : 'false' }}"></canvas>
             @else
                 <p class="text-muted">No Data</p>
             @endif

@@ -42,6 +42,22 @@ function checkAndRenderCharts() {
         }
     }
 
+    const whiteBackgroundPlugin = {
+        id: 'whiteBackground',
+    
+        beforeDraw(chart, args, options) {
+            const { ctx, width, height } = chart;
+    
+            ctx.save();
+            ctx.globalCompositeOperation = 'destination-over';
+            ctx.fillStyle = options.color || '#ffffff';
+            ctx.fillRect(0, 0, width, height);
+            ctx.restore();
+        }
+    };
+    
+    Chart.register(whiteBackgroundPlugin);
+
     function renderPieChart(chartData, chartId, chartLabels, chartTitle) {
         const piChart = document.getElementById(chartId);
         if (piChart) {
@@ -60,10 +76,15 @@ function checkAndRenderCharts() {
                },
                options: {
                    responsive: true,
+                   plugins: {
+                    whiteBackground: {
+                        color: '#ffffff'
+                    },
                     legend: {
                         display: true,
                         position: 'bottom',
-                    },
+                    }
+                },
                     title: {
                         display: !!chartTitle,
                         text: chartTitle
@@ -92,8 +113,13 @@ function checkAndRenderCharts() {
                 },
                 options: {
                     responsive: true,
-                    legend: {
-                        display: false,
+                    plugins: {
+                        whiteBackground: {
+                            color: '#ffffff'
+                        },
+                        legend: {
+                            display: false,
+                        }
                     },
                     title: {
                         display: !!chartTitle,
@@ -125,6 +151,9 @@ function checkAndRenderCharts() {
                 options: {
                     responsive: true,
                     plugins: {
+                        whiteBackground: {
+                            color: '#ffffff'
+                        },
                         legend: {
                             display: true,
                             labels: {
@@ -378,8 +407,10 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 document.addEventListener('livewire:init', () => {
-    Livewire.hook('commit', () => {
-        randomizeMulticolorBorder();
+    Livewire.hook('morph.updated', () => {
+        requestAnimationFrame(() => {
+            randomizeMulticolorBorder();
+        });
     });
 });
 
