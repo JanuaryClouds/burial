@@ -18,6 +18,10 @@ class BurialAssistancePolicy
             return true;
         }
 
+        if ($burialAssistance->hasClaimantChange()) {
+            return $user->id == $burialAssistance->claimantChanges()->first()->newUserClaimant->id;
+        }
+
         return $user->id == $burialAssistance->originalClaimant()->client->user_id;
     }
 
