@@ -11,15 +11,15 @@ use App\Services\NotificationService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Exception;
 use Illuminate\Http\Request;
-use Str;
+use Illuminate\Support\Str;
 
 class FuneralAssistanceController extends Controller
 {
-    protected $funeralAssistanceServices;
+    protected FuneralAssistanceService $funeralAssistanceServices;
 
-    protected $datatableServices;
+    protected DatatableService $datatableServices;
 
-    protected $notificationServices;
+    protected NotificationService $notificationServices;
 
     public function __construct(FuneralAssistanceService $funeralAssistanceService, DatatableService $datatableService, NotificationService $notificationService)
     {
