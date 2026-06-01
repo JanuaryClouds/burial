@@ -90,6 +90,19 @@ class CentralClientService
         }
 
         if ($user) {
+            if (! empty($citizenData)) {
+                $user->fill([
+                    'first_name' => $citizenData[0]['firstname'],
+                    'middle_name' => $citizenData[0]['middlename'],
+                    'last_name' => $citizenData[0]['lastname'],
+                    'suffix' => $citizenData[0]['suffix'],
+                    'email' => $citizenData[0]['email'],
+                    'contact_number' => $citizenData[0]['contact_number'],
+                ]);
+                
+                $user->save();
+            }
+
             return $user;
         }
 
@@ -108,6 +121,7 @@ class CentralClientService
         try {
             return User::create([
                 'citizen_uuid' => $citizenData['user_id'] ?? null,
+                'emp_id' => $citizenData['emp_id'] ?? null,
                 'first_name' => $citizenData['firstname'] ?? null,
                 'middle_name' => $citizenData['middlename'] ?? null,
                 'last_name' => $citizenData['lastname'] ?? null,
@@ -140,6 +154,7 @@ class CentralClientService
 
         return [
             'citizen_uuid' => $citizen['user_id'] ?? null,
+            'emp_id' => $citizen['emp_id'] ?? null,
             'first_name' => $citizen['firstname'] ?? null,
             'middle_name' => $citizen['middlename'] ?? null,
             'last_name' => $citizen['lastname'] ?? null,
