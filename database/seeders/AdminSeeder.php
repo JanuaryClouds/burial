@@ -7,6 +7,7 @@ use App\Services\CentralClientService;
 use Illuminate\Database\Seeder;
 use RuntimeException;
 use Spatie\Permission\Models\Role;
+use Str;
 
 class AdminSeeder extends Seeder
 {
@@ -27,6 +28,7 @@ class AdminSeeder extends Seeder
             [
                 'email' => $superadminData['email'],
                 'citizen_uuid' => $superadminData['user_id'],
+                'emp_id' => (string) rand(100000, 999999),
                 'first_name' => $superadminData['firstname'],
                 'middle_name' => $superadminData['middlename'],
                 'last_name' => $superadminData['lastname'],
@@ -51,6 +53,7 @@ class AdminSeeder extends Seeder
             }
             $staff = User::firstOrCreate([
                 'citizen_uuid' => $staffData['user_id'],
+                'emp_id' => (string) rand(100000, 999999),
                 'email' => $staffData['email'],
                 'first_name' => $staffData['firstname'],
                 'middle_name' => $staffData['middlename'] ?? null,
