@@ -28,7 +28,7 @@ class CitizenAccessController extends Controller
 
     public function index(Request $request)
     {
-        if (SystemSetting::first()?->maintenance_mode ?? false) {
+        if (app()->isProduction() && SystemSetting::first()?->maintenance_mode ?? false) {
             return response()->view('error.maintenance', [], 503);
         }
 
@@ -119,6 +119,11 @@ class CitizenAccessController extends Controller
 
         if ($uuid) {
             $user = $this->centralClientService->checkIfUser($uuid);
+
+            if ($user && !$user->hasRole('superadmin') && SystemSetting::first()?->maintenance_mode ?? false) {
+                return response()->view('error.maintenance', [], 503);
+            }
+    
             if ($user === null) {
                 return redirect()->route('landing.page')->with('error', 'User not found.');
             }
@@ -130,7 +135,6 @@ class CitizenAccessController extends Controller
             if (! Auth::check()) {
                 Auth::login($user);
                 $token = $user->createToken('fileserver')->plainTextToken;
-                session(['api_token' => $token]);
             }
 
             $redirect = auth()->user()->hasRole('staff')
@@ -165,7 +169,7 @@ class CitizenAccessController extends Controller
         $endpoint = config('services.portal.endpoint');
 
         if (empty($endpoint) || app()->isLocal()) {
-            return redirect('/');
+            return redirect()->route('landing.page');
         }
 
         return redirect($endpoint);

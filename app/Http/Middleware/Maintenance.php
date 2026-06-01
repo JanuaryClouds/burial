@@ -24,17 +24,20 @@ class Maintenance
                 return $next($request);
             }
 
+            if ($request->routeIs([
+                'landing.page',
+                'login',
+                'login.check',
+                'sso',
+                'sso.logout',
+            ])) {
+                return $next($request);
+            }
+
             if ($request->expectsJson()) {
                 return response()->json([
                     'error' => 'System is currently under maintenance.',
                 ], 503);
-            }
-
-            if ($request->routeIs([
-                'landing.page',
-                'logout',
-            ])) {
-                return $next($request);
             }
 
             return response()->view('error.maintenance', [], 503);
