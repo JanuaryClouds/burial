@@ -3,6 +3,7 @@
 namespace App\Services\Auth;
 
 use App\Models\User;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
 class UserService
@@ -28,34 +29,37 @@ class UserService
 
     public function index()
     {
-        return User::select('id', 'first_name', 'middle_name', 'last_name', 'email', 'contact_number', 'is_active')
+        return User::select('id', 'emp_id', 'first_name', 'middle_name', 'last_name', 'email', 'contact_number', 'is_active')
             ->whereDoesntHave('roles', function ($query) {
                 $query->where('name', 'superadmin');
             })
             ->get()
             ->map(function ($user) {
+                $flagAsStaff = $user->roles->contains('name', 'staff');
+                $flagAsPotentialStaff = $user->roles->isEmpty() && $user->emp_id != null;
+
                 return [
                     'id' => $user->id,
-                    'first_name' => $user->first_name,
-                    'middle_name' => $user->middle_name ?? '',
-                    'last_name' => $user->last_name,
+                    'name' => $user->fullname(),
                     'email' => $user->email,
                     'contact_number' => $user->contact_number ?? 'N/A',
                     'is_active' => $user->is_active,
+                    'staff' => $flagAsStaff,
+                    'potential_staff' => $flagAsPotentialStaff,
                     'show_route' => route('user.edit', $user->id),
                 ];
             });
     }
 
-    public function storeUser(array $data)
-    {
-        $user = User::create($data);
-        $user->assignRole('staff');
+    // public function storeUser(array $data)
+    // {
+    //     $user = User::create($data);
+    //     $user->assignRole('staff');
 
-        return $user;
-    }
+    //     return $user;
+    // }
 
-    public function update(array $data, $user)
+    public function update(array $data, User $user)
     {
         if (! empty($data['password'])) {
             $data['password'] = bcrypt($data['password']);

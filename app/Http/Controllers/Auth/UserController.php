@@ -27,9 +27,9 @@ class UserController extends Controller
 
     public function login(LoginRequest $request)
     {
+        $ip = request()->ip();
+        $browser = request()->header('User-Agent');
         try {
-            $ip = request()->ip();
-            $browser = request()->header('User-Agent');
 
             if (! Auth::attempt($request->validated())) {
                 return back()
@@ -183,14 +183,15 @@ class UserController extends Controller
         }
     }
 
-    public function store(CreateUserRequest $request)
-    {
-        try {
-            $user = $this->userServices->storeUser($request->validated());
+    // ! Disabled to prioritize portal
+    // public function store(CreateUserRequest $request)
+    // {
+    //     try {
+    //         $user = $this->userServices->storeUser($request->validated());
 
-            return redirect()->route('user.edit', $user)->with('success', 'User created successfully.');
-        } catch (Exception $e) {
-            return redirect()->back()->with('error', $e->getMessage());
-        }
-    }
+    //         return redirect()->route('user.edit', $user)->with('success', 'User created successfully.');
+    //     } catch (Exception $e) {
+    //         return redirect()->back()->with('error', $e->getMessage());
+    //     }
+    // }
 }
