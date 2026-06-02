@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Models\SystemSetting;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class Maintenance
@@ -40,6 +41,7 @@ class Maintenance
                 ], 503);
             }
 
+            Auth::logout();
             return response()->view('error.maintenance', [], 503);
         }
 
