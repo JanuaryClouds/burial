@@ -5,6 +5,7 @@ namespace App\Services\Auth;
 use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Spatie\Permission\Models\Role;
 
 class UserService
 {
@@ -75,10 +76,15 @@ class UserService
         }
         $user->save();
 
+        $staffRole = Role::where('name', 'staff')->first();
         if (! isset($data['roles']) || empty($data['roles']) || $data['roles'] == []) {
             $user->roles()->detach();
         } else {
-            $user->roles()->sync($data['roles']);
+            if (! in_array($staffRole->id, $data['roles'])) {
+                $user->roles()->detach();
+            } else {
+                $user->roles()->sync($data['roles']);
+            }
         }
 
         return $user;
