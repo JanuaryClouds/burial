@@ -101,6 +101,11 @@
                 dataSrc: dataSrc,
                 headers: {
                     'Accept': 'application/json'
+                },
+                error: function(response) {
+                    if (response.status === 403) {
+                        window.location.reload();
+                    }
                 }
             } : undefined,
             dom:

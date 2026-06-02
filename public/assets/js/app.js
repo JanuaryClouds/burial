@@ -414,6 +414,12 @@ document.addEventListener('livewire:init', () => {
     });
 });
 
+$(document).ajaxError(function(event, xhr) {
+    if (xhr.status === 403) {
+        window.location.reload();
+    }
+});
+
 $(document).ready(function () {
     $(".nav-link.has-dropdown").each(function () {
         const $this = $(this).parent();
