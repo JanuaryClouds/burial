@@ -27,6 +27,6 @@
     integrity="sha256-iZhCeCp/0W/MLXp8h3/57BWTlARMh7FYsu8TJ4ZgaTI=" crossorigin="anonymous"></script> --}}
 <link rel="icon" type="image/x-icon" href="{{ asset('images/favicon.ico') }}">
 
-<link rel="preload" href="{{ asset('assets/fonts/poppins.ttf') }}" as="font" type="font/ttf" crossorigin>
-<link rel="stylesheet" href="{{ asset('assets/css/app.css') }}">
+<link rel="preload" href="{{ asset('fonts/poppins.ttf') }}" as="font" type="font/ttf" crossorigin>
+<link rel="stylesheet" href="{{ asset('css/app.css') }}">
 @livewireStyles(['nonce' => $nonce ?? ''])

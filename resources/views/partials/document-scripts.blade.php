@@ -21,7 +21,7 @@
 <script nonce="{{ $nonce ?? '' }}" src="https://cdn.datatables.net/responsive/3.0.7/js/responsive.bootstrap5.min.js">
 </script>
 
-<script nonce="{{ $nonce ?? '' }}" src="{{ asset('assets/js/app.js') }}"></script>
+<script nonce="{{ $nonce ?? '' }}" src="{{ asset('js/app.js') }}"></script>
 
 <script nonce="{{ $nonce ?? '' }}" src="{{ asset('metronic/js/scripts.bundle.js') }}"></script>
 
