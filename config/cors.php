@@ -1,5 +1,22 @@
 <?php
 
+$origins = match (env('APP_ENV')) {
+    'production' => array_filter(
+        array_map(
+            'trim',
+            explode(',', env('APP_PRODUCTION_URLS', ''))
+        )
+    ),
+
+    default => [
+        'http://localhost',
+        'http://localhost:8000',
+        'http://127.0.0.1',
+        'http://127.0.0.1:8000',
+        'http://localhost:5173',
+    ],
+};
+
 return [
 
     /*
@@ -17,9 +34,9 @@ return [
 
     'paths' => ['api/*', 'sanctum/csrf-cookie'],
 
-    'allowed_methods' => ['*'],
+    'allowed_methods' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
 
-    'allowed_origins' => ['*'],
+    'allowed_origins' => $origins,
 
     'allowed_origins_patterns' => [],
 
