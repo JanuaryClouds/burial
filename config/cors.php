@@ -1,12 +1,20 @@
 <?php
 
 $origins = match (env('APP_ENV')) {
-    'production' => array_filter(
-        array_map(
-            'trim',
-            explode(',', env('APP_PRODUCTION_URLS', ''))
-        )
-    ),
+    'production' => (function () {
+        $urls = array_filter(
+            array_map(
+                'trim',
+                explode(',', env('APP_PRODUCTION_URLS', ''))
+            )
+        );
+
+        if (empty($urls)) {
+            throw new RuntimeException('APP_PRODUCTION_URLS is not set.');
+        }
+
+        return $urls;
+    })(),
 
     default => [
         'http://localhost',
