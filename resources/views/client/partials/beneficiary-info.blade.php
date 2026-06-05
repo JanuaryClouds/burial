@@ -33,12 +33,12 @@
             :disabled="$readonly" />
     </div>
     <div class="col-12 col-md-6 col-lg-2">
-        <x-form-input name="ben_date_of_birth" label="3. Date of Birth" required="true" type="date"
-            value="{{ $beneficiary?->date_of_birth ?? null }}" :readonly="$readonly" />
+        <x-form-input name="ben_date_of_birth" id="ben_date_of_birth" label="3. Date of Birth" required="true"
+            type="date" value="{{ $beneficiary?->date_of_birth ?? null }}" :readonly="$readonly" />
     </div>
     <div class="col-12 col-md-6 col-lg-2">
-        <x-form-input name="ben_date_of_death" label="Date of Death" required="true" type="date"
-            value="{{ $beneficiary?->date_of_death ?? null }}" :readonly="$readonly" />
+        <x-form-input name="ben_date_of_death" id="ben_date_of_death" label="Date of Death" required="true"
+            type="date" value="{{ $beneficiary?->date_of_death ?? null }}" :readonly="$readonly" />
     </div>
     <div class="col-12 col-md-4 col-lg-4">
         <x-form-select name="ben_religion_id" label="Religion" required="true" :options="$religions ?? []" :selected="$beneficiary?->religion->id ?? ''"
@@ -55,3 +55,22 @@
             :selected="$beneficiary?->barangay->id ?? ''" :disabled="$readonly" />
     </div>
 </div>
+<script nonce={{ $nonce ?? '' }}>
+    $('#ben_date_of_birth').on('change', function() {
+        let value = $(this).val();
+        if (value) {
+            $('#ben_date_of_death').attr('min', value);
+        } else {
+            $('#ben_date_of_death').attr('min', '');
+        }
+    });
+
+    $('#ben_date_of_death').on('change', function() {
+        let value = $(this).val();
+        if (value) {
+            $('#ben_date_of_birth').attr('max', value);
+        } else {
+            $('#ben_date_of_birth').attr('max', '');
+        }
+    });
+</script>
