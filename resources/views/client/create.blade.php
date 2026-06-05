@@ -23,11 +23,11 @@
             </div>
         </div>
         <div class="modal fade" id="confirmSubmitModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
-            role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
+            role="dialog" aria-labelledby="confirmSubmitModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="confirmExitModalLabel">Cancel Application</h5>
+                        <h5 class="modal-title" id="confirmSubmitModalLabel">Submit Application</h5>
                     </div>
                     <div class="modal-body">
                         <p class="fs-3">
