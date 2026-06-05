@@ -19,8 +19,6 @@ Route::get('/sso/callback', [CitizenAccessController::class, 'sso'])
 Route::match(['get', 'post'], '/sso/logout', [CitizenAccessController::class, 'logout'])
     ->name('sso.logout');
 
-Route::get('/login', [UserController::class, 'loginPage'])
-    ->name('login');
 Route::post('/login/check', [UserController::class, 'login'])
     ->middleware('throttle:3,1')
     ->name('login.check');
