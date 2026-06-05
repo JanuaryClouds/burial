@@ -65,7 +65,7 @@ class ClaimantChangeController extends Controller
                     return redirect()->back()->with('info', 'You are already the current claimant of this assistance.');
                 }
 
-                if ($burialAssistance->status == 'approved' || $burialAssistance->status == 'rejected' || $burialAssistance->status == 'released') {
+                if ($burialAssistance->status == 'approved' || $burialAssistance->status == 'released') {
                     return redirect()->back()->with('error', 'Changing claimant is not allowed in a '.$burialAssistance->status.' status.');
                 }
 

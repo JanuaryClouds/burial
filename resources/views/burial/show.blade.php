@@ -12,17 +12,10 @@
                 @include('burial.partials.claimant-change-status-alert')
             </div>
         </div>
-        @can('create-updates')
-            @includeWhen(
-                $data->status != 'released' &&
-                    $data->status != 'rejected' &&
-                    $next_step != null,
-                'burial.partials.process-update-modal')
-            @include('burial.partials.reject-modal')
-        @endcan
         @if (
             $claimantChange == null &&
-                ($data->status != 'released' && $data->status != 'rejected' && $data->status != 'approved') &&
+                ($data->status != 'released' && $data->status != 'approved') &&
+                $current_step < 9 &&
                 auth()->user()->can('create', [App\Models\ClaimantChange::class, $data]))
             @include('burial.partials.claimant-change-form')
         @endif

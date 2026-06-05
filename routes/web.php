@@ -39,10 +39,6 @@ Route::middleware(['auth'])
             ->middleware('permission:create-reports')
             ->name('applications.export.all');
 
-        Route::post('/application/{id}/reject/toggle', [BurialAssistanceController::class, 'toggleReject'])
-            ->middleware('permission:create-updates')
-            ->name('application.reject.toggle');
-
         Route::get('/activity-logs', [ActivityLogController::class, 'index'])
             ->middleware('permission:view-logs')
             ->name('activity.logs');

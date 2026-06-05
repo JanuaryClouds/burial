@@ -16,7 +16,7 @@
                             View Certificate
                         </a>
                     @endif
-                    @if ($data->status != 'rejected' && $data->status != 'released' && $next_step != null)
+                    @if ($data->status != 'released' && $next_step != null)
                         @can('update', [App\Models\BurialAssistance::class, $data])
                             <button class="btn btn-primary mr-2" type="button" data-bs-toggle="modal"
                                 data-bs-target="#addUpdateModal-{{ $data->id }}">

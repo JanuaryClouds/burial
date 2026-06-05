@@ -28,8 +28,7 @@ return new class extends Migration
                 'pending',
                 'processing',
                 'approved',
-                'released',
-                'rejected'])
+                'released'])
                 ->default('pending');
             $table->string('remarks')->nullable();
             $table->foreignId('assigned_to')

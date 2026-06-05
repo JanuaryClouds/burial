@@ -112,11 +112,6 @@ class BurialAssistance extends Model
         return $this->belongsTo(User::class, 'assigned_to', 'id');
     }
 
-    public function rejection()
-    {
-        return $this->hasOne(Rejection::class, 'burial_assistance_id', 'id');
-    }
-
     // Scopes
     public function scopeAccessibleByUser($query, $userId)
     {
