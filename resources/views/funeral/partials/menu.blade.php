@@ -32,8 +32,8 @@
                         </button>
                     @endif
                 @else
-                    <button type="button" class="btn btn-secondary" disabled data-bs-toggle="tooltip"
-                        data-bs-placement="bottom" title="You do not have permissions to update this record">
+                    <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                        title="You do not have permissions to update this record">
                         Update
                     </button>
                 @endcan

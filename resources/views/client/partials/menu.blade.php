@@ -9,7 +9,7 @@
                         Generate GIS Form
                     </a>
                     @if ($released)
-                        @if ($client?->interviews?->count() === 0)
+                        @if ($client?->interviews?->count() === 0 && $client?->assessment?->count() === 0)
                             @can('create', [App\Models\Interview::class, $client])
                                 <button class="btn btn-primary" type="button" data-bs-toggle="modal"
                                     data-bs-target="#set-schedule-modal">
@@ -21,9 +21,14 @@
                                     Schedule an Interview
                                 </button>
                             @endcan
-                        @else
+                        @elseif ($client?->interviews?->count() > 0 && $client?->assessment?->count() === 0)
                             <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip"
                                 data-bs-placement="bottom" title="Client has been scheduled for an interview">
+                                Schedule an Interview
+                            </button>
+                        @elseif ($client?->assessment?->count() >= 1)
+                            <button type="button" class="btn btn-secondary" data-bs-toggle="tooltip"
+                                data-bs-placement="bottom" title="Client has already been assessed">
                                 Schedule an Interview
                             </button>
                         @endif

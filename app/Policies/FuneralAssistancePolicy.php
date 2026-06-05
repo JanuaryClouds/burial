@@ -48,7 +48,7 @@ class FuneralAssistancePolicy
             return false;
         }
 
-        return $user->can('update-libreng-libing');
+        return $user->can('update-libreng-libings');
     }
 
     /**
