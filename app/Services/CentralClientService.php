@@ -99,7 +99,7 @@ class CentralClientService
                     'email' => $citizenData[0]['email'],
                     'contact_number' => $citizenData[0]['contact_number'],
                 ]);
-                
+
                 $user->save();
             }
 

@@ -3,7 +3,6 @@
 namespace App\Services\Auth;
 
 use App\Models\User;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Role;
 

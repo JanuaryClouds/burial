@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\Auth\UserController;
-use App\Http\Controllers\BurialAssistanceController;
 use App\Http\Controllers\CitizenAccessController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExportController;

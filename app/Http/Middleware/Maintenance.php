@@ -42,6 +42,7 @@ class Maintenance
             }
 
             Auth::logout();
+
             return response()->view('error.maintenance', [], 503);
         }
 

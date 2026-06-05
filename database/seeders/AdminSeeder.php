@@ -7,7 +7,6 @@ use App\Services\CentralClientService;
 use Illuminate\Database\Seeder;
 use RuntimeException;
 use Spatie\Permission\Models\Role;
-use Str;
 
 class AdminSeeder extends Seeder
 {

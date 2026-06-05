@@ -120,10 +120,10 @@ class CitizenAccessController extends Controller
         if ($uuid) {
             $user = $this->centralClientService->checkIfUser($uuid);
 
-            if ($user && !$user->hasRole('superadmin') && SystemSetting::first()?->maintenance_mode ?? false) {
+            if ($user && ! $user->hasRole('superadmin') && SystemSetting::first()?->maintenance_mode ?? false) {
                 return response()->view('error.maintenance', [], 503);
             }
-    
+
             if ($user === null) {
                 return redirect()->route('landing.page')->with('error', 'User not found.');
             }
