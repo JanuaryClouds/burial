@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreBurialAssistanceRequest;
 use App\Models\Barangay;
 use App\Models\BurialAssistance;
 use App\Models\Relationship;
@@ -18,7 +17,7 @@ use App\Services\WorkflowStepService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Exception;
 use Illuminate\Http\Request;
-use Str;
+use Illuminate\Support\Str;
 
 class BurialAssistanceController extends Controller
 {
@@ -180,88 +179,6 @@ class BurialAssistanceController extends Controller
         } catch (\Throwable $th) {
             return redirect()->back()->with('error', 'Unable to find application.'.(app()->hasDebugModeEnabled() ? ' '.$th->getMessage() : ''));
         }
-    }
-
-    public function update(StoreBurialAssistanceRequest $request, $id)
-    {
-        $burialAssistance = BurialAssistance::where('id', $id)->with('claimant', 'deceased')->first();
-        $this->authorize('update', $burialAssistance);
-        $burialAssistance = $this->burialAssistanceServices->update($request->validated(), $burialAssistance);
-
-        return redirect()->back()->with('success', 'Successfully updated application.');
-    }
-
-    public function toggleReject(Request $request, $id)
-    {
-        try {
-            $application = BurialAssistance::where('id', $id)->first();
-            if (! $application) {
-                return back()->with('error', 'Application not found.');
-            }
-            $this->authorize('update', $application);
-
-            if (! empty($application->rejection)) {
-                $application->rejection()->delete();
-            }
-
-            if ($application->status != 'rejected') {
-                $validated = $request->validate([
-                    'reason' => 'required|string|max:255',
-                ]);
-
-                $application->rejection()->create([
-                    'id' => Str::uuid(),
-                    'reason' => $validated['reason'],
-                    'burial_assistance_id' => $application->id,
-                ]);
-
-                $claimant = $application->currentClaimant();
-                $beneficiary = $application->beneficiary();
-
-                if ($claimant && $claimant->contact_number && $beneficiary) {
-                    $department_email = SystemSetting::first()?->department_email;
-
-                    $this->smsServices->send(
-                        $claimant->contact_number,
-                        'Magandang araw! '.$claimant->fullname().', Ito ay abiso mula sa CSWDO ng Lungsod Taguig. Ang inyong aplikasyon para sa Burial Assistance para kay '
-                        .$beneficiary->fullname().' ay tinanggihan sa kadahilanang '
-                        .$validated['reason'].'. Para sa karagdagang detalye, maaaring makipag-ugnayan sa '.$department_email
-                        .'. Maraming salamat po.'
-                    );
-                }
-
-            }
-
-            if ($application->processLogs()->count() > 0) {
-                $application->status = $application->status == 'rejected' ? 'processing' : 'rejected';
-                $application->update();
-            } else {
-                $application->status = $application->status == 'rejected' ? 'pending' : 'rejected';
-                $application->update();
-            }
-
-            return redirect()->back()->with('success', 'Successfully updated burial assistance application status.');
-        } catch (Exception $e) {
-            return redirect()->back()->with('error', 'Unable to update burial assistance application status. '.$e->getMessage());
-        }
-    }
-
-    public function assign(Request $request, $id)
-    {
-        $request->validate([
-            'assigned_to' => 'nullable|exists:users,id',
-        ]);
-
-        $application = BurialAssistance::where('id', $id)->first();
-        if (! $application) {
-            return back()->with('error', 'Application not found.');
-        }
-        $this->authorize('update', $application);
-
-        $application->assigned_to = $request->assigned_to;
-        $application->update();
-
-        return redirect()->back()->with('success', 'Successfully updated assignment.');
     }
 
     public function generatePdfReport(Request $request, $startDate, $endDate)
