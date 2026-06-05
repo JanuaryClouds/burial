@@ -5,7 +5,7 @@
     <!--begin::Logo-->
     <div class="aside-logo flex-column-auto pt-10 pt-lg-7" id="kt_aside_logo">
         <a href="{{ route('dashboard') }}" aria-label="Go to dashboard">
-            <img alt="Logo" src="{{ asset('images/CSWDO.webp') }}" class="h-60px bg-white rounded-circle">
+            <img alt="Logo" src="{{ asset('images/CSWDO.webp') }}" class="h-75px bg-white rounded-circle">
         </a>
     </div>
     <!--end::Logo-->
