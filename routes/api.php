@@ -23,12 +23,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::middleware('api.check')
     ->name('api.')
     ->group(function () {
-        Route::get('/burial-assistances', [APIController::class, 'getBurialAssistances']);
-        Route::get('/claimants', [APIController::class, 'claimants']);
-        Route::get('/deceased', [APIController::class, 'deceased']);
-        Route::get('/cheques', [APIController::class, 'cheques']);
-        Route::get('/process-logs', [APIController::class, 'processLogs']);
-
-        Route::post('/test/component/post', [TestController::class, 'post'])
-            ->name('test.component.post');
+        
     });
