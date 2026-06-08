@@ -28,7 +28,7 @@ class CitizenAccessController extends Controller
 
     public function index(Request $request)
     {
-        if (app()->isProduction() && SystemSetting::first()?->maintenance_mode ?? false) {
+        if (app()->isProduction() && SystemSetting::first()->maintenance_mode) {
             return response()->view('error.maintenance', [], 503);
         }
 
@@ -119,7 +119,7 @@ class CitizenAccessController extends Controller
 
         $user = $this->centralClientService->checkIfUser($uuid);
 
-        if ($user && ! $user->hasRole('superadmin') && SystemSetting::first()?->maintenance_mode) {
+        if ($user && ! $user->hasRole('superadmin') && SystemSetting::first()->maintenance_mode) {
             return response()->view('error.maintenance', [], 503);
         }
 

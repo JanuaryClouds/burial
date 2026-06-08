@@ -110,25 +110,25 @@ class CentralClientService
             return null;
         }
 
-        if ($citizen_uuid !== ($citizenData['user_id'] ?? null)) {
+        if ($citizen_uuid !== ($citizenData[0]['user_id'] ?? null)) {
             return null;
         }
 
-        if (User::where('email', $citizenData['email'])->exists()) {
+        if (User::where('email', $citizenData[0]['email'])->exists()) {
             return null;
         }
 
         try {
             return User::create([
-                'citizen_uuid' => $citizenData['user_id'] ?? null,
-                'emp_id' => $citizenData['emp_id'] ?? null,
-                'first_name' => $citizenData['firstname'] ?? null,
-                'middle_name' => $citizenData['middlename'] ?? null,
-                'last_name' => $citizenData['lastname'] ?? null,
-                'suffix' => $citizenData['suffix'] ?? null,
-                'email' => $citizenData['email'] ?? null,
+                'citizen_uuid' => $citizenData[0]['user_id'],
+                'emp_id' => $citizenData[0]['emp_id'] ?? null,
+                'first_name' => $citizenData[0]['firstname'] ?? null,
+                'middle_name' => $citizenData[0]['middlename'] ?? null,
+                'last_name' => $citizenData[0]['lastname'] ?? null,
+                'suffix' => $citizenData[0]['suffix'] ?? null,
+                'email' => $citizenData[0]['email'] ?? null,
                 'is_active' => true,
-                'contact_number' => $citizenData['contact_number'] ?? null,
+                'contact_number' => $citizenData[0]['contact_number'] ?? null,
                 'password' => bcrypt(Str::random(32)),
             ]);
         } catch (QueryException $e) {

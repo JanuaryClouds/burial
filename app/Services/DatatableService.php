@@ -11,7 +11,7 @@ class DatatableService
      *
      * @param Collection $data Collected Data
      * @param array $reject Columns not to show
-     * @return Collection<int, array{data: string}>     */
+     * @return Collection<int, array{data: int|string}>     */
     public function getColumns(Collection $data, array $reject = [])
     {
         if ($data->isEmpty()) {

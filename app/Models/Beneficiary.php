@@ -48,7 +48,7 @@ class Beneficiary extends Model
      */
     public function tracking_no(): string
     {
-        return $this->client?->tracking_no;
+        return $this->client->tracking_no;
     }
 
     /**
@@ -78,12 +78,12 @@ class Beneficiary extends Model
      */
     public function assistance(): mixed
     {
-        if ($this->client?->claimant?->count() > 0) {
-            return $this->client?->claimant?->burialAssistance;
+        if ($this->client->claimant?->count() > 0) {
+            return $this->client->claimant->burialAssistance;
         }
 
-        if ($this->client?->funeralAssistance?->count() > 0) {
-            return $this->client?->funeralAssistance;
+        if ($this->client->funeralAssistance?->count() > 0) {
+            return $this->client->funeralAssistance;
         }
 
         return null;
@@ -91,7 +91,7 @@ class Beneficiary extends Model
 
     /**
      * Summary of sex
-     * @return BelongsTo<Sex>
+     * @return BelongsTo<Sex, Beneficiary>
      */
     public function sex(): BelongsTo
     {
@@ -100,7 +100,7 @@ class Beneficiary extends Model
 
     /**
      * Summary of client
-     * @return BelongsTo<Client>
+     * @return BelongsTo<Client, Beneficiary>
      */
     public function client(): BelongsTo
     {
@@ -109,7 +109,7 @@ class Beneficiary extends Model
 
     /**
      * Summary of religion
-     * @return BelongsTo<Religion>
+     * @return BelongsTo<Religion, Beneficiary>
      */
     public function religion(): BelongsTo
     {
@@ -118,7 +118,7 @@ class Beneficiary extends Model
 
     /**
      * Summary of barangay
-     * @return BelongsTo<Barangay>
+     * @return BelongsTo<Barangay, Beneficiary>
      */
     public function barangay(): BelongsTo
     {
@@ -139,11 +139,9 @@ class Beneficiary extends Model
             return $query;
         }
 
-        if (! $user->client) {
-            return $query->whereRaw('1 = 0');
-        }
-
-        return $query->where('client_id', $user->client->id);
+        return $query->whereHas('client', function ($query) use ($user) {
+            $query->whereIn('id', $user->clients->pluck('id'));
+        });
     }
 
     public function scopeReferral($query)
@@ -158,11 +156,9 @@ class Beneficiary extends Model
             return $query->whereHas('client.referral');
         }
 
-        if (! $user->client) {
-            return $query->whereRaw('1 = 0');
-        }
-
-        return $query->where('client_id', $user->client->id)->whereHas('client.referral');
+        return $query->whereHas('client', function ($query) use ($user) {
+            $query->whereIn('id', $user->clients->pluck('id'))->whereHas('referral');
+        });
     }
 
     public function scopeBurialAssistance($query)
@@ -177,11 +173,9 @@ class Beneficiary extends Model
             return $query->whereHas('client.claimant');
         }
 
-        if (! $user->client) {
-            return $query->whereRaw('1 = 0');
-        }
-
-        return $query->where('client_id', $user->client->id)->whereHas('client.claimant');
+        return $query->whereHas('client', function ($query) use ($user) {
+            $query->whereIn('id', $user->clients->pluck('id'))->whereHas('claimant');
+        });
     }
 
     public function scopeFuneralAssistance($query)
@@ -196,10 +190,8 @@ class Beneficiary extends Model
             return $query->whereHas('client.funeralAssistance');
         }
 
-        if (! $user->client) {
-            return $query->whereRaw('1 = 0');
-        }
-
-        return $query->where('client_id', $user->client->id)->whereHas('client.funeralAssistance');
+        return $query->whereHas('client', function ($query) use ($user) {
+            $query->whereIn('id', $user->clients->pluck('id'))->whereHas('funeralAssistance');
+        });
     }
 }

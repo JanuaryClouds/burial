@@ -67,32 +67,26 @@ class AdminSeeder extends Seeder
             $staffFactories[] = $staff;
         }
 
-        foreach ($staffFactories as $staffFactory) {
-            $staffFactory->assignRole($staffRole);
-        }
+        foreach ($staffFactories as $staff) {
+            $assignedRoles = $staff->roles()->pluck('name')->toArray();
+            $unavailableRoles = array_merge($assignedRoles, ['superadmin', 'staff']);
 
-        if (count($staffFactories) > 0) {
-            foreach ($staffFactories as $staff) {
-                $assignedRoles = $staff->roles()->pluck('name')->toArray();
-                $unavailableRoles = array_merge($assignedRoles, ['superadmin', 'staff']);
+            $availableRoles = Role::whereNotIn('name', $unavailableRoles)->pluck('name')->toArray();
+            $assignedRolesCount = 0;
 
-                $availableRoles = Role::whereNotIn('name', $unavailableRoles)->pluck('name')->toArray();
-                $assignedRolesCount = 0;
-
-                while ($assignedRolesCount < count($availableRoles)) {
-                    if (count($assignedRoles) >= count($availableRoles) || rand(0, 1) === 0) {
-                        break;
-                    }
-
-                    $randomRole = array_rand($availableRoles);
-                    if (in_array($availableRoles[$randomRole], $assignedRoles)) {
-                        continue;
-                    }
-
-                    $staff->assignRole($availableRoles[$randomRole]);
-                    $assignedRoles[] = $availableRoles[$randomRole];
-                    $assignedRolesCount++;
+            while ($assignedRolesCount < count($availableRoles)) {
+                if (count($assignedRoles) >= count($availableRoles) || rand(0, 1) === 0) {
+                    break;
                 }
+
+                $randomRole = array_rand($availableRoles);
+                if (in_array($availableRoles[$randomRole], $assignedRoles)) {
+                    continue;
+                }
+
+                $staff->assignRole($availableRoles[$randomRole]);
+                $assignedRoles[] = $availableRoles[$randomRole];
+                $assignedRolesCount++;
             }
         }
     }

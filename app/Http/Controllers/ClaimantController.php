@@ -32,16 +32,16 @@ class ClaimantController extends Controller
             $claimantPerBarangay = Barangay::query()
                 ->select('id', 'name')
                 ->withCount([
-                    'deceased as deceased_count' => function ($query) use ($startDate, $endDate) {
+                    'beneficiary as deceased_count' => function ($query) use ($startDate, $endDate) {
                         $query->whereBetween('date_of_death', [$startDate, $endDate]);
                     },
                 ])
-                ->whereHas('deceased', function ($query) use ($startDate, $endDate) {
+                ->whereHas('beneficiary', function ($query) use ($startDate, $endDate) {
                     $query->whereBetween('date_of_death', [$startDate, $endDate]);
                 })
                 ->get()
                 ->mapWithKeys(function ($barangay) {
-                    return [$barangay->name => $barangay->deceased_count];
+                    return [$barangay->name => (int) $barangay->getAttribute('deceased_count')];
                 })
                 ->toArray();
 

@@ -33,10 +33,6 @@ class ClientSeeder extends Seeder
         ]);
 
         foreach ($clients as $client) {
-            if (! $client) {
-                continue;
-            }
-
             if (rand(0, 1) == 1) {
                 $interview = Interview::factory()->create([
                     'client_id' => $client->id,

@@ -14,7 +14,7 @@ class DistrictRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255|unique:districts,name,'.$this->route('district')?->id,
+            'name' => 'required|string|max:255|unique:districts,name',
             'remarks' => 'nullable|string|max:255',
         ];
     }

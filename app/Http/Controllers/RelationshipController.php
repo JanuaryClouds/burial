@@ -6,6 +6,7 @@ use App\Http\Requests\RelationshipRequest;
 use App\Models\Relationship;
 use App\Services\DatatableService;
 use App\Services\RelationshipService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class RelationshipController extends Controller
@@ -76,8 +77,9 @@ class RelationshipController extends Controller
     public function update(RelationshipRequest $request, $id)
     {
         try {
+            $data = $request->validated();
             $relationship = Relationship::withTrashed()->findOrFail($id);
-            $this->relationshipServices->updateRelationship($request->validated(), $relationship);
+            $this->relationshipServices->updateRelationship($data, $relationship);
 
             activity()
                 ->causedBy(Auth::user())

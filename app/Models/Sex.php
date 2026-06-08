@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Sex extends Model
 {
@@ -21,13 +23,21 @@ class Sex extends Model
         return self::all();
     }
 
-    public function clientDemographic()
+    /**
+     * Summary of clientDemographic
+     * @return HasMany<ClientDemographic>
+     */
+    public function clientDemographic(): HasMany
     {
         return $this->hasMany(ClientDemographic::class);
     }
 
-    public function clientFamily()
+    /**
+     * Summary of beneficiaryFamilies
+     * @return HasMany<BeneficiaryFamily>
+     */
+    public function beneficiaryFamilies(): HasMany
     {
-        return $this->belongsTo(BeneficiaryFamily::class);
+        return $this->hasMany(BeneficiaryFamily::class, 'sex_id', 'id');
     }
 }

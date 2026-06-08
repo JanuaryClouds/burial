@@ -1,21 +1,21 @@
 <style>
     @font-face {
         font-family: 'FuturaCyrillic';
-        src: url('/assets/fonts/FuturaCyrillicBook.ttf') format('truetype');
+        src: url('/fonts/FuturaCyrillicBook.ttf') format('truetype');
         font-weight: 400;
         font-display: swap;
     }
 
     @font-face {
         font-family: 'FuturaCyrillicBold';
-        src: url('/assets/fonts/FuturaCyrillicBold.ttf') format('truetype');
+        src: url('/fonts/FuturaCyrillicBold.ttf') format('truetype');
         font-weight: 600;
         font-display: swap;
     }
 
     @font-face {
         font-family: 'FuturaCyrillicExtraBold';
-        src: url('/assets/fonts/FuturaCyrillicExtraBold.ttf') format('truetype');
+        src: url('/fonts/FuturaCyrillicExtraBold.ttf') format('truetype');
         font-weight: 800;
         font-display: swap;
     }

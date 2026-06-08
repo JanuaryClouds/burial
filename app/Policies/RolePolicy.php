@@ -84,7 +84,15 @@ class RolePolicy
      */
     public function restore(User $user, Role $role): bool
     {
-        //
+        if ($user->cannot('create-roles')) {
+            return false;
+        }
+
+        if ($role->id == 1) {
+            return false;
+        }
+
+        return true;
     }
 
     /**

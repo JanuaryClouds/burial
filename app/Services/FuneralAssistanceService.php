@@ -26,11 +26,11 @@ class FuneralAssistanceService
             ->orderBy($orderColumn, $orderDirection)
             ->get()
             ->map(function ($application) {
-                if ($application?->approved_at) {
+                if ($application->approved_at) {
                     $status = 'Approved';
                 }
 
-                if ($application?->forwarded_at) {
+                if ($application->forwarded_at) {
                     $status = 'Forwarded';
                 }
 

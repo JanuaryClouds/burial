@@ -21,7 +21,7 @@ class ClaimantChangePolicy
      */
     public function view(User $user, ClaimantChange $claimantChange): bool
     {
-        if ($user->id == $claimantChange->originalClient()?->client?->user_id) {
+        if ($user->id == $claimantChange->burialAssistance->originalClaimant()->client->user_id) {
             return true;
         }
 

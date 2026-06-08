@@ -75,14 +75,11 @@ class NationalityController extends Controller
             ->with('success', 'You have successfully created a nationality!');
     }
 
-    public function update($id, Request $request)
+    public function update($id, NationalityRequest $request)
     {
         $nationality = Nationality::withTrashed()->findOrFail($id);
-        $this->nationalityServices->updateNationality($request->validate([
-            'name' => 'required',
-            'remarks' => 'nullable',
-        ]), $nationality);
-
+        $this->nationalityServices->updateNationality($request->validated(), $nationality);
+        
         activity()
             ->causedBy(Auth::user())
             ->performedOn($nationality)

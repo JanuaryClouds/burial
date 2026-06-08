@@ -14,7 +14,7 @@ class EducationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255|unique:educations,name',
+            'name' => 'required|string|max:255|unique:educations,name,' . $this->route('education')?->id,
             'remarks' => 'nullable|string|max:255',
         ];
     }

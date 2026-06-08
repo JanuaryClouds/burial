@@ -5,7 +5,10 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Str;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Str;
 
 class Claimant extends Model
 {
@@ -44,7 +47,11 @@ class Claimant extends Model
 
     protected $table = 'claimants';
 
-    public function fullname()
+    /**
+     * Summary of fullname
+     * @return string returns the fullname of the claimant, shortening the middlename
+     */
+    public function fullname(): string
     {
         return $this->first_name.' '.
             ($this->middle_name ? Str::limit($this->middle_name, 1, '.').' ' : '').
@@ -52,52 +59,92 @@ class Claimant extends Model
             ($this->suffix ? ' '.$this->suffix : '');
     }
 
-    public function age()
+    /**
+     * Summary of age
+     * @return int returns the age of the claimant
+     */
+    public function age(): int
     {
         return Carbon::parse($this->date_of_birth)->age;
     }
 
-    public function fullAddress()
+    /**
+     * Summary of fullAddress
+     * @return string returns the full address of the claimant
+     */
+    public function fullAddress(): string
     {
-        return $this->address.', '.$this->barangay?->name;
+        return $this->address.', '.$this->barangay->name;
     }
 
-    public function client()
+    /**
+     * Summary of client
+     * @return BelongsTo<Client, Claimant>
+     */
+    public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class, 'client_id', 'id');
     }
 
-    public function burialAssistance()
+    /**
+     * Summary of burialAssistance
+     * @return BelongsTo<BurialAssistance, Claimant>
+     */
+    public function burialAssistance(): BelongsTo
     {
         return $this->belongsTo(BurialAssistance::class, 'burial_assistance_id', 'id');
     }
 
-    public function relationship()
+    /**
+     * Summary of relationship
+     * @return BelongsTo<Relationship, Claimant>
+     */
+    public function relationship(): BelongsTo
     {
         return $this->belongsTo(Relationship::class, 'relationship_id', 'id')->withTrashed();
     }
 
-    public function oldClaimantChanges()
+    /**
+     * Summary of oldClaimantChanges
+     * @return HasMany<ClaimantChange>
+     */
+    public function oldClaimantChanges(): HasMany
     {
         return $this->hasMany(ClaimantChange::class, 'old_claimant_id', 'id');
     }
 
-    public function newClaimantChanges()
+    /**
+     * Summary of newClaimantChanges
+     * @return HasMany<ClaimantChange>
+     */
+    public function newClaimantChanges(): HasMany
     {
         return $this->hasMany(ClaimantChange::class, 'new_claimant_id', 'id');
     }
 
-    public function barangay()
+    /**
+     * Summary of barangay
+     * @return BelongsTo<Barangay, Claimant>
+     */
+    public function barangay(): BelongsTo
     {
         return $this->belongsTo(Barangay::class, 'barangay_id', 'id');
     }
 
-    public function processLogs()
+    /**
+     * Summary of processLogs
+     * @return HasMany<ProcessLog>
+     */
+    public function processLogs(): HasMany
     {
         return $this->hasMany(ProcessLog::class, 'claimant_id', 'id');
     }
 
-    public function cheque()
+    /**
+     * Summary of cheque
+     * @return HasOne<Cheque>
+     */
+    public function cheque(): HasOne
     {
         return $this->hasOne(Cheque::class, 'claimant_id', 'id')->latestOfMany();
     }

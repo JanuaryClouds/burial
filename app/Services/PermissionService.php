@@ -6,26 +6,34 @@ use App\Models\Permission;
 
 class PermissionService
 {
+    /**
+     * Summary of storePermission
+     * @param array $data
+     * @return Permission
+     */
     public function storePermission(array $data): Permission
     {
         return Permission::create($data);
     }
 
-    public function updatePermission(array $data, $permission): Permission
+    /**
+     * Summary of updatePermission
+     * @param array $data
+     * @param Permission $permission
+     * @return bool
+     */
+    public function updatePermission(array $data, Permission $permission): bool
     {
-        if ($permission->update($data)) {
-            return $permission;
-        }
-
-        return null;
+        return $permission->update($data);
     }
 
-    public function deletePermission($permission): Permission
+    /**
+     * Summary of deletePermission
+     * @param Permission $permission
+     * @return bool
+     */
+    public function deletePermission(Permission $permission): bool
     {
-        if ($permission->delete()) {
-            return $permission;
-        }
-
-        return null;
+        return $permission->delete();
     }
 }

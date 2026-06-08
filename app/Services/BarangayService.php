@@ -11,21 +11,26 @@ class BarangayService
         return Barangay::create($data);
     }
 
-    public function updateBarangay(array $data, $barangay): Barangay
+    /**
+     * Summary of updateBarangay
+     * @param array $data
+     * @param \App\Models\Barangay $barangay
+     * @return \App\Models\Barangay
+     */
+    public function updateBarangay(array $data, Barangay $barangay): Barangay
     {
-        if ($barangay->update($data)) {
-            return $barangay;
-        }
+        $barangay->update($data);
 
-        return null;
+        return $barangay->fresh();
     }
 
-    public function deleteBarangay($barangay): Barangay
+    /**
+     * Summary of deleteBarangay
+     * @param \App\Models\Barangay $barangay
+     * @return bool
+     */
+    public function deleteBarangay($barangay): bool
     {
-        if ($barangay->delete()) {
-            return $barangay;
-        }
-
-        return null;
+        return $barangay->delete();
     }
 }

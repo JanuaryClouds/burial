@@ -43,29 +43,6 @@ class UpdateClientRequest extends FormRequest
         return $value;
     }
 
-    private function cleanArray(mixed $value): ?array
-    {
-        if ($value === null || ! is_array($value)) {
-            return null;
-        }
-
-        $clean = function ($value) use (&$clean) {
-            if (is_array($value)) {
-                return array_map($clean, $value);
-            }
-
-            if (is_string($value)) {
-                $value = trim($value);
-
-                return preg_replace('/\s+/u', ' ', $value);
-            }
-
-            return $value;
-        };
-
-        return array_map($clean, $value);
-    }
-
     private function normalizePhone(?string $value): ?string
     {
         if ($value === null) {

@@ -120,12 +120,8 @@ class BurialAssistanceController extends Controller
             $claimantChange = $data->claimantChanges()->first();
             $newClaimants = [];
 
-            if (! $currentClaimant) {
-                abort(404);
-            }
-
             if (! $claimantChange) {
-                $currentClaimantUserId = $currentClaimant->client?->user_id;
+                $currentClaimantUserId = $currentClaimant->client->user_id;
                 $newClaimants = User::whereHas('clients')
                     ->where('id', '!=', $currentClaimantUserId)
                     ->get()
@@ -135,7 +131,7 @@ class BurialAssistanceController extends Controller
                     ->toArray();
             }
 
-            $page_title = $data->originalClaimant()?->client?->tracking_no;
+            $page_title = $data->originalClaimant()->client->tracking_no;
             $page_subtitle = $currentClaimant->fullname()."'s Burial Assistance Application";
             $readonly = ! auth()->user()->hasRole('superadmin') && $data->status == 'released';
 
@@ -243,10 +239,6 @@ class BurialAssistanceController extends Controller
         }
 
         $claimant = $assistance->currentClaimant();
-
-        if (! $claimant) {
-            return back()->with('error', 'Claimant not found.');
-        }
 
         $title = Str::title($claimant->first_name).' '.Str::title($claimant->last_name).'\'s Certificate of Eligibility';
         $social_welfare_officer = Str::upper(SystemSetting::first()?->social_welfare_officer);

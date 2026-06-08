@@ -78,13 +78,10 @@ class EducationController extends Controller
             ->with('success', 'Education created successfully.');
     }
 
-    public function update($id, Request $request)
+    public function update($id, EducationRequest $request)
     {
         $education = Education::withTrashed()->findOrFail($id);
-        $this->educationServices->updateEducation($request->validate([
-            'name' => 'required',
-            'remarks' => 'nullable',
-        ]), $education);
+        $this->educationServices->updateEducation($request->validated(), $education);
 
         activity()
             ->performedOn($education)

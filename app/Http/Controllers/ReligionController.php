@@ -74,13 +74,10 @@ class ReligionController extends Controller
         return view('cms.edit', compact('page_title', 'data', 'resource'));
     }
 
-    public function update($id, Request $request)
+    public function update($id, ReligionRequest $request)
     {
         $religion = Religion::withTrashed()->findOrFail($id);
-        $this->religionServices->updateReligion($request->validate([
-            'name' => 'required',
-            'remarks' => 'nullable',
-        ]), $religion);
+        $this->religionServices->updateReligion($request->validated(), $religion);
 
         activity()
             ->causedBy(Auth::user())
