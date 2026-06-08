@@ -8,8 +8,6 @@ class ModeOfAssistanceService
 {
     /**
      * Summary of storeModeOfAssistance
-     * @param array $data
-     * @return ModeOfAssistance
      */
     public function storeModeOfAssistance(array $data): ModeOfAssistance
     {
@@ -18,9 +16,6 @@ class ModeOfAssistanceService
 
     /**
      * Summary of updateModeOfAssistance
-     * @param array $data
-     * @param ModeOfAssistance $moa
-     * @return bool
      */
     public function updateModeOfAssistance(array $data, ModeOfAssistance $moa): bool
     {
@@ -29,8 +24,6 @@ class ModeOfAssistanceService
 
     /**
      * Summary of deleteModeOfAssistance
-     * @param ModeOfAssistance $moa
-     * @return bool
      */
     public function deleteModeOfAssistance(ModeOfAssistance $moa): bool
     {

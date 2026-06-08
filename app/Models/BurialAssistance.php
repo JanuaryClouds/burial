@@ -34,6 +34,7 @@ class BurialAssistance extends Model
 
     /**
      * Summary of claimant
+     *
      * @return HasOne<Claimant>
      */
     public function claimant(): HasOne
@@ -43,6 +44,7 @@ class BurialAssistance extends Model
 
     /**
      * Summary of trackingNumber
+     *
      * @return string|null returns the tracking number from the client record
      */
     public function trackingNumber(): ?string
@@ -52,6 +54,7 @@ class BurialAssistance extends Model
 
     /**
      * Summary of claimants
+     *
      * @return HasMany<Claimant>
      */
     public function claimants(): HasMany
@@ -61,6 +64,7 @@ class BurialAssistance extends Model
 
     /**
      * Summary of hasClaimantChange
+     *
      * @return bool returns if burial assistance's claimant has been changed
      */
     public function hasClaimantChange(): bool
@@ -70,6 +74,7 @@ class BurialAssistance extends Model
 
     /**
      * Summary of claimantChanges
+     *
      * @return HasMany<ClaimantChange>
      */
     public function claimantChanges(): HasMany
@@ -79,6 +84,7 @@ class BurialAssistance extends Model
 
     /**
      * Summary of originalClaimant
+     *
      * @return Claimant returns the original claimant
      */
     public function originalClaimant(): Claimant
@@ -92,6 +98,7 @@ class BurialAssistance extends Model
 
     /**
      * Summary of newClaimant
+     *
      * @return Claimant returns the new claimant if there's a claimant change
      */
     public function newClaimant(): ?Claimant
@@ -101,6 +108,7 @@ class BurialAssistance extends Model
 
     /**
      * Summary of currentClaimant
+     *
      * @return Claimant returns the current claimant (original if no changes, new if there's a change)
      */
     public function currentClaimant(): Claimant
@@ -114,6 +122,7 @@ class BurialAssistance extends Model
 
     /**
      * Summary of beneficiary
+     *
      * @return Beneficiary returns the beneficiary
      */
     public function beneficiary(): Beneficiary
@@ -123,6 +132,7 @@ class BurialAssistance extends Model
 
     /**
      * Summary of processLogs
+     *
      * @return HasMany<ProcessLog>
      */
     public function processLogs(): HasMany
@@ -132,6 +142,7 @@ class BurialAssistance extends Model
 
     /**
      * Summary of cheques
+     *
      * @return HasMany<Cheque>
      */
     public function cheques(): HasMany
@@ -141,6 +152,7 @@ class BurialAssistance extends Model
 
     /**
      * Summary of latestCheque
+     *
      * @return HasOne<Cheque>
      */
     public function latestCheque(): HasOne
@@ -150,6 +162,7 @@ class BurialAssistance extends Model
 
     /**
      * Summary of encoder
+     *
      * @return BelongsTo<User, BurialAssistance>
      */
     public function encoder(): BelongsTo
@@ -159,6 +172,7 @@ class BurialAssistance extends Model
 
     /**
      * Summary of initialChecker
+     *
      * @return BelongsTo<User, BurialAssistance>
      */
     public function initialChecker(): BelongsTo

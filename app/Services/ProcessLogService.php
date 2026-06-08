@@ -8,9 +8,9 @@ use App\Models\Claimant;
 use App\Models\ProcessLog;
 use App\Models\WorkflowStep;
 use Carbon\Carbon;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Str;
 
 class ProcessLogService

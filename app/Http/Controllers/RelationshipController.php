@@ -6,7 +6,6 @@ use App\Http\Requests\RelationshipRequest;
 use App\Models\Relationship;
 use App\Services\DatatableService;
 use App\Services\RelationshipService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class RelationshipController extends Controller

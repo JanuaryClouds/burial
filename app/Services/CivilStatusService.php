@@ -8,8 +8,6 @@ class CivilStatusService
 {
     /**
      * Summary of storeCivilStatus
-     * @param array $data
-     * @return CivilStatus
      */
     public function storeCivilStatus(array $data): CivilStatus
     {
@@ -18,9 +16,6 @@ class CivilStatusService
 
     /**
      * Summary of updateCivilStatus
-     * @param array $data
-     * @param CivilStatus $civil
-     * @return CivilStatus
      */
     public function updateCivilStatus(array $data, CivilStatus $civil): CivilStatus
     {
@@ -31,8 +26,6 @@ class CivilStatusService
 
     /**
      * Summary of deleteCivilStatus
-     * @param CivilStatus $civil
-     * @return bool
      */
     public function deleteCivilStatus(CivilStatus $civil): bool
     {

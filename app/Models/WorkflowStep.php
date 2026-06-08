@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class WorkflowStep extends Model
 {
@@ -34,6 +33,7 @@ class WorkflowStep extends Model
 
     /**
      * Summary of handler
+     *
      * @return BelongsTo<Handler, WorkflowStep>
      */
     public function handler(): BelongsTo

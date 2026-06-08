@@ -3,15 +3,13 @@
 namespace App\Services;
 
 // use App\Models\Role;
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\Contracts\Role as RoleContract;
+use Spatie\Permission\Models\Role;
 
 class RoleService
 {
     /**
      * Summary of storeRole
-     * @param array $data
-     * @return RoleContract
      */
     public function storeRole(array $data): RoleContract
     {
@@ -31,8 +29,6 @@ class RoleService
 
     /**
      * Summary of destroyRole
-     * @param Role $role
-     * @return bool
      */
     public function destroyRole(Role $role): bool
     {

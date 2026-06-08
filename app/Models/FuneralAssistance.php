@@ -28,6 +28,7 @@ class FuneralAssistance extends Model
 
     /**
      * Summary of client
+     *
      * @return BelongsTo<Client, FuneralAssistance>
      */
     public function client(): BelongsTo
@@ -37,6 +38,7 @@ class FuneralAssistance extends Model
 
     /**
      * Summary of trackingNumber
+     *
      * @return string returns the tracking number of the client
      */
     public function trackingNumber(): string

@@ -24,6 +24,7 @@ class District extends Model
 
     /**
      * Summary of client
+     *
      * @return HasMany<Client>
      */
     public function client(): HasMany
@@ -33,6 +34,7 @@ class District extends Model
 
     /**
      * Summary of barangay
+     *
      * @return HasMany<Barangay>
      */
     public function barangay(): HasMany

@@ -41,6 +41,7 @@ class BeneficiaryFamily extends Model
 
     /**
      * Summary of sex
+     *
      * @return BelongsTo<Sex, BeneficiaryFamily>
      */
     public function sex(): BelongsTo
@@ -50,6 +51,7 @@ class BeneficiaryFamily extends Model
 
     /**
      * Summary of civil
+     *
      * @return BelongsTo<CivilStatus, BeneficiaryFamily>
      */
     public function civil(): BelongsTo
@@ -59,6 +61,7 @@ class BeneficiaryFamily extends Model
 
     /**
      * Summary of relationship
+     *
      * @return BelongsTo<Relationship, BeneficiaryFamily>
      */
     public function relationship(): BelongsTo
@@ -68,6 +71,7 @@ class BeneficiaryFamily extends Model
 
     /**
      * Summary of client
+     *
      * @return BelongsTo<Client, BeneficiaryFamily>
      */
     public function client(): BelongsTo

@@ -8,8 +8,6 @@ class DistrictService
 {
     /**
      * Summary of storeDistrict
-     * @param array $data
-     * @return District
      */
     public function storeDistrict(array $data): District
     {
@@ -18,9 +16,6 @@ class DistrictService
 
     /**
      * Summary of updateDistrict
-     * @param array $data
-     * @param District $district
-     * @return District
      */
     public function updateDistrict(array $data, District $district): District
     {
@@ -31,8 +26,6 @@ class DistrictService
 
     /**
      * Summary of deleteDistrict
-     * @param District $district
-     * @return bool
      */
     public function deleteDistrict(District $district): bool
     {

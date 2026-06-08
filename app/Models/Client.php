@@ -57,6 +57,7 @@ class Client extends Model
 
     /**
      * Summary of user
+     *
      * @return BelongsTo<User, Client>
      */
     public function user(): BelongsTo
@@ -66,7 +67,6 @@ class Client extends Model
 
     /**
      * Summary of fullname
-     * @return string
      */
     public function fullname(): string
     {
@@ -82,6 +82,7 @@ class Client extends Model
 
     /**
      * Summary of age
+     *
      * @return int returns the age of the client
      */
     public function age(): int
@@ -91,6 +92,7 @@ class Client extends Model
 
     /**
      * Summary of address
+     *
      * @return string joins the house number, street, and barangay name
      */
     public function address(): string
@@ -100,6 +102,7 @@ class Client extends Model
 
     /**
      * Summary of assessment
+     *
      * @return HasMany<ClientAssessment>
      */
     public function assessment(): HasMany
@@ -109,6 +112,7 @@ class Client extends Model
 
     /**
      * Summary of beneficiary
+     *
      * @return HasOne<Beneficiary>
      */
     public function beneficiary(): HasOne
@@ -118,6 +122,7 @@ class Client extends Model
 
     /**
      * Summary of family
+     *
      * @return HasMany<BeneficiaryFamily>
      */
     public function family(): HasMany
@@ -127,6 +132,7 @@ class Client extends Model
 
     /**
      * Summary of demographic
+     *
      * @return HasOne<ClientDemographic>
      */
     public function demographic(): HasOne
@@ -136,6 +142,7 @@ class Client extends Model
 
     /**
      * Summary of socialInfo
+     *
      * @return HasOne<ClientSocialInfo>
      */
     public function socialInfo(): HasOne
@@ -145,6 +152,7 @@ class Client extends Model
 
     /**
      * Summary of recommendation
+     *
      * @return HasMany<ClientRecommendation>
      */
     public function recommendation(): HasMany
@@ -154,6 +162,7 @@ class Client extends Model
 
     /**
      * Summary of referral
+     *
      * @return HasOne<Referral>
      */
     public function referral(): HasOne
@@ -163,6 +172,7 @@ class Client extends Model
 
     /**
      * Summary of district
+     *
      * @return BelongsTo<District, Client>
      */
     public function district(): BelongsTo
@@ -172,6 +182,7 @@ class Client extends Model
 
     /**
      * Summary of barangay
+     *
      * @return BelongsTo<Barangay, Client>
      */
     public function barangay(): BelongsTo
@@ -181,6 +192,7 @@ class Client extends Model
 
     /**
      * Summary of interviews
+     *
      * @return HasMany<Interview>
      */
     public function interviews(): HasMany
@@ -190,6 +202,7 @@ class Client extends Model
 
     /**
      * Summary of claimant
+     *
      * @return HasOne<Claimant>
      */
     public function claimant(): HasOne
@@ -199,6 +212,7 @@ class Client extends Model
 
     /**
      * Summary of funeralAssistance
+     *
      * @return HasOne<FuneralAssistance>
      */
     public function funeralAssistance(): HasOne

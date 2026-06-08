@@ -6,7 +6,6 @@ use App\Http\Requests\ReligionRequest;
 use App\Models\Religion;
 use App\Services\DatatableService;
 use App\Services\ReligionService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ReligionController extends Controller

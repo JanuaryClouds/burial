@@ -21,6 +21,7 @@ class Handler extends Model
 
     /**
      * Summary of workflow
+     *
      * @return BelongsTo<WorkflowStep, Handler>
      */
     public function workflow(): BelongsTo

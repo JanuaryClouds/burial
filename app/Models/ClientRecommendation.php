@@ -37,6 +37,7 @@ class ClientRecommendation extends Model
 
     /**
      * Summary of client
+     *
      * @return BelongsTo<Client, ClientRecommendation>
      */
     public function client(): BelongsTo
@@ -46,6 +47,7 @@ class ClientRecommendation extends Model
 
     /**
      * Summary of assistance
+     *
      * @return BelongsTo<Assistance, ClientRecommendation>
      */
     public function assistance(): BelongsTo
@@ -55,6 +57,7 @@ class ClientRecommendation extends Model
 
     /**
      * Summary of moa
+     *
      * @return BelongsTo<ModeOfAssistance, ClientRecommendation>
      */
     public function moa(): BelongsTo

@@ -44,6 +44,7 @@ class Beneficiary extends Model
 
     /**
      * Summary of tracking_no
+     *
      * @return string returns the tracking number of the client this beneficiary is created from
      */
     public function tracking_no(): string
@@ -53,6 +54,7 @@ class Beneficiary extends Model
 
     /**
      * Summary of fullname
+     *
      * @return string returns the full name of the beneficiary, with the middlename being shortened
      */
     public function fullname(): string
@@ -65,7 +67,8 @@ class Beneficiary extends Model
 
     /**
      * Summary of age
-     * @return int returns the age of the beneficiary 
+     *
+     * @return int returns the age of the beneficiary
      */
     public function age(): int
     {
@@ -74,6 +77,7 @@ class Beneficiary extends Model
 
     /**
      * Summary of assistance
+     *
      * @return mixed returns the assistance of the beneficiary, could be burial or funeral
      */
     public function assistance(): mixed
@@ -91,6 +95,7 @@ class Beneficiary extends Model
 
     /**
      * Summary of sex
+     *
      * @return BelongsTo<Sex, Beneficiary>
      */
     public function sex(): BelongsTo
@@ -100,6 +105,7 @@ class Beneficiary extends Model
 
     /**
      * Summary of client
+     *
      * @return BelongsTo<Client, Beneficiary>
      */
     public function client(): BelongsTo
@@ -109,6 +115,7 @@ class Beneficiary extends Model
 
     /**
      * Summary of religion
+     *
      * @return BelongsTo<Religion, Beneficiary>
      */
     public function religion(): BelongsTo
@@ -118,6 +125,7 @@ class Beneficiary extends Model
 
     /**
      * Summary of barangay
+     *
      * @return BelongsTo<Barangay, Beneficiary>
      */
     public function barangay(): BelongsTo

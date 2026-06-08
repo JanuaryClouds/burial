@@ -6,7 +6,6 @@ use App\Http\Requests\NationalityRequest;
 use App\Models\Nationality;
 use App\Services\DatatableService;
 use App\Services\NationalityService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class NationalityController extends Controller
@@ -79,7 +78,7 @@ class NationalityController extends Controller
     {
         $nationality = Nationality::withTrashed()->findOrFail($id);
         $this->nationalityServices->updateNationality($request->validated(), $nationality);
-        
+
         activity()
             ->causedBy(Auth::user())
             ->performedOn($nationality)

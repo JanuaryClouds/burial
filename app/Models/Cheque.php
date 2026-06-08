@@ -37,6 +37,7 @@ class Cheque extends Model
 
     /**
      * Summary of burialAssistance
+     *
      * @return BelongsTo<BurialAssistance, Cheque>
      */
     public function burialAssistance(): BelongsTo
@@ -46,6 +47,7 @@ class Cheque extends Model
 
     /**
      * Summary of claimant
+     *
      * @return BelongsTo<Claimant, Cheque>
      */
     public function claimant(): BelongsTo

@@ -6,7 +6,6 @@ use App\Http\Requests\EducationRequest;
 use App\Models\Education;
 use App\Services\DatatableService;
 use App\Services\EducationService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class EducationController extends Controller

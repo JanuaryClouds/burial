@@ -8,8 +8,6 @@ class SexService
 {
     /**
      * Summary of storeSex
-     * @param array $data
-     * @return Sex
      */
     public function storeSex(array $data): Sex
     {
@@ -18,9 +16,6 @@ class SexService
 
     /**
      * Summary of updateSex
-     * @param array $data
-     * @param Sex $sex
-     * @return Sex
      */
     public function updateSex(array $data, Sex $sex): Sex
     {
@@ -31,8 +26,6 @@ class SexService
 
     /**
      * Summary of deleteSex
-     * @param Sex $sex
-     * @return bool
      */
     public function deleteSex(Sex $sex): bool
     {

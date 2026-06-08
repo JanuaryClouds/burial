@@ -25,6 +25,7 @@ class Religion extends Model
 
     /**
      * Summary of clientDemographic
+     *
      * @return HasMany<ClientDemographic>
      */
     public function clientDemographic(): HasMany
@@ -34,6 +35,7 @@ class Religion extends Model
 
     /**
      * Summary of beneficiary
+     *
      * @return HasMany<Beneficiary>
      */
     public function beneficiary(): HasMany

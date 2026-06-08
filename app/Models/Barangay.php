@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -24,6 +23,7 @@ class Barangay extends Model
 
     /**
      * Summary of client
+     *
      * @return HasMany<Client>
      */
     public function client(): HasMany
@@ -33,6 +33,7 @@ class Barangay extends Model
 
     /**
      * Summary of beneficiary
+     *
      * @return HasMany<Beneficiary>
      */
     public function beneficiary(): HasMany
@@ -42,6 +43,7 @@ class Barangay extends Model
 
     /**
      * Summary of district
+     *
      * @return BelongsTo<District, Barangay>
      */
     public function district(): BelongsTo
@@ -51,6 +53,7 @@ class Barangay extends Model
 
     /**
      * Summary of claimant
+     *
      * @return HasMany<Claimant>
      */
     public function claimant(): HasMany

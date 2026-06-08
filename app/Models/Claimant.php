@@ -49,6 +49,7 @@ class Claimant extends Model
 
     /**
      * Summary of fullname
+     *
      * @return string returns the fullname of the claimant, shortening the middlename
      */
     public function fullname(): string
@@ -61,6 +62,7 @@ class Claimant extends Model
 
     /**
      * Summary of age
+     *
      * @return int returns the age of the claimant
      */
     public function age(): int
@@ -70,6 +72,7 @@ class Claimant extends Model
 
     /**
      * Summary of fullAddress
+     *
      * @return string returns the full address of the claimant
      */
     public function fullAddress(): string
@@ -79,6 +82,7 @@ class Claimant extends Model
 
     /**
      * Summary of client
+     *
      * @return BelongsTo<Client, Claimant>
      */
     public function client(): BelongsTo
@@ -88,6 +92,7 @@ class Claimant extends Model
 
     /**
      * Summary of burialAssistance
+     *
      * @return BelongsTo<BurialAssistance, Claimant>
      */
     public function burialAssistance(): BelongsTo
@@ -97,6 +102,7 @@ class Claimant extends Model
 
     /**
      * Summary of relationship
+     *
      * @return BelongsTo<Relationship, Claimant>
      */
     public function relationship(): BelongsTo
@@ -106,6 +112,7 @@ class Claimant extends Model
 
     /**
      * Summary of oldClaimantChanges
+     *
      * @return HasMany<ClaimantChange>
      */
     public function oldClaimantChanges(): HasMany
@@ -115,6 +122,7 @@ class Claimant extends Model
 
     /**
      * Summary of newClaimantChanges
+     *
      * @return HasMany<ClaimantChange>
      */
     public function newClaimantChanges(): HasMany
@@ -124,6 +132,7 @@ class Claimant extends Model
 
     /**
      * Summary of barangay
+     *
      * @return BelongsTo<Barangay, Claimant>
      */
     public function barangay(): BelongsTo
@@ -133,6 +142,7 @@ class Claimant extends Model
 
     /**
      * Summary of processLogs
+     *
      * @return HasMany<ProcessLog>
      */
     public function processLogs(): HasMany
@@ -142,6 +152,7 @@ class Claimant extends Model
 
     /**
      * Summary of cheque
+     *
      * @return HasOne<Cheque>
      */
     public function cheque(): HasOne

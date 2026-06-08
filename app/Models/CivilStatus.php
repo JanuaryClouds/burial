@@ -24,6 +24,7 @@ class CivilStatus extends Model
 
     /**
      * Summary of clientSocialInfo
+     *
      * @return HasMany<ClientSocialInfo>
      */
     public function clientSocialInfo(): HasMany
@@ -33,6 +34,7 @@ class CivilStatus extends Model
 
     /**
      * Summary of clientFamily
+     *
      * @return HasMany<BeneficiaryFamily>
      */
     public function clientFamily(): HasMany

@@ -25,6 +25,7 @@ class Nationality extends Model
 
     /**
      * Summary of clientDemographics
+     *
      * @return HasMany<ClientDemographic>
      */
     public function clientDemographics(): HasMany

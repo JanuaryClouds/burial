@@ -28,6 +28,7 @@ class Interview extends Model
 
     /**
      * Summary of client
+     *
      * @return BelongsTo<Client, Interview>
      */
     public function client(): BelongsTo

@@ -13,9 +13,6 @@ class BarangayService
 
     /**
      * Summary of updateBarangay
-     * @param array $data
-     * @param \App\Models\Barangay $barangay
-     * @return \App\Models\Barangay
      */
     public function updateBarangay(array $data, Barangay $barangay): Barangay
     {
@@ -26,8 +23,8 @@ class BarangayService
 
     /**
      * Summary of deleteBarangay
-     * @param \App\Models\Barangay $barangay
-     * @return bool
+     *
+     * @param  Barangay  $barangay
      */
     public function deleteBarangay($barangay): bool
     {

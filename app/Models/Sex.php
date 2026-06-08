@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Sex extends Model
@@ -25,6 +24,7 @@ class Sex extends Model
 
     /**
      * Summary of clientDemographic
+     *
      * @return HasMany<ClientDemographic>
      */
     public function clientDemographic(): HasMany
@@ -34,6 +34,7 @@ class Sex extends Model
 
     /**
      * Summary of beneficiaryFamilies
+     *
      * @return HasMany<BeneficiaryFamily>
      */
     public function beneficiaryFamilies(): HasMany

@@ -32,6 +32,7 @@ class ClientAssessment extends Model
 
     /**
      * Summary of client
+     *
      * @return BelongsTo<Client, ClientAssessment>
      */
     public function client(): BelongsTo

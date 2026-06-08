@@ -25,6 +25,7 @@ class Education extends Model
 
     /**
      * Summary of clientSocialInfo
+     *
      * @return HasMany<ClientSocialInfo>
      */
     public function clientSocialInfo(): HasMany

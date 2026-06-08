@@ -7,6 +7,7 @@ use Illuminate\Support\Str;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\FileExtension;
 use Intervention\Image\ImageManager;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class ImageService
 {
@@ -124,7 +125,7 @@ class ImageService
         $hmac = hash_hmac('sha256', $encrypted, $key, true);
         $payload = $iv.$hmac.$encrypted;
         // This only works in production
-        /** @var \Laravel\Sanctum\PersonalAccessToken $personalAccessToken */
+        /** @var PersonalAccessToken $personalAccessToken */
         $personalAccessToken = auth()->user()->tokens()->first();
 
         if ($personalAccessToken == null) {

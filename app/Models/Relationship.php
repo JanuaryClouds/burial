@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -26,6 +25,7 @@ class Relationship extends Model
 
     /**
      * Summary of clientSocialInfo
+     *
      * @return HasMany<ClientSocialInfo>
      */
     public function clientSocialInfo(): HasMany
@@ -35,6 +35,7 @@ class Relationship extends Model
 
     /**
      * Summary of beneficiaryFamilies
+     *
      * @return HasMany<BeneficiaryFamily>
      */
     public function beneficiaryFamilies(): HasMany
@@ -44,6 +45,7 @@ class Relationship extends Model
 
     /**
      * Summary of claimant
+     *
      * @return HasMany<Claimant>
      */
     public function claimant(): HasMany

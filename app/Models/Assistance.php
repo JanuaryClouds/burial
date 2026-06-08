@@ -29,6 +29,7 @@ class Assistance extends Model
 
     /**
      * Summary of clientRecommendation
+     *
      * @return HasMany<ClientRecommendation>
      */
     public function clientRecommendation(): HasMany

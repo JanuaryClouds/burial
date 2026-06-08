@@ -39,6 +39,7 @@ class ProcessLog extends Model
 
     /**
      * Summary of burialAssistance
+     *
      * @return BelongsTo<BurialAssistance, ProcessLog>
      */
     public function burialAssistance(): BelongsTo
@@ -48,6 +49,7 @@ class ProcessLog extends Model
 
     /**
      * Summary of claimant
+     *
      * @return BelongsTo<Claimant, ProcessLog>
      */
     public function claimant(): BelongsTo
@@ -57,6 +59,7 @@ class ProcessLog extends Model
 
     /**
      * Summary of addedBy
+     *
      * @return BelongsTo<User, ProcessLog>
      */
     public function addedBy(): BelongsTo
@@ -66,6 +69,7 @@ class ProcessLog extends Model
 
     /**
      * Summary of loggable
+     *
      * @return MorphTo<Model, ProcessLog>
      */
     public function loggable(): MorphTo

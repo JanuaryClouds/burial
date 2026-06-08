@@ -8,8 +8,6 @@ class PermissionService
 {
     /**
      * Summary of storePermission
-     * @param array $data
-     * @return Permission
      */
     public function storePermission(array $data): Permission
     {
@@ -18,9 +16,6 @@ class PermissionService
 
     /**
      * Summary of updatePermission
-     * @param array $data
-     * @param Permission $permission
-     * @return bool
      */
     public function updatePermission(array $data, Permission $permission): bool
     {
@@ -29,8 +24,6 @@ class PermissionService
 
     /**
      * Summary of deletePermission
-     * @param Permission $permission
-     * @return bool
      */
     public function deletePermission(Permission $permission): bool
     {

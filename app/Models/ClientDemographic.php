@@ -33,6 +33,7 @@ class ClientDemographic extends Model
 
     /**
      * Summary of sex
+     *
      * @return BelongsTo<Sex, ClientDemographic>
      */
     public function sex(): BelongsTo
@@ -42,6 +43,7 @@ class ClientDemographic extends Model
 
     /**
      * Summary of religion
+     *
      * @return BelongsTo<Religion, ClientDemographic>
      */
     public function religion(): BelongsTo
@@ -51,6 +53,7 @@ class ClientDemographic extends Model
 
     /**
      * Summary of nationality
+     *
      * @return BelongsTo<Nationality, ClientDemographic>
      */
     public function nationality(): BelongsTo
@@ -60,6 +63,7 @@ class ClientDemographic extends Model
 
     /**
      * Summary of client
+     *
      * @return BelongsTo<Client, ClientDemographic>
      */
     public function client(): BelongsTo

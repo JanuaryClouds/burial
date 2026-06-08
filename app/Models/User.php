@@ -6,9 +6,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Support\Str;
 
 class User extends Authenticatable
 {
@@ -43,6 +43,7 @@ class User extends Authenticatable
 
     /**
      * Summary of fullname
+     *
      * @return string returns the fullname of the user
      */
     public function fullname(): string
@@ -55,6 +56,7 @@ class User extends Authenticatable
 
     /**
      * Summary of clients
+     *
      * @return HasMany<Client>
      */
     public function clients(): HasMany
@@ -64,6 +66,7 @@ class User extends Authenticatable
 
     /**
      * Summary of processLogs
+     *
      * @return HasMany<ProcessLog>
      */
     public function processLogs(): HasMany
@@ -73,6 +76,7 @@ class User extends Authenticatable
 
     /**
      * Summary of encoder
+     *
      * @return HasMany<BurialAssistance>
      */
     public function encoder(): HasMany
@@ -82,6 +86,7 @@ class User extends Authenticatable
 
     /**
      * Summary of initialChecker
+     *
      * @return HasMany<BurialAssistance>
      */
     public function initialChecker(): HasMany
@@ -91,6 +96,7 @@ class User extends Authenticatable
 
     /**
      * Summary of assignedTo
+     *
      * @return HasMany<BurialAssistance>
      */
     public function assignedTo(): HasMany
@@ -100,6 +106,7 @@ class User extends Authenticatable
 
     /**
      * Summary of claimantChange
+     *
      * @return HasMany<ClaimantChange>
      */
     public function claimantChange(): HasMany

@@ -36,6 +36,7 @@ class ClientSocialInfo extends Model
 
     /**
      * Summary of relationship
+     *
      * @return BelongsTo<Relationship, ClientSocialInfo>
      */
     public function relationship(): BelongsTo
@@ -45,6 +46,7 @@ class ClientSocialInfo extends Model
 
     /**
      * Summary of education
+     *
      * @return BelongsTo<Education, ClientSocialInfo>
      */
     public function education(): BelongsTo
@@ -54,6 +56,7 @@ class ClientSocialInfo extends Model
 
     /**
      * Summary of civil
+     *
      * @return BelongsTo<CivilStatus, ClientSocialInfo>
      */
     public function civil(): BelongsTo
@@ -63,6 +66,7 @@ class ClientSocialInfo extends Model
 
     /**
      * Summary of client
+     *
      * @return BelongsTo<Client, ClientSocialInfo>
      */
     public function client(): BelongsTo

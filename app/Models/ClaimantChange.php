@@ -24,6 +24,7 @@ class ClaimantChange extends Model
 
     /**
      * Summary of burialAssistance
+     *
      * @return BelongsTo<BurialAssistance, ClaimantChange>
      */
     public function burialAssistance(): BelongsTo
@@ -33,6 +34,7 @@ class ClaimantChange extends Model
 
     /**
      * Summary of oldClaimant
+     *
      * @return BelongsTo<Claimant, ClaimantChange>
      */
     public function oldClaimant(): BelongsTo
@@ -42,6 +44,7 @@ class ClaimantChange extends Model
 
     /**
      * Summary of newClaimant
+     *
      * @return BelongsTo<Claimant, ClaimantChange>
      */
     public function newClaimant(): BelongsTo
@@ -51,6 +54,7 @@ class ClaimantChange extends Model
 
     /**
      * Summary of newUserClaimant
+     *
      * @return BelongsTo<User, ClaimantChange>
      */
     public function newUserClaimant(): BelongsTo

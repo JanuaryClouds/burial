@@ -27,6 +27,7 @@ class Referral extends Model
 
     /**
      * Summary of client
+     *
      * @return BelongsTo<Client, Referral>
      */
     public function client(): BelongsTo
@@ -36,6 +37,7 @@ class Referral extends Model
 
     /**
      * Summary of beneficiary
+     *
      * @return BelongsTo<Beneficiary, Referral>
      */
     public function beneficiary(): BelongsTo
