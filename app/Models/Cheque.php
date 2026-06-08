@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Cheque extends Model
 {
@@ -34,12 +35,22 @@ class Cheque extends Model
     // TODO Deletion is not allowed, but should be stored as request for editing and deleting
     // TODO Head can see those request
 
-    public function burialAssistance()
+    /**
+     * Summary of burialAssistance
+     *
+     * @return BelongsTo<BurialAssistance, Cheque>
+     */
+    public function burialAssistance(): BelongsTo
     {
         return $this->belongsTo(BurialAssistance::class, 'burial_assistance_id', 'id');
     }
 
-    public function claimant()
+    /**
+     * Summary of claimant
+     *
+     * @return BelongsTo<Claimant, Cheque>
+     */
+    public function claimant(): BelongsTo
     {
         return $this->belongsTo(Claimant::class, 'claimant_id', 'id');
     }

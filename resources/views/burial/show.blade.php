@@ -2,6 +2,11 @@
 @section('content')
     <div class="d-flex flex-column gap-4">
         @include('burial.partials.menu')
+        @if ($data->status != 'released' && $next_step != null)
+            @can('update', [App\Models\BurialAssistance::class, $data])
+                @include('burial.partials.process-update-modal')
+            @endcan
+        @endif
         <div class="card">
             <div class="card-header">
                 <h4 class="card-title">Progress of Burial Assistance</h4>

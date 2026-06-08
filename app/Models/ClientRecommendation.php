@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ClientRecommendation extends Model
 {
@@ -34,17 +35,32 @@ class ClientRecommendation extends Model
         return self::where('client_id', $client)->get();
     }
 
-    public function client()
+    /**
+     * Summary of client
+     *
+     * @return BelongsTo<Client, ClientRecommendation>
+     */
+    public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class, 'client_id');
     }
 
-    public function assistance()
+    /**
+     * Summary of assistance
+     *
+     * @return BelongsTo<Assistance, ClientRecommendation>
+     */
+    public function assistance(): BelongsTo
     {
         return $this->belongsTo(Assistance::class, 'assistance_id');
     }
 
-    public function moa()
+    /**
+     * Summary of moa
+     *
+     * @return BelongsTo<ModeOfAssistance, ClientRecommendation>
+     */
+    public function moa(): BelongsTo
     {
         return $this->belongsTo(ModeOfAssistance::class, 'moa_id');
     }

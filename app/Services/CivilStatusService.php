@@ -6,26 +6,29 @@ use App\Models\CivilStatus;
 
 class CivilStatusService
 {
+    /**
+     * Summary of storeCivilStatus
+     */
     public function storeCivilStatus(array $data): CivilStatus
     {
         return CivilStatus::create($data);
     }
 
-    public function updateCivilStatus(array $data, $civil): CivilStatus
+    /**
+     * Summary of updateCivilStatus
+     */
+    public function updateCivilStatus(array $data, CivilStatus $civil): CivilStatus
     {
-        if ($civil->update($data)) {
-            return $civil;
-        }
+        $civil->update($data);
 
-        return null;
+        return $civil->fresh();
     }
 
-    public function deleteCivilStatus($civil): CivilStatus
+    /**
+     * Summary of deleteCivilStatus
+     */
+    public function deleteCivilStatus(CivilStatus $civil): bool
     {
-        if ($civil->delete()) {
-            return $civil;
-        }
-
-        return null;
+        return $civil->delete();
     }
 }

@@ -45,21 +45,23 @@ class ExportController extends Controller
 
         foreach ($clients as $client) {
             $beneficiary = $client->beneficiary;
-            $burialAssistance = $client->claimant?->burialAssistance;
+            $burialAssistance = $client->claimant->burialAssistance;
 
-            $dob = $beneficiary?->date_of_birth ? Carbon::parse($beneficiary->date_of_birth) : null;
-            $dod = $beneficiary?->date_of_death ? Carbon::parse($beneficiary->date_of_death) : null;
-            $encoder = $users->get($burialAssistance?->encoder);
-            $initialChecker = $users->get($burialAssistance?->initial_checker);
+            $dob = $beneficiary->date_of_birth ? Carbon::parse($beneficiary->date_of_birth) : null;
+            $dod = $beneficiary->date_of_death ? Carbon::parse($beneficiary->date_of_death) : null;
+            $encoder = $users->get($burialAssistance->encoder);
+            $initialChecker = $users->get($burialAssistance->initial_checker);
             $age = ($dob && $dod) ? $dob->diffInYears($dod) : null;
-            $approvedChange = $burialAssistance?->claimantChanges?->where('status', 'approved')->first();
+            $approvedChange = $burialAssistance->claimantChanges->where('status', 'approved')->first();
+            $newClaimant = null;
+            $firstClaimant = $burialAssistance->originalClaimant();
+
             if ($approvedChange) {
-                $newClaimant = $approvedChange?->newClaimant;
-                $firstClaimant = $approvedChange?->oldClaimant;
-            } else {
-                $firstClaimant = $burialAssistance?->originalClaimant();
+                $newClaimant = $approvedChange->newClaimant;
+                $firstClaimant = $approvedChange->oldClaimant;
             }
-            $status = $burialAssistance?->status;
+
+            $status = $burialAssistance->status;
             if ($status == 'approved') {
                 $status = 'For Pickup';
             }
@@ -112,11 +114,11 @@ class ExportController extends Controller
             $sheet->setCellValue("AT{$row}", $processLogService->getLog($firstClaimant, 12)?->extra_data['date_issued'] ?? '');
             $sheet->setCellValue("AU{$row}", $processLogService->getLog($firstClaimant, 13)?->date_in ?? '');
             // Change of Claimants start here if it exists
-            if ($approvedChange) {
+            if ($approvedChange && $newClaimant) {
                 $sheet->setCellValue("AV{$row}", $newClaimant->last_name);
                 $sheet->setCellValue("AW{$row}", $newClaimant->first_name);
-                $sheet->setCellValue("AX{$row}", $newClaimant?->middle_name);
-                $sheet->setCellValue("AY{$row}", $newClaimant?->suffix);
+                $sheet->setCellValue("AX{$row}", $newClaimant->middle_name);
+                $sheet->setCellValue("AY{$row}", $newClaimant->suffix);
                 $sheet->setCellValue("AZ{$row}", $approvedChange->reason_for_change);
                 $sheet->setCellValue("BA{$row}", $processLogService->getLog($newClaimant, 4)?->date_out ?? '');
                 $sheet->setCellValue("BB{$row}", $processLogService->getLog($newClaimant, 4)?->date_in ?? '');
@@ -133,7 +135,7 @@ class ExportController extends Controller
                         ($processLogService->getLog($newClaimant, 10)?->date_in ?? '')
                 );
             }
-            $sheet->setCellValue("BK{$row}", $status ?? '');
+            $sheet->setCellValue("BK{$row}", $status);
             $sheet->setCellValue("BL{$row}", $burialAssistance?->remarks ?? '');
             $sheet->setCellValue("BM{$row}", $initialChecker ? $initialChecker->first_name.' '.$initialChecker->last_name : '');
             $row++;

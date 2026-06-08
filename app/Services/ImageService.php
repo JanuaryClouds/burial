@@ -7,6 +7,7 @@ use Illuminate\Support\Str;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\FileExtension;
 use Intervention\Image\ImageManager;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class ImageService
 {
@@ -123,8 +124,15 @@ class ImageService
 
         $hmac = hash_hmac('sha256', $encrypted, $key, true);
         $payload = $iv.$hmac.$encrypted;
-        // This will not work during local because personal_access_tokens from live are the only accepted tokens
-        $token = auth()->user()->tokens()->first()->token.now()->format('Ymd');
+        // This only works in production
+        /** @var PersonalAccessToken $personalAccessToken */
+        $personalAccessToken = auth()->user()->tokens()->first();
+
+        if ($personalAccessToken == null) {
+            throw new \RuntimeException('No token found. You cannot upload images without a token.');
+        }
+
+        $token = $personalAccessToken->token.now()->format('Ymd');
         $response = Http::asMultipart()
             ->timeout(15)
             ->retry(3, 200)

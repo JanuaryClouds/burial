@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class BeneficiaryFamily extends Model
 {
@@ -38,22 +39,42 @@ class BeneficiaryFamily extends Model
         return self::where('client_id', $client);
     }
 
-    public function sex()
+    /**
+     * Summary of sex
+     *
+     * @return BelongsTo<Sex, BeneficiaryFamily>
+     */
+    public function sex(): BelongsTo
     {
         return $this->belongsTo(Sex::class, 'sex_id');
     }
 
-    public function civil()
+    /**
+     * Summary of civil
+     *
+     * @return BelongsTo<CivilStatus, BeneficiaryFamily>
+     */
+    public function civil(): BelongsTo
     {
         return $this->belongsTo(CivilStatus::class, 'civil_id');
     }
 
-    public function relationship()
+    /**
+     * Summary of relationship
+     *
+     * @return BelongsTo<Relationship, BeneficiaryFamily>
+     */
+    public function relationship(): BelongsTo
     {
         return $this->belongsTo(Relationship::class, 'relationship_id')->withTrashed();
     }
 
-    public function client()
+    /**
+     * Summary of client
+     *
+     * @return BelongsTo<Client, BeneficiaryFamily>
+     */
+    public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class, 'client_id');
     }

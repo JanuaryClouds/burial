@@ -56,7 +56,7 @@ class FuneralAssistancePolicy
      */
     public function delete(User $user, FuneralAssistance $funeralAssistance): bool
     {
-        //
+        return false;
     }
 
     /**
@@ -64,7 +64,7 @@ class FuneralAssistancePolicy
      */
     public function restore(User $user, FuneralAssistance $funeralAssistance): bool
     {
-        //
+        return false;
     }
 
     /**
@@ -72,6 +72,6 @@ class FuneralAssistancePolicy
      */
     public function forceDelete(User $user, FuneralAssistance $funeralAssistance): bool
     {
-        //
+        return false;
     }
 }

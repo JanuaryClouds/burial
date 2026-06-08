@@ -14,7 +14,7 @@ class CivilStatusRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255|unique:civil_statuses,name,'.$this->route('civil')?->id,
+            'name' => 'required|string|max:255|unique:civil_statuses,name',
             'remarks' => 'nullable|string|max:255',
         ];
     }

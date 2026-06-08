@@ -28,7 +28,7 @@ class CitizenAccessController extends Controller
 
     public function index(Request $request)
     {
-        if (app()->isProduction() && SystemSetting::first()?->maintenance_mode ?? false) {
+        if (app()->isProduction() && SystemSetting::first()->maintenance_mode) {
             return response()->view('error.maintenance', [], 503);
         }
 
@@ -117,34 +117,30 @@ class CitizenAccessController extends Controller
 
         $uuid = $payload['citizen_uuid'];
 
-        if ($uuid) {
-            $user = $this->centralClientService->checkIfUser($uuid);
+        $user = $this->centralClientService->checkIfUser($uuid);
 
-            if ($user && ! $user->hasRole('superadmin') && SystemSetting::first()?->maintenance_mode ?? false) {
-                return response()->view('error.maintenance', [], 503);
-            }
-
-            if ($user === null) {
-                return redirect()->route('landing.page')->with('error', 'User not found.');
-            }
-
-            if (! $user->is_active) {
-                return redirect()->back()->with('warning', 'Your account is inactive. Please contact the superadmin.');
-            }
-
-            if (! Auth::check()) {
-                Auth::login($user);
-                $token = $user->createToken('fileserver')->plainTextToken;
-            }
-
-            $redirect = auth()->user()->hasRole('staff')
-                ? route('dashboard')
-                : (auth()->user()->clients()->exists() ? route('dashboard') : route('general.intake.form'));
-
-            return redirect()->to($redirect);
-        } else {
-            return redirect()->back()->with('error', 'Login failed.');
+        if ($user && ! $user->hasRole('superadmin') && SystemSetting::first()->maintenance_mode) {
+            return response()->view('error.maintenance', [], 503);
         }
+
+        if ($user === null) {
+            return redirect()->route('landing.page')->with('error', 'User not found.');
+        }
+
+        if (! $user->is_active) {
+            return redirect()->back()->with('warning', 'Your account is inactive. Please contact the superadmin.');
+        }
+
+        if (! Auth::check()) {
+            Auth::login($user);
+            $token = $user->createToken('fileserver')->plainTextToken;
+        }
+
+        $redirect = auth()->user()->hasRole('staff')
+            ? route('dashboard')
+            : (auth()->user()->clients()->exists() ? route('dashboard') : route('general.intake.form'));
+
+        return redirect()->to($redirect);
     }
 
     public function logout()

@@ -69,7 +69,7 @@ class ClientPolicy
      */
     public function update(User $user, Client $client): bool
     {
-        //
+        return false;
     }
 
     /**
@@ -77,7 +77,7 @@ class ClientPolicy
      */
     public function delete(User $user, Client $client): bool
     {
-        //
+        return false;
     }
 
     /**
@@ -85,7 +85,7 @@ class ClientPolicy
      */
     public function restore(User $user, Client $client): bool
     {
-        //
+        return false;
     }
 
     /**
@@ -93,6 +93,6 @@ class ClientPolicy
      */
     public function forceDelete(User $user, Client $client): bool
     {
-        //
+        return false;
     }
 }

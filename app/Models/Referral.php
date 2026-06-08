@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Referral extends Model
 {
@@ -24,12 +25,22 @@ class Referral extends Model
         'remarks',
     ];
 
-    public function client()
+    /**
+     * Summary of client
+     *
+     * @return BelongsTo<Client, Referral>
+     */
+    public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class);
     }
 
-    public function beneficiary()
+    /**
+     * Summary of beneficiary
+     *
+     * @return BelongsTo<Beneficiary, Referral>
+     */
+    public function beneficiary(): BelongsTo
     {
         return $this->belongsTo(Beneficiary::class);
     }

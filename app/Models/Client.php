@@ -5,7 +5,10 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Str;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Str;
 
 class Client extends Model
 {
@@ -52,12 +55,20 @@ class Client extends Model
         return self::where('id', $client)->first();
     }
 
-    public function user()
+    /**
+     * Summary of user
+     *
+     * @return BelongsTo<User, Client>
+     */
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function fullname()
+    /**
+     * Summary of fullname
+     */
+    public function fullname(): string
     {
         if (! $this->user) {
             return '';
@@ -69,74 +80,142 @@ class Client extends Model
             ($this->user->suffix ? ' '.$this->user->suffix : '');
     }
 
-    public function age()
+    /**
+     * Summary of age
+     *
+     * @return int returns the age of the client
+     */
+    public function age(): int
     {
         return Carbon::parse($this->date_of_birth)->age;
     }
 
-    public function address()
+    /**
+     * Summary of address
+     *
+     * @return string joins the house number, street, and barangay name
+     */
+    public function address(): string
     {
-        $address = $this->house_no.' '.$this->street.', '.$this->barangay?->name;
-
-        return $address;
+        return $this->house_no.' '.$this->street.', '.$this->barangay->name;
     }
 
-    public function assessment()
+    /**
+     * Summary of assessment
+     *
+     * @return HasMany<ClientAssessment>
+     */
+    public function assessment(): HasMany
     {
         return $this->hasMany(ClientAssessment::class);
     }
 
-    public function beneficiary()
+    /**
+     * Summary of beneficiary
+     *
+     * @return HasOne<Beneficiary>
+     */
+    public function beneficiary(): HasOne
     {
         return $this->hasOne(Beneficiary::class);
     }
 
-    public function family()
+    /**
+     * Summary of family
+     *
+     * @return HasMany<BeneficiaryFamily>
+     */
+    public function family(): HasMany
     {
         return $this->hasMany(BeneficiaryFamily::class);
     }
 
-    public function demographic()
+    /**
+     * Summary of demographic
+     *
+     * @return HasOne<ClientDemographic>
+     */
+    public function demographic(): HasOne
     {
         return $this->hasOne(ClientDemographic::class);
     }
 
-    public function socialInfo()
+    /**
+     * Summary of socialInfo
+     *
+     * @return HasOne<ClientSocialInfo>
+     */
+    public function socialInfo(): HasOne
     {
         return $this->hasOne(ClientSocialInfo::class);
     }
 
-    public function recommendation()
+    /**
+     * Summary of recommendation
+     *
+     * @return HasMany<ClientRecommendation>
+     */
+    public function recommendation(): HasMany
     {
         return $this->hasMany(ClientRecommendation::class);
     }
 
-    public function referral()
+    /**
+     * Summary of referral
+     *
+     * @return HasOne<Referral>
+     */
+    public function referral(): HasOne
     {
         return $this->hasOne(Referral::class);
     }
 
-    public function district()
+    /**
+     * Summary of district
+     *
+     * @return BelongsTo<District, Client>
+     */
+    public function district(): BelongsTo
     {
         return $this->belongsTo(District::class, 'district_id');
     }
 
-    public function barangay()
+    /**
+     * Summary of barangay
+     *
+     * @return BelongsTo<Barangay, Client>
+     */
+    public function barangay(): BelongsTo
     {
         return $this->belongsTo(Barangay::class, 'barangay_id', 'id');
     }
 
-    public function interviews()
+    /**
+     * Summary of interviews
+     *
+     * @return HasMany<Interview>
+     */
+    public function interviews(): HasMany
     {
         return $this->hasMany(Interview::class);
     }
 
-    public function claimant()
+    /**
+     * Summary of claimant
+     *
+     * @return HasOne<Claimant>
+     */
+    public function claimant(): HasOne
     {
         return $this->hasOne(Claimant::class, 'client_id', 'id');
     }
 
-    public function funeralAssistance()
+    /**
+     * Summary of funeralAssistance
+     *
+     * @return HasOne<FuneralAssistance>
+     */
+    public function funeralAssistance(): HasOne
     {
         return $this->hasOne(FuneralAssistance::class, 'client_id', 'id');
     }

@@ -71,7 +71,7 @@ class UserService
         if (isset($data['is_active'])) {
             $user->is_active = (bool) $data['is_active'];
         } else {
-            $user->is_active = 0;
+            $user->is_active = false;
         }
         $user->save();
 

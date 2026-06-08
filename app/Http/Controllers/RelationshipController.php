@@ -76,8 +76,9 @@ class RelationshipController extends Controller
     public function update(RelationshipRequest $request, $id)
     {
         try {
+            $data = $request->validated();
             $relationship = Relationship::withTrashed()->findOrFail($id);
-            $this->relationshipServices->updateRelationship($request->validated(), $relationship);
+            $this->relationshipServices->updateRelationship($data, $relationship);
 
             activity()
                 ->causedBy(Auth::user())

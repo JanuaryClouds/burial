@@ -6,7 +6,6 @@ use App\Http\Requests\ReligionRequest;
 use App\Models\Religion;
 use App\Services\DatatableService;
 use App\Services\ReligionService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ReligionController extends Controller
@@ -74,13 +73,10 @@ class ReligionController extends Controller
         return view('cms.edit', compact('page_title', 'data', 'resource'));
     }
 
-    public function update($id, Request $request)
+    public function update($id, ReligionRequest $request)
     {
         $religion = Religion::withTrashed()->findOrFail($id);
-        $this->religionServices->updateReligion($request->validate([
-            'name' => 'required',
-            'remarks' => 'nullable',
-        ]), $religion);
+        $this->religionServices->updateReligion($request->validated(), $religion);
 
         activity()
             ->causedBy(Auth::user())

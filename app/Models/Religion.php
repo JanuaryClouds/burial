@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Religion extends Model
@@ -22,12 +23,22 @@ class Religion extends Model
         return self::all();
     }
 
-    public function clientDemographic()
+    /**
+     * Summary of clientDemographic
+     *
+     * @return HasMany<ClientDemographic>
+     */
+    public function clientDemographic(): HasMany
     {
         return $this->hasMany(ClientDemographic::class);
     }
 
-    public function beneficiary()
+    /**
+     * Summary of beneficiary
+     *
+     * @return HasMany<Beneficiary>
+     */
+    public function beneficiary(): HasMany
     {
         return $this->hasMany(Beneficiary::class, 'religion_id', 'id');
     }

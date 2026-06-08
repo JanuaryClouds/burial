@@ -72,7 +72,7 @@ class AuthServiceProvider extends ServiceProvider
                     if ($argument instanceof Referral && $argument->client && $argument->client->user_id === $user->id) {
                         return false;
                     }
-                    if ($argument instanceof BurialAssistance && $argument->originalClaimant() && $argument->originalClaimant()->client && $argument->originalClaimant()->client->user_id === $user->id) {
+                    if ($argument instanceof BurialAssistance && $argument->originalClaimant()->client->user_id === $user->id) {
                         return false;
                     }
                     if ($argument instanceof FuneralAssistance && $argument->client && $argument->client->user_id === $user->id) {

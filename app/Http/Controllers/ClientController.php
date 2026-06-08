@@ -186,7 +186,7 @@ class ClientController extends Controller
             $browser = request()->header('User-Agent');
             activity()
                 ->withProperties(['ip' => $ip, 'browser' => $browser])
-                ->log('Added the client details: '.$client?->id.(($result['uploadError'] ?? false) ? ' images failed to upload' : ''));
+                ->log('Added the client details: '.$client->id.(($result['uploadError'] ?? false) ? ' images failed to upload' : ''));
 
             return redirect()
                 ->route('client.show', $client)
@@ -250,25 +250,21 @@ class ClientController extends Controller
                 'assessment' => 'required|string|max:255',
             ]);
 
-            if ($client) {
-                $client->assessment()->create([
-                    'id' => Str::uuid(),
-                    'client_id' => $client->id,
-                    'problem_presented' => $request['problem_presented'],
-                    'assessment' => $request['assessment'],
-                ]);
+            $client->assessment()->create([
+                'id' => Str::uuid(),
+                'client_id' => $client->id,
+                'problem_presented' => $request['problem_presented'],
+                'assessment' => $request['assessment'],
+            ]);
 
-                $ip = request()->ip();
-                $browser = request()->header('User-Agent');
-                activity()
-                    ->causedBy(auth()->user())
-                    ->withProperties(['ip' => $ip, 'browser' => $browser, 'client' => $client->id])
-                    ->log('Added an assessment for a client');
+            $ip = request()->ip();
+            $browser = request()->header('User-Agent');
+            activity()
+                ->causedBy(auth()->user())
+                ->withProperties(['ip' => $ip, 'browser' => $browser, 'client' => $client->id])
+                ->log('Added an assessment for a client');
 
-                return redirect()->back()->with('success', 'Assessment created successfully.');
-            } else {
-                return redirect()->back()->with('error', 'Client not found.');
-            }
+            return redirect()->back()->with('success', 'Assessment created successfully.');
         } catch (Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }

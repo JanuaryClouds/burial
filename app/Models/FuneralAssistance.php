@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class FuneralAssistance extends Model
 {
@@ -25,14 +26,24 @@ class FuneralAssistance extends Model
         'remarks',
     ];
 
-    public function client()
+    /**
+     * Summary of client
+     *
+     * @return BelongsTo<Client, FuneralAssistance>
+     */
+    public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class, 'client_id', 'id');
     }
 
-    public function trackingNumber()
+    /**
+     * Summary of trackingNumber
+     *
+     * @return string returns the tracking number of the client
+     */
+    public function trackingNumber(): string
     {
-        return $this->client?->tracking_no;
+        return $this->client->tracking_no;
     }
 
     // Scopes

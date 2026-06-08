@@ -34,24 +34,6 @@ class StoreClaimantChangeRequest extends FormRequest
         return $value;
     }
 
-    private function normalizePhone(?string $value): ?string
-    {
-        if ($value === null) {
-            return null;
-        }
-
-        return preg_replace('/\D+/', '', $value);
-    }
-
-    private function normalizeEmail(?string $value): ?string
-    {
-        if ($value === null) {
-            return null;
-        }
-
-        return mb_strtolower(trim($value));
-    }
-
     /**
      * Get the validation rules that apply to the request.
      *

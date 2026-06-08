@@ -6,26 +6,29 @@ use App\Models\Sex;
 
 class SexService
 {
+    /**
+     * Summary of storeSex
+     */
     public function storeSex(array $data): Sex
     {
         return Sex::create($data);
     }
 
-    public function updateSex(array $data, $sex): Sex
+    /**
+     * Summary of updateSex
+     */
+    public function updateSex(array $data, Sex $sex): Sex
     {
-        if ($sex->update($data)) {
-            return $sex;
-        }
+        $sex->update($data);
 
-        return null;
+        return $sex;
     }
 
-    public function deleteSex($sex): Sex
+    /**
+     * Summary of deleteSex
+     */
+    public function deleteSex(Sex $sex): bool
     {
-        if ($sex->delete()) {
-            return $sex;
-        }
-
-        return null;
+        return $sex->delete();
     }
 }

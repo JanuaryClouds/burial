@@ -6,7 +6,6 @@ use App\Http\Requests\EducationRequest;
 use App\Models\Education;
 use App\Services\DatatableService;
 use App\Services\EducationService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class EducationController extends Controller
@@ -78,13 +77,10 @@ class EducationController extends Controller
             ->with('success', 'Education created successfully.');
     }
 
-    public function update($id, Request $request)
+    public function update($id, EducationRequest $request)
     {
         $education = Education::withTrashed()->findOrFail($id);
-        $this->educationServices->updateEducation($request->validate([
-            'name' => 'required',
-            'remarks' => 'nullable',
-        ]), $education);
+        $this->educationServices->updateEducation($request->validated(), $education);
 
         activity()
             ->performedOn($education)

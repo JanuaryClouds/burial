@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CivilStatus extends Model
 {
@@ -21,12 +22,22 @@ class CivilStatus extends Model
         return self::all();
     }
 
-    public function clientSocialInfo()
+    /**
+     * Summary of clientSocialInfo
+     *
+     * @return HasMany<ClientSocialInfo>
+     */
+    public function clientSocialInfo(): HasMany
     {
         return $this->hasMany(ClientSocialInfo::class);
     }
 
-    public function clientFamily()
+    /**
+     * Summary of clientFamily
+     *
+     * @return HasMany<BeneficiaryFamily>
+     */
+    public function clientFamily(): HasMany
     {
         return $this->hasMany(BeneficiaryFamily::class);
     }

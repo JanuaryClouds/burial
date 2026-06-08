@@ -14,7 +14,7 @@ class AssistanceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255|unique:assistances,name'.$this->route('assistance')?->id,
+            'name' => 'required|string|max:255|unique:assistances,name',
             'remarks' => 'nullable|string|max:255',
         ];
     }

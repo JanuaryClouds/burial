@@ -93,7 +93,7 @@ class FuneralAssistanceController extends Controller
             }
             $page_title = $client->tracking_no;
             $page_subtitle = $client->fullname()."'s Funeral Assistance Application";
-            $readonly = ! auth()->user()->hasRole('superadmin') || $data?->forwarded_at != null;
+            $readonly = ! auth()->user()->hasRole('superadmin') || $data->forwarded_at != null;
 
             return view('funeral.view', compact(
                 'data',

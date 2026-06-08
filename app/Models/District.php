@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class District extends Model
 {
@@ -21,12 +22,22 @@ class District extends Model
         return self::all();
     }
 
-    public function client()
+    /**
+     * Summary of client
+     *
+     * @return HasMany<Client>
+     */
+    public function client(): HasMany
     {
         return $this->hasMany(Client::class);
     }
 
-    public function barangay()
+    /**
+     * Summary of barangay
+     *
+     * @return HasMany<Barangay>
+     */
+    public function barangay(): HasMany
     {
         return $this->hasMany(Barangay::class);
     }

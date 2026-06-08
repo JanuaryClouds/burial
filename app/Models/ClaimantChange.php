@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ClaimantChange extends Model
 {
@@ -21,22 +22,42 @@ class ClaimantChange extends Model
 
     protected $table = 'claimant_changes';
 
-    public function burialAssistance()
+    /**
+     * Summary of burialAssistance
+     *
+     * @return BelongsTo<BurialAssistance, ClaimantChange>
+     */
+    public function burialAssistance(): BelongsTo
     {
         return $this->belongsTo(BurialAssistance::class, 'burial_assistance_id', 'id');
     }
 
-    public function oldClaimant()
+    /**
+     * Summary of oldClaimant
+     *
+     * @return BelongsTo<Claimant, ClaimantChange>
+     */
+    public function oldClaimant(): BelongsTo
     {
         return $this->belongsTo(Claimant::class, 'old_claimant_id', 'id');
     }
 
-    public function newClaimant()
+    /**
+     * Summary of newClaimant
+     *
+     * @return BelongsTo<Claimant, ClaimantChange>
+     */
+    public function newClaimant(): BelongsTo
     {
         return $this->belongsTo(Claimant::class, 'new_claimant_id', 'id');
     }
 
-    public function newUserClaimant()
+    /**
+     * Summary of newUserClaimant
+     *
+     * @return BelongsTo<User, ClaimantChange>
+     */
+    public function newUserClaimant(): BelongsTo
     {
         return $this->belongsTo(User::class, 'new_claimant_user_id', 'id');
     }

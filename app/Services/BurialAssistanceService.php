@@ -35,10 +35,10 @@ class BurialAssistanceService
 
                 return [
                     'id' => $application->id,
-                    'tracking_no' => $application->originalClaimant()->client?->tracking_no,
-                    'claimant' => $claimant?->fullname(),
-                    'contact_number' => $claimant?->contact_number ?? 'N/A',
-                    'beneficiary' => $application->beneficiary()?->fullname(),
+                    'tracking_no' => $application->originalClaimant()->client->tracking_no,
+                    'claimant' => $claimant->fullname(),
+                    'contact_number' => $claimant->contact_number,
+                    'beneficiary' => $application->beneficiary()->fullname(),
                     'status' => $status,
                     'show_route' => $showRoute,
                 ];
@@ -62,10 +62,10 @@ class BurialAssistanceService
                 }
 
                 return [
-                    'tracking_no' => $burialAssistance->originalClaimant()?->client?->tracking_no,
-                    'client' => $burialAssistance->originalClaimant()?->client?->fullname(),
-                    'beneficiary' => $burialAssistance->beneficiary()?->fullname(),
-                    'address' => $burialAssistance->currentClaimant()?->fullAddress(),
+                    'tracking_no' => $burialAssistance->originalClaimant()->client->tracking_no,
+                    'client' => $burialAssistance->originalClaimant()->client->fullname(),
+                    'beneficiary' => $burialAssistance->beneficiary()->fullname(),
+                    'address' => $burialAssistance->currentClaimant()->fullAddress(),
                     'funeraria' => $burialAssistance->funeraria,
                     'amount' => $burialAssistance->amount,
                     'status' => Str::title($status),
@@ -88,11 +88,11 @@ class BurialAssistanceService
     {
         $application->update($data);
         if (isset($data['claimant'])) {
-            $application->currentClaimant()?->update($data['claimant']);
+            $application->currentClaimant()->update($data['claimant']);
         }
 
         if (isset($data['beneficiary'])) {
-            $application->beneficiary()?->update($data['beneficiary']);
+            $application->beneficiary()->update($data['beneficiary']);
         }
 
         // $client = $application->claimant->client;

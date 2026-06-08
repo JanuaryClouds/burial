@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class BurialAssistance extends Model
 {
@@ -29,32 +32,62 @@ class BurialAssistance extends Model
         'initial_checker',
     ];
 
-    public function claimant()
+    /**
+     * Summary of claimant
+     *
+     * @return HasOne<Claimant>
+     */
+    public function claimant(): HasOne
     {
         return $this->hasOne(Claimant::class, 'burial_assistance_id', 'id')->latestOfMany('created_at');
     }
 
-    public function trackingNumber()
+    /**
+     * Summary of trackingNumber
+     *
+     * @return string|null returns the tracking number from the client record
+     */
+    public function trackingNumber(): ?string
     {
-        return $this->originalClaimant()?->client?->tracking_no;
+        return $this->originalClaimant()->client->tracking_no;
     }
 
-    public function claimants()
+    /**
+     * Summary of claimants
+     *
+     * @return HasMany<Claimant>
+     */
+    public function claimants(): HasMany
     {
         return $this->hasMany(Claimant::class, 'burial_assistance_id', 'id');
     }
 
-    public function hasClaimantChange()
+    /**
+     * Summary of hasClaimantChange
+     *
+     * @return bool returns if burial assistance's claimant has been changed
+     */
+    public function hasClaimantChange(): bool
     {
         return $this->claimantChanges()->exists();
     }
 
-    public function claimantChanges()
+    /**
+     * Summary of claimantChanges
+     *
+     * @return HasMany<ClaimantChange>
+     */
+    public function claimantChanges(): HasMany
     {
         return $this->hasMany(ClaimantChange::class, 'burial_assistance_id', 'id');
     }
 
-    public function originalClaimant()
+    /**
+     * Summary of originalClaimant
+     *
+     * @return Claimant returns the original claimant
+     */
+    public function originalClaimant(): Claimant
     {
         if (! $this->claimantChanges->count()) {
             return $this->claimant;
@@ -63,12 +96,22 @@ class BurialAssistance extends Model
         return $this->claimantChanges->first()->oldClaimant;
     }
 
-    public function newClaimant()
+    /**
+     * Summary of newClaimant
+     *
+     * @return Claimant returns the new claimant if there's a claimant change
+     */
+    public function newClaimant(): ?Claimant
     {
-        return $this->claimantChanges()->first()->newClaimant;
+        return $this->claimantChanges()->first()?->newClaimant;
     }
 
-    public function currentClaimant()
+    /**
+     * Summary of currentClaimant
+     *
+     * @return Claimant returns the current claimant (original if no changes, new if there's a change)
+     */
+    public function currentClaimant(): Claimant
     {
         if ($this->hasClaimantChange()) {
             return $this->newClaimant();
@@ -77,39 +120,64 @@ class BurialAssistance extends Model
         return $this->originalClaimant();
     }
 
-    public function beneficiary()
+    /**
+     * Summary of beneficiary
+     *
+     * @return Beneficiary returns the beneficiary
+     */
+    public function beneficiary(): Beneficiary
     {
         return $this->originalClaimant()->client->beneficiary;
     }
 
-    public function processLogs()
+    /**
+     * Summary of processLogs
+     *
+     * @return HasMany<ProcessLog>
+     */
+    public function processLogs(): HasMany
     {
         return $this->hasMany(ProcessLog::class, 'burial_assistance_id', 'id');
     }
 
-    public function cheque()
+    /**
+     * Summary of cheques
+     *
+     * @return HasMany<Cheque>
+     */
+    public function cheques(): HasMany
     {
         return $this->hasMany(Cheque::class, 'burial_assistance_id', 'id');
     }
 
-    public function latestCheque()
+    /**
+     * Summary of latestCheque
+     *
+     * @return HasOne<Cheque>
+     */
+    public function latestCheque(): HasOne
     {
         return $this->hasOne(Cheque::class, 'burial_assistance_id', 'id')->latestOfMany();
     }
 
-    public function encoder()
+    /**
+     * Summary of encoder
+     *
+     * @return BelongsTo<User, BurialAssistance>
+     */
+    public function encoder(): BelongsTo
     {
         return $this->belongsTo(User::class, 'encoder', 'id');
     }
 
-    public function initialChecker()
+    /**
+     * Summary of initialChecker
+     *
+     * @return BelongsTo<User, BurialAssistance>
+     */
+    public function initialChecker(): BelongsTo
     {
         return $this->belongsTo(User::class, 'initial_checker', 'id');
-    }
-
-    public function assignedTo()
-    {
-        return $this->belongsTo(User::class, 'assigned_to', 'id');
     }
 
     // Scopes
@@ -167,14 +235,6 @@ class BurialAssistance extends Model
 
     public function scopeProcessing($query)
     {
-        if (! auth()->user()) {
-            return $query->whereRaw('1 = 0');
-        }
-
-        if (! auth()->user()) {
-            return $query->whereRaw('1 = 0');
-        }
-
         if (auth()->user()->roles()->count() > 0) {
             return $query->whereIn('status', ['processing', 'approved']);
         }

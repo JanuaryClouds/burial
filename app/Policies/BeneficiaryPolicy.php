@@ -36,7 +36,7 @@ class BeneficiaryPolicy
      */
     public function create(User $user): bool
     {
-        //
+        return false;
     }
 
     /**
@@ -44,7 +44,7 @@ class BeneficiaryPolicy
      */
     public function update(User $user, Beneficiary $beneficiary): bool
     {
-        //
+        return false;
     }
 
     /**
@@ -52,7 +52,7 @@ class BeneficiaryPolicy
      */
     public function delete(User $user, Beneficiary $beneficiary): bool
     {
-        //
+        return false;
     }
 
     /**
@@ -60,7 +60,7 @@ class BeneficiaryPolicy
      */
     public function restore(User $user, Beneficiary $beneficiary): bool
     {
-        //
+        return false;
     }
 
     /**
@@ -68,6 +68,6 @@ class BeneficiaryPolicy
      */
     public function forceDelete(User $user, Beneficiary $beneficiary): bool
     {
-        //
+        return false;
     }
 }

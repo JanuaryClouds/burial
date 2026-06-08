@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ClientAssessment extends Model
 {
@@ -29,7 +30,12 @@ class ClientAssessment extends Model
         return self::where('client_id', $client);
     }
 
-    public function client()
+    /**
+     * Summary of client
+     *
+     * @return BelongsTo<Client, ClientAssessment>
+     */
+    public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class);
     }
