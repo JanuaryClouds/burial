@@ -52,7 +52,7 @@ class HandlerController extends Controller
     public function update($id, Request $request)
     {
         $request->validate([
-            'name' => 'required',
+            'name' => 'required|string|max:255|unique:handlers,name,'.$id,
             'department' => 'required',
         ]);
         $handler = Handler::findOrFail($id);
