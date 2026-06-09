@@ -31,6 +31,12 @@ class BurialAssistancePolicy
             return false;
         }
 
+        if ($burialAssistance->hasClaimantChange()) {
+            if ($burialAssistance->claimantChanges()->first()->newUserClaimant->id === $user->id) {
+                return false;
+            }
+        }
+
         return $user->can('create-updates');
     }
 }

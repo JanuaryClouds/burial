@@ -44,10 +44,6 @@ class ClaimantChangeController extends Controller
                 return redirect()->back()->with('error', 'Couldn\'t find the new claimant as a user in this system. Please ensure they are a previous client using their TLC Portal account.');
             }
 
-            if ($newClaimantUser->roles()->exists()) {
-                return redirect()->back()->with('error', 'Users with system roles cannot be set as claimants, Please select a different user.');
-            }
-
             $validated = $request->validated();
 
             if ($validated) {
