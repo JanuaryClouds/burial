@@ -55,6 +55,44 @@
                 @endforeach
             </div>
         </div>
+        @if ($client->assessment->count() > 0)
+            <div class="card">
+                <div class="card-body">
+                    @include('client.partials.beneficiary-assessment', [
+                        'client' => $client,
+                    ])
+                </div>
+            </div>
+        @endif
+        @if ($client->recommendation->count() > 0)
+            <div class="card">
+                <div class="card-body">
+                    @include('client.partials.recommended-assistance', [
+                        'client' => $client,
+                    ])
+                </div>
+            </div>
+        @endif
+        @if ($client->referral)
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">REFERRAL</h5>
+                    @include('components.form-input', [
+                        'name' => 'referral_to',
+                        'label' => 'Referral To',
+                        'type' => 'text',
+                        'readonly' => true,
+                        'value' => $client->referral->referral_to,
+                    ])
+                    @include('components.form-textarea', [
+                        'name' => 'remarks',
+                        'label' => 'Remarks',
+                        'readonly' => true,
+                        'value' => $client->referral->remarks,
+                    ])
+                </div>
+            </div>
+        @endif
         <div class="card">
             <div class="card-body">
                 @include('client.partials.documents', [
