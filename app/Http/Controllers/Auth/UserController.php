@@ -113,8 +113,11 @@ class UserController extends Controller
             session()->forget('citizen');
         }
 
-        return redirect()
-            ->route('landing.page');
+        if (config('services.portal.endpoint')) {
+            return redirect(config('services.portal.endpoint'));
+        }
+
+        return redirect()->route('landing.page');
     }
 
     public function loginPage()
@@ -127,7 +130,7 @@ class UserController extends Controller
                 request()->session()->invalidate();
                 request()->session()->regenerateToken();
 
-                return redirect()->route('landing.page');
+                return redirect(config('services.portal.endpoint'));
             } else {
                 return redirect()->route('dashboard');
             }

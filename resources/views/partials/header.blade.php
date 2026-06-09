@@ -86,8 +86,7 @@
                             <a name="" id="" class="btn"
                                 href="{{ route('user.edit', ['user' => auth()->user()]) }}" role="button">Profile</a>
                         @endif
-                        <form action="{{ auth()->user()->roles()->exists() ? route('logout') : route('sso.logout') }}"
-                            method="POST" class="block mb-0">
+                        <form action="{{ route('sso.logout') }}" method="POST" class="block mb-0">
                             @csrf
                             <button type="submit" class="btn">
                                 <span class="fw-medium">
