@@ -63,7 +63,7 @@ class UserService
     {
         $user->update($data);
         if (isset($data['is_active'])) {
-            $user->is_active = (bool) $data['is_active'];
+            $user->is_active = true;
         } else {
             $user->is_active = false;
         }

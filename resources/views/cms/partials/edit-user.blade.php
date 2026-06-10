@@ -3,11 +3,16 @@
         @if (!$data->hasRole('superadmin') && auth()->user()->hasRole('superadmin'))
             <h5>Account Status</h5>
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="{{ $data->is_active == '1' ? '1' : '0' }}"
-                    name="is_active" id="activeCheck" {{ $data->is_active ? 'checked' : '' }} />
+                <input class="form-check-input" type="checkbox" value="{{ $data->is_active ? '1' : '0' }}" name="is_active"
+                    id="activeCheck" {{ $data->is_active ? 'checked' : '' }} />
                 <label class="form-check-label" for="activeCheck">
                     Active Account
                 </label>
+                <script nonce="{{ $nonce ?? '' }}">
+                    $('#activeCheck').on('click', function() {
+                        $(this).val($(this).is(':checked') ? '1' : '0');
+                    });
+                </script>
             </div>
         @elseif ($data->hasRole('superadmin'))
             <h5>Account Status</h5>
