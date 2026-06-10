@@ -12,8 +12,10 @@ use App\Models\Interview;
 use App\Models\Notification;
 use App\Models\Referral;
 use App\Models\User;
+use App\Services\CentralClientService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
+use RuntimeException;
 
 class ClientSeeder extends Seeder
 {
@@ -22,13 +24,40 @@ class ClientSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory()->count(20)->create([
+        $centralClientServices = new CentralClientService;
+
+        $uatClients = [];
+        for ($uatClientsCount = 1; $uatClientsCount <= 10; $uatClientsCount++) {
+            $uatClientsArray = $centralClientServices->fetchFromPortal('search', 'client'.$uatClientsCount.'_tlc');
+            if (count($uatClientsArray) == 0) {
+                throw new RuntimeException('No client data found for client'.$uatClientsCount.'_tlc');
+            } else {
+                $uatClients[] = $uatClientsArray[0];
+            }
+        }
+
+        foreach ($uatClients as $uatClient) {
+            User::firstOrCreate([
+                'email' => $uatClient['email'],
+                'citizen_uuid' => $uatClient['user_id'],
+                'emp_id' => $uatClient['emp_id'],
+                'first_name' => $uatClient['firstname'],
+                'middle_name' => $uatClient['middlename'] ?? null,
+                'last_name' => $uatClient['lastname'],
+                'suffix' => $uatClient['suffix'] ?? null,
+                'is_active' => true,
+                'contact_number' => $uatClient['contact_number'],
+                'password' => bcrypt(Str::random(32)),
+            ]);
+        }
+
+        User::factory()->count(10)->create([
             'citizen_uuid' => fn () => Str::uuid()->toString(),
         ]);
 
         $users = User::all();
 
-        $clients = Client::factory()->count(20)->create([
+        $clients = Client::factory()->count(25)->create([
             'user_id' => fn () => $users->random()->id,
         ]);
 
