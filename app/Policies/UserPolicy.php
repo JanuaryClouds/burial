@@ -11,11 +11,11 @@ class UserPolicy
      */
     public function viewAny(User $user): bool
     {
-        if ($user->cannot('view-users')) {
-            return false;
+        if ($user->hasRole('superadmin')) {
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     /**
@@ -27,11 +27,7 @@ class UserPolicy
             return true;
         }
 
-        if ($model->hasRole('superadmin')) {
-            return false;
-        }
-
-        if ($user->can('view-users')) {
+        if ($user->hasRole('superadmin')) {
             return true;
         }
 
@@ -43,10 +39,6 @@ class UserPolicy
      */
     public function create(User $user): bool
     {
-        if ($user->can('create-users')) {
-            return true;
-        }
-
         return false;
     }
 
@@ -59,11 +51,7 @@ class UserPolicy
             return true;
         }
 
-        if ($model->hasRole('superadmin')) {
-            return false;
-        }
-
-        if ($user->can('edit-users')) {
+        if ($user->hasRole('superadmin')) {
             return true;
         }
 
@@ -83,10 +71,6 @@ class UserPolicy
      */
     public function restore(User $user, User $model): bool
     {
-        if ($user->cannot('edit-users')) {
-            return false;
-        }
-
         if ($model->hasRole('superadmin')) {
             return false;
         }

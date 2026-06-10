@@ -158,23 +158,25 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        if (auth()->user()->cannot('update', $user)) {
-            abort(403);
-        }
+        $this->authorize('update', $user);
 
         $page_title = 'Edit User';
         $resource = 'user';
-        $roles = Role::all();
+
         $data = User::find($user->id);
+
+        $roles = Role::where('name', '!=', 'superadmin')->orderBy('id', 'desc')->get();
+
+        if ($data->hasRole('superadmin')) {
+            $roles = Role::whereIn('name', ['superadmin', 'staff'])->get();
+        }
 
         return view('cms.edit', compact('data', 'page_title', 'resource', 'roles'));
     }
 
     public function update(UpdateUserRequest $request, User $user)
     {
-        if (auth()->user()->cannot('update', $user)) {
-            abort(403);
-        }
+        $this->authorize('update', $user);
 
         try {
             $user = User::find($user->id);
