@@ -69,7 +69,6 @@ class UpdateUserRequest extends FormRequest
             'last_name' => 'required|string|max:255',
             'suffix' => 'nullable|string|max:64',
             'contact_number' => 'required|string|max:11',
-            'password' => 'nullable|string|min:8|confirmed',
             'is_active' => 'nullable|boolean',
             'roles' => 'nullable|array',
             'roles.*' => 'exists:roles,id',

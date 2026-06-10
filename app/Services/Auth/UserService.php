@@ -61,12 +61,6 @@ class UserService
 
     public function update(array $data, User $user)
     {
-        if (! empty($data['password'])) {
-            $data['password'] = bcrypt($data['password']);
-        } else {
-            $data['password'] = $user->password;
-        }
-
         $user->update($data);
         if (isset($data['is_active'])) {
             $user->is_active = (bool) $data['is_active'];
