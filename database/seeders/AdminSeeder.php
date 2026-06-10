@@ -49,7 +49,7 @@ class AdminSeeder extends Seeder
             } else {
                 $staffData = $staffDataArray[0];
             }
-            
+
             $staff = User::firstOrCreate([
                 'citizen_uuid' => $staffData['user_id'],
                 'emp_id' => (string) rand(100000, 999999),

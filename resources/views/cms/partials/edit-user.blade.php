@@ -34,9 +34,9 @@
     @endif
     @if (count($roles) > 0)
         <div class="d-flex flex-column gap-4">
-            <h5>Roles</h5>
             @foreach ($roles as $role)
                 @if ($data->hasRole('staff'))
+                    <h5>Roles</h5>
                     @if (auth()->user()->can('edit-roles') && $role->name !== 'superadmin')
                         @if ($data->hasRole('superadmin') && $role->name === 'staff')
                             <div class="form-check">
@@ -73,6 +73,7 @@
                     @endif
                 @else
                     @if ($role->name === 'staff' && $data->emp_id !== null)
+                        <h5>Roles</h5>
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" value="{{ $role->id }}" name="roles[]"
                                 id="role{{ $role->id }}Check"
