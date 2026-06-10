@@ -4,6 +4,7 @@ namespace App\Http;
 
 use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\CheckApiKey;
+use App\Http\Middleware\CheckUserIfActive;
 use App\Http\Middleware\EncryptCookies;
 use App\Http\Middleware\Maintenance;
 use App\Http\Middleware\PreventRequestsDuringMaintenance;
@@ -101,5 +102,6 @@ class Kernel extends HttpKernel
         'permission' => PermissionMiddleware::class,
         'role_or_permission' => RoleOrPermissionMiddleware::class,
         'api.check' => CheckApiKey::class,
+        'active.check' => CheckUserIfActive::class,
     ];
 }
