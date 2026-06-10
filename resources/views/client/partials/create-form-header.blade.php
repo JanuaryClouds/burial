@@ -11,9 +11,14 @@
         <img src="{{ asset('images/CSWDO.webp') }}" alt="CSWDO Logo" style="width: 150px;"
             class="text-center d-none d-md-block d-lg-block">
     </div> --}}
-    <div class="card-body">
+    <div class="card-body d-flex justify-content-between align-items-center flex-wrap gap-3">
         <p class="mb-0">Please fill out all required fields marked by (*). This information is necessary for evaluating
             your
             application and to determine the type of assistance.</p>
+        @env('local')
+            <button type="button" class="btn btn-warning btn-sm hover-scale text-nowrap" id="btn-autofill">
+                <i class="fa fa-magic me-1"></i> Autofill Form
+            </button>
+        @endenv
     </div>
 </div>

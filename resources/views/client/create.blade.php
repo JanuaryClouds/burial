@@ -426,6 +426,144 @@
                         }
                     });
                 }
+                // Autofill logic
+                const btnAutofill = document.getElementById('btn-autofill');
+                if (btnAutofill) {
+                    btnAutofill.addEventListener('click', () => {
+                        const firstNames = ['Juan', 'Jose', 'Maria', 'Ana', 'Pedro', 'Rosa', 'Manuel',
+                            'Francis', 'David', 'Sarah', 'Mark', 'Emily', 'Joseph', 'Teresa'
+                        ];
+                        const middleNames = ['Santos', 'Reyes', 'Cruz', 'Bautista', 'Ocampo', 'Smith', 'Garcia',
+                            'Gonzales', 'Aquino', 'Ramos'
+                        ];
+                        const lastNames = ['Dela Cruz', 'Santos', 'Reyes', 'Gonzales', 'Bautista', 'Aquino',
+                            'Ramos', 'Mendoza', 'Lopez', 'Garcia'
+                        ];
+                        const streetNames = ['Rizal St.', 'Mabini St.', 'Luna St.', 'Bonifacio St.',
+                            'Del Pilar St.', 'Quezon Ave.'
+                        ];
+                        const skillOccupations = ['Driver', 'Vendor', 'Helper', 'Clerk', 'Security Guard',
+                            'Housewife', 'Construction Worker', 'Tailor', 'Teacher', 'Seaman'
+                        ];
+                        const placeOfBirths = ['111 Sample', '222 Sample', '333 Sample', '444 Sample',
+                            '555 Sample'
+                        ];
+                        const familyNames = ['Michael Dela Cruz', 'Sarah Dela Cruz', 'David Dela Cruz',
+                            'Teresa Dela Cruz', 'Mark Santos', 'Emily Santos'
+                        ];
+
+                        const getRandomElement = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+                        const getRandomDate = (startYear, endYear) => {
+                            const year = Math.floor(Math.random() * (endYear - startYear + 1)) + startYear;
+                            const month = String(Math.floor(Math.random() * 12) + 1).padStart(2, '0');
+                            const day = String(Math.floor(Math.random() * 28) + 1).padStart(2, '0');
+                            return `${year}-${month}-${day}`;
+                        };
+
+                        const getRandomPhone = () => {
+                            let num = '09';
+                            for (let i = 0; i < 9; i++) {
+                                num += Math.floor(Math.random() * 10);
+                            }
+                            return num;
+                        };
+
+                        const getRandomPhilHealth = () => {
+                            let num = '';
+                            for (let i = 0; i < 12; i++) {
+                                num += Math.floor(Math.random() * 10);
+                            }
+                            return num.replace(/(\d{2})(\d{9})(\d{1})/, '$1-$2-$3');
+                        };
+
+                        const getAutofillValue = (el) => {
+                            const name = el.name || '';
+                            if (name.includes('first_name')) {
+                                return getRandomElement(firstNames);
+                            }
+                            if (name.includes('middle_name')) {
+                                return getRandomElement(middleNames);
+                            }
+                            if (name.includes('last_name')) {
+                                return getRandomElement(lastNames);
+                            }
+                            if (name.includes('suffix')) {
+                                return Math.random() > 0.8 ? getRandomElement(['Jr.', 'Sr.', 'III']) : '';
+                            }
+                            if (name.includes('fam_name')) {
+                                return getRandomElement(familyNames);
+                            }
+                            if (name.includes('date_of_birth')) {
+                                return getRandomDate(1960, 2005);
+                            }
+                            if (name.includes('date_of_death')) {
+                                return getRandomDate(2020, 2026);
+                            }
+                            if (name.includes('house_no')) {
+                                return String(Math.floor(Math.random() * 500) + 1);
+                            }
+                            if (name.includes('street')) {
+                                return getRandomElement(streetNames);
+                            }
+                            if (name.includes('skill') || name.includes('occupation')) {
+                                return getRandomElement(skillOccupations);
+                            }
+                            if (name.includes('income')) {
+                                return String(getRandomElement([5000, 8000, 10000, 12000, 15000, 20000,
+                                    25000
+                                ]));
+                            }
+                            if (name.includes('philhealth')) {
+                                return getRandomPhilHealth();
+                            }
+                            if (name.includes('contact_number')) {
+                                return getRandomPhone();
+                            }
+                            if (name.includes('place_of_birth')) {
+                                return getRandomElement(placeOfBirths);
+                            }
+                            if (name.includes('age') || name.includes('fam_age')) {
+                                return String(Math.floor(Math.random() * 50) + 18);
+                            }
+                            if (el.type === 'date') {
+                                return getRandomDate(1980, 2020);
+                            }
+                            if (el.type === 'number') {
+                                return String(Math.floor(Math.random() * 100));
+                            }
+                            return 'Test Data';
+                        };
+
+                        const inputs = gisForm.querySelectorAll('input, select');
+                        inputs.forEach(el => {
+                            if (el.readOnly || el.disabled || el.type === 'hidden' || el.type ===
+                                'file' || el.type === 'submit') {
+                                return;
+                            }
+
+                            if (el.tagName.toLowerCase() === 'select') {
+                                const options = Array.from(el.options).filter(opt => opt.value !== "");
+                                if (options.length > 0) {
+                                    const randomOpt = getRandomElement(options);
+                                    el.value = randomOpt.value;
+                                }
+                            } else {
+                                el.value = getAutofillValue(el);
+                            }
+
+                            el.dispatchEvent(new Event('input', {
+                                bubbles: true
+                            }));
+                            el.dispatchEvent(new Event('change', {
+                                bubbles: true
+                            }));
+                            if (window.jQuery) {
+                                window.jQuery(el).trigger('input').trigger('change');
+                            }
+                        });
+                    });
+                }
             });
         </script>
     </div>

@@ -26,18 +26,18 @@
     <div class="row">
         <div class="col-6 col-md-6 col-lg-3">
             <x-form-input name="first_name" label="1.1 First Name" required="true" value="{{ $first_name ?? null }}"
-                :readonly="$readonly" />
+                :readonly="true" />
         </div>
         <div class="col-6 col-md-6 col-lg-2">
             <x-form-input name="middle_name" label="1.2 Middle Name" value="{{ $middle_name ?? null }}"
-                :readonly="$readonly" />
+                :readonly="true" />
         </div>
         <div class="col-8 col-md-8 col-lg-2">
             <x-form-input name="last_name" label="1.3 Last Name" required="true" value="{{ $last_name ?? null }}"
-                :readonly="$readonly" />
+                :readonly="true" />
         </div>
         <div class="col-4 col-md-4 col-lg-1">
-            <x-form-input name="suffix" label="1.4 Suffix" value="{{ $suffix ?? null }}" :readonly="$readonly" />
+            <x-form-input name="suffix" label="1.4 Suffix" value="{{ $suffix ?? null }}" :readonly="true" />
         </div>
         <div class="col-4 col-md-4 col-lg-1">
             <x-form-input name="age" id="age" label="2. Age" required="true" type="number"
