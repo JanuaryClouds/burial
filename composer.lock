@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c6477a4b0915b3cc6f299f21a8b1acbd",
+    "content-hash": "cf72455a365acef16ee796df5385c7d5",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -4555,6 +4555,94 @@
                 "source": "https://github.com/ralouphie/getallheaders/tree/develop"
             },
             "time": "2019-03-08T08:55:37+00:00"
+        },
+        {
+            "name": "ramadan/custom-fresh",
+            "version": "v1.2.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mahmoudmohamedramadan/custom-fresh.git",
+                "reference": "e37d60a3217bc7c7fc6c100224cdc75d3d5ddc32"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mahmoudmohamedramadan/custom-fresh/zipball/e37d60a3217bc7c7fc6c100224cdc75d3d5ddc32",
+                "reference": "e37d60a3217bc7c7fc6c100224cdc75d3d5ddc32",
+                "shasum": ""
+            },
+            "require": {
+                "ext-pdo": "*",
+                "laravel/framework": "^10.0|^11.0|^12.0|^13.0",
+                "php": "^8.2"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Ramadan\\CustomFresh\\CustomFreshServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Ramadan\\CustomFresh\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Mahmoud Ramadan",
+                    "email": "mahmoudramadan496@gmail.com",
+                    "homepage": "https://portfolio.mmramadan.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A Laravel package to specify the tables that you do not want to drop while refreshing the database.",
+            "homepage": "https://github.com/mahmoudmohamedramadan/custom-fresh",
+            "keywords": [
+                "custom-fresh",
+                "database",
+                "laravel",
+                "mariadb",
+                "migrate",
+                "mssql",
+                "mysql",
+                "oracle",
+                "pdo",
+                "pgsql",
+                "postgresql",
+                "queryobject",
+                "refreshing",
+                "sql",
+                "sqlite",
+                "sqlserver"
+            ],
+            "support": {
+                "issues": "https://github.com/mahmoudmohamedramadan/custom-fresh/issues",
+                "source": "https://github.com/mahmoudmohamedramadan/custom-fresh/tree/v1.2.2"
+            },
+            "funding": [
+                {
+                    "url": "https://buymeacoffee.com/mmramadan496",
+                    "type": "buymeacoffee"
+                },
+                {
+                    "url": "https://github.com/sponsors/mahmoudmohamedramadan",
+                    "type": "github"
+                },
+                {
+                    "url": "https://patreon.com/mmramadan496",
+                    "type": "patreon"
+                },
+                {
+                    "url": "https://paypal.com/paypalme/mmramadan496",
+                    "type": "paypal"
+                }
+            ],
+            "time": "2026-06-05T22:42:32+00:00"
         },
         {
             "name": "ramsey/collection",

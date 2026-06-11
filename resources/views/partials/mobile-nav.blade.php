@@ -10,8 +10,8 @@
     </a>
 
     <!--begin::Menu-->
-    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-title-gray-700 menu-icon-gray-500 menu-active-bg menu-state-color fw-semibold py-4 fs-base w-100 overflow-y-scroll mt-20"
-        data-kt-menu="true" style="">
+    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-title-gray-700 menu-icon-gray-500 menu-active-bg menu-state-color fw-semibold py-4 fs-base w-100 overflow-y-scroll"
+        data-kt-menu="true" style="max-height: calc(100vh - 100px);">
         <div class="menu-item">
             <a href="{{ route('dashboard') }}" @class([
                 'active' => Route::is('dashboard'),

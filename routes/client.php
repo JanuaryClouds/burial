@@ -27,10 +27,6 @@ Route::prefix('client')
         Route::get('/{id}/gis-form', [ClientController::class, 'generateGISForm'])
             ->name('gis-form');
 
-        Route::put('/{id}/update', [ClientController::class, 'update'])
-            ->middleware('role:superadmin')
-            ->name('update');
-
         Route::post('/{id}/schedule', [InterviewController::class, 'store'])
             ->name('interview.schedule.store');
 
