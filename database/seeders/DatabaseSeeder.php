@@ -23,7 +23,14 @@ class DatabaseSeeder extends Seeder
             BarangaySeeder::class,
             HandlerSeeder::class,
             WorkflowSeeder::class,
+            UserSeeder::class,
             ClientSeeder::class,
+            InterviewSeeder::class,
+            ClientAssessmentSeeder::class,
+            ReferralSeeder::class,
+            ClientRecommendationSeeder::class,
+            BurialAssistanceSeeder::class,
+            FuneralAssistanceSeeder::class,
             SystemSettingSeeder::class,
         ]);
     }
