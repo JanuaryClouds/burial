@@ -14,7 +14,11 @@ return [
     */
 
     'always_keep' => [
+        'activity_log',
+        'beneficiaries',
+        'beneficiary_families',
         'users',
+        'clients',
         'personal_access_tokens',
         'password_reset_tokens',
         'barangays',
@@ -29,9 +33,6 @@ return [
         'mode_of_assistances',
         'roles',
         'permissions',
-        'role_has_permissions',
-        'model_has_roles',
-        'model_has_permissions',
         'workflow_steps',
         'sessions',
         'handlers',
@@ -50,8 +51,9 @@ return [
     */
 
     'patterns' => [
-        // 'oauth_*',
-        // 'telescope_*',
+        '*_has_roles',
+        '*_has_permissions',
+        'client_*'
     ],
 
     /*

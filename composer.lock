@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cf72455a365acef16ee796df5385c7d5",
+    "content-hash": "9e04c37192c6964cc9cbf82e35142b86",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -4558,16 +4558,16 @@
         },
         {
             "name": "ramadan/custom-fresh",
-            "version": "v1.2.2",
+            "version": "v1.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mahmoudmohamedramadan/custom-fresh.git",
-                "reference": "e37d60a3217bc7c7fc6c100224cdc75d3d5ddc32"
+                "reference": "0443811a4f61201d0f93c32b72e009f2fad47171"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mahmoudmohamedramadan/custom-fresh/zipball/e37d60a3217bc7c7fc6c100224cdc75d3d5ddc32",
-                "reference": "e37d60a3217bc7c7fc6c100224cdc75d3d5ddc32",
+                "url": "https://api.github.com/repos/mahmoudmohamedramadan/custom-fresh/zipball/0443811a4f61201d0f93c32b72e009f2fad47171",
+                "reference": "0443811a4f61201d0f93c32b72e009f2fad47171",
                 "shasum": ""
             },
             "require": {
@@ -4622,7 +4622,7 @@
             ],
             "support": {
                 "issues": "https://github.com/mahmoudmohamedramadan/custom-fresh/issues",
-                "source": "https://github.com/mahmoudmohamedramadan/custom-fresh/tree/v1.2.2"
+                "source": "https://github.com/mahmoudmohamedramadan/custom-fresh/tree/v1.2.1"
             },
             "funding": [
                 {
@@ -4642,7 +4642,7 @@
                     "type": "paypal"
                 }
             ],
-            "time": "2026-06-05T22:42:32+00:00"
+            "time": "2026-06-05T11:39:21+00:00"
         },
         {
             "name": "ramsey/collection",
