@@ -90,7 +90,7 @@
                             @csrf
                             <button type="submit" class="btn">
                                 <span class="fw-medium">
-                                    <i class="fa-solid fa-right-from-bracket me-2"></i> Logout
+                                    <i class="fa-solid fa-right-from-bracket me-2"></i> Exit
                                 </span>
                             </button>
                         </form>

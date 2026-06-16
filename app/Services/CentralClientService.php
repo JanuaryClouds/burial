@@ -85,7 +85,7 @@ class CentralClientService
             }
 
             if (! empty($citizenData)) {
-                session(['citizen' => $this->filterData($citizenData)]);
+                $this->rememberCitizenData($this->filterData($citizenData));
             }
         }
 
@@ -146,7 +146,7 @@ class CentralClientService
      * @param  mixed  $citizen  citizen data to filter from
      * @return array
      */
-    public function filterData($citizen)
+    private function filterData($citizen)
     {
         if (! is_array($citizen)) {
             return [];
@@ -167,5 +167,17 @@ class CentralClientService
             'civil_status' => $citizen['civil_status'] ?? null,
             'contact_number' => $citizen['contact_number'] ?? null,
         ];
+    }
+
+    /**
+     * Summary of rememberCitizenData
+     * @param array $data array of citiezen data to store into session
+     * @return void
+     */
+    private function rememberCitizenData(array $data): void
+    {   
+        session([
+            'citizen' => $data,
+        ]);
     }
 }

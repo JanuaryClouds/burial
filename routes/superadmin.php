@@ -54,7 +54,7 @@ Route::middleware('role:superadmin')
         // Route::resource('district', DistrictController::class);
         // Route::resource('moa', ModeOfAssistanceController::class);
         Route::resource('user', UserController::class)
-            ->only(['index']);
+            ->only(['index', 'store']);
         // Route::resource('user', UserController::class)
         //     ->only(['store']);
     });

@@ -143,7 +143,6 @@ class ClientController extends Controller
 
     public function create()
     {
-        $documents = DocumentRequirement::burial();
         $page_title = 'New Application';
         $citizen = session('citizen');
         $matched = [];

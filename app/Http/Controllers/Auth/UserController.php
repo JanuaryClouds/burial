@@ -188,15 +188,14 @@ class UserController extends Controller
         }
     }
 
-    // ! Disabled to prioritize portal
-    // public function store(CreateUserRequest $request)
-    // {
-    //     try {
-    //         $user = $this->userServices->storeUser($request->validated());
+    public function store(CreateUserRequest $request)
+    {
+        try {
+            $user = $this->userServices->storeUser($request->validated());
 
-    //         return redirect()->route('user.edit', $user)->with('success', 'User created successfully.');
-    //     } catch (Exception $e) {
-    //         return redirect()->back()->with('error', $e->getMessage());
-    //     }
-    // }
+            return redirect()->route('user.edit', $user)->with('success', 'User created successfully.');
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
+    }
 }

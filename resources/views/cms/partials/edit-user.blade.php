@@ -34,9 +34,9 @@
     @endif
     @if (count($roles) > 0)
         <div class="d-flex flex-column gap-4">
+            <h5>Roles</h5>
             @foreach ($roles as $role)
                 @if ($data->hasRole('staff'))
-                    <h5>Roles</h5>
                     @if (auth()->user()->can('edit-roles') && $role->name !== 'superadmin')
                         @if ($data->hasRole('superadmin') && $role->name === 'staff')
                             <div class="form-check">
