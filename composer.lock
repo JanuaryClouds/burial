@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9e04c37192c6964cc9cbf82e35142b86",
+    "content-hash": "f3f4f17824a63c1e90b77c88c116c7b0",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -8638,6 +8638,62 @@
                 "source": "https://github.com/hamcrest/hamcrest-php/tree/v2.1.1"
             },
             "time": "2025-04-30T06:54:44+00:00"
+        },
+        {
+            "name": "jaydeep/laravel-guarddog",
+            "version": "v1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/JaydeepGadhiya/laravel-guarddog.git",
+                "reference": "6b90996f102c1ed66c7728931442d28689e0aba1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/JaydeepGadhiya/laravel-guarddog/zipball/6b90996f102c1ed66c7728931442d28689e0aba1",
+                "reference": "6b90996f102c1ed66c7728931442d28689e0aba1",
+                "shasum": ""
+            },
+            "require": {
+                "laravel/framework": "^8.0|^9.0|^10.0|^11.0|^12.0|^13.0",
+                "php": "^7.4|^8.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Jaydeep\\GuardDog\\GuardDogServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Jaydeep\\GuardDog\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jaydeep Gadhiya",
+                    "email": "jaydeepgadhiya5699@gmail.com"
+                }
+            ],
+            "description": "Laravel GuardDog — Scan your Laravel project for common security vulnerabilities and generate beautiful HTML reports.",
+            "keywords": [
+                "Audit",
+                "guarddog",
+                "laravel",
+                "scanner",
+                "security",
+                "vulnerability"
+            ],
+            "support": {
+                "issues": "https://github.com/JaydeepGadhiya/laravel-guarddog/issues",
+                "source": "https://github.com/JaydeepGadhiya/laravel-guarddog/tree/v1.1.0"
+            },
+            "time": "2026-05-19T12:40:45+00:00"
         },
         {
             "name": "larastan/larastan",
