@@ -15,21 +15,12 @@ use Illuminate\Support\Carbon;
 
 class InterviewController extends Controller
 {
-    protected $interviewServices;
-
-    protected $datatableServices;
-
-    protected $notificationServices;
-
-    protected $smsServices;
-
-    public function __construct(InterviewService $interviewService, DatatableService $datatableService, NotificationService $notificationServices, SmsService $smsServices)
-    {
-        $this->interviewServices = $interviewService;
-        $this->datatableServices = $datatableService;
-        $this->notificationServices = $notificationServices;
-        $this->smsServices = $smsServices;
-    }
+    public function __construct(
+        protected InterviewService $interviewServices,
+        protected DatatableService $datatableServices,
+        protected NotificationService $notificationServices,
+        protected SmsService $smsServices
+    ) { }
 
     public function index()
     {

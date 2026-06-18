@@ -10,12 +10,9 @@ use Illuminate\Support\Facades\Auth;
 
 class PermissionController extends Controller
 {
-    protected $permissionServices;
-
-    public function __construct(PermissionService $permissionServices)
-    {
-        $this->permissionServices = $permissionServices;
-    }
+    public function __construct(
+        protected PermissionService $permissionServices
+    ) {}
 
     // Boilerplate Code
     // public function index(CmsDataTable $dataTable)

@@ -117,7 +117,7 @@ class CitizenAccessController extends Controller
 
         $uuid = $payload['citizen_uuid'];
 
-        $user = $this->centralClientService->checkIfUser($uuid);
+        $user = $this->centralClientService->checkIfUser('uuid', $uuid, false);
 
         if ($user && ! $user->hasRole('superadmin') && SystemSetting::first()->maintenance_mode) {
             return response()->view('error.maintenance', [], 503);

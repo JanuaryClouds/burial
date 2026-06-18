@@ -10,15 +10,10 @@ use Illuminate\Support\Facades\Auth;
 
 class EducationController extends Controller
 {
-    protected $educationServices;
-
-    protected $datatableServices;
-
-    public function __construct(EducationService $educationService, DatatableService $datatableService)
-    {
-        $this->educationServices = $educationService;
-        $this->datatableServices = $datatableService;
-    }
+    public function __construct(
+        protected EducationService $educationServices,
+        protected DatatableService $datatableServices
+    ) {}
 
     public function index()
     {

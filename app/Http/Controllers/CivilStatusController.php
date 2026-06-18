@@ -6,10 +6,9 @@ use App\Services\CivilStatusService;
 
 class CivilStatusController extends Controller
 {
-    protected $civilStatusServices;
+    public function __construct(
+        protected CivilStatusService $civilStatusServices
+    ) {}
 
-    public function __construct(CivilStatusService $civilStatusServices)
-    {
-        $this->civilStatusServices = $civilStatusServices;
-    }
+    
 }

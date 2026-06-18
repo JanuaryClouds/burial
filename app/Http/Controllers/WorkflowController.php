@@ -8,12 +8,9 @@ use Illuminate\Http\Request;
 
 class WorkflowController extends Controller
 {
-    protected $datatableServices;
-
-    public function __construct(DatatableService $datatableService)
-    {
-        $this->datatableServices = $datatableService;
-    }
+    public function __construct(
+        protected DatatableService $datatableServices
+    ) {}
 
     public function index()
     {

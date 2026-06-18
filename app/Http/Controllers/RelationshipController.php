@@ -10,15 +10,10 @@ use Illuminate\Support\Facades\Auth;
 
 class RelationshipController extends Controller
 {
-    protected $relationshipServices;
-
-    protected $datatableServices;
-
-    public function __construct(RelationshipService $relationshipServices, DatatableService $datatableService)
-    {
-        $this->relationshipServices = $relationshipServices;
-        $this->datatableServices = $datatableService;
-    }
+    public function __construct(
+        protected RelationshipService $relationshipServices,
+        protected DatatableService $datatableServices
+    ) { }
 
     public function index()
     {

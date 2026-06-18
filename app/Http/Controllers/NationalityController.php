@@ -10,15 +10,10 @@ use Illuminate\Support\Facades\Auth;
 
 class NationalityController extends Controller
 {
-    protected $nationalityServices;
-
-    protected $datatableServices;
-
-    public function __construct(NationalityService $nationalityServices, DatatableService $datatableService)
-    {
-        $this->nationalityServices = $nationalityServices;
-        $this->datatableServices = $datatableService;
-    }
+    public function __construct(
+        protected NationalityService $nationalityServices,
+        protected DatatableService $datatableServices
+    ) {}
 
     public function index()
     {

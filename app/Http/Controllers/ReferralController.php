@@ -12,18 +12,11 @@ use App\Services\ReferralService;
 
 class ReferralController extends Controller
 {
-    protected $referralServices;
-
-    protected $notificationServices;
-
-    protected $datatableServices;
-
-    public function __construct(ReferralService $referralService, NotificationService $notificationService, DatatableService $datatableService)
-    {
-        $this->referralServices = $referralService;
-        $this->notificationServices = $notificationService;
-        $this->datatableServices = $datatableService;
-    }
+    public function __construct(
+        protected ReferralService $referralServices,
+        protected NotificationService $notificationServices,
+        protected DatatableService $datatableServices
+    ) {}
 
     /**
      * Display a listing of the resource.

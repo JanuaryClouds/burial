@@ -8,12 +8,9 @@ use App\Services\SystemSettingService;
 
 class SystemSettingController extends Controller
 {
-    protected $systemSettingServices;
-
-    public function __construct(SystemSettingService $systemSettingService)
-    {
-        $this->systemSettingServices = $systemSettingService;
-    }
+    public function __construct(
+        protected SystemSettingService $systemSettingServices
+    ) {}
 
     /**
      * Display a listing of the resource.

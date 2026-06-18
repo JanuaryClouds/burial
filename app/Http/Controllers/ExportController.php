@@ -11,12 +11,15 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class ExportController extends Controller
 {
-    protected $processLogService;
+    public function __construct(
+        protected ProcessLogService $processLogService
+    ) {}
 
-    public function applications(ProcessLogService $processLogService)
+    public function applications()
     {
         $templatePath = storage_path('app/templates/burial-assistances-template.xlsx');
         $spreadsheet = IOFactory::load($templatePath);
+        $processLogService = $this->processLogService;
 
         $sheet = $spreadsheet->getActiveSheet();
         $row = 4;

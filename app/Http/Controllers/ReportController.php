@@ -15,34 +15,14 @@ use Illuminate\Http\Request;
 
 class ReportController extends Controller
 {
-    protected $reportServices;
-
-    protected $clientServices;
-
-    protected $beneficiaryServices;
-
-    protected $burialAssistanceServices;
-
-    protected $funeralAssistanceServices;
-
-    protected $datatableServices;
-
     public function __construct(
-        ReportService $reportService,
-        DatatableService $datatableService,
-        ClientService $clientService,
-        BeneficiaryService $beneficiaryService,
-        BurialAssistanceService $burialAssistanceService,
-        FuneralAssistanceService $funeralAssistanceService
-    ) {
-        $this->reportServices = $reportService;
-        $this->datatableServices = $datatableService;
-        $this->clientServices = $clientService;
-        $this->beneficiaryServices = $beneficiaryService;
-        $this->burialAssistanceServices = $burialAssistanceService;
-        $this->funeralAssistanceServices = $funeralAssistanceService;
-        $this->middleware('permission:view-reports');
-    }
+        protected ReportService $reportServices,
+        protected DatatableService $datatableServices,
+        protected ClientService $clientServices,
+        protected BeneficiaryService $beneficiaryServices,
+        protected BurialAssistanceService $burialAssistanceServices,
+        protected FuneralAssistanceService $funeralAssistanceServices
+    ) {}
 
     public function clients(Request $request)
     {

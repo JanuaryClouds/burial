@@ -15,15 +15,10 @@ use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
-    protected $userServices;
-
-    protected $datatableServices;
-
-    public function __construct(UserService $userServices, DatatableService $datatableService)
-    {
-        $this->userServices = $userServices;
-        $this->datatableServices = $datatableService;
-    }
+    public function __construct(
+        protected UserService $userServices,
+        protected DatatableService $datatableService,
+    ) {}
 
     public function login(LoginRequest $request)
     {

@@ -10,17 +10,10 @@ use Illuminate\Http\Request;
 
 class BeneficiaryController extends Controller
 {
-    protected $beneficiaryServices;
-
-    protected $datatableServices;
-
     public function __construct(
-        BeneficiaryService $beneficiaryService,
-        DatatableService $datatableService,
-    ) {
-        $this->beneficiaryServices = $beneficiaryService;
-        $this->datatableServices = $datatableService;
-    }
+        protected BeneficiaryService $beneficiaryServices,
+        protected DatatableService $datatableServices
+    ) {}
 
     public function index()
     {

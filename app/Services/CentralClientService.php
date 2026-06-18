@@ -11,12 +11,12 @@ use RuntimeException;
 class CentralClientService
 {
     /**
-     * Fetch client details by UUID from the central database.
-     *
-     * @param  string  $value  array value to match
-     * @return array Citizen Data if successfully fetched one citizen, empty array if not
+     * Fetch client details by passed key value from the central database.
+     * @param string $key json key to match
+     * @param string $value array value to match
+     * @return array returns the citizen data
      */
-    public function fetchFromPortal(string $key, string $value)
+    public function fetchFromPortal(string $key, string $value): array
     {
         if (config('services.portal.users.enable.get') === false) {
             throw new RuntimeException('User fetching from portal is disabled.');
@@ -62,18 +62,25 @@ class CentralClientService
     /**
      * Summary of checkIfUser
      *
-     * @param  string  $citizen_uuid  UUID or user_id of citizen from the portal
-     * @return User|null
+     * @param  string $key json key to match
+     * @param  string $value value to match
+     * @param bool $remember whether to remember the data to session
+     * @return User|null returns the user if found
      */
-    public function checkIfUser(string $citizen_uuid)
+    public function checkIfUser(string $key, string $value, bool $remember = false)
     {
-        if (! $citizen_uuid) {
-            throw new RuntimeException('Missing citizen UUID');
+        if ($value === '' || $key === '') {
+            throw new RuntimeException('Missing key or value.');
         }
 
         $citizenData = [];
 
-        $user = User::firstWhere('citizen_uuid', $citizen_uuid);
+        $allowedKeys = ['uuid', 'emp_id'];
+        if (! in_array($key, $allowedKeys, true)) {
+            throw new RuntimeException("Invalid lookup key: {$key}");
+        }
+
+        $user = User::firstWhere($key === 'uuid' ? 'citizen_uuid' : $key, $value);
         $userEmail = $user?->email ?? '';
         if (config('services.portal.users.enable.get')) {
             if (! Str::endsWith($userEmail, [
@@ -81,11 +88,11 @@ class CentralClientService
                 '@example.org',
                 '@example.net',
             ])) {
-                $citizenData = $this->fetchFromPortal('uuid', $citizen_uuid);
+                $citizenData = $this->fetchFromPortal($key, $value);
             }
-
-            if (! empty($citizenData)) {
-                $this->rememberCitizenData($this->filterData($citizenData));
+            
+            if (! empty($citizenData) && $remember) {
+                session()->put('citizen', $this->filterData($citizenData[0]));
             }
         }
 
@@ -107,10 +114,6 @@ class CentralClientService
         }
 
         if (empty($citizenData)) {
-            return null;
-        }
-
-        if ($citizen_uuid !== ($citizenData[0]['user_id'] ?? null)) {
             return null;
         }
 
@@ -167,17 +170,5 @@ class CentralClientService
             'civil_status' => $citizen['civil_status'] ?? null,
             'contact_number' => $citizen['contact_number'] ?? null,
         ];
-    }
-
-    /**
-     * Summary of rememberCitizenData
-     * @param array $data array of citiezen data to store into session
-     * @return void
-     */
-    private function rememberCitizenData(array $data): void
-    {   
-        session([
-            'citizen' => $data,
-        ]);
     }
 }

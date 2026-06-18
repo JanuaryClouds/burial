@@ -8,12 +8,9 @@ use Illuminate\Http\Request;
 
 class HandlerController extends Controller
 {
-    protected $datatableServices;
-
-    public function __construct(DatatableService $datatableService)
-    {
-        $this->datatableServices = $datatableService;
-    }
+    public function __construct(
+        protected DatatableService $datatableServices
+    ) {}
 
     public function index()
     {

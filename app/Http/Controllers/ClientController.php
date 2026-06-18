@@ -10,12 +10,10 @@ use App\Models\CivilStatus;
 use App\Models\Client;
 use App\Models\ClientAssessment;
 use App\Models\ClientRecommendation;
-use App\Models\DocumentRequirement;
 use App\Models\Sex;
 use App\Services\CentralClientService;
 use App\Services\ClientService;
 use App\Services\DatatableService;
-use App\Services\ImageService;
 use App\Services\NotificationService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Exception;
@@ -25,29 +23,12 @@ use Illuminate\Support\Str;
 
 class ClientController extends Controller
 {
-    protected $clientServices;
-
-    protected $citizenServices;
-
-    protected $imageServices;
-
-    protected $datatableServices;
-
-    protected $notificationServices;
-
     public function __construct(
-        ClientService $clientService,
-        CentralClientService $citizenService,
-        ImageService $imageService,
-        DatatableService $datatableService,
-        NotificationService $notificationService
-    ) {
-        $this->clientServices = $clientService;
-        $this->citizenServices = $citizenService;
-        $this->imageServices = $imageService;
-        $this->datatableServices = $datatableService;
-        $this->notificationServices = $notificationService;
-    }
+        protected ClientService $clientServices,
+        protected CentralClientService $citizenServices,
+        protected DatatableService $datatableServices,
+        protected NotificationService $notificationServices,
+    ) {}
 
     public function index()
     {
@@ -144,8 +125,11 @@ class ClientController extends Controller
     public function create()
     {
         $page_title = 'New Application';
-        $citizen = session('citizen');
         $matched = [];
+        $user = Auth::user();
+
+        $this->citizenServices->checkIfUser('uuid', $user->citizen_uuid, true);
+        $citizen = session('citizen');
 
         if ($citizen) {
             $barangays = Barangay::pluck('name', 'id');

@@ -8,12 +8,9 @@ use App\Services\BeneficiaryFamilyService;
 
 class BeneficiaryFamilyController extends Controller
 {
-    protected $beneficiaryFamilyServices;
-
-    public function __construct(BeneficiaryFamilyService $beneficiaryFamilyServices)
-    {
-        $this->beneficiaryFamilyServices = $beneficiaryFamilyServices;
-    }
+    public function __construct(
+        protected BeneficiaryFamilyService $beneficiaryFamilyServices
+    ) {}
 
     public function show(string $id)
     {

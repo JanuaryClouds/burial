@@ -6,13 +6,9 @@ use App\Services\ImageService;
 
 class ImageController extends Controller
 {
-    protected $imageService;
-
     public function __construct(
-        ImageService $imageService
-    ) {
-        $this->imageService = $imageService;
-    }
+        protected ImageService $imageService
+    ) {}
 
     public function get(string $filename)
     {

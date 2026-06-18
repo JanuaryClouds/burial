@@ -18,23 +18,12 @@ use Illuminate\Support\Str;
 
 class ClaimantChangeController extends Controller
 {
-    protected $claimantChangeService;
-
-    protected $claimantService;
-
-    protected $clientService;
-
-    protected $centralClientService;
-
-    protected $notificationService;
-
-    public function __construct(ClaimantChangeService $claimantChangeService, ClaimantService $claimantService, CentralClientService $centralClientService, NotificationService $notificationService)
-    {
-        $this->claimantChangeService = $claimantChangeService;
-        $this->claimantService = $claimantService;
-        $this->clientService = $centralClientService;
-        $this->notificationService = $notificationService;
-    }
+    public function __construct(
+        protected ClaimantChangeService $claimantChangeServices,
+        protected ClaimantService $claimantServices,
+        protected CentralClientService $centralClientServices,
+        protected NotificationService $notificationServices
+    ) {}
 
     public function store(StoreClaimantChangeRequest $request, $id)
     {

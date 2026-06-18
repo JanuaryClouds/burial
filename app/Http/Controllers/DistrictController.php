@@ -9,12 +9,9 @@ use Illuminate\Support\Facades\Auth;
 
 class DistrictController extends Controller
 {
-    protected $districtServices;
-
-    public function __construct(DistrictService $districtServices)
-    {
-        $this->districtServices = $districtServices;
-    }
+    public function __construct(
+        protected DistrictService $districtServices
+    ) {}
 
     public function index()
     {

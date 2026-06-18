@@ -9,12 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 class SexController extends Controller
 {
-    protected $sexServices;
-
-    public function __construct(SexService $sexServices)
-    {
-        $this->sexServices = $sexServices;
-    }
+    public function __construct(protected SexService $sexServices) {}
 
     public function index()
     {

@@ -15,21 +15,12 @@ use Exception;
 
 class ProcessLogController extends Controller
 {
-    protected $processLogServices;
-
-    protected $imageServices;
-
-    protected $notificationServices;
-
-    protected $smsServices;
-
-    public function __construct(ProcessLogService $processLogService, ImageService $imageService, NotificationService $notificationService, SmsService $smsServices)
-    {
-        $this->processLogServices = $processLogService;
-        $this->imageServices = $imageService;
-        $this->notificationServices = $notificationService;
-        $this->smsServices = $smsServices;
-    }
+    public function __construct(
+        protected ProcessLogService $processLogServices,
+        protected ImageService $imageServices,
+        protected NotificationService $notificationServices,
+        protected SmsService $smsServices
+    ) {}
 
     public function add(ProcessLogRequest $request, $id, $stepId)
     {

@@ -21,29 +21,13 @@ use Illuminate\Support\Str;
 
 class BurialAssistanceController extends Controller
 {
-    protected $processLogServices;
-
-    protected $burialAssistanceServices;
-
-    protected $datatableServices;
-
-    protected $workflowStepServices;
-
-    protected $smsServices;
-
     public function __construct(
-        ProcessLogService $processLogService,
-        BurialAssistanceService $burialAssistanceService,
-        DatatableService $datatableService,
-        WorkflowStepService $workflowStepService,
-        SmsService $smsService
-    ) {
-        $this->processLogServices = $processLogService;
-        $this->burialAssistanceServices = $burialAssistanceService;
-        $this->datatableServices = $datatableService;
-        $this->workflowStepServices = $workflowStepService;
-        $this->smsServices = $smsService;
-    }
+        protected ProcessLogService $processLogServices,
+        protected BurialAssistanceService $burialAssistanceServices,
+        protected DatatableService $datatableServices,
+        protected WorkflowStepService $workflowStepServices,
+        protected SmsService $smsServices
+    ) {}
 
     public function index()
     {

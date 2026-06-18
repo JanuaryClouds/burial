@@ -15,18 +15,11 @@ use Illuminate\Support\Str;
 
 class FuneralAssistanceController extends Controller
 {
-    protected FuneralAssistanceService $funeralAssistanceServices;
-
-    protected DatatableService $datatableServices;
-
-    protected NotificationService $notificationServices;
-
-    public function __construct(FuneralAssistanceService $funeralAssistanceService, DatatableService $datatableService, NotificationService $notificationService)
-    {
-        $this->funeralAssistanceServices = $funeralAssistanceService;
-        $this->datatableServices = $datatableService;
-        $this->notificationServices = $notificationService;
-    }
+    public function __construct(
+        protected FuneralAssistanceService $funeralAssistanceServices,
+        protected DatatableService $datatableServices,
+        protected NotificationService $notificationServices
+    ) {}
 
     public function index()
     {

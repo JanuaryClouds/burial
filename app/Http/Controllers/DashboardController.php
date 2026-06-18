@@ -7,15 +7,10 @@ use App\Services\DatatableService;
 
 class DashboardController extends Controller
 {
-    protected $clientServices;
-
-    protected $datatableServices;
-
-    public function __construct(ClientService $clientService, DatatableService $datatableService)
-    {
-        $this->clientServices = $clientService;
-        $this->datatableServices = $datatableService;
-    }
+    public function __construct(
+        protected ClientService $clientServices,
+        protected DatatableService $datatableServices
+    ) {}
 
     public function index()
     {

@@ -10,15 +10,10 @@ use Illuminate\Support\Facades\Auth;
 
 class ReligionController extends Controller
 {
-    protected $religionServices;
-
-    protected $datatableServices;
-
-    public function __construct(ReligionService $religionServices, DatatableService $datatableService)
-    {
-        $this->religionServices = $religionServices;
-        $this->datatableServices = $datatableService;
-    }
+    public function __construct(
+        protected ReligionService $religionServices,
+        protected DatatableService $datatableServices
+    ) {}
 
     public function index()
     {

@@ -11,12 +11,9 @@ use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
 {
-    protected $roleServices;
-
-    public function __construct(RoleService $roleServices)
-    {
-        $this->roleServices = $roleServices;
-    }
+    public function __construct(
+        protected RoleService $roleServices
+    ) {}
 
     // boilerplate code
     // public function index(CmsDataTable $dataTable)

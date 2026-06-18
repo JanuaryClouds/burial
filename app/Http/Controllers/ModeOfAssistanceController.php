@@ -9,12 +9,9 @@ use Illuminate\Support\Facades\Auth;
 
 class ModeOfAssistanceController extends Controller
 {
-    protected $ModeOfAssistanceServices;
-
-    public function __construct(ModeOfAssistanceService $ModeOfAssistanceServices)
-    {
-        $this->ModeOfAssistanceServices = $ModeOfAssistanceServices;
-    }
+    public function __construct(
+        protected ModeOfAssistanceService $modeOfAssistanceServices
+    ) {}
 
     public function index()
     {
