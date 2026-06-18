@@ -53,7 +53,7 @@ return [
     'patterns' => [
         '*_has_roles',
         '*_has_permissions',
-        'client_*'
+        'client_*',
     ],
 
     /*

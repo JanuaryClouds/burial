@@ -10,5 +10,4 @@ class CivilStatusController extends Controller
         protected CivilStatusService $civilStatusServices
     ) {}
 
-    
 }

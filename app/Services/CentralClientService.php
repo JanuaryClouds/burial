@@ -12,8 +12,9 @@ class CentralClientService
 {
     /**
      * Fetch client details by passed key value from the central database.
-     * @param string $key json key to match
-     * @param string $value array value to match
+     *
+     * @param  string  $key  json key to match
+     * @param  string  $value  array value to match
      * @return array returns the citizen data
      */
     public function fetchFromPortal(string $key, string $value): array
@@ -62,9 +63,9 @@ class CentralClientService
     /**
      * Summary of checkIfUser
      *
-     * @param  string $key json key to match
-     * @param  string $value value to match
-     * @param bool $remember whether to remember the data to session
+     * @param  string  $key  json key to match
+     * @param  string  $value  value to match
+     * @param  bool  $remember  whether to remember the data to session
      * @return User|null returns the user if found
      */
     public function checkIfUser(string $key, string $value, bool $remember = false)
@@ -90,7 +91,7 @@ class CentralClientService
             ])) {
                 $citizenData = $this->fetchFromPortal($key, $value);
             }
-            
+
             if (! empty($citizenData) && $remember) {
                 session()->put('citizen', $this->filterData($citizenData[0]));
             }

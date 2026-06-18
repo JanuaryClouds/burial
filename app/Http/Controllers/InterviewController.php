@@ -20,7 +20,7 @@ class InterviewController extends Controller
         protected DatatableService $datatableServices,
         protected NotificationService $notificationServices,
         protected SmsService $smsServices
-    ) { }
+    ) {}
 
     public function index()
     {

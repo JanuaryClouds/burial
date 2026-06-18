@@ -13,7 +13,7 @@ class RelationshipController extends Controller
     public function __construct(
         protected RelationshipService $relationshipServices,
         protected DatatableService $datatableServices
-    ) { }
+    ) {}
 
     public function index()
     {
