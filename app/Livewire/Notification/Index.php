@@ -15,7 +15,6 @@ class Index extends Component
     public function get()
     {
         $this->notifications = Notification::where('notifiable_id', auth()->user()->id)
-            ->whereNull('read_at')
             ->orderByDesc('created_at')
             ->get()
             ->map(function ($notification) {

@@ -13,28 +13,33 @@
                     <div class="row w-100">
                         <div class="col-2">
                             <span
-                                class="badge rounded-pill text-bg-info d-flex align-items-center justify-content-center">
+                                class="badge {{ $notification['read_at'] !== null ? 'text-bg-secondary' : 'text-bg-info' }} text-white rounded-pill d-flex align-items-center justify-content-center">
                                 {{ $notification['created_at'] }}
                             </span>
                         </div>
                         <div class="col-9">
                             <div class="d-flex flex-column gap-1">
                                 <p class="mb-0">
-                                    <a class="" data-bs-toggle="collapse" href="#body-{{ $notification['id'] }}"
+                                    <a class="{{ $notification['read_at'] !== null ? 'text-muted' : '' }} fw-bold"
+                                        data-bs-toggle="collapse" href="#body-{{ $notification['id'] }}"
                                         aria-expanded="false" aria-controls="body-{{ $notification['id'] }}">
                                         {{ $notification['subject'] }}
                                     </a>
                                 </p>
-                                <div class="collapse" id="body-{{ $notification['id'] }}" wire:ignore.self>
+                                <div class="collapse {{ $notification['read_at'] !== null ? 'text-muted' : '' }}"
+                                    id="body-{{ $notification['id'] }}" wire:ignore.self>
                                     {{ $notification['body'] }}
                                 </div>
                             </div>
                         </div>
                         <div class="col-1" wire:loading.remove>
-                            <button wire:click="markAsRead('{{ $notification['id'] }}')" type="button"
-                                class="btn btn-sm read-btn btn-outline-success rounded-pill" aria-label="Mark as Read">
-                                <i class="fas fa-check pe-0"></i>
-                            </button>
+                            @if ($notification['read_at'] === null)
+                                <button wire:click="markAsRead('{{ $notification['id'] }}')" type="button"
+                                    class="btn btn-sm read-btn btn-outline-success rounded-pill"
+                                    aria-label="Mark as Read">
+                                    <i class="fas fa-check pe-0"></i>
+                                </button>
+                            @endif
                         </div>
                     </div>
                     @if (!$loop->last)
