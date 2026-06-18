@@ -1,29 +1,11 @@
 @extends('layouts.guest')
 <title>Login</title>
 @section('content')
-    <section class="section d-flex justify-content-center align-items-center min-vh-100">
-        <!-- begin::Aside -->
-        <div
-            class="d-flex flex-root flex-lg-column flex-lg-row-fluid flex-lg-column-fluid flex-lg-grow-auto flex-lg-center w-xl-25 gap-lg-10 p-2 p-lg-0">
-            <!-- begin::header -->
-            <div class="d-flex flex-center">
-                <a href="{{ route('landing.page') }}">
-                    <img src="{{ asset('images/CSWDO.webp') }}" alt="" class="h-lg-250px h-20px">
-                </a>
-            </div>
-            <!-- end::header -->
-            <!-- begin::Body -->
-            <div class="d-flex flex-row flex-lg-column flex-center gap-1">
-                <h1 class=" mb-9 fs-2hx d-none d-lg-block text-uppercase">City Social Welfare & Development Office</h1>
-                <h2 class=" mb-0 fs-2hx">Funeral Assistance System</h2>
-            </div>
-            <!-- end::Body -->
-        </div>
-        <!-- end::Aside -->
-        <div class="bg-body d-flex flex-center flex-column align-items-stretch w-xl-500px h-100 w-200 rounded shadow-sm  ">
-
-            <div class="d-flex flex-column-fluid flex-lg-row-auto justify-content-center justify-content-lg-end p-12">
-                <div class="d-flex flex-center flex-column flex-column-fluid pb-15 pb-lg-20">
+    <div class="container-xxl d-flex align-items-center justify-content-center min-vh-100">
+        <div class="card shadow-sm w-100 w-md-75 w-lg-50">
+            <div class="card-body d-flex flex-center flex-column">
+                <div class="d-flex flex-center flex-column flex-column-fluid">
+                    <img src="{{ asset('images/CSWDO.webp') }}" alt="cswdo logo" class="w-25">
                     <h1 class="text-dark fw-bolder mb-3">Sign In</h1>
                     <div class="col d-flex flex-column flex-center">
                         <p class="text-start text-sm-center text-muted fw-semibold fs-6">
@@ -31,7 +13,7 @@
                         </p>
                     </div>
                     @include('components.alert')
-                    <div class="col ">
+                    <div class="col">
                         <form action="{{ route('login.check') }}" method="POST">
                             @csrf
                             <div class="mb-4">
@@ -41,10 +23,11 @@
                             </div>
                             <div class="mb-6">
                                 <label for="password" class="form-label">Password</label>
-                                <div class="d-flex">
+                                <div class="position-relative">
                                     <input type="password" id="password" name="password" placeholder="Enter your password"
-                                        class="form-control" required>
-                                    <button type="button" id="togglePassword" class="btn btn-sm ms-1">
+                                        class="form-control pe-10" required>
+                                    <button type="button" id="togglePassword"
+                                        class="btn btn-sm position-absolute top-50 end-0 translate-middle-y border-0 bg-transparent">
                                         <i class="fa-solid fa-eye"></i>
                                     </button>
                                 </div>
@@ -61,14 +44,15 @@
                             </div>
                             <div class="mt-3 d-flex justify-content-between text-sm">
                                 <a href="{{ route('landing.page') }}"
-                                    class="text-blue-500 w-50 hover:underline text-center">Go Back</a>
+                                    class="text-primary text-decoration-underline w-100 text-center">Go
+                                    Back</a>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
     <script nonce="{{ $nonce ?? '' }}">
         document.getElementById('togglePassword').addEventListener('click', function() {
             const passwordInput = document.getElementById('password');

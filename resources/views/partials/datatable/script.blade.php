@@ -75,12 +75,13 @@
                     if (safeRoute === '#' || safeRoute === '' || safeRoute === undefined ||
                         safeRoute === null) return '';
                     return ` 
-                        <a href="${safeRoute}" class="btn btn-sm btn-primary">
-                            <i class="ki-duotone ki-eye pe-0">
+                        <a href="${safeRoute}" class="btn btn-sm btn-primary hover-scale">
+                            <i class="ki-duotone ki-eye pe-1">
                                 <span class="path1"></span>
                                 <span class="path2"></span>
                                 <span class="path3"></span>
                             </i>
+                            View
                         </a>
                     `;
                 }

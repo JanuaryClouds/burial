@@ -22,11 +22,6 @@
         <!--end::Page title--->
         <!--begin::Wrapper-->
         <div class="d-flex align-items-center justify-content-end flex-wrap gap-3">
-            <!-- begin::Menu wrapper -->
-            @includeWhen(Route::is('*.index') && auth()->user()->hasRole('superadmin'),
-                'superadmin.partials.new-content')
-            <!-- end::Menu wrapper -->
-
             @include('partials.mobile-nav')
             <!-- begin::Theme mode -->
             @if (!Route::is('dashboard'))

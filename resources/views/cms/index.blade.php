@@ -16,8 +16,10 @@
 
 @section('content')
     <div class="card">
-        <div class="card-header d-flex justify-content-between">
+        <div class="card-header d-flex align-items-center justify-content-between">
             <h4 class="card-title">{{ Str::ucfirst($resource) }}s</h4>
+            @includeWhen(Route::is('*.index') && auth()->user()->hasRole('superadmin'),
+                'superadmin.partials.new-content')
         </div>
         <div class="card-body">
             @if (!isset($data) || $data->count() == 0)
