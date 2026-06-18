@@ -11,9 +11,7 @@
     @include('partials.theme-script')
     <div class="d-flex flex-column flex-root" id="kt_app_root">
         <x-loader />
-        @includeWhen(!Route::is('login'), 'client.partials.header')
         @yield('content')
-        @include('guest.partials.footer')
     </div>
     @include('components.alert')
     @include('partials.document-scripts')
