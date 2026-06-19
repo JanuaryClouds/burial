@@ -27,5 +27,10 @@
                 <livewire:notification.index lazy />
             </div>
         </div>
+        <div class="card">
+            <div class="card-body">
+                <x-button />
+            </div>
+        </div>
     </div>
 @endsection

@@ -15,6 +15,14 @@ function randomizeMulticolorBorder() {
         card.style.setProperty('--red-end', `${redEnd}%`);
         card.style.setProperty('--yellow-end', `${yellowEnd}%`);
     });
+    
+    document.querySelectorAll('.btn.multicolor-border').forEach(btn => {
+        const redEnd = Math.floor(Math.random() * 40) + 20;
+        const yellowEnd = Math.floor(Math.random() * (90 - redEnd)) + redEnd;
+
+        btn.style.setProperty('--red-end', `${redEnd}%`);
+        btn.style.setProperty('--yellow-end', `${yellowEnd}%`);
+    });
 }
 
 function checkAndRenderCharts() {
