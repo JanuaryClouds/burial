@@ -68,7 +68,7 @@
                                 @endforeach
                             @endif
                         @endforeach
-                        @if ($next_step->order_no === 13 && $data->status === 'approved' && $data->cheque)
+                        @if ($next_step->order_no === 13 && $data->status === 'approved' && $data->latestCheque)
                             @include('components.form-image-submission', [
                                 'id' => 'cheque-image-proof',
                                 'name' => 'cheque-image-proof',
