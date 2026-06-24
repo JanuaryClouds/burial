@@ -58,8 +58,8 @@ class SexController extends Controller
 
         activity()
             ->causedBy(Auth::user())
-            ->performedOn($gender)
-            ->log('Updated the gender: '.$gender->name);
+            ->withProperties(['ip' => request()->ip()])
+            ->log('Updated the gender');
 
         return redirect()
             ->route('sex.index')
@@ -72,8 +72,8 @@ class SexController extends Controller
 
         activity()
             ->causedBy(Auth::user())
-            ->performedOn($gender)
-            ->log('Deleted the gender: '.$gender->name);
+            ->withProperties(['ip' => request()->ip()])
+            ->log('Deleted the gender');
 
         return redirect()
             ->route('sex.index')

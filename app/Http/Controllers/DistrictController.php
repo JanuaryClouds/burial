@@ -61,9 +61,8 @@ class DistrictController extends Controller
         $district = $this->districtServices->updateDistrict($request->validated(), $district);
 
         activity()
-            ->performedOn($district)
             ->causedBy(Auth::user())
-            ->log('District updated:'.$district->name);
+            ->log('District updated');
 
         return redirect()
             ->route('district.index')
@@ -75,9 +74,9 @@ class DistrictController extends Controller
         $district = $this->districtServices->deleteDistrict($district);
 
         activity()
-            ->performedOn($district)
             ->causedBy(Auth::user())
-            ->log('District deleted:'.$district->name);
+            ->withProperties(['ip' => request()->ip()])
+            ->log('District deleted');
 
         return redirect()
             ->route('district.index')

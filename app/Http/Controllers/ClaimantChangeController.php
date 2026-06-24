@@ -64,11 +64,11 @@ class ClaimantChangeController extends Controller
                 }
 
                 $validated['contact_number'] = $contactNumber;
-                $newClaimant = $this->claimantService->store($validated);
+                $newClaimant = $this->claimantServices->store($validated);
 
                 $validated['new_claimant_id'] = $newClaimant->id;
                 $validated['new_claimant_user_id'] = $newClaimantUser->id;
-                $claimantChange = $this->claimantChangeService->store($validated);
+                $claimantChange = $this->claimantChangeServices->store($validated);
 
                 // After a meeting regarding how changing claimants is done, only admins can change claimants that are automatically approved.
                 $claimantChange->status = 'approved';
@@ -92,7 +92,7 @@ class ClaimantChangeController extends Controller
                     return redirect()->back()->with('error', 'New claimant does not have an account in the system.');
                 }
 
-                $this->notificationService->send(
+                $this->notificationServices->send(
                     $citizen_uuid,
                     'claimant_change_approved',
                     'Claimant Change Approved',
@@ -119,11 +119,11 @@ class ClaimantChangeController extends Controller
         }
     }
 
-    public function decide(Request $request, $uuid, $change)
+    public function decide(Request $request, string $uuid, ClaimantChange $claimantChangeId)
     {
-        DB::transaction(function () use ($request, $uuid, $change) {
+        DB::transaction(function () use ($request, $uuid, $claimantChangeId) {
             $change = ClaimantChange::where('burial_assistance_id', $uuid)
-                ->where('id', $change)
+                ->where('id', $claimantChangeId)
                 ->firstOrFail();
 
             $request->validate([
@@ -153,7 +153,7 @@ class ClaimantChangeController extends Controller
                     return redirect()->back()->with('error', 'New claimant does not have an account in the system.');
                 }
 
-                $this->notificationService->send(
+                $this->notificationServices->send(
                     $citizen_uuid,
                     'claimant_change_approved',
                     'Claimant Change Approved',
@@ -177,7 +177,7 @@ class ClaimantChangeController extends Controller
                     return redirect()->back()->with('error', 'Old claimant does not have an account in the system.');
                 }
 
-                $this->notificationService->send(
+                $this->notificationServices->send(
                     $citizen_uuid,
                     'claimant_change_rejected',
                     'Claimant Change Rejected',

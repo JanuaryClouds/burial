@@ -21,7 +21,7 @@ class BeneficiaryFamilyController extends Controller
         return view('beneficiary.family.view', compact('family', 'page_title', 'readonly'));
     }
 
-    public function update(UpdateBeneficiaryFamilyRequest $request, string $id)
+    public function update(UpdateBeneficiaryFamilyRequest $request, int $id)
     {
         try {
             $this->beneficiaryFamilyServices->update($request->validated(), $id);

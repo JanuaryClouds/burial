@@ -44,7 +44,7 @@ class ModeOfAssistanceController extends Controller
 
     public function store(ModeOfAssistanceRequest $request)
     {
-        $moa = $this->ModeOfAssistanceServices->storeModeOfAssistance($request->validated());
+        $moa = $this->modeOfAssistanceServices->storeModeOfAssistance($request->validated());
 
         activity()
             ->performedOn($moa)
@@ -58,12 +58,12 @@ class ModeOfAssistanceController extends Controller
 
     public function update(ModeOfAssistanceRequest $request, ModeOfAssistance $moa)
     {
-        $moa = $this->ModeOfAssistanceServices->updateModeOfAssistance($request->validated(), $moa);
+        $moa = $this->modeOfAssistanceServices->updateModeOfAssistance($request->validated(), $moa);
 
         activity()
-            ->performedOn($moa)
             ->causedBy(Auth::user())
-            ->log('Updated the Mode of assistance: '.$moa->name);
+            ->withProperties(['ip' => request()->ip()])
+            ->log('Updated Mode of Assistnace');
 
         return redirect()
             ->route('moa.index')
@@ -72,12 +72,12 @@ class ModeOfAssistanceController extends Controller
 
     public function destroy(ModeOfAssistance $moa)
     {
-        $moa = $this->ModeOfAssistanceServices->deleteModeOfAssistance($moa);
+        $moa = $this->modeOfAssistanceServices->deleteModeOfAssistance($moa);
 
         activity()
-            ->performedOn($moa)
             ->causedBy(Auth::user())
-            ->log('Deleted the Mode of assistance: '.$moa->name);
+            ->withProperties(['ip' => request()->ip()])
+            ->log('Deleted Mode of Assistnace');
 
         return redirect()
             ->route('moa.index')

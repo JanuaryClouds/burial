@@ -76,18 +76,12 @@ class RoleController extends Controller
         $request['guard_name'] = 'web';
         $role = $this->roleServices->storeRole($request->validated());
 
-        if (! $role) {
-            return redirect()
-                ->back()
-                ->with('error', 'Role creation failed.');
-        }
-
         $role->syncPermissions($request->permissions);
 
         activity()
             ->causedBy(Auth::user())
-            ->performedOn($role)
-            ->log('Created a new role: '.$role->name);
+            ->withProperties(['ip' => request()->ip()])
+            ->log('Created a new role');
 
         return redirect()
             ->back()
@@ -102,8 +96,8 @@ class RoleController extends Controller
 
         activity()
             ->causedBy(Auth::user())
-            ->performedOn($role)
-            ->log('Updated the role: '.$role->name);
+            ->withProperties(['ip' => request()->ip()])
+            ->log('Updated the role');
 
         return redirect()
             ->back()
@@ -116,8 +110,8 @@ class RoleController extends Controller
 
         activity()
             ->causedBy(Auth::user())
-            ->performedOn($role)
-            ->log('Deleted the role: '.$role->name);
+            ->withProperties(['ip' => request()->ip()])
+            ->log('Deleted the role');
 
         return redirect()
             ->back()

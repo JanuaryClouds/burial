@@ -17,7 +17,7 @@ class UserController extends Controller
 {
     public function __construct(
         protected UserService $userServices,
-        protected DatatableService $datatableService,
+        protected DatatableService $datatableServices,
     ) {}
 
     public function login(LoginRequest $request)
