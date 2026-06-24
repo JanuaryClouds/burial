@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -53,25 +54,45 @@ class RolePermissionSeeder extends Seeder
         ];
 
         foreach ($staffPermissions as $permission) {
-            Permission::firstOrCreate(['name' => $permission]);
+            Permission::firstOrCreate([
+                'id' => (string) Str::uuid(),
+                'name' => $permission
+            ]);
         }
 
         foreach ($otherPermissions as $permission) {
-            Permission::firstOrCreate(['name' => $permission]);
+            Permission::firstOrCreate([
+                'id' => (string) Str::uuid(),
+                'name' => $permission
+            ]);
         }
 
-        Role::firstOrCreate(['name' => 'superadmin']);
+        Role::firstOrCreate([
+            'id' => (string) Str::uuid(),
+            'name' => 'superadmin'
+        ]);
 
         // Default Role to all
-        Role::firstOrCreate(['name' => 'staff']);
+        Role::firstOrCreate([
+            'id' => (string) Str::uuid(),
+            'name' => 'staff'
+        ]);
 
-        $reporterRole = Role::firstOrCreate(['name' => 'reporter']);
+        $reporterRole = Role::firstOrCreate([
+            'id' => (string) Str::uuid(),
+            'name' => 'reporter'
+        ]);
+
         $reporterRole->givePermissionTo([
             'create-reports',
             'view-reports',
         ]);
 
-        $interviewerRole = Role::firstOrCreate(['name' => 'interviewer']);
+        $interviewerRole = Role::firstOrCreate([
+            'id' => (string) Str::uuid(),
+            'name' => 'interviewer'
+        ]);
+
         $interviewerRole->givePermissionTo([
             'create-interview-schedules',
             'create-assessments',
@@ -79,7 +100,11 @@ class RolePermissionSeeder extends Seeder
             'create-referrals',
         ]);
 
-        $burialStaffRole = Role::firstOrCreate(['name' => 'burial-staff']);
+        $burialStaffRole = Role::firstOrCreate([
+            'id' => (string) Str::uuid(),
+            'name' => 'burial-staff'
+        ]);
+
         $burialStaffRole->givePermissionTo([
             'view-burial-assistances',
             'create-updates',
@@ -88,7 +113,11 @@ class RolePermissionSeeder extends Seeder
             'create-certificates',
         ]);
 
-        $librengLibingStaffRole = Role::firstOrCreate(['name' => 'libreng-libing-staff']);
+        $librengLibingStaffRole = Role::firstOrCreate([
+            'id' => (string) Str::uuid(),
+            'name' => 'libreng-libing-staff'
+        ]);
+        
         $librengLibingStaffRole->givePermissionTo([
             'view-libreng-libings',
             'update-libreng-libings',

@@ -13,11 +13,9 @@ return new class extends Migration
     {
         Schema::create('burial_assistances', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            // $table->string('tracking_no')->unique();
-            // $table->string('tracking_code')->unique();
             $table->date('application_date');
             $table->string('swa')->nullable();
-            $table->foreignId('encoder')
+            $table->foreignUuid('encoder')
                 ->nullable()
                 ->constrained('users')
                 ->onDelete('set null')
@@ -31,12 +29,7 @@ return new class extends Migration
                 'released'])
                 ->default('pending');
             $table->string('remarks')->nullable();
-            $table->foreignId('assigned_to')
-                ->nullable()
-                ->constrained('users')
-                ->onDelete('set null')
-                ->onUpdate('cascade');
-            $table->foreignId('initial_checker')
+            $table->foreignUuid('initial_checker')
                 ->nullable()
                 ->constrained('users')
                 ->onDelete('set null')

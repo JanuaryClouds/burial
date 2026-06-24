@@ -28,7 +28,7 @@ return new class extends Migration
             $table->date('date_out')->nullable();
             $table->string('comments')->nullable();
             $table->json('extra_data')->nullable();
-            $table->foreignId('added_by')
+            $table->foreignUuid('added_by')
                 ->nullable()
                 ->constrained('users', 'id')
                 ->onUpdate('cascade')

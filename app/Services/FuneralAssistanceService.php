@@ -7,7 +7,7 @@ use App\Models\FuneralAssistance;
 class FuneralAssistanceService
 {
     public function index(
-        ?int $user_id = null,
+        ?string $user_id = null,
         ?string $orderColumn = 'created_at',
         ?string $orderDirection = 'asc',
     ) {

@@ -16,7 +16,7 @@ class ClientSeeder extends Seeder
         $users = User::all();
 
         Client::factory()->count(25)->create([
-            'user_id' => fn () => $users->random()->id,
+            'user_id' => $users->random()->id,
         ]);
     }
 }

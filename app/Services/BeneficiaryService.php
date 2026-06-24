@@ -6,7 +6,7 @@ use App\Models\Beneficiary;
 
 class BeneficiaryService
 {
-    public function index(?int $user_id = null)
+    public function index(?string $user_id = null)
     {
         return Beneficiary::with([
             'client',

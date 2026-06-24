@@ -10,7 +10,7 @@ use Str;
 
 class InterviewService
 {
-    public function index(?int $userId = null)
+    public function index(?string $userId = null)
     {
         return Interview::with(['client', 'client.user'])
             ->when($userId, function ($query) use ($userId) {

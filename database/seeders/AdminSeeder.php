@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use App\Services\CentralClientService;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 use RuntimeException;
 use Spatie\Permission\Models\Role;
 
@@ -25,6 +26,7 @@ class AdminSeeder extends Seeder
 
         $superadmin = User::create(
             [
+                'id' => (string) Str::uuid(),
                 'email' => $superadminData['email'],
                 'citizen_uuid' => $superadminData['user_id'],
                 'emp_id' => (string) rand(100000, 999999),
@@ -51,6 +53,7 @@ class AdminSeeder extends Seeder
             }
 
             $staff = User::firstOrCreate([
+                'id' => (string) Str::uuid(),
                 'citizen_uuid' => $staffData['user_id'],
                 'emp_id' => (string) rand(100000, 999999),
                 'email' => $staffData['email'],

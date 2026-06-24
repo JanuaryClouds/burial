@@ -25,6 +25,7 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
+            'id' => (string) Str::uuid(),
             'emp_id' => $this->faker->optional()->regexify('[0-9]{6}'),
             'first_name' => $this->faker->firstName(),
             'middle_name' => $this->faker->optional()->lastName(),

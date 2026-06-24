@@ -31,7 +31,7 @@ class ClientService
     public function index(
         ?string $orderColumn = 'created_at',
         ?string $orderDirection = 'asc',
-        ?int $user_id = null
+        ?string $user_id = null
     ) {
         $allowedColumns = ['created_at', 'tracking_no', 'id'];
         $orderColumn = in_array($orderColumn, $allowedColumns) ? $orderColumn : 'created_at';

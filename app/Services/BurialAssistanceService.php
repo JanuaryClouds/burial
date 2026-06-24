@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 class BurialAssistanceService
 {
     public function index(
-        ?int $user_id = null
+        ?string $user_id = null
     ) {
         return BurialAssistance::with([
             'claimant.client.user',

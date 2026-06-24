@@ -124,6 +124,7 @@ class CentralClientService
 
         try {
             return User::create([
+                'id' => (string) Str::uuid(),
                 'citizen_uuid' => $citizenData[0]['user_id'],
                 'emp_id' => $citizenData[0]['emp_id'] ?? null,
                 'first_name' => $citizenData[0]['firstname'] ?? null,

@@ -29,6 +29,7 @@ class UserSeeder extends Seeder
 
         foreach ($uatClients as $uatClient) {
             User::firstOrCreate([
+                'id' => (string) Str::uuid(),
                 'email' => $uatClient['email'],
                 'citizen_uuid' => $uatClient['user_id'],
                 'emp_id' => $uatClient['emp_id'],
