@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 
 class ReferralService
 {
-    public function index(?string $user_id = null)
+    public function index(?int $user_id = null)
     {
         return Referral::with('client.user')
             ->when($user_id, function ($query) use ($user_id) {
