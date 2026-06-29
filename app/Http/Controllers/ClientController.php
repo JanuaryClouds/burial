@@ -128,7 +128,10 @@ class ClientController extends Controller
         $matched = [];
         $user = Auth::user();
 
-        $this->citizenServices->checkIfUser('uuid', $user->citizen_uuid, true);
+        if ($user->citizen_uuid !== null) {
+            $this->citizenServices->checkIfUser('uuid', $user->citizen_uuid, true);
+        }
+
         $citizen = session('citizen');
 
         if ($citizen) {
