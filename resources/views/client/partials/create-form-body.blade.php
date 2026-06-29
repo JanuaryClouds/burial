@@ -18,8 +18,19 @@
                             aria-controls="beneficiary_fam_tab" aria-selected="false">Beneficiary's Family</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="tab" href="#documents_tab" role="tab"
-                            aria-controls="documents_tab" aria-selected="false">Documents</a>
+                        @if (config('services.fileserver.enable.post'))
+                            <a class="nav-link" data-bs-toggle="tab" href="#documents_tab" role="tab"
+                                aria-controls="documents_tab" aria-selected="false">Documents</a>
+                        @else
+                            <a class="nav-link position-relative" href="#" role="tab"
+                                aria-controls="documents_tab" aria-selected="false">
+                                Documents
+                                <span
+                                    class="position-absolute top-75 start-50 translate-middle badge rounded-pill bg-info text-white">
+                                    Coming soon
+                                </span>
+                            </a>
+                        @endif
                     </li>
                     @if (request()->routeIs('general.intake.form'))
                         <li class="nav-item">
