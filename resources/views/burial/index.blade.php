@@ -23,19 +23,20 @@
                     ])
                 </div>
             </div>
+        @else
+            <div class="card multicolor-border">
+                <div class="card-header">
+                    <h5 class="card-title">My Applications</h5>
+                </div>
+                <div class="card-body">
+                    @include('partials.datatable.index', [
+                        'data' => $personalData,
+                        'columns' => $personalDataColumns,
+                        'src' => 'personalData',
+                    ])
+                </div>
+            </div>
         @endrole
-        <div class="card multicolor-border">
-            <div class="card-header">
-                <h5 class="card-title">My Applications</h5>
-            </div>
-            <div class="card-body">
-                @include('partials.datatable.index', [
-                    'data' => $personalData,
-                    'columns' => $personalDataColumns,
-                    'src' => 'personalData',
-                ])
-            </div>
-        </div>
         @can('create-reports')
             <div class="d-flex justify-content-center mt-10">
                 <a name="" id="" class="btn btn-primary align-self-end" data-no-loader

@@ -129,6 +129,10 @@ class ClientController extends Controller
         $user = Auth::user();
         $client = null;
 
+        if ($user->hasRole('staff')) {
+            return redirect()->route('dashboard')->with('warning', 'You are not allowed to apply as a client.');
+        }
+
         if ($user->clients->count() === 0 && $user->citizen_uuid !== null) {
             $this->citizenServices->checkIfUser('uuid', $user->citizen_uuid, true);
         } else if ($user->clients->count() > 0) {

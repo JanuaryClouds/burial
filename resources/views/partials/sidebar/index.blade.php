@@ -21,7 +21,7 @@
                 class="menu menu-column menu-title-gray-600 menu-state-primary menu-state-icon-primary menu-state-bullet-primary menu-icon-gray-500 menu-arrow-gray-500 fw-semibold fs-6 my-auto"
                 data-kt-menu="true">
                 @include('partials.sidebar.common')
-                @include('components.sidebar-link', [
+                @includeWhen(!auth()->user()->hasRole('staff'), 'components.sidebar-link', [
                     'route' => route('general.intake.form'),
                     'active_link' => 'general.intake.form',
                     'icon' => 'add-files',
