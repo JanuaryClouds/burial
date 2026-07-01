@@ -13,7 +13,7 @@ class AdminSeeder extends Seeder
         $superAdminRole = Role::firstOrCreate(['name' => 'superadmin']);
         $staffRole = Role::firstOrCreate(['name' => 'staff']);
 
-        $superadmin = User::create(
+        $superadmin = User::firstOrCreate(
             [
                 'email' => 'superadmin@example.org',
                 'first_name' => 'Super',
