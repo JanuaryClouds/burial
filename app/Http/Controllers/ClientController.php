@@ -127,9 +127,12 @@ class ClientController extends Controller
         $page_title = 'New Application';
         $matched = [];
         $user = Auth::user();
+        $client = null;
 
-        if ($user->citizen_uuid !== null) {
+        if ($user->clients->count() === 0 && $user->citizen_uuid !== null) {
             $this->citizenServices->checkIfUser('uuid', $user->citizen_uuid, true);
+        } else if ($user->clients->count() > 0) {
+            $client = $user->clients->first();
         }
 
         $citizen = session('citizen');
@@ -154,7 +157,8 @@ class ClientController extends Controller
 
         return view('client.create', compact(
             'matched',
-            'page_title'
+            'page_title',
+            'client'
         ));
     }
 

@@ -6,7 +6,7 @@
     $relationships = \App\Models\Relationship::pluck('name', 'id');
     $civilStatus = \App\Models\CivilStatus::pluck('name', 'id');
 
-    if (isset($client)) {
+    if (isset($client) && !Route::is('general.intake.form')) {
         $familiesData = $client->family
             ->map(function ($family) {
                 return [
