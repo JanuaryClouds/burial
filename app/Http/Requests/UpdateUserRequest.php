@@ -22,7 +22,6 @@ class UpdateUserRequest extends FormRequest
             'middle_name' => $this->clean($this->middle_name),
             'last_name' => $this->clean($this->last_name),
             'suffix' => $this->clean($this->suffix),
-            'email' => $this->normalizeEmail($this->email),
             'contact_number' => $this->normalizePhone($this->contact_number),
         ]);
     }
@@ -45,15 +44,6 @@ class UpdateUserRequest extends FormRequest
         }
 
         return preg_replace('/\D+/', '', $value);
-    }
-
-    private function normalizeEmail(?string $value): ?string
-    {
-        if ($value === null) {
-            return null;
-        }
-
-        return mb_strtolower(trim($value));
     }
 
     /**

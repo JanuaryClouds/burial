@@ -1,6 +1,12 @@
 <div class="d-flex flex-column gap-6">
     <div class="d-flex flex-column gap-4">
         @if (!$data->hasRole('superadmin') && auth()->user()->hasRole('superadmin'))
+            @include('components.form-input', [
+                'disabled' => true,
+                'value' => $data->email,
+                'label' => 'Email Address',
+                'name' => 'email',
+            ])
             <h5>Account Status</h5>
             <div class="form-check">
                 <input class="form-check-input" type="checkbox" value="{{ $data->is_active ? '1' : '0' }}" name="is_active"
