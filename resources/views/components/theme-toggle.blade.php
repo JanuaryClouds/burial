@@ -1,6 +1,7 @@
 <div class="d-flex align-items-center">
     <a href="#" class="btn btn-icon btn-custom btn-active-color-primary" data-kt-menu-trigger="{default:'click'}"
-        data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
+        data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end" data-bs-toggle="tooltip" data-bs-placement="bottom"
+        title="System theme options">
         <i class="ki-duotone ki-night-day theme-light-show fs-1">
             <span class="path1"></span>
             <span class="path2"></span>

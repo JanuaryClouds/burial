@@ -39,7 +39,8 @@
             <div class="">
                 <!-- begin::User -->
                 <a href="#" class="btn btn-icon btn-custom btn-active-color-primary menu-dropdown"
-                    data-kt-menu-trigger="click" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
+                    data-kt-menu-trigger="click" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end"
+                    data-bs-toggle="tooltip" data-bs-placement="bottom" title="Account options">
                     <x-ki-icon :icon_name="'user'" :icon_size="'1'" :paths_count="2" />
                 </a>
 

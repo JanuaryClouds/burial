@@ -58,12 +58,18 @@ class UserService
 
     public function update(array $data, User $user)
     {
+        if ($data['password'] == null || $data['password'] == '') {
+            $data['password'] = $user->password;
+        }
+
         $user->update($data);
+
         if (isset($data['is_active'])) {
             $user->is_active = true;
         } else {
             $user->is_active = false;
         }
+
         $user->save();
 
         $staffRole = Role::where('name', 'staff')->first();

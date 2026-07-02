@@ -1,27 +1,6 @@
 @extends('layouts.app')
 @section('content')
     <div class="d-flex flex-column gap-4">
-        <div id="confirm-exit-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="confirmExitModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-body">
-                        <p class="fs-5">Are you sure you want to cancel the application? You will have to fill up the
-                            form again if
-                            you
-                            leave this page.</p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">
-                            Continue Application
-                        </button>
-                        <a href="{{ route('dashboard') }}" class="btn btn-danger">
-                            Cancel and Exit
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
         <div class="modal fade" id="confirmSubmitModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
             role="dialog" aria-labelledby="confirmSubmitModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">

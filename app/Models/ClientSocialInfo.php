@@ -51,7 +51,7 @@ class ClientSocialInfo extends Model
      */
     public function education(): BelongsTo
     {
-        return $this->belongsTo(Education::class, 'education_id');
+        return $this->belongsTo(Education::class, 'education_id')->withTrashed();
     }
 
     /**

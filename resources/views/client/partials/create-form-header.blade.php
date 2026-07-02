@@ -12,9 +12,11 @@
             class="text-center d-none d-md-block d-lg-block">
     </div> --}}
     <div class="card-body d-flex justify-content-between align-items-center flex-wrap gap-3">
-        <p class="mb-0">Please fill out all required fields marked by (*). This information is necessary for evaluating
-            your
-            application and to determine the type of assistance.</p>
+        <p class="mb-0 fs-6">Please fill out all required fields marked by (*). This information is necessary
+            to determine the type of assistance. Some fields have been automatically filled out using your previous
+            information.
+            <span class="text-danger">Please double check every field first before submitting.</span>
+        </p>
         @env('local')
             <button type="button" class="btn btn-warning btn-sm hover-scale text-nowrap" id="btn-autofill">
                 <i class="fa fa-magic me-1"></i> Autofill Form

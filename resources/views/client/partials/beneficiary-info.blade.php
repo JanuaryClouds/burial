@@ -4,7 +4,7 @@
 ])
 @php
     $beneficiary = null;
-    if (isset($client)) {
+    if (isset($client) && !Route::is('general.intake.form')) {
         $beneficiary = $client->beneficiary;
     }
 @endphp
