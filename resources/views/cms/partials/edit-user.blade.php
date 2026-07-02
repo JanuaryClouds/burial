@@ -1,12 +1,35 @@
 <div class="d-flex flex-column gap-6">
     <div class="d-flex flex-column gap-4">
-        @if (!$data->hasRole('superadmin') && auth()->user()->hasRole('superadmin'))
+        @include('components.form-input', [
+            'disabled' => true,
+            'value' => $data->email,
+            'label' => 'Email Address',
+            'name' => 'email',
+        ])
+        @if (auth()->user()->can('update', $data) && $data->hasRole('staff'))
             @include('components.form-input', [
-                'disabled' => true,
-                'value' => $data->email,
-                'label' => 'Email Address',
-                'name' => 'email',
+                'name' => 'current_password',
+                'type' => 'password',
+                'label' => 'Current Password',
+                'value' => '',
+                'autocomplete' => false,
             ])
+            @include('components.form-input', [
+                'name' => 'password',
+                'type' => 'password',
+                'label' => 'New Password',
+                'value' => '',
+                'autocomplete' => false,
+            ])
+            @include('components.form-input', [
+                'name' => 'password_confirmation',
+                'type' => 'password',
+                'label' => 'Confirm Password',
+                'value' => '',
+                'autocomplete' => false,
+            ])
+        @endif
+        @if (!$data->hasRole('superadmin') && auth()->user()->hasRole('superadmin'))
             <h5>Account Status</h5>
             <div class="form-check">
                 <input class="form-check-input" type="checkbox" value="{{ $data->is_active ? '1' : '0' }}" name="is_active"
@@ -32,24 +55,19 @@
             </div>
         @endif
     </div>
-    @if ($data->emp_id != null && !$data->hasRole('staff'))
-        <div class="alert alert-info mb-3" role="alert">
-            <strong>Staff User:</strong> This user is a government employee. Check the 'staff' role if this user is
-            considered as a staff of the system.
-        </div>
-    @endif
     @if (count($roles) > 0)
         <div class="d-flex flex-column gap-4">
-            <h5>Roles</h5>
+            @if ($data->roles->count() > 0)
+                <h5>Roles</h5>
+            @endif
             @foreach ($roles as $role)
                 @if ($data->hasRole('staff'))
                     @if (auth()->user()->can('edit-roles') && $role->name !== 'superadmin')
-                        @if ($data->hasRole('superadmin') && $role->name === 'staff')
+                        @if ($data->hasRole('superadmin') || $role->name === 'staff')
                             <div class="form-check">
                                 <input type="hidden" name="roles[]" value="{{ $role->id }}">
                                 <input class="form-check-input" type="checkbox" value="{{ $role->id }}"
-                                    id="role{{ $role->id }}Check"
-                                    {{ $data->roles->contains($role) ? 'checked' : '' }} disabled />
+                                    id="role{{ $role->id }}Check" checked disabled />
                                 <label class="form-check-label" for="role{{ $role->id }}Check">
                                     {{ $role->name }}
                                 </label>
@@ -72,18 +90,6 @@
                             <input class="form-check-input" type="checkbox" value="{{ $role->id }}"
                                 id="role{{ $role->id }}Check" {{ $data->roles->contains($role) ? 'checked' : '' }}
                                 disabled />
-                            <label class="form-check-label" for="role{{ $role->id }}Check">
-                                {{ $role->name }}
-                            </label>
-                        </div>
-                    @endif
-                @else
-                    @if ($role->name === 'staff' && $data->emp_id !== null)
-                        <h5>Roles</h5>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="{{ $role->id }}" name="roles[]"
-                                id="role{{ $role->id }}Check"
-                                {{ $data->roles->contains($role) ? 'checked' : '' }} />
                             <label class="form-check-label" for="role{{ $role->id }}Check">
                                 {{ $role->name }}
                             </label>

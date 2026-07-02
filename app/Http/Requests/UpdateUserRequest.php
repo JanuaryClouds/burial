@@ -62,6 +62,8 @@ class UpdateUserRequest extends FormRequest
             'is_active' => 'nullable|boolean',
             'roles' => 'nullable|array',
             'roles.*' => 'exists:roles,id',
+            'current_password' => 'required_with:password|nullable|string|current_password',
+            'password' => 'required_with:current_password|nullable|string|min:8|confirmed',
         ];
     }
 }
