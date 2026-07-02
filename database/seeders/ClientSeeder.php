@@ -13,7 +13,7 @@ class ClientSeeder extends Seeder
      */
     public function run(): void
     {
-        $users = User::all();
+        $users = User::whereDoesntHave('roles')->get();
 
         Client::factory()->count(25)->create([
             'user_id' => fn () => $users->random()->id,
