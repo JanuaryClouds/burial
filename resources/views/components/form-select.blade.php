@@ -23,7 +23,16 @@
 
 <div class="mb-3">
     @if ($label)
-        <label for="{{ $id ?? $name }}" class="form-label">{{ $label }}{{ $required ? ' *' : '' }}</label>
+        @if (app()->hasDebugModeEnabled())
+            <label for="{{ $id ?? $name }}" class="form-label" data-bs-toggle="tooltip" data-bs-placement="top"
+                title="{{ 'Name: ' . $name . ', Error: ' . $errorname }}">
+                {{ $label }}{{ $required ? ' *' : '' }}
+            </label>
+        @else
+            <label for="{{ $id ?? $name }}" class="form-label">
+                {{ $label }}{{ $required ? ' *' : '' }}
+            </label>
+        @endif
     @endif
 
     <select {{ $attributes->merge(['class' => 'form-control' . $isInactive]) }} name="{{ $name }}"

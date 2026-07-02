@@ -22,7 +22,6 @@ class UpdateUserRequest extends FormRequest
             'middle_name' => $this->clean($this->middle_name),
             'last_name' => $this->clean($this->last_name),
             'suffix' => $this->clean($this->suffix),
-            'email' => $this->normalizeEmail($this->email),
             'contact_number' => $this->normalizePhone($this->contact_number),
         ]);
     }
@@ -47,15 +46,6 @@ class UpdateUserRequest extends FormRequest
         return preg_replace('/\D+/', '', $value);
     }
 
-    private function normalizeEmail(?string $value): ?string
-    {
-        if ($value === null) {
-            return null;
-        }
-
-        return mb_strtolower(trim($value));
-    }
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -72,6 +62,8 @@ class UpdateUserRequest extends FormRequest
             'is_active' => 'nullable|boolean',
             'roles' => 'nullable|array',
             'roles.*' => 'exists:roles,id',
+            'current_password' => 'required_with:password|nullable|string|current_password',
+            'password' => 'required_with:current_password|nullable|string|min:8|confirmed',
         ];
     }
 }

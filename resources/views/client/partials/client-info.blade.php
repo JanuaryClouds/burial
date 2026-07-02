@@ -10,8 +10,11 @@
         $last_name = $client->user?->last_name;
         $suffix = $client->user?->suffix;
         $contact_number = $client->contact_number;
-
         $socialInfo = $client?->socialInfo;
+        if ($socialInfo && Route::is('general.intake.form')) {
+            $socialInfo->relationship_id = null;
+        }
+
         $demographic = $client?->demographic;
     } else {
         $first_name = session('citizen')['first_name'] ?? (auth()->user()?->first_name ?? null);

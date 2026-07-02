@@ -43,6 +43,7 @@ class CitizenAccessController extends Controller
 
         if (config('services.portal.users.mock')) {
             $citizens = User::orderBy('created_at')
+                ->whereDoesntHave('roles')
                 ->get();
             $testLinks = [];
             foreach ($citizens as $citizen) {

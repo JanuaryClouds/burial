@@ -127,8 +127,18 @@ class ClientController extends Controller
         $page_title = 'New Application';
         $matched = [];
         $user = Auth::user();
+        $client = null;
 
-        $this->citizenServices->checkIfUser('uuid', $user->citizen_uuid, true);
+        if ($user->hasRole('staff')) {
+            return redirect()->route('dashboard')->with('warning', 'You are not allowed to apply as a client.');
+        }
+
+        if ($user->clients->count() === 0 && $user->citizen_uuid !== null) {
+            $this->citizenServices->checkIfUser('uuid', $user->citizen_uuid, true);
+        } else if ($user->clients->count() > 0) {
+            $client = $user->clients->first();
+        }
+
         $citizen = session('citizen');
 
         if ($citizen) {
@@ -151,7 +161,8 @@ class ClientController extends Controller
 
         return view('client.create', compact(
             'matched',
-            'page_title'
+            'page_title',
+            'client'
         ));
     }
 

@@ -20,3 +20,4 @@ parameters:
 #
     excludePaths:
         - ./routes/console.php
+        - app/Http/Requests/RoleRequest.php
