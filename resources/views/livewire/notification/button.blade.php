@@ -1,5 +1,6 @@
 <a href="#" class="btn btn-icon btn-custom btn-active-color-primary position-relative show menu-dropdown"
-    data-kt-menu-trigger="click" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end" wire:poll.30s>
+    data-kt-menu-trigger="click" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end" data-bs-toggle="tooltip"
+    data-bs-placement="bottom" title="Notifications or updates regarding your applications" wire:poll.30s>
     <i class="ki-duotone ki-notification fs-1">
         <span class="path1"></span>
         <span class="path2"></span>
