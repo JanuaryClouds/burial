@@ -10,7 +10,6 @@ use Illuminate\Support\ServiceProvider;
 use Maatwebsite\Excel\ExcelServiceProvider;
 use Maatwebsite\Excel\Facades\Excel;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
-use Yajra\DataTables\DataTablesServiceProvider;
 
 return [
 
@@ -179,7 +178,6 @@ return [
         EventServiceProvider::class,
         RouteServiceProvider::class,
         ExcelServiceProvider::class,
-        DataTablesServiceProvider::class,
         ViewServiceProvider::class,
     ])->toArray(),
 
