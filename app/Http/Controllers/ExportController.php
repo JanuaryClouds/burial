@@ -54,7 +54,7 @@ class ExportController extends Controller
             $dod = $beneficiary->date_of_death ? Carbon::parse($beneficiary->date_of_death) : null;
             $encoder = $users->get($burialAssistance->encoder);
             $initialChecker = $users->get($burialAssistance->initial_checker);
-            $age = ($dob && $dod) ? $dob->diffInYears($dod) : null;
+            $age = ($dob && $dod) ? round($dob->diffInYears($dod), 0, PHP_ROUND_HALF_DOWN) : null;
             $approvedChange = $burialAssistance->claimantChanges->where('status', 'approved')->first();
             $newClaimant = null;
             $firstClaimant = $burialAssistance->originalClaimant();
