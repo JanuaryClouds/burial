@@ -11,11 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('client_assessments', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->foreignUuid('client_id')->constrained('clients')->onDelete('CASCADE');
-            $table->longText('problem_presented');
-            $table->longText('assessment');
+        Schema::create('custom_field_values', function (Blueprint $table) {
+            $table->id();
             $table->timestamps();
         });
     }
@@ -25,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('client_assessments');
+        Schema::dropIfExists('custom_field_values');
     }
 };

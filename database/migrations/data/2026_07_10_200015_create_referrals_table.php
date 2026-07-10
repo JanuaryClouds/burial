@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('referrals', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->foreignUuid('client_id')->constrained('clients')->onDelete('CASCADE');
+            $table->uuid()->primary();
+            $table->foreignUuid('application_uuid')->constrained('applications', 'uuid')->onDelete('CASCADE');
             $table->string('referral_to');
             $table->text('remarks')->nullable();
             $table->timestamps();

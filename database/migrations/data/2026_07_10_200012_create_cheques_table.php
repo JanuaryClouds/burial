@@ -12,14 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('cheques', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-
-            $table->foreignUuid('burial_assistance_id')
-                ->constrained('burial_assistances', 'id')
-                ->onDelete('cascade');
-            $table->foreignUuid('claimant_id')
-                ->constrained('claimants', 'id')
-                ->onDelete('cascade');
+            $table->uuid()->primary();
+            $table->foreignUuid('application_uuid')->constrained('applications', 'uuid')->cascadeOnDelete();
             $table->string('obr_number')->unique();
             $table->string('cheque_number')->unique()->nullable();
             $table->string('dv_number')->unique()->nullable();

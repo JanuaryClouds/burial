@@ -13,15 +13,18 @@ return new class extends Migration
     {
         Schema::create('process_logs', function (Blueprint $table) {
             $table->uuid('id')->primary();
-
-            $table->foreignUuid('burial_assistance_id')
-                ->constrained('burial_assistances', 'id')
-                ->onDelete('cascade')
-                ->onUpdate('cascade');
-            $table->foreignUuid('claimant_id')
-                ->constrained('claimants', 'id')
-                ->onDelete('cascade')
-                ->onUpdate('cascade');
+            $table->foreignUuid('application_id')
+                ->constrained('applications', 'uuid')
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();
+            // $table->foreignUuid('burial_assistance_id')
+            //     ->constrained('burial_assistances', 'id')
+            //     ->onDelete('cascade')
+            //     ->onUpdate('cascade');
+            // $table->foreignUuid('claimant_id')
+            //     ->constrained('claimants', 'id')
+            //     ->onDelete('cascade')
+            //     ->onUpdate('cascade');
             $table->nullableMorphs('loggable');
             $table->boolean('is_progress_step')->default(true);
             $table->date('date_in');

@@ -12,18 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('workflow_steps', function (Blueprint $table) {
-            $table->id();
+            $table->uuid()->primary();
 
             $table->integer('order_no');
-            $table->foreignId('handler_id')
-                ->nullable()
-                ->constrained('handlers')
-                ->onDelete('cascade')
-                ->onUpdate('cascade');
             $table->string('description');
-            $table->boolean('requires_extra_data')->default(false);
-            $table->boolean('is_optional')->default(false);
-            $table->json('extra_data_schema')->nullable();
 
             $table->timestamps();
         });

@@ -9,8 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('beneficiaries', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->foreignUuid('client_id')->constrained('clients')->onDelete('CASCADE');
+            $table->uuid()->primary();
             $table->string('first_name');
             $table->string('middle_name')->nullable();
             $table->string('last_name');

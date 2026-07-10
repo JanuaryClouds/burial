@@ -11,16 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('handlers', function (Blueprint $table) {
-            $table->id();
-
+        Schema::create('burial_assistance_types', function (Blueprint $table) {
+            $table->uuid()->primary();
             $table->string('name');
-            $table->enum('type', ['individual', 'organization'])
-                ->nullable()
-                ->default(null);
-            $table->string('department')->nullable();
-            $table->boolean('is_active')->default(true);
-
+            $table->text('description')->nullable();
+            $table->json('fields')->nullable();
             $table->timestamps();
         });
     }
@@ -30,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('handlers');
+        Schema::dropIfExists('burial_assistance_types');
     }
 };

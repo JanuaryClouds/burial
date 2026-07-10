@@ -11,15 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('funeral_assistances', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+        Schema::create('interviews', function (Blueprint $table) {
+            $table->uuid()->primary();
 
-            $table->foreignUuid('client_id')
-                ->constrained('clients', 'id')
+            $table->foreignUuid('client_uuid')
+                ->constrained('clients', 'uuid')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
-            $table->dateTime('approved_at')->nullable();
-            $table->dateTime('forwarded_at')->nullable();
+            $table->enum('status', ['scheduled', 'done'])->default('scheduled');
+            $table->dateTime('schedule');
             $table->string('remarks')->nullable();
 
             $table->timestamps();
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('funeral_assistance');
+        Schema::dropIfExists('interviews');
     }
 };
