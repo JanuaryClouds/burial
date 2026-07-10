@@ -20,7 +20,7 @@ class InterviewSeeder extends Seeder
         foreach ($clients as $client) {
             if (rand(0, 1) == 1) {
                 $interview = Interview::factory()->create([
-                    'client_id' => $client->id,
+                    'client_uuid' => $client->uuid,
                     'status' => 'done',
                 ]);
 
