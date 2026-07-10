@@ -53,6 +53,9 @@ return [
             'key' => env('PORTAL_USERS_API_KEY', ''),
             'sampleUuid' => env('PORTAL_USERS_SAMPLE_UUID', false),
             'mock' => env('PORTAL_MOCK', false),
+            'seeder' => [
+                'from_portal' => env('PORTAL_USERS_SEED_FROM_PORTAL', false),
+            ]
         ],
         'sso' => [
             'secret' => env('SSO_SECRET_KEY', ''),

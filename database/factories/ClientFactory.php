@@ -26,7 +26,6 @@ class ClientFactory extends Factory
     public function definition()
     {
         return [
-            'id' => $this->faker->uuid(),
             'date_of_birth' => $this->faker->date('Y-m-d'),
             'house_no' => $this->faker->buildingNumber(),
             'street' => $this->faker->streetName(),
@@ -40,21 +39,16 @@ class ClientFactory extends Factory
     public function configure()
     {
         return $this->afterCreating(function (Client $client) {
-            Beneficiary::factory()->create([
-                'client_id' => $client->id,
-            ]);
+            // Beneficiary::factory()->create([
+            //     'client_id' => $client->id,
+            // ]);
 
             ClientSocialInfo::factory()->create([
-                'client_id' => $client->id,
+                'client_uuid' => $client->uuid,
             ]);
 
             ClientDemographic::factory()->create([
-                'client_id' => $client->id,
-            ]);
-
-            $familyCount = rand(1, 5);
-            BeneficiaryFamily::factory()->count($familyCount)->create([
-                'client_id' => $client->id,
+                'client_uuid' => $client->uuid,
             ]);
         });
     }

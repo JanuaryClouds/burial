@@ -2,27 +2,21 @@
 
 namespace App\Models;
 
+use App\Traits\HasUuid;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
 
 class Beneficiary extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUuid;
 
     protected $table = 'beneficiaries';
 
-    protected $primaryKey = 'id';
-
-    public $incrementing = false;
-
-    protected $keyType = 'string';
-
     protected $fillable = [
-        'id',
-        'client_id',
         'first_name',
         'middle_name',
         'last_name',
@@ -111,6 +105,15 @@ class Beneficiary extends Model
     public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class, 'client_id');
+    }
+
+    /**
+     * Summary of application
+     * @return HasOne<Application>
+     */
+    public function application(): HasOne
+    {
+        return $this->hasOne(Application::class);
     }
 
     /**

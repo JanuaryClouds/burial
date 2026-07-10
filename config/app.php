@@ -3,6 +3,7 @@
 use App\Providers\AppServiceProvider;
 use App\Providers\AuthServiceProvider;
 use App\Providers\EventServiceProvider;
+use App\Providers\MigrationsLoader;
 use App\Providers\RouteServiceProvider;
 use App\Providers\ViewServiceProvider;
 use Illuminate\Support\Facades\Facade;
@@ -178,7 +179,8 @@ return [
         EventServiceProvider::class,
         RouteServiceProvider::class,
         ExcelServiceProvider::class,
-        ViewServiceProvider::class,
+        // ViewServiceProvider::class,
+        MigrationsLoader::class,
     ])->toArray(),
 
     /*

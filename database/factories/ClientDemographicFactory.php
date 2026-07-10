@@ -22,7 +22,6 @@ class ClientDemographicFactory extends Factory
     public function definition(): array
     {
         return [
-            'id' => Str::uuid(),
             'sex_id' => Sex::inRandomOrder()->first()->id,
             'religion_id' => Religion::inRandomOrder()->first()->id,
             'nationality_id' => Nationality::inRandomOrder()->first()->id,

@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Barangay;
 use App\Models\Beneficiary;
+use App\Models\BeneficiaryFamily;
 use App\Models\Religion;
 use App\Models\Sex;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -21,7 +22,6 @@ class BeneficiaryFactory extends Factory
     public function definition(): array
     {
         return [
-            'id' => $this->faker->uuid(),
             'first_name' => $this->faker->firstName(),
             'middle_name' => $this->faker->optional()->lastName(),
             'last_name' => $this->faker->lastName(),
@@ -33,5 +33,15 @@ class BeneficiaryFactory extends Factory
             'place_of_birth' => $this->faker->city(),
             'barangay_id' => Barangay::inRandomOrder()->first()->id,
         ];
+    }
+
+    public function configure()
+    {
+        return $this->afterCreating(function (Beneficiary $beneficiary) {
+            $familyCount = rand(1, 5);
+            BeneficiaryFamily::factory()->count($familyCount)->create([
+                'beneficiary_uuid' => $beneficiary->uuid,
+            ]);
+        });
     }
 }

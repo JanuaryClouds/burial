@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\HasUuid;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,20 +13,13 @@ use Illuminate\Support\Str;
 
 class Client extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUuid;
 
     protected $table = 'clients';
 
-    protected $primaryKey = 'id';
-
-    public $incrementing = false;
-
-    protected $keyType = 'string';
 
     protected $fillable = [
-        'id',
         'user_id',
-        'tracking_no',
         'date_of_birth',
         'house_no',
         'street',
@@ -34,16 +28,6 @@ class Client extends Model
         'city',
         'contact_number',
     ];
-
-    protected static function booted()
-    {
-        static::creating(function ($client) {
-            $year = now()->format('Y');
-            $count = self::whereYear('created_at', $year)->count() + 1;
-
-            $client->tracking_no = sprintf('%s-%04d', $year, $count);
-        });
-    }
 
     public static function getAllClients()
     {
@@ -118,6 +102,15 @@ class Client extends Model
     public function beneficiary(): HasOne
     {
         return $this->hasOne(Beneficiary::class);
+    }
+
+    /**
+     * Summary of application
+     * @return HasOne<Application>
+     */
+    public function application(): HasOne
+    {
+        return $this->hasOne(Application::class);
     }
 
     /**
