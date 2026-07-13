@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\BurialAssistanceTypes;
-use App\Http\Requests\StoreBurialAssistanceTypesRequest;
-use App\Http\Requests\UpdateBurialAssistanceTypesRequest;
+use App\Models\FuneralAssistanceType;
+use App\Http\Requests\StoreFuneralAssistanceTypeRequest;
+use App\Http\Requests\UpdateFuneralAssistanceTypeRequest;
 
-class BurialAssistanceTypesController extends Controller
+class FuneralAssistanceTypeController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -27,7 +27,7 @@ class BurialAssistanceTypesController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreBurialAssistanceTypesRequest $request)
+    public function store(StoreFuneralAssistanceTypeRequest $request)
     {
         //
     }
@@ -35,7 +35,7 @@ class BurialAssistanceTypesController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(BurialAssistanceTypes $burialAssistanceTypes)
+    public function show(FuneralAssistanceType $funeralAssistanceType)
     {
         //
     }
@@ -43,7 +43,7 @@ class BurialAssistanceTypesController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(BurialAssistanceTypes $burialAssistanceTypes)
+    public function edit(FuneralAssistanceType $funeralAssistanceType)
     {
         //
     }
@@ -51,7 +51,7 @@ class BurialAssistanceTypesController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateBurialAssistanceTypesRequest $request, BurialAssistanceTypes $burialAssistanceTypes)
+    public function update(UpdateFuneralAssistanceTypeRequest $request, FuneralAssistanceType $funeralAssistanceType)
     {
         //
     }
@@ -59,7 +59,7 @@ class BurialAssistanceTypesController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(BurialAssistanceTypes $burialAssistanceTypes)
+    public function destroy(FuneralAssistanceType $funeralAssistanceType)
     {
         //
     }

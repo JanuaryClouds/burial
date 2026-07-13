@@ -2,13 +2,13 @@
 
 namespace Database\Factories;
 
-use App\Models\BurialAssistanceTypes;
+use App\Models\FuneralAssistanceType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<BurialAssistanceTypes>
+ * @extends Factory<FuneralAssistanceType>
  */
-class BurialAssistanceTypesFactory extends Factory
+class FuneralAssistanceTypeFactory extends Factory
 {
     /**
      * Define the model's default state.
