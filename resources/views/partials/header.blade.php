@@ -107,8 +107,8 @@
     function darkMode() {
         const header = document.getElementById('main-header-web');
         const pageTitle = document.getElementById('pageTitle');
-        const lightBanner = @json(asset('images/banner-light.svg'));
-        const darkBanner = @json(asset('images/banner-dark.svg'));
+        const lightBanner = @json(asset('images/banner-light.png'));
+        const darkBanner = @json(asset('images/banner-dark.png'));
         header.style.background = `url('${darkBanner}') no-repeat center center / cover`;
         header.style.backgroundColor = '#151521';
         pageTitle.classList.add('text-white');
@@ -118,7 +118,7 @@
     function lightMode() {
         const header = document.getElementById('main-header-web');
         const pageTitle = document.getElementById('pageTitle');
-        const lightBanner = @json(asset('images/banner-light.svg'));
+        const lightBanner = @json(asset('images/banner-light.png'));
         header.style.background = `url('${lightBanner}') no-repeat center center / cover`;
         header.style.backgroundColor = '#f9fafb';
         pageTitle.classList.add('text-black');
