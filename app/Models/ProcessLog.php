@@ -19,7 +19,7 @@ class ProcessLog extends Model
 
     protected $fillable = [
         'id',
-        'application_id',
+        'application_uuid',
         // 'burial_assistance_id',
         // 'claimant_id',
         'loggable_id',

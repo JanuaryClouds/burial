@@ -17,10 +17,12 @@ class AssessmentSeeder extends Seeder
     {
         $clients = Client::whereHas('interviews')->get();
 
+        dump($clients->count() . ' Clients with Interviews to Seed');
+
         foreach ($clients as $client) {
             if (rand(0,1) == 1 && $client->application) {
                 Assessment::factory()->create([
-                    'application_id' => $client->application->uuid,
+                    'application_uuid' => $client->application->uuid,
                 ]);
             }
         }

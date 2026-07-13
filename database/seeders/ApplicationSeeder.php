@@ -23,5 +23,7 @@ class ApplicationSeeder extends Seeder
                 'beneficiary_uuid' => Beneficiary::inRandomOrder()->first()->uuid,
             ]);
         }
+
+        dump(Application::count() . ' Applications Seeded');
     }
 }

@@ -16,7 +16,7 @@ class Assessment extends Model
     protected $table = "assessments";
 
     protected $fillable = [
-        'application_id',
+        'application_uuid',
         'swa',
         'problem_presented',
         'amount_extended',
