@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('process_logs', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('application_id')
+            $table->foreignUuid('application_uuid')
                 ->constrained('applications', 'uuid')
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();

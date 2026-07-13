@@ -12,7 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('custom_fields', function (Blueprint $table) {
-            $table->id();
+            $table->uuid()->primary();
+            $table->morphs('fieldable');
+            $table->string('name', 64);
+            $table->string('label');
+            $table->string('input_type');
+            $table->boolean('required')->default(false);
+            $table->integer('order_no');
             $table->timestamps();
         });
     }

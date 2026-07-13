@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('burial_assistance_types', function (Blueprint $table) {
+        Schema::create('funeral_assistance_types', function (Blueprint $table) {
             $table->uuid()->primary();
             $table->string('name');
             $table->text('description')->nullable();
-            $table->json('fields')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('burial_assistance_types');
+        Schema::dropIfExists('funeral_assistance_types');
     }
 };

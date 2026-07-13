@@ -12,7 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('custom_field_values', function (Blueprint $table) {
-            $table->id();
+            $table->uuid()->primary();
+            $table->foreignUuid('custom_field_uuid')->constrained('custom_fields', 'uuid')->cascadeOnDelete();
+            $table->morphs('valuable');
+            $table->string('value');
             $table->timestamps();
         });
     }

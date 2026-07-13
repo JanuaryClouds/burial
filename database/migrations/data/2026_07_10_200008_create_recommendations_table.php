@@ -16,6 +16,12 @@ return new class extends Migration
             $table->foreignUuid('application_uuid')
                 ->constrained('applications', 'uuid')
                 ->cascadeOnDelete();
+            $table->foreignId('recommended_by')
+                ->constrained('users', 'id')
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();
+            $table->enum('status', ['pending', 'approved', 'canceled', 'rejected'])->default('pending');
+            $table->dateTime('approved_at')->nullable();
             $table->timestamps();
         });
     }

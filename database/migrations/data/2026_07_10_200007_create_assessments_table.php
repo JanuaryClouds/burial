@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('assessments', function (Blueprint $table) {
             $table->uuid()->primary();
-            $table->foreignUuid('application_id')
+            $table->foreignUuid('application_uuid')
                 ->constrained('applications', 'uuid')
                 ->cascadeOnDelete();
             $table->text('swa');
