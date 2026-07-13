@@ -16,7 +16,6 @@ class Application extends Model
     use HasFactory, HasUuid;
 
     protected $table = 'applications';
-    
 
     protected $fillable = [
         'tracking_no',
@@ -39,7 +38,7 @@ class Application extends Model
      */
     public function client(): BelongsTo
     {
-        return $this->belongsTo(Client::class, 'client_id', 'id');
+        return $this->belongsTo(Client::class, 'client_uuid', 'uuid');
     }
 
     /**
@@ -47,7 +46,7 @@ class Application extends Model
      */
     public function beneficiary(): BelongsTo
     {
-        return $this->belongsTo(Beneficiary::class, 'beneficiary_id', 'id');
+        return $this->belongsTo(Beneficiary::class, 'beneficiary_uuid', 'uuid');
     }
 
     /**
@@ -58,7 +57,16 @@ class Application extends Model
     {
         return $this->hasOne(Assessment::class);
     }
-    
+
+    /**
+     * Summary of recommendation
+     * @return HasMany<Recommendation, Application>
+     */
+    public function recommendations(): HasMany
+    {
+        return $this->hasMany(Recommendation::class, 'application_uuid', 'uuid');
+    }
+
     /**
      * Summary of processLogs
      * @return HasMany<ProcessLog>
@@ -68,50 +76,47 @@ class Application extends Model
         return $this->hasMany(ProcessLog::class);
     }
 
-    // Assistances
-    /**
-     * Summary of burialAssistance
-     * @return HasOne<BurialAssistance, Application>
-     */
-    public function burialAssistance(): HasOne
+    public function status(): String
     {
-        return $this->hasOne(BurialAssistance::class);
-    }
+        $status = "Pending";
 
-    /**
-     * Summary of librengLibingAssistance
-     * @return HasOne<LibrengLibingAssistance, Application>
-     */
-    public function librengLibingAssistance(): HasOne
-    {
-        return $this->hasOne(LibrengLibingAssistance::class);
-    }
+        if ($this->client->interviews->count() > 0) {
+            if ($this->client->interviews->first()->status == 'done') {
+                $status = "Interviewed";
+            } else {
+                $status = "Scheduled";
+            }
+        }
 
-    /**
-     * Summary of mortuaryAssistance
-     * @return HasOne<MortuaryAssistance, Application>
-     */
-    public function mortuaryAssistance(): HasOne
-    {
-        return $this->hasOne(MortuaryAssistance::class);
-    }
+        if ($this->assessment) {
+            $status = "Assessed";
+        }
 
-    /**
-     * Summary of exhumationAssistance
-     * @return HasOne<ExhumationAssistance, Application>
-     */
-    public function exhumationAssistance(): HasOne
-    {
-        return $this->hasOne(ExhumationAssistance::class);
-    }
+        if ($this->recommendations->count() > 0) {
+            $recommendation = $this->recommendations->where('status', 'approved');
 
-    /**
-     * Summary of financialAssistance
-     * @return HasOne<FinancialAssistance, Application>
-     */
-    public function financialAssistance(): HasOne
-    {
-        return $this->hasOne(FinancialAssistance::class);
+            if ($recommendation != null) {
+                $status = "Recommended";
+            }
+        }
+
+        if ($this->processLogs->count() > 0) {
+            $latestLog = $this->processLogs()->first();
+            $latestStep = $latestLog->loggable()->order_no;
+            $totalSteps = WorkflowStep::count();
+    
+            if ($latestLog == null) {
+                return "Processing";
+            }
+    
+            if ($latestStep == $totalSteps) {
+                return "Completed";
+            }
+    
+            return "Processing";
+        }
+
+        return $status;
     }
 
     /**

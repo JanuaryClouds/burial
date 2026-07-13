@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\ApplicationService;
 use App\Services\ClientService;
 use App\Services\DatatableService;
 
@@ -9,6 +10,7 @@ class DashboardController extends Controller
 {
     public function __construct(
         protected ClientService $clientServices,
+        protected ApplicationService $applicationServices,
         protected DatatableService $datatableServices
     ) {}
 
@@ -25,58 +27,19 @@ class DashboardController extends Controller
 
     public function staff()
     {
-        $page_title = 'Dashboard';
-
-        $data = $this->clientServices->index('tracking_no', 'asc');
-        $columns = $this->datatableServices->getColumns($data, ['id', 'status', 'show_route']);
-
-        $cardData = [
-            [
-                'model' => 'App\Models\Client',
-                'label' => 'Total Clients',
-                'scope' => 'Total',
-                'iconName' => 'people',
-                'iconPathsCount' => 5,
-                'route' => route('client.index'),
-            ],
-            [
-                'model' => 'App\Models\Client',
-                'label' => 'Referred',
-                'scope' => 'Referral',
-                'iconName' => 'route',
-                'iconPathsCount' => 4,
-                'route' => route('referral.index'),
-            ],
-            [
-                'model' => 'App\Models\Client',
-                'label' => 'With Burial Assistances',
-                'scope' => 'BurialAssistance',
-                'iconName' => 'file-up',
-                'iconPathsCount' => 2,
-                'route' => route('burial.index'),
-            ],
-            [
-                'model' => 'App\Models\Client',
-                'label' => 'With Libreng Libing',
-                'scope' => 'FuneralAssistance',
-                'iconName' => 'file-up',
-                'iconPathsCount' => 2,
-                'route' => route('funeral.index'),
-            ],
-        ];
-
+        $data = $this->applicationServices->index('tracking_no', 'desc');
+        
         if (request()->expectsJson()) {
             return response()->json([
-                'clients' => $data ? $data->values() : [],
+                'data' => $data ? $data->values() : [],
             ]);
         }
 
-        return view('dashboard', compact(
-            'page_title',
-            'cardData',
-            'data',
-            'columns',
-        ));
+        return view('dashboard', [
+            'page_title' => 'Dashboard',
+            'data' => $data,
+            'columns' => $this->datatableServices->getColumns($data)
+        ]);
     }
 
     public function user()

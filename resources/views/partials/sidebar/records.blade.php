@@ -3,10 +3,8 @@
     @class([
         'menu-item',
         'here' =>
-            Route::is('interview.*') ||
-            Route::is('burial*') ||
-            Route::is('assignments*') ||
-            Route::is('funeral*') ||
+            Route::is('interview*') ||
+            Route::is('application*') ||
             Route::is('client*') ||
             Route::is('beneficiary*') ||
             Route::is('referral*'),
@@ -26,54 +24,31 @@
                 <span class="menu-section fs-5 fw-bolder ps-1 py-1">Records</span>
             </div>
         </div>
-        <div class="menu-item">
-            <a href="{{ route('client.index') }}" @class(['active' => Request::is('client*'), 'menu-link'])>
-                <span class="menu-icon">
-                    <x-ki-icon :icon_name="'people'" :icon_size="'2'" :paths_count="5" />
-                </span>
-                <span class="menu-title">Clients</span>
-            </a>
-        </div>
-        <div class="menu-item">
-            <a href="{{ route('beneficiary.index') }}" @class(['active' => Request::is('beneficiary*'), 'menu-link'])>
-                <span class="menu-icon">
-                    <x-ki-icon :icon_name="'people'" :icon_size="'2'" :paths_count="5" />
-                </span>
-                <span class="menu-title">Beneficiaries</span>
-            </a>
-        </div>
-        <div class="menu-item">
-            <a href="{{ route('interview.index') }}" @class(['active' => Route::is('interview.*'), 'menu-link']) aria-label="Go to client intakes">
-                <span class="menu-icon">
-                    <x-ki-icon :icon_name="'message-question'" :icon_size="'2'" :paths_count="3" />
-                </span>
-                <span class="menu-title">Interviews</span>
-            </a>
-        </div>
-        <div class="menu-item">
-            <a href="{{ route('referral.index') }}" @class(['active' => Request::is('referral*'), 'menu-link'])>
-                <span class="menu-icon">
-                    <x-ki-icon :icon_name="'route'" :icon_size="'2'" :paths_count="4" />
-                </span>
-                <span class="menu-title">Referrals</span>
-            </a>
-        </div>
-        <div class="menu-item">
-            <a href="{{ route('funeral.index') }}" @class(['active' => Request::is('funeral*'), 'menu-link'])>
-                <span class="menu-icon">
-                    <x-ki-icon :icon_name="'file-up'" :icon_size="'2'" :paths_count="2" />
-                </span>
-                <span class="menu-title">Libreng Libing</span>
-            </a>
-        </div>
-        <div class="menu-item">
-            <a href="{{ route('burial.index') }}" @class(['active' => Request::is('burial*'), 'menu-link'])>
-                <span class="menu-icon">
-                    <x-ki-icon :icon_name="'file-up'" :icon_size="'2'" :paths_count="2" />
-                </span>
-                <span class="menu-title">Burial Assistance</span>
-            </a>
-        </div>
+        @include('components.sidebar-menu-link', [
+            'route' => 'client.index',
+            'activeLink' => 'client',
+            'text' => 'Clients',
+        ])
+        @include('components.sidebar-menu-link', [
+            'route' => 'beneficiary.index',
+            'activeLink' => 'beneficiary',
+            'text' => 'Beneficiaries',
+        ])
+        @include('components.sidebar-menu-link', [
+            'route' => 'interview.index',
+            'activeLink' => 'interview',
+            'text' => 'Interviews',
+        ])
+        @include('components.sidebar-menu-link', [
+            'route' => 'referral.index',
+            'activeLink' => 'referral',
+            'text' => 'Referrals',
+        ])
+        @include('components.sidebar-menu-link', [
+            'route' => 'application.index',
+            'activeLink' => 'application',
+            'text' => 'Applications',
+        ])
     </div>
     <!--end:Menu sub-->
 </div>

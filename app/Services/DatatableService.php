@@ -18,7 +18,7 @@ class DatatableService
             return collect();
         }
 
-        $reject = array_merge($reject, ['id', 'status', 'show_route']);
+        $reject = array_merge($reject, ['uuid', 'id', 'status', 'show_route']);
 
         $keys = is_array($data->first()) ? array_keys($data->first()) : array_keys($data->first()->toArray());
 
