@@ -59,7 +59,7 @@
         if (dataTable.hasClass('with-actions')) {
             columns.push({
                 data: null,
-                title: 'Actions',
+                title: '',
                 orderable: false,
                 searchable: false,
                 className: 'text-center',
