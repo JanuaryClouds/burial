@@ -100,6 +100,10 @@ class Application extends Model
             }
         }
 
+        if ($this->referral) {
+            $status = "Referred";
+        }
+
         if ($this->processLogs->count() > 0) {
             $latestLog = $this->processLogs()->first();
             $latestStep = $latestLog->loggable()->order_no;

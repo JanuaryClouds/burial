@@ -179,7 +179,7 @@ return [
         EventServiceProvider::class,
         RouteServiceProvider::class,
         ExcelServiceProvider::class,
-        // ViewServiceProvider::class,
+        ViewServiceProvider::class,
         MigrationsLoader::class,
     ])->toArray(),
 

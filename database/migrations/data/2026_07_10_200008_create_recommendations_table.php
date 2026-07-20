@@ -16,6 +16,11 @@ return new class extends Migration
             $table->foreignUuid('application_uuid')
                 ->constrained('applications', 'uuid')
                 ->cascadeOnDelete();
+            $table->string('amount_extended')->nullable();
+            $table->foreignId('mode_of_assistance_id')
+                ->nullable()
+                ->constrained('mode_of_assistances')
+                ->nullOnDelete();
             $table->foreignId('recommended_by')
                 ->constrained('users', 'id')
                 ->cascadeOnUpdate()

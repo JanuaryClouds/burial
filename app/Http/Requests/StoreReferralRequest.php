@@ -24,7 +24,6 @@ class StoreReferralRequest extends FormRequest
     {
         return [
             'referral_to' => 'required|string|max:255',
-            'remarks' => 'nullable|string|max:65535',
         ];
     }
 }

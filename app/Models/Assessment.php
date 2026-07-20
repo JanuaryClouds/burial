@@ -19,13 +19,6 @@ class Assessment extends Model
         'application_uuid',
         'swa',
         'problem_presented',
-        'amount_extended',
-        'mode_of_assistance_id',
-        'remarks'
-    ];
-
-    protected $casts = [
-        'amount_extended' => 'encrypted',
     ];
 
     protected static function booted()
@@ -42,14 +35,5 @@ class Assessment extends Model
     public function application(): BelongsTo
     {
         return $this->belongsTo(Application::class, 'application_id', 'id');
-    }
-
-    /**
-     * Summary of mode_of_assistance
-     * @return BelongsTo<ModeOfAssistance, Assessment>
-     */
-    public function mode_of_assistance(): BelongsTo
-    {
-        return $this->belongsTo(ModeOfAssistance::class, 'mode_of_assistance_id', 'id');
     }
 }

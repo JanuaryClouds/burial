@@ -20,7 +20,6 @@ class InterviewFactory extends Factory
     {
         return [
             'schedule' => $this->faker->dateTimeBetween('-1 week', now()),
-            'remarks' => $this->faker->sentence(8),
         ];
     }
 }

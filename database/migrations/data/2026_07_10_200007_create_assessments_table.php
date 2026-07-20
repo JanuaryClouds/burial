@@ -18,12 +18,6 @@ return new class extends Migration
                 ->cascadeOnDelete();
             $table->text('swa');
             $table->text('problem_presented');
-            $table->string('amount_extended')->nullable();
-            $table->foreignId('mode_of_assistance_id')
-                ->nullable()
-                ->constrained('mode_of_assistances')
-                ->nullOnDelete();
-            $table->string('remarks')->nullable();
             $table->timestamps();
         });
     }

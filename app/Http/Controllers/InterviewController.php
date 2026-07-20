@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\InterviewRequest;
+use App\Http\Requests\StoreInterviewRequest;
 use App\Models\Client;
 use App\Models\SystemSetting;
 use App\Services\DatatableService;
@@ -53,19 +54,20 @@ class InterviewController extends Controller
         ));
     }
 
-    public function store(InterviewRequest $request, $id)
+    public function store(StoreInterviewRequest $request, Client $client)
     {
         try {
-            $client = Client::findOrFail($id);
             $this->authorize('interview', $client);
 
-            $interview = $this->interviewServices->store($request->validated(), $id);
+            $interview = $this->interviewServices->store($request->validated(), $client->uuid);
             if ($interview) {
                 $client = $interview->client;
                 if (! $client->contact_number) {
                     return redirect()->back()->with('info', 'Contact number is required.');
                 }
+                
                 $citizen_uuid = $client->user?->citizen_uuid;
+
                 if ($citizen_uuid) {
                     $this->notificationServices->send(
                         $citizen_uuid,

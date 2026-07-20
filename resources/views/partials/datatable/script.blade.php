@@ -18,25 +18,30 @@
         }
 
         if (dataTable.hasClass('with-status')) {
-            columns.push({
-                data: null,
-                title: 'Status',
-                orderable: true,
-                searchable: true,
-                className: 'text-center',
-                render: (_, __, row) => {
+            const statusColumn = columns.find(column => column.data === 'status');
+
+            if (statusColumn) {
+                statusColumn.className = 'text-center';
+
+                statusColumn.render = (_, __, row) => {
                     const rawStatus = row.status || 'pending';
                     const status = escapeHtml(rawStatus);
                     let badgeClass;
                     switch (rawStatus.toLowerCase()) {
-                        case 'pending':
+                        case 'new':
                             badgeClass = 'bg-warning text-dark';
                             break;
-                        case 'processing':
+                        case 'interviewed':
                             badgeClass = 'bg-primary text-white';
                             break;
-                        case 'for pickup':
+                        case 'recommended':
+                            badgeClass = 'bg-info text-white';
+                            break;
+                        case 'referred':
                             badgeClass = 'bg-success text-white';
+                            break;
+                        case 'for pickup':
+                            badgeClass = 'bg-warning text-dark';
                             break;
                         case 'rejected':
                             badgeClass = 'bg-danger text-white';
@@ -53,17 +58,18 @@
                         </span>
                     `;
                 }
-            })
+            }
         }
 
         if (dataTable.hasClass('with-actions')) {
-            columns.push({
-                data: null,
-                title: '',
-                orderable: false,
-                searchable: false,
-                className: 'text-center',
-                render: (_, __, row) => {
+            const actionsColumn = columns.find(column => column.data === 'show_route');
+
+            if (actionsColumn) {
+                actionsColumn.orderable = false;
+                actionsColumn.searchable = false;
+                actionsColumn.className = 'text-center';
+
+                actionsColumn.render = (_, __, row) => {
                     const routeValue = row.show_route || '#';
                     const isValidPath = routeValue.startsWith('/') && !routeValue.startsWith('//');
                     const isSameOrigin = routeValue.startsWith(window.location.origin);
@@ -75,17 +81,17 @@
                     if (safeRoute === '#' || safeRoute === '' || safeRoute === undefined ||
                         safeRoute === null) return '';
                     return ` 
-                        <a href="${safeRoute}" class="btn btn-sm btn-primary hover-scale">
-                            <i class="ki-duotone ki-eye pe-1">
-                                <span class="path1"></span>
-                                <span class="path2"></span>
-                                <span class="path3"></span>
-                            </i>
-                            View
-                        </a>
-                    `;
+                            <a href="${safeRoute}" class="btn btn-sm btn-primary hover-scale">
+                                <i class="ki-duotone ki-eye pe-1">
+                                    <span class="path1"></span>
+                                    <span class="path2"></span>
+                                    <span class="path3"></span>
+                                </i>
+                                View
+                            </a>
+                        `;
                 }
-            })
+            }
         }
 
         dataTable.DataTable({
@@ -119,7 +125,7 @@
             buttons: [{
                     extend: 'excel',
                     text: 'Export to Excel',
-                    className: 'btn btn-primary py-1 px-3',
+                    className: '',
                 },
                 // {
                 //     extend: 'print',

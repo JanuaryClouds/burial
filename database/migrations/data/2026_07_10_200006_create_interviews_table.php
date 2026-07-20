@@ -20,7 +20,6 @@ return new class extends Migration
                 ->onUpdate('cascade');
             $table->enum('status', ['scheduled', 'done'])->default('scheduled');
             $table->dateTime('schedule');
-            $table->string('remarks')->nullable();
 
             $table->timestamps();
         });

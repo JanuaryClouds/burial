@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
 
@@ -134,6 +135,15 @@ class Beneficiary extends Model
     public function barangay(): BelongsTo
     {
         return $this->belongsTo(Barangay::class, 'barangay_id');
+    }
+
+    /**
+     * Summary of family
+     * @return HasMany<BeneficiaryFamily, Beneficiary>
+     */
+    public function family(): HasMany
+    {
+        return $this->hasMany(BeneficiaryFamily::class, 'beneficiary_uuid', 'uuid');
     }
 
     // Scopes

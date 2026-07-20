@@ -17,6 +17,8 @@ class Recommendation extends Model
 
     protected $fillable = [
         'application_uuid',
+        'amount_extended',
+        'mode_of_assistance_id',
         'recommended_by',
         'status',
         'approved_at'
@@ -29,6 +31,15 @@ class Recommendation extends Model
     public function application(): BelongsTo
     {
         return $this->belongsTo(Application::class, 'application_uuid', 'uuid');
+    }
+
+    /**
+     * Summary of modeOfAssistance
+     * @return BelongsTo<ModeOfAssistance, Recommendation>
+     */
+    public function modeOfAssistance(): BelongsTo
+    {
+        return $this->belongsTo(ModeOfAssistance::class, 'mode_of_assistance_id', 'id');
     }
 
     /**

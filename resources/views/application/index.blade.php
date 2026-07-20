@@ -5,7 +5,6 @@
             @include('partials.datatable.index', [
                 'columns' => $columns,
                 'src' => 'data',
-                'route' => 'application',
             ])
         </div>
     </div>

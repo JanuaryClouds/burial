@@ -13,12 +13,14 @@
         );
         $hasStatus = $data->contains(fn($item) => array_key_exists('status', $item));
 
-        if ($hasActions) {
-            $classes .= ' with-actions';
-        }
-
         if ($hasStatus) {
             $classes .= ' with-status';
+            $columns[] = ['data' => 'status'];
+        }
+
+        if ($hasActions) {
+            $classes .= ' with-actions';
+            $columns[] = ['data' => 'show_route'];
         }
     }
 
@@ -31,22 +33,19 @@
     }
 @endphp
 <div class="table-responsive overflow-x-hidden">
-    <div class="dataTables_wrapper">
-        <table class="table data-table {{ $classes }}" id="dataTable-{{ $dataTableId }}" style="width:100%"
-            data-route="{{ $route ?? request()->url() }}" data-columns='@json($columns)'
-            data-rows='@json($data)' data-src="{{ $src }}"
-            data-count-per-page="{{ $countPerPage }}">
-            <thead class="border-bottom border-bottom-1 border-gray-200 fw-bold">
-                @include('partials.datatable.head', [
-                    'columns' => $columns,
-                ])
-            </thead>
-            <tbody>
-                @include('partials.datatable.body', [
-                    'columns' => $columns,
-                ])
-            </tbody>
-        </table>
-    </div>
+    <table class="table data-table {{ $classes }}" id="dataTable-{{ $dataTableId }}" style="width:100%"
+        data-route="{{ $route ?? request()->url() }}" data-columns='@json($columns)'
+        data-rows='@json($data)' data-src="{{ $src }}" data-count-per-page="{{ $countPerPage }}">
+        <thead class="border-bottom border-bottom-1 border-gray-200 fw-bold">
+            @include('partials.datatable.head', [
+                'columns' => $columns,
+            ])
+        </thead>
+        <tbody>
+            @include('partials.datatable.body', [
+                'columns' => $columns,
+            ])
+        </tbody>
+    </table>
 </div>
 @include('partials.datatable.script')

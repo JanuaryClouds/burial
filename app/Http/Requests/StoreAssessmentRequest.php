@@ -12,7 +12,7 @@ class StoreAssessmentRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,7 +23,8 @@ class StoreAssessmentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'swa' => 'required|string',
+            'problem_presented' => 'required|string'
         ];
     }
 }

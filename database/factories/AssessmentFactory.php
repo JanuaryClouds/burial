@@ -22,9 +22,6 @@ class AssessmentFactory extends Factory
         return [
             'swa' => $this->faker->sentences(2, true),
             'problem_presented' => $this->faker->sentences(2, true),
-            'amount_extended' => $this->faker->randomFloat(0, 100, 10000),
-            'mode_of_assistance_id' => ModeOfAssistance::inRandomOrder()->firstOrFail()->id,
-            'remarks' => $this->faker->optional()->sentences(2, true),
         ];
     }
 }

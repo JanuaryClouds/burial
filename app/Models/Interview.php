@@ -19,7 +19,6 @@ class Interview extends Model
         'client_uuid',
         'status',
         'schedule',
-        'remarks',
     ];
 
     /**

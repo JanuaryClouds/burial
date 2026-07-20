@@ -15,7 +15,6 @@ return new class extends Migration
             $table->uuid()->primary();
             $table->foreignUuid('application_uuid')->constrained('applications', 'uuid')->onDelete('CASCADE');
             $table->string('referral_to');
-            $table->text('remarks')->nullable();
             $table->timestamps();
         });
     }

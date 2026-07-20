@@ -36,6 +36,7 @@ class DatabaseSeeder extends Seeder
             InterviewSeeder::class,
             AssessmentSeeder::class,
             RecommendationSeeder::class,
+            ReferralSeeder::class,
 
             // Custom Fields
         ]);

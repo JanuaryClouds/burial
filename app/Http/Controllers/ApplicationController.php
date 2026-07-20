@@ -5,6 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Application;
 use App\Http\Requests\StoreApplicationRequest;
 use App\Http\Requests\UpdateApplicationRequest;
+use App\Models\Assistance;
+use App\Models\Barangay;
+use App\Models\Education;
+use App\Models\FuneralAssistanceType;
+use App\Models\ModeOfAssistance;
+use App\Models\Sex;
 use App\Services\ApplicationService;
 use App\Services\DatatableService;
 
@@ -58,6 +64,12 @@ class ApplicationController extends Controller
     {
         return view('application.show', [
             'application' => $application,
+            'interviews' => $application->client->interviews,
+            'assessment' => $application->assessment,
+            'recommendations' => $application->recommendations,
+            'referral' => $application->referral,
+            'funeralAssistanceTypes' => FuneralAssistanceType::select(['name', 'uuid'])->get(),
+            'modes' => ModeOfAssistance::select(['id', 'name'])->get(),
             'page_title' => $application->tracking_no
         ]);
     }
@@ -81,8 +93,18 @@ class ApplicationController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Application $application)
+    // public function destroy(Application $application)
+    // {
+    //     //
+    // }
+
+    public function print(Application $application)
     {
-        //
+        return $this->applicationServices->print($application);
+    }
+
+    public function certificate(Application $application)
+    {
+        return $this->applicationServices->certificate($application);
     }
 }

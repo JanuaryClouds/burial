@@ -2,14 +2,14 @@
 
 namespace App\Policies;
 
-use App\Models\Client;
+use App\Models\Application;
 use App\Models\User;
 
 class RecommendationPolicy
 {
-    public function create(User $user, Client $client): bool
+    public function create(User $user, Application $application): bool
     {
-        if ($user->id === $client->user_id) {
+        if ($user->id === $application->client->user_id) {
             return false;
         }
 

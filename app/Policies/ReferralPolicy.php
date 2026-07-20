@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Models\Application;
 use App\Models\Client;
 use App\Models\Referral;
 use App\Models\User;
@@ -11,9 +12,9 @@ class ReferralPolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user, Client $client): bool
+    public function create(User $user, Application $application): bool
     {
-        if ($user->id === $client->user_id) {
+        if ($user->id === $application->client->user_id) {
             return false;
         }
 

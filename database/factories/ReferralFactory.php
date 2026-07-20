@@ -19,9 +19,7 @@ class ReferralFactory extends Factory
     public function definition(): array
     {
         return [
-            'id' => (string) Str::uuid(),
             'referral_to' => $this->faker->name(),
-            'remarks' => 'seeder generated',
         ];
     }
 }

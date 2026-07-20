@@ -71,12 +71,12 @@ class UserSeeder extends Seeder
 
                 foreach ($uatClientUserIds as $index => $userId) {
                     User::firstOrCreate([
-                        'email' => 'client'.$index.'tlcportal.com',
+                        'email' => 'client'.($index + 1).'@tlcportal.com',
                         'citizen_uuid' => $userId,
                         'emp_id' => null,
                         'first_name' => 'Client',
                         'middle_name' => null,
-                        'last_name' => 'TLC '.$index,
+                        'last_name' => 'TLC '.($index + 1),
                         'suffix' => null,
                         'is_active' => true,
                         'contact_number' => null,

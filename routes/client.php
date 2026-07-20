@@ -15,11 +15,11 @@ Route::post('/general-intake-form/store', [ClientController::class, 'store'])
     ->middleware('throttle:5,1')
     ->name('general.intake.form.store');
 
-Route::get('/referral', [ReferralController::class, 'index'])
-    ->name('referral.index');
+// Route::get('/referral', [ReferralController::class, 'index'])
+//     ->name('referral.index');
 
-Route::get('/interviews', [InterviewController::class, 'index'])
-    ->name('interview.index');
+// Route::get('/interviews', [InterviewController::class, 'index'])
+//     ->name('interview.index');
 
 Route::prefix('client')
     ->name('client.')
@@ -27,21 +27,21 @@ Route::prefix('client')
         Route::get('/{id}/gis-form', [ClientController::class, 'generateGISForm'])
             ->name('gis-form');
 
-        Route::post('/{id}/schedule', [InterviewController::class, 'store'])
-            ->name('interview.schedule.store');
+        // Route::post('/{id}/schedule', [InterviewController::class, 'store'])
+        //     ->name('interview.schedule.store');
 
-        Route::post('/{id}/schedule/done', [InterviewController::class, 'done'])
-            ->name('interview.schedule.done');
+        // Route::post('/{id}/schedule/done', [InterviewController::class, 'done'])
+        //     ->name('interview.schedule.done');
 
-        Route::post('/{id}/assessment', [ClientController::class, 'assessment'])
-            ->middleware('permission:create-assessments')
-            ->name('assessment.store');
+        // Route::post('/{id}/assessment', [ClientController::class, 'assessment'])
+        //     ->middleware('permission:create-assessments')
+        //     ->name('assessment.store');
 
-        Route::post('/{id}/recommendation', [ClientController::class, 'recommendedService'])
-            ->middleware('permission:create-recommendations')
-            ->name('recommendation.store');
+        // Route::post('/{id}/recommendation', [ClientController::class, 'recommendedService'])
+        //     ->middleware('permission:create-recommendations')
+        //     ->name('recommendation.store');
 
-        Route::post('/{id}/referral', [ReferralController::class, 'store'])
-            ->middleware('permission:create-referrals')
-            ->name('referral.store');
+        // Route::post('/{id}/referral', [ReferralController::class, 'store'])
+        //     ->middleware('permission:create-referrals')
+        //     ->name('referral.store');
     });

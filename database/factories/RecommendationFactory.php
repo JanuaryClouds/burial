@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\ModeOfAssistance;
 use App\Models\Recommendation;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -18,7 +19,8 @@ class RecommendationFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'amount_extended' => $this->faker->randomFloat(0, 100, 10000),
+            'mode_of_assistance_id' => ModeOfAssistance::inRandomOrder()->firstOrFail()->id,
         ];
     }
 }

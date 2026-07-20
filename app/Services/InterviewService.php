@@ -31,17 +31,16 @@ class InterviewService
             });
     }
 
-    public function store(array $data, $id)
+    /**
+     * Summary of store
+     * @param array $data
+     * @param string $clientUuid
+     * @return Interview
+     */
+    public function store(array $data, string $clientUuid): Interview
     {
-        try {
-            $client = Client::findOrFail($id);
-            $data['client_id'] = $client->id;
-            $data['id'] = Str::uuid();
-
-            return Interview::create($data);
-        } catch (Exception $e) {
-            return null;
-        }
+        $data['client_uuid'] = $clientUuid;
+        return Interview::create($data);
     }
 
     public function done($id)
