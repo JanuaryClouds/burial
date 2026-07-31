@@ -18,7 +18,7 @@ return new class extends Migration
                 ->constrained('clients', 'uuid')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
-            $table->enum('status', ['scheduled', 'done'])->default('scheduled');
+            $table->enum('status', ['scheduled', 'done', 'canceled'])->default('scheduled');
             $table->dateTime('schedule');
 
             $table->timestamps();
