@@ -39,10 +39,6 @@ class ClientFactory extends Factory
     public function configure()
     {
         return $this->afterCreating(function (Client $client) {
-            // Beneficiary::factory()->create([
-            //     'client_id' => $client->id,
-            // ]);
-
             ClientSocialInfo::factory()->create([
                 'client_uuid' => $client->uuid,
             ]);

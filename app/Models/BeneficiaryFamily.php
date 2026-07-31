@@ -27,12 +27,9 @@ class BeneficiaryFamily extends Model
 
     protected $casts = [
         'name' => 'encrypted',
+        'income' => 'encrypted',
+        'occupation' => 'encrypted',
     ];
-
-    public static function getBeneficiaryFamilies($client)
-    {
-        return self::where('client_id', $client);
-    }
 
     /**
      * Summary of sex
@@ -65,12 +62,21 @@ class BeneficiaryFamily extends Model
     }
 
     /**
-     * Summary of client
-     *
-     * @return BelongsTo<Client, BeneficiaryFamily>
+     * Summary of beneficiary
+     * @return BelongsTo<Beneficiary, BeneficiaryFamily>
      */
-    public function client(): BelongsTo
+    public function beneficiary(): BelongsTo
     {
-        return $this->belongsTo(Client::class, 'client_id');
+        return $this->belongsTo(Beneficiary::class, 'beneficiary_uuid');
+    }
+
+    public static function relations(): array
+    {
+        return [
+            'sex',
+            'civil',
+            'relationship',
+            'beneficiary'
+        ];
     }
 }

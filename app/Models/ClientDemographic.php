@@ -14,6 +14,7 @@ class ClientDemographic extends Model
     protected $table = 'client_demographics';
 
     protected $fillable = [
+        'client_uuid',
         'sex_id',
         'religion_id',
         'nationality_id',

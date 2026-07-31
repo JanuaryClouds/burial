@@ -3,43 +3,117 @@
 namespace App\Services;
 
 use App\Models\Application;
+use App\Models\Assessment;
 use App\Models\Assistance;
+use App\Models\Beneficiary;
 use App\Models\Client;
 use App\Models\ModeOfAssistance;
+use App\Models\Referral;
 use App\Models\SystemSetting;
 use App\Models\WorkflowStep;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 class ApplicationService
 {
-    public function index(string $orderBy = 'tracking_no', string $orderDirection = 'asc')
+    public function index(?string $userId = null, string $orderBy = 'created_at', string $orderDirection = 'asc')
     {
         return Application::with([
             'client',
             'client.interviews',
+            'client.user',
+            'beneficiary',
             'assessment',
             'recommendations',
-            'recommendations.assistance'
+            'referral',
+            'processLogs',
         ])
+            ->when($userId, function ($query) use ($userId) {
+                $query->whereHas('client.user', function ($subQuery) use ($userId) {
+                    $subQuery->where('id', $userId);
+                });
+            })
             ->orderBy($orderBy, $orderDirection)
             ->get()
-            ->map(function ($application) {
+            ->map(function (Application $application) {
+                $client = $application->client;
+                $beneficiary = $application->beneficiary;
+
                 $status = $application->status();
 
                 return [
                     'uuid' => $application->uuid,
                     'tracking_no' => $application->tracking_no,
-                    'client' => $application->client->fullname(),
-                    'beneficiary' => $application->beneficiary->fullname(),
-                    'status' => $status,
+                    'client' => $client->fullname(),
+                    'beneficiary' => $beneficiary->fullname(),
                     'application_date' => $application->created_at->format('F d, Y'),
+                    'status' => $status,
                     'show_route' => route('application.show', $application),
                 ];
             });
     }
 
+    public function workflowState(Application $application): array
+    {
+        // This is the default state of newly submitted applications
+        $state = [
+            'canInterview' => null,
+            'canAssess' => app()->isLocal() ? null : 'The client must be interviewed first',
+            'canRefer' => 'This application cannot be referred without an assessment',
+            'canRecommend' => 'This application cannot receive a recommendation without an assessment',
+        ];
+
+        if ($application->client->interviews->where('scheduled', '>', now())->isNotEmpty()) {
+            $state['canInterview'] = 'The client has an upcoming interview.';
+            $state['canAssess'] = 'The client must be interviewed first.';
+            $state['canRefer'] = 'This application cannot be referred without an assessment';
+            $state['canRecommend'] = 'This application cannot receive a recommendation without an assessment';
+        } else {
+            if ($application->client->interviews->where('status', 'done')->isNotEmpty()) {
+                $state['canInterview'] = null;
+            }
+            
+            $state['canAssess'] = 'The client must be interviewed first';
+            $state['canRefer'] = 'This application cannot be referred without an assessment';
+            $state['canRecommend'] = 'This application cannot receive a recommendation without an assessment';
+        }
+        
+        if ($application->assessment) {
+            $state['canInterview'] = 'This application already has an assessment';
+            $state['canAssess'] = 'This applcation already has an assessment';
+            $state['canRefer'] = null;
+            $state['canRecommend'] = null;
+        }
+
+        if ($application->referral) {
+            $state['canInterview'] = 'This application already has a referral';
+            $state['canAssess'] = 'This application already has a referral';
+            $state['canRefer'] = 'This application already has a referral';
+            $state['canRecommend'] = 'This application already has a referral';
+        }
+        
+        if ($application->recommendations->isNotEmpty()) {
+            $state['canInterview'] = 'This application has already received a recommendation';
+            $state['canAssess'] = 'This application already has a recommendation';
+
+            if ($application->recommendations->where('status', ['approved', 'canceled'])->isNotEmpty()) {
+                $state['canRefer'] = 'This application already has an approved or canceled recommendation';
+                $state['canRecommend'] = 'This application already has an approved or canceled recommendation';
+            } else {
+                $state['canRefer'] = null;
+                $state['canRecommend'] = null;
+            }
+        }
+
+        return $state;
+    }
+
+    /**
+     * Summary of print
+     * @param Application $application
+     */
     public function print(Application $application)
     {
         $client = $application->client;
@@ -140,5 +214,13 @@ class ApplicationService
             ->setOption('margin-top', '0')
             ->setPaper('A4', 'portrait');
         return $pdf->stream($application->tracking_no."-certificate.pdf");
+    }
+
+    public function store(Client $client, Beneficiary $beneficiary)
+    {
+        return Application::create([
+            'client_uuid' => $client->uuid,
+            'beneficiary_uuid' => $beneficiary->uuid,
+        ]);
     }
 }

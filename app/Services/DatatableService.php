@@ -18,15 +18,24 @@ class DatatableService
             return collect();
         }
 
-        $reject = array_merge($reject, ['uuid', 'id', 'status', 'show_route']);
+        $reject = array_merge($reject, ['uuid', 'id']);
 
         $keys = is_array($data->first()) ? array_keys($data->first()) : array_keys($data->first()->toArray());
 
-        return collect($keys)
+        $columns = collect($keys)
             ->reject(fn ($key) => in_array($key, $reject))
             ->map(fn ($key) => [
                 'data' => $key,
             ])
             ->values();
+
+        return $columns;
+    }
+
+    public function ajax(Collection $data)
+    {
+        return response()->json([
+            'data' => $data->values(),
+        ]);
     }
 }

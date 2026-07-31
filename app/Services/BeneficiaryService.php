@@ -3,79 +3,56 @@
 namespace App\Services;
 
 use App\Models\Beneficiary;
+use Illuminate\Support\Facades\Auth;
 
 class BeneficiaryService
 {
-    public function index(?int $user_id = null)
+    public function index(?string $user_id = null, string $orderBy = 'created_at', string $orderDirection = 'asc')
     {
         return Beneficiary::with([
-            'client',
-            'client.claimant',
-            'client.funeralAssistance',
+            'application',
+            'application.client',
+            'application.client.user',
+            'application.client.interviews',
+            'application.assessment',
+            'application.recommendations',
+            'application.recommendations.assistance',
+            'application.referral',
+            'application.processLogs',
             'religion',
         ])
+            ->whereHas('application')
             ->when($user_id, function ($query) use ($user_id) {
-                $query->whereHas('client', function ($q) use ($user_id) {
-                    $q->where('user_id', $user_id);
-                });
+                $query->where('created_by', $user_id);
             })
-            ->orderBy('created_at', 'desc')
+            ->orderBy($orderBy, $orderDirection)
             ->get()
-            ->map(function ($beneficiary) {
-                $assistance = 'Pending';
-                $client = $beneficiary->client;
-                if ($client?->claimant?->count() > 0) {
-                    $assistance = 'Burial Assistance';
-                }
-
-                if ($client?->funeralAssistance?->count() > 0) {
-                    $assistance = 'Libreng Libing';
-                }
-
-                if ($client?->referral?->count() > 0) {
-                    $assistance = 'Referral';
-                }
+            ->map(function (Beneficiary $beneficiary) {
+                $application = $beneficiary->application;
+                $status = $application ? $application->status() : 'Draft';
 
                 return [
-                    'client_tracking_no' => $beneficiary->client?->tracking_no,
+                    'application_tracking_no' => $application->tracking_no,
                     'beneficiary' => $beneficiary->fullname(),
                     'date_of_birth' => $beneficiary->date_of_birth,
-                    'date_of_death' => $beneficiary->date_of_death,
+                    'date_of_death' => $beneficiary->date_of_death . ' (' . $beneficiary->age() .')',
                     'religion' => $beneficiary->religion?->name,
-                    'assistance' => $assistance,
-                    'show_route' => route('beneficiary.show', $beneficiary->id),
+                    'status' => $status,
+                    'show_route' => route('beneficiary.show', $beneficiary),
                 ];
-            })
-            ->sortBy('client_tracking_no');
+            });
     }
 
-    public function show(string $id): Beneficiary
+    public function update(array $data, Beneficiary $beneficiary): void
     {
-        return Beneficiary::with([
-            'client',
-            'client.claimant',
-            'religion',
-            'barangay',
-        ])->findOrFail($id);
-    }
-
-    public function update(string $id, array $data): void
-    {
-        $beneficiary = Beneficiary::findOrFail($id);
-        $data = [
-            'first_name' => $data['ben_first_name'],
-            'middle_name' => $data['ben_middle_name'],
-            'last_name' => $data['ben_last_name'],
-            'suffix' => $data['ben_suffix'],
-            'sex_id' => $data['ben_sex_id'],
-            'religion_id' => $data['ben_religion_id'],
-            'date_of_birth' => $data['ben_date_of_birth'],
-            'date_of_death' => $data['ben_date_of_death'],
-            'place_of_birth' => $data['ben_place_of_birth'],
-            'barangay_id' => $data['ben_barangay_id'],
-        ];
         $beneficiary->update($data);
     }
+
+    public function store(array $data)
+    {
+        $data['created_by'] = Auth::user()->id;
+        return Beneficiary::create($data);
+    } 
 
     public function reportIndex($startDate, $endDate)
     {

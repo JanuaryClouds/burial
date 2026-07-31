@@ -24,7 +24,7 @@ use Illuminate\Support\Str;
 class ClientController extends Controller
 {
     public function __construct(
-        protected ClientService $clientServices,
+        protected ClientService $services,
         protected CentralClientService $citizenServices,
         protected DatatableService $datatableServices,
         protected NotificationService $notificationServices,
@@ -32,105 +32,45 @@ class ClientController extends Controller
 
     public function index()
     {
-        $page_title = 'Clients';
-        $personalData = $this->clientServices->index('tracking_no', 'asc', auth()->user()->id);
-        $personalDataColumns = $this->datatableServices->getColumns($personalData, ['client']);
+        $user = Auth::user();
 
-        $cardData = [];
-        $allData = [];
-        $allDataColumns = [];
-        if (auth()->user()->hasRole('staff')) {
-            $allData = $this->clientServices->index('tracking_no', 'asc');
-            $allDataColumns = $this->datatableServices->getColumns($allData, []);
-            $cardData = [
-                [
-                    'model' => 'App\Models\Client',
-                    'label' => 'Total Clients',
-                    'scope' => 'Total',
-                    'iconName' => 'people',
-                    'iconPathsCount' => 5,
-                    'route' => route('client.index'),
-                ],
-                [
-                    'model' => 'App\Models\Client',
-                    'label' => 'Referred',
-                    'scope' => 'Referral',
-                    'iconName' => 'route',
-                    'iconPathsCount' => 4,
-                    'route' => route('referral.index'),
-                ],
-                [
-                    'model' => 'App\Models\Client',
-                    'label' => 'With Burial Assistances',
-                    'scope' => 'BurialAssistance',
-                    'iconName' => 'file-up',
-                    'iconPathsCount' => 2,
-                    'route' => route('burial.index'),
-                ],
-                [
-                    'model' => 'App\Models\Client',
-                    'label' => 'With Libreng Libing',
-                    'scope' => 'FuneralAssistance',
-                    'iconName' => 'file-up',
-                    'iconPathsCount' => 2,
-                    'route' => route('funeral.index'),
-                ],
-            ];
-        }
+        $clients = $user->roles->isNotEmpty() ? $this->services->index() : $this->services->index($user->id);
 
         if (request()->expectsJson()) {
-            return response()->json([
-                'personalData' => $personalData ? $personalData->values() : [],
-                'allData' => $allData ? $allData->values() : [],
-            ]);
+            return $this->datatableServices->ajax($clients);
         }
 
-        return view('client.index', compact(
-            'page_title',
-            'cardData',
-            'personalData',
-            'personalDataColumns',
-            'allData',
-            'allDataColumns',
-        ));
+        return view('client.index', [
+            'page_title' => 'Clients',
+            'columns' => $this->datatableServices->getColumns($clients),
+        ]);
     }
 
     public function show(Client $client)
     {
-        try {
-            $resource = 'client';
-            $client = $this->clientServices->get($client->id);
-            $page_title = $client->tracking_no;
-            $page_subtitle = $client->fullname()."'s Application";
-            $readonly = ! auth()->user()->hasRole('superadmin');
-            $released = $client?->claimant?->burialAssistance?->status != 'released' || $client?->funeralAssistance?->forwarded_at != null;
+        $application = $client->application ?? null;
 
-            if ($client) {
-                return view('client.view', compact(
-                    'page_title',
-                    'page_subtitle',
-                    'resource',
-                    'client',
-                    'readonly',
-                    'released',
-                ));
-            } else {
-                return redirect()->back()->with('error', 'Client not found.');
-            }
-        } catch (\Throwable $th) {
-            return redirect()->back()->with('error', 'Unable to find application.');
-        }
+        return view('client.show', [
+            'client' => $client,
+            'application' => $application,
+            'beneficiary' => $application->beneficiary ?? null,
+            'page_title' => $client->fullname() . ' | Client | ' . ($application ? $application->tracking_no : 'Draft'),
+        ]);
     }
 
     public function create()
     {
-        $page_title = 'New Application';
+        $page_title = 'New Client Record';
         $matched = [];
         $user = Auth::user();
         $client = null;
 
         if ($user->hasRole('staff')) {
             return redirect()->route('dashboard')->with('warning', 'You are not allowed to apply as a client.');
+        }
+
+        if (session()->has('client_uuid')) {
+            session()->remove('client_uuid');
         }
 
         if ($user->clients->count() === 0 && $user->citizen_uuid !== null) {
@@ -147,44 +87,59 @@ class ClientController extends Controller
             $civilStatus = CivilStatus::pluck('name', 'id');
 
             if (isset($citizen['sex'])) {
-                $matched['sex_id'] = $this->clientServices->match($citizen['sex'], $genders, true);
+                $matched['sex_id'] = $this->services->match($citizen['sex'], $genders, true);
             }
 
             if (isset($citizen['barangay'])) {
-                $matched['barangay_id'] = $this->clientServices->match($citizen['barangay'], $barangays, true);
+                $matched['barangay_id'] = $this->services->match($citizen['barangay'], $barangays, true);
             }
 
             if (isset($citizen['civil_status'])) {
-                $matched['civil_id'] = $this->clientServices->match($citizen['civil_status'], $civilStatus, false);
+                $matched['civil_id'] = $this->services->match($citizen['civil_status'], $civilStatus, false);
             }
         }
 
-        return view('client.create', compact(
-            'matched',
-            'page_title',
-            'client'
-        ));
+        $view = view('client.create', [
+            'page_title' => $page_title,
+        ]);
+
+        if (!$client && !$citizen) {
+            session()->flash('info', 'The system could not prefill some fields. We apolagize for the inconvinience.');
+        }
+
+        return $view->with([
+            'client' => $client,
+            'matched' => $matched,
+        ]);
     }
 
     public function store(ClientRequest $request)
     {
         try {
-            $result = $this->clientServices->storeClient($request->validated(), Auth::user(), $request->file('images', []));
-            $client = $result['client'] ?? null;
+            $client = $this->services->store($request->validated());
 
-            if (! $client) {
-                return redirect()->back()->with('error', 'Failed to add client information!');
-            }
-
-            $ip = request()->ip();
-            $browser = request()->header('User-Agent');
-            activity()
-                ->withProperties(['ip' => $ip, 'browser' => $browser])
-                ->log('Added the client details: '.$client->id.(($result['uploadError'] ?? false) ? ' images failed to upload' : ''));
+            session()->put('client_uuid', $client->uuid);
 
             return redirect()
-                ->route('client.show', $client)
-                ->with('success', 'Client information added successfully!'.(($result['uploadError'] ?? false) ? ' However, some images failed to upload.' : '').' Please remember to bring hard copies of the submitted documents during the interview at the CSWDO Office.');
+                ->route('beneficiary.create')
+                ->with('success', 'Client information added successfully! You may edit the information later when finalizing your application.');
+
+            // $result = $this->clientServices->storeClient($request->validated(), Auth::user(), $request->file('images', []));
+            // $client = $result['client'] ?? null;
+
+            // if (! $client) {
+            //     return redirect()->back()->with('error', 'Failed to add client information!');
+            // }
+
+            // $ip = request()->ip();
+            // $browser = request()->header('User-Agent');
+            // activity()
+            //     ->withProperties(['ip' => $ip, 'browser' => $browser])
+            //     ->log('Added the client details: '.$client->id.(($result['uploadError'] ?? false) ? ' images failed to upload' : ''));
+
+            // return redirect()
+            //     ->route('client.show', $client)
+            //     ->with('success', 'Client information added successfully!'.(($result['uploadError'] ?? false) ? ' However, some images failed to upload.' : '').' Please remember to bring hard copies of the submitted documents during the interview at the CSWDO Office.');
         } catch (Exception $e) {
             return redirect()->back()->with('error', 'Failed to add client information!'.(app()->hasDebugModeEnabled() ? ': '.$e->getMessage() : ''));
         }
@@ -192,31 +147,26 @@ class ClientController extends Controller
 
     public function edit(Client $client)
     {
-        $page_title = 'Client update';
-        $resource = 'client';
-        $data = Client::getClientInfo($client);
-
-        return view('client.view', compact(
-            'page_title',
-            'resource',
-            'data',
-        ));
+        return view('client.edit', [
+            'client' => $client,
+            'page_title' => 'Edit ' . $client->fullname(),
+        ]);
     }
 
     public function update(UpdateClientRequest $request, Client $client)
     {
         try {
-            $this->clientServices->updateClient($request->validated(), $client);
+            $this->services->update($request->validated(), $client);
             activity()
-                ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
+                ->withProperties(['ip' => request()->ip(), 'browser' => request()->userAgent(), 'client' => $client->uuid])
                 ->causedBy(Auth::user())
-                ->log('Updated the client details: '.$client->id);
+                ->log('Updated the client details: '.$client->uuid);
 
             return redirect()
                 ->route('client.show', $client)
                 ->with('success', 'Client information updated successfully!');
-        } catch (\Throwable $th) {
-            return redirect()->back()->with('error', 'Failed to update client information!'.(app()->hasDebugModeEnabled() ? ': '.$th->getMessage() : ''));
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', 'Failed to update client information!'.(app()->hasDebugModeEnabled() ? ': '.$e->getMessage() : ''));
         }
     }
 
