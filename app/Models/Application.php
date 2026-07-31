@@ -2,18 +2,21 @@
 
 namespace App\Models;
 
+use App\Traits\HasRelationSets;
 use App\Traits\HasUuid;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Str;
 
 class Application extends Model
 {
     /** @use HasFactory<\Database\Factories\ApplicationFactory> */
-    use HasFactory, HasUuid;
+    use HasFactory, HasUuid, HasRelationSets;
 
     protected $table = 'applications';
 
@@ -31,6 +34,15 @@ class Application extends Model
             $application->tracking_no = sprintf('%s-%04d', $year, $count);
         });
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Model Relations
+    |--------------------------------------------------------------------------
+    |
+    | Model relationships.
+    |
+    */
 
     /** 
      * Get the client that owns the application.
@@ -76,36 +88,107 @@ class Application extends Model
         return $this->hasMany(ProcessLog::class);
     }
 
+    /**
+     * Summary of referral
+     * @return HasOne<Referral, Application>
+     */
+    public function referral(): HasOne
+    {
+        return $this->hasOne(Referral::class);
+    }
+
+    public function relationship(): BelongsTo
+    {
+        return $this->belongsTo(Relationship::class);
+    }
+
+    protected static function clientRelations(): array
+    {
+        return self::prefixRelations(
+                'client',
+                Client::relations()
+            );
+    }
+
+    protected static function beneficiaryRelations(): array
+    {
+        return self::prefixRelations(
+            'beneficiary',
+            Beneficiary::relations()
+        );
+    }
+
+    protected static function recommendationRelations(): array
+    {
+        return self::prefixRelations(
+            'recommendations',
+            Recommendation::relations()
+        );
+    }
+
+    public static function relations(string ...$groups): array
+    {
+        return collect($groups)
+            ->flatMap(fn ($group) => match ($group) {
+                'client' => self::clientRelations(),
+                'beneficiary' => self::beneficiaryRelations(),
+                'recommendation' => self::recommendationRelations(),
+                'assessment' => ['assessment'],
+                'processLogs' => ['processLogs'],
+                'referral' => ['referral'],
+                'relationship' => ['relationship'],
+                default => [],
+            })
+            ->unique()
+            ->values()
+            ->all();
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Model Functions
+    |--------------------------------------------------------------------------
+    |
+    | Functions exclusive to this model.
+    |
+    */
+
     public function status(): String
     {
         $status = "Pending";
+        
+        $interviews = $this->client->interviews;
+        $assessment = $this->assessment;
+        $recommendations = $this->recommendations;
+        $referral = $this->referral;
+        $processLogs = $this->processLogs;
 
-        if ($this->client->interviews->count() > 0) {
-            if ($this->client->interviews->first()->status == 'done') {
+        if ($interviews && $interviews->count() > 0) {
+            if ($interviews->first()->status == 'done') {
                 $status = "Interviewed";
             } else {
                 $status = "Scheduled";
             }
         }
 
-        if ($this->assessment) {
+        if ($assessment) {
             $status = "Assessed";
         }
 
-        if ($this->recommendations->count() > 0) {
-            $recommendation = $this->recommendations->where('status', 'approved');
+        if ($recommendations->isNotEmpty()) {
+            $approved_recommendation = $recommendations->where('status', 'approved');
 
-            if ($recommendation != null) {
+            if ($approved_recommendation) {
                 $status = "Recommended";
             }
         }
 
-        if ($this->referral) {
+        if ($referral) {
             $status = "Referred";
         }
 
-        if ($this->processLogs->count() > 0) {
-            $latestLog = $this->processLogs()->first();
+        if ($processLogs->isNotEmpty()) {
+            $latestLog = $processLogs->first();
             $latestStep = $latestLog->loggable()->order_no;
             $totalSteps = WorkflowStep::count();
     
@@ -123,12 +206,12 @@ class Application extends Model
         return $status;
     }
 
-    /**
-     * Summary of referral
-     * @return HasOne<Referral, Application>
-     */
-    public function referral(): HasOne
-    {
-        return $this->hasOne(Referral::class);
-    }
+    /*
+    |--------------------------------------------------------------------------
+    | Model Scope
+    |--------------------------------------------------------------------------
+    |
+    | Model scopes.
+    |
+    */
 }

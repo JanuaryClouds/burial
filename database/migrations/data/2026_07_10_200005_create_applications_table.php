@@ -20,6 +20,10 @@ return new class extends Migration
             $table->foreignUuid('beneficiary_uuid')
                 ->constrained('beneficiaries', 'uuid')
                 ->cascadeOnDelete();
+            $table->foreignId('relationship_id')
+                ->nullable()
+                ->constrained('relationships')
+                ->nullOnDelete();
             $table->timestamps();
         });
     }

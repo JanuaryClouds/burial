@@ -17,21 +17,22 @@ return new class extends Migration
                 ->constrained('clients', 'uuid')
                 ->onDelete('CASCADE')
                 ->onUpdate('CASCADE');
-            $table->foreignId('relationship_id')
-                ->constrained('relationships')
-                ->onDelete('CASCADE')
-                ->onUpdate('CASCADE');
+            // $table->foreignId('relationship_id')
+            //     ->constrained('relationships')
+            //     ->onDelete('CASCADE')
+            //     ->onUpdate('CASCADE');
             $table->foreignId('civil_id')
                 ->constrained('civil_statuses')
                 ->onDelete('CASCADE')
                 ->onUpdate('CASCADE');
             $table->foreignId('education_id')
+                ->nullable()
                 ->constrained('educations')
                 ->onDelete('CASCADE')
                 ->onUpdate('CASCADE');
-            $table->string('income')->nullable();
-            $table->string('philhealth')->nullable();
-            $table->string('skill')->nullable();
+            $table->text('income')->nullable();
+            $table->text('philhealth')->nullable();
+            $table->text('skill')->nullable();
             $table->timestamps();
         });
     }

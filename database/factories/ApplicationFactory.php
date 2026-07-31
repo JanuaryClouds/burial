@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Application;
+use App\Models\Relationship;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -19,7 +20,7 @@ class ApplicationFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'relationship_id' => Relationship::inRandomOrder()->first()->id
         ];
     }
 }
