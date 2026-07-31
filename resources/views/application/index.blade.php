@@ -1,11 +1,9 @@
 @extends('layouts.app')
 @section('content')
-    <div class="card multicolor-border">
-        <div class="card-body">
-            @include('partials.datatable.index', [
-                'columns' => $columns,
-                'src' => 'data',
-            ])
-        </div>
-    </div>
+	<x-card>
+		@include('partials.datatable.index', [
+			'columns' => $columns,
+			'src' => 'data',
+		])
+	</x-card>
 @endsection

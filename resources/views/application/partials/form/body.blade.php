@@ -1,0 +1,123 @@
+<div class="card">
+	<form action="{{ route('application.store') }}"
+		method="post"
+		id="gisForm"
+		enctype="multipart/form-data">
+		@csrf
+		<div class="card-header card-header-stretch">
+			<h3 id="tab-title"
+				class="card-title">General Intake Sheet</h3>
+			<div class="card-toolbar">
+				<ul class="nav nav-tabs nav-line-tabs nav-stretch fs-6 border-0"
+					role="tablist">
+					<li class="nav-item"
+						data-bs-toggle="tooltip"
+						data-bs-placement="bottom"
+						title="Client's Information">
+						<a class="nav-link active"
+							data-bs-toggle="tab"
+							href="#client_info_tab"
+							role="tab"
+							aria-controls="client_info_tab"
+							aria-selected="true">Client's Info</a>
+					</li>
+					<li class="nav-item"
+						data-bs-toggle="tooltip"
+						data-bs-placement="bottom"
+						title="Beneficiary's Information">
+						<a class="nav-link"
+							data-bs-toggle="tab"
+							href="#beneficiary_info_tab"
+							role="tab"
+							aria-controls="beneficiary_info_tab"
+							aria-selected="false">Beneficiary Info</a>
+					</li>
+					<li class="nav-item"
+						data-bs-toggle="tooltip"
+						data-bs-placement="bottom"
+						title="Beneficiary's Family">
+						<a class="nav-link"
+							data-bs-toggle="tab"
+							href="#beneficiary_fam_tab"
+							role="tab"
+							aria-controls="beneficiary_fam_tab"
+							aria-selected="false">Beneficiary's Family</a>
+					</li>
+					<li class="nav-item"
+						data-bs-toggle="tooltip"
+						data-bs-placement="bottom"
+						title="Documents">
+						@if (config('services.fileserver.enable.post'))
+							<a class="nav-link"
+								data-bs-toggle="tab"
+								href="#documents_tab"
+								role="tab"
+								aria-controls="documents_tab"
+								aria-selected="false">Documents</a>
+						@else
+							<a class="nav-link position-relative"
+								href="#"
+								role="tab"
+								aria-controls="documents_tab"
+								aria-selected="false">
+								Documents
+								<span class="position-absolute top-75 start-50 translate-middle badge rounded-pill bg-info text-white">
+									Coming soon
+								</span>
+							</a>
+						@endif
+					</li>
+					@if (Route::is('application.create'))
+						<li class="nav-item">
+							<a class="nav-link"
+								data-bs-toggle="tab"
+								href="#review_tab"
+								role="tab"
+								aria-controls="review_tab"
+								aria-selected="false"
+								id="review_tab_link">Review &
+								Submit</a>
+						</li>
+					@endif
+				</ul>
+			</div>
+		</div>
+		<div class="card-body">
+			<div class="tab-content"
+				id="gisTabContent">
+				<div class="tab-pane fade show active"
+					id="client_info_tab"
+					role="tabpanel"
+					aria-labelledby="client_info_tab_link">
+					@include('client.partials.show', ['readonly' => false, 'client' => $previousRecord])
+				</div>
+				<div class="tab-pane fade"
+					id="beneficiary_info_tab"
+					role="tabpanel"
+					aria-labelledby="beneficiary_info_tab_link">
+					@include('beneficiary.partials.show', ['readonly' => false])
+				</div>
+				<div class="tab-pane fade"
+					id="beneficiary_fam_tab"
+					role="tabpanel"
+					aria-labelledby="family_tab_link">
+					@include('beneficiary.family.partials.form', ['readonly' => false])
+				</div>
+				<div class="tab-pane fade"
+					id="documents_tab"
+					role="tabpanel"
+					aria-labelledby="documents_tab_link">
+					@include('application.partials.documents')
+				</div>
+				@if (Route::is('application.create'))
+					<div class="tab-pane fade"
+						id="review_tab"
+						role="tabpanel"
+						aria-labelledby="review_tab_link">
+						@include('application.partials.review')
+					</div>
+				@endif
+			</div>
+		</div>
+	</form>
+</div>
