@@ -59,4 +59,14 @@ class Recommendation extends Model
     {
         return $this->belongsToMany(FuneralAssistanceType::class, 'recommendation_has_assistances', 'recommendation_uuid', 'funeral_assistance_uuid');
     }
+
+    public static function relations(): array
+    {
+        return [
+            'application',
+            'modeOfAssistance',
+            'recommendedBy',
+            'assistance',
+        ];
+    }
 }

@@ -11,7 +11,6 @@ class Citizen extends Model
 
     protected $fillable = [
         'user_id',
-        'emp_id',
         'firstname',
         'middlename',
         'lastname',

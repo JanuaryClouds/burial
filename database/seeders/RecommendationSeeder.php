@@ -22,40 +22,42 @@ class RecommendationSeeder extends Seeder
         dump('Number of Applications to Seed: ' . $applications->count());
 
         foreach ($applications as $application) {
-            $recommendation = Recommendation::factory()->create([
-                'application_uuid' => $application->uuid,
-                'recommended_by' => $staff->random(1)->first()->id ?? 1
-            ]);
-
-            $assistancesTotal = FuneralAssistanceType::count();
-            $assistancesCount = $assistancesTotal > 0 ? rand(1, $assistancesTotal) : 0;
-
-            $assistances = FuneralAssistanceType::query()
-                ->inRandomOrder()
-                ->limit($assistancesCount)
-                ->pluck('uuid');
-
-            $recommendation->assistance()->attach($assistances);
-
-            switch (rand(0, 3)) {
-                case 1:
-                    $recommendation->update([
-                        'status' => 'approved',
-                        'approved_at' => now()->subDays(rand(1, 10))
-                    ]);
-                    break;
-                case 2:
-                    $recommendation->update([
-                        'status' => 'rejected'
-                    ]);
-                    break;
-                case 3:
-                    $recommendation->update([
-                        'status' => 'canceled'
-                    ]);
-                    break;
-                default:
-                    break;
+            if (rand(0,1) === 1) {
+                $recommendation = Recommendation::factory()->create([
+                    'application_uuid' => $application->uuid,
+                    'recommended_by' => $staff->random(1)->first()->id ?? 1
+                ]);
+    
+                $assistancesTotal = FuneralAssistanceType::count();
+                $assistancesCount = $assistancesTotal > 0 ? rand(1, $assistancesTotal) : 0;
+    
+                $assistances = FuneralAssistanceType::query()
+                    ->inRandomOrder()
+                    ->limit($assistancesCount)
+                    ->pluck('uuid');
+    
+                $recommendation->assistance()->attach($assistances);
+    
+                switch (rand(0, 3)) {
+                    case 1:
+                        $recommendation->update([
+                            'status' => 'approved',
+                            'approved_at' => now()->subDays(rand(1, 10))
+                        ]);
+                        break;
+                    case 2:
+                        $recommendation->update([
+                            'status' => 'rejected'
+                        ]);
+                        break;
+                    case 3:
+                        $recommendation->update([
+                            'status' => 'canceled'
+                        ]);
+                        break;
+                    default:
+                        break;
+                }
             }
         }
     }

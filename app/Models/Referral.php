@@ -20,22 +20,11 @@ class Referral extends Model
     ];
 
     /**
-     * Summary of client
-     *
-     * @return BelongsTo<Client, Referral>
+     * Summary of application
+     * @return BelongsTo<Application, Referral>
      */
-    public function client(): BelongsTo
+    public function application(): BelongsTo
     {
-        return $this->belongsTo(Client::class);
-    }
-
-    /**
-     * Summary of beneficiary
-     *
-     * @return BelongsTo<Beneficiary, Referral>
-     */
-    public function beneficiary(): BelongsTo
-    {
-        return $this->belongsTo(Beneficiary::class);
+        return $this->belongsTo(Application::class, 'application_uuid', 'uuid');
     }
 }

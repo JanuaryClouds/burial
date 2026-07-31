@@ -16,7 +16,9 @@ class ReferralSeeder extends Seeder
      */
     public function run(): void
     {
-        $applications = Application::whereDoesntHave('recommendations')->get();
+        $applications = Application::whereDoesntHave('recommendations')
+            ->whereHas('assessment')
+            ->get();
 
         foreach ($applications as $application) {
             if (rand(0, 3) === 0) {

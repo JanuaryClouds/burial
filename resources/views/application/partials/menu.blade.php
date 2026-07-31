@@ -30,11 +30,11 @@
 			<div class="col-6 col-lg-auto">
 				<x-menu-action label="Schedule an Interview"
 					icon="fa-solid fa-calendar-plus"
-					:enabled_when="$recommendations->isEmpty() && !$referral"
+					:enabled_when="!$conditions['canInterview']"
 					:permission="auth()
 					    ->user()
 					    ->can('create', [App\Models\Interview::class, $application])"
-					disabled_message="Application has already been assessed or referred">
+					:disabled_message="$conditions['canInterview']">
 					<x-modal modalId="set-schedule-modal"
 						buttonClass="btn-primary"
 						modalTitle="Schedule an Interview"
@@ -64,11 +64,11 @@
 			<div class="col-6 col-lg-auto">
 				<x-menu-action label="Write an Assessment"
 					icon="fa-solid fa-pen-to-square"
-					:enabled_when="$interviews->isNotEmpty() && !$assessment && $recommendations->isEmpty() && !$referral"
+					:enabled_when="!$conditions['canAssess']"
 					:permission="auth()
 					    ->user()
 					    ->can('create', [App\Models\Assessment::class, $application])"
-					:disabled_message="'Application already has been assessed'">
+					:disabled_message="$conditions['canAssess']">
 					<x-modal modalId="assessment-modal"
 						buttonClass="btn-primary"
 						modalTitle="Write an Assessment"
@@ -98,13 +98,11 @@
 			<div class="col-6 col-lg-auto">
 				<x-menu-action label="Recommend an Assistance"
 					icon="fa-solid fa-check-to-slot"
-					:enabled_when="$assessment && $recommendations->isEmpty() && !$referral"
+					:enabled_when="!$conditions['canRecommend']"
 					:permission="auth()
 					    ->user()
 					    ->can('create', [App\Models\Recommendation::class, $application])"
-					:disabled_message="$recommendations->isNotEmpty()
-					    ? 'Application already has been recommended a service'
-					    : 'Application already has been referred'">
+					:disabled_message="$conditions['canRecommend']">
 					<x-modal modalId="recommendation-modal"
 						buttonClass="btn-success"
 						modalTitle="Recommend an Assistance"
@@ -134,13 +132,11 @@
 			<div class="col-6 col-lg-auto">
 				<x-menu-action label="Referral"
 					icon="fa-solid fa-forward"
-					:enabled_when="$assessment && $recommendations->isEmpty() && !$referral"
+					:enabled_when="!$conditions['canRefer']"
 					:permission="auth()
 					    ->user()
 					    ->can('create', [App\Models\Referral::class, $application])"
-					:disabled_message="$referral
-					    ? 'Application already has been referred'
-					    : 'Application already has been recommended a service'">
+					:disabled_message="$conditions['canRefer']">
 					<x-modal modalId="referral-modal"
 						buttonClass="btn-success"
 						modalTitle="Referral an Assistance"

@@ -18,21 +18,6 @@ class Relationship extends Model
         'remarks',
     ];
 
-    public static function getAllRelationships()
-    {
-        return self::all();
-    }
-
-    /**
-     * Summary of clientSocialInfo
-     *
-     * @return HasMany<ClientSocialInfo>
-     */
-    public function clientSocialInfo(): HasMany
-    {
-        return $this->hasMany(ClientSocialInfo::class);
-    }
-
     /**
      * Summary of beneficiaryFamilies
      *
@@ -44,12 +29,11 @@ class Relationship extends Model
     }
 
     /**
-     * Summary of claimant
-     *
-     * @return HasMany<Claimant>
+     * Summary of applications
+     * @return HasMany<Application, Relationship>
      */
-    public function claimant(): HasMany
+    public function applications(): HasMany
     {
-        return $this->hasMany(Claimant::class, 'relationship_to_deceased', 'id');
+        return $this->hasMany(Application::class, 'relationship_id', 'id');
     }
 }

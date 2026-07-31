@@ -9,8 +9,8 @@ use App\Services\DatatableService;
 class DashboardController extends Controller
 {
     public function __construct(
+        protected ApplicationService $services,
         protected ClientService $clientServices,
-        protected ApplicationService $applicationServices,
         protected DatatableService $datatableServices
     ) {}
 
@@ -27,7 +27,7 @@ class DashboardController extends Controller
 
     public function staff()
     {
-        $data = $this->applicationServices->index('tracking_no', 'desc');
+        $data = $this->services->index(null, 'tracking_no', 'desc');
         
         if (request()->expectsJson()) {
             return response()->json([

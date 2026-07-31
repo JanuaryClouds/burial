@@ -15,7 +15,6 @@ class ClientSocialInfo extends Model
 
     protected $fillable = [
         'client_uuid',
-        'relationship_id',
         'civil_id',
         'education_id',
         'income',
@@ -23,20 +22,11 @@ class ClientSocialInfo extends Model
         'skill',
     ];
 
-    public static function getClientSocial($client)
-    {
-        return self::where($client, 'client_id')->first();
-    }
-
-    /**
-     * Summary of relationship
-     *
-     * @return BelongsTo<Relationship, ClientSocialInfo>
-     */
-    public function relationship(): BelongsTo
-    {
-        return $this->belongsTo(Relationship::class, 'relationship_id')->withTrashed();
-    }
+    protected $casts = [
+        'income' => 'encrypted',
+        'philhealth' => 'encrypted',
+        'skill' => 'encrypted',
+    ];
 
     /**
      * Summary of education

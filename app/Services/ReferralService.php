@@ -8,11 +8,11 @@ use Illuminate\Support\Str;
 
 class ReferralService
 {
-    public function index(?int $user_id = null)
+    public function index(?string $user_id = null)
     {
-        return Referral::with('client.user')
+        return Referral::with(['application.client.user', 'remarks'])
             ->when($user_id, function ($query) use ($user_id) {
-                $query->whereHas('client.user', function ($q) use ($user_id) {
+                $query->whereHas('application.client.user', function ($q) use ($user_id) {
                     $q->where('id', $user_id);
                 });
             })
@@ -20,8 +20,8 @@ class ReferralService
             ->get()
             ->map(function ($referral) {
                 return [
-                    'id' => $referral->id,
-                    'client' => $referral->client?->fullname() ?? '',
+                    'uuid' => $referral->id,
+                    'client' => $referral->application->client?->fullname() ?? '',
                     'referral_to' => $referral->referral_to,
                     'remarks' => $referral->remarks,
                 ];

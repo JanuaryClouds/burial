@@ -21,7 +21,6 @@ class ClientSocialInfoFactory extends Factory
     public function definition(): array
     {
         return [
-            'relationship_id' => Relationship::inRandomOrder()->first()->id,
             'civil_id' => CivilStatus::inRandomOrder()->first()->id,
             'education_id' => Education::inRandomOrder()->first()->id,
             'income' => $this->faker->randomFloat(0, 100, 10000),
