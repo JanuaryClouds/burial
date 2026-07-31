@@ -18,8 +18,15 @@ return new class extends Migration
             $table->foreignId('religion_id')->constrained('religions')->onDelete('cascade')->onUpdate('cascade');
             $table->date('date_of_birth');
             $table->date('date_of_death')->nullable();
-            $table->string('place_of_birth');
+            $table->text('house_no');
+            $table->text('street');
+            $table->string('city');
+            $table->foreignId('district_id');
             $table->foreignId('barangay_id')->constrained('barangays')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignId('created_by')
+                ->constrained('users', 'id')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
             $table->timestamps();
         });
     }
