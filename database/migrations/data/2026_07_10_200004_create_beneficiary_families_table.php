@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignUuid('beneficiary_uuid')
                 ->constrained('beneficiaries', 'uuid')
                 ->onDelete('CASCADE');
-            $table->string('name');
+            $table->text('name');
             $table->foreignId('sex_id')->constrained('sexes');
             $table->integer('age');
             $table->foreignId('civil_id')
@@ -24,8 +24,8 @@ return new class extends Migration
                 ->constrained('relationships')
                 ->onDelete('CASCADE')
                 ->onUpdate('CASCADE');
-            $table->string('occupation')->nullable();
-            $table->string('income')->nullable();
+            $table->text('occupation')->nullable();
+            $table->text('income')->nullable();
             $table->timestamps();
         });
     }

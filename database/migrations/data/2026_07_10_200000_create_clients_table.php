@@ -15,8 +15,8 @@ return new class extends Migration
             $table->uuid()->primary();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->date('date_of_birth');
-            $table->string('house_no');
-            $table->string('street');
+            $table->text('house_no');
+            $table->text('street');
             $table->foreignId('district_id')->constrained('districts');
             $table->foreignId('barangay_id')->constrained('barangays');
             $table->string('city')->default('Taguig City');
