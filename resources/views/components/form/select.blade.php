@@ -3,6 +3,7 @@
     'id' => null,
     'label' => null,
     'options' => [],
+    'multiselect' => false,
     'selected' => null,
     'required' => false,
     'disabled' => false,
@@ -35,7 +36,7 @@
         @endif
     @endif
 
-    <select {{ $attributes->merge(['class' => 'form-control' . $isInactive]) }} name="{{ $name }}"
+    <select {{ $attributes->merge(['class' => 'form-control' . $isInactive]) }} name="{{ $name }}" {{ $multiselect ? 'multiple' : '' }}
         id="{{ $id ?? $name }}" {{ $disabled ? 'disabled' : '' }} {{ $required == true ? 'required' : '' }} data-control="select2">
         <option value="">Select one</option>
         @foreach ($options as $key => $value)

@@ -8,7 +8,7 @@
     'required' => false,
 ])
 
-<div class="mb-3">
+<div class="mb-3" wire:ignore>
     @if ($label)
         <label class="form-label">
             {{ $label }}
