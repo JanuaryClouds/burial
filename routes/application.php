@@ -10,12 +10,22 @@ Route::controller(ApplicationController::class)
         Route::get('/', 'index')
             ->name('index');
 
-        Route::get('/{application}', 'show')
-            ->name('show');
+        Route::get('/create', 'create')
+            ->name('create');
 
-        Route::get('/{application}/print', 'print')
-            ->name('print');
+        Route::post('/store', 'store')
+            ->middleware('throttle:5,1')
+            ->name('store');
 
-        Route::get('/{application}/certificate', 'certificate')
-            ->name('certificate');
+        Route::prefix('/{application}')
+            ->group(function () {
+                Route::get('', 'show')
+                    ->name('show');
+        
+                Route::get('/print', 'print')
+                    ->name('print');
+        
+                Route::get('/certificate', 'certificate')
+                    ->name('certificate');
+            });
     });

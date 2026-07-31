@@ -1,47 +1,33 @@
 <?php
 
 use App\Http\Controllers\ClientController;
-use App\Http\Controllers\InterviewController;
-use App\Http\Controllers\ReferralController;
 use Illuminate\Support\Facades\Route;
 
-Route::resource('client', ClientController::class)
-    ->only(['index', 'show']);
+Route::name('client.')
+    ->prefix('clients')
+    ->controller(ClientController::class)
+    ->group(function() {
+        Route::get('/', 'index')
+            ->name('index');
 
-Route::get('/general-intake-form', [ClientController::class, 'create'])
-    ->name('general.intake.form');
+            Route::get('/create', 'create')
+                ->name('create');
+    
+            Route::post('/store', 'store')
+                ->name('store');
 
-Route::post('/general-intake-form/store', [ClientController::class, 'store'])
-    ->middleware('throttle:5,1')
-    ->name('general.intake.form.store');
+        Route::prefix('/{client}')
+            ->group(function() {
+                Route::get('', 'show')
+                    ->name('show');
 
-// Route::get('/referral', [ReferralController::class, 'index'])
-//     ->name('referral.index');
-
-// Route::get('/interviews', [InterviewController::class, 'index'])
-//     ->name('interview.index');
-
-Route::prefix('client')
-    ->name('client.')
-    ->group(function () {
-        Route::get('/{id}/gis-form', [ClientController::class, 'generateGISForm'])
-            ->name('gis-form');
-
-        // Route::post('/{id}/schedule', [InterviewController::class, 'store'])
-        //     ->name('interview.schedule.store');
-
-        // Route::post('/{id}/schedule/done', [InterviewController::class, 'done'])
-        //     ->name('interview.schedule.done');
-
-        // Route::post('/{id}/assessment', [ClientController::class, 'assessment'])
-        //     ->middleware('permission:create-assessments')
-        //     ->name('assessment.store');
-
-        // Route::post('/{id}/recommendation', [ClientController::class, 'recommendedService'])
-        //     ->middleware('permission:create-recommendations')
-        //     ->name('recommendation.store');
-
-        // Route::post('/{id}/referral', [ReferralController::class, 'store'])
-        //     ->middleware('permission:create-referrals')
-        //     ->name('referral.store');
+                Route::get('/edit', 'edit')
+                    ->middleware('can:edit,client')
+                    ->name('edit');
+                    
+                Route::post('/update', 'update')
+                    ->middleware('can:update,client')
+                    ->name('update');
+            });
     });
+
