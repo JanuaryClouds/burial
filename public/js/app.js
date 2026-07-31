@@ -7,6 +7,8 @@
 
 "use strict";
 
+import updateDistrict from './districts.js';
+
 function randomizeMulticolorBorder() {
     document.querySelectorAll('.card.multicolor-border').forEach(card => {
         const redEnd = Math.floor(Math.random() * 40) + 20;
@@ -194,14 +196,107 @@ function checkAndRenderCharts() {
 document.addEventListener('DOMContentLoaded', () => {
     checkAndRenderCharts();
     randomizeMulticolorBorder();
+    initSelect2();
+    
+    $('#barangay_id').on('change', function() {
+        let text = $(this).find('option:selected').text();
+        updateDistrict(text.trim());
+    });
+
+    $('#client_uuid_select').on('change', function(event) {
+        const uuid = $(this).val();
+        Livewire.dispatch('client-selected', uuid);
+    });
+    $('#beneficiary_uuid_select').on('change', function(event) {
+        const uuid = $(this).val();
+        Livewire.dispatch('beneficiary-selected', uuid);
+    });
 });
 
+function initSelect2(root = document) {
+    if (typeof $ === 'undefined' || typeof $.fn.select2 === 'undefined') {
+        return;
+    }
+
+    root.querySelectorAll('[data-control="select2"], [data-kt-select2="true"]').forEach((element) => {
+        if (element.getAttribute('data-kt-initialized') === '1') {
+            return;
+        }
+
+        // If Livewire morphed this element in place (without wire:ignore), the
+        // previous select2 instance and its container may still be attached.
+        // Tear those down first so we never end up with a stale instance or
+        // duplicate dropdown container.
+        if ($(element).data('select2')) {
+            $(element).select2('destroy');
+        }
+
+        let sibling = element.nextElementSibling;
+        while (sibling && sibling.classList.contains('select2-container')) {
+            const next = sibling.nextElementSibling;
+            sibling.remove();
+            sibling = next;
+        }
+
+        const options = {
+            dir: document.body.getAttribute('direction'),
+        };
+
+        if (element.getAttribute('data-hide-search') === 'true') {
+            options.minimumResultsForSearch = Infinity;
+        }
+
+        $(element).select2(options);
+
+        // Handle Select2's KTMenu parent case
+        if (element.hasAttribute('data-dropdown-parent') && element.hasAttribute('multiple')) {
+            const parentEl = document.querySelector(element.getAttribute('data-dropdown-parent'));
+
+            if (parentEl && parentEl.hasAttribute('data-kt-menu') && typeof KTMenu !== 'undefined') {
+                const menu = new KTMenu(parentEl);
+
+                if (menu) {
+                    $(element).on('select2:unselect', function () {
+                        element.setAttribute('data-multiple-unselect', '1');
+                    });
+
+                    menu.on('kt.menu.dropdown.hide', function (item) {
+                        if (element.getAttribute('data-multiple-unselect') === '1') {
+                            element.removeAttribute('data-multiple-unselect');
+                            return false;
+                        }
+                    });
+                }
+            }
+        }
+
+        element.setAttribute('data-kt-initialized', '1');
+    });
+}
+
 document.addEventListener('livewire:init', () => {
-    Livewire.hook('morph.updated', () => {
+    Livewire.hook('morph.updated', ({ el }) => {
         requestAnimationFrame(() => {
+            initSelect2(el);
             randomizeMulticolorBorder();
         });
     });
+
+    Livewire.hook('morph.added', ({ el }) => {
+        requestAnimationFrame(() => {
+            initSelect2(el);
+        });
+    });
+
+    Livewire.hook('element.init', ({ el }) => {
+        requestAnimationFrame(() => {
+            initSelect2(el);
+        });
+    });
+});
+
+document.addEventListener('livewire:navigated', () => {
+    initSelect2();
 });
 
 $(document).ajaxError(function(event, xhr) {
