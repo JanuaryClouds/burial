@@ -2,11 +2,13 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Requests\Traits\NormalizesInput;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateClientRequest extends FormRequest
 {
+    use NormalizesInput;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -32,26 +34,6 @@ class UpdateClientRequest extends FormRequest
         ]);
     }
 
-    private function clean(?string $value): ?string
-    {
-        if ($value === null) {
-            return null;
-        }
-        $value = trim($value);
-        $value = preg_replace('/\s+/u', ' ', $value);
-
-        return $value;
-    }
-
-    private function normalizePhone(?string $value): ?string
-    {
-        if ($value === null) {
-            return null;
-        }
-
-        return preg_replace('/\D+/', '', $value);
-    }
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -64,7 +46,6 @@ class UpdateClientRequest extends FormRequest
             'middle_name' => 'nullable|string|max:255',
             'last_name' => 'required|string|max:255',
             'suffix' => 'nullable|string|max:255',
-            'age' => 'required|min:1|max:120',
             'sex_id' => 'required|exists:sexes,id',
             'date_of_birth' => 'required|date',
             'house_no' => 'required|string|max:255',
@@ -72,7 +53,6 @@ class UpdateClientRequest extends FormRequest
             'barangay_id' => 'required|exists:barangays,id',
             'district_id' => 'required|exists:districts,id',
             'city' => 'required|string|max:255',
-            'relationship_id' => 'required|exists:relationships,id',
             'civil_id' => 'required|exists:civil_statuses,id',
             'religion_id' => 'required|exists:religions,id',
             'nationality_id' => 'required|exists:nationalities,id',

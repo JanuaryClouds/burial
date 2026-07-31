@@ -2,11 +2,13 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Requests\Traits\NormalizesInput;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateBeneficiaryRequest extends FormRequest
 {
+    use NormalizesInput;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -18,28 +20,17 @@ class UpdateBeneficiaryRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->merge([
-            'ben_first_name' => $this->clean($this->ben_first_name),
-            'ben_middle_name' => $this->clean($this->ben_middle_name),
-            'ben_last_name' => $this->clean($this->ben_last_name),
-            'ben_suffix' => $this->clean($this->ben_suffix),
-            'ben_sex_id' => $this->clean($this->ben_sex_id),
-            'ben_religion_id' => $this->clean($this->ben_religion_id),
-            'ben_date_of_birth' => $this->clean($this->ben_date_of_birth),
-            'ben_date_of_death' => $this->clean($this->ben_date_of_death),
-            'ben_place_of_birth' => $this->clean($this->ben_place_of_birth),
-            'ben_barangay_id' => $this->clean($this->ben_barangay_id),
+            'first_name' => $this->clean($this->first_name),
+            'middle_name' => $this->clean($this->middle_name),
+            'last_name' => $this->clean($this->last_name),
+            'suffix' => $this->clean($this->suffix),
+            'sex_id' => $this->clean($this->sex_id),
+            'date_of_birth' => $this->clean($this->date_of_birth),
+            'date_of_death' => $this->clean($this->date_of_death),
+            'house_no' => $this->clean($this->house_no),
+            'street' => $this->clean($this->street),
+            'city' => $this->clean($this->city),
         ]);
-    }
-
-    private function clean(?string $value): ?string
-    {
-        if ($value === null) {
-            return null;
-        }
-        $value = trim($value);
-        $value = preg_replace('/\s+/u', ' ', $value);
-
-        return $value;
     }
 
     /**
@@ -50,16 +41,19 @@ class UpdateBeneficiaryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'ben_first_name' => 'required|string|max:255',
-            'ben_middle_name' => 'nullable|string|max:255',
-            'ben_last_name' => 'required|string|max:255',
-            'ben_suffix' => 'nullable|string|max:255',
-            'ben_sex_id' => 'required|exists:sexes,id',
-            'ben_religion_id' => 'required|exists:religions,id',
-            'ben_date_of_birth' => 'required|date',
-            'ben_date_of_death' => 'required|date|after_or_equal:date_of_birth',
-            'ben_place_of_birth' => 'required|string|max:255',
-            'ben_barangay_id' => 'required|exists:barangays,id',
+            'first_name' => 'required|string|max:255',
+            'middle_name' => 'nullable|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'suffix' => 'nullable|string|max:255',
+            'sex_id' => 'required|exists:sexes,id',
+            'religion_id' => 'required|exists:religions,id',
+            'date_of_birth' => 'required|date',
+            'date_of_death' => 'required|date|after_or_equal:date_of_birth',
+            'house_no' => 'required|string|max:255',
+            'street' => 'nullable|string|max:255',
+            'barangay_id' => 'required|exists:barangays,id',
+            'district_id' => 'required|exists:districts,id',
+            'city' => 'required|string|max:255',
         ];
     }
 }
