@@ -35,7 +35,6 @@ class UserSeeder extends Seeder
                     User::firstOrCreate([
                         'email' => $uatClient['email'],
                         'citizen_uuid' => $uatClient['user_id'],
-                        'emp_id' => $uatClient['emp_id'],
                         'first_name' => $uatClient['firstname'],
                         'middle_name' => $uatClient['middlename'] ?? null,
                         'last_name' => $uatClient['lastname'],
@@ -73,7 +72,6 @@ class UserSeeder extends Seeder
                     User::firstOrCreate([
                         'email' => 'client'.($index + 1).'@tlcportal.com',
                         'citizen_uuid' => $userId,
-                        'emp_id' => null,
                         'first_name' => 'Client',
                         'middle_name' => null,
                         'last_name' => 'TLC '.($index + 1),
