@@ -15,7 +15,7 @@
 				<a name=""
 					id=""
 					class="btn btn-sm btn-light"
-					href="{{ route('client.show', $client) }}"
+					href="{{ app()->make('url')->previous() }}"
 					role="button">
 					<i class="fa-solid fa-xmark"></i>
 					Back

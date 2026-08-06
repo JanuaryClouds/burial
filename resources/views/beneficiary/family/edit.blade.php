@@ -15,7 +15,7 @@
 				<a name=""
 					id=""
 					class="btn btn-sm btn-light"
-					href="{{ route('family.show', $member) }}"
+					href="{{ app()->make('url')->previous() }}"
 					role="button">
 					<i class="fa-solid fa-xmark"></i>
 					Back
