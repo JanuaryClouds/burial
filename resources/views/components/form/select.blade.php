@@ -6,13 +6,13 @@
     'multiselect' => false,
     'selected' => null,
     'required' => false,
-    'disabled' => false,
+    'readonly' => false,
     'helpText' => false,
     'errorname' => null,
 ])
 
 @php
-    $isInactive = $disabled ? ' bg-body text-gray-700' : '';
+    $isInactive = $readonly ? ' bg-body text-gray-700' : '';
     if ($errorname == null) {
         if (str_contains($name, '[')) {
             $errorname = str_replace('[', '.', str_replace(']', '', $name));
@@ -37,7 +37,7 @@
     @endif
 
     <select {{ $attributes->merge(['class' => 'form-control' . $isInactive]) }} name="{{ $name }}" {{ $multiselect ? 'multiple' : '' }}
-        id="{{ $id ?? $name }}" {{ $disabled ? 'disabled' : '' }} {{ $required == true ? 'required' : '' }} data-control="select2">
+        id="{{ $id ?? $name }}" {{ $readonly ? 'disabled' : '' }} {{ $required == true ? 'required' : '' }} data-control="select2">
         <option value="">Select one</option>
         @foreach ($options as $key => $value)
             <option value="{{ $key }}" {{ old($name, $selected) == $key ? 'selected' : '' }}>{{ $value }}</option>
