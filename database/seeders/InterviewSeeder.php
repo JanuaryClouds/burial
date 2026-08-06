@@ -34,6 +34,6 @@ class InterviewSeeder extends Seeder
             }
         }
 
-        dump(Interview::count() . ' Interviews Seeded');
+        dump(Interview::count().' Interviews Seeded');
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\HasUuid;
+use Database\Factories\RecommendationFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,10 +11,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Recommendation extends Model
 {
-    /** @use HasFactory<\Database\Factories\RecommendationFactory> */
+    /** @use HasFactory<RecommendationFactory> */
     use HasFactory, HasUuid;
 
-    protected $table = "recommendations";
+    protected $table = 'recommendations';
 
     protected $fillable = [
         'application_uuid',
@@ -21,11 +22,12 @@ class Recommendation extends Model
         'mode_of_assistance_id',
         'recommended_by',
         'status',
-        'approved_at'
+        'approved_at',
     ];
 
     /**
      * Summary of application
+     *
      * @return BelongsTo<Application, Recommendation>
      */
     public function application(): BelongsTo
@@ -35,6 +37,7 @@ class Recommendation extends Model
 
     /**
      * Summary of modeOfAssistance
+     *
      * @return BelongsTo<ModeOfAssistance, Recommendation>
      */
     public function modeOfAssistance(): BelongsTo
@@ -44,6 +47,7 @@ class Recommendation extends Model
 
     /**
      * Summary of recommendedBy
+     *
      * @return BelongsTo<User, Recommendation>
      */
     public function recommendedBy(): BelongsTo
@@ -53,6 +57,7 @@ class Recommendation extends Model
 
     /**
      * Summary of assistance
+     *
      * @return BelongsToMany<FuneralAssistanceType, Recommendation>
      */
     public function assistance(): BelongsToMany

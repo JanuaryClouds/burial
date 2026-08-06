@@ -32,10 +32,10 @@ class AdminSeeder extends Seeder
         $staffFactories = [];
         for ($staffCount = 1; $staffCount < 6; $staffCount++) {
             $staff = User::firstOrCreate([
-                'email' => 'staff' . $staffCount . '@example.org',
+                'email' => 'staff'.$staffCount.'@example.org',
                 'first_name' => 'Staff',
                 'middle_name' => null,
-                'last_name' => 'User ' . $staffCount,
+                'last_name' => 'User '.$staffCount,
                 'suffix' => null,
                 'is_active' => true,
                 'contact_number' => null,

@@ -5,7 +5,6 @@ namespace Database\Factories;
 use App\Models\CivilStatus;
 use App\Models\ClientSocialInfo;
 use App\Models\Education;
-use App\Models\Relationship;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\CustomFieldValue;
 use App\Http\Requests\StoreCustomFieldValueRequest;
 use App\Http\Requests\UpdateCustomFieldValueRequest;
+use App\Models\CustomFieldValue;
 
 class CustomFieldValueController extends Controller
 {

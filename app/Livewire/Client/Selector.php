@@ -2,17 +2,16 @@
 
 namespace App\Livewire\Client;
 
-use App\Models\Beneficiary;
 use App\Models\Client;
-use App\Services\ClientService;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class Selector extends Component
 {
     public array $clients;
+
     public ?Client $selectedClient = null;
+
     public ?string $selectedClientUuid = null;
 
     public function mount(): void
@@ -23,7 +22,7 @@ class Selector extends Component
     public function draftClients(): void
     {
         $this->clients = Client::with([
-            'application'
+            'application',
         ])
             ->whereDoesntHave('application')
             ->where('user_id', Auth::user()->id)
@@ -32,7 +31,7 @@ class Selector extends Component
             ->mapWithKeys(function (Client $client) {
                 return [$client->uuid => $client->created_at->diffForHumans()];
             })
-                ->toArray();
+            ->toArray();
     }
 
     public function updatedSelectedClientUuid(?string $uuid): void

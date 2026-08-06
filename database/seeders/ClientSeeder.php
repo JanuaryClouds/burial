@@ -18,7 +18,7 @@ class ClientSeeder extends Seeder
         foreach ($users as $user) {
             if (rand(0, 10) >= 2) {
                 Client::factory()->create([
-                    'user_id' => $user->id
+                    'user_id' => $user->id,
                 ]);
             }
         }

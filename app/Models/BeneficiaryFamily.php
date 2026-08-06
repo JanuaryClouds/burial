@@ -13,7 +13,6 @@ class BeneficiaryFamily extends Model
 
     protected $table = 'beneficiary_families';
 
-
     protected $fillable = [
         'beneficiary_uuid',
         'name',
@@ -63,6 +62,7 @@ class BeneficiaryFamily extends Model
 
     /**
      * Summary of beneficiary
+     *
      * @return BelongsTo<Beneficiary, BeneficiaryFamily>
      */
     public function beneficiary(): BelongsTo
@@ -76,7 +76,7 @@ class BeneficiaryFamily extends Model
             'sex',
             'civil',
             'relationship',
-            'beneficiary'
+            'beneficiary',
         ];
     }
 }

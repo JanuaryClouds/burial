@@ -19,15 +19,16 @@ class ModelTreeCommand extends Command
 
     public function handle(): int
     {
-        $modelClass = 'App\\Models\\' . $this->argument('model');
+        $modelClass = 'App\\Models\\'.$this->argument('model');
 
         if (! class_exists($modelClass)) {
             $this->error("Model [{$modelClass}] not found.");
+
             return self::FAILURE;
         }
 
         $this->displayTree(
-            new $modelClass(),
+            new $modelClass,
             '',
             [],
             (int) $this->option('depth')
@@ -35,12 +36,12 @@ class ModelTreeCommand extends Command
 
         if ($this->option('paths')) {
             $this->displayPaths(
-                new $modelClass(),
+                new $modelClass,
                 [],
                 [],
                 (int) $this->option('depth')
             );
-        
+
             return self::SUCCESS;
         }
 
@@ -73,15 +74,15 @@ class ModelTreeCommand extends Command
             $isLast = $index === $lastIndex;
 
             $branch = $isLast ? '└── ' : '├── ';
-            $nextPrefix = $prefix . ($isLast ? '    ' : '│   ');
+            $nextPrefix = $prefix.($isLast ? '    ' : '│   ');
 
             $relationName = $relation['name'];
             $relationType = $relation['type'];
             $relatedModel = $relation['related'];
 
             $this->line(
-                $prefix .
-                $branch .
+                $prefix.
+                $branch.
                 "{$relationName} ({$relationType})"
             );
 
@@ -92,7 +93,7 @@ class ModelTreeCommand extends Command
             }
 
             $this->displayTree(
-                new $relatedModel(),
+                new $relatedModel,
                 $nextPrefix,
                 $visited,
                 $remainingDepth - 1
@@ -109,20 +110,20 @@ class ModelTreeCommand extends Command
         if ($remainingDepth <= 0) {
             return;
         }
-    
+
         $visited[] = get_class($model);
-    
+
         foreach ($this->getRelations($model) as $relation) {
             $currentPath = [...$path, $relation['name']];
-    
+
             $this->line(implode('.', $currentPath));
-    
+
             if (in_array($relation['related'], $visited, true)) {
                 continue;
             }
-    
+
             $this->displayPaths(
-                new $relation['related'](),
+                new $relation['related'],
                 $currentPath,
                 $visited,
                 $remainingDepth - 1

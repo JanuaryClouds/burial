@@ -21,7 +21,6 @@ class BeneficiaryService
             'application.processLogs',
             'religion',
         ])
-            ->whereHas('application')
             ->when($user_id, function ($query) use ($user_id) {
                 $query->where('created_by', $user_id);
             })
@@ -32,10 +31,10 @@ class BeneficiaryService
                 $status = $application ? $application->status() : 'Draft';
 
                 return [
-                    'application_tracking_no' => $application->tracking_no,
+                    'application_tracking_no' => $application ? $application->tracking_no : 'Draft',
                     'beneficiary' => $beneficiary->fullname(),
                     'date_of_birth' => $beneficiary->date_of_birth,
-                    'date_of_death' => $beneficiary->date_of_death . ' (' . $beneficiary->age() .')',
+                    'date_of_death' => $beneficiary->date_of_death.' ('.$beneficiary->age().')',
                     'religion' => $beneficiary->religion?->name,
                     'status' => $status,
                     'show_route' => route('beneficiary.show', $beneficiary),
@@ -51,8 +50,9 @@ class BeneficiaryService
     public function store(array $data)
     {
         $data['created_by'] = Auth::user()->id;
+
         return Beneficiary::create($data);
-    } 
+    }
 
     public function reportIndex($startDate, $endDate)
     {

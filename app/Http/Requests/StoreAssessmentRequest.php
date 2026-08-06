@@ -24,7 +24,7 @@ class StoreAssessmentRequest extends FormRequest
     {
         return [
             'swa' => 'required|string',
-            'problem_presented' => 'required|string'
+            'problem_presented' => 'required|string',
         ];
     }
 }

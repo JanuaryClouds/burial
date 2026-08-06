@@ -30,7 +30,7 @@ class MigrationsLoader extends ServiceProvider
             $referenceMigrations,
             $dataMigrations,
             $workflowMigrations,
-            $customFieldsMigrations
+            $customFieldsMigrations,
         ]);
     }
 }

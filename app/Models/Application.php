@@ -4,19 +4,17 @@ namespace App\Models;
 
 use App\Traits\HasRelationSets;
 use App\Traits\HasUuid;
-use Illuminate\Database\Eloquent\Collection;
+use Database\Factories\ApplicationFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Query\Builder;
-use Illuminate\Support\Str;
 
 class Application extends Model
 {
-    /** @use HasFactory<\Database\Factories\ApplicationFactory> */
-    use HasFactory, HasUuid, HasRelationSets;
+    /** @use HasFactory<ApplicationFactory> */
+    use HasFactory, HasRelationSets, HasUuid;
 
     protected $table = 'applications';
 
@@ -44,8 +42,9 @@ class Application extends Model
     |
     */
 
-    /** 
+    /**
      * Get the client that owns the application.
+     *
      * @return BelongsTo<Client, Application>
      */
     public function client(): BelongsTo
@@ -63,6 +62,7 @@ class Application extends Model
 
     /**
      * Summary of assessment
+     *
      * @return HasOne<Assessment>
      */
     public function assessment(): HasOne
@@ -72,6 +72,7 @@ class Application extends Model
 
     /**
      * Summary of recommendation
+     *
      * @return HasMany<Recommendation, Application>
      */
     public function recommendations(): HasMany
@@ -81,6 +82,7 @@ class Application extends Model
 
     /**
      * Summary of processLogs
+     *
      * @return HasMany<ProcessLog>
      */
     public function processLogs(): HasMany
@@ -90,6 +92,7 @@ class Application extends Model
 
     /**
      * Summary of referral
+     *
      * @return HasOne<Referral, Application>
      */
     public function referral(): HasOne
@@ -105,9 +108,9 @@ class Application extends Model
     protected static function clientRelations(): array
     {
         return self::prefixRelations(
-                'client',
-                Client::relations()
-            );
+            'client',
+            Client::relations()
+        );
     }
 
     protected static function beneficiaryRelations(): array
@@ -153,10 +156,10 @@ class Application extends Model
     |
     */
 
-    public function status(): String
+    public function status(): string
     {
-        $status = "Pending";
-        
+        $status = 'Pending';
+
         $interviews = $this->client->interviews;
         $assessment = $this->assessment;
         $recommendations = $this->recommendations;
@@ -165,42 +168,42 @@ class Application extends Model
 
         if ($interviews && $interviews->count() > 0) {
             if ($interviews->first()->status == 'done') {
-                $status = "Interviewed";
+                $status = 'Interviewed';
             } else {
-                $status = "Scheduled";
+                $status = 'Scheduled';
             }
         }
 
         if ($assessment) {
-            $status = "Assessed";
+            $status = 'Assessed';
         }
 
         if ($recommendations->isNotEmpty()) {
             $approved_recommendation = $recommendations->where('status', 'approved');
 
             if ($approved_recommendation) {
-                $status = "Recommended";
+                $status = 'Recommended';
             }
         }
 
         if ($referral) {
-            $status = "Referred";
+            $status = 'Referred';
         }
 
         if ($processLogs->isNotEmpty()) {
             $latestLog = $processLogs->first();
             $latestStep = $latestLog->loggable()->order_no;
             $totalSteps = WorkflowStep::count();
-    
+
             if ($latestLog == null) {
-                return "Processing";
+                return 'Processing';
             }
-    
+
             if ($latestStep == $totalSteps) {
-                return "Completed";
+                return 'Completed';
             }
-    
-            return "Processing";
+
+            return 'Processing';
         }
 
         return $status;

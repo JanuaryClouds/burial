@@ -29,7 +29,7 @@ class ClientService
         $this->imageServices = $imageService;
     }
 
-    public function index(?string $user_id = null, string $orderBy = 'created_at', string $orderDirection = 'asc') 
+    public function index(?string $user_id = null, string $orderBy = 'created_at', string $orderDirection = 'asc')
     {
         return Client::with([
             'user',
@@ -54,13 +54,13 @@ class ClientService
                 if ($application) {
                     $status = $application->status();
                 } else {
-                    $status = "Draft";
+                    $status = 'Draft';
                 }
 
                 return [
                     'uuid' => $client->uuid,
                     'tracking_no' => $application?->tracking_no ?? 'Draft',
-                    'client' => $client->fullname() . ($application ? ' (' . $application->relationship->name . ')' : ''),
+                    'client' => $client->fullname().($application ? ' ('.$application->relationship->name.')' : ''),
                     'beneficiary' => $application?->beneficiary?->fullname() ?? 'N/A',
                     'status' => $status,
                     'applied_at' => $client->application?->created_at->format('F d, Y') ?? 'Draft',
@@ -112,7 +112,7 @@ class ClientService
             'education_id' => $data['education_id'],
             'income' => $data['income'],
             'philhealth' => $data['philhealth'],
-            'skill' => $data['skill']
+            'skill' => $data['skill'],
         ]);
 
         return $client;

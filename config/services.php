@@ -55,7 +55,7 @@ return [
             'mock' => env('PORTAL_MOCK', false),
             'seeder' => [
                 'from_portal' => env('PORTAL_USERS_SEED_FROM_PORTAL', false),
-            ]
+            ],
         ],
         'sso' => [
             'secret' => env('SSO_SECRET_KEY', ''),

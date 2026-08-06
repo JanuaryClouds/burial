@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Assessment;
 use App\Http\Requests\StoreAssessmentRequest;
 use App\Http\Requests\UpdateAssessmentRequest;
 use App\Models\Application;
+use App\Models\Assessment;
 use App\Services\AssessmentService;
 
 class AssessmentController extends Controller
@@ -37,6 +37,7 @@ class AssessmentController extends Controller
     {
         try {
             $this->assessmentServices->store($request->validated(), $application->uuid);
+
             return back()->with('success', 'Assessment created successfully');
         } catch (\Exception $e) {
             return back()->with('error', 'Unable to create an assessment');

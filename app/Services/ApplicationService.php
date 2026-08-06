@@ -3,16 +3,12 @@
 namespace App\Services;
 
 use App\Models\Application;
-use App\Models\Assessment;
 use App\Models\Assistance;
 use App\Models\Beneficiary;
 use App\Models\Client;
 use App\Models\ModeOfAssistance;
-use App\Models\Referral;
 use App\Models\SystemSetting;
-use App\Models\WorkflowStep;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
@@ -74,12 +70,12 @@ class ApplicationService
             if ($application->client->interviews->where('status', 'done')->isNotEmpty()) {
                 $state['canInterview'] = null;
             }
-            
+
             $state['canAssess'] = 'The client must be interviewed first';
             $state['canRefer'] = 'This application cannot be referred without an assessment';
             $state['canRecommend'] = 'This application cannot receive a recommendation without an assessment';
         }
-        
+
         if ($application->assessment) {
             $state['canInterview'] = 'This application already has an assessment';
             $state['canAssess'] = 'This applcation already has an assessment';
@@ -93,7 +89,7 @@ class ApplicationService
             $state['canRefer'] = 'This application already has a referral';
             $state['canRecommend'] = 'This application already has a referral';
         }
-        
+
         if ($application->recommendations->isNotEmpty()) {
             $state['canInterview'] = 'This application has already received a recommendation';
             $state['canAssess'] = 'This application already has a recommendation';
@@ -112,7 +108,6 @@ class ApplicationService
 
     /**
      * Summary of print
-     * @param Application $application
      */
     public function print(Application $application)
     {
@@ -135,7 +130,7 @@ class ApplicationService
         $assessment = $application->assessment ?? null;
         $recommendation = $application->recommendations->first() ?? null;
         $referral = $application->referral ?? null;
-        
+
         $data = [
             'client' => [
                 [
@@ -213,7 +208,8 @@ class ApplicationService
         ])
             ->setOption('margin-top', '0')
             ->setPaper('A4', 'portrait');
-        return $pdf->stream($application->tracking_no."-certificate.pdf");
+
+        return $pdf->stream($application->tracking_no.'-certificate.pdf');
     }
 
     public function store(Client $client, Beneficiary $beneficiary)

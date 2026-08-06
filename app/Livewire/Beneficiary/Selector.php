@@ -9,7 +9,9 @@ use Livewire\Component;
 class Selector extends Component
 {
     public array $beneficiaries;
+
     public ?Beneficiary $selectedBeneficiary = null;
+
     public ?string $selectedBeneficiaryUuid = null;
 
     public function mount(): void
@@ -32,6 +34,7 @@ class Selector extends Component
             ->mapWithKeys(function (Beneficiary $beneficiary) {
                 $label = $beneficiary->fullname();
                 $date = $beneficiary->created_at->format('M d, Y');
+
                 return [$beneficiary->uuid => "{$label} (created {$date})"];
             })
             ->toArray();

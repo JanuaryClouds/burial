@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\HasUuid;
+use Database\Factories\AssessmentFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,10 +11,10 @@ use Illuminate\Support\Str;
 
 class Assessment extends Model
 {
-    /** @use HasFactory<\Database\Factories\AssessmentFactory> */
+    /** @use HasFactory<AssessmentFactory> */
     use HasFactory, HasUuid;
 
-    protected $table = "assessments";
+    protected $table = 'assessments';
 
     protected $fillable = [
         'application_uuid',
@@ -30,6 +31,7 @@ class Assessment extends Model
 
     /**
      * Summary of application
+     *
      * @return BelongsTo<Application, Assessment>
      */
     public function application(): BelongsTo

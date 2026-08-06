@@ -9,7 +9,6 @@ trait HasCustomFields
 {
     /**
      * Summary of customFields
-     * @return MorphMany
      */
     public function customFields(): MorphMany
     {

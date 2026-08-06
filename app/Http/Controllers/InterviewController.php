@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\InterviewRequest;
 use App\Http\Requests\StoreInterviewRequest;
 use App\Models\Client;
 use App\Models\SystemSetting;
@@ -65,7 +64,7 @@ class InterviewController extends Controller
                 if (! $client->contact_number) {
                     return redirect()->back()->with('info', 'Contact number is required.');
                 }
-                
+
                 $citizen_uuid = $client->user?->citizen_uuid;
 
                 if ($citizen_uuid) {

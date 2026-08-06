@@ -9,6 +9,7 @@ use Illuminate\Foundation\Http\FormRequest;
 class UpdateClientRequest extends FormRequest
 {
     use NormalizesInput;
+
     /**
      * Determine if the user is authorized to make this request.
      */

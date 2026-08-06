@@ -2,11 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\Application;
 use App\Models\Beneficiary;
-use App\Models\Client;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class BeneficiarySeeder extends Seeder

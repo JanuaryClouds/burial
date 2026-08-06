@@ -27,9 +27,6 @@ class BeneficiaryFamilyService
 
     /**
      * Summary of update
-     * @param array $data
-     * @param BeneficiaryFamily $member
-     * @return void
      */
     public function update(array $data, BeneficiaryFamily $member): void
     {

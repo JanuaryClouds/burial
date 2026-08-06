@@ -116,6 +116,7 @@ class User extends Authenticatable
 
     /**
      * Summary of beneficiary
+     *
      * @return HasMany<Beneficiary, User>
      */
     public function beneficiaries(): HasMany

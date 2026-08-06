@@ -14,7 +14,7 @@ use Illuminate\Support\Str;
 
 class Beneficiary extends Model
 {
-    use HasFactory, HasUuid, HasRelationSets;
+    use HasFactory, HasRelationSets, HasUuid;
 
     protected $table = 'beneficiaries';
 
@@ -32,7 +32,7 @@ class Beneficiary extends Model
         'barangay_id',
         'district_id',
         'city',
-        'created_by'
+        'created_by',
     ];
 
     protected $casts = [
@@ -80,6 +80,7 @@ class Beneficiary extends Model
 
     /**
      * Summary of application
+     *
      * @return HasOne<Application>
      */
     public function application(): HasOne
@@ -109,6 +110,7 @@ class Beneficiary extends Model
 
     /**
      * Summary of district
+     *
      * @return BelongsTo<District, Beneficiary>
      */
     public function district(): BelongsTo
@@ -118,6 +120,7 @@ class Beneficiary extends Model
 
     /**
      * Summary of family
+     *
      * @return HasMany<BeneficiaryFamily, Beneficiary>
      */
     public function family(): HasMany
@@ -127,6 +130,7 @@ class Beneficiary extends Model
 
     /**
      * Summary of user
+     *
      * @return BelongsTo<User, Beneficiary>
      */
     public function user(): BelongsTo

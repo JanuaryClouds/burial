@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
+use Database\Factories\CustomFieldValueFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class CustomFieldValue extends Model
 {
-    /** @use HasFactory<\Database\Factories\CustomFieldValueFactory> */
+    /** @use HasFactory<CustomFieldValueFactory> */
     use HasFactory;
 }

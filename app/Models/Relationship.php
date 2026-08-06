@@ -30,6 +30,7 @@ class Relationship extends Model
 
     /**
      * Summary of applications
+     *
      * @return HasMany<Application, Relationship>
      */
     public function applications(): HasMany

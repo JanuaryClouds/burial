@@ -3,8 +3,6 @@
 namespace Database\Factories;
 
 use App\Models\Barangay;
-use App\Models\Beneficiary;
-use App\Models\BeneficiaryFamily;
 use App\Models\Client;
 use App\Models\ClientDemographic;
 use App\Models\ClientSocialInfo;

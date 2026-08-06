@@ -18,7 +18,6 @@ class Client extends Model
 
     protected $table = 'clients';
 
-
     protected $fillable = [
         'user_id',
         'date_of_birth',
@@ -57,6 +56,7 @@ class Client extends Model
 
     /**
      * Summary of application
+     *
      * @return HasOne<Application>
      */
     public function application(): HasOne

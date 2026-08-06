@@ -7,7 +7,6 @@ use App\Models\Nationality;
 use App\Models\Religion;
 use App\Models\Sex;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Str;
 
 /**
  * @extends Factory<ClientDemographic>

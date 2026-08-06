@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Referral extends Model
 {
-    use HasFactory, HasUuid, HasRemarks;
+    use HasFactory, HasRemarks, HasUuid;
 
     protected $table = 'referrals';
 
@@ -21,6 +21,7 @@ class Referral extends Model
 
     /**
      * Summary of application
+     *
      * @return BelongsTo<Application, Referral>
      */
     public function application(): BelongsTo

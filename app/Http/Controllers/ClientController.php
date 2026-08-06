@@ -54,7 +54,7 @@ class ClientController extends Controller
             'client' => $client,
             'application' => $application,
             'beneficiary' => $application->beneficiary ?? null,
-            'page_title' => $client->fullname() . ' | Client | ' . ($application ? $application->tracking_no : 'Draft'),
+            'page_title' => $client->fullname().' | Client | '.($application ? $application->tracking_no : 'Draft'),
         ]);
     }
 
@@ -75,7 +75,7 @@ class ClientController extends Controller
 
         if ($user->clients->count() === 0 && $user->citizen_uuid !== null) {
             $this->citizenServices->checkIfUser('uuid', $user->citizen_uuid, true);
-        } else if ($user->clients->count() > 0) {
+        } elseif ($user->clients->count() > 0) {
             $client = $user->clients->first();
         }
 
@@ -103,7 +103,7 @@ class ClientController extends Controller
             'page_title' => $page_title,
         ]);
 
-        if (!$client && !$citizen) {
+        if (! $client && ! $citizen) {
             session()->flash('info', 'The system could not prefill some fields. We apolagize for the inconvinience.');
         }
 
@@ -149,7 +149,7 @@ class ClientController extends Controller
     {
         return view('client.edit', [
             'client' => $client,
-            'page_title' => 'Edit ' . $client->fullname(),
+            'page_title' => 'Edit '.$client->fullname(),
         ]);
     }
 

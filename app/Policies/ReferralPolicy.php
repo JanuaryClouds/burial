@@ -3,7 +3,6 @@
 namespace App\Policies;
 
 use App\Models\Application;
-use App\Models\Client;
 use App\Models\Referral;
 use App\Models\User;
 

@@ -65,30 +65,15 @@ class ClientPolicy
     }
 
     /**
-     * Summary of edit
-     * @param User $user
-     * @param Client $client
-     * @return bool
-     */
-    public function edit(User $user, Client $client): bool
-    {
-        if ($user->id === $client->user_id) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
      * Determine whether the user can update the model.
      */
     public function update(User $user, Client $client): bool
     {
-        if ($user->id === $client->user_id) {
-            return true;
+        if ($client->application) {
+            return false;
         }
 
-        return false;
+        return $user->id === $client->user_id;
     }
 
     /**

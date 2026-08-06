@@ -25,7 +25,7 @@ class BeneficiaryController extends Controller
         $user = Auth::user();
         $beneficiaries = $user->roles->isNotEmpty() ? $this->services->index() : $this->services->index($user->id);
         $columns = $this->datatableServices->getColumns($beneficiaries);
-        
+
         if (request()->expectsJson()) {
             return $this->datatableServices->ajax($beneficiaries);
         }
@@ -44,7 +44,7 @@ class BeneficiaryController extends Controller
         }
 
         return view('beneficiary.create', [
-            'page_title' => 'Register a Beneficiary'
+            'page_title' => 'Register a Beneficiary',
         ]);
     }
 
@@ -53,7 +53,7 @@ class BeneficiaryController extends Controller
         $application = $beneficiary->application;
 
         return view('beneficiary.show', [
-            'page_title' => $beneficiary->fullname() . ' | Beneficiary | ' . ($application ? $application->tracking_no : 'Draft'),
+            'page_title' => $beneficiary->fullname().' | Beneficiary | '.($application ? $application->tracking_no : 'Draft'),
             'application' => $application ?? null,
             'client' => $application?->client,
             'beneficiary' => $beneficiary,
@@ -75,7 +75,7 @@ class BeneficiaryController extends Controller
         } catch (\Exception $e) {
             return redirect()
                 ->back()
-                ->with('error', 'Unable to save beneficiary. ' . (app()->hasDebugModeEnabled() ? $e->getMessage() : ''));
+                ->with('error', 'Unable to save beneficiary. '.(app()->hasDebugModeEnabled() ? $e->getMessage() : ''));
         }
     }
 
@@ -83,7 +83,7 @@ class BeneficiaryController extends Controller
     {
         return view('beneficiary.edit', [
             'beneficiary' => $beneficiary,
-            'page_title' => 'Edit ' . $beneficiary->fullname() 
+            'page_title' => 'Edit '.$beneficiary->fullname(),
         ]);
     }
 

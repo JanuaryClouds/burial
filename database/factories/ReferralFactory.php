@@ -4,7 +4,6 @@ namespace Database\Factories;
 
 use App\Models\Referral;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Str;
 
 /**
  * @extends Factory<Referral>

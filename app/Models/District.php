@@ -31,9 +31,10 @@ class District extends Model
     {
         return $this->hasMany(Client::class);
     }
-    
+
     /**
      * Summary of beneficiary
+     *
      * @return HasMany<Beneficiary, District>
      */
     public function beneficiary(): HasMany

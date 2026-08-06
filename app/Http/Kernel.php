@@ -9,7 +9,6 @@ use App\Http\Middleware\EncryptCookies;
 use App\Http\Middleware\Maintenance;
 use App\Http\Middleware\PreventRequestsDuringMaintenance;
 use App\Http\Middleware\RedirectIfAuthenticated;
-use App\Http\Middleware\RedirectOverride;
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\TrimStrings;
 use App\Http\Middleware\TrustProxies;

@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\BeneficiaryFamily;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class BeneficiaryFamilyPolicy
 {
@@ -47,20 +46,12 @@ class BeneficiaryFamilyPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function edit(User $user, BeneficiaryFamily $beneficiaryFamily): bool
-    {
-        if ($user->id === $beneficiaryFamily->beneficiary->user->id) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Determine whether the user can update the model.
-     */
     public function update(User $user, BeneficiaryFamily $beneficiaryFamily): bool
     {
+        if ($beneficiaryFamily->beneficiary->application !== null) {
+            return false;
+        }
+
         if ($user->id === $beneficiaryFamily->beneficiary->user->id) {
             return true;
         }

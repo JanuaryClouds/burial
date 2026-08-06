@@ -22,25 +22,25 @@ Route::name('beneficiary.')
                     ->group(function () {
                         Route::get('', 'show')
                             ->name('show');
-        
+
                         Route::get('/edit', 'edit')
-                            ->middleware('can:edit,beneficiary')
-                        ->name('edit');
-                
+                            ->middleware('can:update,beneficiary')
+                            ->name('edit');
+
                         Route::post('/update', 'update')
                             ->middleware('can:update,beneficiary')
                             ->name('update');
                     });
             });
-        });
+    });
 
 Route::name('family.')
-->controller(BeneficiaryFamilyController::class)
+    ->controller(BeneficiaryFamilyController::class)
     ->prefix('family/')
     ->group(function () {
         Route::get('', 'create')
             ->name('create');
-        
+
         Route::post('/store', 'store')
             ->name('store');
 
@@ -48,14 +48,13 @@ Route::name('family.')
             ->group(function () {
                 Route::get('', 'show')
                     ->name('show');
-        
+
                 Route::get('/edit', 'edit')
-                    ->middleware('role:superadmin')
+                    ->middleware('can:update,member')
                     ->name('edit');
-                    
+
                 Route::post('/update', 'update')
-                    ->middleware('role:superadmin')
-                    ->middleware('role:superadmin')
+                    ->middleware('can:update,member')
                     ->name('update');
             });
     });

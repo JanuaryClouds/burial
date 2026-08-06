@@ -6,14 +6,12 @@ use App\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Str;
 
 class Interview extends Model
 {
     use HasFactory, HasUuid;
 
     protected $table = 'interviews';
-
 
     protected $fillable = [
         'client_uuid',

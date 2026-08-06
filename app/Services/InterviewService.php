@@ -2,11 +2,9 @@
 
 namespace App\Services;
 
-use App\Models\Client;
 use App\Models\Interview;
 use Carbon\Carbon;
 use Exception;
-use Str;
 
 class InterviewService
 {
@@ -33,13 +31,11 @@ class InterviewService
 
     /**
      * Summary of store
-     * @param array $data
-     * @param string $clientUuid
-     * @return Interview
      */
     public function store(array $data, string $clientUuid): Interview
     {
         $data['client_uuid'] = $clientUuid;
+
         return Interview::create($data);
     }
 

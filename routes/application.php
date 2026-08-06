@@ -21,10 +21,10 @@ Route::controller(ApplicationController::class)
             ->group(function () {
                 Route::get('', 'show')
                     ->name('show');
-        
+
                 Route::get('/print', 'print')
                     ->name('print');
-        
+
                 Route::get('/certificate', 'certificate')
                     ->name('certificate');
             });

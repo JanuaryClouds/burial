@@ -4,10 +4,8 @@ namespace Database\Seeders;
 
 use App\Models\Assessment;
 use App\Models\Client;
-use App\Models\Interview;
 use App\Models\Notification;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class AssessmentSeeder extends Seeder
@@ -19,10 +17,10 @@ class AssessmentSeeder extends Seeder
     {
         $clients = Client::whereHas('interviews')->get();
 
-        dump($clients->count() . ' Clients with Interviews to Seed');
+        dump($clients->count().' Clients with Interviews to Seed');
 
         foreach ($clients as $client) {
-            if (rand(0,1) == 1 && $client->application) {
+            if (rand(0, 1) == 1 && $client->application) {
                 $assessment = Assessment::factory()->create([
                     'application_uuid' => $client->application->uuid,
                 ]);
@@ -37,6 +35,6 @@ class AssessmentSeeder extends Seeder
             }
         }
 
-        dump(Assessment::count() .' assessments have been provided.');
+        dump(Assessment::count().' assessments have been provided.');
     }
 }

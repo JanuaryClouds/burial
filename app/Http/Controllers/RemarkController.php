@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Remark;
 use App\Http\Requests\StoreRemarkRequest;
 use App\Http\Requests\UpdateRemarkRequest;
+use App\Models\Remark;
 
 class RemarkController extends Controller
 {

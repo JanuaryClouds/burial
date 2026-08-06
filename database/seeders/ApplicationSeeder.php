@@ -3,10 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Application;
-use App\Models\Beneficiary;
-use App\Models\Client;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class ApplicationSeeder extends Seeder
@@ -29,6 +26,6 @@ class ApplicationSeeder extends Seeder
             }
         }
 
-        dump(Application::count() . ' Applications Seeded');
+        dump(Application::count().' Applications Seeded');
     }
 }

@@ -28,7 +28,7 @@ class DashboardController extends Controller
     public function staff()
     {
         $data = $this->services->index(null, 'tracking_no', 'desc');
-        
+
         if (request()->expectsJson()) {
             return response()->json([
                 'data' => $data ? $data->values() : [],
@@ -38,7 +38,7 @@ class DashboardController extends Controller
         return view('dashboard', [
             'page_title' => 'Dashboard',
             'data' => $data,
-            'columns' => $this->datatableServices->getColumns($data)
+            'columns' => $this->datatableServices->getColumns($data),
         ]);
     }
 

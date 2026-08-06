@@ -40,21 +40,10 @@ class BeneficiaryPolicy
      */
     public function create(User $user): bool
     {
-        if ($user->roles->isEmpty()) return true;
+        if ($user->roles->isEmpty()) {
+            return true;
+        }
 
-        return false;
-    }
-
-    /**
-     * Summary of edit
-     * @param User $user
-     * @param Beneficiary $beneficiary
-     * @return bool
-     */
-    public function edit(User $user, Beneficiary $beneficiary): bool
-    {
-        if ($user->id === $beneficiary->created_by) return true;
-        
         return false;
     }
 
@@ -63,8 +52,11 @@ class BeneficiaryPolicy
      */
     public function update(User $user, Beneficiary $beneficiary): bool
     {
-        if ($user->id === $beneficiary->created_by) return true;
-        return false;
+        if ($beneficiary->application) {
+            return false;
+        }
+
+        return $user->id === $beneficiary->created_by;
     }
 
     /**
@@ -72,7 +64,10 @@ class BeneficiaryPolicy
      */
     public function delete(User $user, Beneficiary $beneficiary): bool
     {
-        if ($user->id === $beneficiary->created_by) return true;
+        if ($user->id === $beneficiary->created_by) {
+            return true;
+        }
+
         return false;
     }
 
@@ -81,7 +76,10 @@ class BeneficiaryPolicy
      */
     public function restore(User $user, Beneficiary $beneficiary): bool
     {
-        if ($user->id === $beneficiary->created_by) return true;
+        if ($user->id === $beneficiary->created_by) {
+            return true;
+        }
+
         return false;
     }
 

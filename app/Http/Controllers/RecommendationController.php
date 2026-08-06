@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Recommendation;
 use App\Http\Requests\StoreRecommendationRequest;
 use App\Http\Requests\UpdateRecommendationRequest;
 use App\Models\Application;
+use App\Models\Recommendation;
 use App\Services\RecommendationService;
 
 class RecommendationController extends Controller
@@ -52,7 +52,7 @@ class RecommendationController extends Controller
                     'application' => $application,
                 ])
                 ->log('Unable to create a recommendation');
-            
+
             return back()->with('error', 'Failed to create a recommendation to the application');
         }
     }

@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Application;
-use App\Models\Client;
 use App\Models\Notification;
 use App\Models\Referral;
 use App\Models\User;
@@ -25,7 +24,7 @@ class ReferralSeeder extends Seeder
                 $referral = Referral::factory()->create([
                     'application_uuid' => $application->uuid,
                 ]);
-    
+
                 Notification::factory()->create([
                     'notifiable_id' => $application->client->user_id,
                     'notifiable_type' => User::class,
@@ -36,6 +35,6 @@ class ReferralSeeder extends Seeder
             }
         }
 
-        dump(Referral::count() .' referrals have been provided.');
+        dump(Referral::count().' referrals have been provided.');
     }
 }

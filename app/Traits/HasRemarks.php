@@ -9,7 +9,6 @@ trait HasRemarks
 {
     /**
      * Summary of remarks
-     * @return MorphMany
      */
     public function remarks(): MorphMany
     {

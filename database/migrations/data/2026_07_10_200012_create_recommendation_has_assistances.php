@@ -20,7 +20,7 @@ return new class extends Migration
                 ->cascadeOnDelete();
             $table->primary([
                 'recommendation_uuid',
-                'funeral_assistance_uuid'
+                'funeral_assistance_uuid',
             ]);
             $table->timestamps();
         });

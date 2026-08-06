@@ -2,19 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Application;
 use App\Http\Requests\StoreApplicationRequest;
 use App\Http\Requests\UpdateApplicationRequest;
+use App\Models\Application;
 use App\Models\Beneficiary;
 use App\Models\Client;
 use App\Models\FuneralAssistanceType;
 use App\Models\ModeOfAssistance;
-use App\Models\Relationship;
 use App\Services\ApplicationService;
 use App\Services\BeneficiaryFamilyService;
-use App\Services\ClientService;
 use App\Services\BeneficiaryService;
+use App\Services\ClientService;
 use App\Services\DatatableService;
+use App\Services\ImageService;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 
 class ApplicationController extends Controller
@@ -25,6 +26,7 @@ class ApplicationController extends Controller
         protected ClientService $clientServices,
         protected BeneficiaryService $beneficiaryServices,
         protected BeneficiaryFamilyService $beneficiaryFamilyServices,
+        protected ImageService $imageServices,
     ) {}
 
     /**
@@ -35,7 +37,7 @@ class ApplicationController extends Controller
         $data = $this->services->index(
             Auth::user()->roles->isNotEmpty() ? null : Auth::user()->id, 'tracking_no', 'desc'
         );
-        
+
         if (request()->expectsJson()) {
             return $this->datatableServices->ajax($data);
         }
@@ -52,7 +54,7 @@ class ApplicationController extends Controller
     public function create()
     {
         $user = Auth::user();
-        
+
         if ($user->roles->isNotEmpty()) {
             return redirect()->route('dashboard')
                 ->with('warning', 'You are not allowed to apply as a client');
@@ -71,15 +73,15 @@ class ApplicationController extends Controller
         $clientOptions = $draftClients
             ->mapWithKeys(function (Client $client) {
                 return [
-                    $client->uuid => $client->fullname() . ' - created at ' . $client->created_at->format('M d, Y : h:m a'),
+                    $client->uuid => $client->fullname().' - created at '.$client->created_at->format('M d, Y : h:m a'),
                 ];
             })
             ->toArray();
-            
+
         $beneficiaryOptions = $draftBeneficiaries
             ->mapWithKeys(function (Beneficiary $beneficiary) {
                 return [
-                    $beneficiary->uuid => $beneficiary->fullname() . ' - created at ' . $beneficiary->created_at->format('M d, Y : h:m a'),
+                    $beneficiary->uuid => $beneficiary->fullname().' - created at '.$beneficiary->created_at->format('M d, Y : h:m a'),
                 ];
             })
             ->toArray();
@@ -111,11 +113,23 @@ class ApplicationController extends Controller
 
             $application = $this->services->store($client, $beneficiary);
 
+            // Upload any submitted document images (skipped gracefully when the fileserver is disabled)
+            $uploadError = false;
+            foreach ($request->file('images', []) as $fieldName => $uploadedFile) {
+                try {
+                    $this->imageServices->post($application->tracking_no.'-'.$fieldName, $uploadedFile);
+                } catch (\Throwable $th) {
+                    report($th);
+                    $uploadError = true;
+                }
+            }
+
             // Clear session UUIDs
             session()->forget(['client_uuid', 'beneficiary_uuid']);
 
             return redirect()->route('application.index')
-                ->with('success', 'Application submitted successfully! Your tracking number is: ' . $application->tracking_no);
+                ->with('success', 'Application submitted successfully! Your tracking number is: '.$application->tracking_no
+                    .($uploadError ? ' However, some documents failed to upload.' : ''));
         } catch (\Exception $e) {
             activity()
                 ->causedBy(Auth::user())
@@ -127,7 +141,7 @@ class ApplicationController extends Controller
                 ->log('Unable to store application');
 
             return redirect()->back()
-                ->with('error', 'Unable to submit application' . (config('app.debug') ? ': ' . $e->getMessage() : ''));
+                ->with('error', 'Unable to submit application'.(config('app.debug') ? ': '.$e->getMessage() : ''));
         }
     }
 
@@ -137,11 +151,11 @@ class ApplicationController extends Controller
     public function show(Application $application)
     {
         $application->loadMissing(Application::relations(
-            'client', 
-            'beneficiary', 
-            'recommendation', 
-            'assessment', 
-            'processLogs', 
+            'client',
+            'beneficiary',
+            'recommendation',
+            'assessment',
+            'processLogs',
             'referral',
             'relationship',
         ));
@@ -170,7 +184,7 @@ class ApplicationController extends Controller
             'conditions' => $conditions,
             'funeralAssistanceTypes' => $funeralAssistanceTypes,
             'modes' => $modes,
-            'page_title' => $application->tracking_no
+            'page_title' => $application->tracking_no,
         ]);
     }
 
@@ -200,7 +214,6 @@ class ApplicationController extends Controller
 
     /**
      * Summary of print
-     * @param Application $application
      */
     public function print(Application $application)
     {
@@ -209,8 +222,8 @@ class ApplicationController extends Controller
 
     /**
      * Summary of certificate
-     * @param Application $application
-     * @return \Illuminate\Http\Response
+     *
+     * @return Response
      */
     public function certificate(Application $application)
     {

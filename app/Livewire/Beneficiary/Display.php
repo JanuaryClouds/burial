@@ -2,10 +2,7 @@
 
 namespace App\Livewire\Beneficiary;
 
-use App\Models\Barangay;
 use App\Models\Beneficiary;
-use App\Models\Religion;
-use App\Models\Sex;
 use Illuminate\Database\Eloquent\Collection;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -13,15 +10,18 @@ use Livewire\Component;
 class Display extends Component
 {
     public ?string $beneficiaryUuid = null;
+
     public ?Beneficiary $beneficiary = null;
+
     public ?Collection $draftBeneficiaries = null;
+
     public Collection $family;
 
-    public function mount(?string $uuid = null, ?Collection $draftBeneficiaries): void
+    public function mount(?string $uuid, ?Collection $draftBeneficiaries): void
     {
         $this->draftBeneficiaries = $draftBeneficiaries;
         $this->beneficiaryUuid = $uuid;
-    
+
         $this->queryBeneficiary();
     }
 
@@ -32,7 +32,7 @@ class Display extends Component
 
         $this->queryBeneficiary();
     }
-    
+
     public function queryBeneficiary(): void
     {
         if ($this->beneficiaryUuid) {
