@@ -274,6 +274,10 @@ function initSelect2(root = document) {
     });
 }
 
+// Expose for vanilla JS that adds dynamic selects (e.g. the beneficiary family
+// composition rows) so newly inserted dropdowns can be initialized too.
+window.initSelect2 = initSelect2;
+
 document.addEventListener('livewire:init', () => {
     Livewire.hook('morph.updated', ({ el }) => {
         requestAnimationFrame(() => {
