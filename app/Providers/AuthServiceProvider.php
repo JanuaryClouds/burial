@@ -53,39 +53,8 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Gate::before(function ($user, $ability, $arguments) {
-            // Block any user (including superadmin) from modifying/creating their own application details
-            if (in_array($ability, ['create', 'update', 'delete', 'forceDelete'])) {
-                foreach ((array) $arguments as $argument) {
-                    if ($argument instanceof Client && $argument->user_id === $user->id) {
-                        return false;
-                    }
-                    if ($argument instanceof Interview && $argument->client && $argument->client->user_id === $user->id) {
-                        return false;
-                    }
-                    if ($argument instanceof ClientAssessment && $argument->client && $argument->client->user_id === $user->id) {
-                        return false;
-                    }
-                    if ($argument instanceof ClientRecommendation && $argument->client && $argument->client->user_id === $user->id) {
-                        return false;
-                    }
-                    if ($argument instanceof Referral && $argument->client && $argument->client->user_id === $user->id) {
-                        return false;
-                    }
-                    if ($argument instanceof BurialAssistance && $argument->originalClaimant()->client->user_id === $user->id) {
-                        return false;
-                    }
-                    if ($argument instanceof FuneralAssistance && $argument->client && $argument->client->user_id === $user->id) {
-                        return false;
-                    }
-                }
-            }
-
+        Gate::before(function ($user) {
             if ($user->hasRole('superadmin')) {
-                if (in_array($ability, ['update', 'delete', 'forceDelete'])) {
-                    return null;
-                }
-
                 return true;
             }
 

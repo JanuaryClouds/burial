@@ -2,111 +2,103 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreBeneficiaryRequest;
 use App\Http\Requests\UpdateBeneficiaryRequest;
+use App\Models\Beneficiary;
+use App\Services\BeneficiaryFamilyService;
 use App\Services\BeneficiaryService;
 use App\Services\DatatableService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class BeneficiaryController extends Controller
 {
     public function __construct(
-        protected BeneficiaryService $beneficiaryServices,
+        protected BeneficiaryService $services,
+        protected BeneficiaryFamilyService $familyServices,
         protected DatatableService $datatableServices
     ) {}
 
     public function index()
     {
-        $page_title = 'Beneficiaries';
-        $personalData = $this->beneficiaryServices->index(auth()->user()->id);
-        $personalDataColumns = $this->datatableServices->getColumns($personalData, []);
-
-        $allData = [];
-        $allDataColumns = [];
-        $cardData = [];
-        if (auth()->user()->hasRole('staff')) {
-            $allData = $this->beneficiaryServices->index();
-            $allDataColumns = $this->datatableServices->getColumns($allData, []);
-        }
+        $user = Auth::user();
+        $beneficiaries = $user->roles->isNotEmpty() ? $this->services->index() : $this->services->index($user->id);
+        $columns = $this->datatableServices->getColumns($beneficiaries);
 
         if (request()->expectsJson()) {
-            return response()->json([
-                'personalData' => $personalData ? $personalData->values() : [],
-                'allData' => $allData ? $allData->values() : [],
-            ]);
+            return $this->datatableServices->ajax($beneficiaries);
         }
 
-        if (auth()->user()->hasRole('staff')) {
-            $cardData = [
-                [
-                    'model' => 'App\Models\Beneficiary',
-                    'label' => 'Total Beneficiaries',
-                    'scope' => 'Total',
-                    'iconName' => 'people',
-                    'iconPathsCount' => 5,
-                    'route' => route('beneficiary.index'),
-                ],
-                [
-                    'model' => 'App\Models\Beneficiary',
-                    'label' => 'Referred',
-                    'scope' => 'Referral',
-                    'iconName' => 'route',
-                    'iconPathsCount' => 4,
-                    'route' => route('referral.index'),
-                ],
-                [
-                    'model' => 'App\Models\Beneficiary',
-                    'label' => 'With Burial Assistances',
-                    'scope' => 'BurialAssistance',
-                    'iconName' => 'file-up',
-                    'iconPathsCount' => 2,
-                    'route' => route('burial.index'),
-                ],
-                [
-                    'model' => 'App\Models\Beneficiary',
-                    'label' => 'With Libreng Libing',
-                    'scope' => 'FuneralAssistance',
-                    'iconName' => 'file-up',
-                    'iconPathsCount' => 2,
-                    'route' => route('funeral.index'),
-                ],
-            ];
-        }
-
-        return view('beneficiary.index', compact(
-            'page_title',
-            'allData',
-            'allDataColumns',
-            'cardData',
-            'personalData',
-            'personalDataColumns'
-        ));
-    }
-
-    public function show(string $id)
-    {
-        $beneficiary = $this->beneficiaryServices->show($id);
-        $readonly = ! auth()->user()->hasRole('superadmin');
-
-        return view('beneficiary.view', [
-            'page_title' => $beneficiary->fullname(),
-            'readonly' => $readonly,
-            'beneficiary' => $beneficiary,
+        return view('beneficiary.index', [
+            'page_title' => 'Beneficiaries',
+            'beneficiaries' => $beneficiaries,
+            'columns' => $columns,
         ]);
     }
 
-    public function update(string $id, UpdateBeneficiaryRequest $request)
+    public function create()
+    {
+        if (session()->has('beneficiary_uuid')) {
+            session()->remove('beneficiary_uuid');
+        }
+
+        return view('beneficiary.create', [
+            'page_title' => 'Register a Beneficiary',
+        ]);
+    }
+
+    public function show(Beneficiary $beneficiary)
+    {
+        $application = $beneficiary->application;
+
+        return view('beneficiary.show', [
+            'page_title' => $beneficiary->fullname().' | Beneficiary | '.($application ? $application->tracking_no : 'Draft'),
+            'application' => $application ?? null,
+            'client' => $application?->client,
+            'beneficiary' => $beneficiary,
+            'family' => $beneficiary->family,
+        ]);
+    }
+
+    public function store(StoreBeneficiaryRequest $request)
+    {
+        try {
+            $beneficiary = $this->services->store($request->validated());
+            $this->familyServices->store($request->validated(), $beneficiary);
+
+            session()->put('beneficiary_uuid', $beneficiary->uuid);
+
+            return redirect()
+                ->route('application.create')
+                ->with('success', 'Successfully recorded beneficiary and their family composition. You may edit it before finalizing your application.');
+        } catch (\Exception $e) {
+            return redirect()
+                ->back()
+                ->with('error', 'Unable to save beneficiary. '.(app()->hasDebugModeEnabled() ? $e->getMessage() : ''));
+        }
+    }
+
+    public function edit(Beneficiary $beneficiary)
+    {
+        return view('beneficiary.edit', [
+            'beneficiary' => $beneficiary,
+            'page_title' => 'Edit '.$beneficiary->fullname(),
+        ]);
+    }
+
+    public function update(UpdateBeneficiaryRequest $request, Beneficiary $beneficiary)
     {
         try {
             $data = $request->validated();
-            $this->beneficiaryServices->update($id, $data);
+            $this->services->update($data, $beneficiary);
 
             activity()
-                ->withProperties(['ip' => $request->ip(), 'beneficiary' => $id])
-                ->causedBy(auth()->user())
+                ->withProperties(['ip' => request()->ip(), 'browser' => request()->userAgent(), 'beneficiary' => $beneficiary->uuid])
+                ->causedBy(Auth::user())
                 ->log('Updated beneficiary');
 
-            return redirect()->route('beneficiary.show', $id)
+            return redirect()->route('beneficiary.show', $beneficiary)
                 ->with('success', 'Beneficiary updated successfully');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to update beneficiary. '.(app()->hasDebugModeEnabled() ? $e->getMessage() : ''));

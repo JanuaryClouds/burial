@@ -16,6 +16,7 @@ use App\Models\SystemSetting;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -28,71 +29,41 @@ class ClientService
         $this->imageServices = $imageService;
     }
 
-    public function index(
-        ?string $orderColumn = 'created_at',
-        ?string $orderDirection = 'asc',
-        ?int $user_id = null
-    ) {
-        $allowedColumns = ['created_at', 'tracking_no', 'id'];
-        $orderColumn = in_array($orderColumn, $allowedColumns) ? $orderColumn : 'created_at';
-        $orderDirection = in_array(strtolower($orderDirection), ['asc', 'desc']) ? $orderDirection : 'asc';
-
+    public function index(?string $user_id = null, string $orderBy = 'created_at', string $orderDirection = 'asc')
+    {
         return Client::with([
             'user',
-            'funeralAssistance',
             'interviews',
-            'assessment',
-            'claimant',
-            'beneficiary',
-            'claimant.burialAssistance',
-            'socialInfo.relationship',
-            'referral',
+            'application',
+            'application.beneficiary',
+            'application.assessment',
+            'application.referral',
+            'application.processLogs',
+            'application.recommendations',
+            'application.relationship',
+            'socialInfo',
+            'application.client.interviews',
         ])
-            ->where(function ($query) {
-                $query
-                    ->whereHas('recommendation')
-                    ->orWhereHas('funeralAssistance', function ($query) {
-                        $query->where('forwarded_at', null);
-                    })
-                    ->orWhereHas('claimant.burialAssistance', function ($query) {
-                        $query->where('status', '!=', 'released');
-                    })
-                    ->orWhereDoesntHave('claimant.burialAssistance')
-                    ->orWhereDoesntHave('funeralAssistance');
-            })
             ->when($user_id, function ($query) use ($user_id) {
                 $query->where('user_id', $user_id);
             })
-            ->orderBy($orderColumn, $orderDirection)
+            ->orderBy($orderBy, $orderDirection)
             ->get()
-            ->map(function ($client) {
-                if ($client->interviews->count() > 0) {
-                    $status = 'Interviewed';
-                }
-
-                if ($client->assessment->count() > 0) {
-                    $status = 'Assessed';
-                }
-
-                if (isset($client->referral)) {
-                    $status = 'For Referral';
-                }
-
-                if (isset($client->claimant)) {
-                    $status = 'For Burial Assistance';
-                }
-
-                if (isset($client->funeralAssistance)) {
-                    $status = 'For Libreng Libing';
+            ->map(function (Client $client) {
+                $application = $client->application;
+                if ($application) {
+                    $status = $application->status();
+                } else {
+                    $status = 'Draft';
                 }
 
                 return [
-                    'id' => $client->id,
-                    'tracking_no' => $client->tracking_no,
-                    'client' => $client->fullname().' ('.$client->socialInfo?->relationship?->name.')',
-                    'beneficiary' => $client->beneficiary?->fullname(),
-                    'status' => $status ?? 'pending',
-                    'created_at' => $client->created_at->format('F d, Y'),
+                    'uuid' => $client->uuid,
+                    'tracking_no' => $application?->tracking_no ?? 'Draft',
+                    'client' => $client->fullname().($application ? ' ('.$application->relationship->name.')' : ''),
+                    'beneficiary' => $application?->beneficiary?->fullname() ?? 'N/A',
+                    'status' => $status,
+                    'applied_at' => $client->application?->created_at->format('F d, Y') ?? 'Draft',
                     'show_route' => route('client.show', $client),
                 ];
             });
@@ -104,7 +75,7 @@ class ClientService
             ->whereBetween('created_at', [$startDate, $endDate])
             ->orderBy('tracking_no', 'asc')
             ->get()
-            ->map(function ($client) {
+            ->map(function (Client $client) {
                 return [
                     'tracking_no' => $client->tracking_no,
                     'client' => $client->fullname().' ('.$client->socialInfo?->relationship?->name.')',
@@ -113,6 +84,38 @@ class ClientService
                     'created_at' => $client->created_at->format('F d, Y H:i'),
                 ];
             });
+    }
+
+    public function store(array $data)
+    {
+        $client = Client::create([
+            'user_id' => Auth::user()->id,
+            'date_of_birth' => $data['date_of_birth'],
+            'house_no' => $data['house_no'],
+            'street' => $data['street'],
+            'district_id' => $data['district_id'],
+            'barangay_id' => $data['barangay_id'],
+            'city' => $data['city'],
+            'contact_number' => $data['contact_number'],
+        ]);
+
+        ClientDemographic::create([
+            'client_uuid' => $client->uuid,
+            'sex_id' => $data['sex_id'],
+            'religion_id' => $data['religion_id'],
+            'nationality_id' => $data['nationality_id'],
+        ]);
+
+        ClientSocialInfo::create([
+            'client_uuid' => $client->uuid,
+            'civil_id' => $data['civil_id'],
+            'education_id' => $data['education_id'],
+            'income' => $data['income'],
+            'philhealth' => $data['philhealth'],
+            'skill' => $data['skill'],
+        ]);
+
+        return $client;
     }
 
     /**
@@ -344,7 +347,7 @@ class ClientService
     /**
      * Summary of updateClient
      */
-    public function updateClient(array $data, Client $client): void
+    public function update(array $data, Client $client): void
     {
         $client->update($data);
 
@@ -355,7 +358,6 @@ class ClientService
         ]);
 
         $client->socialInfo->update([
-            'relationship_id' => $data['relationship_id'],
             'civil_id' => $data['civil_id'],
             'education_id' => $data['education_id'],
             'income' => $data['income'],

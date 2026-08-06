@@ -69,7 +69,11 @@ class ClientPolicy
      */
     public function update(User $user, Client $client): bool
     {
-        return false;
+        if ($client->application) {
+            return false;
+        }
+
+        return $user->id === $client->user_id;
     }
 
     /**
@@ -77,6 +81,10 @@ class ClientPolicy
      */
     public function delete(User $user, Client $client): bool
     {
+        if ($user->id === $client->user_id) {
+            return true;
+        }
+
         return false;
     }
 
@@ -85,6 +93,10 @@ class ClientPolicy
      */
     public function restore(User $user, Client $client): bool
     {
+        if ($user->id === $client->user_id) {
+            return true;
+        }
+
         return false;
     }
 

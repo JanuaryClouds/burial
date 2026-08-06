@@ -1,0 +1,47 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('client_social_infos', function (Blueprint $table) {
+            $table->uuid()->primary();
+            $table->foreignUuid('client_uuid')
+                ->constrained('clients', 'uuid')
+                ->onDelete('CASCADE')
+                ->onUpdate('CASCADE');
+            // $table->foreignId('relationship_id')
+            //     ->constrained('relationships')
+            //     ->onDelete('CASCADE')
+            //     ->onUpdate('CASCADE');
+            $table->foreignId('civil_id')
+                ->constrained('civil_statuses')
+                ->onDelete('CASCADE')
+                ->onUpdate('CASCADE');
+            $table->foreignId('education_id')
+                ->nullable()
+                ->constrained('educations')
+                ->onDelete('CASCADE')
+                ->onUpdate('CASCADE');
+            $table->text('income')->nullable();
+            $table->text('philhealth')->nullable();
+            $table->text('skill')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('client_social_infos');
+    }
+};

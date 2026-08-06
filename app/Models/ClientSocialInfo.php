@@ -2,26 +2,19 @@
 
 namespace App\Models;
 
+use App\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ClientSocialInfo extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUuid;
 
     protected $table = 'client_social_infos';
 
-    protected $primaryKey = 'id';
-
-    public $incrementing = false;
-
-    protected $keyType = 'string';
-
     protected $fillable = [
-        'id',
-        'client_id',
-        'relationship_id',
+        'client_uuid',
         'civil_id',
         'education_id',
         'income',
@@ -29,20 +22,11 @@ class ClientSocialInfo extends Model
         'skill',
     ];
 
-    public static function getClientSocial($client)
-    {
-        return self::where($client, 'client_id')->first();
-    }
-
-    /**
-     * Summary of relationship
-     *
-     * @return BelongsTo<Relationship, ClientSocialInfo>
-     */
-    public function relationship(): BelongsTo
-    {
-        return $this->belongsTo(Relationship::class, 'relationship_id')->withTrashed();
-    }
+    protected $casts = [
+        'income' => 'encrypted',
+        'philhealth' => 'encrypted',
+        'skill' => 'encrypted',
+    ];
 
     /**
      * Summary of education

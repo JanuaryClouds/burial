@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Client;
+use App\Models\Application;
 use App\Models\Notification;
 use App\Models\Referral;
 use App\Models\User;
@@ -15,20 +15,18 @@ class ReferralSeeder extends Seeder
      */
     public function run(): void
     {
-        $clients = Client::whereHas('assessment')
-            ->where(function ($query) {
-                $query->whereDoesntHave('recommendation');
-            })
+        $applications = Application::whereDoesntHave('recommendations')
+            ->whereHas('assessment')
             ->get();
 
-        foreach ($clients as $client) {
-            if (rand(0, 2) === 0) {
+        foreach ($applications as $application) {
+            if (rand(0, 3) === 0) {
                 $referral = Referral::factory()->create([
-                    'client_id' => $client->id,
+                    'application_uuid' => $application->uuid,
                 ]);
 
                 Notification::factory()->create([
-                    'notifiable_id' => $client->user->id,
+                    'notifiable_id' => $application->client->user_id,
                     'notifiable_type' => User::class,
                     'source_type' => Referral::class,
                     'source_id' => $referral->id,
@@ -36,5 +34,7 @@ class ReferralSeeder extends Seeder
                 ]);
             }
         }
+
+        dump(Referral::count().' referrals have been provided.');
     }
 }

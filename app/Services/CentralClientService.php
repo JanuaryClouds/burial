@@ -76,7 +76,7 @@ class CentralClientService
 
         $citizenData = [];
 
-        $allowedKeys = ['uuid', 'emp_id'];
+        $allowedKeys = ['uuid'];
         if (! in_array($key, $allowedKeys, true)) {
             throw new RuntimeException("Invalid lookup key: {$key}");
         }
@@ -125,7 +125,6 @@ class CentralClientService
         try {
             return User::create([
                 'citizen_uuid' => $citizenData[0]['user_id'],
-                'emp_id' => $citizenData[0]['emp_id'] ?? null,
                 'first_name' => $citizenData[0]['firstname'] ?? null,
                 'middle_name' => $citizenData[0]['middlename'] ?? null,
                 'last_name' => $citizenData[0]['lastname'] ?? null,
@@ -158,7 +157,6 @@ class CentralClientService
 
         return [
             'citizen_uuid' => $citizen['user_id'] ?? null,
-            'emp_id' => $citizen['emp_id'] ?? null,
             'first_name' => $citizen['firstname'] ?? null,
             'middle_name' => $citizen['middlename'] ?? null,
             'last_name' => $citizen['lastname'] ?? null,

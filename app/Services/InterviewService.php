@@ -2,15 +2,13 @@
 
 namespace App\Services;
 
-use App\Models\Client;
 use App\Models\Interview;
 use Carbon\Carbon;
 use Exception;
-use Str;
 
 class InterviewService
 {
-    public function index(?int $userId = null)
+    public function index(?string $userId = null)
     {
         return Interview::with(['client', 'client.user'])
             ->when($userId, function ($query) use ($userId) {
@@ -31,17 +29,14 @@ class InterviewService
             });
     }
 
-    public function store(array $data, $id)
+    /**
+     * Summary of store
+     */
+    public function store(array $data, string $clientUuid): Interview
     {
-        try {
-            $client = Client::findOrFail($id);
-            $data['client_id'] = $client->id;
-            $data['id'] = Str::uuid();
+        $data['client_uuid'] = $clientUuid;
 
-            return Interview::create($data);
-        } catch (Exception $e) {
-            return null;
-        }
+        return Interview::create($data);
     }
 
     public function done($id)

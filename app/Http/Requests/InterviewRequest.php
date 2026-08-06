@@ -23,8 +23,7 @@ class InterviewRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'client_id' => 'exists:clients,id',
-            'status' => 'in:scheduled,done',
+            'client_uuid' => 'exists:clients,uuid',
             'schedule' => 'required|date',
             'remarks' => 'nullable|string|max:255',
         ];

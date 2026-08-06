@@ -33,6 +33,16 @@ class District extends Model
     }
 
     /**
+     * Summary of beneficiary
+     *
+     * @return HasMany<Beneficiary, District>
+     */
+    public function beneficiary(): HasMany
+    {
+        return $this->hasMany(Beneficiary::class);
+    }
+
+    /**
      * Summary of barangay
      *
      * @return HasMany<Barangay>

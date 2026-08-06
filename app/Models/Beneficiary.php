@@ -2,27 +2,23 @@
 
 namespace App\Models;
 
+use App\Traits\HasRelationSets;
+use App\Traits\HasUuid;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
 
 class Beneficiary extends Model
 {
-    use HasFactory;
+    use HasFactory, HasRelationSets, HasUuid;
 
     protected $table = 'beneficiaries';
 
-    protected $primaryKey = 'id';
-
-    public $incrementing = false;
-
-    protected $keyType = 'string';
-
     protected $fillable = [
-        'id',
-        'client_id',
         'first_name',
         'middle_name',
         'last_name',
@@ -31,8 +27,12 @@ class Beneficiary extends Model
         'religion_id',
         'date_of_birth',
         'date_of_death',
-        'place_of_birth',
+        'house_no',
+        'street',
         'barangay_id',
+        'district_id',
+        'city',
+        'created_by',
     ];
 
     protected $casts = [
@@ -40,17 +40,10 @@ class Beneficiary extends Model
         'middle_name' => 'encrypted',
         'last_name' => 'encrypted',
         'suffix' => 'encrypted',
+        'house_no' => 'encrypted',
+        'street' => 'encrypted',
+        'city' => 'encrypted',
     ];
-
-    /**
-     * Summary of tracking_no
-     *
-     * @return string returns the tracking number of the client this beneficiary is created from
-     */
-    public function tracking_no(): string
-    {
-        return $this->client->tracking_no;
-    }
 
     /**
      * Summary of fullname
@@ -76,24 +69,6 @@ class Beneficiary extends Model
     }
 
     /**
-     * Summary of assistance
-     *
-     * @return mixed returns the assistance of the beneficiary, could be burial or funeral
-     */
-    public function assistance(): mixed
-    {
-        if ($this->client->claimant?->count() > 0) {
-            return $this->client->claimant->burialAssistance;
-        }
-
-        if ($this->client->funeralAssistance?->count() > 0) {
-            return $this->client->funeralAssistance;
-        }
-
-        return null;
-    }
-
-    /**
      * Summary of sex
      *
      * @return BelongsTo<Sex, Beneficiary>
@@ -104,13 +79,13 @@ class Beneficiary extends Model
     }
 
     /**
-     * Summary of client
+     * Summary of application
      *
-     * @return BelongsTo<Client, Beneficiary>
+     * @return HasOne<Application>
      */
-    public function client(): BelongsTo
+    public function application(): HasOne
     {
-        return $this->belongsTo(Client::class, 'client_id');
+        return $this->hasOne(Application::class, 'beneficiary_uuid', 'uuid');
     }
 
     /**
@@ -131,6 +106,59 @@ class Beneficiary extends Model
     public function barangay(): BelongsTo
     {
         return $this->belongsTo(Barangay::class, 'barangay_id');
+    }
+
+    /**
+     * Summary of district
+     *
+     * @return BelongsTo<District, Beneficiary>
+     */
+    public function district(): BelongsTo
+    {
+        return $this->belongsTo(District::class, 'district_id');
+    }
+
+    /**
+     * Summary of family
+     *
+     * @return HasMany<BeneficiaryFamily, Beneficiary>
+     */
+    public function family(): HasMany
+    {
+        return $this->hasMany(BeneficiaryFamily::class, 'beneficiary_uuid', 'uuid');
+    }
+
+    /**
+     * Summary of user
+     *
+     * @return BelongsTo<User, Beneficiary>
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Model Functions
+    |--------------------------------------------------------------------------
+    |
+    | Custom model functions.
+    |
+    */
+
+    public static function relations()
+    {
+        return [
+            'sex',
+            'religion',
+            'barangay',
+            'district',
+            'family',
+            'family.sex',
+            'family.civil',
+            'family.relationship',
+        ];
     }
 
     // Scopes

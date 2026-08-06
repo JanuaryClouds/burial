@@ -2,30 +2,24 @@
 
 namespace App\Models;
 
+use App\Traits\HasUuid;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Str;
 
 class Client extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUuid;
 
     protected $table = 'clients';
 
-    protected $primaryKey = 'id';
-
-    public $incrementing = false;
-
-    protected $keyType = 'string';
-
     protected $fillable = [
-        'id',
         'user_id',
-        'tracking_no',
         'date_of_birth',
         'house_no',
         'street',
@@ -35,25 +29,20 @@ class Client extends Model
         'contact_number',
     ];
 
-    protected static function booted()
-    {
-        static::creating(function ($client) {
-            $year = now()->format('Y');
-            $count = self::whereYear('created_at', $year)->count() + 1;
+    protected $casts = [
+        'house_no' => 'encrypted',
+        'street' => 'encrypted',
+        'city' => 'encrypted',
+    ];
 
-            $client->tracking_no = sprintf('%s-%04d', $year, $count);
-        });
-    }
-
-    public static function getAllClients()
-    {
-        return self::all();
-    }
-
-    public static function getClientInfo($client)
-    {
-        return self::where('id', $client)->first();
-    }
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    |
+    | Model Relationships.
+    |
+    */
 
     /**
      * Summary of user
@@ -66,68 +55,13 @@ class Client extends Model
     }
 
     /**
-     * Summary of fullname
-     */
-    public function fullname(): string
-    {
-        if (! $this->user) {
-            return '';
-        }
-
-        return $this->user->first_name.' '.
-            ($this->user->middle_name ? Str::limit($this->user->middle_name, 1, '.').' ' : '').
-            $this->user->last_name.
-            ($this->user->suffix ? ' '.$this->user->suffix : '');
-    }
-
-    /**
-     * Summary of age
+     * Summary of application
      *
-     * @return int returns the age of the client
+     * @return HasOne<Application>
      */
-    public function age(): int
+    public function application(): HasOne
     {
-        return Carbon::parse($this->date_of_birth)->age;
-    }
-
-    /**
-     * Summary of address
-     *
-     * @return string joins the house number, street, and barangay name
-     */
-    public function address(): string
-    {
-        return $this->house_no.' '.$this->street.', '.$this->barangay->name;
-    }
-
-    /**
-     * Summary of assessment
-     *
-     * @return HasMany<ClientAssessment>
-     */
-    public function assessment(): HasMany
-    {
-        return $this->hasMany(ClientAssessment::class);
-    }
-
-    /**
-     * Summary of beneficiary
-     *
-     * @return HasOne<Beneficiary>
-     */
-    public function beneficiary(): HasOne
-    {
-        return $this->hasOne(Beneficiary::class);
-    }
-
-    /**
-     * Summary of family
-     *
-     * @return HasMany<BeneficiaryFamily>
-     */
-    public function family(): HasMany
-    {
-        return $this->hasMany(BeneficiaryFamily::class);
+        return $this->hasOne(Application::class);
     }
 
     /**
@@ -148,26 +82,6 @@ class Client extends Model
     public function socialInfo(): HasOne
     {
         return $this->hasOne(ClientSocialInfo::class);
-    }
-
-    /**
-     * Summary of recommendation
-     *
-     * @return HasMany<ClientRecommendation>
-     */
-    public function recommendation(): HasMany
-    {
-        return $this->hasMany(ClientRecommendation::class);
-    }
-
-    /**
-     * Summary of referral
-     *
-     * @return HasOne<Referral>
-     */
-    public function referral(): HasOne
-    {
-        return $this->hasOne(Referral::class);
     }
 
     /**
@@ -200,28 +114,80 @@ class Client extends Model
         return $this->hasMany(Interview::class);
     }
 
-    /**
-     * Summary of claimant
-     *
-     * @return HasOne<Claimant>
-     */
-    public function claimant(): HasOne
+    public static function relations(): array
     {
-        return $this->hasOne(Claimant::class, 'client_id', 'id');
+        return [
+            'user',
+            'demographic',
+            'demographic.sex',
+            'demographic.religion',
+            'demographic.nationality',
+            'socialInfo',
+            'socialInfo.education',
+            'socialInfo.civil',
+            'district',
+            'barangay',
+            'interviews',
+        ];
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Model functions
+    |--------------------------------------------------------------------------
+    |
+    | Model functions.
+    |
+    */
+
+    /**
+     * Summary of fullname
+     */
+    public function fullname(): string
+    {
+        $user = $this->user;
+
+        if (! $user) {
+            return '';
+        }
+
+        return $user->first_name.' '.
+            ($user->middle_name ? Str::limit($user->middle_name, 1, '.').' ' : '').
+            $user->last_name.
+            ($user->suffix ? ' '.$user->suffix : '');
     }
 
     /**
-     * Summary of funeralAssistance
+     * Summary of age
      *
-     * @return HasOne<FuneralAssistance>
+     * @return int returns the age of the client
      */
-    public function funeralAssistance(): HasOne
+    public function age(): int
     {
-        return $this->hasOne(FuneralAssistance::class, 'client_id', 'id');
+        return Carbon::parse($this->date_of_birth)->age;
     }
+
+    /**
+     * Summary of address
+     *
+     * @return string joins the house number, street, and barangay name
+     */
+    public function address(): string
+    {
+        return $this->house_no.' '.$this->street.', '.$this->barangay->name;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Model scopes
+    |--------------------------------------------------------------------------
+    |
+    | Model scopes.
+    |
+    */
 
     // Scopes
-    public function scopeTotal($query)
+    public function scopeTotal(Builder $query)
     {
         if (! auth()->user()) {
             return $query->whereRaw('1 = 0');

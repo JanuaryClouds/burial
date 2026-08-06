@@ -4,7 +4,6 @@ namespace Database\Factories;
 
 use App\Models\Referral;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Str;
 
 /**
  * @extends Factory<Referral>
@@ -19,9 +18,7 @@ class ReferralFactory extends Factory
     public function definition(): array
     {
         return [
-            'id' => (string) Str::uuid(),
             'referral_to' => $this->faker->name(),
-            'remarks' => 'seeder generated',
         ];
     }
 }

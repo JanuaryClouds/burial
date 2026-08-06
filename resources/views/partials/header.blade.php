@@ -1,4 +1,4 @@
-<div id="main-header-web" class="header py-6 py-lg-0" data-kt-sticky="true" data-kt-sticky-name="header"
+<div id="main-header-web" class="header py-6 py-lg-0 " data-kt-sticky="true" data-kt-sticky-name="header"
     data-kt-sticky-offset="{lg: '300px'}" style="background-color: #00000000;">
     <!--begin::Container-->
     <div class="header-container container-xxl">
@@ -6,7 +6,7 @@
         <div
             class="page-title d-flex flex-column align-items-start justify-content-center flex-wrap me-lg-20 py-3 py-lg-0 me-3">
             <!--begin::Heading-->
-            <h1 class="d-flex flex-column text-gray-900 fw-bold my-1">
+            <h1 class="flex-column text-gray-900 fw-bold my-1 d-md-flex d-none d-lg-flex">
                 <span class="text-white fs-1" id="pageTitle">
                     {{ $page_title ?? 'CSWDO - Funeral Assistance' }}
                     @if (Route::is('*.show') && ($readonly ?? false))
@@ -107,8 +107,8 @@
     function darkMode() {
         const header = document.getElementById('main-header-web');
         const pageTitle = document.getElementById('pageTitle');
-        const lightBanner = @json(asset('images/banner-light.svg'));
-        const darkBanner = @json(asset('images/banner-dark.svg'));
+        const lightBanner = @json(asset('images/banner-light.png'));
+        const darkBanner = @json(asset('images/banner-dark.png'));
         header.style.background = `url('${darkBanner}') no-repeat center center / cover`;
         header.style.backgroundColor = '#151521';
         pageTitle.classList.add('text-white');
@@ -118,7 +118,7 @@
     function lightMode() {
         const header = document.getElementById('main-header-web');
         const pageTitle = document.getElementById('pageTitle');
-        const lightBanner = @json(asset('images/banner-light.svg'));
+        const lightBanner = @json(asset('images/banner-light.png'));
         header.style.background = `url('${lightBanner}') no-repeat center center / cover`;
         header.style.backgroundColor = '#f9fafb';
         pageTitle.classList.add('text-black');

@@ -2,25 +2,19 @@
 
 namespace App\Models;
 
+use App\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ClientDemographic extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUuid;
 
     protected $table = 'client_demographics';
 
-    protected $primaryKey = 'id';
-
-    public $incrementing = false;
-
-    protected $keyType = 'string';
-
     protected $fillable = [
-        'id',
-        'client_id',
+        'client_uuid',
         'sex_id',
         'religion_id',
         'nationality_id',

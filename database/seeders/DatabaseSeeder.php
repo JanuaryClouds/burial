@@ -9,8 +9,13 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            RolePermissionSeeder::class,
+            // System
+            UserSeeder::class,
             AdminSeeder::class,
+            RolePermissionSeeder::class,
+            SystemSettingSeeder::class,
+
+            // Reference
             AssistanceSeeder::class,
             MoaSeeder::class,
             CivilSeeder::class,
@@ -21,17 +26,19 @@ class DatabaseSeeder extends Seeder
             ReligionSeeder::class,
             SexSeeder::class,
             BarangaySeeder::class,
-            HandlerSeeder::class,
             WorkflowSeeder::class,
-            UserSeeder::class,
+            FuneralAssistanceTypeSeeder::class,
+
+            // Data
             ClientSeeder::class,
+            BeneficiarySeeder::class,
+            ApplicationSeeder::class,
             InterviewSeeder::class,
-            ClientAssessmentSeeder::class,
+            AssessmentSeeder::class,
+            RecommendationSeeder::class,
             ReferralSeeder::class,
-            ClientRecommendationSeeder::class,
-            BurialAssistanceSeeder::class,
-            FuneralAssistanceSeeder::class,
-            SystemSettingSeeder::class,
+
+            // Custom Fields
         ]);
     }
 }

@@ -1,0 +1,35 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('clients', function (Blueprint $table) {
+            $table->uuid()->primary();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->date('date_of_birth');
+            $table->text('house_no');
+            $table->text('street');
+            $table->foreignId('district_id')->constrained('districts');
+            $table->foreignId('barangay_id')->constrained('barangays');
+            $table->string('city')->default('Taguig City');
+            $table->string('contact_number');
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('clients');
+    }
+};

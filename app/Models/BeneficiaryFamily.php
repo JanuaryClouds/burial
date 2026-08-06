@@ -2,25 +2,19 @@
 
 namespace App\Models;
 
+use App\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class BeneficiaryFamily extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUuid;
 
     protected $table = 'beneficiary_families';
 
-    protected $primaryKey = 'id';
-
-    public $incrementing = false;
-
-    protected $keyType = 'string';
-
     protected $fillable = [
-        'id',
-        'client_id',
+        'beneficiary_uuid',
         'name',
         'sex_id',
         'age',
@@ -32,12 +26,9 @@ class BeneficiaryFamily extends Model
 
     protected $casts = [
         'name' => 'encrypted',
+        'income' => 'encrypted',
+        'occupation' => 'encrypted',
     ];
-
-    public static function getBeneficiaryFamilies($client)
-    {
-        return self::where('client_id', $client);
-    }
 
     /**
      * Summary of sex
@@ -70,12 +61,22 @@ class BeneficiaryFamily extends Model
     }
 
     /**
-     * Summary of client
+     * Summary of beneficiary
      *
-     * @return BelongsTo<Client, BeneficiaryFamily>
+     * @return BelongsTo<Beneficiary, BeneficiaryFamily>
      */
-    public function client(): BelongsTo
+    public function beneficiary(): BelongsTo
     {
-        return $this->belongsTo(Client::class, 'client_id');
+        return $this->belongsTo(Beneficiary::class, 'beneficiary_uuid');
+    }
+
+    public static function relations(): array
+    {
+        return [
+            'sex',
+            'civil',
+            'relationship',
+            'beneficiary',
+        ];
     }
 }

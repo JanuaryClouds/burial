@@ -7,6 +7,8 @@
 
 "use strict";
 
+import updateDistrict from './districts.js';
+
 function randomizeMulticolorBorder() {
     document.querySelectorAll('.card.multicolor-border').forEach(card => {
         const redEnd = Math.floor(Math.random() * 40) + 20;
@@ -191,227 +193,114 @@ function checkAndRenderCharts() {
     }
 }
 
-function checkAndRenderDataTables() {
-    const cmsTable = $('#cms-table');
-
-    if (!cmsTable || !cmsTable.length) return;
-    cmsTable.DataTable({
-        responsive: true,
-        ordering: true,
-        dom: 
-            // First row: buttons on the left, filter on the right
-            "<'row mb-2'<'col-sm-6 d-flex align-items-center'l><'col-sm-6 d-flex justify-content-end'f<'mr-3 me-3'>B>>" +
-            // Table
-            "<'row'<'col-12'tr>>" +
-            // Bottom row: info and pagination
-            "<'row mt-2'<'col-sm-6'i><'col-sm-6 d-flex justify-content-end'p>>",
-        buttons:[
-            {
-                extend: 'excel',
-                text: 'Export to Excel',
-                className: 'btn btn-primary py-1 px-3',
-            },
-            {
-                extend: 'print',
-                text: 'Print',
-                className: 'btn btn-secondary py-1 px-3 ml-2',
-            },
-            // 'copy', 
-            // 'csv', 
-            // 'pdf',
-            // 'print'
-        ],
-        classes: {
-            sortAsc: '',     // override ascending class
-            sortDesc: '',    // override descending class
-            sortable: ''     // override neutral sortable class 
-        }
-    });
-
-    const perBarangayTable = $('#per-barangay-table');
-    
-    // Cannot have export options because of the row grouping
-    if (!perBarangayTable) return;
-    perBarangayTable.DataTable({
-        responsive: true,
-        ordering: true,
-        rowGroup: {
-            dataSrc: 0
-        },
-        order:[[0, 'asc']],
-        dom:
-            // First row: buttons on the left, filter on the right
-            "<'row mb-2'<'col-sm-6 d-flex align-items-center'l<'mr-3'>><'col-sm-6 d-flex justify-content-end'f>>" +
-            // Table
-            "<'row'<'col-12'tr>>" +
-            // Bottom row: info and pagination
-            "<'row mt-2'<'col-sm-6'i><'col-sm-6 d-flex justify-content-end'p>>",
-        // buttons:[
-        //     'copy', 'csv', 'excel', 'pdf', 'print'
-        // ],
-        classes: {
-            sortAsc: '',     // override ascending class
-            sortDesc: '',    // override descending class
-            sortable: ''     // override neutral sortable class 
-        }
-    });
-
-    const assignmentTable = $('#assignment-table');
-    if (!assignmentTable) return;
-    assignmentTable.DataTable({
-        responsive: true,
-        order: [[3, 'desc']],
-        ordering: true,
-        dom: 
-            // First row: buttons on the left, filter on the right
-            "<'row mb-2'<'col-sm-6 d-flex align-items-center'l<'mr-3'>><'col-sm-6 d-flex justify-content-end'f>>" +
-            // Table
-            "<'row'<'col-12'tr>>" +
-            // Bottom row: info and pagination
-            "<'row mt-2'<'col-sm-6'i><'col-sm-6 d-flex justify-content-end'p>>",
-        buttons:[
-            'copy', 'csv', 'excel', 'pdf', 'print'
-        ],
-        classes: {
-            sortAsc: '',     // override ascending class
-            sortDesc: '',    // override descending class
-            sortable: ''     // override neutral sortable class 
-        }
-    });
-
-    const assignedApplicationsTable = $('#assigned-applications-table');
-    if (!assignedApplicationsTable) return;
-    assignedApplicationsTable ?? assignedApplicationsTable.DataTable({
-        responsive: true,
-        ordering: true,
-        dom: 
-            // First row: buttons on the left, filter on the right
-            "<'row mb-2'<'col-sm-6 d-flex align-items-center'l<'mr-3'>><'col-sm-6 d-flex justify-content-end'f>>" +
-            // Table
-            "<'row'<'col-12'tr>>" +
-            // Bottom row: info and pagination
-            "<'row mt-2'<'col-sm-6'i><'col-sm-6 d-flex justify-content-end'p>>",
-        buttons:[
-            'copy', 'csv', 'excel', 'pdf', 'print'
-        ],
-        classes: {
-            sortAsc: '',     // override ascending class
-            sortDesc: '',    // override descending class
-            sortable: ''     // override neutral sortable class 
-        }
-    });
-
-    const latestApplicationsTable = $('#latest-applications-table');
-    if (!latestApplicationsTable) return;
-    latestApplicationsTable.DataTable({
-        responsive: true,
-        ordering: true,
-        order:[[6, 'desc']], // order by Submitted on column descending
-        dom: 
-            // First row: buttons on the left, filter on the right
-            "<'row mb-2'<'col-sm-6 d-flex align-items-center'i<'mr-3'>><'col-sm-6 d-flex justify-content-end'f>>" +
-            // Table
-            "<'row'<'col-12'tr>>",
-            // Bottom row: info
-            // "<'row mt-2'<'col-sm-6'i>>"
-        buttons:[
-            {
-                extend: 'excel',
-                text: '<i class="mr-2 fas fa-file-excel"></i> Export to Excel',
-                className: 'btn btn-primary py-1 px-3',
-            },
-            {
-                extend: 'print',
-                text: '<i class="mr-2 fas fa-print"></i> Print',
-                className: 'btn btn-secondary py-1 px-3 ml-2',
-            },
-            // 'copy', 
-            // 'csv', 
-            // 'pdf',
-            // 'print'
-        ],
-        classes: {
-            sortAsc: '',     // override ascending class
-            sortDesc: '',    // override descending class
-            sortable: ''     // override neutral sortable class 
-        }
-    });
-
-    const genericTables = $('.generic-table');
-    if (genericTables.length === 0) return;
-
-    genericTables.each(function() { 
-        $(this).DataTable({ 
-            responsive: true,
-            ordering: true,
-            dom: 
-                // First row: buttons on the left, filter on the right
-                "<'row mb-2'<'col-sm-6 d-flex align-items-center'l><'col-sm-6 d-flex justify-content-end'f<'mr-3 me-3'>B>>" +
-                // Table
-                "<'row'<'col-12'tr>>" +
-                // Bottom row: info and pagination
-                "<'row mt-2'<'col-sm-6'i><'col-sm-6 d-flex justify-content-end'p>>",
-            buttons: [
-                {
-                    extend: 'excel',
-                    text: 'Export to Excel',
-                    className: 'btn btn-primary py-1 px-3'
-                },
-                {
-                    extend: 'print',
-                    text: 'Print',
-                    className: 'btn btn-secondary py-1 px-3 ml-2'
-                },
-                // Other button options can be included here
-            ],
-            classes: {
-                sortAsc: '',     // Override ascending class
-                sortDesc: '',    // Override descending class
-                sortable: ''     // Override neutral sortable class 
-            }
-        });
-    });
-
-    const reportsTable = $('#reports-applications-table');
-    if (!reportsTable) return;
-    reportsTable.DataTable({
-        responsive: true,
-        ordering: true, // keep ordering functional
-        dom:
-            // First row: buttons on the left, filter on the right
-            "<'row mb-2'<'col-sm-6 d-flex align-items-center'l<'mr-3'>><'col-sm-6 d-flex justify-content-end align-items-center'f<'ml-3'>B>>" +
-            // Table
-            "<'row'<'col-12'tr>>" +
-            // Bottom row: info and pagination
-            "<'row mt-2'<'col-sm-6'i><'col-sm-6 d-flex justify-content-end'p>>",
-        buttons: [
-            // 'copy',
-            // 'csv',
-            // 'excel',
-            // 'pdf',
-            // 'print'
-        ],
-        classes: {
-            sortAsc: '',     // override ascending class
-            sortDesc: '',    // override descending class
-            sortable: ''     // override neutral sortable class
-        }
-    });;
-}
-
-
 document.addEventListener('DOMContentLoaded', () => {
     checkAndRenderCharts();
     randomizeMulticolorBorder();
-    checkAndRenderDataTables();
+    initSelect2();
+    
+    $('#barangay_id').on('change', function() {
+        let text = $(this).find('option:selected').text();
+        updateDistrict(text.trim());
+    });
+
+    $('#client_uuid_select').on('change', function(event) {
+        const uuid = $(this).val();
+        Livewire.dispatch('client-selected', uuid);
+    });
+    $('#beneficiary_uuid_select').on('change', function(event) {
+        const uuid = $(this).val();
+        Livewire.dispatch('beneficiary-selected', uuid);
+    });
 });
 
+function initSelect2(root = document) {
+    if (typeof $ === 'undefined' || typeof $.fn.select2 === 'undefined') {
+        return;
+    }
+
+    root.querySelectorAll('[data-control="select2"], [data-kt-select2="true"]').forEach((element) => {
+        if (element.getAttribute('data-kt-initialized') === '1') {
+            return;
+        }
+
+        // If Livewire morphed this element in place (without wire:ignore), the
+        // previous select2 instance and its container may still be attached.
+        // Tear those down first so we never end up with a stale instance or
+        // duplicate dropdown container.
+        if ($(element).data('select2')) {
+            $(element).select2('destroy');
+        }
+
+        let sibling = element.nextElementSibling;
+        while (sibling && sibling.classList.contains('select2-container')) {
+            const next = sibling.nextElementSibling;
+            sibling.remove();
+            sibling = next;
+        }
+
+        const options = {
+            dir: document.body.getAttribute('direction'),
+        };
+
+        if (element.getAttribute('data-hide-search') === 'true') {
+            options.minimumResultsForSearch = Infinity;
+        }
+
+        $(element).select2(options);
+
+        // Handle Select2's KTMenu parent case
+        if (element.hasAttribute('data-dropdown-parent') && element.hasAttribute('multiple')) {
+            const parentEl = document.querySelector(element.getAttribute('data-dropdown-parent'));
+
+            if (parentEl && parentEl.hasAttribute('data-kt-menu') && typeof KTMenu !== 'undefined') {
+                const menu = new KTMenu(parentEl);
+
+                if (menu) {
+                    $(element).on('select2:unselect', function () {
+                        element.setAttribute('data-multiple-unselect', '1');
+                    });
+
+                    menu.on('kt.menu.dropdown.hide', function (item) {
+                        if (element.getAttribute('data-multiple-unselect') === '1') {
+                            element.removeAttribute('data-multiple-unselect');
+                            return false;
+                        }
+                    });
+                }
+            }
+        }
+
+        element.setAttribute('data-kt-initialized', '1');
+    });
+}
+
+// Expose for vanilla JS that adds dynamic selects (e.g. the beneficiary family
+// composition rows) so newly inserted dropdowns can be initialized too.
+window.initSelect2 = initSelect2;
+
 document.addEventListener('livewire:init', () => {
-    Livewire.hook('morph.updated', () => {
+    Livewire.hook('morph.updated', ({ el }) => {
         requestAnimationFrame(() => {
+            initSelect2(el);
             randomizeMulticolorBorder();
         });
     });
+
+    Livewire.hook('morph.added', ({ el }) => {
+        requestAnimationFrame(() => {
+            initSelect2(el);
+        });
+    });
+
+    Livewire.hook('element.init', ({ el }) => {
+        requestAnimationFrame(() => {
+            initSelect2(el);
+        });
+    });
+});
+
+document.addEventListener('livewire:navigated', () => {
+    initSelect2();
 });
 
 $(document).ajaxError(function(event, xhr) {

@@ -7,7 +7,6 @@ use App\Models\Nationality;
 use App\Models\Religion;
 use App\Models\Sex;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Str;
 
 /**
  * @extends Factory<ClientDemographic>
@@ -22,7 +21,6 @@ class ClientDemographicFactory extends Factory
     public function definition(): array
     {
         return [
-            'id' => Str::uuid(),
             'sex_id' => Sex::inRandomOrder()->first()->id,
             'religion_id' => Religion::inRandomOrder()->first()->id,
             'nationality_id' => Nationality::inRandomOrder()->first()->id,

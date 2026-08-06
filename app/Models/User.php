@@ -113,4 +113,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(ClaimantChange::class, 'new_claimant_user_id', 'id');
     }
+
+    /**
+     * Summary of beneficiary
+     *
+     * @return HasMany<Beneficiary, User>
+     */
+    public function beneficiaries(): HasMany
+    {
+        return $this->hasMany(Beneficiary::class, 'created_by', 'id');
+    }
 }

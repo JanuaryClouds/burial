@@ -21,7 +21,7 @@
     }
 @endphp
 
-<div class="mb-3">
+<div class="mb-3" wire:ignore>
     @if ($label)
         @if (app()->hasDebugModeEnabled())
             <label for="{{ $id ?? $name }}" class="form-label" data-bs-toggle="tooltip" data-bs-placement="top"
@@ -36,12 +36,10 @@
     @endif
 
     <select {{ $attributes->merge(['class' => 'form-control' . $isInactive]) }} name="{{ $name }}"
-        id="{{ $id ?? $name }}" {{ $disabled ? 'disabled' : '' }} {{ $required == true ? 'required' : '' }}>
+        id="{{ $id ?? $name }}" {{ $disabled ? 'disabled' : '' }} {{ $required == true ? 'required' : '' }} data-control="select2">
         <option value="">Select one</option>
         @foreach ($options as $key => $value)
-            <option value="{{ $key }}" {{ old($name, $selected) == $key ? 'selected' : '' }}>
-                {{ $value }}
-            </option>
+            <option value="{{ $key }}" {{ old($name, $selected) == $key ? 'selected' : '' }}>{{ $value }}</option>
         @endforeach
     </select>
     @error($errorname)

@@ -15,8 +15,12 @@ class ClientSeeder extends Seeder
     {
         $users = User::whereDoesntHave('roles')->get();
 
-        Client::factory()->count(25)->create([
-            'user_id' => fn () => $users->random()->id,
-        ]);
+        foreach ($users as $user) {
+            if (rand(0, 10) >= 2) {
+                Client::factory()->create([
+                    'user_id' => $user->id,
+                ]);
+            }
+        }
     }
 }

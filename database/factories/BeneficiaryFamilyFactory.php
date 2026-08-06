@@ -21,7 +21,6 @@ class BeneficiaryFamilyFactory extends Factory
     public function definition(): array
     {
         return [
-            'id' => $this->faker->uuid(),
             'name' => $this->faker->name(),
             'sex_id' => Sex::inRandomOrder()->first()->id,
             'age' => $this->faker->numberBetween(1, 100),

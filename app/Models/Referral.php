@@ -2,46 +2,30 @@
 
 namespace App\Models;
 
+use App\Traits\HasRemarks;
+use App\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Referral extends Model
 {
-    use HasFactory;
+    use HasFactory, HasRemarks, HasUuid;
 
     protected $table = 'referrals';
 
-    protected $primaryKey = 'id';
-
-    public $incrementing = false;
-
-    protected $keyType = 'string';
-
     protected $fillable = [
-        'id',
-        'client_id',
+        'application_uuid',
         'referral_to',
-        'remarks',
     ];
 
     /**
-     * Summary of client
+     * Summary of application
      *
-     * @return BelongsTo<Client, Referral>
+     * @return BelongsTo<Application, Referral>
      */
-    public function client(): BelongsTo
+    public function application(): BelongsTo
     {
-        return $this->belongsTo(Client::class);
-    }
-
-    /**
-     * Summary of beneficiary
-     *
-     * @return BelongsTo<Beneficiary, Referral>
-     */
-    public function beneficiary(): BelongsTo
-    {
-        return $this->belongsTo(Beneficiary::class);
+        return $this->belongsTo(Application::class, 'application_uuid', 'uuid');
     }
 }

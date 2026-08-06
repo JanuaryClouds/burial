@@ -14,17 +14,10 @@ use Illuminate\Support\Str;
 
 class CitizenAccessController extends Controller
 {
-    protected $centralClientService;
-
-    protected $imageService;
-
     public function __construct(
-        CentralClientService $centralClientService,
-        ImageService $imageService
-    ) {
-        $this->centralClientService = $centralClientService;
-        $this->imageService = $imageService;
-    }
+        protected CentralClientService $centralClientService,
+        protected ImageService $imageService
+    ) {}
 
     public function index(Request $request)
     {
@@ -45,22 +38,34 @@ class CitizenAccessController extends Controller
             $citizens = User::orderBy('created_at')
                 ->whereDoesntHave('roles')
                 ->get();
+
             $testLinks = [];
-            foreach ($citizens as $citizen) {
-                $payload = [
-                    'citizen_uuid' => $citizen->citizen_uuid,
-                    'nonce' => Str::random(32),
-                ];
 
-                $encoded = rtrim(strtr(base64_encode(json_encode($payload)), '+/', '-_'), '=');
-                $signature = hash_hmac('sha256', $encoded, config('services.portal.sso.secret'));
+            if (config('services.portal.users.enable.get')) {
+                foreach ($citizens as $citizen) {
+                    $payload = [
+                        'citizen_uuid' => $citizen->citizen_uuid,
+                        'nonce' => Str::random(32),
+                    ];
 
-                $url = url('/sso/callback')."?payload={$encoded}&signature={$signature}";
+                    $encoded = rtrim(strtr(base64_encode(json_encode($payload)), '+/', '-_'), '=');
+                    $signature = hash_hmac('sha256', $encoded, config('services.portal.sso.secret'));
 
-                $testLinks[] = [
-                    'label' => $citizen->fullname(),
-                    'url' => $url,
-                ];
+                    $url = url('/sso/callback')."?payload={$encoded}&signature={$signature}";
+
+                    $testLinks[] = [
+                        'label' => $citizen->fullname(),
+                        'url' => $url,
+                    ];
+                }
+            } else {
+                foreach ($citizens as $citizen) {
+                    $url = url('/sso/callback')."?citizen_uuid={$citizen->citizen_uuid}";
+                    $testLinks[] = [
+                        'label' => $citizen->fullname(),
+                        'url' => $url,
+                    ];
+                }
             }
 
             return view('test.zero', [
@@ -78,58 +83,62 @@ class CitizenAccessController extends Controller
 
     public function sso()
     {
-        $ssoRequest = request('payload');
-        $signature = request('signature');
+        if (config('services.portal.users.enable.get')) {
+            $ssoRequest = request('payload');
+            $signature = request('signature');
 
-        if (empty($ssoRequest) || empty($signature)) {
-            activity()
-                ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
-                ->log('Missing SSO parameters.');
+            if (empty($ssoRequest) || empty($signature)) {
+                activity()
+                    ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
+                    ->log('Missing SSO parameters.');
 
-            return redirect()->back()->with('error', 'Login failed.');
-        }
+                return redirect()->back()->with('error', 'Login failed.');
+            }
 
-        $secret = config('services.portal.sso.secret');
-        if (empty($secret)) {
-            activity()
-                ->log('SSO secret is not set.');
-            abort(500, 'Login failed.');
-        }
+            $secret = config('services.portal.sso.secret');
+            if (empty($secret)) {
+                activity()
+                    ->log('SSO secret is not set.');
+                abort(500, 'Login failed.');
+            }
 
-        $expectedSignature = hash_hmac('sha256', $ssoRequest, config('services.portal.sso.secret'));
+            $expectedSignature = hash_hmac('sha256', $ssoRequest, config('services.portal.sso.secret'));
 
-        if (! hash_equals($expectedSignature, $signature)) {
-            activity()
-                ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
-                ->log('Invalid SSO signature.');
+            if (! hash_equals($expectedSignature, $signature)) {
+                activity()
+                    ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
+                    ->log('Invalid SSO signature.');
 
-            return redirect()->back()->with('error', 'Login Failed.');
-        }
+                return redirect()->back()->with('error', 'Login Failed.');
+            }
 
-        $payload = json_decode(base64_decode($ssoRequest), true);
+            $payload = json_decode(base64_decode($ssoRequest), true);
 
-        if (! is_array($payload) || empty($payload['citizen_uuid'])) {
-            activity()
-                ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
-                ->log('Incomplete SSO payload.');
+            if (! is_array($payload) || empty($payload['citizen_uuid'])) {
+                activity()
+                    ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
+                    ->log('Incomplete SSO payload.');
 
-            return redirect()->back()->with('error', 'Login failed.');
-        }
+                return redirect()->back()->with('error', 'Login failed.');
+            }
 
-        $uuid = $payload['citizen_uuid'];
+            $uuid = $payload['citizen_uuid'];
 
-        $user = $this->centralClientService->checkIfUser('uuid', $uuid, false);
+            $user = $this->centralClientService->checkIfUser('uuid', $uuid, false);
 
-        if ($user && ! $user->hasRole('superadmin') && SystemSetting::first()->maintenance_mode) {
-            return response()->view('error.maintenance', [], 503);
-        }
+            if ($user && ! $user->hasRole('superadmin') && SystemSetting::first()->maintenance_mode) {
+                return response()->view('error.maintenance', [], 503);
+            }
 
-        if ($user === null) {
-            return redirect()->route('landing.page')->with('error', 'User not found.');
-        }
+            if ($user === null) {
+                return redirect()->route('landing.page')->with('error', 'User not found.');
+            }
 
-        if (! $user->is_active) {
-            return redirect()->back()->with('warning', 'Your account is inactive. Please contact the superadmin.');
+            if (! $user->is_active) {
+                return redirect()->back()->with('warning', 'Your account is inactive. Please contact the superadmin.');
+            }
+        } else {
+            $user = User::where('citizen_uuid', request('citizen_uuid'))->firstOrFail();
         }
 
         if (! Auth::check()) {
@@ -139,7 +148,7 @@ class CitizenAccessController extends Controller
 
         $redirect = auth()->user()->hasRole('staff')
             ? route('dashboard')
-            : (auth()->user()->clients()->exists() ? route('dashboard') : route('general.intake.form'));
+            : (auth()->user()->clients()->exists() ? route('dashboard') : route('client.create'));
 
         return redirect()->to($redirect);
     }

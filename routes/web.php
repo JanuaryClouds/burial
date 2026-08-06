@@ -49,10 +49,13 @@ Route::middleware(['auth', 'active.check'])
             ->where('filename', '[a-zA-Z0-9_\-\.]+')
             ->name('image');
 
+        require __DIR__.'/application.php';
         require __DIR__.'/client.php';
         require __DIR__.'/beneficiary.php';
-        require __DIR__.'/burial.php';
-        require __DIR__.'/funeral.php';
+        require __DIR__.'/assessment.php';
+        require __DIR__.'/recommendation.php';
+        require __DIR__.'/referral.php';
+        require __DIR__.'/interview.php';
         require __DIR__.'/reports.php';
         require __DIR__.'/superadmin.php';
     });

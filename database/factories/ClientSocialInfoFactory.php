@@ -5,7 +5,6 @@ namespace Database\Factories;
 use App\Models\CivilStatus;
 use App\Models\ClientSocialInfo;
 use App\Models\Education;
-use App\Models\Relationship;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -21,8 +20,6 @@ class ClientSocialInfoFactory extends Factory
     public function definition(): array
     {
         return [
-            'id' => $this->faker->uuid(),
-            'relationship_id' => Relationship::inRandomOrder()->first()->id,
             'civil_id' => CivilStatus::inRandomOrder()->first()->id,
             'education_id' => Education::inRandomOrder()->first()->id,
             'income' => $this->faker->randomFloat(0, 100, 10000),

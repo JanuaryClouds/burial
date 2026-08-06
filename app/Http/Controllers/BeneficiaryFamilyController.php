@@ -5,29 +5,41 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UpdateBeneficiaryFamilyRequest;
 use App\Models\BeneficiaryFamily;
 use App\Services\BeneficiaryFamilyService;
+use Illuminate\Support\Facades\Auth;
 
 class BeneficiaryFamilyController extends Controller
 {
     public function __construct(
-        protected BeneficiaryFamilyService $beneficiaryFamilyServices
+        protected BeneficiaryFamilyService $services
     ) {}
 
-    public function show(string $id)
+    public function show(BeneficiaryFamily $member)
     {
-        $family = BeneficiaryFamily::findOrFail($id);
-        $page_title = 'Edit '.$family->name;
-        $readonly = ! auth()->user()->hasRole('superadmin');
+        $application = $member->beneficiary->application;
 
-        return view('beneficiary.family.view', compact('family', 'page_title', 'readonly'));
+        return view('beneficiary.family.show', [
+            'page_title' => $member->name.' | Beneficiary Family Member | '.$application->tracking_no,
+            'application' => $application,
+            'member' => $member,
+            'beneficiary' => $member->beneficiary,
+        ]);
     }
 
-    public function update(UpdateBeneficiaryFamilyRequest $request, int $id)
+    public function edit(BeneficiaryFamily $member)
+    {
+        return view('beneficiary.family.edit', [
+            'page_title' => 'Edit '.$member->name,
+            'member' => $member,
+        ]);
+    }
+
+    public function update(UpdateBeneficiaryFamilyRequest $request, BeneficiaryFamily $member)
     {
         try {
-            $this->beneficiaryFamilyServices->update($request->validated(), $id);
+            $this->services->update($request->validated(), $member);
             activity()
-                ->withProperties(['ip' => $request->ip(), 'beneficiary_family' => $id])
-                ->causedBy(auth()->user())
+                ->withProperties(['ip' => request()->ip(), 'browser' => request()->userAgent(), 'beneficiary_family' => $member->uuid])
+                ->causedBy(Auth::user())
                 ->log('Updated beneficiary family');
 
             return back()->with('success', 'Beneficiary family updated successfully.');
