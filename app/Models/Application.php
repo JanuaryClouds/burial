@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Str;
 
 class Application extends Model
 {
@@ -30,6 +31,7 @@ class Application extends Model
             $year = now()->format('Y');
             $count = self::whereYear('created_at', $year)->count() + 1;
             $application->tracking_no = sprintf('%s-%04d', $year, $count);
+            $application->qr_code = 'APP-' . Str::upper(Str::random(8));
         });
     }
 

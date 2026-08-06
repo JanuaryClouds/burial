@@ -27,16 +27,6 @@ class RecommendationSeeder extends Seeder
                     'recommended_by' => $staff->random(1)->first()->id ?? 1,
                 ]);
 
-                $assistancesTotal = FuneralAssistanceType::count();
-                $assistancesCount = $assistancesTotal > 0 ? rand(1, $assistancesTotal) : 0;
-
-                $assistances = FuneralAssistanceType::query()
-                    ->inRandomOrder()
-                    ->limit($assistancesCount)
-                    ->pluck('uuid');
-
-                $recommendation->assistance()->attach($assistances);
-
                 switch (rand(0, 3)) {
                     case 1:
                         $recommendation->update([

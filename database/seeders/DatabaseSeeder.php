@@ -26,7 +26,6 @@ class DatabaseSeeder extends Seeder
             ReligionSeeder::class,
             SexSeeder::class,
             BarangaySeeder::class,
-            WorkflowSeeder::class,
             FuneralAssistanceTypeSeeder::class,
 
             // Data
