@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('applications', function (Blueprint $table) {
             $table->uuid()->primary();
             $table->string('tracking_no')->unique();
+            $table->string('qr_code')->unique();
             $table->foreignUuid('client_uuid')
                 ->constrained('clients', 'uuid')
                 ->cascadeOnDelete();

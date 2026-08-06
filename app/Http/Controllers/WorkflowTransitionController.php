@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Workflow;
-use App\Http\Requests\StoreWorkflowRequest;
-use App\Http\Requests\UpdateWorkflowRequest;
+use App\Models\WorkflowTransition;
+use App\Http\Requests\StoreWorkflowTransitionRequest;
+use App\Http\Requests\UpdateWorkflowTransitionRequest;
 
-class WorkflowController extends Controller
+class WorkflowTransitionController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -27,7 +27,7 @@ class WorkflowController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreWorkflowRequest $request)
+    public function store(StoreWorkflowTransitionRequest $request)
     {
         //
     }
@@ -35,7 +35,7 @@ class WorkflowController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Workflow $workflow)
+    public function show(WorkflowTransition $workflowTransition)
     {
         //
     }
@@ -43,7 +43,7 @@ class WorkflowController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Workflow $workflow)
+    public function edit(WorkflowTransition $workflowTransition)
     {
         //
     }
@@ -51,7 +51,7 @@ class WorkflowController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateWorkflowRequest $request, Workflow $workflow)
+    public function update(UpdateWorkflowTransitionRequest $request, WorkflowTransition $workflowTransition)
     {
         //
     }
@@ -59,7 +59,7 @@ class WorkflowController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Workflow $workflow)
+    public function destroy(WorkflowTransition $workflowTransition)
     {
         //
     }
