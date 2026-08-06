@@ -23,7 +23,7 @@
 			@include('beneficiary.partials.create.form')
 			<div class="separator my-4"></div>
 			<h5 class="card-title">Family Composition</h5>
-			@include('beneficiary.family.partials.form')
+			@include('livewire.beneficiary.family-composition')
 			<x-slot:footer>
 				<a name=""
 					id=""

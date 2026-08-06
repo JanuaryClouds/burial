@@ -5,7 +5,7 @@
 			method="post">
 			@csrf
 			<x-slot:header>Register Family Members</x-slot:header>
-			@include('beneficiary.family.partials.form')
+			@include('livewire.beneficiary.family-composition')
 			<x-slot:footer>
 				<a name=""
 					id=""
