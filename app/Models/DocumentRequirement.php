@@ -20,7 +20,7 @@ class DocumentRequirement extends Model
     {
         return [
             [
-                'key' => 'death-certificate',
+                'key' => 'death_certificate',
                 'name' => 'Certified True Copy of Registered Death Certificate',
                 'description' => null,
                 'source' => 'Local Civil Registry',
@@ -28,7 +28,7 @@ class DocumentRequirement extends Model
                 'is_muslim' => false,
             ],
             [
-                'key' => 'funeral-contract',
+                'key' => 'funeral_contract',
                 'name' => 'Original Copy of Funeral Contract',
                 'description' => null,
                 'source' => 'Funeral Establishment',
@@ -36,7 +36,7 @@ class DocumentRequirement extends Model
                 'is_muslim' => false,
             ],
             [
-                'key' => 'deceased-id-card',
+                'key' => 'deceased_id_card',
                 'name' => 'Photocopy of Valid Identification Card of Deceased',
                 'description' => null,
                 'source' => 'Local Civil Registry',
@@ -44,7 +44,7 @@ class DocumentRequirement extends Model
                 'is_muslim' => false,
             ],
             [
-                'key' => 'relationship-proof',
+                'key' => 'relationship_proof',
                 'name' => 'Proof of Relationship',
                 'description' => 'Examples include Marriage Contract, Birth Certificate, Baptismal Certificate.',
                 'source' => 'Local Civil Registry',
@@ -52,7 +52,7 @@ class DocumentRequirement extends Model
                 'is_muslim' => false,
             ],
             [
-                'key' => 'burial-rites',
+                'key' => 'burial_rites',
                 'name' => 'Certificate of Burial Rites (signed by IMAM)',
                 'description' => '',
                 'source' => 'Muslim/Islam Religious Community',
@@ -60,7 +60,7 @@ class DocumentRequirement extends Model
                 'is_muslim' => true,
             ],
             [
-                'key' => 'interment-certificate',
+                'key' => 'interment_certificate',
                 'name' => 'Certificate of Interment issued by Muslim Cemetery',
                 'description' => '',
                 'source' => 'Muslim/Islam Religious Community',
