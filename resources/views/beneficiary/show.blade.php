@@ -6,7 +6,7 @@
 			'beneficiary' => $beneficiary,
 			'readonly' => true,
 		])
-		@can('edit', $beneficiary)
+		@can('update', $beneficiary)
 			<x-slot:footer>
 				<a name=""
 					id=""

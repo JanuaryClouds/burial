@@ -21,6 +21,7 @@
 				'member' => $member,
 				'readonly' => true,
 			])
+			<div class="separator my-4"></div>
 		@endforeach
 	@endif
 	<x-slot:footer>
@@ -32,7 +33,7 @@
 			<i class="fa-solid fa-plus"></i>
 			Create Another Beneficiary Record
 		</a>
-		@if ($beneficiary && auth()->user()->can('edit', $beneficiary))
+		@if ($beneficiary && auth()->user()->can('update', $beneficiary))
 			<a name=""
 				id=""
 				class="btn btn-warning btn-sm"

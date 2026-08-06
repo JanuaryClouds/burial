@@ -55,9 +55,9 @@
 	</div>
 </div>
 <div class="d-flex justify-content-end">
-	@can('edit', $member)
-		@if (!Route::is('family.edit') && !Route::is('application.create'))
-			@if (Route::is('family.show'))
+	@if (!Route::is('family.edit') && !Route::is('application.create'))
+		@if (Route::is('family.show'))
+			@can('update', $member)
 				<a name=""
 					id=""
 					class="btn btn-sm btn-warning"
@@ -66,16 +66,16 @@
 					<i class="fa-solid fa-arrow-up-right-from-square"></i>
 					Edit Data
 				</a>
-			@else
-				<a name=""
-					id=""
-					class="btn btn-info btn-sm"
-					href="{{ route('family.show', $member) }}"
-					role="button">
-					<i class="fa-solid fa-arrow-up-right-from-square"></i>
-					View Family Member
-				</a>
-			@endif
+			@endcan
+		@else
+			<a name=""
+				id=""
+				class="btn btn-info btn-sm"
+				href="{{ route('family.show', $member) }}"
+				role="button">
+				<i class="fa-solid fa-arrow-up-right-from-square"></i>
+				View Family Member
+			</a>
 		@endif
-	@endcan
+	@endif
 </div>

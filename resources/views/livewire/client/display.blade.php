@@ -23,7 +23,7 @@
 			<i class="fa-solid fa-plus"></i>
 			Create Another Client Record
 		</a>
-		@if ($client && auth()->user()->can('edit', $client))
+		@if ($client && auth()->user()->can('update', $client))
 			<a name=""
 				id=""
 				class="btn btn-warning btn-sm"
