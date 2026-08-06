@@ -57,5 +57,4 @@
 			true
 		)
 	</script>
-	@dump($errors)
 @endif
