@@ -14,10 +14,12 @@ return new class extends Migration
         Schema::create('workflow_histories', function (Blueprint $table) {
             $table->uuid()->primary();
             $table->foreignUuid('from_stage_uuid')
+                ->nullable()
                 ->constrained('workflow_stages', 'uuid')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->foreignUuid('to_stage_uuid')
+                ->nullable()
                 ->constrained('workflow_stages', 'uuid')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
@@ -28,10 +30,6 @@ return new class extends Migration
                 ->nullable()
                 ->constrained('users', 'id')
                 ->nullOnDelete()
-                ->cascadeOnUpdate();
-            $table->foreignUuid('recommendation_uuid')
-                ->constrained('recommendations', 'uuid')
-                ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->timestamps();
         });

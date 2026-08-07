@@ -11,21 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('workflow_stages', function (Blueprint $table) {
+        Schema::create('workflows', function (Blueprint $table) {
             $table->uuid()->primary();
-            $table->foreignUuid('workflow_uuid')
-                ->constrained('workflows', 'uuid')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
+            $table->string('name');
             $table->text('description');
             $table->timestamps();
         });
 
-        Schema::table('applications', function (Blueprint $table) {
-            $table->foreignUuid('current_workflow_stage_uuid')
-                ->after('qr_code')
+        Schema::table('funeral_assistance_types', function (Blueprint $table) {
+            $table->foreignUuid('workflow_uuid')
                 ->nullable()
-                ->constrained('workflow_stages', 'uuid')
+                ->constrained('workflows', 'uuid')
                 ->nullOnDelete()
                 ->cascadeOnUpdate();
         });
@@ -36,6 +32,11 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('workflow_stages');
+        Schema::table('funeral_assistance_types', function (Blueprint $table) {
+            $table->dropForeign(['workflow_uuid']);
+            $table->dropColumn('workflow_uuid');
+        });
+        
+        Schema::dropIfExists('workflows');
     }
 };
