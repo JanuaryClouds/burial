@@ -20,7 +20,7 @@ class Application extends Model
     protected $table = 'applications';
 
     protected $fillable = [
-        'tracking_no',
+        'current_workflow_uuid',
         'client_uuid',
         'beneficiary_uuid',
     ];
@@ -83,13 +83,21 @@ class Application extends Model
     }
 
     /**
-     * Summary of processLogs
-     *
-     * @return HasMany<ProcessLog>
+     * Summary of workflow
+     * @return BelongsTo<Workflow, Application>
      */
-    public function processLogs(): HasMany
+    public function workflow(): BelongsTo
     {
-        return $this->hasMany(ProcessLog::class);
+        return $this->belongsTo(Workflow::class, 'current_workflow_stage_uuid', 'uuid');
+    }
+
+    /**
+     * Summary of workflowHistory
+     * @return HasMany<WorkflowHistory, Application>
+     */
+    public function workflowHistory(): HasMany
+    {
+        return $this->hasMany(WorkflowHistory::class, 'application_uuid', 'uuid');
     }
 
     /**
