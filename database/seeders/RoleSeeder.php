@@ -46,12 +46,14 @@ class RoleSeeder extends Seeder
 
     public static function queryPermission(string $column = 'name', string $permissionName): array
     {
-        return Permission::where($column, 'like', '%'.$permissionName.'%')
+        $permission = Permission::where($column, 'like', '%'.$permissionName.'%')
             ->get()
             ->mapWithKeys(function (Permission $permission) {
                 return [$permission->id => $permission->name];
             })
             ->toArray();
+        
+        return $permission;
     }
 
     protected function syncPermission(Role $role, string $permissionName): void
