@@ -6,6 +6,10 @@ use App\Models\Assessment;
 use App\Models\Client;
 use App\Models\Notification;
 use App\Models\User;
+use App\Models\Workflow;
+use App\Models\WorkflowHistory;
+use App\Models\WorkflowStage;
+use App\Models\WorkflowTransition;
 use Illuminate\Database\Seeder;
 
 class AssessmentSeeder extends Seeder
@@ -20,9 +24,21 @@ class AssessmentSeeder extends Seeder
         dump($clients->count().' Clients with Interviews to Seed');
 
         foreach ($clients as $client) {
-            if (rand(0, 1) == 1 && $client->application) {
+            if (rand(0, 9) >= 2 && $client->application) {
                 $assessment = Assessment::factory()->create([
                     'application_uuid' => $client->application->uuid,
+                ]);
+
+                $previousStage = $client->application->workflowHistory()->latest()->first();
+                $nextStage = WorkflowTransition::where('from_stage_uuid', $previousStage->to_stage_uuid)->first();
+                WorkflowHistory::factory()->create([
+                    'from_stage_uuid' => $previousStage->to_stage_uuid,
+                    'to_stage_uuid' => $nextStage->to_stage_uuid,
+                    'application_uuid' => $client->application->uuid
+                ]);
+
+                $client->application->update([
+                    'current_workflow_stage_uuid' => $nextStage->to_stage_uuid,
                 ]);
 
                 Notification::factory()->create([
