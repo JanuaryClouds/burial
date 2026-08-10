@@ -41,8 +41,8 @@ class DatabaseSeeder extends Seeder
             InterviewSeeder::class,
             AssessmentSeeder::class,
             RecommendationSeeder::class,
-            ReferralSeeder::class,
             WorkflowHistorySeeder::class,
+            ReferralSeeder::class,
 
             // Custom Fields
         ]);
