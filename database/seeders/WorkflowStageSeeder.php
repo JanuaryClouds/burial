@@ -30,17 +30,17 @@ class WorkflowStageSeeder extends Seeder
             [
                 'name' => 'Interview',
                 'description' => 'Initial interview with the client to gather information about the deceased and the circumstances surrounding the death.',
-                'permission' => array_values(RoleSeeder::queryPermission('name', 'interview')),
+                'permission' => array_values(RoleSeeder::queryPermission('name', 'interview.create')),
             ],
             [
                 'name' => 'Assessment',
                 'description' => 'Assessment of the client’s needs and eligibility for assistance.',
-                'permission' => array_values(RoleSeeder::queryPermission('name', 'assessment')),
+                'permission' => array_values(RoleSeeder::queryPermission('name', 'assessment.create')),
             ],
             [
                 'name' => 'Recommendation',
                 'description' => 'Recommendation for assistance based on the assessment.',
-                'permission' => array_values(RoleSeeder::queryPermission('name', 'recommendation')),
+                'permission' => array_values(RoleSeeder::queryPermission('name', 'recommendation.create')),
             ],
             [
                 'name' => 'Forward to Admin Staff',
@@ -93,7 +93,7 @@ class WorkflowStageSeeder extends Seeder
                 'permission' => array_values(RoleSeeder::queryPermission('name', 'releasing')),
             ],
             [
-                'name' => 'Close',
+                'name' => 'Closing',
                 'description' => 'Client/Claimant has received the funeral assistance.',
                 'permission' => array_values(RoleSeeder::queryPermission('name', 'closing')),
             ],
