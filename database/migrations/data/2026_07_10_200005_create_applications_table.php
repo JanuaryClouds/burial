@@ -35,6 +35,7 @@ return new class extends Migration
 
         Schema::table('workflow_histories', function (Blueprint $table) {
             $table->foreignUuid('application_uuid')
+                ->after('uuid')
                 ->constrained('applications', 'uuid')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
