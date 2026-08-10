@@ -23,19 +23,22 @@ class InterviewSeeder extends Seeder
             ->get();
 
         foreach ($clients as $client) {
-            if (rand(0, 1) == 1) {
+            if (rand(0, 9) >= 2) {
                 $interview = Interview::factory()->create([
                     'client_uuid' => $client->uuid,
                     'status' => 'done',
                 ]);
 
-                $workflow = Workflow::where('name', 'Funeral Assistance')->first();
                 $interviewStage = WorkflowStage::where('name', 'Interview')->first();
                 $nextStage = WorkflowTransition::where('from_stage_uuid', $interviewStage->uuid)->first();
                 WorkflowHistory::factory()->create([
                     'from_stage_uuid' => $interviewStage->uuid,
                     'to_stage_uuid' => $nextStage->to_stage_uuid,
                     'application_uuid' => $client->application->uuid
+                ]);
+
+                $client->application->update([
+                    'current_workflow_stage_uuid' => $nextStage->to_stage_uuid,
                 ]);
 
                 Notification::factory()->create([
