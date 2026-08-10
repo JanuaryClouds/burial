@@ -15,12 +15,14 @@ class ReferralSeeder extends Seeder
      */
     public function run(): void
     {
-        $applications = Application::whereDoesntHave('recommendations')
-            ->whereHas('assessment')
+        $applications = Application::whereHas('assessment')
+            ->whereHas('recommendations', function ($query) {
+                $query->whereIn('status', ['rejected']);
+            })
             ->get();
 
         foreach ($applications as $application) {
-            if (rand(0, 3) === 0) {
+            if (rand(0, 1) === 0) {
                 $referral = Referral::factory()->create([
                     'application_uuid' => $application->uuid,
                 ]);
