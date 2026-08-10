@@ -19,7 +19,8 @@ class PermissionSeeder extends Seeder
             $this->claimantChangePermissions(),
             $this->reportPermissions(),
             $this->logPermissions(),
-            $this->rolePermissions()
+            $this->rolePermissions(),
+            $this->workflowPermission(),
         );
 
         foreach ($basePermissions as $permission) {
@@ -122,7 +123,7 @@ class PermissionSeeder extends Seeder
             'workflow.accounting.update',
             'workflow.treasury.update',
             'workflow.releasing.update',
-            'workflow.close.update',
+            'workflow.closing.update',
         ];
     }
 }
