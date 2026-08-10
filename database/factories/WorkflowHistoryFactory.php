@@ -18,8 +18,8 @@ class WorkflowHistoryFactory extends Factory
      */
     public function definition(): array
     {
-        $dateIn = $this->faker->dateTime();
-        $dateOut = $this->faker->dateTimeBetween($dateIn, 'now');
+        $dateIn = $this->faker->dateTimeBetween(now()->subWeek(), now());
+        $dateOut = $this->faker->dateTimeBetween($dateIn, now());
 
         return [
             'reason' => $this->faker->sentence,
