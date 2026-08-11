@@ -25,10 +25,8 @@ Route::middleware('role:superadmin')
             ->only(['update']);
         Route::resource('funeral', FuneralAssistanceController::class)
             ->only(['update']);
-        Route::resource('workflowstep', WorkflowController::class)
-            ->only(['index', 'edit', 'update']);
-        Route::resource('handler', HandlerController::class)
-            ->only(['index', 'edit', 'update']);
+        // Route::resource('workflowstep', WorkflowController::class)
+        //     ->only(['index', 'edit', 'update']);
         // Route::resource('assistance', AssistanceController::class);
         // Route::resource('civil', CivilStatusController::class);
         Route::resource('education', EducationController::class)
