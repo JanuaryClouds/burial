@@ -23,6 +23,24 @@ class WorkflowTransition extends Model
         'permission_id',
     ];
 
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    |
+    | Model Relationships.
+    |
+    */
+
+    /**
+     * Summary of workflow
+     * @return BelongsTo<Workflow, WorkflowTransition>
+     */
+    public function workflow(): BelongsTo
+    {
+        return $this->belongsTo(Workflow::class, 'workflow_uuid', 'uuid');
+    }
+
     /**
      * 
      * @return BelongsTo<WorkflowStage, WorkflowTransition>
@@ -41,6 +59,10 @@ class WorkflowTransition extends Model
         return $this->belongsTo(WorkflowStage::class, 'to_stage_uuid');
     }
 
+    /**
+     * Summary of permission
+     * @return BelongsTo<Permission, WorkflowTransition>
+     */
     public function permission(): BelongsTo
     {
         return $this->belongsTo(Permission::class, 'permission_id', 'id');
