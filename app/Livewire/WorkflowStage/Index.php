@@ -4,44 +4,46 @@ namespace App\Livewire\WorkflowStage;
 
 use App\Models\Workflow;
 use App\Models\WorkflowStage;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class Index extends Component
 {
     public Workflow $workflow;
+    public Collection $stages;
 
-    public function mount(Workflow $workflow)
+    public function mount(Workflow $workflow): void
     {
         $this->workflow = $workflow;
+        $this->queryStages();
     }
 
-    public function queryStages()
+    #[On('refreshWorkflow')]
+    public function queryStages(): void
     {
-        if ($this->workflow->stages()->count() === 0) {
-            return collect();
-        }
+        $this->stages = $this->workflow
+            ->stages()
+            ->orderBy('position')
+            ->get();
+    }
 
-        $stage = $this->workflow->stages()
-            ->whereDoesntHave('incomingStages')
-            ->first();
+    public function addStage(): void
+    {
+        WorkflowStage::create([
+            'workflow_uuid' => $this->workflow->uuid,
+            'name' => 'New Stage',
+            'description' => 'Stage Description',
+            'position' => $this->stages->count() + 1,
+        ]);
 
-        $orderedStages = collect();
-
-        while ($stage) {
-            $orderedStages->push($stage);
-            $stage = $stage->outgoingStages
-                ->first()
-                ?->toStage;
-        }
-
-        return $orderedStages;
+        $this->dispatch('refreshWorkflow');
     }
 
     public function render()
     {
         return view('livewire.workflow-stage.index', [
-            'stages' => $this->queryStages(),
+            'stages' => $this->stages,
         ]);
     }
 }
