@@ -1,4 +1,4 @@
-@props(['name', 'id' => null, 'label' => null, 'options' => [], 'helpText' => false, 'errorname' => null])
+@props(['name', 'id' => null, 'label' => null, 'selected' => null, 'options' => [], 'helpText' => false, 'errorname' => null])
 
 @php
 	if ($errorname == null) {
@@ -35,7 +35,7 @@
 		data-control="select2">
 		<option value="">Select one</option>
 		@foreach ($options as $key => $value)
-			<option value="{{ $key }}">{{ $value }}</option>
+			<option value="{{ $key }}" {{ $selected == $key ? 'selected' : '' }}>{{ $value }}</option>
 		@endforeach
 	</select>
 	@error($errorname)
