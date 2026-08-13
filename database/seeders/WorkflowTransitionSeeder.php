@@ -34,15 +34,10 @@ class WorkflowTransitionSeeder extends Seeder
                     'description' => $stages[$i + 1]['description'],
                 ]);
 
-                $permission = Permission::firstOrCreate([
-                    'name' => $stages[$i]['permission'],
-                ]);
-
                 WorkflowTransition::create([
                     'workflow_uuid' => $primaryWorkflow->uuid,
                     'from_stage_uuid' => $fromStage->uuid,
                     'to_stage_uuid' => $toStage->uuid,
-                    'permission_id' => $permission->id,
                 ]);
             }
         }

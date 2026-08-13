@@ -6,6 +6,8 @@ use App\Models\Workflow;
 use App\Models\WorkflowStage;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Permission;
 
 class WorkflowStageSeeder extends Seeder
 {
@@ -17,11 +19,18 @@ class WorkflowStageSeeder extends Seeder
         $primaryWorkflow = Workflow::where('name', 'Funeral Assistance')->first();
 
         foreach($this->stages() as $stage) {
-            WorkflowStage::firstOrCreate([
-                'workflow_uuid' => $primaryWorkflow->uuid,
-                'name' => $stage['name'],
-                'description' => $stage['description'],
+            $permission = Permission::firstOrCreate([
+                'name' => $stage['permission'],
             ]);
+
+            DB::transaction(function () use ($primaryWorkflow, $permission, $stage) {
+                WorkflowStage::firstOrCreate([
+                    'name' => $stage['name'],
+                    'workflow_uuid' => $primaryWorkflow->uuid,
+                    'description' => $stage['description'],
+                    'permission_id' => $permission->id
+                ]);
+            });
         }
     }
 
