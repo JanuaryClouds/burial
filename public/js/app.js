@@ -323,4 +323,8 @@ $(document).ready(function () {
         e.preventDefault();
         e.stopPropagation();
     });
+
+    $(".select-dynamic").select2({
+        tags: true,
+    });
 });
