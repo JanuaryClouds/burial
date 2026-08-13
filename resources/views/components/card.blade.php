@@ -2,6 +2,11 @@
 	@isset($header)
 		<div class="card-header">
 			<h5 class="card-title">{{ $header }}</h5>
+			@isset($toolbar)
+				<div class="card-toolbar">
+					{{ $toolbar }}
+				</div>
+			@endisset
 		</div>
 	@endisset
 	<div class="card-body">
