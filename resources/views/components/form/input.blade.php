@@ -10,7 +10,8 @@
 	}
 @endphp
 
-<div class="mb-3">
+<div class="mb-3"
+	wire:loading.remove>
 	@if ($label)
 		@if (app()->hasDebugModeEnabled())
 			<label for="{{ $id ?? $name }}"
