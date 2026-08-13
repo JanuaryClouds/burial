@@ -18,8 +18,17 @@ return new class extends Migration
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->string('name');
+            $table->integer('position')->nullable();
             $table->text('description');
+            $table->foreignId('permission_id')
+                ->nullable()
+                ->constrained('permissions')
+                ->nullOnDelete()
+                ->cascadeOnUpdate();
             $table->timestamps();
+            $table->softDeletes();
+
+            $table->unique(['workflow_uuid', 'position']);
         });
     }
 

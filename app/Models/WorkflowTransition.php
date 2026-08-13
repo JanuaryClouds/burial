@@ -7,12 +7,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Permission\Models\Permission;
 
 class WorkflowTransition extends Model
 {
     /** @use HasFactory<\Database\Factories\WorkflowTransitionFactory> */
-    use HasFactory, HasUuid;
+    use HasFactory, HasUuid, SoftDeletes;
 
     protected $table = 'workflow_transitions';
 
@@ -20,7 +21,6 @@ class WorkflowTransition extends Model
         'workflow_uuid',
         'from_stage_uuid',
         'to_stage_uuid',
-        'permission_id',
     ];
 
     /*
@@ -57,14 +57,5 @@ class WorkflowTransition extends Model
     public function toStage(): BelongsTo
     {
         return $this->belongsTo(WorkflowStage::class, 'to_stage_uuid');
-    }
-
-    /**
-     * Summary of permission
-     * @return BelongsTo<Permission, WorkflowTransition>
-     */
-    public function permission(): BelongsTo
-    {
-        return $this->belongsTo(Permission::class, 'permission_id', 'id');
     }
 }

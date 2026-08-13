@@ -25,13 +25,9 @@ return new class extends Migration
                 ->constrained('workflow_stages', 'uuid')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->foreignId('permission_id')
-                ->nullable()
-                ->constrained('permissions')
-                ->nullOnDelete()
-                ->cascadeOnUpdate();
             $table->text('description')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

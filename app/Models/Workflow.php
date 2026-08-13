@@ -6,11 +6,12 @@ use App\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Workflow extends Model
 {
     /** @use HasFactory<\Database\Factories\WorkflowFactory> */
-    use HasFactory, HasUuid;
+    use HasFactory, HasUuid, SoftDeletes;
 
     protected $table = "workflows";
 

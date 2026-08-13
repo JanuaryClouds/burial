@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->text('description');
             $table->timestamps();
+            $table->softDeletes();
         });
 
         Schema::table('funeral_assistance_types', function (Blueprint $table) {

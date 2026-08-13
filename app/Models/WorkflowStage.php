@@ -7,19 +7,40 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class WorkflowStage extends Model
 {
     /** @use HasFactory<\Database\Factories\WorkflowStageFactory> */
-    use HasFactory, HasUuid;
+    use HasFactory, HasUuid, SoftDeletes;
 
     protected $table = 'workflow_stages';
 
     protected $fillable = [
         'name',
+        'position',
         'description',
         'workflow_uuid',
+        'permission_id'
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (WorkflowStage $stage) {
+            if ($stage->position !== null) {
+                WorkflowStage::where('workflow_uuid', $stage->workflow_uuid)
+                    ->where('position', '>=', $stage->position)
+                    ->increment('position');
+
+                return;
+            }
+
+            $stage->position = (
+                WorkflowStage::where('workflow_uuid', $stage->workflow_uuid)
+                    ->max('position') ?? 0
+            ) + 1;
+        });
+    }
 
     /*
     |--------------------------------------------------------------------------
@@ -82,5 +103,14 @@ class WorkflowStage extends Model
     public function previousStages(): HasMany
     {
         return $this->hasMany(WorkflowHistory::class, 'from_stage_uuid', 'uuid');
+    }
+
+    /**
+     * Summary of permission
+     * @return BelongsTo<Permission, WorkflowTransition>
+     */
+    public function permission(): BelongsTo
+    {
+        return $this->belongsTo(Permission::class, 'permission_id', 'id');
     }
 }
