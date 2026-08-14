@@ -24,8 +24,8 @@ class Show extends Component
     #[Validate('required|string|max:65535')]
     public string $description;
 
-    #[Validate('required|exists:permissions,id')]
-    public string $permission_id;
+    #[Validate('nullable')]
+    public ?string $permission_id = null;
 
     public function mount(WorkflowStage $stage, int $maxCount)
     {
@@ -57,18 +57,40 @@ class Show extends Component
         $this->workflowPermissions = $this->loadPermissions();
     }
 
-    public function save(string $uuid)
+    public function save()
     {
         $validated = $this->validate();
 
-        WorkflowStage::where('uuid', $uuid)
-            ->update($validated);
+        $permissionId = $validated['permission_id'] ?? null;
 
-        $this->dispatch('refreshWorkflow');
+        if ($permissionId !== null && $permissionId !== '') {
+            $permission = Permission::where('id', $permissionId)
+                ->first();
+
+            // A tagged value that isn't an existing permission id is a
+            // permission name; create the permission on the fly.
+            if (is_null($permission)) {
+                $permission = Permission::firstOrCreate([
+                    'name' => 'workflow.' . Str::slug($permissionId),
+                    'guard_name' => 'web',
+                ]);
+            }
+
+            $permissionId = $permission->id;
+        }
+
+        $this->stage->update([
+            'name' => $validated['name'],
+            'description' => $validated['description'],
+            'permission_id' => $permissionId ?: null
+        ]);
+
+        $this->stage->refresh();
+
         session()->flash('Successfully updated stage information');
     }
 
-    public function delete(string $uuid)
+    public function remove(string $uuid)
     {
         DB::transaction(function () use ($uuid) {
             $stage = WorkflowStage::where('uuid', $uuid)
@@ -83,7 +105,7 @@ class Show extends Component
             ]);
 
             $stage->delete();
-
+            
             WorkflowStage::where('workflow_uuid', $stage->workflow_uuid)
                 ->where('position', '>', $emptyPosition)
                 ->decrement('position');
@@ -93,6 +115,31 @@ class Show extends Component
         session()->flash('Successfully deleted stage');
     }
 
+    public function restore(string $uuid)
+    {
+        DB::transaction(function () use ($uuid) {
+            $stage = WorkflowStage::withTrashed()
+                ->where('uuid', $uuid)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            $lastPosition = WorkflowStage::withTrashed()
+                ->where('workflow_uuid', $stage->workflow_uuid)
+                ->whereNull('deleted_at')
+                ->max('position') ?? 0;
+
+            $stage->update([
+                'position' => $lastPosition + 1,
+                'permission_id' => null
+            ]);
+
+            $stage->restore();
+        });
+
+        session()->flash('Successfully restored stage');
+        $this->dispatch('refreshWorkflow');
+    }
+
     public function moveUp(string $uuid)
     {
         DB::transaction(function () use ($uuid) {
@@ -100,14 +147,14 @@ class Show extends Component
                 ->lockForUpdate()
                 ->firstOrFail();
 
-            if ($stage->position <= 1) {
-                return;
-            }
-
             $previous = WorkflowStage::where('workflow_uuid', $stage->workflow_uuid)
                 ->where('position', $stage->position - 1)
                 ->lockForUpdate()
-                ->firstOrFail();
+                ->first();
+
+            if (!$previous) {
+                return;
+            }
 
             $currentposition = $stage->position;
             $previousPosition = $previous->position;
@@ -117,7 +164,8 @@ class Show extends Component
             $stage->update(['position' => $previousPosition]);
         });
 
-        $this->save($uuid);
+        $this->stage->refresh();
+        $this->dispatch('refreshWorkflow');
     }
 
     public function moveDown(string $uuid)
@@ -127,14 +175,14 @@ class Show extends Component
                 ->lockForUpdate()
                 ->firstOrFail();
 
-            if ($stage->position >= Workflow::where('uuid', $stage->workflow_uuid)->first()->stages()->count()) {
-                return;
-            }
-
             $next = WorkflowStage::where('workflow_uuid', $stage->workflow_uuid)
                 ->where('position', $stage->position + 1)
                 ->lockForUpdate()
-                ->firstOrFail();
+                ->first();
+
+            if (!$next) {
+                return;
+            }
 
             $currentposition = $stage->position;
             $nextPosition = $next->position;
@@ -144,7 +192,8 @@ class Show extends Component
             $stage->update(['position' => $nextPosition]);
         });
 
-        $this->save($uuid);
+        $this->stage->refresh();
+        $this->dispatch('refreshWorkflow');
     }
 
     public function render()
