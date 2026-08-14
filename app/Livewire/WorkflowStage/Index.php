@@ -12,6 +12,7 @@ class Index extends Component
 {
     public Workflow $workflow;
     public Collection $stages;
+    public Collection $trashedStages;
 
     public function mount(Workflow $workflow): void
     {
@@ -25,6 +26,12 @@ class Index extends Component
         $this->stages = $this->workflow
             ->stages()
             ->orderBy('position')
+            ->get();
+
+        $this->trashedStages = $this->workflow
+            ->stages()
+            ->onlyTrashed()
+            ->orderBy('deleted_at', 'desc')
             ->get();
     }
 
@@ -44,6 +51,7 @@ class Index extends Component
     {
         return view('livewire.workflow-stage.index', [
             'stages' => $this->stages,
+            'trashedStages' => $this->trashedStages,
         ]);
     }
 }
