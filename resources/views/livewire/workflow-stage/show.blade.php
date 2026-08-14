@@ -29,52 +29,76 @@
 				</div>
 				<div class="col-12">
 					<x-form.select name="permission_id"
+						class="select-dynamic"
+						:id="'permission_id_' . $stage->uuid"
 						label="Permission to Proceed to this Stage"
 						wire:model='permission_id'
-						:selected="$this->permission_id"
 						:options="$this->workflowPermissions"
-						required />
+						required
+						:selected="$this->permission_id" />
 				</div>
 			</div>
 		</div>
 		<x-slot:footer>
-			@if ($stage->position > 1)
+			@if ($stage->trashed())
 				<div wire:loading.remove>
-					<x-button class="btn-sm btn-light"
-						wire:click="moveUp('{{ $stage->uuid }}')"
+					<x-button class="btn-sm btn-info"
+						wire:click="restore('{{ $stage->uuid }}')"
 						wire:loading.attr='disabled'>
-						<i class="fa-solid fa-arrow-up"></i>
-						Move Up
+						<i class="fa-solid fa-trash-arrow-up"></i>
+						<span>Restore</span>
+					</x-button>
+				</div>
+			@else
+				@if ($stage->position > 1)
+					<div wire:loading.remove>
+						<x-button class="btn-sm btn-light"
+							wire:click="moveUp('{{ $stage->uuid }}')"
+							wire:loading.attr='disabled'>
+							<i class="fa-solid fa-arrow-up"></i>
+							Move Up
+						</x-button>
+					</div>
+				@endif
+				@if ($stage->position < $maxCount)
+					<div wire:loading.remove>
+						<x-button class="btn-sm btn-light"
+							wire:click="moveDown('{{ $stage->uuid }}')"
+							wire:loading.attr='disabled'>
+							<i class="fa-solid fa-arrow-down"></i>
+							Move Down
+						</x-button>
+					</div>
+				@endif
+				<div wire:loading.remove>
+					<x-button class="btn-sm btn-danger"
+						wire:click="remove('{{ $stage->uuid }}')"
+						wire:loading.attr='disabled'>
+						<i class="fa-solid fa-trash"></i>
+						<span>Remove</span>
+					</x-button>
+				</div>
+				<div wire:loading.remove>
+					<x-button class="btn-sm btn-success"
+						wire:click="save"
+						wire:loading.attr='disabled'>
+						<i class="fa-solid fa-floppy-disk"></i>
+						<span>Save</span>
 					</x-button>
 				</div>
 			@endif
-			@if ($stage->position < $maxCount)
-				<div wire:loading.remove>
-					<x-button class="btn-sm btn-light"
-						wire:click="moveDown('{{ $stage->uuid }}')"
-						wire:loading.attr='disabled'>
-						<i class="fa-solid fa-arrow-down"></i>
-						Move Down
-					</x-button>
-				</div>
-			@endif
-			<div wire:loading.remove>
-				<x-button class="btn-sm btn-danger"
-					wire:confirm='Are you sure you want to remove this stage?'
-					wire:click="delete('{{ $stage->uuid }}')"
-					wire:loading.attr='disabled'>
-					<i class="fa-solid fa-trash"></i>
-					<span>Delete</span>
-				</x-button>
-			</div>
-			<div wire:loading.remove>
-				<x-button class="btn-sm btn-success"
-					wire:click="save('{{ $stage->uuid }}')"
-					wire:loading.attr='disabled'>
-					<i class="fa-solid fa-floppy-disk"></i>
-					<span>Save</span>
-				</x-button>
-			</div>
 		</x-slot:footer>
 	</form>
 </x-card>
+
+@script
+	<script>
+		const permissionSelect = $wire.$el.querySelector('#permission_id_{{ $stage->uuid }}');
+
+		if (permissionSelect) {
+			$(permissionSelect).on('change', function() {
+				$wire.set('permission_id', $(this).val(), false);
+			});
+		}
+	</script>
+@endscript
