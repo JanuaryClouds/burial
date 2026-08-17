@@ -81,6 +81,8 @@ class WorkflowHistorySeeder extends Seeder
                         $application->recommendations()->latest()->first()->update([
                             'status' => 'rejected',
                         ]);
+
+                        $currentStageUuid = $application->current_workflow_stage_uuid;
                         
                         // Create workflowHistory using the latest as the previous stage
                         WorkflowHistory::factory()->create([
