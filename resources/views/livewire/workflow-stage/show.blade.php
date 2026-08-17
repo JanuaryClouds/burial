@@ -1,6 +1,6 @@
 <x-card class="shadow-xl">
 	<x-slot:header>
-		Stage {{ $stage->position }}
+		Stage {{ $position }} {{ app()->hasDebugModeEnabled() ? '(' . $maxStages . ')' : '' }}
 		<x-slot:toolbar>
 			<div wire:loading>
 				<div class="spinner-border text-success"
@@ -10,7 +10,7 @@
 			</div>
 		</x-slot:toolbar>
 	</x-slot:header>
-	<form wire:submit='save({{ $stage->uuid }})'
+	<form wire:submit='save()'
 		method="POST">
 		@csrf
 		<div wire:loading.remove>
@@ -43,27 +43,27 @@
 			@if ($stage->trashed())
 				<div wire:loading.remove>
 					<x-button class="btn-sm btn-info"
-						wire:click="restore('{{ $stage->uuid }}')"
+						wire:click="restore"
 						wire:loading.attr='disabled'>
 						<i class="fa-solid fa-trash-arrow-up"></i>
 						<span>Restore</span>
 					</x-button>
 				</div>
 			@else
-				@if ($stage->position > 1)
+				@if ($position > 1)
 					<div wire:loading.remove>
 						<x-button class="btn-sm btn-light"
-							wire:click="moveUp('{{ $stage->uuid }}')"
+							wire:click="moveUp"
 							wire:loading.attr='disabled'>
 							<i class="fa-solid fa-arrow-up"></i>
 							Move Up
 						</x-button>
 					</div>
 				@endif
-				@if ($stage->position < $maxCount)
+				@if ($position < $maxStages)
 					<div wire:loading.remove>
 						<x-button class="btn-sm btn-light"
-							wire:click="moveDown('{{ $stage->uuid }}')"
+							wire:click="moveDown"
 							wire:loading.attr='disabled'>
 							<i class="fa-solid fa-arrow-down"></i>
 							Move Down
@@ -72,7 +72,7 @@
 				@endif
 				<div wire:loading.remove>
 					<x-button class="btn-sm btn-danger"
-						wire:click="remove('{{ $stage->uuid }}')"
+						wire:click="remove"
 						wire:loading.attr='disabled'>
 						<i class="fa-solid fa-trash"></i>
 						<span>Remove</span>

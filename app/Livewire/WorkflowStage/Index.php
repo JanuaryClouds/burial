@@ -2,9 +2,11 @@
 
 namespace App\Livewire\WorkflowStage;
 
+use App\Models\Permission;
 use App\Models\Workflow;
 use App\Models\WorkflowStage;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -13,25 +15,30 @@ class Index extends Component
     public Workflow $workflow;
     public Collection $stages;
     public Collection $trashedStages;
+    public Collection $workflowPermissions;
 
     public function mount(Workflow $workflow): void
     {
         $this->workflow = $workflow;
+        $this->workflowPermissions = Permission::where('name', 'like', 'workflow%')
+            ->get()
+            ->mapWithKeys(function (Permission $permission) {
+                return [$permission->id => Str::remove(['workflow.', '.update'], $permission->name)];
+            });
+
         $this->queryStages();
     }
 
     #[On('refreshWorkflow')]
     public function queryStages(): void
     {
-        $this->stages = $this->workflow
-            ->stages()
+        $this->stages = WorkflowStage::where('workflow_uuid', $this->workflow->uuid)
             ->orderBy('position')
             ->get();
 
-        $this->trashedStages = $this->workflow
-            ->stages()
+        $this->trashedStages = WorkflowStage::where('workflow_uuid', $this->workflow->uuid)
             ->onlyTrashed()
-            ->orderBy('deleted_at', 'desc')
+            ->orderBy('position')
             ->get();
     }
 
@@ -41,7 +48,6 @@ class Index extends Component
             'workflow_uuid' => $this->workflow->uuid,
             'name' => 'New Stage',
             'description' => 'Stage Description',
-            'position' => $this->stages->count() + 1,
         ]);
 
         $this->dispatch('refreshWorkflow');
@@ -49,9 +55,6 @@ class Index extends Component
 
     public function render()
     {
-        return view('livewire.workflow-stage.index', [
-            'stages' => $this->stages,
-            'trashedStages' => $this->trashedStages,
-        ]);
+        return view('livewire.workflow-stage.index');
     }
 }
