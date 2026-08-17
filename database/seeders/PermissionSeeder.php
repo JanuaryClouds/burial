@@ -114,16 +114,16 @@ class PermissionSeeder extends Seeder
 
     public static function workflowPermission(): array  {
         return [
-            'workflow.admin.update',
-            'workflow.maricar.update',
-            'workflow.emma.update',
-            'workflow.nikki.update',
-            'workflow.bao.update',
-            'workflow.budget.update',
-            'workflow.accounting.update',
-            'workflow.treasury.update',
-            'workflow.releasing.update',
-            'workflow.closing.update',
+            'workflow.admin',
+            'workflow.maricar',
+            'workflow.emma',
+            'workflow.nikki',
+            'workflow.bao',
+            'workflow.budget',
+            'workflow.accounting',
+            'workflow.treasury',
+            'workflow.releasing',
+            'workflow.closing',
         ];
     }
 }
