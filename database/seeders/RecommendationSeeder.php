@@ -6,6 +6,8 @@ use App\Models\Application;
 use App\Models\FuneralAssistanceType;
 use App\Models\Recommendation;
 use App\Models\User;
+use App\Models\WorkflowHistory;
+use App\Models\WorkflowTransition;
 use Illuminate\Database\Seeder;
 
 class RecommendationSeeder extends Seeder
@@ -21,42 +23,23 @@ class RecommendationSeeder extends Seeder
         dump('Number of Applications to Seed: '.$applications->count());
 
         foreach ($applications as $application) {
-            if (rand(0, 1) === 1) {
+            if (rand(0, 9) >= 2) {
                 $recommendation = Recommendation::factory()->create([
                     'application_uuid' => $application->uuid,
                     'recommended_by' => $staff->random(1)->first()->id ?? 1,
                 ]);
 
-                $assistancesTotal = FuneralAssistanceType::count();
-                $assistancesCount = $assistancesTotal > 0 ? rand(1, $assistancesTotal) : 0;
+                $previousStage = $application->workflowHistory()->latest()->first();
+                $nextStage = WorkflowTransition::where('from_stage_uuid', $previousStage->to_stage_uuid)->first();
+                WorkflowHistory::factory()->create([
+                    'from_stage_uuid' => $previousStage->to_stage_uuid,
+                    'to_stage_uuid' => $nextStage->to_stage_uuid,
+                    'application_uuid' => $application->uuid
+                ]);
 
-                $assistances = FuneralAssistanceType::query()
-                    ->inRandomOrder()
-                    ->limit($assistancesCount)
-                    ->pluck('uuid');
-
-                $recommendation->assistance()->attach($assistances);
-
-                switch (rand(0, 3)) {
-                    case 1:
-                        $recommendation->update([
-                            'status' => 'approved',
-                            'approved_at' => now()->subDays(rand(1, 10)),
-                        ]);
-                        break;
-                    case 2:
-                        $recommendation->update([
-                            'status' => 'rejected',
-                        ]);
-                        break;
-                    case 3:
-                        $recommendation->update([
-                            'status' => 'canceled',
-                        ]);
-                        break;
-                    default:
-                        break;
-                }
+                $application->update([
+                    'current_workflow_stage_uuid' => $nextStage->to_stage_uuid,
+                ]);
             }
         }
     }

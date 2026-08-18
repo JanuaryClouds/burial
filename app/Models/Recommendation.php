@@ -18,6 +18,7 @@ class Recommendation extends Model
 
     protected $fillable = [
         'application_uuid',
+        'funeral_assistance_type_uuid',
         'amount_extended',
         'mode_of_assistance_id',
         'recommended_by',
@@ -58,11 +59,11 @@ class Recommendation extends Model
     /**
      * Summary of assistance
      *
-     * @return BelongsToMany<FuneralAssistanceType, Recommendation>
+     * @return BelongsTo<FuneralAssistanceType, Recommendation>
      */
-    public function assistance(): BelongsToMany
+    public function funeralAssistanceType(): BelongsTo
     {
-        return $this->belongsToMany(FuneralAssistanceType::class, 'recommendation_has_assistances', 'recommendation_uuid', 'funeral_assistance_uuid');
+        return $this->belongsTo(FuneralAssistanceType::class, 'funeral_assistance_type_uuid', 'uuid');
     }
 
     public static function relations(): array
@@ -71,7 +72,7 @@ class Recommendation extends Model
             'application',
             'modeOfAssistance',
             'recommendedBy',
-            'assistance',
+            'funeralAssistanceType',
         ];
     }
 }

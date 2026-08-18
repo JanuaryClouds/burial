@@ -36,6 +36,7 @@ class BeneficiaryFactory extends Factory
             'city' => $this->faker->city(),
             'district_id' => District::inRandomOrder()->first()->id,
             'barangay_id' => Barangay::inRandomOrder()->first()->id,
+            'created_at' => $this->faker->dateTimeBetween(now()->subWeek(), now())
         ];
     }
 

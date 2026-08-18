@@ -6,7 +6,8 @@ use App\Traits\HasUuid;
 use Database\Factories\FuneralAssistanceTypeFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class FuneralAssistanceType extends Model
@@ -19,15 +20,25 @@ class FuneralAssistanceType extends Model
     protected $fillable = [
         'name',
         'description',
+        'workflow_uuid'
     ];
 
     /**
      * Summary of recommendations
      *
-     * @return BelongsToMany<Recommendation, FuneralAssistanceType>
+     * @return HasMany<Recommendation, FuneralAssistanceType>
      */
-    public function recommendations(): BelongsToMany
+    public function recommendations(): HasMany
     {
-        return $this->belongsToMany(Recommendation::class, 'recommendation_has_assistances', 'funeral_assistance_uuid', 'recommendation_uuid');
+        return $this->hasMany(Recommendation::class, 'funeral_assistance_type_uuid', 'uuid');
+    }
+
+    /**
+     * Summary of workflow
+     * @return BelongsTo<Workflow, FuneralAssistanceType>
+     */
+    public function workflow(): BelongsTo
+    {
+        return $this->belongsTo(Workflow::class, 'workflow_uuid', 'uuid');
     }
 }

@@ -24,7 +24,7 @@ class ApplicationService
             'assessment',
             'recommendations',
             'referral',
-            'processLogs',
+            'workflowStage',
         ])
             ->when($userId, function ($query) use ($userId) {
                 $query->whereHas('client.user', function ($subQuery) use ($userId) {

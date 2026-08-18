@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class Application extends Model
 {
@@ -19,7 +21,7 @@ class Application extends Model
     protected $table = 'applications';
 
     protected $fillable = [
-        'tracking_no',
+        'current_workflow_stage_uuid',
         'client_uuid',
         'beneficiary_uuid',
     ];
@@ -30,6 +32,7 @@ class Application extends Model
             $year = now()->format('Y');
             $count = self::whereYear('created_at', $year)->count() + 1;
             $application->tracking_no = sprintf('%s-%04d', $year, $count);
+            $application->qr_code = 'APP-' . Str::upper(Str::random(8));
         });
     }
 
@@ -81,13 +84,21 @@ class Application extends Model
     }
 
     /**
-     * Summary of processLogs
-     *
-     * @return HasMany<ProcessLog>
+     * Summary of workflow
+     * @return BelongsTo<Workflow, Application>
      */
-    public function processLogs(): HasMany
+    public function workflowStage(): BelongsTo
     {
-        return $this->hasMany(ProcessLog::class);
+        return $this->belongsTo(WorkflowStage::class, 'current_workflow_stage_uuid', 'uuid');
+    }
+
+    /**
+     * Summary of workflowHistory
+     * @return HasMany<WorkflowHistory, Application>
+     */
+    public function workflowHistory(): HasMany
+    {
+        return $this->hasMany(WorkflowHistory::class, 'application_uuid', 'uuid');
     }
 
     /**
@@ -100,6 +111,10 @@ class Application extends Model
         return $this->hasOne(Referral::class);
     }
 
+    /**
+     * Summary of relationship
+     * @return BelongsTo<Relationship, Application>
+     */
     public function relationship(): BelongsTo
     {
         return $this->belongsTo(Relationship::class);
@@ -129,6 +144,14 @@ class Application extends Model
         );
     }
 
+    protected static function workflowRelations(): array
+    {
+        return self::prefixRelations(
+            'workflow',
+            Workflow::relations()
+        );
+    }
+
     public static function relations(string ...$groups): array
     {
         return collect($groups)
@@ -137,8 +160,9 @@ class Application extends Model
                 'beneficiary' => self::beneficiaryRelations(),
                 'recommendation' => self::recommendationRelations(),
                 'assessment' => ['assessment'],
-                'processLogs' => ['processLogs'],
                 'referral' => ['referral'],
+                'workflow' => self::workflowRelations(),
+                'workflowHistory' => ['workflowHistory'],
                 'relationship' => ['relationship'],
                 default => [],
             })
@@ -156,54 +180,70 @@ class Application extends Model
     |
     */
 
-    public function status(): string
+    public function status(): array
     {
-        $status = 'Pending';
+        $status = [
+            'label' => 'Pending',
+            'badgeColor' => 'primary'
+        ];
 
         $interviews = $this->client->interviews;
         $assessment = $this->assessment;
         $recommendations = $this->recommendations;
         $referral = $this->referral;
-        $processLogs = $this->processLogs;
+        $workflowStage = $this->workflowStage;
 
         if ($interviews && $interviews->count() > 0) {
-            if ($interviews->first()->status == 'done') {
-                $status = 'Interviewed';
-            } else {
-                $status = 'Scheduled';
-            }
+            $status = [
+                'label' => 'Interview',
+                'badgeColor' => 'info'
+            ];
         }
 
         if ($assessment) {
-            $status = 'Assessed';
+            $status = [
+                'label' => 'Assessment',
+                'badgeColor' => 'info'
+            ];
         }
 
         if ($recommendations->isNotEmpty()) {
             $approved_recommendation = $recommendations->where('status', 'approved');
 
             if ($approved_recommendation) {
-                $status = 'Recommended';
+                $status = [
+                    'label' => 'Assessment',
+                    'badgeColor' => 'info',
+                ];
+            }
+        }
+
+        if ($workflowStage !== null) {
+            $status = [
+                'label' => 'Processing',
+                'badgeColor' => 'secondary',
+            ];
+
+            if ($workflowStage->name === 'Closing') {
+                $status = [
+                    'label' => 'Closing',
+                    'badgeColor' => 'warning',
+                ];
+            }
+
+            if ($workflowStage->name === 'Releasing') {
+                $status = [
+                    'label' => 'Release',
+                    'badgeColor' => 'success',
+                ];
             }
         }
 
         if ($referral) {
-            $status = 'Referred';
-        }
-
-        if ($processLogs->isNotEmpty()) {
-            $latestLog = $processLogs->first();
-            $latestStep = $latestLog->loggable()->order_no;
-            $totalSteps = WorkflowStep::count();
-
-            if ($latestLog == null) {
-                return 'Processing';
-            }
-
-            if ($latestStep == $totalSteps) {
-                return 'Completed';
-            }
-
-            return 'Processing';
+            $status = [
+                'label' => 'Referred',
+                'badgeColor' => 'success',
+            ];
         }
 
         return $status;

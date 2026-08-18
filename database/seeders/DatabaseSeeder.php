@@ -11,8 +11,9 @@ class DatabaseSeeder extends Seeder
         $this->call([
             // System
             UserSeeder::class,
+            PermissionSeeder::class,
+            RoleSeeder::class,
             AdminSeeder::class,
-            RolePermissionSeeder::class,
             SystemSettingSeeder::class,
 
             // Reference
@@ -26,9 +27,13 @@ class DatabaseSeeder extends Seeder
             ReligionSeeder::class,
             SexSeeder::class,
             BarangaySeeder::class,
-            WorkflowSeeder::class,
             FuneralAssistanceTypeSeeder::class,
 
+            // Workflow
+            WorkflowSeeder::class,
+            WorkflowStageSeeder::class,
+            WorkflowTransitionSeeder::class,
+            
             // Data
             ClientSeeder::class,
             BeneficiarySeeder::class,
@@ -36,6 +41,7 @@ class DatabaseSeeder extends Seeder
             InterviewSeeder::class,
             AssessmentSeeder::class,
             RecommendationSeeder::class,
+            WorkflowHistorySeeder::class,
             ReferralSeeder::class,
 
             // Custom Fields

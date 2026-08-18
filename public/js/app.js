@@ -193,6 +193,13 @@ function checkAndRenderCharts() {
     }
 }
 
+// Initialize select2s as soon as this module runs. Module scripts execute after
+// the DOM is parsed but BEFORE the DOMContentLoaded event, so this beats
+// Metronic's own createSelect2 (scripts.bundle.js), which would otherwise
+// initialize our selects first WITHOUT the tags option and mark them
+// data-kt-initialized, making initSelect2 skip them.
+initSelect2();
+
 document.addEventListener('DOMContentLoaded', () => {
     checkAndRenderCharts();
     randomizeMulticolorBorder();
@@ -246,6 +253,10 @@ function initSelect2(root = document) {
             options.minimumResultsForSearch = Infinity;
         }
 
+        if (element.classList.contains('select-dynamic')) {
+            options.tags = true;
+        }
+
         $(element).select2(options);
 
         // Handle Select2's KTMenu parent case
@@ -287,6 +298,15 @@ document.addEventListener('livewire:init', () => {
     });
 
     Livewire.hook('morph.added', ({ el }) => {
+        requestAnimationFrame(() => {
+            initSelect2(el);
+        });
+    });
+
+    // `morphed` fires after every element in a component has been morphed,
+    // including lazy/deferred children whose HTML is loaded separately. It is
+    // the most reliable place to initialize select2 for freshly added selects.
+    Livewire.hook('morphed', ({ el }) => {
         requestAnimationFrame(() => {
             initSelect2(el);
         });

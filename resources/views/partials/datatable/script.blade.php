@@ -22,39 +22,11 @@
 
 			if (statusColumn) {
 				statusColumn.render = (_, __, row) => {
-					const rawStatus = row.status || 'pending';
+					const rawStatus = row.status.label || 'pending';
+					const badgeClass = row.status.badgeColor || 'primary';
 					const status = escapeHtml(rawStatus);
-					let badgeClass;
-					switch (rawStatus.toLowerCase()) {
-						case 'interviewed':
-							badgeClass = 'bg-info text-white';
-							break;
-						case 'assessed':
-							badgeClass = 'bg-primary text-white';
-							break;
-						case 'recommended':
-							badgeClass = 'bg-info text-white';
-							break;
-						case 'referred':
-							badgeClass = 'bg-success text-white';
-							break;
-						case 'for pickup':
-							badgeClass = 'bg-warning text-dark';
-							break;
-						case 'rejected':
-							badgeClass = 'bg-danger text-white';
-							break;
-						case 'released':
-							badgeClass = 'bg-success text-white';
-							break;
-						case 'canceled':
-							badgeClass = 'bg-success text-white';
-							break;
-						default:
-							badgeClass = 'bg-secondary text-black';
-					}
 					return `
-                        <span class="badge ${badgeClass}">
+                        <span class="badge badge-${badgeClass}">
                             ${status.toUpperCase()}
                         </span>
                     `;

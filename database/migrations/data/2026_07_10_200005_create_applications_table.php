@@ -14,6 +14,12 @@ return new class extends Migration
         Schema::create('applications', function (Blueprint $table) {
             $table->uuid()->primary();
             $table->string('tracking_no')->unique();
+            $table->string('qr_code')->unique();
+            $table->foreignUuid('current_workflow_stage_uuid')
+                ->nullable()
+                ->constrained('workflow_stages', 'uuid')
+                ->nullOnDelete()
+                ->cascadeOnUpdate();
             $table->foreignUuid('client_uuid')
                 ->constrained('clients', 'uuid')
                 ->cascadeOnDelete();
@@ -25,6 +31,14 @@ return new class extends Migration
                 ->constrained('relationships')
                 ->nullOnDelete();
             $table->timestamps();
+        });
+
+        Schema::table('workflow_histories', function (Blueprint $table) {
+            $table->foreignUuid('application_uuid')
+                ->after('uuid')
+                ->constrained('applications', 'uuid')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
         });
     }
 

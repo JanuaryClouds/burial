@@ -31,6 +31,7 @@ class ClientFactory extends Factory
             'district_id' => District::inRandomOrder()->first()->id,
             'city' => 'Taguig City',
             'contact_number' => $this->faker->regexify('09[0-9]{9}'),
+            'created_at' => $this->faker->dateTimeBetween(now()->subWeek(), now())
         ];
     }
 

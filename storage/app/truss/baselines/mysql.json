@@ -1,0 +1,3486 @@
+{
+    "connection": "mysql",
+    "fallback": false,
+    "skipped_migrations": [],
+    "tables": [
+        {
+            "name": "activity_log",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "log_name",
+                    "type": "varchar(255)",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "description",
+                    "type": "text",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "subject_type",
+                    "type": "varchar(255)",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "event",
+                    "type": "varchar(255)",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "subject_id",
+                    "type": "bigint unsigned",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "causer_type",
+                    "type": "varchar(255)",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "causer_id",
+                    "type": "bigint unsigned",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "properties",
+                    "type": "json",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "batch_uuid",
+                    "type": "char(36)",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                }
+            ],
+            "primary_key": [
+                "id"
+            ],
+            "indexes": [
+                {
+                    "name": "activity_log_log_name_index",
+                    "columns": [
+                        "log_name"
+                    ],
+                    "unique": false
+                },
+                {
+                    "name": "causer",
+                    "columns": [
+                        "causer_type",
+                        "causer_id"
+                    ],
+                    "unique": false
+                },
+                {
+                    "name": "subject",
+                    "columns": [
+                        "subject_type",
+                        "subject_id"
+                    ],
+                    "unique": false
+                }
+            ],
+            "foreign_keys": []
+        },
+        {
+            "name": "applications",
+            "columns": [
+                {
+                    "name": "uuid",
+                    "type": "char(36)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "tracking_no",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "qr_code",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "current_workflow_stage_uuid",
+                    "type": "char(36)",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "client_uuid",
+                    "type": "char(36)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "beneficiary_uuid",
+                    "type": "char(36)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "relationship_id",
+                    "type": "bigint unsigned",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                }
+            ],
+            "primary_key": [
+                "uuid"
+            ],
+            "indexes": [
+                {
+                    "name": "applications_beneficiary_uuid_foreign",
+                    "columns": [
+                        "beneficiary_uuid"
+                    ],
+                    "unique": false
+                },
+                {
+                    "name": "applications_client_uuid_foreign",
+                    "columns": [
+                        "client_uuid"
+                    ],
+                    "unique": false
+                },
+                {
+                    "name": "applications_current_workflow_stage_uuid_foreign",
+                    "columns": [
+                        "current_workflow_stage_uuid"
+                    ],
+                    "unique": false
+                },
+                {
+                    "name": "applications_qr_code_unique",
+                    "columns": [
+                        "qr_code"
+                    ],
+                    "unique": true
+                },
+                {
+                    "name": "applications_relationship_id_foreign",
+                    "columns": [
+                        "relationship_id"
+                    ],
+                    "unique": false
+                },
+                {
+                    "name": "applications_tracking_no_unique",
+                    "columns": [
+                        "tracking_no"
+                    ],
+                    "unique": true
+                }
+            ],
+            "foreign_keys": [
+                {
+                    "name": "applications_beneficiary_uuid_foreign",
+                    "columns": [
+                        "beneficiary_uuid"
+                    ],
+                    "references_table": "beneficiaries",
+                    "references_columns": [
+                        "uuid"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "cascade"
+                },
+                {
+                    "name": "applications_client_uuid_foreign",
+                    "columns": [
+                        "client_uuid"
+                    ],
+                    "references_table": "clients",
+                    "references_columns": [
+                        "uuid"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "cascade"
+                },
+                {
+                    "name": "applications_current_workflow_stage_uuid_foreign",
+                    "columns": [
+                        "current_workflow_stage_uuid"
+                    ],
+                    "references_table": "workflow_stages",
+                    "references_columns": [
+                        "uuid"
+                    ],
+                    "on_update": "cascade",
+                    "on_delete": "set null"
+                },
+                {
+                    "name": "applications_relationship_id_foreign",
+                    "columns": [
+                        "relationship_id"
+                    ],
+                    "references_table": "relationships",
+                    "references_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "set null"
+                }
+            ]
+        },
+        {
+            "name": "assessments",
+            "columns": [
+                {
+                    "name": "uuid",
+                    "type": "char(36)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "application_uuid",
+                    "type": "char(36)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "swa",
+                    "type": "text",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "problem_presented",
+                    "type": "text",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                }
+            ],
+            "primary_key": [
+                "uuid"
+            ],
+            "indexes": [
+                {
+                    "name": "assessments_application_uuid_foreign",
+                    "columns": [
+                        "application_uuid"
+                    ],
+                    "unique": false
+                }
+            ],
+            "foreign_keys": [
+                {
+                    "name": "assessments_application_uuid_foreign",
+                    "columns": [
+                        "application_uuid"
+                    ],
+                    "references_table": "applications",
+                    "references_columns": [
+                        "uuid"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "cascade"
+                }
+            ]
+        },
+        {
+            "name": "assistances",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "name",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "remarks",
+                    "type": "varchar(255)",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                }
+            ],
+            "primary_key": [
+                "id"
+            ],
+            "indexes": [
+                {
+                    "name": "assistances_name_unique",
+                    "columns": [
+                        "name"
+                    ],
+                    "unique": true
+                }
+            ],
+            "foreign_keys": []
+        },
+        {
+            "name": "barangays",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "name",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "district_id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "remarks",
+                    "type": "varchar(255)",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                }
+            ],
+            "primary_key": [
+                "id"
+            ],
+            "indexes": [
+                {
+                    "name": "barangays_district_id_foreign",
+                    "columns": [
+                        "district_id"
+                    ],
+                    "unique": false
+                },
+                {
+                    "name": "barangays_name_unique",
+                    "columns": [
+                        "name"
+                    ],
+                    "unique": true
+                }
+            ],
+            "foreign_keys": [
+                {
+                    "name": "barangays_district_id_foreign",
+                    "columns": [
+                        "district_id"
+                    ],
+                    "references_table": "districts",
+                    "references_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "no action"
+                }
+            ]
+        },
+        {
+            "name": "beneficiaries",
+            "columns": [
+                {
+                    "name": "uuid",
+                    "type": "char(36)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "first_name",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "middle_name",
+                    "type": "varchar(255)",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "last_name",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "suffix",
+                    "type": "varchar(255)",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "sex_id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "religion_id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "date_of_birth",
+                    "type": "date",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "date_of_death",
+                    "type": "date",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "house_no",
+                    "type": "text",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "street",
+                    "type": "text",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "city",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "district_id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "barangay_id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "created_by",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                }
+            ],
+            "primary_key": [
+                "uuid"
+            ],
+            "indexes": [
+                {
+                    "name": "beneficiaries_barangay_id_foreign",
+                    "columns": [
+                        "barangay_id"
+                    ],
+                    "unique": false
+                },
+                {
+                    "name": "beneficiaries_created_by_foreign",
+                    "columns": [
+                        "created_by"
+                    ],
+                    "unique": false
+                },
+                {
+                    "name": "beneficiaries_religion_id_foreign",
+                    "columns": [
+                        "religion_id"
+                    ],
+                    "unique": false
+                },
+                {
+                    "name": "beneficiaries_sex_id_foreign",
+                    "columns": [
+                        "sex_id"
+                    ],
+                    "unique": false
+                }
+            ],
+            "foreign_keys": [
+                {
+                    "name": "beneficiaries_barangay_id_foreign",
+                    "columns": [
+                        "barangay_id"
+                    ],
+                    "references_table": "barangays",
+                    "references_columns": [
+                        "id"
+                    ],
+                    "on_update": "cascade",
+                    "on_delete": "cascade"
+                },
+                {
+                    "name": "beneficiaries_created_by_foreign",
+                    "columns": [
+                        "created_by"
+                    ],
+                    "references_table": "users",
+                    "references_columns": [
+                        "id"
+                    ],
+                    "on_update": "cascade",
+                    "on_delete": "cascade"
+                },
+                {
+                    "name": "beneficiaries_religion_id_foreign",
+                    "columns": [
+                        "religion_id"
+                    ],
+                    "references_table": "religions",
+                    "references_columns": [
+                        "id"
+                    ],
+                    "on_update": "cascade",
+                    "on_delete": "cascade"
+                },
+                {
+                    "name": "beneficiaries_sex_id_foreign",
+                    "columns": [
+                        "sex_id"
+                    ],
+                    "references_table": "sexes",
+                    "references_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "no action"
+                }
+            ]
+        },
+        {
+            "name": "beneficiary_families",
+            "columns": [
+                {
+                    "name": "uuid",
+                    "type": "char(36)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "beneficiary_uuid",
+                    "type": "char(36)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "name",
+                    "type": "text",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "sex_id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "age",
+                    "type": "int",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "civil_id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "relationship_id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "occupation",
+                    "type": "text",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "income",
+                    "type": "text",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                }
+            ],
+            "primary_key": [
+                "uuid"
+            ],
+            "indexes": [
+                {
+                    "name": "beneficiary_families_beneficiary_uuid_foreign",
+                    "columns": [
+                        "beneficiary_uuid"
+                    ],
+                    "unique": false
+                },
+                {
+                    "name": "beneficiary_families_civil_id_foreign",
+                    "columns": [
+                        "civil_id"
+                    ],
+                    "unique": false
+                },
+                {
+                    "name": "beneficiary_families_relationship_id_foreign",
+                    "columns": [
+                        "relationship_id"
+                    ],
+                    "unique": false
+                },
+                {
+                    "name": "beneficiary_families_sex_id_foreign",
+                    "columns": [
+                        "sex_id"
+                    ],
+                    "unique": false
+                }
+            ],
+            "foreign_keys": [
+                {
+                    "name": "beneficiary_families_beneficiary_uuid_foreign",
+                    "columns": [
+                        "beneficiary_uuid"
+                    ],
+                    "references_table": "beneficiaries",
+                    "references_columns": [
+                        "uuid"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "cascade"
+                },
+                {
+                    "name": "beneficiary_families_civil_id_foreign",
+                    "columns": [
+                        "civil_id"
+                    ],
+                    "references_table": "civil_statuses",
+                    "references_columns": [
+                        "id"
+                    ],
+                    "on_update": "cascade",
+                    "on_delete": "cascade"
+                },
+                {
+                    "name": "beneficiary_families_relationship_id_foreign",
+                    "columns": [
+                        "relationship_id"
+                    ],
+                    "references_table": "relationships",
+                    "references_columns": [
+                        "id"
+                    ],
+                    "on_update": "cascade",
+                    "on_delete": "cascade"
+                },
+                {
+                    "name": "beneficiary_families_sex_id_foreign",
+                    "columns": [
+                        "sex_id"
+                    ],
+                    "references_table": "sexes",
+                    "references_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "no action"
+                }
+            ]
+        },
+        {
+            "name": "cheques",
+            "columns": [
+                {
+                    "name": "uuid",
+                    "type": "char(36)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "application_uuid",
+                    "type": "char(36)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "obr_number",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "cheque_number",
+                    "type": "varchar(255)",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "dv_number",
+                    "type": "varchar(255)",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "amount",
+                    "type": "decimal(8,2)",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "date_issued",
+                    "type": "date",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "date_claimed",
+                    "type": "date",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "status",
+                    "type": "enum('issued','claimed','cancelled')",
+                    "nullable": false,
+                    "default": "issued"
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                }
+            ],
+            "primary_key": [
+                "uuid"
+            ],
+            "indexes": [
+                {
+                    "name": "cheques_application_uuid_foreign",
+                    "columns": [
+                        "application_uuid"
+                    ],
+                    "unique": false
+                },
+                {
+                    "name": "cheques_cheque_number_unique",
+                    "columns": [
+                        "cheque_number"
+                    ],
+                    "unique": true
+                },
+                {
+                    "name": "cheques_dv_number_unique",
+                    "columns": [
+                        "dv_number"
+                    ],
+                    "unique": true
+                },
+                {
+                    "name": "cheques_obr_number_unique",
+                    "columns": [
+                        "obr_number"
+                    ],
+                    "unique": true
+                }
+            ],
+            "foreign_keys": [
+                {
+                    "name": "cheques_application_uuid_foreign",
+                    "columns": [
+                        "application_uuid"
+                    ],
+                    "references_table": "applications",
+                    "references_columns": [
+                        "uuid"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "cascade"
+                }
+            ]
+        },
+        {
+            "name": "civil_statuses",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "name",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "remarks",
+                    "type": "varchar(255)",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                }
+            ],
+            "primary_key": [
+                "id"
+            ],
+            "indexes": [
+                {
+                    "name": "civil_statuses_name_unique",
+                    "columns": [
+                        "name"
+                    ],
+                    "unique": true
+                }
+            ],
+            "foreign_keys": []
+        },
+        {
+            "name": "client_demographics",
+            "columns": [
+                {
+                    "name": "uuid",
+                    "type": "char(36)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "client_uuid",
+                    "type": "char(36)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "sex_id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "religion_id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "nationality_id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                }
+            ],
+            "primary_key": [
+                "uuid"
+            ],
+            "indexes": [
+                {
+                    "name": "client_demographics_client_uuid_foreign",
+                    "columns": [
+                        "client_uuid"
+                    ],
+                    "unique": false
+                },
+                {
+                    "name": "client_demographics_nationality_id_foreign",
+                    "columns": [
+                        "nationality_id"
+                    ],
+                    "unique": false
+                },
+                {
+                    "name": "client_demographics_religion_id_foreign",
+                    "columns": [
+                        "religion_id"
+                    ],
+                    "unique": false
+                },
+                {
+                    "name": "client_demographics_sex_id_foreign",
+                    "columns": [
+                        "sex_id"
+                    ],
+                    "unique": false
+                }
+            ],
+            "foreign_keys": [
+                {
+                    "name": "client_demographics_client_uuid_foreign",
+                    "columns": [
+                        "client_uuid"
+                    ],
+                    "references_table": "clients",
+                    "references_columns": [
+                        "uuid"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "cascade"
+                },
+                {
+                    "name": "client_demographics_nationality_id_foreign",
+                    "columns": [
+                        "nationality_id"
+                    ],
+                    "references_table": "nationalities",
+                    "references_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "no action"
+                },
+                {
+                    "name": "client_demographics_religion_id_foreign",
+                    "columns": [
+                        "religion_id"
+                    ],
+                    "references_table": "religions",
+                    "references_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "no action"
+                },
+                {
+                    "name": "client_demographics_sex_id_foreign",
+                    "columns": [
+                        "sex_id"
+                    ],
+                    "references_table": "sexes",
+                    "references_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "no action"
+                }
+            ]
+        },
+        {
+            "name": "client_social_infos",
+            "columns": [
+                {
+                    "name": "uuid",
+                    "type": "char(36)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "client_uuid",
+                    "type": "char(36)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "civil_id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "education_id",
+                    "type": "bigint unsigned",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "income",
+                    "type": "text",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "philhealth",
+                    "type": "text",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "skill",
+                    "type": "text",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                }
+            ],
+            "primary_key": [
+                "uuid"
+            ],
+            "indexes": [
+                {
+                    "name": "client_social_infos_civil_id_foreign",
+                    "columns": [
+                        "civil_id"
+                    ],
+                    "unique": false
+                },
+                {
+                    "name": "client_social_infos_client_uuid_foreign",
+                    "columns": [
+                        "client_uuid"
+                    ],
+                    "unique": false
+                },
+                {
+                    "name": "client_social_infos_education_id_foreign",
+                    "columns": [
+                        "education_id"
+                    ],
+                    "unique": false
+                }
+            ],
+            "foreign_keys": [
+                {
+                    "name": "client_social_infos_civil_id_foreign",
+                    "columns": [
+                        "civil_id"
+                    ],
+                    "references_table": "civil_statuses",
+                    "references_columns": [
+                        "id"
+                    ],
+                    "on_update": "cascade",
+                    "on_delete": "cascade"
+                },
+                {
+                    "name": "client_social_infos_client_uuid_foreign",
+                    "columns": [
+                        "client_uuid"
+                    ],
+                    "references_table": "clients",
+                    "references_columns": [
+                        "uuid"
+                    ],
+                    "on_update": "cascade",
+                    "on_delete": "cascade"
+                },
+                {
+                    "name": "client_social_infos_education_id_foreign",
+                    "columns": [
+                        "education_id"
+                    ],
+                    "references_table": "educations",
+                    "references_columns": [
+                        "id"
+                    ],
+                    "on_update": "cascade",
+                    "on_delete": "cascade"
+                }
+            ]
+        },
+        {
+            "name": "clients",
+            "columns": [
+                {
+                    "name": "uuid",
+                    "type": "char(36)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "user_id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "date_of_birth",
+                    "type": "date",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "house_no",
+                    "type": "text",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "street",
+                    "type": "text",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "district_id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "barangay_id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "city",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": "Taguig City"
+                },
+                {
+                    "name": "contact_number",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                }
+            ],
+            "primary_key": [
+                "uuid"
+            ],
+            "indexes": [
+                {
+                    "name": "clients_barangay_id_foreign",
+                    "columns": [
+                        "barangay_id"
+                    ],
+                    "unique": false
+                },
+                {
+                    "name": "clients_district_id_foreign",
+                    "columns": [
+                        "district_id"
+                    ],
+                    "unique": false
+                },
+                {
+                    "name": "clients_user_id_foreign",
+                    "columns": [
+                        "user_id"
+                    ],
+                    "unique": false
+                }
+            ],
+            "foreign_keys": [
+                {
+                    "name": "clients_barangay_id_foreign",
+                    "columns": [
+                        "barangay_id"
+                    ],
+                    "references_table": "barangays",
+                    "references_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "no action"
+                },
+                {
+                    "name": "clients_district_id_foreign",
+                    "columns": [
+                        "district_id"
+                    ],
+                    "references_table": "districts",
+                    "references_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "no action"
+                },
+                {
+                    "name": "clients_user_id_foreign",
+                    "columns": [
+                        "user_id"
+                    ],
+                    "references_table": "users",
+                    "references_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "cascade"
+                }
+            ]
+        },
+        {
+            "name": "custom_field_values",
+            "columns": [
+                {
+                    "name": "uuid",
+                    "type": "char(36)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "custom_field_uuid",
+                    "type": "char(36)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "valuable_type",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "valuable_id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "value",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                }
+            ],
+            "primary_key": [
+                "uuid"
+            ],
+            "indexes": [
+                {
+                    "name": "custom_field_values_custom_field_uuid_foreign",
+                    "columns": [
+                        "custom_field_uuid"
+                    ],
+                    "unique": false
+                },
+                {
+                    "name": "custom_field_values_valuable_type_valuable_id_index",
+                    "columns": [
+                        "valuable_type",
+                        "valuable_id"
+                    ],
+                    "unique": false
+                }
+            ],
+            "foreign_keys": [
+                {
+                    "name": "custom_field_values_custom_field_uuid_foreign",
+                    "columns": [
+                        "custom_field_uuid"
+                    ],
+                    "references_table": "custom_fields",
+                    "references_columns": [
+                        "uuid"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "cascade"
+                }
+            ]
+        },
+        {
+            "name": "custom_fields",
+            "columns": [
+                {
+                    "name": "uuid",
+                    "type": "char(36)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "fieldable_type",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "fieldable_id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "name",
+                    "type": "varchar(64)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "label",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "input_type",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "required",
+                    "type": "tinyint(1)",
+                    "nullable": false,
+                    "default": "0"
+                },
+                {
+                    "name": "order_no",
+                    "type": "int",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                }
+            ],
+            "primary_key": [
+                "uuid"
+            ],
+            "indexes": [
+                {
+                    "name": "custom_fields_fieldable_type_fieldable_id_index",
+                    "columns": [
+                        "fieldable_type",
+                        "fieldable_id"
+                    ],
+                    "unique": false
+                }
+            ],
+            "foreign_keys": []
+        },
+        {
+            "name": "districts",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "name",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "remarks",
+                    "type": "varchar(255)",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                }
+            ],
+            "primary_key": [
+                "id"
+            ],
+            "indexes": [
+                {
+                    "name": "districts_name_unique",
+                    "columns": [
+                        "name"
+                    ],
+                    "unique": true
+                }
+            ],
+            "foreign_keys": []
+        },
+        {
+            "name": "educations",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "name",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "remarks",
+                    "type": "varchar(255)",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "deleted_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                }
+            ],
+            "primary_key": [
+                "id"
+            ],
+            "indexes": [
+                {
+                    "name": "educations_name_unique",
+                    "columns": [
+                        "name"
+                    ],
+                    "unique": true
+                }
+            ],
+            "foreign_keys": []
+        },
+        {
+            "name": "failed_jobs",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "uuid",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "connection",
+                    "type": "text",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "queue",
+                    "type": "text",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "payload",
+                    "type": "longtext",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "exception",
+                    "type": "longtext",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "failed_at",
+                    "type": "timestamp",
+                    "nullable": false,
+                    "default": "CURRENT_TIMESTAMP"
+                }
+            ],
+            "primary_key": [
+                "id"
+            ],
+            "indexes": [
+                {
+                    "name": "failed_jobs_uuid_unique",
+                    "columns": [
+                        "uuid"
+                    ],
+                    "unique": true
+                }
+            ],
+            "foreign_keys": []
+        },
+        {
+            "name": "funeral_assistance_types",
+            "columns": [
+                {
+                    "name": "uuid",
+                    "type": "char(36)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "name",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "description",
+                    "type": "text",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "deleted_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "workflow_uuid",
+                    "type": "char(36)",
+                    "nullable": true,
+                    "default": null
+                }
+            ],
+            "primary_key": [
+                "uuid"
+            ],
+            "indexes": [
+                {
+                    "name": "funeral_assistance_types_workflow_uuid_foreign",
+                    "columns": [
+                        "workflow_uuid"
+                    ],
+                    "unique": false
+                }
+            ],
+            "foreign_keys": [
+                {
+                    "name": "funeral_assistance_types_workflow_uuid_foreign",
+                    "columns": [
+                        "workflow_uuid"
+                    ],
+                    "references_table": "workflows",
+                    "references_columns": [
+                        "uuid"
+                    ],
+                    "on_update": "cascade",
+                    "on_delete": "set null"
+                }
+            ]
+        },
+        {
+            "name": "interviews",
+            "columns": [
+                {
+                    "name": "uuid",
+                    "type": "char(36)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "client_uuid",
+                    "type": "char(36)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "status",
+                    "type": "enum('scheduled','done','canceled')",
+                    "nullable": false,
+                    "default": "scheduled"
+                },
+                {
+                    "name": "schedule",
+                    "type": "datetime",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                }
+            ],
+            "primary_key": [
+                "uuid"
+            ],
+            "indexes": [
+                {
+                    "name": "interviews_client_uuid_foreign",
+                    "columns": [
+                        "client_uuid"
+                    ],
+                    "unique": false
+                }
+            ],
+            "foreign_keys": [
+                {
+                    "name": "interviews_client_uuid_foreign",
+                    "columns": [
+                        "client_uuid"
+                    ],
+                    "references_table": "clients",
+                    "references_columns": [
+                        "uuid"
+                    ],
+                    "on_update": "cascade",
+                    "on_delete": "cascade"
+                }
+            ]
+        },
+        {
+            "name": "migrations",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "int unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "migration",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "batch",
+                    "type": "int",
+                    "nullable": false,
+                    "default": null
+                }
+            ],
+            "primary_key": [
+                "id"
+            ],
+            "indexes": [],
+            "foreign_keys": []
+        },
+        {
+            "name": "mode_of_assistances",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "name",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "remarks",
+                    "type": "varchar(255)",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                }
+            ],
+            "primary_key": [
+                "id"
+            ],
+            "indexes": [
+                {
+                    "name": "mode_of_assistances_name_unique",
+                    "columns": [
+                        "name"
+                    ],
+                    "unique": true
+                }
+            ],
+            "foreign_keys": []
+        },
+        {
+            "name": "model_has_permissions",
+            "columns": [
+                {
+                    "name": "permission_id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "model_type",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "model_id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                }
+            ],
+            "primary_key": [
+                "permission_id",
+                "model_id",
+                "model_type"
+            ],
+            "indexes": [
+                {
+                    "name": "model_has_permissions_model_id_model_type_index",
+                    "columns": [
+                        "model_id",
+                        "model_type"
+                    ],
+                    "unique": false
+                }
+            ],
+            "foreign_keys": [
+                {
+                    "name": "model_has_permissions_permission_id_foreign",
+                    "columns": [
+                        "permission_id"
+                    ],
+                    "references_table": "permissions",
+                    "references_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "cascade"
+                }
+            ]
+        },
+        {
+            "name": "model_has_roles",
+            "columns": [
+                {
+                    "name": "role_id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "model_type",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "model_id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                }
+            ],
+            "primary_key": [
+                "role_id",
+                "model_id",
+                "model_type"
+            ],
+            "indexes": [
+                {
+                    "name": "model_has_roles_model_id_model_type_index",
+                    "columns": [
+                        "model_id",
+                        "model_type"
+                    ],
+                    "unique": false
+                }
+            ],
+            "foreign_keys": [
+                {
+                    "name": "model_has_roles_role_id_foreign",
+                    "columns": [
+                        "role_id"
+                    ],
+                    "references_table": "roles",
+                    "references_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "cascade"
+                }
+            ]
+        },
+        {
+            "name": "nationalities",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "name",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "remarks",
+                    "type": "varchar(255)",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "deleted_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                }
+            ],
+            "primary_key": [
+                "id"
+            ],
+            "indexes": [
+                {
+                    "name": "nationalities_name_unique",
+                    "columns": [
+                        "name"
+                    ],
+                    "unique": true
+                }
+            ],
+            "foreign_keys": []
+        },
+        {
+            "name": "notifications",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "char(36)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "source_type",
+                    "type": "varchar(255)",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "source_id",
+                    "type": "char(36)",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "notifiable_type",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "notifiable_id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "payload",
+                    "type": "json",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "read_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                }
+            ],
+            "primary_key": [
+                "id"
+            ],
+            "indexes": [
+                {
+                    "name": "notifications_notifiable_type_notifiable_id_index",
+                    "columns": [
+                        "notifiable_type",
+                        "notifiable_id"
+                    ],
+                    "unique": false
+                },
+                {
+                    "name": "notifications_source_type_source_id_index",
+                    "columns": [
+                        "source_type",
+                        "source_id"
+                    ],
+                    "unique": false
+                }
+            ],
+            "foreign_keys": []
+        },
+        {
+            "name": "password_reset_tokens",
+            "columns": [
+                {
+                    "name": "email",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "token",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                }
+            ],
+            "primary_key": [
+                "email"
+            ],
+            "indexes": [],
+            "foreign_keys": []
+        },
+        {
+            "name": "permissions",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "name",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "guard_name",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                }
+            ],
+            "primary_key": [
+                "id"
+            ],
+            "indexes": [
+                {
+                    "name": "permissions_name_guard_name_unique",
+                    "columns": [
+                        "name",
+                        "guard_name"
+                    ],
+                    "unique": true
+                }
+            ],
+            "foreign_keys": []
+        },
+        {
+            "name": "personal_access_tokens",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "tokenable_type",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "tokenable_id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "name",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "token",
+                    "type": "varchar(64)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "abilities",
+                    "type": "text",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "last_used_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "expires_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                }
+            ],
+            "primary_key": [
+                "id"
+            ],
+            "indexes": [
+                {
+                    "name": "personal_access_tokens_token_unique",
+                    "columns": [
+                        "token"
+                    ],
+                    "unique": true
+                },
+                {
+                    "name": "personal_access_tokens_tokenable_type_tokenable_id_index",
+                    "columns": [
+                        "tokenable_type",
+                        "tokenable_id"
+                    ],
+                    "unique": false
+                }
+            ],
+            "foreign_keys": []
+        },
+        {
+            "name": "recommendations",
+            "columns": [
+                {
+                    "name": "uuid",
+                    "type": "char(36)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "application_uuid",
+                    "type": "char(36)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "funeral_assistance_type_uuid",
+                    "type": "char(36)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "amount_extended",
+                    "type": "decimal(10,2)",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "mode_of_assistance_id",
+                    "type": "bigint unsigned",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "recommended_by",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "status",
+                    "type": "enum('pending','approved','canceled','rejected')",
+                    "nullable": false,
+                    "default": "pending"
+                },
+                {
+                    "name": "approved_at",
+                    "type": "datetime",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                }
+            ],
+            "primary_key": [
+                "uuid"
+            ],
+            "indexes": [
+                {
+                    "name": "recommendations_application_uuid_foreign",
+                    "columns": [
+                        "application_uuid"
+                    ],
+                    "unique": false
+                },
+                {
+                    "name": "recommendations_funeral_assistance_type_uuid_foreign",
+                    "columns": [
+                        "funeral_assistance_type_uuid"
+                    ],
+                    "unique": false
+                },
+                {
+                    "name": "recommendations_mode_of_assistance_id_foreign",
+                    "columns": [
+                        "mode_of_assistance_id"
+                    ],
+                    "unique": false
+                },
+                {
+                    "name": "recommendations_recommended_by_foreign",
+                    "columns": [
+                        "recommended_by"
+                    ],
+                    "unique": false
+                }
+            ],
+            "foreign_keys": [
+                {
+                    "name": "recommendations_application_uuid_foreign",
+                    "columns": [
+                        "application_uuid"
+                    ],
+                    "references_table": "applications",
+                    "references_columns": [
+                        "uuid"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "cascade"
+                },
+                {
+                    "name": "recommendations_funeral_assistance_type_uuid_foreign",
+                    "columns": [
+                        "funeral_assistance_type_uuid"
+                    ],
+                    "references_table": "funeral_assistance_types",
+                    "references_columns": [
+                        "uuid"
+                    ],
+                    "on_update": "cascade",
+                    "on_delete": "cascade"
+                },
+                {
+                    "name": "recommendations_mode_of_assistance_id_foreign",
+                    "columns": [
+                        "mode_of_assistance_id"
+                    ],
+                    "references_table": "mode_of_assistances",
+                    "references_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "set null"
+                },
+                {
+                    "name": "recommendations_recommended_by_foreign",
+                    "columns": [
+                        "recommended_by"
+                    ],
+                    "references_table": "users",
+                    "references_columns": [
+                        "id"
+                    ],
+                    "on_update": "cascade",
+                    "on_delete": "cascade"
+                }
+            ]
+        },
+        {
+            "name": "referrals",
+            "columns": [
+                {
+                    "name": "uuid",
+                    "type": "char(36)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "application_uuid",
+                    "type": "char(36)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "referral_to",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                }
+            ],
+            "primary_key": [
+                "uuid"
+            ],
+            "indexes": [
+                {
+                    "name": "referrals_application_uuid_foreign",
+                    "columns": [
+                        "application_uuid"
+                    ],
+                    "unique": false
+                }
+            ],
+            "foreign_keys": [
+                {
+                    "name": "referrals_application_uuid_foreign",
+                    "columns": [
+                        "application_uuid"
+                    ],
+                    "references_table": "applications",
+                    "references_columns": [
+                        "uuid"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "cascade"
+                }
+            ]
+        },
+        {
+            "name": "relationships",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "name",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "remarks",
+                    "type": "varchar(255)",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "deleted_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                }
+            ],
+            "primary_key": [
+                "id"
+            ],
+            "indexes": [
+                {
+                    "name": "relationships_name_unique",
+                    "columns": [
+                        "name"
+                    ],
+                    "unique": true
+                }
+            ],
+            "foreign_keys": []
+        },
+        {
+            "name": "religions",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "name",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "remarks",
+                    "type": "varchar(255)",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "deleted_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                }
+            ],
+            "primary_key": [
+                "id"
+            ],
+            "indexes": [
+                {
+                    "name": "religions_name_unique",
+                    "columns": [
+                        "name"
+                    ],
+                    "unique": true
+                }
+            ],
+            "foreign_keys": []
+        },
+        {
+            "name": "remarks",
+            "columns": [
+                {
+                    "name": "uuid",
+                    "type": "char(36)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "content",
+                    "type": "text",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "remarkable_type",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "remarkable_id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "parent_id",
+                    "type": "char(36)",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "author_id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                }
+            ],
+            "primary_key": [
+                "uuid"
+            ],
+            "indexes": [
+                {
+                    "name": "remarks_author_id_foreign",
+                    "columns": [
+                        "author_id"
+                    ],
+                    "unique": false
+                },
+                {
+                    "name": "remarks_parent_id_foreign",
+                    "columns": [
+                        "parent_id"
+                    ],
+                    "unique": false
+                },
+                {
+                    "name": "remarks_remarkable_type_remarkable_id_index",
+                    "columns": [
+                        "remarkable_type",
+                        "remarkable_id"
+                    ],
+                    "unique": false
+                }
+            ],
+            "foreign_keys": [
+                {
+                    "name": "remarks_author_id_foreign",
+                    "columns": [
+                        "author_id"
+                    ],
+                    "references_table": "users",
+                    "references_columns": [
+                        "id"
+                    ],
+                    "on_update": "cascade",
+                    "on_delete": "no action"
+                },
+                {
+                    "name": "remarks_parent_id_foreign",
+                    "columns": [
+                        "parent_id"
+                    ],
+                    "references_table": "remarks",
+                    "references_columns": [
+                        "uuid"
+                    ],
+                    "on_update": "cascade",
+                    "on_delete": "set null"
+                }
+            ]
+        },
+        {
+            "name": "role_has_permissions",
+            "columns": [
+                {
+                    "name": "permission_id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "role_id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                }
+            ],
+            "primary_key": [
+                "permission_id",
+                "role_id"
+            ],
+            "indexes": [
+                {
+                    "name": "role_has_permissions_role_id_foreign",
+                    "columns": [
+                        "role_id"
+                    ],
+                    "unique": false
+                }
+            ],
+            "foreign_keys": [
+                {
+                    "name": "role_has_permissions_permission_id_foreign",
+                    "columns": [
+                        "permission_id"
+                    ],
+                    "references_table": "permissions",
+                    "references_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "cascade"
+                },
+                {
+                    "name": "role_has_permissions_role_id_foreign",
+                    "columns": [
+                        "role_id"
+                    ],
+                    "references_table": "roles",
+                    "references_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "cascade"
+                }
+            ]
+        },
+        {
+            "name": "roles",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "name",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "guard_name",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                }
+            ],
+            "primary_key": [
+                "id"
+            ],
+            "indexes": [
+                {
+                    "name": "roles_name_guard_name_unique",
+                    "columns": [
+                        "name",
+                        "guard_name"
+                    ],
+                    "unique": true
+                }
+            ],
+            "foreign_keys": []
+        },
+        {
+            "name": "sessions",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "user_id",
+                    "type": "bigint unsigned",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "ip_address",
+                    "type": "varchar(45)",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "user_agent",
+                    "type": "text",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "payload",
+                    "type": "longtext",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "last_activity",
+                    "type": "int",
+                    "nullable": false,
+                    "default": null
+                }
+            ],
+            "primary_key": [
+                "id"
+            ],
+            "indexes": [
+                {
+                    "name": "sessions_last_activity_index",
+                    "columns": [
+                        "last_activity"
+                    ],
+                    "unique": false
+                },
+                {
+                    "name": "sessions_user_id_index",
+                    "columns": [
+                        "user_id"
+                    ],
+                    "unique": false
+                }
+            ],
+            "foreign_keys": []
+        },
+        {
+            "name": "sexes",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "name",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "remarks",
+                    "type": "varchar(255)",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                }
+            ],
+            "primary_key": [
+                "id"
+            ],
+            "indexes": [
+                {
+                    "name": "sexes_name_unique",
+                    "columns": [
+                        "name"
+                    ],
+                    "unique": true
+                }
+            ],
+            "foreign_keys": []
+        },
+        {
+            "name": "system_settings",
+            "columns": [
+                {
+                    "name": "uuid",
+                    "type": "char(36)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "maintenance_mode",
+                    "type": "tinyint(1)",
+                    "nullable": false,
+                    "default": "0"
+                },
+                {
+                    "name": "social_welfare_officer",
+                    "type": "varchar(255)",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "dept_head",
+                    "type": "varchar(255)",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "department_email",
+                    "type": "varchar(255)",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                }
+            ],
+            "primary_key": [
+                "uuid"
+            ],
+            "indexes": [],
+            "foreign_keys": []
+        },
+        {
+            "name": "users",
+            "columns": [
+                {
+                    "name": "id",
+                    "type": "bigint unsigned",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "citizen_uuid",
+                    "type": "char(36)",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "first_name",
+                    "type": "text",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "middle_name",
+                    "type": "text",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "last_name",
+                    "type": "text",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "suffix",
+                    "type": "text",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "email",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "contact_number",
+                    "type": "varchar(255)",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "email_verified_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "password",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "is_active",
+                    "type": "tinyint(1)",
+                    "nullable": false,
+                    "default": "1"
+                },
+                {
+                    "name": "remember_token",
+                    "type": "varchar(100)",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                }
+            ],
+            "primary_key": [
+                "id"
+            ],
+            "indexes": [
+                {
+                    "name": "users_citizen_uuid_unique",
+                    "columns": [
+                        "citizen_uuid"
+                    ],
+                    "unique": true
+                },
+                {
+                    "name": "users_email_unique",
+                    "columns": [
+                        "email"
+                    ],
+                    "unique": true
+                }
+            ],
+            "foreign_keys": []
+        },
+        {
+            "name": "workflow_histories",
+            "columns": [
+                {
+                    "name": "uuid",
+                    "type": "char(36)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "application_uuid",
+                    "type": "char(36)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "from_stage_uuid",
+                    "type": "char(36)",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "to_stage_uuid",
+                    "type": "char(36)",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "date_in",
+                    "type": "datetime",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "date_out",
+                    "type": "datetime",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "reason",
+                    "type": "text",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "processed_by",
+                    "type": "bigint unsigned",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                }
+            ],
+            "primary_key": [
+                "uuid"
+            ],
+            "indexes": [
+                {
+                    "name": "workflow_histories_application_uuid_foreign",
+                    "columns": [
+                        "application_uuid"
+                    ],
+                    "unique": false
+                },
+                {
+                    "name": "workflow_histories_from_stage_uuid_foreign",
+                    "columns": [
+                        "from_stage_uuid"
+                    ],
+                    "unique": false
+                },
+                {
+                    "name": "workflow_histories_processed_by_foreign",
+                    "columns": [
+                        "processed_by"
+                    ],
+                    "unique": false
+                },
+                {
+                    "name": "workflow_histories_to_stage_uuid_foreign",
+                    "columns": [
+                        "to_stage_uuid"
+                    ],
+                    "unique": false
+                }
+            ],
+            "foreign_keys": [
+                {
+                    "name": "workflow_histories_application_uuid_foreign",
+                    "columns": [
+                        "application_uuid"
+                    ],
+                    "references_table": "applications",
+                    "references_columns": [
+                        "uuid"
+                    ],
+                    "on_update": "cascade",
+                    "on_delete": "cascade"
+                },
+                {
+                    "name": "workflow_histories_from_stage_uuid_foreign",
+                    "columns": [
+                        "from_stage_uuid"
+                    ],
+                    "references_table": "workflow_stages",
+                    "references_columns": [
+                        "uuid"
+                    ],
+                    "on_update": "cascade",
+                    "on_delete": "cascade"
+                },
+                {
+                    "name": "workflow_histories_processed_by_foreign",
+                    "columns": [
+                        "processed_by"
+                    ],
+                    "references_table": "users",
+                    "references_columns": [
+                        "id"
+                    ],
+                    "on_update": "cascade",
+                    "on_delete": "set null"
+                },
+                {
+                    "name": "workflow_histories_to_stage_uuid_foreign",
+                    "columns": [
+                        "to_stage_uuid"
+                    ],
+                    "references_table": "workflow_stages",
+                    "references_columns": [
+                        "uuid"
+                    ],
+                    "on_update": "cascade",
+                    "on_delete": "cascade"
+                }
+            ]
+        },
+        {
+            "name": "workflow_stages",
+            "columns": [
+                {
+                    "name": "uuid",
+                    "type": "char(36)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "workflow_uuid",
+                    "type": "char(36)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "name",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "description",
+                    "type": "text",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                }
+            ],
+            "primary_key": [
+                "uuid"
+            ],
+            "indexes": [
+                {
+                    "name": "workflow_stages_workflow_uuid_foreign",
+                    "columns": [
+                        "workflow_uuid"
+                    ],
+                    "unique": false
+                }
+            ],
+            "foreign_keys": [
+                {
+                    "name": "workflow_stages_workflow_uuid_foreign",
+                    "columns": [
+                        "workflow_uuid"
+                    ],
+                    "references_table": "workflows",
+                    "references_columns": [
+                        "uuid"
+                    ],
+                    "on_update": "cascade",
+                    "on_delete": "cascade"
+                }
+            ]
+        },
+        {
+            "name": "workflow_transitions",
+            "columns": [
+                {
+                    "name": "uuid",
+                    "type": "char(36)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "workflow_uuid",
+                    "type": "char(36)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "from_stage_uuid",
+                    "type": "char(36)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "to_stage_uuid",
+                    "type": "char(36)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "permission_id",
+                    "type": "bigint unsigned",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "description",
+                    "type": "text",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                }
+            ],
+            "primary_key": [
+                "uuid"
+            ],
+            "indexes": [
+                {
+                    "name": "workflow_transitions_from_stage_uuid_foreign",
+                    "columns": [
+                        "from_stage_uuid"
+                    ],
+                    "unique": false
+                },
+                {
+                    "name": "workflow_transitions_permission_id_foreign",
+                    "columns": [
+                        "permission_id"
+                    ],
+                    "unique": false
+                },
+                {
+                    "name": "workflow_transitions_to_stage_uuid_foreign",
+                    "columns": [
+                        "to_stage_uuid"
+                    ],
+                    "unique": false
+                },
+                {
+                    "name": "workflow_transitions_workflow_uuid_foreign",
+                    "columns": [
+                        "workflow_uuid"
+                    ],
+                    "unique": false
+                }
+            ],
+            "foreign_keys": [
+                {
+                    "name": "workflow_transitions_from_stage_uuid_foreign",
+                    "columns": [
+                        "from_stage_uuid"
+                    ],
+                    "references_table": "workflow_stages",
+                    "references_columns": [
+                        "uuid"
+                    ],
+                    "on_update": "cascade",
+                    "on_delete": "cascade"
+                },
+                {
+                    "name": "workflow_transitions_permission_id_foreign",
+                    "columns": [
+                        "permission_id"
+                    ],
+                    "references_table": "permissions",
+                    "references_columns": [
+                        "id"
+                    ],
+                    "on_update": "cascade",
+                    "on_delete": "set null"
+                },
+                {
+                    "name": "workflow_transitions_to_stage_uuid_foreign",
+                    "columns": [
+                        "to_stage_uuid"
+                    ],
+                    "references_table": "workflow_stages",
+                    "references_columns": [
+                        "uuid"
+                    ],
+                    "on_update": "cascade",
+                    "on_delete": "cascade"
+                },
+                {
+                    "name": "workflow_transitions_workflow_uuid_foreign",
+                    "columns": [
+                        "workflow_uuid"
+                    ],
+                    "references_table": "workflows",
+                    "references_columns": [
+                        "uuid"
+                    ],
+                    "on_update": "cascade",
+                    "on_delete": "cascade"
+                }
+            ]
+        },
+        {
+            "name": "workflows",
+            "columns": [
+                {
+                    "name": "uuid",
+                    "type": "char(36)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "name",
+                    "type": "varchar(255)",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "description",
+                    "type": "text",
+                    "nullable": false,
+                    "default": null
+                },
+                {
+                    "name": "created_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                },
+                {
+                    "name": "updated_at",
+                    "type": "timestamp",
+                    "nullable": true,
+                    "default": null
+                }
+            ],
+            "primary_key": [
+                "uuid"
+            ],
+            "indexes": [],
+            "foreign_keys": []
+        }
+    ],
+    "generated_at": "2026-08-11T10:09:37+08:00"
+}
