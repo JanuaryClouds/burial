@@ -8,9 +8,11 @@ use App\Models\Beneficiary;
 use App\Models\Client;
 use App\Models\ModeOfAssistance;
 use App\Models\SystemSetting;
+use Barcode\Facades\Barcode;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class ApplicationService
 {
@@ -195,6 +197,44 @@ class ApplicationService
             ->setPaper('A4', 'portrait');
 
         return $pdf->stream("gis-form-{$application->tracking_no}.pdf");
+    }
+
+    public function getQrCodeUri(
+        string $format,
+        string $contents, 
+        int $size = 100, 
+        int $margin = 2, 
+        string $errorCorrection = 'H'
+    ) {
+        $qrCode = QrCode::format($format)
+            ->size($size)
+            ->margin($margin)
+            ->errorCorrection($errorCorrection)
+            ->generate($contents);
+
+        return 'data:image/svg+xml;base64,' . base64_encode($qrCode);
+    }
+
+    public function getBarcodeUri(string $contents)
+    {
+        return Barcode::generateSvgBase64($contents);        
+    } 
+
+    public function codes(Application $application)
+    {
+        $pdf = Pdf::loadView('pdf.codes', [
+            'application' => $application,
+            'qrCode' => $this->getQrCodeUri(
+                'svg',
+                $application->qr_code,
+                200
+            ),
+            'barcode' => $this->getBarcodeUri($application->qr_code)
+        ])
+            ->setOption('isRemoteEnabled', true)
+            ->setPaper([0, 0, 250, 400], 'portrait');
+
+        return $pdf->stream("codes-{$application->tracking_no}.pdf");
     }
 
     public function certificate(Application $application)

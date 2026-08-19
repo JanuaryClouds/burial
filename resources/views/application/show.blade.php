@@ -3,7 +3,20 @@
 	@role('staff')
 		@include('application.partials.menu')
 	@endrole
-	{{-- TODO add timeline --}}
+	<div class="row">
+		<div class="col-12 col-lg-8">
+			@include('application.partials.timeline', [
+				'application' => $application,
+			])
+		</div>
+		<div class="col-6 col-lg-4">
+			@include('application.partials.codes', [
+				'application' => $application,
+				'qrCode' => $qrCode,
+				'barcode' => $barcode,
+			])
+		</div>
+	</div>
 	<x-card>
 		<x-slot:header>Client</x-slot:header>
 		@include('client.partials.create.form', [
