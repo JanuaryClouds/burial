@@ -13,6 +13,9 @@ Route::controller(ApplicationController::class)
         Route::get('/create', 'create')
             ->name('create');
 
+        Route::get('/search', 'search')
+            ->name('search');
+
         Route::post('/store', 'store')
             ->middleware('throttle:5,1')
             ->name('store');
@@ -21,6 +24,9 @@ Route::controller(ApplicationController::class)
             ->group(function () {
                 Route::get('', 'show')
                     ->name('show');
+
+                Route::get('/codes', 'codes')
+                    ->name('codes');
 
                 Route::get('/print', 'print')
                     ->name('print');

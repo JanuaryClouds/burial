@@ -146,6 +146,16 @@ class ApplicationController extends Controller
     }
 
     /**
+     * Display the search page to utilize the QR and Barcodes.
+     */
+    public function search()
+    {
+        return view('application.search', [
+            'page_title' => 'Search Application',
+        ]);
+    }
+
+    /**
      * Display the specified resource.
      */
     public function show(Application $application)
@@ -184,6 +194,12 @@ class ApplicationController extends Controller
             'conditions' => $conditions,
             'funeralAssistanceTypes' => $funeralAssistanceTypes,
             'modes' => $modes,
+            'qrCode' => $this->services->getQrCodeUri(
+                'svg', 
+                $application->qr_code,
+                200
+            ),
+            'barcode' => $this->services->getBarcodeUri($application->qr_code),
             'page_title' => $application->tracking_no,
         ]);
     }
@@ -218,6 +234,14 @@ class ApplicationController extends Controller
     public function print(Application $application)
     {
         return $this->services->print($application);
+    }
+
+    /**
+     * Summary of codes
+     */
+    public function codes(Application $application)
+    {
+        return $this->services->codes($application);
     }
 
     /**
