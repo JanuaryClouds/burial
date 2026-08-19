@@ -38,3 +38,5 @@
 	src="{{ asset('metronic/plugins/custom/datatables/datatables.bundle.js') }}"></script>
 
 @livewireScripts(['nonce' => $nonce ?? ''])
+
+@stack('scripts')
