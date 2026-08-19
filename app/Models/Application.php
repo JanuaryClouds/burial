@@ -32,7 +32,7 @@ class Application extends Model
             $year = now()->format('Y');
             $count = self::whereYear('created_at', $year)->count() + 1;
             $application->tracking_no = sprintf('%s-%04d', $year, $count);
-            $application->qr_code = 'APP-' . Str::upper(Str::random(8));
+            $application->qr_code = 'FUNERAL-' . Str::upper(Str::random(8));
         });
     }
 
