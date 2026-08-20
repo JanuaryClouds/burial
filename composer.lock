@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "82f204f5c3f9060af378e89d4e7a841f",
+    "content-hash": "8d9a9644050a76391b9f8354d15041ed",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -3871,6 +3871,69 @@
                 }
             ],
             "time": "2026-02-16T23:10:27+00:00"
+        },
+        {
+            "name": "panchodp/barcode",
+            "version": "v1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PanchoDP/barcode.git",
+                "reference": "5e1f9d8e300cbb7a041b4d7b49de514665d34dc4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PanchoDP/barcode/zipball/5e1f9d8e300cbb7a041b4d7b49de514665d34dc4",
+                "reference": "5e1f9d8e300cbb7a041b4d7b49de514665d34dc4",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.3.0 | ^8.4.0 | ^8.5.0 "
+            },
+            "require-dev": {
+                "larastan/larastan": "^3.9.2",
+                "laravel/pint": "^1.27.1",
+                "pestphp/pest": "^4.4.1",
+                "spatie/ray": "^1.47"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "Barcode": "Barcode\\Facades\\Barcode"
+                    },
+                    "providers": [
+                        "Barcode\\BarcodeServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Barcode\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Francisco de Pablo",
+                    "email": "fcodepablo@gmail.com"
+                }
+            ],
+            "description": "Generate Code 128 svg barcodes in PHP",
+            "keywords": [
+                "128",
+                "barcode",
+                "code128",
+                "generator",
+                "php"
+            ],
+            "support": {
+                "issues": "https://github.com/PanchoDP/barcode/issues",
+                "source": "https://github.com/PanchoDP/barcode/tree/v1.0.1"
+            },
+            "time": "2026-05-13T15:38:59+00:00"
         },
         {
             "name": "phpoffice/phpspreadsheet",
