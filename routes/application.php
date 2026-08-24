@@ -25,8 +25,8 @@ Route::controller(ApplicationController::class)
                 Route::get('', 'show')
                     ->name('show');
 
-                Route::get('/codes', 'codes')
-                    ->name('codes');
+                Route::get('/tracker-slip', 'codes')
+                    ->name('tracker-slip');
 
                 Route::get('/print', 'print')
                     ->name('print');
