@@ -182,66 +182,59 @@ class Application extends Model
 
     public function status(): array
     {
-        $status = [
-            'label' => 'Pending',
+        $status[] = [
+            'label' => 'pending',
             'badgeColor' => 'primary'
         ];
 
         $interviews = $this->client->interviews;
         $assessment = $this->assessment;
-        $recommendations = $this->recommendations;
         $referral = $this->referral;
         $workflowStage = $this->workflowStage;
 
         if ($interviews && $interviews->count() > 0) {
-            $status = [
-                'label' => 'Interview',
+            $status[] = [
+                'label' => 'assessment',
                 'badgeColor' => 'info'
             ];
         }
 
-        if ($assessment) {
-            $status = [
-                'label' => 'Assessment',
-                'badgeColor' => 'info'
+        if ($assessment && !collect($status)->pluck('label')->contains('assessment')) {
+            $status[] = [
+                'label' => 'assessment',
+                'badgeColor' => 'secondary'
             ];
-        }
-
-        if ($recommendations->isNotEmpty()) {
-            $approved_recommendation = $recommendations->where('status', 'approved');
-
-            if ($approved_recommendation) {
-                $status = [
-                    'label' => 'Assessment',
-                    'badgeColor' => 'info',
-                ];
-            }
         }
 
         if ($workflowStage !== null) {
-            $status = [
-                'label' => 'Processing',
-                'badgeColor' => 'secondary',
+            $status[] = [
+                'label' => 'processing',
+                'badgeColor' => 'primary'
             ];
 
-            if ($workflowStage->name === 'Closing') {
-                $status = [
-                    'label' => 'Closing',
-                    'badgeColor' => 'warning',
+            if ($workflowStage->name === 'Releasing') {
+                $status[] = [
+                    'label' => 'processed',
+                    'badgeColor' => 'secondary',
+                ];
+
+                $status[] = [
+                    'label' => 'releasing',
+                    'badgeColor' => 'success',
                 ];
             }
 
-            if ($workflowStage->name === 'Releasing') {
-                $status = [
-                    'label' => 'Release',
-                    'badgeColor' => 'success',
+            if ($workflowStage->name === 'Closing') {
+                $status[] = [
+                    'label' => 'closed',
+                    'badgeColor' => 'warning',
                 ];
             }
         }
 
         if ($referral) {
-            $status = [
-                'label' => 'Referred',
+            $status[] = [
+                'label' => 'referred',
                 'badgeColor' => 'success',
             ];
         }
