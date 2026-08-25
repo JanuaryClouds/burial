@@ -25,6 +25,11 @@ class StatusTimeline extends Component
         $this->status = $application->status();
     }
 
+    public function refresh()
+    {
+        $this->status = $this->application->status();
+    }
+
     public function render()
     {
         return view('livewire.application.status-timeline');

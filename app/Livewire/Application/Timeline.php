@@ -23,7 +23,12 @@ class Timeline extends Component
     public function mount(Application $application)
     {
         $this->application = $application;
-        $this->workflowHistory = $application->workflowHistory()->with(['toStage'])->orderBy('date_in')->get();
+        $this->workflowHistory = $application->workflowHistory()->with(['toStage', 'fromStage'])->orderBy('date_in')->get();
+    }
+
+    public function refresh()
+    {
+        $this->workflowHistory = $this->application->workflowHistory()->with(['toStage', 'fromStage'])->orderBy('date_in')->get();
     }
 
     public function render()
