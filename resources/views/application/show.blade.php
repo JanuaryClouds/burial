@@ -26,12 +26,22 @@
 			</div>
 		</div>
 	@endrole
-	<div class="row">
-		{{-- Partial:Documents --}}
-		@role('staff')
-			{{-- Partial:Interview-History --}}
-			{{-- Partial:Assessment --}}
-			{{-- Partial:Recommendation --}}
-		@endrole
+	<div id="documents">
+		<x-card>
+			<x-slot:header>Documents</x-slot:header>
+			@include('application.partials.documents')
+		</x-card>
 	</div>
+	@role('staff')
+		<div class="row">
+			<div class="col-12 col-lg-6"
+				id="assessment">
+				<livewire:assessment.create :application="$application" />
+			</div>
+			<div class="col-12 col-lg-6"
+				id="recommendation">
+				<livewire:recommendation.create :application="$application" />
+			</div>
+		</div>
+	@endrole
 @endsection

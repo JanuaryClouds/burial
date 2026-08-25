@@ -12,10 +12,14 @@
 				class="list-group-item list-group-item-action">Process History</a>
 			<a href="#workflow-stage-form"
 				class="list-group-item list-group-item-action">Process Form</a>
-			<a href="#interview-history"
-				class="list-group-item list-group-item-action">Interview History</a>
+		@endrole
+		<a href="#documents"
+			class="list-group-item list-group-item-action">Documents</a>
+		@role('staff')
 			<a href="#assessment"
 				class="list-group-item list-group-item-action">Assessment</a>
+			<a href="#recommendation"
+				class="list-group-item list-group-item-action">Recommendation</a>
 		@endrole
 	</div>
 </x-card>
