@@ -30,10 +30,10 @@
 		}
 	@endphp
 	<div class="stepper stepper-pills">
-		<div class="stepper-nav flex-center justify-content-around align-items-center">
+		<div class="stepper-nav flex-wrap flex-lg-nowrap d-flex justify-content-around align-items-center">
 			@foreach ($statusIndicators as $label => $indicator)
 				<div
-					class="stepper-item {{ $indicator === 'completed' ? 'completed' : ($indicator === 'current' ? 'current' : '') }}">
+					class="stepper-item w-100 w-lg-auto mb-4 mb-lg-0 {{ $indicator === 'completed' ? 'completed' : ($indicator === 'current' ? 'current' : '') }}">
 					<div class="stepper-wrapper d-flex align-items-center">
 						<div class="stepper-icon w-60px h-60px">
 							@if ($indicator === 'completed')
