@@ -11,17 +11,6 @@
 				<span>
 					<strong>Submitted on:</strong> {{ \Carbon\Carbon::parse($application->created_at)->format('F d, Y') }}
 				</span>
-				@if ($application->recommendations->where('status', 'approved')->count() > 0)
-					<span>
-						<strong>Recommended Assistance:</strong>
-						{{ $application->recommendations->firstWhere('status', 'approved')->funeralAssistanceType?->name }}
-					</span>
-				@else
-					<span>
-						<strong>Recommended Assistance:</strong>
-						<span class="text-muted">No recommendation yet</span>
-					</span>
-				@endif
 				<span>
 					<strong>Relationship of Client to Beneficiary:</strong>
 					{{ $application->relationship->name }}
@@ -31,10 +20,11 @@
 	</div>
 	<div class="row">
 		<div class="col-12 col-lg-6">
-			<div class="border border-dashed border-gray-300 rounded px-4 py-3 mb-4">
+			<div class="border border-2 border-dashed border-gray-300 rounded px-4 py-3 mb-4">
 				<div class="d-flex flex-column gap-2">
+					<h4>Client</h4>
 					<span>
-						<strong>Client:</strong> {{ $client->fullname() }}
+						<strong>Name:</strong> {{ $client->fullname() }}
 					</span>
 					<span>
 						<strong>Address:</strong> {{ $client->address() }}
@@ -46,10 +36,11 @@
 			</div>
 		</div>
 		<div class="col-12 col-lg-6">
-			<div class="border border-dashed border-gray-300 rounded px-4 py-3">
+			<div class="border border-2 border-dashed border-gray-300 rounded px-4 py-3 mb-4">
 				<div class="d-flex flex-column gap-2">
+					<h4>Beneficiary</h4>
 					<span>
-						<strong>Beneficiary:</strong> {{ $beneficiary->fullname() }}
+						<strong>Name:</strong> {{ $beneficiary->fullname() }}
 					</span>
 					<span>
 						<strong>Date of Birth:</strong> {{ \Carbon\Carbon::parse($beneficiary->date_of_birth)->format('F d, Y') }}
@@ -61,6 +52,19 @@
 				</div>
 			</div>
 		</div>
+		@if ($application->assessment)
+			<div class="col-12 col-lg-6 mb-4">
+				<livewire:assessment.show :assessment="$application->assessment" />
+			</div>
+		@endif
+		@if ($application->recommendations->count() > 0)
+			@php
+				$latestRecommendation = $application->recommendations->sortByDesc('created_at')->first();
+			@endphp
+			<div class="col-12 col-lg-6 mb-4">
+				<livewire:recommendation.show :recommendation="$latestRecommendation" />
+			</div>
+		@endif
 	</div>
 	<x-slot:footer>
 		<a class="btn btn-sm btn-light"
