@@ -60,21 +60,15 @@ class Create extends Component
 
     public function save()
     {
-        dd(
-            $this->funeralAssistanceTypeUuid,
-            $this->amountExtended,
-            $this->modeOfAssistanceId,
-        );
         $this->validate();
 
-        $recommendation = $this->application->recommendations->create([
+        $recommendation = Recommendation::create([
+            'application_uuid' => $this->application->uuid,
             'funeral_assistance_type_uuid' => $this->funeralAssistanceTypeUuid,
             'amount_extended' => $this->amountExtended,
             'mode_of_assistance_id' => $this->modeOfAssistanceId,
             'recommended_by' => Auth::user()->id,
         ]);
-
-        dd($recommendation);
 
         $recommendationStage = WorkflowStage::firstWhere('name', '=', 'Recommendation');
         $nextStage = WorkflowStage::firstWhere('position', '=', $recommendationStage->position + 1);
