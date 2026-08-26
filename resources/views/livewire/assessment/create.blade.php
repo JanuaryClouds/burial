@@ -1,4 +1,4 @@
-<div wire:poll.10s>
+<div>
 	<x-card>
 		<x-slot:header>Assessment</x-slot:header>
 		<x-form.textarea name="problem_presented"
@@ -12,11 +12,9 @@
 		<x-slot:footer>
 			<x-button wire:click='save'
 				class="btn-sm btn-success">
-				<i class="fa-solid fa-floppy-disk"
-					wire:loading.remove></i>
-				<i class="fa-solid fa-spinner fa-spin"
-					wire:loading></i>
+				<i class="fa-solid fa-floppy-disk"></i>
 				<span wire:loading.remove>Save</span>
+				<span wire:loading>Saving</span>
 			</x-button>
 		</x-slot:footer>
 	</x-card>

@@ -3,17 +3,17 @@
 		<x-slot:header>Recommendation</x-slot:header>
 		@if ($application->assessment)
 			<x-form.select name="funeralAssistanceTypeUuid"
-				wire:model.live.blur='funeralAssistanceTypeUuid'
+				wire:model='funeralAssistanceTypeUuid'
 				:options="$funeralAssistanceTypes"
 				label="Funeral Assistance Type"
 				required />
 			<x-form.input name="amountExtended"
-				wire:model.live.blur='amountExtended'
+				wire:model='amountExtended'
 				label="Amount to Extend"
 				required
 				type="number" />
 			<x-form.select name="modeOfAssistanceId"
-				wire:model.live.blur='modeOfAssistanceId'
+				wire:model='modeOfAssistanceId'
 				:options="$modeOfAssistances"
 				label="Mode of Assistance"
 				required />
@@ -22,12 +22,8 @@
 					wire:loading.attr='disabled'
 					class="btn-sm btn-success">
 					<i class="fa-solid fa-floppy-disk"></i>
-					<span wire:loading.remove>
-						Save
-					</span>
-					<span wire:loading>
-						Saving...
-					</span>
+					<span wire:loading.remove>Save</span>
+					<span wire:loading>Saving...</span>
 				</x-button>
 			</x-slot:footer>
 		@else
