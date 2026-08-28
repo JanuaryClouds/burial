@@ -85,7 +85,7 @@ class Application extends Model
 
     /**
      * Summary of workflow
-     * @return BelongsTo<Workflow, Application>
+     * @return BelongsTo<WorkflowStage, Application>
      */
     public function workflowStage(): BelongsTo
     {
@@ -240,6 +240,109 @@ class Application extends Model
         }
 
         return $status;
+    }
+
+    /**
+     * Summary of currentRecommendation
+     * @return Recommendation|null
+     */
+    public function currentRecommendation(): ?Recommendation
+    {
+        return $this->recommendations()
+            ?->whereNotIn('status', ['rejected', 'canceled'])
+            ?->latest()
+            ->first();
+    }
+
+    /**
+     * Summary of currentWorkflow
+     * @return Workflow|null
+     */
+    public function currentWorkflow(): ?Workflow
+    {
+        return $this->currentRecommendation()?->funeralAssistanceType?->workflow;
+    }
+
+    /**
+     * Summary of currentWorkflowHistory
+     * @return WorkflowHistory|null
+     */
+    public function currentWorkflowHistory(): ?WorkflowHistory
+    {
+        return $this->currentRecommendation()?->workflowHistory;
+    }
+
+    /**
+     * Summary of currentStage
+     * @return WorkflowStage|null
+     */
+    public function currentStage(): ?WorkflowStage
+    {
+        return $this->workflowStage;
+    }
+
+    /**
+     * Summary of previousStage
+     * @return WorkflowStage|null
+     */
+    public function previousStage(): ?WorkflowStage
+    {
+        $workflow = $this->currentWorkflow();
+        
+        if (!$workflow) {
+            return null;
+        }
+
+        $position = $this->workflowStage?->position - 1;
+
+        if ($position == 0) {
+            return null;
+        }
+
+        return $workflow->stages()
+            ->firstWhere('position', '=', $position);
+    }
+
+    /**
+     * Summary of nextStage
+     * @return WorkflowStage|null
+     */
+    public function nextStage(): ?WorkflowStage
+    {
+        $workflow = $this->currentWorkflow();
+
+        if (!$workflow) {
+            return null;
+        }
+
+        $position = $this->workflowStage?->position + 1;
+
+        if ($position == 0 || $position == null) $position = 1;
+
+        if ($position > $workflow->stages()->count()) {
+            return null;
+        }
+
+        return $workflow->stages()
+            ->firstWhere('position', '=', $position);
+    }
+
+    /**
+     * Summary of previousHistory
+     * @return WorkflowHistory|null
+     */
+    public function previousHistory(): ?WorkflowHistory
+    {
+        return $this->currentWorkflowHistory()?->where('to_stage_uuid', '=', $this->workflowStage?->uuid)->latest()->first();
+    }
+
+    /**
+     * Summary of nextHistory
+     * @return WorkflowHistory|null
+     */
+    public function nextHistory(): ?WorkflowHistory
+    {
+        return $this->currentWorkflowHistory()?->where('from_stage_uuid', '=', $this->workflowStage?->uuid)?->latest()->first();
     }
 
     /*

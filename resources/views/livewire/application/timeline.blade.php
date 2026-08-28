@@ -18,7 +18,7 @@
 					<div class="timeline-content ms-3 d-flex flex-column">
 						{{-- Stage:Name --}}
 						<span class="text-uppercase fw-bold">
-							{{ $history->fromStage->name }}
+							{{ $history->toStage->name }}
 						</span>
 
 						{{-- Stage:Extra Fields --}}

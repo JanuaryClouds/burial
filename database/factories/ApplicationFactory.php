@@ -20,7 +20,6 @@ class ApplicationFactory extends Factory
     {
         return [
             'relationship_id' => Relationship::inRandomOrder()->first()->id,
-            'created_at' => $this->faker->dateTimeBetween(now()->subWeek(), now())
         ];
     }
 }

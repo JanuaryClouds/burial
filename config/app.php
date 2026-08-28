@@ -2,6 +2,7 @@
 
 use App\Providers\AppServiceProvider;
 use App\Providers\AuthServiceProvider;
+use App\Providers\CarbonServiceProvider;
 use App\Providers\EventServiceProvider;
 use App\Providers\MigrationsLoader;
 use App\Providers\RouteServiceProvider;
@@ -175,6 +176,7 @@ return [
          */
         AppServiceProvider::class,
         AuthServiceProvider::class,
+        CarbonServiceProvider::class,
         // App\Providers\BroadcastServiceProvider::class,
         EventServiceProvider::class,
         RouteServiceProvider::class,
