@@ -69,4 +69,13 @@ class WorkflowHistory extends Model
     {
         return $this->belongsTo(Application::class, 'application_uuid', 'uuid');
     }
+
+    /**
+     * Summary of recommendation
+     * @return BelongsTo<Recommendation, WorkflowHistory>
+     */
+    public function recommendation(): BelongsTo
+    {
+        return $this->belongsTo(Recommendation::class, 'recommendation_uuid', 'uuid');
+    }
 }

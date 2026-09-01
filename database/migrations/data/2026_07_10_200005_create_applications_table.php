@@ -32,14 +32,6 @@ return new class extends Migration
                 ->nullOnDelete();
             $table->timestamps();
         });
-
-        Schema::table('workflow_histories', function (Blueprint $table) {
-            $table->foreignUuid('application_uuid')
-                ->after('uuid')
-                ->constrained('applications', 'uuid')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
-        });
     }
 
     /**

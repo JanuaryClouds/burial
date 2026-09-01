@@ -29,9 +29,17 @@ return new class extends Migration
                 ->constrained('users', 'id')
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
-            $table->enum('status', ['pending', 'approved', 'canceled', 'rejected'])->default('pending');
+            $table->enum('status', ['pending', 'approved', 'cancelled', 'rejected'])->default('pending');
             $table->dateTime('approved_at')->nullable();
             $table->timestamps();
+        });
+
+        Schema::table('workflow_histories', function (Blueprint $table) {
+            $table->foreignUuid('recommendation_uuid')
+                ->after('uuid')
+                ->constrained('recommendations', 'uuid')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
         });
     }
 
