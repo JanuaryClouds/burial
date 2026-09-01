@@ -33,37 +33,31 @@ class RecommendationSeeder extends Seeder
         }
     }
 
-    public static function seed(Application $application)
+    public function seed(Application $application)
     {
         $staff = User::whereHas('roles')->get();
 
         $recommendation = Recommendation::factory()->create([
             'application_uuid' => $application->uuid,
             'recommended_by' => $staff->random(1)->first()->id ?? 1,
-            'created_at' => Carbon::generateRandomDateTime(
-                Carbon::parse($application->assessment->created_at),
-                Carbon::parse($application->assessment->created_at)->addMinutes(rand(5, 10))
-            ),
         ]);
 
-        $workflow = $recommendation->funeralAssistanceType->workflow;
-        $firstStage = $workflow->stages()->where('position', 1)->first();
+        // $workflow = $recommendation->funeralAssistanceType->workflow;
+        // $firstStage = $workflow->stages()->where('position', 1)->first();
 
-        $dateIn = $recommendation->created_at;
-        $dateOut = $dateIn->addMinutes(rand(1, 10));
+        // $dateIn = Carbon::parse($application->created_at)->addMinutes(rand(5, 10));
+        // $dateOut = Carbon::parse($dateIn)->addMinutes(rand(5, 10));
 
-        WorkflowHistory::factory()->create([
-            'application_uuid' => $application->uuid,
-            'from_stage_uuid' => null,
-            'to_stage_uuid' => $firstStage->uuid,
-            'date_in' => $dateIn,
-            'date_out' => $dateOut,
-            'created_at' => $dateIn,
-            'updated_at' => $dateOut,
-        ]);
+        // WorkflowHistory::factory()->create([
+        //     'recommendation_uuid' => $recommendation->fresh()->uuid,
+        //     'from_stage_uuid' => null,
+        //     'to_stage_uuid' => $firstStage->uuid,
+        //     'date_in' => $dateIn,
+        //     'date_out' => $dateOut,
+        // ]);
 
-        $application->update([
-            'current_workflow_stage_uuid' => null,
-        ]);
+        // $application->update([
+        //     'current_workflow_stage_uuid' => null,
+        // ]);
     }
 }
