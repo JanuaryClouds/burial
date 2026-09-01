@@ -11,7 +11,7 @@ class Timeline extends Component
 {
     public Application $application;
 
-    public Collection $workflowHistory;
+    public Collection $recommendations;
 
     private ApplicationService $services;
 
@@ -23,12 +23,12 @@ class Timeline extends Component
     public function mount(Application $application)
     {
         $this->application = $application;
-        $this->workflowHistory = $application->workflowHistory()->with(['toStage', 'fromStage'])->orderBy('date_in')->get();
+        $this->recommendations = $application->recommendations()->with('workflowHistory')->oldest()->get();
     }
 
     public function refresh()
     {
-        $this->workflowHistory = $this->application->workflowHistory()->with(['toStage', 'fromStage'])->orderBy('date_in')->get();
+        $this->recommendations = $this->application->recommendations()->with('workflowHistory')->oldest()->get();
     }
 
     public function render()
