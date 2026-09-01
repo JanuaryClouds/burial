@@ -29,15 +29,9 @@ class InterviewSeeder extends Seeder
 
         foreach ($clients as $client) {
             if (rand(0, 9) >= 2) {
-                $created_at = Carbon::generateRandomDateTime(
-                    Carbon::parse($client->application->created_at),
-                    Carbon::parse($client->application->created_at)->addMinutes(rand(5, 60)),
-                );
+                $created_at = Carbon::parse($client->application->created_at)->addMinutes(rand(5, 60));
 
-                $schedule = Carbon::generateRandomDateTime(
-                    $created_at,
-                    Carbon::parse($created_at)->addMinutes(rand(5, 60)),
-                );
+                $schedule = Carbon::parse($created_at)->addMinutes(rand(5, 60));
 
                 $interview = Interview::factory()->create([
                     'client_uuid' => $client->uuid,

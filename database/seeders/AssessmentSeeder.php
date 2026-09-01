@@ -32,10 +32,7 @@ class AssessmentSeeder extends Seeder
             if (rand(0, 9) >= 2 && $client->application) {
                 $assessment = Assessment::factory()->create([
                     'application_uuid' => $client->application->uuid,
-                    'created_at' => Carbon::generateRandomDateTime(
-                        Carbon::parse($client->interviews()->latest()->first()->created_at), 
-                        Carbon::parse($client->interviews()->latest()->first()->created_at)->addMinutes(rand(5, 60)),
-                    ),
+                    'created_at' => Carbon::parse($client->interviews()->latest()->first()->created_at)->addMinutes(rand(5, 60)),
                 ]);
 
                 Notification::factory()->create([
