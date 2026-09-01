@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\HasRelationSets;
 use App\Traits\HasUuid;
 use Database\Factories\ApplicationFactory;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -90,15 +91,6 @@ class Application extends Model
     public function workflowStage(): BelongsTo
     {
         return $this->belongsTo(WorkflowStage::class, 'current_workflow_stage_uuid', 'uuid');
-    }
-
-    /**
-     * Summary of workflowHistory
-     * @return HasMany<WorkflowHistory, Application>
-     */
-    public function workflowHistory(): HasMany
-    {
-        return $this->hasMany(WorkflowHistory::class, 'application_uuid', 'uuid');
     }
 
     /**
@@ -199,7 +191,7 @@ class Application extends Model
             ];
         }
 
-        if ($assessment && !collect($status)->pluck('label')->contains('assessment')) {
+        if ($assessment) {
             $status[] = [
                 'label' => 'assessment',
                 'badgeColor' => 'secondary'
@@ -207,6 +199,11 @@ class Application extends Model
         }
 
         if ($workflowStage !== null) {
+            $status[] = [
+                'label' => 'processed',
+                'badgeColor' => 'primary'
+            ];
+
             $status[] = [
                 'label' => 'processing',
                 'badgeColor' => 'primary'
@@ -265,9 +262,9 @@ class Application extends Model
 
     /**
      * Summary of currentWorkflowHistory
-     * @return WorkflowHistory|null
+     * @return Collection|null
      */
-    public function currentWorkflowHistory(): ?WorkflowHistory
+    public function currentWorkflowHistory(): ?Collection
     {
         return $this->currentRecommendation()?->workflowHistory;
     }
@@ -282,10 +279,10 @@ class Application extends Model
     }
 
     /**
-     * Summary of previousStage
+     * Summary of fromStage
      * @return WorkflowStage|null
      */
-    public function previousStage(): ?WorkflowStage
+    public function fromStage(): ?WorkflowStage
     {
         $workflow = $this->currentWorkflow();
         
@@ -293,10 +290,12 @@ class Application extends Model
             return null;
         }
 
-        $position = $this->workflowStage?->position - 1;
+        $position = $this->workflowStage?->position;
 
-        if ($position == 0) {
-            return null;
+        if ($position < 0) {
+            if ($this->currentWorkflowHistory()->count() > 0) {
+                $position = 1;
+            }
         }
 
         return $workflow->stages()
@@ -304,10 +303,10 @@ class Application extends Model
     }
 
     /**
-     * Summary of nextStage
+     * Summary of toStage
      * @return WorkflowStage|null
      */
-    public function nextStage(): ?WorkflowStage
+    public function toStage(): ?WorkflowStage
     {
         $workflow = $this->currentWorkflow();
 
@@ -333,7 +332,14 @@ class Application extends Model
      */
     public function previousHistory(): ?WorkflowHistory
     {
-        return $this->currentWorkflowHistory()?->where('to_stage_uuid', '=', $this->workflowStage?->uuid)->latest()->first();
+        $workflowHistory = $this->currentWorkflowHistory();
+        $stage = $this->workflowStage;
+
+        if ($workflowHistory == null || $stage == null) {
+            return null;
+        }
+
+        return $workflowHistory->firstWhere('to_stage_uuid', '=', $stage->uuid);
     }
 
     /**
