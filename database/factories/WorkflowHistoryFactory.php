@@ -19,7 +19,7 @@ class WorkflowHistoryFactory extends Factory
     public function definition(): array
     {
         return [
-            'reason' => $this->faker->sentence,
+            // 'reason' => $this->faker->sentence,
         ];
     }
 }
