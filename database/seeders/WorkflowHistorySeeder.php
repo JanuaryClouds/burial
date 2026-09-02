@@ -94,6 +94,22 @@ class WorkflowHistorySeeder extends Seeder
                         );
                     } elseif ($chances >= 91 && $chances <= 95) {
                         // Chanced to be canceled
+                        $base = $previousHistory
+                            ? Carbon::parse($previousHistory->date_out)
+                            : Carbon::parse($application->currentRecommendation()->created_at ?? $application->created_at);
+
+                        $dateIn = Carbon::parse($base)->addMinutes(5);
+                        $dateOut = Carbon::parse($dateIn)->addMinutes(5);
+
+                        $this->createWorkflowHistory(
+                            $application->currentRecommendation(),
+                            $currentStage,
+                            null,
+                            $dateIn,
+                            $dateOut,
+                            'Client has cancelled their application'
+                        );
+
                         $updatedApplication->currentRecommendation()->update([
                             'status' => 'cancelled',
                         ]);
@@ -102,6 +118,22 @@ class WorkflowHistorySeeder extends Seeder
                         break;
                     } elseif ($chances >= 96 && $chances <= 100) {
                         // Referral
+                        $base = $previousHistory
+                            ? Carbon::parse($previousHistory->date_out)
+                            : Carbon::parse($application->currentRecommendation()->created_at ?? $application->created_at);
+
+                        $dateIn = Carbon::parse($base)->addMinutes(5);
+                        $dateOut = Carbon::parse($dateIn)->addMinutes(5);
+
+                        $this->createWorkflowHistory(
+                            $application->currentRecommendation(),
+                            $currentStage,
+                            null,
+                            $dateIn,
+                            $dateOut,
+                            'Client has been referred'
+                        );
+
                         $updatedApplication->currentRecommendation()->update([
                             'status' => 'rejected'
                         ]);
@@ -199,6 +231,7 @@ class WorkflowHistorySeeder extends Seeder
             null,
             $dateIn,
             $dateOut,
+            'Client has been referred to another department'
         );
 
         // Update that recommendation to rejected
@@ -223,6 +256,7 @@ class WorkflowHistorySeeder extends Seeder
      * @param Recommendation $recommendation
      * @param WorkflowStage $fromStage
      * @param WorkflowStage $toStage
+     * @param string|null $reason
      * @return void
      */
     public function createWorkflowHistory(
@@ -231,6 +265,7 @@ class WorkflowHistorySeeder extends Seeder
         ?WorkflowStage $toStage,
         Carbon $dateIn,
         Carbon $dateOut,
+        ?string $reason = null,
     ): void {
         $workflowHistory = WorkflowHistory::factory()->create([
             'recommendation_uuid' => $recommendation->uuid,
@@ -238,6 +273,7 @@ class WorkflowHistorySeeder extends Seeder
             'date_out' => $dateOut,
             'from_stage_uuid' => $fromStage?->uuid,
             'to_stage_uuid' => $toStage?->uuid,
+            'reason' => $reason,
         ]);
 
         dump('  [SUCCESS][' . $recommendation->application->tracking_no . ']: UUID: ' . $workflowHistory->uuid . ' | Recommendation : ' . $recommendation->uuid . ' | ' . ' Date In: ' . $dateIn . ' Date Out: ' . $dateOut);

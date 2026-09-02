@@ -4,9 +4,9 @@
 		$statusIndicators = [
 		    ['pending' => 'current'],
 		    ['assessment' => false],
-		    ['processed' => false],
+		    ['processing' => false],
 		    ['releasing' => false],
-		    ['closed' => false],
+		    ['closing' => false],
 		];
 
 		for ($i = 0; $i < count($statusIndicators); $i++) {
@@ -62,46 +62,48 @@
 		</div>
 	</div>
 	<div class="separator separator-dashed my-4"></div>
-	@if ($application->currentRecommendation()->status == 'canceled')
-		<div class="stepper stepper-pills">
-			<div class="stepper-nav flex-wrap flex-lg-nowrap d-flex justify-content-around align-items-center">
-				<div class="stepper-item w-100 w-lg-auto mb-4 mb-lg-0 completed">
-					<div class="stepper-wrapper d-flex align-items-center">
-						<div class="stepper-icon w-60px h-60px">
-							<i class="stepper-check fas fa-check text-success fs-2"></i>
-						</div>
-						<div class="stepper-label">
-							<h3 class="stepper-title completed text-success">
-								Cancelled
-							</h3>
-							<div class="stepper-desc completed text-success">
-								Client cancelled the application process
+	<div class="d-flex justify-content-center align-items-center gap-4">
+		@if ($application->currentRecommendation()->status == 'cancelled')
+			<div class="stepper stepper-pills">
+				<div class="stepper-nav flex-wrap flex-lg-nowrap d-flex justify-content-around align-items-center">
+					<div class="stepper-item w-100 w-lg-auto mb-4 mb-lg-0 completed">
+						<div class="stepper-wrapper d-flex align-items-center">
+							<div class="stepper-icon w-60px h-60px">
+								<i class="stepper-check fas fa-check text-success fs-2"></i>
+							</div>
+							<div class="stepper-label">
+								<h3 class="stepper-title completed text-success">
+									Cancelled
+								</h3>
+								<div class="stepper-desc completed text-success">
+									Client cancelled the application process
+								</div>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
-	@endif
-	@if ($application->referral)
-		<div class="stepper stepper-pills">
-			<div class="stepper-nav flex-wrap flex-lg-nowrap d-flex justify-content-around align-items-center">
-				<div class="stepper-item w-100 w-lg-auto mb-4 mb-lg-0 completed">
-					<div class="stepper-wrapper d-flex align-items-center">
-						<div class="stepper-icon w-60px h-60px">
-							<i class="stepper-check fas fa-check text-success fs-2"></i>
-						</div>
-						<div class="stepper-label">
-							<h3 class="stepper-title completed text-success">
-								Referred
-							</h3>
-							<div class="stepper-desc completed text-success">
-								Referred to {{ $application->referral->referral_to }}
+		@endif
+		@if ($application->referral)
+			<div class="stepper stepper-pills">
+				<div class="stepper-nav flex-wrap flex-lg-nowrap d-flex justify-content-around align-items-center">
+					<div class="stepper-item w-100 w-lg-auto mb-4 mb-lg-0 completed">
+						<div class="stepper-wrapper d-flex align-items-center">
+							<div class="stepper-icon w-60px h-60px">
+								<i class="stepper-check fas fa-check text-success fs-2"></i>
+							</div>
+							<div class="stepper-label">
+								<h3 class="stepper-title completed text-success">
+									Referred
+								</h3>
+								<div class="stepper-desc completed text-success">
+									Referred to {{ $application->referral->referral_to }}
+								</div>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
-	@endif
+		@endif
+	</div>
 </div>

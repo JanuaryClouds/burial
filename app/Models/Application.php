@@ -184,13 +184,6 @@ class Application extends Model
         $referral = $this->referral;
         $workflowStage = $this->workflowStage;
 
-        if ($interviews && $interviews->count() > 0) {
-            $status[] = [
-                'label' => 'assessment',
-                'badgeColor' => 'info'
-            ];
-        }
-
         if ($assessment) {
             $status[] = [
                 'label' => 'assessment',
@@ -200,20 +193,15 @@ class Application extends Model
 
         if ($workflowStage !== null) {
             $status[] = [
-                'label' => 'processed',
-                'badgeColor' => 'primary'
-            ];
-
-            $status[] = [
                 'label' => 'processing',
                 'badgeColor' => 'primary'
             ];
 
             if ($workflowStage->name === 'Releasing') {
-                $status[] = [
-                    'label' => 'processed',
-                    'badgeColor' => 'secondary',
-                ];
+                // $status[] = [
+                //     'label' => 'processed',
+                //     'badgeColor' => 'secondary',
+                // ];
 
                 $status[] = [
                     'label' => 'releasing',
@@ -223,7 +211,12 @@ class Application extends Model
 
             if ($workflowStage->name === 'Closing') {
                 $status[] = [
-                    'label' => 'closed',
+                    'label' => 'releasing',
+                    'badgeColor' => 'success',
+                ];
+
+                $status[] = [
+                    'label' => 'closing',
                     'badgeColor' => 'warning',
                 ];
             }
@@ -233,6 +226,13 @@ class Application extends Model
             $status[] = [
                 'label' => 'referred',
                 'badgeColor' => 'success',
+            ];
+        }
+
+        if ($this->recommendations->count() > 0 && $this->currentRecommendation()->status == 'cancelled') {
+            $status[] = [
+                'label' => 'cancelled',
+                'badgeColor' => 'danger',
             ];
         }
 
@@ -246,7 +246,6 @@ class Application extends Model
     public function currentRecommendation(): ?Recommendation
     {
         return $this->recommendations()
-            ?->whereNotIn('status', ['rejected', 'canceled'])
             ?->latest()
             ->first();
     }
