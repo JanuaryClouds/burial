@@ -24,6 +24,13 @@
 			@foreach ($recommendations as $recommendation)
 				<div class="timeline-item">
 					<div class="timeline-label">
+						<span class="text-uppercase fw-bold">
+							{{ \Carbon\Carbon::parse($recommendation->created_at)->format('H:i') }}
+						</span>
+						<br>
+						<span class="text-uppercase small text-muted fw-semibold">
+							{{ \Carbon\Carbon::parse($recommendation->created_at)->format('M d') }}
+						</span>
 					</div>
 					<div class="timeline-badge">
 						<i class="fa-solid fa-genderless text-primary fs-1"></i>
@@ -56,9 +63,7 @@
 							<div class="timeline-content ms-3 d-flex flex-column">
 								{{-- Stage:Name --}}
 								<span class="text-uppercase fw-bold">
-									@if ($history->fromStage)
-										{{ $history->fromStage->name }}
-									@endif
+									{{ $history->fromStage->name }}
 								</span>
 
 								{{-- Stage:Extra Fields --}}
@@ -70,63 +75,63 @@
 						</div>
 					@endif
 				@endforeach
-				@if ($application->referral)
-					<div class="timeline-item">
-						<div class="timeline-label">
-							<span class="text-uppercase fw-bold">
-								{{ \Carbon\Carbon::parse($application->referral->created_at)->format('H:i') }}
-							</span>
-							<br>
-							<span class="text-uppercase small text-muted fw-semibold">
-								{{ \Carbon\Carbon::parse($application->referral->created_at)->format('M d') }}
-							</span>
-						</div>
-						<div class="timeline-badge">
-							<i class="fa-solid fa-genderless text-primary fs-1"></i>
-						</div>
-						<div class="timeline-content ms-3 d-flex flex-column">
-							{{-- Stage:Name --}}
-							<span class="text-uppercase fw-bold">
-								Referral
-							</span>
-
-							{{-- Stage:Extra Fields --}}
-							<span>Referred to {{ $application->referral->referral_to }}</span>
-
-							{{-- Stage:Remark --}}
-							<span class="small text-muted">Sample Remark</span>
-						</div>
-					</div>
-				@endif
-				@if ($application->currentRecommendation()->status == 'cancelled')
-					<div class="timeline-item">
-						<div class="timeline-label">
-							<span class="text-uppercase fw-bold">
-								{{ \Carbon\Carbon::parse($application->currentRecommendation()->updated_at)->format('H:i') }}
-							</span>
-							<br>
-							<span class="text-uppercase small text-muted fw-semibold">
-								{{ \Carbon\Carbon::parse($application->currentRecommendation()->updated_at)->format('M d') }}
-							</span>
-						</div>
-						<div class="timeline-badge">
-							<i class="fa-solid fa-genderless text-primary fs-1"></i>
-						</div>
-						<div class="timeline-content ms-3 d-flex flex-column">
-							{{-- Stage:Name --}}
-							<span class="text-uppercase fw-bold">
-								Cancelled
-							</span>
-
-							{{-- Stage:Extra Fields --}}
-
-
-							{{-- Stage:Remark --}}
-							<span class="small text-muted">Sample Remark</span>
-						</div>
-					</div>
-				@endif
 			@endforeach
+			@if ($application->referral)
+				<div class="timeline-item">
+					<div class="timeline-label">
+						<span class="text-uppercase fw-bold">
+							{{ \Carbon\Carbon::parse($application->referral->created_at)->format('H:i') }}
+						</span>
+						<br>
+						<span class="text-uppercase small text-muted fw-semibold">
+							{{ \Carbon\Carbon::parse($application->referral->created_at)->format('M d') }}
+						</span>
+					</div>
+					<div class="timeline-badge">
+						<i class="fa-solid fa-genderless text-primary fs-1"></i>
+					</div>
+					<div class="timeline-content ms-3 d-flex flex-column">
+						{{-- Stage:Name --}}
+						<span class="text-uppercase fw-bold">
+							Referral
+						</span>
+
+						{{-- Stage:Extra Fields --}}
+						<span>Referred to {{ $application->referral->referral_to }}</span>
+
+						{{-- Stage:Remark --}}
+						<span class="small text-muted">Sample Remark</span>
+					</div>
+				</div>
+			@endif
+			@if ($application->cancellation)
+				<div class="timeline-item">
+					<div class="timeline-label">
+						<span class="text-uppercase fw-bold">
+							{{ \Carbon\Carbon::parse($application->cancellation->created_at)->format('H:i') }}
+						</span>
+						<br>
+						<span class="text-uppercase small text-muted fw-semibold">
+							{{ \Carbon\Carbon::parse($application->cancellation->created_at)->format('M d') }}
+						</span>
+					</div>
+					<div class="timeline-badge">
+						<i class="fa-solid fa-genderless text-primary fs-1"></i>
+					</div>
+					<div class="timeline-content ms-3 d-flex flex-column">
+						{{-- Stage:Name --}}
+						<span class="text-uppercase fw-bold">
+							Cancelled
+						</span>
+
+						{{-- Stage:Extra Fields --}}
+
+
+						{{-- Stage:Remark --}}
+						<span class="small text-muted">Sample Remark</span>
+					</div>
+				</div>
+			@endif
 		</div>
 	@else
 		<div class="d-flex flex-center">

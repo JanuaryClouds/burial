@@ -29,7 +29,7 @@ return new class extends Migration
                 ->constrained('users', 'id')
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
-            $table->enum('status', ['pending', 'approved', 'cancelled', 'rejected'])->default('pending');
+            $table->enum('status', ['pending', 'approved', 'cancelled', 'rejected', 'referred'])->default('pending');
             $table->dateTime('approved_at')->nullable();
             $table->timestamps();
         });

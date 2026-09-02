@@ -112,6 +112,24 @@ class Application extends Model
         return $this->belongsTo(Relationship::class);
     }
 
+    /**
+     * Summary of rejection
+     * @return HasOne<Rejection, Application>
+     */
+    public function rejection(): HasOne
+    {
+        return $this->hasOne(Rejection::class, 'application_uuid', 'uuid');
+    }
+
+    /**
+     * Summary of cancellation
+     * @return HasOne<Cancellation, Application>
+     */
+    public function cancellation(): HasOne
+    {
+        return $this->hasOne(Cancellation::class, 'application_uuid', 'uuid');
+    }
+
     protected static function clientRelations(): array
     {
         return self::prefixRelations(
@@ -153,6 +171,8 @@ class Application extends Model
                 'recommendation' => self::recommendationRelations(),
                 'assessment' => ['assessment'],
                 'referral' => ['referral'],
+                'rejection' => ['rejection'],
+                'cancellation' => ['cancellation'],
                 'workflow' => self::workflowRelations(),
                 'workflowHistory' => ['workflowHistory'],
                 'relationship' => ['relationship'],

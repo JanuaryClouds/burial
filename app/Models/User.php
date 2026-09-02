@@ -65,46 +65,6 @@ class User extends Authenticatable
     }
 
     /**
-     * Summary of processLogs
-     *
-     * @return HasMany<ProcessLog>
-     */
-    public function processLogs(): HasMany
-    {
-        return $this->hasMany(ProcessLog::class, 'added_by', 'id');
-    }
-
-    /**
-     * Summary of encoder
-     *
-     * @return HasMany<BurialAssistance>
-     */
-    public function encoder(): HasMany
-    {
-        return $this->hasMany(BurialAssistance::class, 'encoder', 'id');
-    }
-
-    /**
-     * Summary of initialChecker
-     *
-     * @return HasMany<BurialAssistance>
-     */
-    public function initialChecker(): HasMany
-    {
-        return $this->hasMany(BurialAssistance::class, 'initial_checker', 'id');
-    }
-
-    /**
-     * Summary of assignedTo
-     *
-     * @return HasMany<BurialAssistance>
-     */
-    public function assignedTo(): HasMany
-    {
-        return $this->hasMany(BurialAssistance::class, 'assigned_to', 'id');
-    }
-
-    /**
      * Summary of claimantChange
      *
      * @return HasMany<ClaimantChange>
@@ -122,5 +82,25 @@ class User extends Authenticatable
     public function beneficiaries(): HasMany
     {
         return $this->hasMany(Beneficiary::class, 'created_by', 'id');
+    }
+
+    /**
+     * Summary of rejections
+     *
+     * @return HasMany<Rejection, User>
+     */
+    public function rejections(): HasMany
+    {
+        return $this->hasMany(Rejection::class, 'rejected_by', 'id');
+    }
+
+    /**
+     * Summary of cancellations
+     *
+     * @return HasMany<Cancellation, User>
+     */
+    public function cancellations(): HasMany
+    {
+        return $this->hasMany(Cancellation::class, 'cancelled_by', 'id');
     }
 }

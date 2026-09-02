@@ -63,7 +63,7 @@
 	</div>
 	<div class="separator separator-dashed my-4"></div>
 	<div class="d-flex justify-content-center align-items-center gap-4">
-		@if ($application->currentRecommendation()->status == 'cancelled')
+		@if ($application->cancellation)
 			<div class="stepper stepper-pills">
 				<div class="stepper-nav flex-wrap flex-lg-nowrap d-flex justify-content-around align-items-center">
 					<div class="stepper-item w-100 w-lg-auto mb-4 mb-lg-0 completed">
@@ -76,7 +76,7 @@
 									Cancelled
 								</h3>
 								<div class="stepper-desc completed text-success">
-									Client cancelled the application process
+									{{ $application->cancellation->reason }}
 								</div>
 							</div>
 						</div>

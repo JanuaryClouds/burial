@@ -3,7 +3,9 @@
 namespace Database\Seeders;
 
 use App\Models\Application;
+use App\Models\Cancellation;
 use App\Models\Recommendation;
+use App\Models\Rejection;
 use App\Models\User;
 use App\Models\WorkflowHistory;
 use App\Models\WorkflowStage;
@@ -45,7 +47,7 @@ class WorkflowHistorySeeder extends Seeder
             $workflowStages->where('name', 'Closing')->first()->uuid,
         ]; // prevent reverting back to recommendation stage
 
-        $firstStage = WorkflowStage::where('position', 1)->first();
+        $staff = User::whereHas('roles')->get();
 
         foreach ($applications as $application) {
             while (true) {
@@ -110,6 +112,12 @@ class WorkflowHistorySeeder extends Seeder
                             'Client has cancelled their application'
                         );
 
+                        Cancellation::create([
+                            'application_uuid' => $updatedApplication->uuid,
+                            'reason' => 'Client has cancelled their application',
+                            'cancelled_by' => $updatedApplication->client->user->id,
+                        ]);
+
                         $updatedApplication->currentRecommendation()->update([
                             'status' => 'cancelled',
                         ]);
@@ -125,21 +133,45 @@ class WorkflowHistorySeeder extends Seeder
                         $dateIn = Carbon::parse($base)->addMinutes(5);
                         $dateOut = Carbon::parse($dateIn)->addMinutes(5);
 
-                        $this->createWorkflowHistory(
-                            $application->currentRecommendation(),
-                            $currentStage,
-                            null,
-                            $dateIn,
-                            $dateOut,
-                            'Client has been referred'
-                        );
+                        if (rand(0,1) === 0) {
+                            $this->createWorkflowHistory(
+                                $application->currentRecommendation(),
+                                $currentStage,
+                                null,
+                                $dateIn,
+                                $dateOut,
+                                'Client has been rejected'
+                            );
 
-                        $updatedApplication->currentRecommendation()->update([
-                            'status' => 'rejected'
-                        ]);
-        
-                        dump('[INFO][' . $application->tracking_no . ']: Referred.');
-                        break;
+                            Rejection::create([
+                                'application_uuid' => $updatedApplication->uuid,
+                                'reason' => 'Client has been rejected',
+                                'rejected_by' => $staff->random()->id,
+                            ]);
+    
+                            $updatedApplication->currentRecommendation()->update([
+                                'status' => 'rejected'
+                            ]);
+            
+                            dump('[INFO][' . $application->tracking_no . ']: Rejected.');
+                            break;
+                        } else {
+                            $this->createWorkflowHistory(
+                                $application->currentRecommendation(),
+                                $currentStage,
+                                null,
+                                $dateIn,
+                                $dateOut,
+                                'Client has been referred'
+                            );
+    
+                            $updatedApplication->currentRecommendation()->update([
+                                'status' => 'referred'
+                            ]);
+            
+                            dump('[INFO][' . $application->tracking_no . ']: Referred.');
+                            break;
+                        }
                     }
                 }
             }
