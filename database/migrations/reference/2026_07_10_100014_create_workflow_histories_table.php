@@ -25,7 +25,8 @@ return new class extends Migration
                 ->cascadeOnUpdate();
             $table->dateTime('date_in');
             $table->dateTime('date_out');
-            $table->text('reason');
+            $table->text('reason')
+                ->nullable();
             $table->foreignId('processed_by')
                 ->nullable()
                 ->constrained('users', 'id')

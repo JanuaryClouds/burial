@@ -10,8 +10,7 @@
 	}
 @endphp
 
-<div class="mb-3"
-	wire:ignore>
+<div class="mb-3">
 	@if ($label)
 		@if (app()->hasDebugModeEnabled())
 			<label for="{{ $id ?? $name }}"
@@ -29,16 +28,27 @@
 		@endif
 	@endif
 
-	<select {{ $attributes->merge(['class' => 'form-control']) }}
+	<div wire:ignore>
+		<select {{ $attributes->except('wire:model') }}
+			name="{{ $name }}_display"
+			id="{{ $id ?? $name }}_display"
+			class="form-control"
+			data-control="select2">
+			<option value="">Select one</option>
+			@foreach ($options as $key => $value)
+				<option value="{{ $key }}" {{ $selected == $key ? 'selected' : '' }}>{{ $value }}</option>
+			@endforeach
+		</select>
+	</div>
+	<input type="hidden"
 		name="{{ $name }}"
 		id="{{ $id ?? $name }}"
-		data-control="select2">
-		<option value="">Select one</option>
-		@foreach ($options as $key => $value)
-			<option value="{{ $key }}" {{ $selected == $key ? 'selected' : '' }}>{{ $value }}</option>
-		@endforeach
-	</select>
+		value="{{ $selected }}"
+		{{ $attributes->whereStartsWith('wire:model') }}>
 	@error($errorname)
 		<span class="text-danger">{{ $message }}</span>
 	@enderror
+	@if (app()->hasDebugModeEnabled())
+		<span id="debug-selected-{{ $id ?? $name }}" class="text-muted text-small"></span>
+	@endif
 </div>

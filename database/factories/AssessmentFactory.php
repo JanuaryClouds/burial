@@ -20,7 +20,6 @@ class AssessmentFactory extends Factory
         return [
             'swa' => $this->faker->sentences(2, true),
             'problem_presented' => $this->faker->sentences(2, true),
-            'created_at' => $this->faker->dateTimeBetween(now()->subWeek(), now())
         ];
     }
 }

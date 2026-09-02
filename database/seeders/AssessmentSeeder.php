@@ -10,10 +10,15 @@ use App\Models\Workflow;
 use App\Models\WorkflowHistory;
 use App\Models\WorkflowStage;
 use App\Models\WorkflowTransition;
+use App\Traits\HasWorkflowHistory;
+use App\Traits\HasWorkHours;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Carbon;
 
 class AssessmentSeeder extends Seeder
 {
+    use HasWorkHours, HasWorkflowHistory;
+
     /**
      * Run the database seeds.
      */
@@ -27,18 +32,7 @@ class AssessmentSeeder extends Seeder
             if (rand(0, 9) >= 2 && $client->application) {
                 $assessment = Assessment::factory()->create([
                     'application_uuid' => $client->application->uuid,
-                ]);
-
-                $previousStage = $client->application->workflowHistory()->latest()->first();
-                $nextStage = WorkflowTransition::where('from_stage_uuid', $previousStage->to_stage_uuid)->first();
-                WorkflowHistory::factory()->create([
-                    'from_stage_uuid' => $previousStage->to_stage_uuid,
-                    'to_stage_uuid' => $nextStage->to_stage_uuid,
-                    'application_uuid' => $client->application->uuid
-                ]);
-
-                $client->application->update([
-                    'current_workflow_stage_uuid' => $nextStage->to_stage_uuid,
+                    'created_at' => Carbon::parse($client->interviews()->latest()->first()->created_at)->addMinutes(rand(5, 60)),
                 ]);
 
                 Notification::factory()->create([

@@ -50,4 +50,15 @@
 			</a>
 		@endisset
 	</div>
+	<div class="row">
+		<div class="col-12 col-lg-4">
+			<x-card>
+				<x-slot:header>Interview Schedule</x-slot:header>
+				<livewire:interview.index :client="$client" />
+			</x-card>
+		</div>
+		<div class="col-12 col-lg-8">
+			<livewire:interview.create :client="$client" />
+		</div>
+	</div>
 @endsection

@@ -90,15 +90,3 @@
 		</x-slot:footer>
 	</form>
 </x-card>
-
-@script
-	<script>
-		const permissionSelect = $wire.$el.querySelector('#permission_id_{{ $stage->uuid }}');
-
-		if (permissionSelect) {
-			$(permissionSelect).on('change', function() {
-				$wire.set('permission_id', $(this).val(), false);
-			});
-		}
-	</script>
-@endscript

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Interview;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 
 class InterviewService
 {
@@ -36,7 +37,20 @@ class InterviewService
     {
         $data['client_uuid'] = $clientUuid;
 
-        return Interview::create($data);
+        $interview = Interview::create($data);
+
+        activity()
+            ->withProperties([
+                'client_uuid' => $clientUuid,
+                'interview_uuid' => $interview->uuid,
+                'schedule' => $interview->schedule,
+                'ip' => request()->ip(),
+                'browser' => request()->userAgent(),
+            ])
+            ->causedBy(Auth::user()->id)
+            ->log('Scheduled an interview with the client.');
+
+        return $interview;
     }
 
     public function done($id)

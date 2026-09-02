@@ -65,7 +65,7 @@ class Beneficiary extends Model
      */
     public function age(): int
     {
-        return Carbon::parse($this->created_at)->diffInYears($this->date_of_birth);
+        return Carbon::parse($this->date_of_birth)->diffInYears($this->date_of_death);
     }
 
     /**

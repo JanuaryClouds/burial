@@ -39,31 +39,31 @@ class PermissionSeeder extends Seeder
     public static function interviewPermissions(): array  
     {
         return [
-            'workflow.interview.viewAny',
-            'workflow.interview.view',
-            'workflow.interview.create',
-            'workflow.interview.update',
-            'workflow.interview.delete',
+            'interview.viewAny',
+            'interview.view',
+            'interview.create',
+            'interview.update',
+            'interview.delete',
         ];
     }
 
     public static function assessmentPermissions(): array {
         return [
-            'workflow.assessment.viewAny',
-            'workflow.assessment.view',
-            'workflow.assessment.create',
-            'workflow.assessment.update',
-            'workflow.assessment.delete',
+            'assessment.viewAny',
+            'assessment.view',
+            'assessment.create',
+            'assessment.update',
+            'assessment.delete',
         ];
     }
 
     public static function recommendationPermissions(): array {
         return [
-            'workflow.recommendation.viewAny',
-            'workflow.recommendation.view',
-            'workflow.recommendation.create',
-            'workflow.recommendation.update',
-            'workflow.recommendation.delete',
+            'recommendation.viewAny',
+            'recommendation.view',
+            'recommendation.create',
+            'recommendation.update',
+            'recommendation.delete',
         ];
     }
 

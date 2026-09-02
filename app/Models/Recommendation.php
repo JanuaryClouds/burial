@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Recommendation extends Model
 {
@@ -66,6 +68,15 @@ class Recommendation extends Model
         return $this->belongsTo(FuneralAssistanceType::class, 'funeral_assistance_type_uuid', 'uuid');
     }
 
+    /**
+     * Summary of workflowHistory
+     * @return HasMany<WorkflowHistory, Recommendation>
+     */
+    public function workflowHistory(): HasMany
+    {
+        return $this->hasMany(WorkflowHistory::class, 'recommendation_uuid', 'uuid');
+    }
+
     public static function relations(): array
     {
         return [
@@ -73,6 +84,7 @@ class Recommendation extends Model
             'modeOfAssistance',
             'recommendedBy',
             'funeralAssistanceType',
+            'workflowHistory',
         ];
     }
 }

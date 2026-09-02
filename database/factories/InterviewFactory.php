@@ -17,9 +17,6 @@ class InterviewFactory extends Factory
      */
     public function definition(): array
     {
-        return [
-            'schedule' => $this->faker->dateTimeBetween('-1 week', now()),
-            'created_at' => $this->faker->dateTimeBetween(now()->subWeek(), now())
-        ];
+        return [];
     }
 }

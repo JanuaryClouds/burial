@@ -33,6 +33,16 @@ return [
 
     'api_keys' => explode(',', env('API_KEYS', '')),
 
+    'cswdo' => [
+        'work_hours' => [
+            'start' => env('CSWDO_WORK_HOURS_START', 7),
+            'end' => env('CSWDO_WORK_HOURS_END', 16),
+        ],
+        'department_head' => env('CSWDO_DEPT_HEAD', ''),
+        'social_welfare_officer' => env('CSWDO_SOCIAL_WELFARE_OFFICER', ''),
+        'department_email' => env('CSWDO_DEPARTMENT_EMAIL', ''),
+    ],
+
     'disbursement' => [
         'enable' => [
             'get' => env('DISBURSEMENT_SYSTEM_ENABLE_GET', false),

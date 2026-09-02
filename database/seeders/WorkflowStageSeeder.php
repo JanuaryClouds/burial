@@ -36,21 +36,21 @@ class WorkflowStageSeeder extends Seeder
 
     public static function stages(): array {
         return [
-            [
-                'name' => 'Interview',
-                'description' => 'Initial interview with the client to gather information about the deceased and the circumstances surrounding the death.',
-                'permission' => array_values(RoleSeeder::queryPermission('name', 'interview.create')),
-            ],
-            [
-                'name' => 'Assessment',
-                'description' => 'Assessment of the client’s needs and eligibility for assistance.',
-                'permission' => array_values(RoleSeeder::queryPermission('name', 'assessment.create')),
-            ],
-            [
-                'name' => 'Recommendation',
-                'description' => 'Recommendation for assistance based on the assessment.',
-                'permission' => array_values(RoleSeeder::queryPermission('name', 'recommendation.create')),
-            ],
+            // [
+            //     'name' => 'Interview',
+            //     'description' => 'Initial interview with the client to gather information about the deceased and the circumstances surrounding the death.',
+            //     'permission' => array_values(RoleSeeder::queryPermission('name', 'interview.create')),
+            // ],
+            // [
+            //     'name' => 'Assessment',
+            //     'description' => 'Assessment of the client’s needs and eligibility for assistance.',
+            //     'permission' => array_values(RoleSeeder::queryPermission('name', 'assessment.create')),
+            // ],
+            // [
+            //     'name' => 'Recommendation',
+            //     'description' => 'Recommendation for assistance based on the assessment.',
+            //     'permission' => array_values(RoleSeeder::queryPermission('name', 'recommendation.create')),
+            // ],
             [
                 'name' => 'Forward to Admin Staff',
                 'description' => 'Reviewed and verification of the client\'s recommendation by an Admin.',

@@ -17,7 +17,7 @@ class ReferralSeeder extends Seeder
     {
         $applications = Application::whereHas('assessment')
             ->whereHas('recommendations', function ($query) {
-                $query->whereIn('status', ['rejected']);
+                $query->whereIn('status', ['referred']);
             })
             ->get();
 

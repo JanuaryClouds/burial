@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\HasRelationSets;
 use App\Traits\HasUuid;
 use Database\Factories\ApplicationFactory;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -85,20 +86,11 @@ class Application extends Model
 
     /**
      * Summary of workflow
-     * @return BelongsTo<Workflow, Application>
+     * @return BelongsTo<WorkflowStage, Application>
      */
     public function workflowStage(): BelongsTo
     {
         return $this->belongsTo(WorkflowStage::class, 'current_workflow_stage_uuid', 'uuid');
-    }
-
-    /**
-     * Summary of workflowHistory
-     * @return HasMany<WorkflowHistory, Application>
-     */
-    public function workflowHistory(): HasMany
-    {
-        return $this->hasMany(WorkflowHistory::class, 'application_uuid', 'uuid');
     }
 
     /**
@@ -118,6 +110,24 @@ class Application extends Model
     public function relationship(): BelongsTo
     {
         return $this->belongsTo(Relationship::class);
+    }
+
+    /**
+     * Summary of rejection
+     * @return HasOne<Rejection, Application>
+     */
+    public function rejection(): HasOne
+    {
+        return $this->hasOne(Rejection::class, 'application_uuid', 'uuid');
+    }
+
+    /**
+     * Summary of cancellation
+     * @return HasOne<Cancellation, Application>
+     */
+    public function cancellation(): HasOne
+    {
+        return $this->hasOne(Cancellation::class, 'application_uuid', 'uuid');
     }
 
     protected static function clientRelations(): array
@@ -161,6 +171,8 @@ class Application extends Model
                 'recommendation' => self::recommendationRelations(),
                 'assessment' => ['assessment'],
                 'referral' => ['referral'],
+                'rejection' => ['rejection'],
+                'cancellation' => ['cancellation'],
                 'workflow' => self::workflowRelations(),
                 'workflowHistory' => ['workflowHistory'],
                 'relationship' => ['relationship'],
@@ -182,71 +194,180 @@ class Application extends Model
 
     public function status(): array
     {
-        $status = [
-            'label' => 'Pending',
+        $status[] = [
+            'label' => 'pending',
             'badgeColor' => 'primary'
         ];
 
         $interviews = $this->client->interviews;
         $assessment = $this->assessment;
-        $recommendations = $this->recommendations;
         $referral = $this->referral;
         $workflowStage = $this->workflowStage;
 
-        if ($interviews && $interviews->count() > 0) {
-            $status = [
-                'label' => 'Interview',
-                'badgeColor' => 'info'
-            ];
-        }
-
         if ($assessment) {
-            $status = [
-                'label' => 'Assessment',
-                'badgeColor' => 'info'
+            $status[] = [
+                'label' => 'assessment',
+                'badgeColor' => 'secondary'
             ];
-        }
-
-        if ($recommendations->isNotEmpty()) {
-            $approved_recommendation = $recommendations->where('status', 'approved');
-
-            if ($approved_recommendation) {
-                $status = [
-                    'label' => 'Assessment',
-                    'badgeColor' => 'info',
-                ];
-            }
         }
 
         if ($workflowStage !== null) {
-            $status = [
-                'label' => 'Processing',
-                'badgeColor' => 'secondary',
+            $status[] = [
+                'label' => 'processing',
+                'badgeColor' => 'primary'
             ];
 
-            if ($workflowStage->name === 'Closing') {
-                $status = [
-                    'label' => 'Closing',
-                    'badgeColor' => 'warning',
+            if ($workflowStage->name === 'Releasing') {
+                // $status[] = [
+                //     'label' => 'processed',
+                //     'badgeColor' => 'secondary',
+                // ];
+
+                $status[] = [
+                    'label' => 'releasing',
+                    'badgeColor' => 'success',
                 ];
             }
 
-            if ($workflowStage->name === 'Releasing') {
-                $status = [
-                    'label' => 'Release',
+            if ($workflowStage->name === 'Closing') {
+                $status[] = [
+                    'label' => 'releasing',
                     'badgeColor' => 'success',
+                ];
+
+                $status[] = [
+                    'label' => 'closing',
+                    'badgeColor' => 'warning',
                 ];
             }
         }
 
         if ($referral) {
-            $status = [
-                'label' => 'Referred',
+            $status[] = [
+                'label' => 'referred',
                 'badgeColor' => 'success',
             ];
         }
 
+        if ($this->recommendations->count() > 0 && $this->currentRecommendation()->status == 'cancelled') {
+            $status[] = [
+                'label' => 'cancelled',
+                'badgeColor' => 'danger',
+            ];
+        }
+
         return $status;
+    }
+
+    /**
+     * Summary of currentRecommendation
+     * @return Recommendation|null
+     */
+    public function currentRecommendation(): ?Recommendation
+    {
+        return $this->recommendations()
+            ?->latest()
+            ->first();
+    }
+
+    /**
+     * Summary of currentWorkflow
+     * @return Workflow|null
+     */
+    public function currentWorkflow(): ?Workflow
+    {
+        return $this->currentRecommendation()?->funeralAssistanceType?->workflow;
+    }
+
+    /**
+     * Summary of currentWorkflowHistory
+     * @return Collection|null
+     */
+    public function currentWorkflowHistory(): ?Collection
+    {
+        return $this->currentRecommendation()?->workflowHistory;
+    }
+
+    /**
+     * Summary of currentStage
+     * @return WorkflowStage|null
+     */
+    public function currentStage(): ?WorkflowStage
+    {
+        return $this->workflowStage;
+    }
+
+    /**
+     * Summary of fromStage
+     * @return WorkflowStage|null
+     */
+    public function fromStage(): ?WorkflowStage
+    {
+        $workflow = $this->currentWorkflow();
+        
+        if (!$workflow) {
+            return null;
+        }
+
+        $position = $this->workflowStage?->position;
+
+        if ($position < 0) {
+            if ($this->currentWorkflowHistory()->count() > 0) {
+                $position = 1;
+            }
+        }
+
+        return $workflow->stages()
+            ->firstWhere('position', '=', $position);
+    }
+
+    /**
+     * Summary of toStage
+     * @return WorkflowStage|null
+     */
+    public function toStage(): ?WorkflowStage
+    {
+        $workflow = $this->currentWorkflow();
+
+        if (!$workflow) {
+            return null;
+        }
+
+        $position = $this->workflowStage?->position + 1;
+
+        if ($position == 0 || $position == null) $position = 1;
+
+        if ($position > $workflow->stages()->count()) {
+            return null;
+        }
+
+        return $workflow->stages()
+            ->firstWhere('position', '=', $position);
+    }
+
+    /**
+     * Summary of previousHistory
+     * @return WorkflowHistory|null
+     */
+    public function previousHistory(): ?WorkflowHistory
+    {
+        $workflowHistory = $this->currentWorkflowHistory();
+        $stage = $this->workflowStage;
+
+        if ($workflowHistory == null || $stage == null) {
+            return null;
+        }
+
+        return $workflowHistory->firstWhere('to_stage_uuid', '=', $stage->uuid);
+    }
+
+    /**
+     * Summary of nextHistory
+     * @return WorkflowHistory|null
+     */
+    public function nextHistory(): ?WorkflowHistory
+    {
+        return $this->currentWorkflowHistory()?->where('from_stage_uuid', '=', $this->workflowStage?->uuid)?->latest()->first();
     }
 
     /*
