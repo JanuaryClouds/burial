@@ -1,24 +1,23 @@
 @extends('layouts.app')
 @section('content')
+	{{-- Partial: Client Details --}}
 	<x-card>
-		<x-slot:header>Client Information</x-slot:header>
-		@include('client.partials.create.form', [
-			'client' => $client,
-			'readonly' => true,
-		])
-		@can('edit', $client)
+		@include('client.partials.show')
+		@can('update', $client)
 			<x-slot:footer>
 				<a name=""
 					id=""
 					class="btn btn-warning btn-sm"
 					href="{{ route('client.edit', $client) }}"
 					role="button">
-					<i class="fa-solid fa-arrow-up-right-from-square"></i>
+					<x-icon.font-awesome :icon="'arrow-up-right-from-square'" />
 					Edit Data
 				</a>
 			</x-slot:footer>
 		@endcan
 	</x-card>
+
+	{{-- Partial: Related Links --}}
 	<div class="d-flex align-items-baseline gap-2">
 		@isset($application)
 			<a name=""
@@ -50,6 +49,8 @@
 			</a>
 		@endisset
 	</div>
+
+	{{-- Partial: Interview Schedule and Form --}}
 	<div class="row">
 		<div class="col-12 col-lg-4">
 			<x-card>

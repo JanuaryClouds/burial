@@ -11,6 +11,10 @@ import updateDistrict from './districts.js';
 import initSelect2 from './select2.js';
 import randomizeMulticolorBorder from './multicolorBorder.js';
 import checkAndRenderCharts from './chart.js';
+import theme from './theme.js';
+import autoMarginColumns from './autoMarginColumns.js';
+
+theme();
 
 // Initialize select2s as soon as this module runs. Module scripts execute after
 // the DOM is parsed but BEFORE the DOMContentLoaded event, so this beats
@@ -22,6 +26,8 @@ initSelect2();
 document.addEventListener('DOMContentLoaded', () => {
     checkAndRenderCharts();
     randomizeMulticolorBorder();
+    theme();
+    autoMarginColumns();
     initSelect2();
     
     $('#barangay_id').on('change', function() {
@@ -33,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const uuid = $(this).val();
         Livewire.dispatch('client-selected', uuid);
     });
+
     $('#beneficiary_uuid_select').on('change', function(event) {
         const uuid = $(this).val();
         Livewire.dispatch('beneficiary-selected', uuid);
@@ -48,12 +55,14 @@ document.addEventListener('livewire:init', () => {
         requestAnimationFrame(() => {
             initSelect2(el);
             randomizeMulticolorBorder();
+            autoMarginColumns();
         });
     });
 
     Livewire.hook('morph.added', ({ el }) => {
         requestAnimationFrame(() => {
             initSelect2(el);
+            autoMarginColumns();
         });
     });
 
@@ -63,18 +72,21 @@ document.addEventListener('livewire:init', () => {
     Livewire.hook('morphed', ({ el }) => {
         requestAnimationFrame(() => {
             initSelect2(el);
+            autoMarginColumns();
         });
     });
 
     Livewire.hook('element.init', ({ el }) => {
         requestAnimationFrame(() => {
             initSelect2(el);
+            autoMarginColumns();
         });
     });
 });
 
 document.addEventListener('livewire:navigated', () => {
     initSelect2();
+    autoMarginColumns();
 });
 
 $(document).ajaxError(function(event, xhr) {

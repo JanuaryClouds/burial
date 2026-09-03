@@ -70,19 +70,19 @@
 		<a class="btn btn-sm btn-light"
 			href="{{ route('client.show', $client) }}"
 			role="button">
-			<i class="fa-solid fa-arrow-up-right-from-square"></i>
+			<x-icon.font-awesome :icon="'arrow-up-right-from-square'" />
 			View Client
 		</a>
 		<a class="btn btn-sm btn-light"
 			href="{{ route('beneficiary.show', $beneficiary) }}"
 			role="button">
-			<i class="fa-solid fa-arrow-up-right-from-square"></i>
+			<x-icon.font-awesome :icon="'arrow-up-right-from-square'" />
 			View Beneficiary
 		</a>
-		<x-modal modalId="tracker-slip-modal"
-			modalSize="md"
-			modalTitle="Application Tracker Slip"
-			buttonClass="btn-sm btn-primary">
+		<x-modal :modalId="'tracker-slip-modal'"
+			:modalSize="'md'"
+			:modalTitle="'Application Tracker Slip'"
+			:buttonClass="'btn-sm btn-primary'">
 			<x-slot:triggerButton>
 				<i class="fa-solid fa-qrcode"></i>
 				View Tracker Slip

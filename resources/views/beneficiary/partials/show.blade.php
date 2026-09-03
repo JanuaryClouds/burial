@@ -1,109 +1,28 @@
-@props([
-    'readonly' => true,
-    'beneficiary',
-])
-<div class="row">
-	<div class="col-12 col-md-8 col-lg-3">
-		<x-form-input name="ben_first_name"
-			label="1.1. Beneficiary's First Name"
-			required="true"
-			type="text"
-			value="{{ $beneficiary?->first_name ?? null }}"
-			:readonly="$readonly" />
-	</div>
-	<div class="col-12 col-md-8 col-lg-3">
-		<x-form-input name="ben_middle_name"
-			label="1.2. Beneficiary's Middle Name"
-			type="text"
-			value="{{ $beneficiary?->middle_name ?? null }}"
-			:readonly="$readonly" />
-	</div>
-	<div class="col-12 col-md-8 col-lg-3">
-		<x-form-input name="ben_last_name"
-			label="1.3. Beneficiary's Last Name"
-			required="true"
-			type="text"
-			value="{{ $beneficiary?->last_name ?? null }}"
-			:readonly="$readonly" />
-	</div>
-	<div class="col-12 col-md-8 col-lg-3">
-		<x-form-input name="ben_suffix"
-			label="1.4. Beneficiary's Suffix"
-			type="text"
-			value="{{ $beneficiary?->suffix ?? null }}"
-			:readonly="$readonly" />
+<div class="d-flex flex-column gap-4">
+	<div class="row">
+		<div class="col-12 col-md-8 col-xl-4">
+			<x-display-field label="Full Name"
+				contents="{{ $beneficiary->fullname() }}" />
+		</div>
+		<div class="col-12 col-md-4 col-xl-2">
+			<x-display-field label="Date of Birth"
+				contents="{{ Carbon\Carbon::parse($beneficiary->date_of_birth)->isoFormat('MMM DD, YYYY') }}" />
+		</div>
+		<div class="col-12 col-md-4 col-xl-2">
+			<x-display-field label="Date of Death"
+				contents="{{ Carbon\Carbon::parse($beneficiary->date_of_death)->isoFormat('MMM DD, YYYY') }}" />
+		</div>
+		<div class="col-12 col-md-4 col-xl-1">
+			<x-display-field label="Sex"
+				contents="{{ $beneficiary->sex->name }}" />
+		</div>
+		<div class="col-12 col-md-4 col-xl-3">
+			<x-display-field label="Religion"
+				contents="{{ $beneficiary->religion->name ?? 'N/A' }}" />
+		</div>
+		<div class="col-12 col-md-12 col-xl-6">
+			<x-display-field label="Address"
+				contents="{{ $beneficiary->address() }}" />
+		</div>
 	</div>
 </div>
-<div class="row">
-	<div class="col-12 col-md-4 col-lg-2">
-		<x-form-select name="ben_sex_id"
-			label="2. Sex"
-			required="true"
-			:options="$genders ?? []"
-			:selected="$beneficiary?->sex->id ?? ''"
-			:disabled="$readonly" />
-	</div>
-	<div class="col-12 col-md-6 col-lg-2">
-		<x-form-input name="ben_date_of_birth"
-			id="ben_date_of_birth"
-			label="3. Date of Birth"
-			required="true"
-			type="date"
-			value="{{ $beneficiary?->date_of_birth ?? null }}"
-			:readonly="$readonly" />
-	</div>
-	<div class="col-12 col-md-6 col-lg-2">
-		<x-form-input name="ben_date_of_death"
-			id="ben_date_of_death"
-			label="Date of Death"
-			required="true"
-			type="date"
-			value="{{ $beneficiary?->date_of_death ?? null }}"
-			:readonly="$readonly" />
-	</div>
-	<div class="col-12 col-md-4 col-lg-4">
-		<x-form-select name="ben_religion_id"
-			label="Religion"
-			required="true"
-			:options="$religions ?? []"
-			:selected="$beneficiary?->religion->id ?? ''"
-			:disabled="$readonly" />
-	</div>
-</div>
-<div class="row">
-	<div class="col-12 col-md-6 col-lg-4">
-		<x-form-input name="ben_place_of_birth"
-			label="4.1. Place of Birth"
-			required="true"
-			type="text"
-			value="{{ $beneficiary?->place_of_birth ?? null }}"
-			:readonly="$readonly" />
-	</div>
-	<div class="col-12 col-md-6 col-lg-4">
-		<x-form-select name="ben_barangay_id"
-			label="4.2. Barangay"
-			required="true"
-			:options="$barangays ?? []"
-			:selected="$beneficiary?->barangay->id ?? ''"
-			:disabled="$readonly" />
-	</div>
-</div>
-<script nonce={{ $nonce ?? '' }}>
-	$('#ben_date_of_birth').on('change', function() {
-		let value = $(this).val();
-		if (value) {
-			$('#ben_date_of_death').attr('min', value);
-		} else {
-			$('#ben_date_of_death').attr('min', '');
-		}
-	});
-
-	$('#ben_date_of_death').on('change', function() {
-		let value = $(this).val();
-		if (value) {
-			$('#ben_date_of_birth').attr('max', value);
-		} else {
-			$('#ben_date_of_birth').attr('max', '');
-		}
-	});
-</script>

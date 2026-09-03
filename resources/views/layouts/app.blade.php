@@ -3,12 +3,12 @@
 	data-bs-theme="system">
 
 <head>
-	@include('partials.document-head')
+	@include('partials.document.head')
 </head>
 
 <body id="kt_body"
 	class="header-fixed header-mobile-fixed aside-enabled aside-fixed aside-secondary-disabled overflow-x-hidden">
-	@include('partials.theme-script')
+	@include('partials.theme.script')
 	<x-loader />
 	<div class="d-flex flex-column flex-root min-vh-100">
 		<div class="page d-flex flex-row flex-column-fluid">
@@ -40,8 +40,8 @@
 			</div>
 		</div>
 	</div>
-	@include('components.alert')
-	@include('partials.document-scripts')
+	@include('components.notification.modal')
+	@include('partials.document.scripts')
 </body>
 
 </html>
