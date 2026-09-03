@@ -1,4 +1,4 @@
-@include('components.sidebar-link', [
+@include('components.sidebar.link', [
 	'route' => route('dashboard'),
 	'active_link' => 'dashboard',
 	'icon' => 'home-2',
@@ -6,7 +6,7 @@
 	'text' => 'Dashboard',
 ])
 @unlessrole('staff')
-	@include('components.sidebar-link', [
+	@include('components.sidebar.link', [
 		'route' => route('client.create'),
 		'icon' => 'add-files',
 		'icon_paths' => 3,

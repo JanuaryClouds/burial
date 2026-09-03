@@ -4,7 +4,7 @@
 <div class="row g-6 align-items-stretch">
 	@unless ($isStaff)
 		<div class="col col-md-6 col-lg-6 d-flex">
-			@include('components.card-link', [
+			@include('components.card.link', [
 				'title' => 'Apply as a Client',
 				'route' => route('application.create'),
 				'active' => !App\Models\SystemSetting::first()?->maintenance_mode,
@@ -15,7 +15,7 @@
 		</div>
 	@endunless
 	<div class="col col-md-6 col-lg-6 d-flex">
-		@include('components.card-link', [
+		@include('components.card.link', [
 			'title' => $isStaff ? 'All Clients' : 'Client History',
 			'route' => route('client.index'),
 			'active' => $isStaff ? true : auth()->user()->clients()->count() > 0 || app()->hasDebugModeEnabled(),
@@ -25,7 +25,7 @@
 		])
 	</div>
 	<div class="col col-md-6 col-lg-6 d-flex">
-		@include('components.card-link', [
+		@include('components.card.link', [
 			'title' => 'Referrals',
 			'route' => route('referral.index'),
 			'active' => \App\Models\Referral::count() > 0 || app()->hasDebugModeEnabled(),
@@ -35,7 +35,7 @@
 		])
 	</div>
 	<div class="col col-md-6 col-lg-6 d-flex">
-		@include('components.card-link', [
+		@include('components.card.link', [
 			'title' => 'Beneficiaries',
 			'route' => route('beneficiary.index'),
 			'active' => auth()->user()->clients()->count() > 0 || app()->hasDebugModeEnabled(),
@@ -45,7 +45,7 @@
 		])
 	</div>
 	<div class="col col-md-6 col-lg-6 d-flex">
-		@include('components.card-link', [
+		@include('components.card.link', [
 			'title' => 'Appointment Interviews',
 			'route' => route('interview.index'),
 			'active' => auth()->user()->clients()->whereHas('interviews')->exists() || app()->hasDebugModeEnabled(),
@@ -56,7 +56,7 @@
 		])
 	</div>
 	<div class="col col-md-6 col-lg-6 d-flex">
-		@include('components.card-link', [
+		@include('components.card.link', [
 			'title' => 'Applications',
 			'icon' => 'ki-duotone ki-file-up',
 			'route' => route('application.index'),

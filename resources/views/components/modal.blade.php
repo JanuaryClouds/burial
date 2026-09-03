@@ -1,5 +1,3 @@
-@props(['modalId', 'buttonClass' => '', 'modalTitle', 'modalSize' => 'sm'])
-
 <!-- Modal trigger button -->
 <button type="button"
 	class="btn {{ $buttonClass }}"

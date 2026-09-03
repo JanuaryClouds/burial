@@ -1,11 +1,7 @@
 @extends('layouts.app')
 @section('content')
 	<x-card>
-		<x-slot:header>Beneficiary Information</x-slot:header>
-		@include('beneficiary.partials.create.form', [
-			'beneficiary' => $beneficiary,
-			'readonly' => true,
-		])
+		@include('beneficiary.partials.show')
 		@can('update', $beneficiary)
 			<x-slot:footer>
 				<a name=""
@@ -23,7 +19,7 @@
 		<x-slot:header>Family Composition</x-slot:header>
 		@foreach ($family as $member)
 			@include('beneficiary.family.partials.show', [
-				'family' => $member,
+				'member' => $member,
 			])
 			<hr>
 		@endforeach

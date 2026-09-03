@@ -1,11 +1,9 @@
 <?php
 
 use App\Http\Controllers\Auth\UserController;
-use App\Http\Controllers\BurialAssistanceController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\EducationController;
-use App\Http\Controllers\FuneralAssistanceController;
 use App\Http\Controllers\HandlerController;
 use App\Http\Controllers\ModeOfAssistanceController;
 use App\Http\Controllers\NationalityController;
@@ -20,10 +18,6 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('role:superadmin')
     ->group(function () {
         Route::resource('client', ClientController::class)
-            ->only(['update']);
-        Route::resource('burial', BurialAssistanceController::class)
-            ->only(['update']);
-        Route::resource('funeral', FuneralAssistanceController::class)
             ->only(['update']);
         // Route::resource('workflowstep', WorkflowController::class)
         //     ->only(['index', 'edit', 'update']);

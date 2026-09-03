@@ -14,10 +14,7 @@ use App\Models\Referral;
 use App\Models\User;
 use App\Policies\AssessmentPolicy;
 use App\Policies\BeneficiaryPolicy;
-use App\Policies\BurialAssistancePolicy;
-use App\Policies\ClaimantChangePolicy;
 use App\Policies\ClientPolicy;
-use App\Policies\FuneralAssistancePolicy;
 use App\Policies\InterviewPolicy;
 use App\Policies\RecommendationPolicy;
 use App\Policies\ReferralPolicy;
@@ -43,9 +40,6 @@ class AuthServiceProvider extends ServiceProvider
         ClientAssessment::class => AssessmentPolicy::class,
         ClientRecommendation::class => RecommendationPolicy::class,
         Referral::class => ReferralPolicy::class,
-        BurialAssistance::class => BurialAssistancePolicy::class,
-        FuneralAssistance::class => FuneralAssistancePolicy::class,
-        ClaimantChange::class => ClaimantChangePolicy::class,
     ];
 
     /**
