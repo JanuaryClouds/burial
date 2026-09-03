@@ -59,6 +59,15 @@ class Beneficiary extends Model
     }
 
     /**
+     * Summary of address
+     * @return string
+     */
+    public function address(): string
+    {
+        return $this->house_no.' '.$this->street.', '.$this->barangay->name.', '.$this->district->name.', '.$this->city;
+    }
+
+    /**
      * Summary of age
      *
      * @return int returns the age of the beneficiary

@@ -36,12 +36,12 @@
 				data-kt-menu="true">
 				@include('partials.sidebar.common')
 				@include('partials.sidebar.records')
-				@can('view-reports')
+				{{-- @can('view-reports')
 					@include('partials.sidebar.reports')
 				@endcan
 				@role('superadmin')
 					@include('partials.sidebar.system')
-				@endrole
+				@endrole --}}
 			</div>
 		</div>
 	</div>

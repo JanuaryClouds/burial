@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Client;
 use App\Models\User;
-use App\Services\ProcessLogService;
 use Carbon\Carbon;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -12,14 +11,12 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 class ExportController extends Controller
 {
     public function __construct(
-        protected ProcessLogService $processLogService
     ) {}
 
     public function applications()
     {
         $templatePath = storage_path('app/templates/burial-assistances-template.xlsx');
         $spreadsheet = IOFactory::load($templatePath);
-        $processLogService = $this->processLogService;
 
         $sheet = $spreadsheet->getActiveSheet();
         $row = 4;
@@ -91,31 +88,31 @@ class ExportController extends Controller
             $sheet->setCellValue("T{$row}", $burialAssistance?->amount);
             $sheet->setCellValue("U{$row}", $beneficiary?->date_of_death);
             $sheet->setCellValue("V{$row}", $firstClaimant?->contact_number ?? '');
-            $sheet->setCellValue("W{$row}", $processLogService->getLog($firstClaimant, 1)?->date_out);
-            $sheet->setCellValue("X{$row}", $processLogService->getLog($firstClaimant, 1)?->date_in);
-            $sheet->setCellValue("Y{$row}", $processLogService->getLog($firstClaimant, 1)?->extra_data['comments/recommendation'] ?? '');
-            $sheet->setCellValue("Z{$row}", $processLogService->getLog($firstClaimant, 2)?->date_in);
-            $sheet->setCellValue("AA{$row}", $processLogService->getLog($firstClaimant, 3)?->extra_data['compiled_documents'] ?? '');
-            $sheet->setCellValue("AB{$row}", $processLogService->getLog($firstClaimant, 3)?->date_out ?? '');
-            $sheet->setCellValue("AC{$row}", $processLogService->getLog($firstClaimant, 3)?->date_in ?? '');
-            $sheet->setCellValue("AD{$row}", $processLogService->getLog($firstClaimant, 4)?->date_out ?? '');
-            $sheet->setCellValue("AE{$row}", $processLogService->getLog($firstClaimant, 4)?->date_in ?? '');
-            $sheet->setCellValue("AF{$row}", $processLogService->getLog($firstClaimant, 4)?->extra_data['inputs_and_recommendations'] ?? '');
-            $sheet->setCellValue("AG{$row}", $processLogService->getLog($firstClaimant, 5)?->date_out ?? '');
-            $sheet->setCellValue("AH{$row}", $processLogService->getLog($firstClaimant, 5)?->date_in ?? '');
-            $sheet->setCellValue("AI{$row}", $processLogService->getLog($firstClaimant, 6)?->date_out ?? '');
-            $sheet->setCellValue("AJ{$row}", $processLogService->getLog($firstClaimant, 6)?->date_in ?? '');
-            $sheet->setCellValue("AK{$row}", $processLogService->getLog($firstClaimant, 7)?->date_out ?? '');
-            $sheet->setCellValue("AL{$row}", $processLogService->getLog($firstClaimant, 7)?->date_in ?? '');
-            $sheet->setCellValue("AM{$row}", $processLogService->getLog($firstClaimant, 8)?->date_in ?? '');
-            $sheet->setCellValue("AN{$row}", $processLogService->getLog($firstClaimant, 9)?->date_in ?? '');
-            $sheet->setCellValue("AO{$row}", $processLogService->getLog($firstClaimant, 9)?->extra_data['OBR']['oBR_number'] ?? '');
-            $sheet->setCellValue("AP{$row}", $processLogService->getLog($firstClaimant, 9)?->extra_data['OBR']['date'] ?? '');
-            $sheet->setCellValue("AQ{$row}", $processLogService->getLog($firstClaimant, 10)?->date_in ?? '');
-            $sheet->setCellValue("AR{$row}", $processLogService->getLog($firstClaimant, 11)?->date_in ?? '');
-            $sheet->setCellValue("AS{$row}", $processLogService->getLog($firstClaimant, 11)?->extra_data['cheque_number'] ?? ''); // does not work
-            $sheet->setCellValue("AT{$row}", $processLogService->getLog($firstClaimant, 12)?->extra_data['date_issued'] ?? '');
-            $sheet->setCellValue("AU{$row}", $processLogService->getLog($firstClaimant, 13)?->date_in ?? '');
+            // $sheet->setCellValue("W{$row}", $processLogService->getLog($firstClaimant, 1)?->date_out);
+            // $sheet->setCellValue("X{$row}", $processLogService->getLog($firstClaimant, 1)?->date_in);
+            // $sheet->setCellValue("Y{$row}", $processLogService->getLog($firstClaimant, 1)?->extra_data['comments/recommendation'] ?? '');
+            // $sheet->setCellValue("Z{$row}", $processLogService->getLog($firstClaimant, 2)?->date_in);
+            // $sheet->setCellValue("AA{$row}", $processLogService->getLog($firstClaimant, 3)?->extra_data['compiled_documents'] ?? '');
+            // $sheet->setCellValue("AB{$row}", $processLogService->getLog($firstClaimant, 3)?->date_out ?? '');
+            // $sheet->setCellValue("AC{$row}", $processLogService->getLog($firstClaimant, 3)?->date_in ?? '');
+            // $sheet->setCellValue("AD{$row}", $processLogService->getLog($firstClaimant, 4)?->date_out ?? '');
+            // $sheet->setCellValue("AE{$row}", $processLogService->getLog($firstClaimant, 4)?->date_in ?? '');
+            // $sheet->setCellValue("AF{$row}", $processLogService->getLog($firstClaimant, 4)?->extra_data['inputs_and_recommendations'] ?? '');
+            // $sheet->setCellValue("AG{$row}", $processLogService->getLog($firstClaimant, 5)?->date_out ?? '');
+            // $sheet->setCellValue("AH{$row}", $processLogService->getLog($firstClaimant, 5)?->date_in ?? '');
+            // $sheet->setCellValue("AI{$row}", $processLogService->getLog($firstClaimant, 6)?->date_out ?? '');
+            // $sheet->setCellValue("AJ{$row}", $processLogService->getLog($firstClaimant, 6)?->date_in ?? '');
+            // $sheet->setCellValue("AK{$row}", $processLogService->getLog($firstClaimant, 7)?->date_out ?? '');
+            // $sheet->setCellValue("AL{$row}", $processLogService->getLog($firstClaimant, 7)?->date_in ?? '');
+            // $sheet->setCellValue("AM{$row}", $processLogService->getLog($firstClaimant, 8)?->date_in ?? '');
+            // $sheet->setCellValue("AN{$row}", $processLogService->getLog($firstClaimant, 9)?->date_in ?? '');
+            // $sheet->setCellValue("AO{$row}", $processLogService->getLog($firstClaimant, 9)?->extra_data['OBR']['oBR_number'] ?? '');
+            // $sheet->setCellValue("AP{$row}", $processLogService->getLog($firstClaimant, 9)?->extra_data['OBR']['date'] ?? '');
+            // $sheet->setCellValue("AQ{$row}", $processLogService->getLog($firstClaimant, 10)?->date_in ?? '');
+            // $sheet->setCellValue("AR{$row}", $processLogService->getLog($firstClaimant, 11)?->date_in ?? '');
+            // $sheet->setCellValue("AS{$row}", $processLogService->getLog($firstClaimant, 11)?->extra_data['cheque_number'] ?? ''); // does not work
+            // $sheet->setCellValue("AT{$row}", $processLogService->getLog($firstClaimant, 12)?->extra_data['date_issued'] ?? '');
+            // $sheet->setCellValue("AU{$row}", $processLogService->getLog($firstClaimant, 13)?->date_in ?? '');
             // Change of Claimants start here if it exists
             if ($approvedChange && $newClaimant) {
                 $sheet->setCellValue("AV{$row}", $newClaimant->last_name);
@@ -123,20 +120,20 @@ class ExportController extends Controller
                 $sheet->setCellValue("AX{$row}", $newClaimant->middle_name);
                 $sheet->setCellValue("AY{$row}", $newClaimant->suffix);
                 $sheet->setCellValue("AZ{$row}", $approvedChange->reason_for_change);
-                $sheet->setCellValue("BA{$row}", $processLogService->getLog($newClaimant, 4)?->date_out ?? '');
-                $sheet->setCellValue("BB{$row}", $processLogService->getLog($newClaimant, 4)?->date_in ?? '');
-                $sheet->setCellValue("BC{$row}", $processLogService->getLog($newClaimant, 4)?->extra_data['inputs_and_recommendations'] ?? '');
-                $sheet->setCellValue("BD{$row}", $processLogService->getLog($newClaimant, 5)?->date_out ?? '');
-                $sheet->setCellValue("BE{$row}", $processLogService->getLog($newClaimant, 5)?->date_in ?? '');
-                $sheet->setCellValue("BF{$row}", $processLogService->getLog($newClaimant, 6)?->date_out ?? '');
-                $sheet->setCellValue("BG{$row}", $processLogService->getLog($newClaimant, 6)?->date_in ?? '');
-                $sheet->setCellValue("BH{$row}", $processLogService->getLog($newClaimant, 7)?->date_out ?? '');
-                $sheet->setCellValue("BI{$row}", $processLogService->getLog($newClaimant, 7)?->date_in ?? '');
-                $sheet->setCellValue("BJ{$row}",
-                    ($processLogService->getLog($newClaimant, 9)?->date_in ?? '').' / '.
-                        ($processLogService->getLog($newClaimant, 8)?->date_in ?? '').' / '.
-                        ($processLogService->getLog($newClaimant, 10)?->date_in ?? '')
-                );
+                // $sheet->setCellValue("BA{$row}", $processLogService->getLog($newClaimant, 4)?->date_out ?? '');
+                // $sheet->setCellValue("BB{$row}", $processLogService->getLog($newClaimant, 4)?->date_in ?? '');
+                // $sheet->setCellValue("BC{$row}", $processLogService->getLog($newClaimant, 4)?->extra_data['inputs_and_recommendations'] ?? '');
+                // $sheet->setCellValue("BD{$row}", $processLogService->getLog($newClaimant, 5)?->date_out ?? '');
+                // $sheet->setCellValue("BE{$row}", $processLogService->getLog($newClaimant, 5)?->date_in ?? '');
+                // $sheet->setCellValue("BF{$row}", $processLogService->getLog($newClaimant, 6)?->date_out ?? '');
+                // $sheet->setCellValue("BG{$row}", $processLogService->getLog($newClaimant, 6)?->date_in ?? '');
+                // $sheet->setCellValue("BH{$row}", $processLogService->getLog($newClaimant, 7)?->date_out ?? '');
+                // $sheet->setCellValue("BI{$row}", $processLogService->getLog($newClaimant, 7)?->date_in ?? '');
+                // $sheet->setCellValue("BJ{$row}",
+                //     ($processLogService->getLog($newClaimant, 9)?->date_in ?? '').' / '.
+                //         ($processLogService->getLog($newClaimant, 8)?->date_in ?? '').' / '.
+                //         ($processLogService->getLog($newClaimant, 10)?->date_in ?? '')
+                // );
             }
             $sheet->setCellValue("BK{$row}", $status);
             $sheet->setCellValue("BL{$row}", $burialAssistance?->remarks ?? '');

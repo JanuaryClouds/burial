@@ -95,14 +95,12 @@
 	$('.theme-toggle').on('click', function(e) {
 		e.preventDefault();
 		var mode = $(this).data('kt-value');
-		// localStorage.setItem('data-bs-theme', mode);
+		localStorage.setItem('data-bs-theme', mode);
 		if (mode === 'system') {
-			var systemMode = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-			// document.documentElement.setAttribute('data-bs-theme', $systemMode);
-			KTThemeMode.setMode(systemMode);
+			var $systemMode = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+			document.documentElement.setAttribute('data-bs-theme', $systemMode);
 		} else {
-			KTThemeMode.setMode(mode);
-			// document.documentElement.setAttribute('data-bs-theme', mode);
+			document.documentElement.setAttribute('data-bs-theme', mode);
 		}
 	});
 </script>
