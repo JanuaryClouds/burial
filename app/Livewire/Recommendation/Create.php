@@ -6,6 +6,7 @@ use App\Models\Application;
 use App\Models\FuneralAssistanceType;
 use App\Models\ModeOfAssistance;
 use App\Models\Recommendation;
+use App\Models\WorkflowHistory;
 use App\Models\WorkflowStage;
 use App\Services\WorkflowHistoryService;
 use Illuminate\Support\Facades\Auth;
@@ -69,14 +70,7 @@ class Create extends Component
             'mode_of_assistance_id' => $this->modeOfAssistanceId,
             'recommended_by' => Auth::user()->id,
         ]);
-
-        $recommendationStage = WorkflowStage::firstWhere('name', '=', 'Recommendation');
-        $nextStage = WorkflowStage::firstWhere('position', '=', $recommendationStage->position + 1);
-
-        if (!$nextStage) {
-            $nextStage = $recommendationStage;
-        }
-
+        
         activity()
             ->withProperties([
                 'recommendation' => $recommendation->uuid,
@@ -87,15 +81,7 @@ class Create extends Component
             ->causedBy(Auth::user()->id)
             ->log('Created a recommendation');
 
-        $this->workflowHistoryServices->store([
-            'application_uuid' => $this->application->uuid,
-            'from_stage_uuid' => $recommendationStage->uuid,
-            'to_stage_uuid' => $nextStage->uuid,
-            'date_in' => now(),
-            'date_out' => now(),
-            'reason' => 'pending',
-            'processed_by' => Auth::user()->id,
-        ]);
+        $this->dispatch('refreshWorkflowHistory');
     }
 
     public function render()
