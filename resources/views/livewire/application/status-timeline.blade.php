@@ -14,7 +14,11 @@
 		    if (collect($status)->pluck('label')->contains($currentLabel)) {
 		        $statusIndicators[$i][$currentLabel] = 'current';
 
-		        if ($application->referral || $application->currentRecommendation()->status == 'cancelled') {
+		        if (
+		            $application->referral ||
+		            ($application->recommendations->count() > 0 &&
+		                $application->currentRecommendation()->status == 'cancelled')
+		        ) {
 		            $statusIndicators[$i][$currentLabel] = 'completed';
 		        }
 

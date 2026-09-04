@@ -4,6 +4,7 @@ namespace App\Livewire\Application;
 
 use App\Models\Application;
 use App\Services\ApplicationService;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class StatusTimeline extends Component
@@ -25,6 +26,7 @@ class StatusTimeline extends Component
         $this->status = $application->status();
     }
 
+    #[On('refreshWorkflowHistory')]
     public function refresh()
     {
         $this->status = $this->application->status();

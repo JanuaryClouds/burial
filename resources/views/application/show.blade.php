@@ -44,15 +44,16 @@
 			@endif
 		</div>
 		<div class="row">
-			<div class="col-12 col-lg-8 mb-6 mb-lg-0"
+			<div class="col-12 col-xl-7"
 				id="workflow-history">
 				<x-card>
 					<x-slot:header>Process Timeline</x-slot:header>
 					<livewire:application.timeline :application="$application" />
 				</x-card>
 			</div>
-			<div class="col-12 col-lg-4">
-				{{-- Livewire:Workflow-History/Create --}}
+			<div class="col-12 col-xl-5"
+				id="workflow-history-create-form">
+				<livewire:workflow.history.create :application="$application" />
 			</div>
 		</div>
 	@endrole
