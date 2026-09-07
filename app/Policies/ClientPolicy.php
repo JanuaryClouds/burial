@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\Client;
 use App\Models\User;
+use App\Traits\HasSuperadminByPass;
 
 class ClientPolicy
 {
@@ -44,24 +45,11 @@ class ClientPolicy
      */
     public function create(User $user): bool
     {
-        if ($user->cannot('create-clients')) {
-            return false;
-        }
-
-        if ($user->roles()->count() > 0) {
+        if ($user->roles()->count() == 0) {
             return true;
         }
 
         return false;
-    }
-
-    public function interview(User $user, Client $client): bool
-    {
-        if ($user->id === $client->user_id) {
-            return false;
-        }
-
-        return $user->can('create-interview-schedules');
     }
 
     /**

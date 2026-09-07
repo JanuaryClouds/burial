@@ -5,6 +5,7 @@ namespace App\Policies;
 use App\Models\Application;
 use App\Models\User;
 use App\Models\WorkflowStage;
+use App\Traits\HasSuperadminByPass;
 
 class RecommendationPolicy
 {
@@ -14,12 +15,14 @@ class RecommendationPolicy
             return false;
         }
 
-        $recommendationStageUuid = WorkflowStage::firstWhere('name', 'recommendation')->uuid;
-
-        if ($application->current_workflow_stage_uuid !== $recommendationStageUuid) {
+        if (! $application->assessment) {
             return false;
         }
 
-        return $user->can('create-recommendations');
+        if ($user->hasRole('superadmin')) {
+            return true;
+        }
+
+        return $user->can('recommendation.create');
     }
 }
