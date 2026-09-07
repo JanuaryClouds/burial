@@ -12,9 +12,9 @@
 		<x-slot:footer>
 			<x-button wire:click='save'
 				class="btn-sm btn-success">
-				<i class="fa-solid fa-floppy-disk"></i>
+				<x-icon.font-awesome class="fa-floppy-disk" />
 				<span wire:loading.remove>Save</span>
-				<span wire:loading>Saving</span>
+				<span wire:loading>Saving...</span>
 			</x-button>
 		</x-slot:footer>
 	</x-card>

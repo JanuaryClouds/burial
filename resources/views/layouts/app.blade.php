@@ -40,7 +40,6 @@
 			</div>
 		</div>
 	</div>
-	@include('components.notification.modal')
 	@include('partials.document.scripts')
 </body>
 

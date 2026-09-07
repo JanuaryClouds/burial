@@ -1,1 +1,1 @@
-<i class="fa-solid fa-{{ $icon }}"></i>
+<i {{ $attributes->merge(['class' => 'fa-solid']) }}></i>
