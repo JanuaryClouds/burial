@@ -32,6 +32,11 @@ class StatusTimeline extends Component
         $this->status = $this->application->status();
     }
 
+    public function placeholder()
+    {
+        return view('card.loading');
+    }
+
     public function render()
     {
         return view('livewire.application.status-timeline');

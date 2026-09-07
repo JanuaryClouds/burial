@@ -44,7 +44,7 @@ class Create extends Component
         $this->stages = $this->loadStages($application);
 
         if ($this->stages) {
-            $this->showForm = Auth::user()->can($this->application->toStage()->permission->name);
+            $this->showForm = Auth::user()->can($this->application->toStage()->permission->name) || Auth::user()->hasRole('superadmin');
         }
     }
     
@@ -56,7 +56,7 @@ class Create extends Component
         $this->stages = $this->loadStages($this->application);
 
         if ($this->stages) {
-            $this->showForm = Auth::user()->can($this->application->toStage()->permission->name);
+            $this->showForm = Auth::user()->can($this->application->toStage()->permission->name) || Auth::user()->hasRole('superadmin');
         }
     }
 
@@ -94,6 +94,17 @@ class Create extends Component
     {
         $this->validate();
 
+        if (Auth::user()->can($this->application->toStage()->permission->name) || !Auth::user()->hasRole('superadmin'))
+        {
+            $this->dispatch('refreshWorkflowHistory');
+            $this->dispatch('notification:alert', [
+                'type' => 'warning',
+                'title' => 'Unauthorized',
+                'text' => 'You are not authorized to log this stage',
+            ]);
+            return;
+        }
+
         WorkflowHistory::create([
             'recommendation_uuid' => $this->application->currentRecommendation()->uuid,
             'from_stage_uuid' => $this->application->previousHistory() ? $this->application->previousHistory()->to_stage_uuid : null,
@@ -107,14 +118,16 @@ class Create extends Component
         $this->application->current_workflow_stage_uuid = $this->toStageUuid;
         $this->application->save();
 
-        $this->dispatch(
-            'alert-modal',
-            'Success',
-            'History created successfully',
-            'success'
-        );
-        
+        $this->dispatch('notification:alert', [
+            'type' => 'success',
+            'title' => 'History created successfully',
+        ]);
         $this->dispatch('refreshWorkflowHistory');
+    }
+
+    public function placeholder()
+    {
+        return view('components.card.loading');
     }
 
     public function render()

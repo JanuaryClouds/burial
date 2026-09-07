@@ -14,6 +14,11 @@ class Show extends Component
         $this->recommendation = $recommendation;
     }
 
+    public function placeholder()
+    {
+        return view('components.card.loading');
+    }
+
     public function render()
     {
         return view('livewire.recommendation.show');

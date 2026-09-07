@@ -14,6 +14,11 @@ class Show extends Component
         $this->assessment = $assessment;
     }
 
+    public function placeholder()
+    {
+        return view('components.card.loading');
+    }
+
     public function render()
     {
         return view('livewire.assessment.show');

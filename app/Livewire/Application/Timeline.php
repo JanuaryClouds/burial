@@ -26,6 +26,11 @@ class Timeline extends Component
         $this->recommendations = $this->application->recommendations()->with('workflowHistory')->oldest()->get();
     }
 
+    public function placeholder()
+    {
+        return view('components.card.loading');
+    }
+
     public function render()
     {
         return view('livewire.application.timeline');

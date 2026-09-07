@@ -36,6 +36,11 @@ class Summary extends Component
         $this->barcode = $this->services->getBarcodeUri($application->qr_code);
     }
 
+    public function placeholder()
+    {
+        return view('components.card.loading');
+    }
+
     public function render()
     {
         return view('livewire.application.summary');
