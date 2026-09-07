@@ -200,11 +200,10 @@ class Application extends Model
         ];
 
         $interviews = $this->client->interviews;
-        $assessment = $this->assessment;
         $referral = $this->referral;
         $workflowStage = $this->workflowStage;
 
-        if ($assessment) {
+        if ($interviews->count() > 0) {
             $status[] = [
                 'label' => 'assessment',
                 'badgeColor' => 'secondary'
@@ -257,6 +256,15 @@ class Application extends Model
         }
 
         return $status;
+    }
+
+    /**
+     * Summary of finishedInterview
+     * @return bool
+     */
+    public function finishedInterview(): bool
+    {
+        return $this->client->interviews()->where('status', '=', 'done')->exists();
     }
 
     /**
