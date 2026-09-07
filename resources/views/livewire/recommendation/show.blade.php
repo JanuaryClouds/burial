@@ -1,5 +1,4 @@
-<div class="d-flex flex-column gap-2 border-2 border-dashed border-gray-300 px-4 py-3 rounded">
-	<h4>Recommendation</h4>
+<div class="d-flex flex-column gap-2">
 	<span>
 		<strong>Type of Funeral Assistance:</strong> {{ $recommendation->funeralAssistanceType->name }}
 	</span>
