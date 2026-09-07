@@ -17,15 +17,12 @@ class Create extends Component
 
     private InterviewService $services;
 
-    private WorkflowHistoryService $workflowHistoryServices;
-
     #[Validate('required|date')]
     public string $schedule;
 
-    public function boot(InterviewService $interviewService, WorkflowHistoryService $workflowHistoryService)
+    public function boot(InterviewService $interviewService)
     {
         $this->services = $interviewService;
-        $this->workflowHistoryServices = $workflowHistoryService;
     }
 
     public function mount(Client $client)
@@ -45,27 +42,6 @@ class Create extends Component
             ['schedule' => $this->schedule],
             $this->client->uuid
         );
-
-        $interviewStage = WorkflowStage::firstWhere('name', 'Interview');
-        $nextStage = WorkflowStage::firstWhere('position', $interviewStage->position + 1);
-
-        if (!$nextStage) {
-            return;
-        }
-
-        if ($this->client->application->workflowHistory->firstWhere('from_stage_uuid', '=', $interviewStage->uuid)) {
-            return;
-        }
-
-        $this->workflowHistoryServices->store([
-            'application_uuid' => $this->client->application->uuid,
-            'from_stage_uuid' => $interviewStage->uuid,
-            'to_stage_uuid' => $nextStage->uuid,
-            'date_in' => now(),
-            'date_out' => now(),
-            'reason' => 'Interview scheduled.',
-            'processed_by' => Auth::user()->id,
-        ]);
 
         $this->reset('schedule');
         $this->dispatch('interviewCreated');
