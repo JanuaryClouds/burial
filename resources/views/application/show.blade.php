@@ -26,6 +26,18 @@
 					@else
 						<x-card.unauthorized>
 							<x-slot:header>Assessment</x-slot:header>
+							<x-icon.font-awesome class="fa-lock fs-4" />
+							@if (!$application->finishedInterview())
+								<p class="fs-4">Interview the client before making an assessment</p>
+								<a class="btn btn-sm btn-light"
+									href="{{ route('client.show', $client) }}"
+									role="button">
+									<x-icon.font-awesome class="fa-arrow-up-right-from-square" />
+									View Client
+								</a>
+							@else
+								<p class="fs-4">You do not have permission to assess the client</p>
+							@endif
 						</x-card.unauthorized>
 					@endcan
 				</div>
@@ -38,24 +50,46 @@
 					@else
 						<x-card.unauthorized>
 							<x-slot:header>Recommendation</x-slot:header>
+							<x-icon.font-awesome class="fa-lock fs-4" />
+							@if (!$application->assessment)
+								<p class="fs-4">Write an assessment first before making a recommendation</p>
+							@else
+								<p class="fs-4">You do not have permission to create a recommendation</p>
+							@endif
 						</x-card.unauthorized>
 					@endcan
 				</div>
 			@endif
 		</div>
-		<div class="row">
-			<div class="col-12 col-xl-7"
-				id="workflow-history">
-				<x-card>
-					<x-slot:header>Process Timeline</x-slot:header>
-					<livewire:application.timeline :application="$application" />
-				</x-card>
+		@if ($application->recommendations->count() > 0)
+			<div class="row">
+				<div class="col-12 col-xl-7"
+					id="workflow-history">
+					<x-card>
+						<x-slot:header>Process Timeline</x-slot:header>
+						<livewire:application.timeline :application="$application" />
+					</x-card>
+				</div>
+				<div class="col-12 col-xl-5"
+					id="workflow-history-create-form">
+					@can('create', [\App\Models\WorkflowHistory::class, $application])
+						<livewire:workflow.history.create :application="$application" />
+					@else
+						<x-card.unauthorized>
+							<x-icon.font-awesome class="fa-lock fs-4" />
+							<p class="fs-5 fw-semibold">
+								@if ($application->referral)
+									Application has been referred
+								@endif
+								@if ($application->cancellation)
+									Application has been cancelled
+								@endif
+							</p>
+						</x-card.unauthorized>
+					@endcan
+				</div>
 			</div>
-			<div class="col-12 col-xl-5"
-				id="workflow-history-create-form">
-				<livewire:workflow.history.create :application="$application" />
-			</div>
-		</div>
+		@endif
 	@endrole
 	<div id="documents">
 		<x-card>
