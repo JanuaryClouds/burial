@@ -41,7 +41,7 @@
 		<div class="stepper-nav flex-wrap flex-lg-nowrap d-flex justify-content-around align-items-center">
 			@foreach ($statusIndicators as $label => $indicator)
 				<div
-					class="stepper-item w-100 w-lg-auto mb-4 mb-lg-0 {{ $indicator === 'completed' ? 'completed' : ($indicator === 'current' ? 'current' : '') }}">
+					class="stepper-item w-100 w-lg-auto {{ $indicator === 'completed' ? 'completed' : ($indicator === 'current' ? 'current' : '') }}">
 					<div class="stepper-wrapper d-flex align-items-center">
 						<div class="stepper-icon w-60px h-60px">
 							@if ($indicator === 'completed')
@@ -70,7 +70,7 @@
 		@if ($application->cancellation)
 			<div class="stepper stepper-pills">
 				<div class="stepper-nav flex-wrap flex-lg-nowrap d-flex justify-content-around align-items-center">
-					<div class="stepper-item w-100 w-lg-auto mb-4 mb-lg-0 completed">
+					<div class="stepper-item w-100 w-lg-auto completed">
 						<div class="stepper-wrapper d-flex align-items-center">
 							<div class="stepper-icon w-60px h-60px">
 								<i class="stepper-check fas fa-check text-success fs-2"></i>
@@ -91,7 +91,7 @@
 		@if ($application->referral)
 			<div class="stepper stepper-pills">
 				<div class="stepper-nav flex-wrap flex-lg-nowrap d-flex justify-content-around align-items-center">
-					<div class="stepper-item w-100 w-lg-auto mb-4 mb-lg-0 completed">
+					<div class="stepper-item w-100 w-lg-auto completed">
 						<div class="stepper-wrapper d-flex align-items-center">
 							<div class="stepper-icon w-60px h-60px">
 								<i class="stepper-check fas fa-check text-success fs-2"></i>
