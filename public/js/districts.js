@@ -42,10 +42,10 @@ export default function updateDistrict(barangay) {
             'South signal village',
             'West rembo',
         ].includes(barangay)) {
-        $('#district_id').val(2);
-        $('#district_id_display').val(2);
+        $('#districtId').val(2);
+        $('#districtId_display').val(2);
     } else {
-        $('#district_id').val("");
-        $('#district_id_display').val("");
+        $('#districtId').val("");
+        $('#districtId_display').val("");
     }
 }

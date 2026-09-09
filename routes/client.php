@@ -1,31 +1,29 @@
 <?php
 
 use App\Http\Controllers\ClientController;
+use App\Livewire\Client\Create;
 use Illuminate\Support\Facades\Route;
 
 Route::name('client.')
-    ->prefix('clients')
-    ->controller(ClientController::class)
+    ->prefix('client')
     ->group(function () {
-        Route::get('/', 'index')
+        Route::get('/', [ClientController::class, 'index'])
             ->name('index');
 
-        Route::get('/create', 'create')
+        Route::get('/create', Create::class)
+            ->middleware('can:create,App\Models\Client')
             ->name('create');
-
-        Route::post('/store', 'store')
-            ->name('store');
 
         Route::prefix('/{client}')
             ->group(function () {
-                Route::get('', 'show')
+                Route::get('', [ClientController::class, 'show'])
                     ->name('show');
 
-                Route::get('/edit', 'edit')
+                Route::get('/edit', [ClientController::class, 'edit'])
                     ->middleware('can:update,client')
                     ->name('edit');
 
-                Route::post('/update', 'update')
+                Route::post('/update', [ClientController::class, 'update'])
                     ->middleware('can:update,client')
                     ->name('update');
             });
