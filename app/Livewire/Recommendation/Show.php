@@ -3,6 +3,7 @@
 namespace App\Livewire\Recommendation;
 
 use App\Models\Recommendation;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class Show extends Component
@@ -12,6 +13,12 @@ class Show extends Component
     public function mount(Recommendation $recommendation)
     {
         $this->recommendation = $recommendation;
+    }
+
+    #[On('refreshRecommendation')]
+    public function refresh()
+    {
+        $this->recommendation = $this->recommendation->application->currentRecommendation();
     }
 
     public function placeholder()
