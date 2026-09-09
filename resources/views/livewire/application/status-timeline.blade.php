@@ -65,49 +65,49 @@
 			@endforeach
 		</div>
 	</div>
-	<div class="separator separator-dashed my-4"></div>
-	<div class="d-flex justify-content-center align-items-center gap-4">
-		@if ($application->cancellation)
-			<div class="stepper stepper-pills">
-				<div class="stepper-nav flex-wrap flex-lg-nowrap d-flex justify-content-around align-items-center">
-					<div class="stepper-item w-100 w-lg-auto completed">
-						<div class="stepper-wrapper d-flex align-items-center">
-							<div class="stepper-icon w-60px h-60px">
-								<i class="stepper-check fas fa-check text-success fs-2"></i>
-							</div>
-							<div class="stepper-label">
-								<h3 class="stepper-title completed text-success">
-									Cancelled
-								</h3>
-								<div class="stepper-desc completed text-success">
-									{{ $application->cancellation->reason }}
-								</div>
+	@if ($application->cancellation)
+		<div class="separator separator-dashed my-4"></div>
+		<div class="stepper stepper-pills">
+			<div class="stepper-nav flex-wrap flex-lg-nowrap d-flex justify-content-around align-items-center">
+				<div class="stepper-item w-100 w-lg-auto completed">
+					<div class="stepper-wrapper d-flex align-items-center">
+						<div class="stepper-icon w-60px h-60px">
+							<i class="stepper-check fas fa-check text-success fs-2"></i>
+						</div>
+						<div class="stepper-label">
+							<h3 class="stepper-title completed text-success">
+								Cancelled
+							</h3>
+							<div class="stepper-desc completed text-success">
+								{{ $application->cancellation->reason }}
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-		@endif
-		@if ($application->referral)
-			<div class="stepper stepper-pills">
-				<div class="stepper-nav flex-wrap flex-lg-nowrap d-flex justify-content-around align-items-center">
-					<div class="stepper-item w-100 w-lg-auto completed">
-						<div class="stepper-wrapper d-flex align-items-center">
-							<div class="stepper-icon w-60px h-60px">
-								<i class="stepper-check fas fa-check text-success fs-2"></i>
-							</div>
-							<div class="stepper-label">
-								<h3 class="stepper-title completed text-success">
-									Referred
-								</h3>
-								<div class="stepper-desc completed text-success">
-									Referred to {{ $application->referral->referral_to }}
-								</div>
+		</div>
+	@endif
+	@if ($application->referral)
+		<div class="separator separator-dashed my-4"></div>
+		<div class="stepper stepper-pills">
+			<div class="stepper-nav flex-wrap flex-lg-nowrap d-flex justify-content-around align-items-center">
+				<div class="stepper-item w-100 w-lg-auto completed">
+					<div class="stepper-wrapper d-flex align-items-center">
+						<div class="stepper-icon w-60px h-60px">
+							<i class="stepper-check fas fa-check text-success fs-2"></i>
+						</div>
+						<div class="stepper-label">
+							<h3 class="stepper-title completed text-success">
+								Referred
+							</h3>
+							<div class="stepper-desc completed text-success">
+								Referred to {{ $application->referral->referral_to }}
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-		@endif
-	</div>
+		</div>
+	@endif
+</div>
 </div>
