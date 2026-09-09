@@ -15,8 +15,7 @@
 			</div>
 		</div>
 	</div>
-	<div class="row"
-		wire:poll='30s'>
+	<div class="row">
 		<div class="col-12 col-lg-6">
 			<div class="border border-2 border-dashed border-gray-300 rounded px-4 py-3 mb-4">
 				<div class="d-flex flex-column gap-2">
