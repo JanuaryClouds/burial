@@ -1,12 +1,13 @@
 <?php
 
 use App\Http\Controllers\AssessmentController;
+use App\Livewire\Assessment\Create;
 use Illuminate\Support\Facades\Route;
 
-Route::controller(AssessmentController::class)
-    ->name('assessment.')
+Route::name('assessment.')
     ->prefix('assessment')
     ->group(function () {
-        Route::post('store/{application}', 'store')
-            ->name('store');
+        Route::get('/{application}/create', Create::class)
+            ->middleware('can:create, \App\Models\Assessment')
+            ->name('create');
     });

@@ -5,24 +5,42 @@ use App\Livewire\Application\Create;
 use App\Livewire\Application\Index;
 use App\Livewire\Application\Search;
 use App\Livewire\Application\Show;
+use App\Livewire\Assessment\Create as AssessmentCreate;
+use App\Livewire\Recommendation\Create as RecommendationCreate;
 use Illuminate\Support\Facades\Route;
 
 Route::name('application.')
-    ->prefix('applications')
+    ->prefix('application')
     ->group(function () {
         Route::get('/', [ApplicationController::class, 'index'])
             ->name('index');
 
-        Route::livewire('/create', Create::class)
+        Route::get('/create', [ApplicationController::class, 'create'])
             ->name('create');
 
-        Route::livewire('/search', Search::class)
+        Route::get('/search', Search::class)
             ->name('search');
 
         Route::prefix('/{application}')
             ->group(function() {
-                Route::livewire('', Show::class)
+                Route::get('', Show::class)
                     ->name('show');
+
+                Route::name('assessment.')
+                    ->prefix('assessment')
+                    ->group(function() {
+                        Route::get('/create', AssessmentCreate::class)
+                            ->middleware('can:create,\App\Models\Assessment,application')
+                            ->name('create');
+                    });
+
+                Route::name('recommendation.')
+                    ->prefix('recommendation')
+                    ->group(function() {
+                        Route::get('/create', RecommendationCreate::class)
+                            ->middleware('can:create,\App\Models\Recommendation,application')
+                            ->name('create');
+                    });
 
                 Route::controller(ApplicationController::class)
                     ->group(function () {
