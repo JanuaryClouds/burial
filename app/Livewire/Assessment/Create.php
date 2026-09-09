@@ -45,7 +45,13 @@ class Create extends Component
             ->causedBy(Auth::user()->id)
             ->log('Created an assessment');
 
-        $this->resetValidation();
+        $this->reset('problem_presented', 'swa');
+        $this->dispatch('notification:alert', [
+            'type' => 'success',
+            'text' => 'Assessment created successfully',
+        ]);
+
+        $this->redirect(route('application.show', $this->application));
     }
 
     public function render()

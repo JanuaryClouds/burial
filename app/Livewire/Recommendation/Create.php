@@ -10,6 +10,7 @@ use App\Models\WorkflowHistory;
 use App\Models\WorkflowStage;
 use App\Services\WorkflowHistoryService;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\On;
 use Livewire\Attributes\Rule;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -22,7 +23,7 @@ class Create extends Component
 
     public array $modeOfAssistances = [];
 
-    private WorkflowHistoryService $workflowHistoryServices;
+    public bool $createNew = false;
 
     #[Rule('required|exists:funeral_assistance_types,uuid')]
     public ?string $funeralAssistanceTypeUuid = null;
@@ -33,9 +34,8 @@ class Create extends Component
     #[Rule('required|exists:mode_of_assistances,id')]
     public ?int $modeOfAssistanceId = null;
 
-    public function boot(WorkflowHistoryService $workflowHistoryService)
+    public function boot()
     {
-        $this->workflowHistoryServices = $workflowHistoryService;
         $this->funeralAssistanceTypes = FuneralAssistanceType::query()
             ->get()
             ->mapWithKeys(function ($item) {
@@ -81,7 +81,21 @@ class Create extends Component
             ->causedBy(Auth::user()->id)
             ->log('Created a recommendation');
 
-        $this->dispatch('refreshWorkflowHistory');
+        $this->dispatch('notification:alert', [
+            'type' => 'success',
+            'title' => 'Recommendation created successfully',
+        ]);
+
+        $this->reset('createNew');
+        
+        $this->dispatch('refreshRecommendation');
+    }
+
+    #[On('refreshRecommendation')]
+    public function refresh()
+    {
+        $this->reset('funeralAssistanceTypeUuid', 'amountExtended', 'modeOfAssistanceId');
+        $this->application->refresh();
     }
 
     public function render()

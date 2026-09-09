@@ -8,6 +8,7 @@ use App\Models\WorkflowStage;
 use App\Services\InterviewService;
 use App\Services\WorkflowHistoryService;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
@@ -17,8 +18,10 @@ class Create extends Component
 
     private InterviewService $services;
 
-    #[Validate('required|date')]
+    #[Validate('required|date|after_or_equal:now')]
     public string $schedule;
+
+    public bool $scheduled;
 
     public function boot(InterviewService $interviewService)
     {
@@ -28,6 +31,11 @@ class Create extends Component
     public function mount(Client $client)
     {
         $this->client = $client;
+
+        $this->scheduled = $this->client->interviews()
+            ->where('schedule', '>', now())
+            ->where('status', 'scheduled')
+            ->exists();
     }
 
     public function save()
@@ -43,8 +51,22 @@ class Create extends Component
             $this->client->uuid
         );
 
+        $this->dispatch('notification:alert', [
+            'type' => 'success',
+            'text' => 'Interview scheduled successfully',
+        ]);
+
         $this->reset('schedule');
         $this->dispatch('interviewCreated');
+    }
+
+    #[On('interviewCreated')]
+    public function refresh()
+    {
+        $this->scheduled = $this->client->interviews()
+            ->where('schedule', '>', now())
+            ->where('status', 'scheduled')
+            ->exists();
     }
 
     public function render()
