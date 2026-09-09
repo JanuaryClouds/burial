@@ -9,6 +9,15 @@ use App\Traits\HasSuperadminByPass;
 
 class RecommendationPolicy
 {
+    public function view(User $user): bool
+    {
+        if ($user->roles()->count() > 0) {
+            return true;
+        }
+
+        return false;
+    }
+
     public function create(User $user, Application $application): bool
     {
         if ($user->id === $application->client->user_id) {
@@ -16,6 +25,18 @@ class RecommendationPolicy
         }
 
         if (! $application->assessment) {
+            return false;
+        }
+
+        if ($application->rejection) {
+            return false;
+        }
+
+        if ($application->cancellation) {
+            return false;
+        }
+
+        if ($application->referral) {
             return false;
         }
 

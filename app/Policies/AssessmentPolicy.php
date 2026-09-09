@@ -28,7 +28,11 @@ class AssessmentPolicy
 
     public function view(User $user): bool
     {
-        return $user->hasAnyDirectPermission($this->permissions);
+        if ($user->roles()->count() > 0) {
+            return true;
+        }
+
+        return false;
     }
 
     public function create(User $user, Application $application): bool
