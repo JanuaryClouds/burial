@@ -1,4 +1,4 @@
-@props(['name', 'id' => null, 'label' => null, 'selected' => null, 'options' => [], 'helpText' => false, 'errorname' => null])
+@props(['name', 'id' => null, 'label' => null, 'selected' => null, 'options' => [], 'helpText' => false, 'errorname' => null, 'required' => false])
 
 @php
 	if ($errorname == null) {
@@ -32,6 +32,7 @@
 		<select {{ $attributes->except('wire:model') }}
 			name="{{ $name }}_display"
 			id="{{ $id ?? $name }}_display"
+			{{ $required ? 'required' : '' }}
 			class="form-control"
 			data-control="select2">
 			<option value="">Select one</option>
