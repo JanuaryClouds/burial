@@ -62,14 +62,16 @@
 				</div>
 			@endif
 			{{-- Remarks --}}
-			<x-slot:footer>
-				<x-button wire:click="submit"
-					wire:loading.remove
-					class="btn-sm btn-success">
-					<x-icon.font-awesome class="fa-floppy-disk" />
-					Save
-				</x-button>
-			</x-slot:footer>
+			@if ($dateOut)
+				<x-slot:footer>
+					<x-button wire:click="submit"
+						wire:loading.remove
+						class="btn-sm btn-success">
+						<x-icon.font-awesome class="fa-floppy-disk" />
+						Save
+					</x-button>
+				</x-slot:footer>
+			@endif
 		</x-card>
 	@else
 		<x-card.unauthorized>
