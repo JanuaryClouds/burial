@@ -39,12 +39,12 @@
 				<div class="col-12 col-xl-7"
 					id="workflow-history">
 					{{-- Workflow History --}}
-					@include('application.show.partials.workflow-history')
+					@include('application.show.partials.workflow.history.index')
 				</div>
 				<div class="col-12 col-xl-5"
 					id="workflow-history-create-form">
 					{{-- Create Workflow History --}}
-					@include('application.show.partials.workflow-history-create')
+					@include('application.show.partials.workflow.history.create')
 				</div>
 			</div>
 		@endif

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Application;
+namespace App\Livewire\Workflow\History;
 
 use App\Models\Application;
 use App\Services\ApplicationService;
@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
-class Timeline extends Component
+class Index extends Component
 {
     public Application $application;
 
@@ -33,6 +33,6 @@ class Timeline extends Component
 
     public function render()
     {
-        return view('livewire.application.timeline');
+        return view('livewire.workflow.history.index');
     }
 }

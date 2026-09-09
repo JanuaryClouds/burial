@@ -1,5 +1,5 @@
 <x-card>
 	<x-slot:header>Process Timeline</x-slot:header>
-	<livewire:application.timeline :application="$application"
+	<livewire:workflow.history.index :application="$application"
 		defer />
 </x-card>
