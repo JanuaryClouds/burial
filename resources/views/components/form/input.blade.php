@@ -1,4 +1,12 @@
-@props(['name', 'id' => null, 'label' => null, 'type' => 'text', 'helpText' => false, 'errorname' => null])
+@props([
+    'name',
+    'id' => null,
+    'label' => null,
+    'type' => 'text',
+    'helpText' => false,
+    'errorname' => null,
+    'required' => true,
+])
 
 @php
 	if ($errorname == null) {
@@ -30,6 +38,7 @@
 	@endif
 	<input type="{{ $type }}"
 		{{ $attributes->merge(['class' => 'form-control']) }}
+		{{ $required ? 'required' : '' }}
 		name="{{ $name ?? $id }}"
 		{{ $id ? 'id=' . $id : 'id=' . $name }}
 		aria-describedby="{{ $helpText ? 'helpId' : '' }}" />
