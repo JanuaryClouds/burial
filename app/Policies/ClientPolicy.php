@@ -45,6 +45,10 @@ class ClientPolicy
      */
     public function create(User $user): bool
     {
+        if ($user->hasRole('superadmin')) {
+            return true;
+        }
+
         if ($user->roles()->count() == 0) {
             return true;
         }
@@ -60,6 +64,10 @@ class ClientPolicy
         if ($client->application) {
             return false;
         }
+        
+        if ($user->hasRole('superadmin')) {
+            return true;
+        }
 
         return $user->id === $client->user_id;
     }
@@ -69,6 +77,10 @@ class ClientPolicy
      */
     public function delete(User $user, Client $client): bool
     {
+        if ($user->hasRole('superadmin')) {
+            return true;
+        }
+
         if ($user->id === $client->user_id) {
             return true;
         }
