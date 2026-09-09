@@ -41,7 +41,11 @@ class InterviewPolicy
             return false;
         }
 
-        return $user->can('create-interview-schedules');
+        if ($user->hasRole('superadmin')) {
+            return true;
+        }
+
+        return $user->can('interview.create');
     }
 
     /**
