@@ -38,7 +38,7 @@ return [
     |
     */
 
-    'layout' => 'components.layouts.app',
+    'component_layout' => 'layouts::livewire',
 
     /*
     |---------------------------------------------------------------------------
@@ -50,7 +50,7 @@ return [
     |
     */
 
-    'lazy_placeholder' => null,
+    'lazy_placeholder' => 'component.card.loading',
 
     /*
     |---------------------------------------------------------------------------
@@ -194,6 +194,7 @@ return [
     */
 
     'make_command' => [
+        'type' => 'class',
         'emoji' => false,
     ],
 ];

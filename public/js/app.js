@@ -13,6 +13,7 @@ import randomizeMulticolorBorder from './multicolorBorder.js';
 import checkAndRenderCharts from './chart.js';
 import theme from './theme.js';
 import autoMarginColumns from './autoMarginColumns.js';
+import sweetAlert from './sweetAlert2.js';
 
 theme();
 
@@ -51,11 +52,13 @@ document.addEventListener('DOMContentLoaded', () => {
 window.initSelect2 = initSelect2;
 
 document.addEventListener('livewire:init', () => {
+    autoMarginColumns();
+    sweetAlert();
+
     Livewire.hook('morph.updated', ({ el }) => {
         requestAnimationFrame(() => {
             initSelect2(el);
             randomizeMulticolorBorder();
-            autoMarginColumns();
         });
     });
 

@@ -8,6 +8,7 @@ use App\Models\WorkflowStage;
 use App\Services\InterviewService;
 use App\Services\WorkflowHistoryService;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
@@ -17,20 +18,24 @@ class Create extends Component
 
     private InterviewService $services;
 
-    private WorkflowHistoryService $workflowHistoryServices;
-
-    #[Validate('required|date')]
+    #[Validate('required|date|after_or_equal:now')]
     public string $schedule;
 
-    public function boot(InterviewService $interviewService, WorkflowHistoryService $workflowHistoryService)
+    public bool $scheduled;
+
+    public function boot(InterviewService $interviewService)
     {
         $this->services = $interviewService;
-        $this->workflowHistoryServices = $workflowHistoryService;
     }
 
     public function mount(Client $client)
     {
         $this->client = $client;
+
+        $this->scheduled = $this->client->interviews()
+            ->where('schedule', '>', now())
+            ->where('status', 'scheduled')
+            ->exists();
     }
 
     public function save()
@@ -46,29 +51,22 @@ class Create extends Component
             $this->client->uuid
         );
 
-        $interviewStage = WorkflowStage::firstWhere('name', 'Interview');
-        $nextStage = WorkflowStage::firstWhere('position', $interviewStage->position + 1);
-
-        if (!$nextStage) {
-            return;
-        }
-
-        if ($this->client->application->workflowHistory->firstWhere('from_stage_uuid', '=', $interviewStage->uuid)) {
-            return;
-        }
-
-        $this->workflowHistoryServices->store([
-            'application_uuid' => $this->client->application->uuid,
-            'from_stage_uuid' => $interviewStage->uuid,
-            'to_stage_uuid' => $nextStage->uuid,
-            'date_in' => now(),
-            'date_out' => now(),
-            'reason' => 'Interview scheduled.',
-            'processed_by' => Auth::user()->id,
+        $this->dispatch('notification:alert', [
+            'type' => 'success',
+            'text' => 'Interview scheduled successfully',
         ]);
 
         $this->reset('schedule');
         $this->dispatch('interviewCreated');
+    }
+
+    #[On('interviewCreated')]
+    public function refresh()
+    {
+        $this->scheduled = $this->client->interviews()
+            ->where('schedule', '>', now())
+            ->where('status', 'scheduled')
+            ->exists();
     }
 
     public function render()

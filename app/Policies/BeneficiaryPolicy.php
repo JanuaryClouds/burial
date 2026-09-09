@@ -4,15 +4,18 @@ namespace App\Policies;
 
 use App\Models\Beneficiary;
 use App\Models\User;
+use App\Traits\HasSuperadminByPass;
 
 class BeneficiaryPolicy
 {
+    use HasSuperadminByPass;
+
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        if ($user->roles->isNotEmpty()) {
+        if ($user->roles()->count() > 0) {
             return true;
         }
 
@@ -40,7 +43,7 @@ class BeneficiaryPolicy
      */
     public function create(User $user): bool
     {
-        if ($user->roles->isEmpty()) {
+        if ($user->roles()->count() == 0) {
             return true;
         }
 

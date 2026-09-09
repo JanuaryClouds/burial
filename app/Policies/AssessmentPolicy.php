@@ -5,6 +5,8 @@ namespace App\Policies;
 use App\Models\Application;
 use App\Models\User;
 use App\Models\WorkflowStage;
+use App\Traits\HasSuperadminByPass;
+use Illuminate\Support\Arr;
 use Spatie\Permission\Models\Permission;
 
 class AssessmentPolicy
@@ -13,9 +15,9 @@ class AssessmentPolicy
 
     public function __construct()
     {
-        $permissions = Permission::where('name', 'like', 'workflow.assessment.%')->get();
+        $permissions = Permission::where('name', 'like', 'assessment.%')->get();
         foreach ($permissions as $permission) {
-            $this->permissions[] = $permission;
+            $this->permissions[] = $permission->name;
         }
     }
 
@@ -26,7 +28,11 @@ class AssessmentPolicy
 
     public function view(User $user): bool
     {
-        return $user->hasAnyDirectPermission($this->permissions);
+        if ($user->roles()->count() > 0) {
+            return true;
+        }
+
+        return false;
     }
 
     public function create(User $user, Application $application): bool
@@ -39,14 +45,10 @@ class AssessmentPolicy
             return false;
         }
 
-        $assessmentStageUuid = WorkflowStage::firstWhere('name', 'assessment')->uuid;
-
-        if ($application->current_workflow_stage_uuid !== $assessmentStageUuid) {
-            return false;
+        if ($user->hasRole('superadmin')) {
+            return true;
         }
 
-        return $user->hasDirectPermission(
-            array_search('create', $this->permissions, false)
-        );
+        return $user->hasDirectPermission('assessment.create');
     }
 }

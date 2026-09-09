@@ -18,7 +18,7 @@
 			@endif
 			<a href="#workflow-history"
 				class="list-group-item list-group-item-action">Process History</a>
-			<a href="#workflow-stage-form"
+			<a href="#workflow-history-create-form"
 				class="list-group-item list-group-item-action">Process Form</a>
 		@endrole
 		<a href="#documents"

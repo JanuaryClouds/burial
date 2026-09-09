@@ -39,10 +39,12 @@
 							Full filename:
 							{{ $filename }}</p>
 					@endif
-					<img src="{{ route('image', ['filename' => $filename]) }}"
-						alt="{{ $document['name'] }}"
-						class="img-fluid {{ $document['description'] ? 'for-muslim' : '' }}">
-					<hr>
+					@if (config('services.fileserver.enable.get'))
+						<img src="{{ route('image', ['filename' => $filename]) }}"
+							alt="{{ $document['name'] }}"
+							class="img-fluid {{ $document['description'] ? 'for-muslim' : '' }}">
+						<hr>
+					@endif
 				</div>
 			@endforeach
 		@else

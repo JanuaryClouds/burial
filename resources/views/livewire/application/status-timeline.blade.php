@@ -14,7 +14,11 @@
 		    if (collect($status)->pluck('label')->contains($currentLabel)) {
 		        $statusIndicators[$i][$currentLabel] = 'current';
 
-		        if ($application->referral || $application->currentRecommendation()->status == 'cancelled') {
+		        if (
+		            $application->referral ||
+		            ($application->recommendations->count() > 0 &&
+		                $application->currentRecommendation()->status == 'cancelled')
+		        ) {
 		            $statusIndicators[$i][$currentLabel] = 'completed';
 		        }
 
@@ -37,7 +41,7 @@
 		<div class="stepper-nav flex-wrap flex-lg-nowrap d-flex justify-content-around align-items-center">
 			@foreach ($statusIndicators as $label => $indicator)
 				<div
-					class="stepper-item w-100 w-lg-auto mb-4 mb-lg-0 {{ $indicator === 'completed' ? 'completed' : ($indicator === 'current' ? 'current' : '') }}">
+					class="stepper-item w-100 w-lg-auto {{ $indicator === 'completed' ? 'completed' : ($indicator === 'current' ? 'current' : '') }}">
 					<div class="stepper-wrapper d-flex align-items-center">
 						<div class="stepper-icon w-60px h-60px">
 							@if ($indicator === 'completed')
@@ -61,49 +65,37 @@
 			@endforeach
 		</div>
 	</div>
-	<div class="separator separator-dashed my-4"></div>
-	<div class="d-flex justify-content-center align-items-center gap-4">
-		@if ($application->cancellation)
-			<div class="stepper stepper-pills">
-				<div class="stepper-nav flex-wrap flex-lg-nowrap d-flex justify-content-around align-items-center">
-					<div class="stepper-item w-100 w-lg-auto mb-4 mb-lg-0 completed">
-						<div class="stepper-wrapper d-flex align-items-center">
-							<div class="stepper-icon w-60px h-60px">
-								<i class="stepper-check fas fa-check text-success fs-2"></i>
-							</div>
-							<div class="stepper-label">
+	@if ($application->cancellation || $application->referral)
+		<div class="separator separator-dashed my-4"></div>
+		<div class="stepper stepper-pills">
+			<div class="stepper-nav flex-wrap flex-lg-nowrap d-flex justify-content-around align-items-center">
+				<div class="stepper-item w-100 w-lg-auto completed">
+					<div class="stepper-wrapper d-flex align-items-center">
+						<div class="stepper-icon w-60px h-60px">
+							<i class="stepper-check fas fa-check text-success fs-2"></i>
+						</div>
+						<div class="stepper-label">
+							@if ($application->cancellation)
 								<h3 class="stepper-title completed text-success">
 									Cancelled
 								</h3>
 								<div class="stepper-desc completed text-success">
 									{{ $application->cancellation->reason }}
 								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		@endif
-		@if ($application->referral)
-			<div class="stepper stepper-pills">
-				<div class="stepper-nav flex-wrap flex-lg-nowrap d-flex justify-content-around align-items-center">
-					<div class="stepper-item w-100 w-lg-auto mb-4 mb-lg-0 completed">
-						<div class="stepper-wrapper d-flex align-items-center">
-							<div class="stepper-icon w-60px h-60px">
-								<i class="stepper-check fas fa-check text-success fs-2"></i>
-							</div>
-							<div class="stepper-label">
+							@endif
+							@if ($application->referral)
 								<h3 class="stepper-title completed text-success">
 									Referred
 								</h3>
 								<div class="stepper-desc completed text-success">
 									Referred to {{ $application->referral->referral_to }}
 								</div>
-							</div>
+							@endif
 						</div>
 					</div>
 				</div>
 			</div>
-		@endif
-	</div>
+		</div>
+	@endif
+</div>
 </div>

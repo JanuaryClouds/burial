@@ -8,18 +8,12 @@ use Illuminate\View\Component;
 
 class FontAwesome extends Component
 {
-    public string $icon;
-    public ?string $size;
-    public ?string $color;
-
     /**
      * Create a new component instance.
      */
-    public function __construct(string $icon, ?string $size, ?string $color)
+    public function __construct()
     {
-        $this->icon = $icon;
-        $this->size = $size;
-        $this->color = $color;
+        //
     }
 
     /**

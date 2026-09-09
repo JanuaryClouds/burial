@@ -14,10 +14,12 @@
 					<x-slot:footer>
 						<x-button wire:click="clear()"
 							class="btn-light">
+							<x-icon.font-awesome class="fa-xmark" />
 							Clear
 						</x-button>
 						<x-button wire:click="search"
 							class="btn-primary">
+							<x-icon.font-awesome class="fa-magnifying-glass" />
 							Search
 						</x-button>
 					</x-slot:footer>
@@ -49,23 +51,12 @@
 			@if ($application)
 				<x-card>
 					<x-slot:header>Results</x-slot:header>
-					<h4 class="fs-4 fw-bold mb-4">{{ $application->tracking_no }}</h4>
-					<h4 class="fs-5 fw-bold">Client</h4>
-					@include('client.partials.create.form', [
-						'client' => $application->client,
-						'readonly' => true,
-					])
-					<div class="separator my-6"></div>
-					<h4 class="fs-5 fw-bold">Beneficiary</h4>
-					@include('beneficiary.partials.create.form', [
-						'beneficiary' => $application->beneficiary,
-						'readonly' => true,
-					])
+					<livewire:application.summary :application="$application" />
 					<x-slot:footer>
 						<a href="{{ route('application.show', $application) }}"
-							class="btn btn-info"
+							class="btn btn-sm btn-info"
 							role="button">
-							<i class="fa-solid fa-up-right-from-square"></i>
+							<x-icon.font-awesome class="fa-up-right-from-square" />
 							View Application
 						</a>
 					</x-slot:footer>

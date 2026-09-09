@@ -46,7 +46,7 @@
 					$workflowHistory = $recommendation->workflowHistory()->orderBy('date_in')->get();
 				@endphp
 				@foreach ($workflowHistory as $history)
-					@if ($history->fromStage != null)
+					@if ($history->toStage)
 						<div class="timeline-item">
 							<div class="timeline-label">
 								<span class="text-uppercase fw-bold">
@@ -63,7 +63,7 @@
 							<div class="timeline-content ms-3 d-flex flex-column">
 								{{-- Stage:Name --}}
 								<span class="text-uppercase fw-bold">
-									{{ $history->fromStage->name }}
+									{{ $history->toStage->name }}
 								</span>
 
 								{{-- Stage:Extra Fields --}}

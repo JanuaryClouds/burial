@@ -52,8 +52,6 @@ Route::middleware(['auth', 'active.check'])
         require __DIR__.'/application.php';
         require __DIR__.'/client.php';
         require __DIR__.'/beneficiary.php';
-        require __DIR__.'/assessment.php';
-        require __DIR__.'/recommendation.php';
         require __DIR__.'/referral.php';
         require __DIR__.'/interview.php';
         require __DIR__.'/workflow.php';

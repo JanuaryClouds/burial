@@ -15,6 +15,7 @@ class WorkflowHistory extends Model
     protected $table = 'workflow_histories';
 
     protected $fillable = [
+        'recommendation_uuid',
         'workflow_uuid',
         'from_stage_uuid',
         'to_stage_uuid',
@@ -22,7 +23,6 @@ class WorkflowHistory extends Model
         'date_out',
         'reason',
         'processed_by',
-        'application_uuid'
     ];
 
     /*
@@ -59,15 +59,6 @@ class WorkflowHistory extends Model
     public function processedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'processed_by', 'id');
-    }
-
-    /**
-     * Summary of application
-     * @return BelongsTo<Application, WorkflowHistory>
-     */
-    public function application(): BelongsTo
-    {
-        return $this->belongsTo(Application::class, 'application_uuid', 'uuid');
     }
 
     /**

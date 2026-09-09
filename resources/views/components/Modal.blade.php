@@ -30,9 +30,18 @@
 					aria-label="Close"></button>
 			</div>
 			<div class="modal-body">{{ $slot }}</div>
-			<div class="modal-footer">
-				{{ $footer }}
-			</div>
+			@isset($footer)
+				<div class="modal-footer">
+					<button type="button"
+						class="btn btn-sm btn-light"
+						data-bs-dismiss="modal"
+						aria-label="Close">
+						<x-icon.font-awesome class="fa-xmark" />
+						Close
+					</button>
+					{{ $footer }}
+				</div>
+			@endisset
 		</div>
 	</div>
 </div>

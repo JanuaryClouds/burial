@@ -12,7 +12,7 @@ class BeneficiaryFamilyPolicy
      */
     public function viewAny(User $user): bool
     {
-        if ($user->roles->isNotEmpty()) {
+        if ($user->roles()->count() > 0) {
             return true;
         }
 
@@ -36,7 +36,7 @@ class BeneficiaryFamilyPolicy
      */
     public function create(User $user): bool
     {
-        if ($user->roles->isNotEmpty()) {
+        if ($user->roles()->count() > 0) {
             return false;
         }
 
@@ -76,6 +76,10 @@ class BeneficiaryFamilyPolicy
      */
     public function restore(User $user, BeneficiaryFamily $beneficiaryFamily): bool
     {
+        if ($user->id === $beneficiaryFamily->beneficiary->user->id) {
+            return true;
+        }
+        
         return false;
     }
 

@@ -6,9 +6,11 @@ use App\Models\Application;
 use App\Models\FuneralAssistanceType;
 use App\Models\ModeOfAssistance;
 use App\Models\Recommendation;
+use App\Models\WorkflowHistory;
 use App\Models\WorkflowStage;
 use App\Services\WorkflowHistoryService;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\On;
 use Livewire\Attributes\Rule;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -21,7 +23,7 @@ class Create extends Component
 
     public array $modeOfAssistances = [];
 
-    private WorkflowHistoryService $workflowHistoryServices;
+    public bool $createNew = false;
 
     #[Rule('required|exists:funeral_assistance_types,uuid')]
     public ?string $funeralAssistanceTypeUuid = null;
@@ -32,9 +34,8 @@ class Create extends Component
     #[Rule('required|exists:mode_of_assistances,id')]
     public ?int $modeOfAssistanceId = null;
 
-    public function boot(WorkflowHistoryService $workflowHistoryService)
+    public function boot()
     {
-        $this->workflowHistoryServices = $workflowHistoryService;
         $this->funeralAssistanceTypes = FuneralAssistanceType::query()
             ->get()
             ->mapWithKeys(function ($item) {
@@ -69,14 +70,7 @@ class Create extends Component
             'mode_of_assistance_id' => $this->modeOfAssistanceId,
             'recommended_by' => Auth::user()->id,
         ]);
-
-        $recommendationStage = WorkflowStage::firstWhere('name', '=', 'Recommendation');
-        $nextStage = WorkflowStage::firstWhere('position', '=', $recommendationStage->position + 1);
-
-        if (!$nextStage) {
-            $nextStage = $recommendationStage;
-        }
-
+        
         activity()
             ->withProperties([
                 'recommendation' => $recommendation->uuid,
@@ -87,15 +81,21 @@ class Create extends Component
             ->causedBy(Auth::user()->id)
             ->log('Created a recommendation');
 
-        $this->workflowHistoryServices->store([
-            'application_uuid' => $this->application->uuid,
-            'from_stage_uuid' => $recommendationStage->uuid,
-            'to_stage_uuid' => $nextStage->uuid,
-            'date_in' => now(),
-            'date_out' => now(),
-            'reason' => 'pending',
-            'processed_by' => Auth::user()->id,
+        $this->dispatch('notification:alert', [
+            'type' => 'success',
+            'title' => 'Recommendation created successfully',
         ]);
+
+        $this->reset('createNew');
+        
+        $this->dispatch('refreshRecommendation');
+    }
+
+    #[On('refreshRecommendation')]
+    public function refresh()
+    {
+        $this->reset('funeralAssistanceTypeUuid', 'amountExtended', 'modeOfAssistanceId');
+        $this->application->refresh();
     }
 
     public function render()

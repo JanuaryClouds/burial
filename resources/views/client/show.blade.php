@@ -10,7 +10,7 @@
 					class="btn btn-warning btn-sm"
 					href="{{ route('client.edit', $client) }}"
 					role="button">
-					<x-icon.font-awesome :icon="'arrow-up-right-from-square'" />
+					<x-icon.font-awesome class="fa-arrow-up-right-from-square" />
 					Edit Data
 				</a>
 			</x-slot:footer>
@@ -25,7 +25,7 @@
 				class="btn btn-sm btn-info"
 				href="{{ route('application.show', $application) }}"
 				role="button">
-				<i class="fa-solid fa-arrow-up-right-from-square"></i>
+				<x-icon.font-awesome class="fa-arrow-up-right-from-square" />
 				Application {{ $application->tracking_no }}
 			</a>
 		@endisset
@@ -35,7 +35,7 @@
 				class="btn btn-sm btn-info"
 				href="{{ route('beneficiary.show', $beneficiary) }}"
 				role="button">
-				<i class="fa-solid fa-arrow-up-right-from-square"></i>
+				<x-icon.font-awesome class="fa-arrow-up-right-from-square" />
 				{{ $beneficiary->fullname() }} (Beneficiary)
 			</a>
 		@else
@@ -44,7 +44,7 @@
 				class="btn btn-primary"
 				href="{{ route('beneficiary.create') }}"
 				role="button">
-				<i class="fa-solid fa-arrow-up-right-from-square"></i>
+				<x-icon.font-awesome class="fa-arrow-up-right-from-square" />
 				Create Beneficiary
 			</a>
 		@endisset
