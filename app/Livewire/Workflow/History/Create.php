@@ -8,6 +8,7 @@ use App\Models\WorkflowStage;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Rule;
 use Livewire\Component;
@@ -70,10 +71,19 @@ class Create extends Component
                     return $stage->position < $currentPosition || $stage->position === $currentPosition + 1;
                 });
             })
+            ->when($application->currentStage() === null, function ($stages) use ($application) {
+                return $stages->where('position', '=', 1);
+            })
             ->sortBy('position')
             ->map(function ($stage) use ($application) {
+                $name = $stage->name;
+
+                if ($application->currentStage() && $stage->position === $application->currentStage()->position + 1) {
+                    $name = 'Next Stage - ' . $name;
+                }
+
                 return [
-                    'name' => $stage->position === $application->currentStage()->position + 1 ? 'Next Stage - ' . $stage->name : $stage->name,
+                    'name' => $name,
                     'uuid' => $stage->uuid,
                 ];
             });
