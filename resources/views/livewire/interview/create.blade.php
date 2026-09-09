@@ -1,6 +1,6 @@
 <div>
 	<x-card>
-		@if ($client->interviews->where('schedule', '>', now())->count() === 0)
+		@if (!$scheduled)
 			<x-form.input name="schedule"
 				label="Schedule"
 				type="datetime-local"
