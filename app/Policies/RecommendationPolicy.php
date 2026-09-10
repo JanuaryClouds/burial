@@ -40,6 +40,10 @@ class RecommendationPolicy
             return false;
         }
 
+        if (!empty(array_intersect(collect($application->status())->pluck('label')->toArray(), ['releasing', 'referred', 'cancelled', 'closed']))) {
+            return false;
+        }
+
         if ($user->hasRole('superadmin')) {
             return true;
         }
