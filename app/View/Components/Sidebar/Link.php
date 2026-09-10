@@ -18,7 +18,7 @@ class Link extends Component
 
     public string $label;
 
-    public string $description;
+    public ?string $description;
 
     /**
      * Create a new component instance.
@@ -29,7 +29,7 @@ class Link extends Component
         string $icon,
         int $iconPathsCount,
         string $label,
-        string $description
+        ?string $description
     )
     {
         $this->route = $route;
