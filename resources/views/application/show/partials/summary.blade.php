@@ -1,7 +1,6 @@
 <x-card>
 	<x-slot:header>Application Summary</x-slot:header>
 	<livewire:application.summary :application="$application"
-		wire:poll.60s
 		defer />
 	<x-slot:footer>
 		<a href="{{ route('client.show', $application->client) }}"
