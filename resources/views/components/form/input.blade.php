@@ -5,7 +5,8 @@
     'type' => 'text',
     'helpText' => false,
     'errorname' => null,
-    'required' => true,
+    'required' => false,
+    'readonly' => false,
 ])
 
 @php
@@ -23,7 +24,7 @@
 	@if ($label)
 		@if (app()->hasDebugModeEnabled())
 			<label for="{{ $id ?? $name }}"
-				class="form-label"
+				class="form-label {{ $required ? 'required' : '' }}"
 				data-bs-toggle="tooltip"
 				data-bs-placement="top"
 				title="{{ 'Name: ' . $name . ', Error: ' . $errorname }}">
@@ -31,14 +32,15 @@
 			</label>
 		@else
 			<label for="{{ $id ?? $name }}"
-				class="form-label">
+				class="form-label {{ $required ? 'required' : '' }}">
 				{{ $label }}
 			</label>
 		@endif
 	@endif
 	<input type="{{ $type }}"
-		{{ $attributes->merge(['class' => 'form-control']) }}
+		{{ $attributes->merge(['class' => 'form-control ' . ($readonly ? 'bg-light' : '')]) }}
 		{{ $required ? 'required' : '' }}
+		{{ $readonly ? 'readonly' : '' }}
 		name="{{ $name ?? $id }}"
 		{{ $id ? 'id=' . $id : 'id=' . $name }}
 		aria-describedby="{{ $helpText ? 'helpId' : '' }}" />

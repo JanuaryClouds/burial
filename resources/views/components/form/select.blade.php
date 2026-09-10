@@ -1,4 +1,4 @@
-@props(['name', 'id' => null, 'label' => null, 'selected' => null, 'options' => [], 'helpText' => false, 'errorname' => null, 'required' => false])
+@props(['name', 'id' => null, 'label' => null, 'selected' => null, 'options' => [], 'helpText' => false, 'errorname' => null, 'required' => false, 'readonly' => false])
 
 @php
 	if ($errorname == null) {
@@ -14,7 +14,7 @@
 	@if ($label)
 		@if (app()->hasDebugModeEnabled())
 			<label for="{{ $id ?? $name }}"
-				class="form-label"
+				class="form-label {{ $required ? 'required' : '' }}"
 				data-bs-toggle="tooltip"
 				data-bs-placement="top"
 				title="{{ 'Name: ' . $name . ', Error: ' . $errorname }}">
@@ -22,7 +22,7 @@
 			</label>
 		@else
 			<label for="{{ $id ?? $name }}"
-				class="form-label">
+				class="form-label {{ $required ? 'required' : '' }}">
 				{{ $label }}
 			</label>
 		@endif
@@ -33,7 +33,8 @@
 			name="{{ $name }}_display"
 			id="{{ $id ?? $name }}_display"
 			{{ $required ? 'required' : '' }}
-			class="form-control"
+			{{ $readonly ? 'disabled' : '' }}
+			class="form-control {{ $readonly ? 'bg-light' : '' }}"
 			data-control="select2">
 			<option value="">Select one</option>
 			@foreach ($options as $key => $value)
