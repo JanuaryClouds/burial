@@ -1,42 +1,4 @@
-<div class="d-flex flex-column"
-	wire:poll.10s="refresh()">
-	@php
-		$statusIndicators = [
-		    ['pending' => 'current'],
-		    ['assessment' => false],
-		    ['processing' => false],
-		    ['releasing' => false],
-		    ['closing' => false],
-		];
-
-		for ($i = 0; $i < count($statusIndicators); $i++) {
-		    $currentLabel = key($statusIndicators[$i]);
-		    if (collect($status)->pluck('label')->contains($currentLabel)) {
-		        $statusIndicators[$i][$currentLabel] = 'current';
-
-		        if (
-		            $application->referral ||
-		            ($application->recommendations->count() > 0 &&
-		                $application->currentRecommendation()->status == 'cancelled')
-		        ) {
-		            $statusIndicators[$i][$currentLabel] = 'completed';
-		        }
-
-		        if ($i !== 0) {
-		            $previousLabel = key($statusIndicators[$i - 1]);
-		            $statusIndicators[$i - 1][$previousLabel] = 'completed';
-		        }
-		    }
-		}
-
-		foreach ($statusIndicators as $key => $value) {
-		    if (is_array($value)) {
-		        $label = key($value);
-		        $statusIndicators[$label] = $value[$label];
-		        unset($statusIndicators[$key]);
-		    }
-		}
-	@endphp
+<div class="d-flex flex-column">
 	<div class="stepper stepper-pills">
 		<div class="stepper-nav flex-wrap flex-lg-nowrap d-flex justify-content-around align-items-center">
 			@foreach ($statusIndicators as $label => $indicator)
@@ -97,5 +59,4 @@
 			</div>
 		</div>
 	@endif
-</div>
 </div>
