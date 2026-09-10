@@ -17,7 +17,7 @@
 		<x-loader />
 		@yield('content')
 	</div>
-	@include('components.notification.modal')
+	@include('components.notification.alert')
 	@include('partials.document.scripts')
 </body>
 

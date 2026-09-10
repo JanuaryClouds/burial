@@ -38,7 +38,6 @@ class ClientService
             'application.beneficiary',
             'application.assessment',
             'application.referral',
-            'application.processLogs',
             'application.recommendations',
             'application.relationship',
             'socialInfo',

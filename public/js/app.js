@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     autoMarginColumns();
     initSelect2();
     
-    $('#barangay_id').on('change', function() {
+    $('#barangayId_display').on('change', function() {
         let text = $(this).find('option:selected').text();
         updateDistrict(text.trim());
     });

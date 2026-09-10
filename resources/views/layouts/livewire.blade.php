@@ -40,6 +40,7 @@
 			</div>
 		</div>
 	</div>
+	@include('components.notification.alert')
 	@include('partials.document.scripts')
 </body>
 

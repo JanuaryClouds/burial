@@ -3,7 +3,8 @@
 <div class="d-flex flex-column gap-6">
 	<div class="row">
 		<div class="col-12 col-lg-8"
-			id="application-summary">
+			id="application-summary"
+			wire:poll.30s>
 			{{-- Application Summary --}}
 			@include('application.show.partials.summary')
 		</div>
@@ -14,7 +15,8 @@
 	</div>
 	<div class="row">
 		<div class="col-12"
-			id="status">
+			id="status"
+			wire:poll.30s>
 			{{-- Status Timeline --}}
 			@include('application.show.partials.status-timeline')
 		</div>
@@ -23,13 +25,13 @@
 		<div class="row">
 			<div class="col-12 col-lg-6 mb-6 mb-lg-0"
 				id="assessment"
-				wire:poll.10s>
+				wire:poll.300s>
 				{{-- Assessment --}}
 				@include('application.show.partials.assessment')
 			</div>
 			<div class="col-12 col-lg-6"
 				id="recommendation"
-				wire:poll.10s>
+				wire:poll.120s>
 				{{-- Recommendation --}}
 				@include('application.show.partials.recommendation')
 			</div>
@@ -37,12 +39,14 @@
 		@if ($application->recommendations->count() > 0)
 			<div class="row">
 				<div class="col-12 col-xl-7"
-					id="workflow-history">
+					id="workflow-history"
+					wire:poll.60s>
 					{{-- Workflow History --}}
 					@include('application.show.partials.workflow.history.index')
 				</div>
 				<div class="col-12 col-xl-5"
-					id="workflow-history-create-form">
+					id="workflow-history-create-form"
+					wire:poll.60s>
 					{{-- Create Workflow History --}}
 					@include('application.show.partials.workflow.history.create')
 				</div>

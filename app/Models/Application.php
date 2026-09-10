@@ -235,8 +235,8 @@ class Application extends Model
                 ];
 
                 $status[] = [
-                    'label' => 'closing',
-                    'badgeColor' => 'warning',
+                    'label' => 'closed',
+                    'badgeColor' => 'success',
                 ];
             }
         }
