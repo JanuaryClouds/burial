@@ -18,6 +18,8 @@ return new class extends Migration
             $table->foreignId('religion_id')->constrained('religions')->onDelete('cascade')->onUpdate('cascade');
             $table->date('date_of_birth');
             $table->date('date_of_death')->nullable();
+            $table->boolean('lethal')->default(false);
+            $table->boolean('pwd')->default(false);
             $table->text('house_no');
             $table->text('street');
             $table->string('city');

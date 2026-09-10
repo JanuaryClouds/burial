@@ -27,6 +27,8 @@ class Beneficiary extends Model
         'religion_id',
         'date_of_birth',
         'date_of_death',
+        'lethal',
+        'pwd',
         'house_no',
         'street',
         'barangay_id',
