@@ -35,12 +35,16 @@
 	</div>
 	<x-card>
 		<x-slot:header>Submit Documents</x-slot:header>
-		<x-callout>
-			<x-slot:icon>
-				<x-icon.font-awesome class="fa-exclamation-circle" />
-			</x-slot:icon>
-			During the interview, please bring hard copies of the documents you have submitted as soft copies.
-		</x-callout>
-		@include('application.partials.documents')
+		<div class="d-flex flex-column gap-4">
+			<x-callout class="bg-info-subtle border-info">
+				<x-slot:icon>
+					<x-icon.font-awesome class="fa-exclamation-circle text-info" />
+				</x-slot:icon>
+				<div class="text-info">
+					During the interview, please bring hard copies of the documents you have submitted as soft copies.
+				</div>
+			</x-callout>
+			@include('application.create.partials.documents')
+		</div>
 	</x-card>
 </div>
