@@ -4,6 +4,8 @@ namespace App\Livewire\Beneficiary;
 
 use App\Models\Barangay;
 use App\Models\Beneficiary;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Rule;
@@ -30,18 +32,18 @@ class Create extends Component
     public string $dateOfDeath;
 
     #[Rule('nullable|boolean')]
-    public ?bool $lethal;
+    public ?bool $lethal = null;
 
     #[Rule('nullable|boolean')]
-    public ?bool $pwd;
+    public ?bool $pwd = null;
 
-    #[Rule('required|integer')]
+    #[Rule('required|integer|exists:sexes,id')]
     public int $sexId;
 
-    #[Rule('nullable|integer')]
+    #[Rule('required|integer|exists:religions,id')]
     public int $religionId;
 
-    #[Rule('required|integer')]
+    #[Rule('required|integer|exists:barangays,id')]
     public int $barangayId;
 
     // #[Rule('required|integer')]
@@ -55,6 +57,43 @@ class Create extends Component
 
     #[Rule('required|string|max:255')]
     public string $street;
+
+    public array $family = [];
+
+    public function addFamilyMember()
+    {
+        if (count($this->family) < 5) {
+            $this->family[] = [
+                'name' => '',
+                'dateOfBirth' => '',
+                'civilId' => '',
+                'relationshipId' => '',
+                'occupation' => '',
+                'income' => '',
+            ];
+        }
+    }
+
+    public function removeFamilyMember(int $index)
+    {
+        unset($this->family[$index]);
+
+        $this->family = array_values($this->family);
+    }
+
+    protected function rules(): array
+    {
+        return [
+            'family' => 'array|max:5',
+            'family.*.name' => 'required|string|max:255',
+            'family.*.dateOfBirth' => 'required|date|before_or_equal:tomorrow',
+            'family.*.civilId' => 'required|integer|exists:civil_statuses,id',
+            'family.*.sexId' => 'required|integer|exists:sexes,id',
+            'family.*.relationshipId' => 'required|integer|exists:relationships,id',
+            'family.*.occupation' => 'nullable|string|max:255',
+            'family.*.income' => 'nullable|numeric|min:0',
+        ];
+    }
 
     public function save()
     {
@@ -83,6 +122,18 @@ class Create extends Component
                     'street' => $this->street,
                 ]);
 
+                foreach ($this->family as $member) {
+                    $beneficiary->family()->create([
+                        'name' => $member['name'],
+                        'age' => Carbon::parse($member['dateOfBirth'])->age,
+                        'civil_id' => $member['civilId'],
+                        'sex_id' => $member['sexId'],
+                        'relationship_id' => $member['relationshipId'],
+                        'occupation' => $member['occupation'],
+                        'income' => $member['income'],
+                    ]);
+                }
+
                 session()->put('beneficiary_uuid', $beneficiary->uuid);
         
                 $this->reset();
@@ -91,6 +142,8 @@ class Create extends Component
                     'type' => 'success',
                     'text' => 'Beneficiary created successfully',
                 ]);
+
+                $this->redirect('application.create');
             });
         } catch (\Throwable $th) {
             if (app()->hasDebugModeEnabled()) {
