@@ -1,16 +1,17 @@
 @include('components.sidebar.link', [
 	'route' => route('dashboard'),
-	'active_link' => 'dashboard',
+	'activeLink' => 'dashboard',
 	'icon' => 'home-2',
-	'icon_paths' => 2,
-	'text' => 'Dashboard',
+	'iconPathsCount' => 2,
+	'label' => 'Dashboard',
 ])
 @unlessrole('staff')
 	@include('components.sidebar.link', [
 		'route' => route('client.create'),
+		'activeLink' => 'client.create',
 		'icon' => 'add-files',
-		'icon_paths' => 3,
-		'text' => 'Apply',
-		'long_text' => 'Apply as Applicant',
+		'iconPathsCount' => 3,
+		'label' => 'Apply',
+		'description' => 'Apply as Applicant',
 	])
 @endunlessrole

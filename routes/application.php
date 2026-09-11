@@ -15,7 +15,7 @@ Route::name('application.')
         Route::get('/', [ApplicationController::class, 'index'])
             ->name('index');
 
-        Route::get('/create', [ApplicationController::class, 'create'])
+        Route::get('/create', Create::class)
             ->name('create');
 
         Route::get('/search', Search::class)
