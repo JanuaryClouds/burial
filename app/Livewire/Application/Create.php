@@ -5,13 +5,18 @@ namespace App\Livewire\Application;
 use App\Models\Application;
 use App\Models\Beneficiary;
 use App\Models\Client;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Rule;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class Create extends Component
 {
+    use WithFileUploads;
+
     public Collection $clientOptions;
     public Collection $beneficiaryOptions;
 
@@ -27,6 +32,28 @@ class Create extends Component
     public ?Client $client = null;
 
     public ?Beneficiary $beneficiary = null;
+
+    public $images = [];
+
+    public function mount()
+    {
+        $this->clientOptions = Client::whereDoesntHave('application')
+            ->where('user_id', '=', Auth::id())
+            ->orderByDesc('created_at')
+            ->get()
+            ->mapWithKeys(fn($client) => [$client->uuid => $client->fullname() . ' (created in ' . Carbon::parse($client->created_at)->format('d M Y, h:i A') . ')']);
+
+        $this->beneficiaryOptions = Beneficiary::whereDoesntHave('application')
+            ->where('created_by', '=', Auth::id())
+            ->orderBy('created_at')
+            ->get()
+            ->mapWithKeys(fn($beneficiary) => [$beneficiary->uuid => $beneficiary->fullname() . ' (created in ' . Carbon::parse($beneficiary->created_at)->format('d M Y, h:i A') . ')']);
+    }
+
+    public function removeImage(string $key)
+    {
+        unset($this->images[$key]);
+    }
 
     public function save()
     {
