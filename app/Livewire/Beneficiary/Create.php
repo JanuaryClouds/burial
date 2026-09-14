@@ -143,7 +143,7 @@ class Create extends Component
                     'text' => 'Beneficiary created successfully',
                 ]);
 
-                $this->redirect('application.create');
+                $this->redirect(route('application.create'));
             });
         } catch (\Throwable $th) {
             if (app()->hasDebugModeEnabled()) {

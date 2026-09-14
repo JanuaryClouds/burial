@@ -8,6 +8,7 @@ use App\Models\WorkflowStage;
 use App\Services\InterviewService;
 use App\Services\WorkflowHistoryService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -42,22 +43,38 @@ class Create extends Component
     {
         $this->validate();
 
-        if ($this->client->interviews->where('schedule', '>', now())->count() > 0) {
-            return;
+        try {
+            DB::transaction(function() {
+                if ($this->client->interviews->where('schedule', '>', now())->count() > 0) {
+                    return;
+                }
+        
+                $this->services->store(
+                    ['schedule' => $this->schedule],
+                    $this->client->uuid
+                );
+        
+                $this->dispatch('notification:alert', [
+                    'type' => 'success',
+                    'text' => 'Interview scheduled successfully',
+                ]);
+        
+                $this->reset('schedule');
+                $this->dispatch('interviewCreated');
+            });  
+        } catch (\Throwable $th) {
+            if (app()->hasDebugModeEnabled()) {
+                $this->dispatch('notification:alert', [
+                    'type' => 'error',
+                    'text' => $th->getMessage(),
+                ]);
+            } else {
+                $this->dispatch('notification:alert', [
+                    'type' => 'error',
+                    'text' => 'Something went wrong. Try again later.',
+                ]);
+            }
         }
-
-        $this->services->store(
-            ['schedule' => $this->schedule],
-            $this->client->uuid
-        );
-
-        $this->dispatch('notification:alert', [
-            'type' => 'success',
-            'text' => 'Interview scheduled successfully',
-        ]);
-
-        $this->reset('schedule');
-        $this->dispatch('interviewCreated');
     }
 
     #[On('interviewCreated')]
