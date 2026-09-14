@@ -2,7 +2,7 @@
 	@isset($icon)
 		{{ $icon }}
 	@endisset
-	<p class="fs-6 text-muted">{{ $slot }}</p>
+	<p class="fs-6 text-muted text-center">{{ $slot }}</p>
 	@isset($options)
 		<div class="d-flex flex-center gap-2">
 			{{ $options }}
