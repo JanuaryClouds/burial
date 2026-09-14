@@ -5,10 +5,12 @@ namespace App\Livewire\Application;
 use App\Models\Application;
 use App\Models\Beneficiary;
 use App\Models\Client;
+use App\Services\ImageService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Livewire\Attributes\Rule;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -21,10 +23,10 @@ class Create extends Component
     public Collection $beneficiaryOptions;
 
     #[Rule('required|exists:clients,uuid')]
-    public string $client_uuid;
+    public ?string $clientUuid = null;
 
     #[Rule('required|exists:beneficiaries,uuid')]
-    public string $beneficiary_uuid;
+    public ?string $beneficiaryUuid = null;
 
     #[Rule('required|exists:relationships,id')]
     public string $relationshipId;
@@ -48,6 +50,14 @@ class Create extends Component
             ->orderBy('created_at')
             ->get()
             ->mapWithKeys(fn($beneficiary) => [$beneficiary->uuid => $beneficiary->fullname() . ' (created in ' . Carbon::parse($beneficiary->created_at)->format('d M Y, h:i A') . ')']);
+    
+        if (session()->has('client_uuid')) {
+            $this->clientUuid = session('client_uuid');
+        }
+
+        if (session()->has('beneficiary_uuid')) {
+            $this->beneficiaryUuid = session('beneficiary_uuid');
+        }
     }
 
     public function removeImage(string $key)
@@ -55,17 +65,46 @@ class Create extends Component
         unset($this->images[$key]);
     }
 
+    public function clearForm()
+    {
+        $this->reset();
+        $this->dispatch('notification:alert', [
+            'type' => 'success',
+            'title' => 'Form Cleared',
+            'text' => 'The form has been cleared. You can now start a new application.'
+        ]);
+    }
+
     public function save()
     {
         $this->validate();
+        $imageService = App(ImageService::class);
 
         try {
-            DB::transaction(function () {
+            DB::transaction(function () use ($imageService) {
                 $application = Application::create([
-                    'client_uuid' => $this->client_uuid,
-                    'beneficiary_uuid' => $this->beneficiary_uuid,
+                    'client_uuid' => $this->clientUuid,
+                    'beneficiary_uuid' => $this->beneficiaryUuid,
                     'relationship_id' => $this->relationshipId
                 ]);
+
+                foreach ($this->images as $key => $file) {
+                    if (!$file) {
+                        continue;
+                    }
+
+                    $filename = $application->tracking_no .'-'. Str::replace($key, '_', '-');
+                    $imageService->post($filename, $file);    
+                }
+
+                activity()
+                    ->causedBy(Auth::user())
+                    ->withProperties([
+                        'ip' => request()->ip(),
+                        'browser' => request()->header('User-Agent'),
+                        'application_uuid' => $application->uuid,
+                    ])
+                    ->log('Application created with '. count($this->images) . ' images');
 
                 $this->reset();
 
@@ -75,7 +114,7 @@ class Create extends Component
                     'text' => 'Your application has been submitted. The information you have attached will no longer be available for editing.'
                 ]);
 
-                $this->redirect('application.show', $application);
+                $this->redirect(route('application.show', $application));
             });
         } catch (\Throwable $th) {
             if (app()->hasDebugModeEnabled()) {
