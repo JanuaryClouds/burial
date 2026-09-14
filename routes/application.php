@@ -16,14 +16,17 @@ Route::name('application.')
             ->name('index');
 
         Route::get('/create', Create::class)
+            ->middleware('can:create,\App\Models\Application')
             ->name('create');
 
         Route::get('/search', Search::class)
+            ->middleware('can:viewAny,\App\Models\Application')
             ->name('search');
 
         Route::prefix('/{application}')
             ->group(function() {
                 Route::get('', Show::class)
+                    ->middleware('can:view,\App\Models\Application,application')
                     ->name('show');
 
                 Route::name('assessment.')
