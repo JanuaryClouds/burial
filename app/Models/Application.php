@@ -25,6 +25,7 @@ class Application extends Model
         'current_workflow_stage_uuid',
         'client_uuid',
         'beneficiary_uuid',
+        'relationship_id'
     ];
 
     protected static function booted()
