@@ -1,0 +1,75 @@
+<x-slot:page_title>{{ $beneficiary->fullname() }} | Beneficiary</x-slot:page_title>
+<x-slot:page_subtitle>Funeral Assistance System | CSWDO Taguig</x-slot:page_subtitle>
+<div class="d-flex flex-column gap-4">
+	{{-- start::Basic Information --}}
+	<h4>Basic Information</h4>
+	<div class="row">
+		<div class="col-12 col-lg-6">
+			<x-form.display label="Name"
+				:contents="$beneficiary->fullname()" />
+		</div>
+		<div class="col-6 col-lg-2">
+			<x-form.display label="Sex"
+				:contents="$beneficiary->sex->name" />
+		</div>
+		<div class="col-6 col-lg-4">
+			<x-form.display label="Person with Disability"
+				:contents="$beneficiary->pwd ? 'Yes' : 'No'" />
+		</div>
+		<div class="col-6 col-lg-4">
+			<x-form.display label="Date of Birth"
+				:contents="\Carbon\Carbon::parse($beneficiary->date_of_birth)->format('F d, Y')" />
+		</div>
+		<div class="col-6 col-lg-4">
+			<x-form.display label="Date of Death"
+				:contents="\Carbon\Carbon::parse($beneficiary->date_of_death)->format('F d, Y')" />
+		</div>
+		<div class="col-6 col-md-4 col-lg-4 col-xl-2">
+			<x-form.display label="Age"
+				:contents="$beneficiary->age() . ' years old'" />
+		</div>
+		@if (\Carbon\Carbon::parse($beneficiary->date_of_birth)->diffinMonths($beneficiary->date_of_death) < 1)
+			<div class="col-3 col-md-2 col-lg-2 col-xl-2">
+				<x-form.display label="Lethal"
+					:contents="$beneficiary->lethal ? 'Yes' : 'No'" />
+			</div>
+		@endif
+	</div>
+	{{-- end::Basic Information --}}
+
+	<div class="separator separator-dashed my-4"></div>
+
+	{{-- start::Demographics --}}
+	<h4>Demographics</h4>
+	<div class="row">
+		<div class="col-12 col-md-6 col-lg-4 col-xl-3">
+			<x-form.display label="Religion"
+				:contents="$beneficiary->religion->name" />
+		</div>
+	</div>
+	{{-- end::Demographics --}}
+
+	<div class="separator separator-dashed my-4"></div>
+
+	{{-- start::Address --}}
+	<h4>Place of Birth</h4>
+	<div class="row">
+		<div class="col-12 col-md-5 col-xl-3">
+			<x-form.display label="House Number"
+				:contents="$beneficiary->house_no" />
+		</div>
+		<div class="col-12 col-md-7 col-xl-5">
+			<x-form.display label="Street"
+				:contents="$beneficiary->street" />
+		</div>
+		<div class="col-6 col-md-6 col-xl-2">
+			<x-form.display label="Barangay"
+				:contents="$beneficiary->barangay->name" />
+		</div>
+		<div class="col-6 col-xl-2">
+			<x-form.display label="City"
+				:contents="$beneficiary->city" />
+		</div>
+	</div>
+	{{-- end::Address --}}
+</div>

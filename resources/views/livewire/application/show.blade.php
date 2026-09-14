@@ -57,7 +57,7 @@
 		<x-card>
 			{{-- Documents --}}
 			<x-slot:header>Documents</x-slot:header>
-			@include('application.partials.documents')
+			@include('application.show.partials.documents')
 		</x-card>
 	</div>
 </div>

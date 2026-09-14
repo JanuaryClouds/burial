@@ -1,0 +1,32 @@
+<?php
+
+namespace App\Livewire\Client;
+
+use App\Models\Client;
+use Livewire\Component;
+
+class Show extends Component
+{
+    public ?Client $client = null;
+
+    public ?string $uuid = null;
+
+    public function mount(?Client $client, ?string $uuid)
+    {
+        if ($uuid) {
+            $this->client = Client::where('uuid', $uuid)->firstOrFail();
+        } else {
+            $this->client = $client;
+        }
+    }
+
+    public function placeholder()
+    {
+        return view('components.card.loading');
+    }
+
+    public function render()
+    {
+        return view('livewire.client.show');
+    }
+}
