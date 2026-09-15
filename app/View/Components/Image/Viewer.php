@@ -12,13 +12,16 @@ class Viewer extends Component
 
     public string $alt;
 
+    public ?string $applicationUuid;
+
     /**
      * Create a new component instance.
      */
-    public function __construct(string $src, string $alt)
+    public function __construct(string $src, string $alt, ?string $applicationUuid = null)
     {
         $this->src = $src;
         $this->alt = $alt;
+        $this->applicationUuid = $applicationUuid;
     }
 
     /**
