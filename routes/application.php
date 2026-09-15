@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ApplicationController;
+use App\Http\Controllers\ImageController;
 use App\Livewire\Application\Create;
 use App\Livewire\Application\Index;
 use App\Livewire\Application\Search;
@@ -28,6 +29,14 @@ Route::name('application.')
                 Route::get('', Show::class)
                     ->middleware('can:view,\App\Models\Application,application')
                     ->name('show');
+
+                Route::get('/image/{filename}', [ImageController::class, 'get'])
+                    ->where('filename', '[a-zA-Z0-9_\-\.]+')
+                    ->name('image');
+
+                Route::get('/image/{filename}/webView', [ImageController::class, 'webView'])
+                    ->where('filename', '[a-zA-Z0-9_\-\.]+')
+                    ->name('image.webView');
 
                 Route::name('assessment.')
                     ->prefix('assessment')

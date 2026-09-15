@@ -45,10 +45,6 @@ Route::middleware(['auth', 'active.check'])
             ->middleware('permission:view-logs')
             ->name('activity.logs');
 
-        Route::get('/image/{filename}', [ImageController::class, 'get'])
-            ->where('filename', '[a-zA-Z0-9_\-\.]+')
-            ->name('image');
-
         require __DIR__.'/application.php';
         require __DIR__.'/client.php';
         require __DIR__.'/beneficiary.php';
