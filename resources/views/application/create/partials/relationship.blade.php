@@ -11,8 +11,9 @@
 			<x-slot:icon>
 				<x-icon.font-awesome class="fa-exclamation-circle fs-2" />
 			</x-slot:icon>
-			Select a {{ $clientUuid ? '' : 'Client Draft' }} {{ $clientUuid && $beneficiaryUuid ? '' : 'and a' }}
-			{{ $beneficiaryUuid ? '' : 'Beneficiary Draft' }} to continue.
+			Please provide the following to continue:
+			{{ !$clientUuid ? 'Client Draft, ' : '' }}
+			{{ !$beneficiaryUuid ? 'Beneficiary Draft' : '' }}
 		</x-alert>
 	@endif
 </x-card>

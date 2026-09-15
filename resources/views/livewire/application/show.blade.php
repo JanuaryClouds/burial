@@ -53,7 +53,8 @@
 			</div>
 		@endif
 	@endrole
-	<div id="documents">
+	<div id="documents"
+		wire:ignore>
 		<x-card>
 			{{-- Documents --}}
 			<x-slot:header>Documents</x-slot:header>

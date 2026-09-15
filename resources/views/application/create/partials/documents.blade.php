@@ -3,7 +3,7 @@
 @endphp
 <x-card>
 	<x-slot:header>Documents</x-slot:header>
-	@if ($clientUuid && $beneficiaryUuid)
+	@if ($clientUuid && $beneficiaryUuid && $relationshipId)
 		<div class="d-flex flex-column gap-4">
 			<x-callout class="bg-info-subtle border-info">
 				<x-slot:icon>
@@ -72,7 +72,10 @@
 			<x-slot:icon>
 				<x-icon.font-awesome class="fa-exclamation-circle fs-2" />
 			</x-slot:icon>
-			Select a Client and a Beneficiary to continue.
+			Please provide the following to continue:
+			{{ !$clientUuid ? 'Client Draft, ' : '' }}
+			{{ !$beneficiaryUuid ? 'Beneficiary Draft, ' : '' }}
+			{{ !$relationshipId ? 'Relationship to the Beneficiary' : '' }}
 		</x-alert>
 	@endif
 </x-card>

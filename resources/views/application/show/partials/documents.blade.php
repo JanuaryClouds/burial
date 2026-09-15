@@ -9,14 +9,10 @@
 			@endif
 			<div class="col-12 col-lg-6 p-4">
 				<div class="d-flex flex-column gap-4">
-					<h5 class="">
-						{{ Str::title(Str::replace('_', ' ', $document['key'])) }}
-					</h5>
-					<x-image.viewer src="{{ route('image', $document['key']) }}"
-						:alt="$document['name']"
-						defer />
+					<x-image.viewer src="{{ route('application.image', [$application, $document['key']]) }}"
+						:applicationUuid="$application->uuid"
+						:alt="$document['name']" />
 				</div>
-				<div class="separator separator-dashed my-4"></div>
 			</div>
 		@endforeach
 	</div>
