@@ -21,21 +21,6 @@
 
 	<div class="separator separator-dashed my-4"></div>
 
-	{{-- start::Contact Information --}}
-	<h4>Contact Information</h4>
-	<div class="row">
-		<div class="col-12 col-md-6 col-lg-4 col-xl-2">
-			<x-form.display label="Contact Number"
-				:contents="$client->contact_number" />
-		</div>
-		<div class="col-12 col-md-6 col-lg-8 col-xl-4">
-			<x-form.display label="Email Address"
-				:contents="$client->user->email"
-				helpText="This is synced with their TLC Portal Account" />
-		</div>
-
-	</div>
-
 	{{-- start::Address --}}
 	<h4>Address</h4>
 	<div class="row">
@@ -60,43 +45,39 @@
 
 	<div class="separator separator-dashed my-4"></div>
 
-	{{-- start::Demographics --}}
-	<h4>Demographics</h4>
-	<div class="row">
-		<div class="col-6 col-md-4 col-xl-4">
-			<x-form.display label="Civil Status"
-				:contents="$client->socialInfo->civil->name" />
-		</div>
-		<div class="col-6 col-md-4 col-xl-4">
-			<x-form.display label="Religion"
-				:contents="$client->demographic->religion->name" />
-		</div>
-		<div class="col-12 col-md-4 col-xl-4">
-			<x-form.display label="Nationality"
-				:contents="$client->demographic->nationality->name" />
-		</div>
-	</div>
-	{{-- end::Demographics --}}
-
-	<div class="separator separator-dashed my-4"></div>
-
 	{{-- start::Social Information --}}
 	<h4>Social Information</h4>
 	<div class="row">
-		<div class="col-12 col-md-6 col-xl-3">
+		<div class="col-6 col-md-4 col-lg-4 col-xl-2">
+			<x-form.display label="Contact Number"
+				:contents="$client->contact_number" />
+		</div>
+		<div class="col-6 col-md-3 col-xl-2">
+			<x-form.display label="Civil Status"
+				:contents="$client->socialInfo->civil->name" />
+		</div>
+		<div class="col-12 col-md-5 col-xl-3">
+			<x-form.display label="Nationality"
+				:contents="$client->demographic->nationality->name" />
+		</div>
+		<div class="col-12 col-md-6 col-xl-4">
+			<x-form.display label="Religion"
+				:contents="$client->demographic->religion->name" />
+		</div>
+		<div class="col-12 col-md-6 col-xl-4">
 			<x-form.display label="Educational Attainment"
 				:contents="$client->socialInfo->education?->name ?? 'N/A'" />
 		</div>
 		<div class="col-12 col-md-6 col-xl-3">
-			<x-form.display label="Skills"
-				:contents="$client->socialInfo->skill ?? 'N/A'" />
-		</div>
-		<div class="col-6 col-xl-3">
 			<x-form.display label="PhilHealth ID"
 				:contents="$client->socialInfo->philHealth ?? 'N/A'" />
 		</div>
-		<div class="col-6 col-xl-3">
-			<x-form.display label="Income"
+		<div class="col-12 col-md-6 col-xl-3">
+			<x-form.display label="Skills/Occupation"
+				:contents="$client->socialInfo->skill ?? 'N/A'" />
+		</div>
+		<div class="col-6 col-md-4 col-xl-3">
+			<x-form.display label="Estimated Monthly Income"
 				:contents="$client->socialInfo->income ?? 'N/A'" />
 		</div>
 	</div>
