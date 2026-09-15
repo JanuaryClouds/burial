@@ -14,6 +14,7 @@ import checkAndRenderCharts from './chart.js';
 import theme from './theme.js';
 import autoMarginColumns from './autoMarginColumns.js';
 import sweetAlert from './sweetAlert2.js';
+import toast from './toast.js';
 
 theme();
 
@@ -30,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     theme();
     autoMarginColumns();
     initSelect2();
-    
+
     $('#barangayId_display').on('change', function() {
         let text = $(this).find('option:selected').text();
         updateDistrict(text.trim());
@@ -54,6 +55,7 @@ window.initSelect2 = initSelect2;
 document.addEventListener('livewire:init', () => {
     autoMarginColumns();
     sweetAlert();
+    toast();
 
     Livewire.hook('morph.updated', ({ el }) => {
         requestAnimationFrame(() => {
