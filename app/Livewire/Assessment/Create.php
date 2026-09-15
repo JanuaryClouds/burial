@@ -6,6 +6,7 @@ use App\Models\Application;
 use App\Models\Assessment;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
@@ -28,7 +29,18 @@ class Create extends Component
 
     public function save()
     {
-        $this->validate();
+        try {
+            $this->validate();
+        } catch (ValidationException $e) {
+            $this->dispatch('notification:toast', [
+                'type' => 'error',
+                'title' => 'Invalid Form Submitted',
+                'text' => 'Please check your inputs and try again.',
+            ]);
+
+            report($e);
+            return;
+        }
 
         try {
             DB::transaction(function() {
@@ -67,6 +79,15 @@ class Create extends Component
                     'type' => 'error',
                     'text' => 'Something went wrong. Try again later.'
                 ]);
+
+                activity()
+                    ->withProperties([
+                        'application' => $this->application->uuid ?? null,
+                        'ip' => request()->ip(),
+                        'browser' => request()->userAgent(),
+                    ])
+                    ->causedBy(Auth::user())
+                    ->log('Failed to create assessment');
             }
         }
     }

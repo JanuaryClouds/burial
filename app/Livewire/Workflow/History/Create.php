@@ -10,6 +10,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Rule;
 use Livewire\Component;
@@ -103,7 +104,18 @@ class Create extends Component
 
     public function submit()
     {
-        $this->validate();
+        try {
+            $this->validate();
+        } catch (ValidationException $e) {
+            $this->dispatch('notification:toast', [
+                'type' => 'error',
+                'title' => 'Invalid Form Submitted',
+                'text' => 'Please check your inputs and try again.',
+            ]);
+
+            report($e);
+            return;
+        }
 
         try {
             DB::transaction(function () {
@@ -150,6 +162,15 @@ class Create extends Component
                     'title' => 'Error',
                     'text' => 'An error occurred while processing your request. Please try again later.',
                 ]);
+
+                activity()
+                    ->withProperties([
+                        'application' => $this->application->uuid ?? null,
+                        'ip' => request()->ip(),
+                        'browser' => request()->userAgent(),
+                    ])
+                    ->causedBy(Auth::user())
+                    ->log('Failed to create workflow history');
             }
         }
     }

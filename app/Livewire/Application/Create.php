@@ -11,6 +11,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Rule;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -36,6 +37,8 @@ class Create extends Component
     public ?Beneficiary $beneficiary = null;
 
     public $images = [];
+
+    public bool $agreedToTerms = false;
 
     public function mount()
     {
@@ -67,7 +70,15 @@ class Create extends Component
 
     public function clearForm()
     {
-        $this->reset();
+        $this->reset([
+            'clientUuid',
+            'beneficiaryUuid',
+            'relationshipId',
+            'images',
+            'client',
+            'beneficiary'
+        ]);
+        
         $this->dispatch('notification:alert', [
             'type' => 'success',
             'title' => 'Form Cleared',
@@ -77,7 +88,19 @@ class Create extends Component
 
     public function save()
     {
-        $this->validate();
+        try {
+            $this->validate();
+        } catch (ValidationException $e) {
+            $this->dispatch('notification:alert', [
+                'type' => 'error',
+                'title' => 'Invalid Form Submitted',
+                'text' => 'Please check your inputs and try again.',
+            ]);
+
+            report($e);
+            return;
+        }
+        
         $imageService = App(ImageService::class);
 
         try {
@@ -108,7 +131,7 @@ class Create extends Component
 
                 $this->reset();
 
-                $this->dispatch('notificaiton:alert', [
+                $this->dispatch('notification:alert', [
                     'type' => 'success',
                     'title' => 'Application Submitted Successfully',
                     'text' => 'Your application has been submitted. The information you have attached will no longer be available for editing.'
@@ -129,6 +152,15 @@ class Create extends Component
                     'text' => 'Something went wrong. Try again later.'
                 ]);
             }
+
+            activity()
+                ->withProperties([
+                    'application' => $application->uuid ?? null,
+                    'ip' => request()->ip(),
+                    'browser' => request()->userAgent(),
+                ])
+                ->causedBy(Auth::user())
+                ->log('Failed to create application');
         }
     }
 

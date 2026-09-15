@@ -11,6 +11,7 @@ use App\Models\WorkflowStage;
 use App\Services\WorkflowHistoryService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Rule;
 use Livewire\Attributes\Validate;
@@ -62,7 +63,18 @@ class Create extends Component
 
     public function save()
     {
-        $this->validate();
+        try {
+            $this->validate();
+        } catch (ValidationException $e) {
+            $this->dispatch('notification:toast', [
+                'type' => 'error',
+                'title' => 'Invalid Form Submitted',
+                'text' => 'Please check your inputs and try again.',
+            ]);
+
+            report($e);
+            return;
+        }
 
         try {
             DB::transaction(function() {
@@ -107,6 +119,15 @@ class Create extends Component
                     'text' => 'An error occurred while processing your request. Please try again later.',
                 ]);
             }
+
+            activity()
+                ->withProperties([
+                    'application' => $this->application->uuid,
+                    'ip' => request()->ip(),
+                    'browser' => request()->userAgent(),
+                ])
+                ->causedBy(Auth::id())
+                ->log('Failed to create a recommendation');
         }
     }
 

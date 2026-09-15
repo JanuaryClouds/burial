@@ -6,9 +6,11 @@ use App\Models\Barangay;
 use App\Models\Client;
 use App\Models\ClientDemographic;
 use App\Models\ClientSocialInfo;
+use App\Models\DocumentRequirement;
 use App\Services\CentralClientService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Rule;
 use Livewire\Component;
 
@@ -73,8 +75,12 @@ class Create extends Component
     #[Rule('nullable|string|max:255')]
     public ?string $income = null;
 
+    public array $requiredDocuments;
+
     public function mount()
     {
+        $this->requiredDocuments = DocumentRequirement::burial();
+
         if (Auth::user()->clients->count() > 0) {
             $this->previousRecord = Auth::user()->clients->sortByDesc('created_at')->first();
         }
@@ -116,7 +122,18 @@ class Create extends Component
 
     public function save()
     {
-        $this->validate();
+        try {
+            $this->validate();
+        } catch (ValidationException $e) {
+            $this->dispatch('notification:toast', [
+                'type' => 'error',
+                'title' => 'Invalid Form Submitted',
+                'text' => 'Please check your inputs and try again.',
+            ]);
+
+            report($e);
+            return;
+        }
 
         try {
             DB::transaction(function () {
@@ -173,6 +190,14 @@ class Create extends Component
                     'title' => 'Failed to Submit',
                     'text' => 'Something went wrong. Please try again.',
                 ]);
+
+                activity()
+                    ->withProperties([
+                        'ip' => request()->ip(),
+                        'browser' => request()->userAgent(),
+                    ])
+                    ->causedBy(Auth::user())
+                    ->log('Failed to create client');
             }
         }
     }
