@@ -18,7 +18,7 @@ class BeneficiaryFamilyController extends Controller
         $application = $member->beneficiary->application;
 
         return view('beneficiary.family.show', [
-            'page_title' => $member->name.' | Beneficiary Family Member | '.$application->tracking_no,
+            'pageTitle' => $member->name.' | Beneficiary Family Member | '.$application->tracking_no,
             'application' => $application,
             'member' => $member,
             'beneficiary' => $member->beneficiary,
@@ -28,7 +28,7 @@ class BeneficiaryFamilyController extends Controller
     public function edit(BeneficiaryFamily $member)
     {
         return view('beneficiary.family.edit', [
-            'page_title' => 'Edit '.$member->name,
+            'pageTitle' => 'Edit '.$member->name,
             'member' => $member,
         ]);
     }

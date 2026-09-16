@@ -36,7 +36,7 @@ class DashboardController extends Controller
         }
 
         return view('dashboard', [
-            'page_title' => 'Dashboard',
+            'pageTitle' => 'Dashboard',
             'data' => $data,
             'columns' => $this->datatableServices->getColumns($data),
         ]);
@@ -45,7 +45,7 @@ class DashboardController extends Controller
     public function user()
     {
         return view('dashboard', [
-            'page_title' => 'Dashboard',
+            'pageTitle' => 'Dashboard',
         ]);
     }
 }

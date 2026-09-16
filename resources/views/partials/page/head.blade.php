@@ -1,7 +1,7 @@
 <meta charset="UTF-8">
 <meta name="viewport"
 	content="width=device-width, initial-scale=1.0">
-<title>{{ $page_title ?? config('app.name') }} {{ isset($page_subtitle) ? '| ' . $page_subtitle : '' }}</title>
+@include('partials.page.title')
 
 <script nonce="{{ $nonce ?? '' }}"
 	src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"

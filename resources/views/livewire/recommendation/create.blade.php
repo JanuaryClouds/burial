@@ -1,5 +1,5 @@
-<x-slot:page_title>{{ $application->tracking_no }} | Create Recommendation</x-slot:page_title>
-<x-slot:page_subtitle>Funeral Assistance System | CSWDO Taguig</x-slot:page_subtitle>
+<x-slot:pageTitle>{{ $application->tracking_no }} | Create Recommendation</x-slot:pageTitle>
+<x-slot:pageSubTitle>Funeral Assistance System | CSWDO Taguig</x-slot:pageSubTitle>
 
 <div class="d-flex flex-column gap-6">
 	<div class="row">

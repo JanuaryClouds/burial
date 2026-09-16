@@ -1,5 +1,5 @@
-<x-slot:page_title>{{ $beneficiary->fullname() }} | Beneficiary</x-slot:page_title>
-<x-slot:page_subtitle>Funeral Assistance System | CSWDO Taguig</x-slot:page_subtitle>
+<x-slot:pageTitle>{{ $beneficiary->fullname() }} | Beneficiary</x-slot:pageTitle>
+<x-slot:pageSubTitle>Funeral Assistance System | CSWDO Taguig</x-slot:pageSubTitle>
 <div class="d-flex flex-column gap-4">
 	{{-- start::Basic Information --}}
 	<h4>Basic Information</h4>

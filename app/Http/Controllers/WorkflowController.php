@@ -29,7 +29,7 @@ class WorkflowController extends Controller
 
         return view('workflow.index', [
             'workflows' => $workflows,
-            'page_title' => 'Workflows',
+            'pageTitle' => 'Workflows',
             'columns' => $this->datatableServices->getColumns($workflows),
         ]);
     }
@@ -40,7 +40,7 @@ class WorkflowController extends Controller
     public function create()
     {
         return view('workflow.create', [
-            'page_title' => 'Create Workflow',
+            'pageTitle' => 'Create Workflow',
         ]);
     }
 
@@ -71,7 +71,7 @@ class WorkflowController extends Controller
     {
         return view('workflow.show', [
             'workflow' => $workflow,
-            'page_title' => $workflow->name,
+            'pageTitle' => $workflow->name,
         ]);
     }
 
@@ -82,7 +82,7 @@ class WorkflowController extends Controller
     {
         return view('workflow.edit', [
             'workflow' => $workflow,
-            'page_title' => $workflow->name,
+            'pageTitle' => $workflow->name,
         ]);
     }
 

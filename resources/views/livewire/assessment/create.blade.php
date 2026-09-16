@@ -1,9 +1,9 @@
-<x-slot:page_title>
+<x-slot:pageTitle>
 	{{ $application->tracking_no }} | Create Assessment
-</x-slot:page_title>
-<x-slot:page_subtitle>
+</x-slot:pageTitle>
+<x-slot:pageSubTitle>
 	Funeral Assistance System | CSWDO Taguig
-</x-slot:page_subtitle>
+</x-slot:pageSubTitle>
 
 <div class="d-flex flex-column gap-6">
 	<div class="row">

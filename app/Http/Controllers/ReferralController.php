@@ -23,7 +23,7 @@ class ReferralController extends Controller
      */
     public function index()
     {
-        $page_title = 'Referrals';
+        $pageTitle = 'Referrals';
 
         $personalData = $this->referralServices->index(auth()->user()->id);
         $personalDataColumns = $this->datatableServices->getColumns($personalData, ['client']);
@@ -47,7 +47,7 @@ class ReferralController extends Controller
             'allDataColumns',
             'personalData',
             'personalDataColumns',
-            'page_title'
+            'pageTitle'
         ));
     }
 

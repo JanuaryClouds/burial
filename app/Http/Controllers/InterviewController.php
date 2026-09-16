@@ -24,7 +24,7 @@ class InterviewController extends Controller
 
     public function index()
     {
-        $page_title = 'Appointment Interviews';
+        $pageTitle = 'Appointment Interviews';
 
         $personalData = $this->interviewServices->index(auth()->user()->id);
         $personalDataColumns = $this->datatableServices->getColumns($personalData, ['client']);
@@ -45,7 +45,7 @@ class InterviewController extends Controller
         }
 
         return view('interview.index', compact(
-            'page_title',
+            'pageTitle',
             'personalDataColumns',
             'personalData',
             'allDataColumns',

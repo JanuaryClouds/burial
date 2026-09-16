@@ -15,7 +15,7 @@ class ModeOfAssistanceController extends Controller
 
     public function index()
     {
-        $page_title = 'Mode of assistance';
+        $pageTitle = 'Mode of assistance';
         $resource = 'moa';
         $columns = ['name', 'remarks'];
         $data = ModeOfAssistance::getAllMoas()
@@ -35,7 +35,7 @@ class ModeOfAssistanceController extends Controller
         }
 
         return view('cms.index', compact(
-            'page_title',
+            'pageTitle',
             'resource',
             'columns',
             'data'

@@ -41,7 +41,7 @@ class ClientController extends Controller
         }
 
         return view('client.index', [
-            'page_title' => 'Clients',
+            'pageTitle' => 'Clients',
             'columns' => $this->datatableServices->getColumns($clients),
         ]);
     }
@@ -54,13 +54,13 @@ class ClientController extends Controller
             'client' => $client,
             'application' => $application,
             'beneficiary' => $application->beneficiary ?? null,
-            'page_title' => $client->fullname().' | Client | '.($application ? $application->tracking_no : 'Draft'),
+            'pageTitle' => $client->fullname().' | Client | '.($application ? $application->tracking_no : 'Draft'),
         ]);
     }
 
     public function create()
     {
-        $page_title = 'New Client Record';
+        $pageTitle = 'New Client Record';
         $matched = [];
         $user = Auth::user();
         $client = null;
@@ -100,7 +100,7 @@ class ClientController extends Controller
         }
 
         $view = view('client.create', [
-            'page_title' => $page_title,
+            'pageTitle' => $pageTitle,
         ]);
 
         if (! $client && ! $citizen) {
@@ -149,7 +149,7 @@ class ClientController extends Controller
     {
         return view('client.edit', [
             'client' => $client,
-            'page_title' => 'Edit '.$client->fullname(),
+            'pageTitle' => 'Edit '.$client->fullname(),
         ]);
     }
 

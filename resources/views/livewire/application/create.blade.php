@@ -1,5 +1,5 @@
-<x-slot:page_title>Create Application</x-slot:page_title>
-<x-slot:page_subtitle>Funeral Assistance System | CSWDO Taguig</x-slot:page_subtitle>
+<x-slot:pageTitle>Create Application</x-slot:pageTitle>
+<x-slot:pageSubTitle>Funeral Assistance System | CSWDO Taguig</x-slot:pageSubTitle>
 <div class="d-flex flex-column gap-6">
 	@include('application.create.partials.client')
 	@include('application.create.partials.beneficiary')

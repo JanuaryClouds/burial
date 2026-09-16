@@ -15,7 +15,7 @@ class DistrictController extends Controller
 
     public function index()
     {
-        $page_title = 'District';
+        $pageTitle = 'District';
         $resource = 'district';
         $columns = ['id', 'name', 'remarks', 'action'];
         $data = District::getAllDistricts()
@@ -35,7 +35,7 @@ class DistrictController extends Controller
         }
 
         return view('cms.index', compact(
-            'page_title',
+            'pageTitle',
             'resource',
             'columns',
             'data'

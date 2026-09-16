@@ -17,7 +17,7 @@ class NationalityController extends Controller
 
     public function index()
     {
-        $page_title = 'Nationality';
+        $pageTitle = 'Nationality';
         $resource = 'nationality';
         $data = Nationality::withTrashed()
             ->get()
@@ -38,7 +38,7 @@ class NationalityController extends Controller
         }
 
         return view('cms.index', compact(
-            'page_title',
+            'pageTitle',
             'resource',
             'columns',
             'data'
@@ -47,12 +47,12 @@ class NationalityController extends Controller
 
     public function edit($id)
     {
-        $page_title = 'Nationality';
+        $pageTitle = 'Nationality';
         $type = 'nationality';
         $data = Nationality::withTrashed()->findOrFail($id);
         $resource = 'nationality';
 
-        return view('cms.edit', compact('page_title', 'data', 'type', 'resource'));
+        return view('cms.edit', compact('pageTitle', 'data', 'type', 'resource'));
     }
 
     public function store(NationalityRequest $request)

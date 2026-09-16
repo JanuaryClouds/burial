@@ -31,7 +31,7 @@ class BeneficiaryController extends Controller
         }
 
         return view('beneficiary.index', [
-            'page_title' => 'Beneficiaries',
+            'pageTitle' => 'Beneficiaries',
             'beneficiaries' => $beneficiaries,
             'columns' => $columns,
         ]);
@@ -44,7 +44,7 @@ class BeneficiaryController extends Controller
         }
 
         return view('beneficiary.create', [
-            'page_title' => 'Register a Beneficiary',
+            'pageTitle' => 'Register a Beneficiary',
         ]);
     }
 
@@ -53,7 +53,7 @@ class BeneficiaryController extends Controller
         $application = $beneficiary->application;
 
         return view('beneficiary.show', [
-            'page_title' => $beneficiary->fullname().' | Beneficiary | '.($application ? $application->tracking_no : 'Draft'),
+            'pageTitle' => $beneficiary->fullname().' | Beneficiary | '.($application ? $application->tracking_no : 'Draft'),
             'application' => $application ?? null,
             'client' => $application?->client,
             'beneficiary' => $beneficiary,
@@ -83,7 +83,7 @@ class BeneficiaryController extends Controller
     {
         return view('beneficiary.edit', [
             'beneficiary' => $beneficiary,
-            'page_title' => 'Edit '.$beneficiary->fullname(),
+            'pageTitle' => 'Edit '.$beneficiary->fullname(),
         ]);
     }
 
