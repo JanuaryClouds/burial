@@ -11,7 +11,7 @@ class Show extends Component
 
     public ?string $uuid = null;
 
-    public function mount(?Client $client, ?string $uuid)
+    public function mount(?Client $client = null, ?string $uuid = null)
     {
         if ($uuid) {
             $this->client = Client::where('uuid', $uuid)->firstOrFail();
