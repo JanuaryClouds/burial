@@ -24,7 +24,7 @@ class SystemSettingController extends Controller
 
         return view('system.index', [
             'settings' => SystemSetting::first(),
-            'page_title' => 'System Settings',
+            'pageTitle' => 'System Settings',
         ]);
     }
 

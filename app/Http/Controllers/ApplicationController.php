@@ -44,7 +44,7 @@ class ApplicationController extends Controller
 
         return view('application.index', [
             'columns' => $this->datatableServices->getColumns($data),
-            'page_title' => 'Applications',
+            'pageTitle' => 'Applications',
         ]);
     }
 
@@ -87,7 +87,7 @@ class ApplicationController extends Controller
             ->toArray();
 
         return view('application.create', [
-            'page_title' => 'Create Application',
+            'pageTitle' => 'Create Application',
             'draftClients' => $draftClients,
             'draftBeneficiaries' => $draftBeneficiaries,
             'clientOptions' => $clientOptions,
@@ -151,7 +151,7 @@ class ApplicationController extends Controller
     public function search()
     {
         return view('application.search', [
-            'page_title' => 'Search Application',
+            'pageTitle' => 'Search Application',
         ]);
     }
 
@@ -200,7 +200,7 @@ class ApplicationController extends Controller
                 200
             ),
             'barcode' => $this->services->getBarcodeUri($application->qr_code),
-            'page_title' => $application->tracking_no,
+            'pageTitle' => $application->tracking_no,
         ]);
     }
 

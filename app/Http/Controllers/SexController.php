@@ -13,7 +13,7 @@ class SexController extends Controller
 
     public function index()
     {
-        $page_title = 'Sex';
+        $pageTitle = 'Sex';
         $resource = 'sex';
         $columns = ['name', 'remarks'];
         $data = Sex::getAllSexes()->map(function ($sex) {
@@ -32,7 +32,7 @@ class SexController extends Controller
         }
 
         return view('cms.index', compact(
-            'page_title',
+            'pageTitle',
             'resource',
             'columns',
             'data'

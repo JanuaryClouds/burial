@@ -136,7 +136,7 @@ class UserController extends Controller
 
     public function index()
     {
-        $page_title = 'Users';
+        $pageTitle = 'Users';
         $resource = 'user';
         $data = $this->userServices->index();
 
@@ -148,14 +148,14 @@ class UserController extends Controller
 
         $columns = $this->datatableServices->getColumns($data, ['is_active']);
 
-        return view('cms.index', compact('data', 'page_title', 'resource', 'columns'));
+        return view('cms.index', compact('data', 'pageTitle', 'resource', 'columns'));
     }
 
     public function edit(User $user)
     {
         $this->authorize('update', $user);
 
-        $page_title = 'Edit User';
+        $pageTitle = 'Edit User';
         $resource = 'user';
 
         $data = User::find($user->id);
@@ -166,7 +166,7 @@ class UserController extends Controller
             $roles = Role::whereIn('name', ['superadmin', 'staff'])->get();
         }
 
-        return view('cms.edit', compact('data', 'page_title', 'resource', 'roles'));
+        return view('cms.edit', compact('data', 'pageTitle', 'resource', 'roles'));
     }
 
     public function update(UpdateUserRequest $request, User $user)

@@ -17,7 +17,7 @@ class PermissionController extends Controller
     // Boilerplate Code
     // public function index(CmsDataTable $dataTable)
     // {
-    //     $page_title = 'Permission';
+    //     $pageTitle = 'Permission';
     //     $resource = 'permission';
     //     $columns = ['id', 'name', 'guard', 'action'];
     //     $data = Permission::getAllPermissions();
@@ -25,7 +25,7 @@ class PermissionController extends Controller
     //     return $dataTable
     //         ->render('cms.index', compact(
     //             'dataTable',
-    //             'page_title',
+    //             'pageTitle',
     //             'resource',
     //             'columns',
     //             'data',
@@ -44,7 +44,7 @@ class PermissionController extends Controller
     //         });
     //     $columns = ['name', 'guard'];
     //     $resource = 'permission';
-    //     $page_title = 'Permission';
+    //     $pageTitle = 'Permission';
 
     //     if (request()->expectsJson()) {
     //         return response()->json([
@@ -52,7 +52,7 @@ class PermissionController extends Controller
     //         ]);
     //     }
 
-    //     return view('cms.index', compact('data', 'resource', 'columns', 'page_title'));
+    //     return view('cms.index', compact('data', 'resource', 'columns', 'pageTitle'));
     // }
 
     // public function store(PermissionRequest $request)

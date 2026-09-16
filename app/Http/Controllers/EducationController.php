@@ -17,7 +17,7 @@ class EducationController extends Controller
 
     public function index()
     {
-        $page_title = 'Education';
+        $pageTitle = 'Education';
         $resource = 'education';
         $data = Education::withTrashed()
             ->get()
@@ -38,7 +38,7 @@ class EducationController extends Controller
         }
 
         return view('cms.index', compact(
-            'page_title',
+            'pageTitle',
             'resource',
             'columns',
             'data'
@@ -47,14 +47,14 @@ class EducationController extends Controller
 
     public function edit($id)
     {
-        $page_title = 'Education';
+        $pageTitle = 'Education';
         $resource = 'education';
         $data = Education::withTrashed()->findOrFail($id);
 
         return view('cms.edit', compact(
             'data',
             'resource',
-            'page_title',
+            'pageTitle',
         ));
     }
 

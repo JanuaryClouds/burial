@@ -13,13 +13,13 @@
 			<h1 class="flex-column text-gray-900 fw-bold my-1 d-md-flex d-none d-lg-flex">
 				<span class="text-white fs-1"
 					id="pageTitle">
-					{{ $page_title ?? 'CSWDO - Funeral Assistance' }}
+					{{ $pageTitle ?? 'CSWDO - Funeral Assistance' }}
 					@if (Route::is('*.show') && ($readonly ?? false))
 						<i class="ki-duotone ki-lock-3"></i>
 					@endif
 				</span>
 				<small class="text-gray-600 fs-6 fw-normal pt-2">
-					{{ $page_subtitle ?? 'Today is ' . \Carbon\Carbon::now()->format('l, F d, Y') }}.
+					{{ $pageSubTitle ?? 'Today is ' . \Carbon\Carbon::now()->format('l, F d, Y') }}.
 				</small>
 			</h1>
 			<!--end::Heading-->

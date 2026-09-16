@@ -29,7 +29,7 @@ class CitizenAccessController extends Controller
             return redirect()->route('dashboard');
         }
 
-        $page_title = 'Funeral Assistance System - Taguig CSWDO';
+        $pageTitle = 'Funeral Assistance System - Taguig CSWDO';
         $steps = ApplicationStep::steps();
         $burialDocuments = DocumentRequirement::burial();
         $funeralDocuments = DocumentRequirement::funeral();
@@ -77,7 +77,7 @@ class CitizenAccessController extends Controller
             'steps',
             'burialDocuments',
             'funeralDocuments',
-            'page_title',
+            'pageTitle',
         ));
     }
 

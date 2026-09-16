@@ -24,7 +24,7 @@ class BarangayController extends Controller
 
     public function index()
     {
-        $page_title = 'Barangay';
+        $pageTitle = 'Barangay';
         $resource = 'barangay';
         $data = Barangay::get()->map(function ($barangay) {
             return [
@@ -45,7 +45,7 @@ class BarangayController extends Controller
         }
 
         return view('cms.index', compact(
-            'page_title',
+            'pageTitle',
             'resource',
             'columns',
             'data',
@@ -55,19 +55,19 @@ class BarangayController extends Controller
 
     public function show(Barangay $barangay)
     {
-        $page_title = 'Barangay';
+        $pageTitle = 'Barangay';
         $type = 'barangay';
         $data = $barangay;
-        // return view('cms.show', compact('page_title', 'data', 'type'));
+        // return view('cms.show', compact('pageTitle', 'data', 'type'));
     }
 
     public function edit($id)
     {
-        $page_title = 'Barangay';
+        $pageTitle = 'Barangay';
         $resource = 'barangay';
         $data = Barangay::select('id', 'name')->findOrFail($id);
 
-        return view('cms.edit', compact('page_title', 'data', 'resource'));
+        return view('cms.edit', compact('pageTitle', 'data', 'resource'));
     }
 
     public function store(BarangayRequest $request)

@@ -17,7 +17,7 @@ class ReligionController extends Controller
 
     public function index()
     {
-        $page_title = 'Religion';
+        $pageTitle = 'Religion';
         $resource = 'religion';
         $data = Religion::withTrashed()
             ->get()
@@ -38,7 +38,7 @@ class ReligionController extends Controller
         }
 
         return view('cms.index', compact(
-            'page_title',
+            'pageTitle',
             'resource',
             'columns',
             'data',
@@ -61,11 +61,11 @@ class ReligionController extends Controller
 
     public function edit($id)
     {
-        $page_title = 'Religion';
+        $pageTitle = 'Religion';
         $resource = 'religion';
         $data = Religion::withTrashed()->findOrFail($id);
 
-        return view('cms.edit', compact('page_title', 'data', 'resource'));
+        return view('cms.edit', compact('pageTitle', 'data', 'resource'));
     }
 
     public function update($id, ReligionRequest $request)

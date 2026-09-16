@@ -3,7 +3,7 @@
 	data-bs-theme="system">
 
 <head>
-	@include('partials.document.head')
+	@include('partials.page.head')
 </head>
 
 <body id="kt_body"
@@ -41,7 +41,7 @@
 		</div>
 	</div>
 	@include('components.notification.alert')
-	@include('partials.document.scripts')
+	@include('partials.page.scripts')
 </body>
 
 </html>

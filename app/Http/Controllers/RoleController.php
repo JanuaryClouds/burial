@@ -18,7 +18,7 @@ class RoleController extends Controller
     // boilerplate code
     // public function index(CmsDataTable $dataTable)
     // {
-    //     $page_title = 'Role';
+    //     $pageTitle = 'Role';
     //     $resource = 'role';
     //     $columns = ['id', 'name', 'guard', 'action'];
     //     $data = Role::getAllRoles();
@@ -26,7 +26,7 @@ class RoleController extends Controller
     //     return $dataTable
     //         ->render('cms.index', compact(
     //             'dataTable',
-    //             'page_title',
+    //             'pageTitle',
     //             'resource',
     //             'columns',
     //             'data',
@@ -48,7 +48,7 @@ class RoleController extends Controller
         $columns = collect(['name'])->map(fn ($key) => [
             'data' => $key,
         ]);
-        $page_title = 'Role';
+        $pageTitle = 'Role';
         $resource = 'role';
         $permissions = Permission::select('id', 'name')->get();
 
@@ -58,17 +58,17 @@ class RoleController extends Controller
             ]);
         }
 
-        return view('cms.index', compact('data', 'page_title', 'resource', 'permissions', 'columns'));
+        return view('cms.index', compact('data', 'pageTitle', 'resource', 'permissions', 'columns'));
     }
 
     public function edit(Role $role)
     {
         $data = Role::where('id', $role->id)->select('id', 'name')->first();
-        $page_title = 'Edit Role';
+        $pageTitle = 'Edit Role';
         $resource = 'role';
         $permissions = Permission::select('id', 'name')->get();
 
-        return view('cms.edit', compact('data', 'page_title', 'resource', 'permissions'));
+        return view('cms.edit', compact('data', 'pageTitle', 'resource', 'permissions'));
     }
 
     public function store(RoleRequest $request)

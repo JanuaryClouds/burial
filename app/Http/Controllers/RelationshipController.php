@@ -17,7 +17,7 @@ class RelationshipController extends Controller
 
     public function index()
     {
-        $page_title = 'Relationship';
+        $pageTitle = 'Relationship';
         $resource = 'relationship';
         $data = Relationship::withTrashed()
             ->get()
@@ -38,7 +38,7 @@ class RelationshipController extends Controller
         }
 
         return view('cms.index', compact(
-            'page_title',
+            'pageTitle',
             'resource',
             'columns',
             'data'
@@ -61,11 +61,11 @@ class RelationshipController extends Controller
 
     public function edit($id)
     {
-        $page_title = 'Relationship';
+        $pageTitle = 'Relationship';
         $resource = 'relationship';
         $data = Relationship::withTrashed()->findOrFail($id);
 
-        return view('cms.edit', compact('data', 'page_title', 'resource'));
+        return view('cms.edit', compact('data', 'pageTitle', 'resource'));
     }
 
     public function update(RelationshipRequest $request, $id)
