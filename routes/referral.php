@@ -9,7 +9,4 @@ Route::controller(ReferralController::class)
     ->group(function () {
         Route::get('/', 'index')
             ->name('index');
-
-        Route::post('/{application}/store', 'store')
-            ->name('store');
     });
