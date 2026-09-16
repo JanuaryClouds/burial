@@ -6,12 +6,14 @@
 			'src' => 'data',
 		])
 		<x-slot:footer>
-			<a href="{{ route('application.search') }}"
-				class="btn btn-sm btn-primary"
-				role="button">
-				<x-icon.font-awesome class="fa-qrcode" />
-				Scan Barcode
-			</a>
+			@if (Auth::user()->hasRole('staff'))
+				<a href="{{ route('application.search') }}"
+					class="btn btn-sm btn-primary"
+					role="button">
+					<x-icon.font-awesome class="fa-qrcode" />
+					Scan Barcode
+				</a>
+			@endif
 			@unlessrole('staff')
 				<a href="{{ route('application.create') }}"
 					class="btn btn-sm btn-light">

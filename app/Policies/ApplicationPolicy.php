@@ -12,6 +12,10 @@ class ApplicationPolicy
      */
     public function viewAny(User $user): bool
     {
+        if ($user->roles()->count() > 0) {
+            return true;
+        }
+
         return false;
     }
 
@@ -20,6 +24,14 @@ class ApplicationPolicy
      */
     public function view(User $user, Application $application): bool
     {
+        if ($user->roles()->count() > 0) {
+            return true;
+        }
+
+        if ($user->id === $application->client->user_id) {
+            return true;
+        }
+
         return false;
     }
 
@@ -28,6 +40,14 @@ class ApplicationPolicy
      */
     public function create(User $user): bool
     {
+        if ($user->hasRole('superadmin')) {
+            return true;
+        }
+
+        if ($user->roles()->count() == 0) {
+            return true;
+        }
+
         return false;
     }
 
@@ -36,6 +56,10 @@ class ApplicationPolicy
      */
     public function update(User $user, Application $application): bool
     {
+        if ($user->hasRole('superadmin')) {
+            return true;
+        }
+
         return false;
     }
 
@@ -44,6 +68,14 @@ class ApplicationPolicy
      */
     public function delete(User $user, Application $application): bool
     {
+        if ($user->hasRole('superadmin')) {
+            return true;
+        }
+
+        if ($user->id === $application->client->user_id) {
+            return true;
+        }
+
         return false;
     }
 
@@ -52,6 +84,14 @@ class ApplicationPolicy
      */
     public function restore(User $user, Application $application): bool
     {
+        if ($user->hasRole('superadmin')) {
+            return true;
+        }
+
+        if ($user->id === $application->client->user_id) {
+            return true;
+        }
+
         return false;
     }
 
@@ -60,6 +100,10 @@ class ApplicationPolicy
      */
     public function forceDelete(User $user, Application $application): bool
     {
+        if ($user->hasRole('superadmin')) {
+            return true;
+        }
+
         return false;
     }
 }

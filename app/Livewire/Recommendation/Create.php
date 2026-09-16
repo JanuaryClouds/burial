@@ -10,6 +10,8 @@ use App\Models\WorkflowHistory;
 use App\Models\WorkflowStage;
 use App\Services\WorkflowHistoryService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Rule;
 use Livewire\Attributes\Validate;
@@ -61,34 +63,72 @@ class Create extends Component
 
     public function save()
     {
-        $this->validate();
+        try {
+            $this->validate();
+        } catch (ValidationException $e) {
+            $this->dispatch('notification:toast', [
+                'type' => 'error',
+                'title' => 'Invalid Form Submitted',
+                'text' => 'Please check your inputs and try again.',
+            ]);
 
-        $recommendation = Recommendation::create([
-            'application_uuid' => $this->application->uuid,
-            'funeral_assistance_type_uuid' => $this->funeralAssistanceTypeUuid,
-            'amount_extended' => $this->amountExtended,
-            'mode_of_assistance_id' => $this->modeOfAssistanceId,
-            'recommended_by' => Auth::user()->id,
-        ]);
+            report($e);
+            return;
+        }
+
+        try {
+            DB::transaction(function() {
+                $recommendation = Recommendation::create([
+                    'application_uuid' => $this->application->uuid,
+                    'funeral_assistance_type_uuid' => $this->funeralAssistanceTypeUuid,
+                    'amount_extended' => $this->amountExtended,
+                    'mode_of_assistance_id' => $this->modeOfAssistanceId,
+                    'recommended_by' => Auth::user()->id,
+                ]);
+                
+                activity()
+                    ->withProperties([
+                        'recommendation' => $recommendation->uuid,
+                        'application' => $this->application->uuid,
+                        'ip' => request()->ip(),
+                        'browser' => request()->userAgent(),
+                    ])
+                    ->causedBy(Auth::user()->id)
+                    ->log('Created a recommendation');
         
-        activity()
-            ->withProperties([
-                'recommendation' => $recommendation->uuid,
-                'application' => $this->application->uuid,
-                'ip' => request()->ip(),
-                'browser' => request()->userAgent(),
-            ])
-            ->causedBy(Auth::user()->id)
-            ->log('Created a recommendation');
-
-        $this->dispatch('notification:alert', [
-            'type' => 'success',
-            'title' => 'Recommendation created successfully',
-        ]);
-
-        $this->reset('createNew');
+                $this->dispatch('notification:alert', [
+                    'type' => 'success',
+                    'title' => 'Recommendation created successfully',
+                ]);
         
-        $this->dispatch('refreshRecommendation');
+                $this->reset('createNew');
+                
+                $this->dispatch('refreshRecommendation');
+            });
+        } catch (\Throwable $th) {
+            if (app()->hasDebugModeEnabled()) {
+                $this->dispatch('notification:alert', [
+                    'type' => 'error',
+                    'title' => 'Error',
+                    'text' => $th->getMessage(),
+                ]);
+            } else {
+                $this->dispatch('notification:alert', [
+                    'type' => 'error',
+                    'title' => 'Error',
+                    'text' => 'An error occurred while processing your request. Please try again later.',
+                ]);
+            }
+
+            activity()
+                ->withProperties([
+                    'application' => $this->application->uuid,
+                    'ip' => request()->ip(),
+                    'browser' => request()->userAgent(),
+                ])
+                ->causedBy(Auth::id())
+                ->log('Failed to create a recommendation');
+        }
     }
 
     #[On('refreshRecommendation')]

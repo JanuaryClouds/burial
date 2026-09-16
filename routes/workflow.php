@@ -3,10 +3,9 @@
 use App\Http\Controllers\WorkflowController;
 use App\Http\Controllers\WorkflowHistoryController;
 use App\Http\Controllers\WorkflowStageController;
-use App\Http\Controllers\WorkflowTransitionController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('workflows/')
+Route::prefix('workflow/')
     ->name('workflow.')
     ->group(function () {
         Route::controller(WorkflowController::class)
@@ -14,25 +13,25 @@ Route::prefix('workflows/')
                 Route::get('/', 'index')
                     ->name('index');
 
-                Route::get('/create', 'create')
-                    ->name('create');
+                // Route::get('/create', 'create')
+                //     ->name('create');
 
-                Route::post('/store', 'store')
-                    ->name('store');
+                // Route::post('/store', 'store')
+                //     ->name('store');
 
                 Route::prefix('/{workflow}')
                     ->group(function () {
                         Route::get('', 'show')
                             ->name('show');
 
-                        Route::get('/edit', 'edit')
-                            ->name('edit');
+                        // Route::get('/edit', 'edit')
+                        //     ->name('edit');
 
-                        Route::post('/update', 'update')
-                            ->name('update');
+                        // Route::post('/update', 'update')
+                        //     ->name('update');
 
-                        Route::post('/destroy', 'destroy')
-                            ->name('destroy');
+                        // Route::post('/destroy', 'destroy')
+                        //     ->name('destroy');
                     });
             });
 
@@ -43,55 +42,26 @@ Route::prefix('workflows/')
                 Route::get('/', 'index')
                     ->name('index');
 
-                Route::get('create', 'create')
-                    ->name('create');
+                // Route::get('create', 'create')
+                //     ->name('create');
 
-                Route::post('/store', 'store')
-                    ->name('store');
+                // Route::post('/store', 'store')
+                //     ->name('store');
 
-                Route::prefix('/{stage}')
-                    ->group(function () {
-                        Route::get('', 'show')
-                            ->name('show');
+                // Route::prefix('/{stage}')
+                //     ->group(function () {
+                //         Route::get('', 'show')
+                //             ->name('show');
 
-                        Route::get('/edit', 'edit')
-                            ->name('edit');
+                //         Route::get('/edit', 'edit')
+                //             ->name('edit');
         
-                        Route::post('/update', 'update')
-                            ->name('update');
+                //         Route::post('/update', 'update')
+                //             ->name('update');
         
-                        Route::post('/destroy', 'destroy')
-                            ->name('destroy');
-                    });
-            });
-
-        Route::controller(WorkflowTransitionController::class)
-            ->prefix('transitions/')
-            ->name('transition.')
-            ->group(function () {
-                Route::get('/', 'index')
-                    ->name('index');
-
-                Route::get('/create', 'create')
-                    ->name('create');
-
-                Route::post('/store', 'store')
-                    ->name('store');
-
-                Route::prefix('/{transition}')
-                    ->group(function () {
-                        Route::get('', 'show')
-                            ->name('show');
-
-                        Route::get('/edit', 'edit')
-                            ->name('edit');
-        
-                        Route::post('/update', 'update')
-                            ->name('update');
-        
-                        Route::post('/destroy', 'destroy')
-                            ->name('destroy');
-                    });
+                //         Route::post('/destroy', 'destroy')
+                //             ->name('destroy');
+                //     });
             });
 
         Route::controller(WorkflowHistoryController::class)
@@ -101,25 +71,25 @@ Route::prefix('workflows/')
                 Route::get('/index')
                     ->name('index');
 
-                Route::get('/create')
-                    ->name('create');
+                // Route::get('/create')
+                //     ->name('create');
 
-                Route::post('/store', 'store')
-                    ->name('store');
+                // Route::post('/store', 'store')
+                //     ->name('store');
 
                 Route::prefix('/{history}')
                     ->group(function () {
                         Route::get('', 'show')
                             ->name('show');
 
-                        Route::get('/edit', 'edit')
-                            ->name('edit');
+                        // Route::get('/edit', 'edit')
+                        //     ->name('edit');
         
-                        Route::post('/update', 'update')
-                            ->name('update');
+                        // Route::post('/update', 'update')
+                        //     ->name('update');
         
-                        Route::post('/destroy', 'destroy')
-                            ->name('destroy');
+                        // Route::post('/destroy', 'destroy')
+                        //     ->name('destroy');
                     });
             });
     });

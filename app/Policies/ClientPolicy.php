@@ -29,12 +29,8 @@ class ClientPolicy
             return true;
         }
 
-        if ($user->roles()->count() == 0) {
-            if ($user->id == $client->user_id) {
-                return true;
-            } else {
-                return false;
-            }
+        if ($user->id == $client->user_id) {
+            return true;
         }
 
         return false;
@@ -69,7 +65,11 @@ class ClientPolicy
             return true;
         }
 
-        return $user->id === $client->user_id;
+        if ($user->id === $client->user_id) {
+            return true;
+        }
+
+        return false;
     }
 
     /**

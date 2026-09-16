@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ApplicationController;
+use App\Http\Controllers\ImageController;
 use App\Livewire\Application\Create;
 use App\Livewire\Application\Index;
 use App\Livewire\Application\Search;
@@ -16,15 +17,26 @@ Route::name('application.')
             ->name('index');
 
         Route::get('/create', Create::class)
+            ->middleware('can:create,\App\Models\Application')
             ->name('create');
 
         Route::get('/search', Search::class)
+            ->middleware('can:viewAny,\App\Models\Application')
             ->name('search');
 
         Route::prefix('/{application}')
             ->group(function() {
                 Route::get('', Show::class)
+                    ->middleware('can:view,\App\Models\Application,application')
                     ->name('show');
+
+                Route::get('/image/{filename}', [ImageController::class, 'get'])
+                    ->where('filename', '[a-zA-Z0-9_\-\.]+')
+                    ->name('image');
+
+                Route::get('/image/{filename}/webView', [ImageController::class, 'webView'])
+                    ->where('filename', '[a-zA-Z0-9_\-\.]+')
+                    ->name('image.webView');
 
                 Route::name('assessment.')
                     ->prefix('assessment')
@@ -55,36 +67,3 @@ Route::name('application.')
                     });
             });
     });
-
-// Route::controller(ApplicationController::class)
-//     ->name('application.')
-//     ->prefix('applications')
-//     ->group(function () {
-//         Route::get('/', 'index')
-//             ->name('index');
-
-//         Route::get('/create', 'create')
-//             ->name('create');
-
-//         Route::get('/search', 'search')
-//             ->name('search');
-
-//         Route::post('/store', 'store')
-//             ->middleware('throttle:5,1')
-//             ->name('store');
-
-//         Route::prefix('/{application}')
-//             ->group(function () {
-//                 // Route::get('', 'show')
-//                 //     ->name('show');
-
-//                 Route::get('/tracker-slip', 'codes')
-//                     ->name('tracker-slip');
-
-//                 Route::get('/print', 'print')
-//                     ->name('print');
-
-//                 Route::get('/certificate', 'certificate')
-//                     ->name('certificate');
-//             });
-//     });

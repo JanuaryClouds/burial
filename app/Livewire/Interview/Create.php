@@ -8,6 +8,8 @@ use App\Models\WorkflowStage;
 use App\Services\InterviewService;
 use App\Services\WorkflowHistoryService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -40,24 +42,51 @@ class Create extends Component
 
     public function save()
     {
-        $this->validate();
+        try {
+            $this->validate();
+        } catch (ValidationException $e) {
+            $this->dispatch('notification:toast', [
+                'type' => 'error',
+                'title' => 'Invalid Form Submitted',
+                'text' => 'Please check your inputs and try again.',
+            ]);
 
-        if ($this->client->interviews->where('schedule', '>', now())->count() > 0) {
+            report($e);
             return;
         }
 
-        $this->services->store(
-            ['schedule' => $this->schedule],
-            $this->client->uuid
-        );
-
-        $this->dispatch('notification:alert', [
-            'type' => 'success',
-            'text' => 'Interview scheduled successfully',
-        ]);
-
-        $this->reset('schedule');
-        $this->dispatch('interviewCreated');
+        try {
+            DB::transaction(function() {
+                if ($this->client->interviews->where('schedule', '>', now())->count() > 0) {
+                    return;
+                }
+        
+                $this->services->store(
+                    ['schedule' => $this->schedule],
+                    $this->client->uuid
+                );
+        
+                $this->dispatch('notification:alert', [
+                    'type' => 'success',
+                    'text' => 'Interview scheduled successfully',
+                ]);
+        
+                $this->reset('schedule');
+                $this->dispatch('interviewCreated');
+            });  
+        } catch (\Throwable $th) {
+            if (app()->hasDebugModeEnabled()) {
+                $this->dispatch('notification:alert', [
+                    'type' => 'error',
+                    'text' => $th->getMessage(),
+                ]);
+            } else {
+                $this->dispatch('notification:alert', [
+                    'type' => 'error',
+                    'text' => 'Something went wrong. Try again later.',
+                ]);
+            }
+        }
     }
 
     #[On('interviewCreated')]

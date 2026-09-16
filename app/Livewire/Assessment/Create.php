@@ -5,6 +5,8 @@ namespace App\Livewire\Assessment;
 use App\Models\Application;
 use App\Models\Assessment;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
@@ -27,31 +29,67 @@ class Create extends Component
 
     public function save()
     {
-        $this->validate();
+        try {
+            $this->validate();
+        } catch (ValidationException $e) {
+            $this->dispatch('notification:toast', [
+                'type' => 'error',
+                'title' => 'Invalid Form Submitted',
+                'text' => 'Please check your inputs and try again.',
+            ]);
 
-        $assessment = Assessment::updateOrCreate([
-            'application_uuid' => $this->application->uuid,
-            'problem_presented' => $this->problem_presented,
-            'swa' => $this->swa,
-        ]);
+            report($e);
+            return;
+        }
 
-        activity()
-            ->withProperties([
-                'assessment' => $assessment->uuid,
-                'application' => $this->application->uuid,
-                'ip' => request()->ip(),
-                'browser' => request()->userAgent(),
-            ])
-            ->causedBy(Auth::user()->id)
-            ->log('Created an assessment');
+        try {
+            DB::transaction(function() {
+                $assessment = Assessment::updateOrCreate([
+                    'application_uuid' => $this->application->uuid,
+                    'problem_presented' => $this->problem_presented,
+                    'swa' => $this->swa,
+                ]);
+        
+                activity()
+                    ->withProperties([
+                        'assessment' => $assessment->uuid,
+                        'application' => $this->application->uuid,
+                        'ip' => request()->ip(),
+                        'browser' => request()->userAgent(),
+                    ])
+                    ->causedBy(Auth::user()->id)
+                    ->log('Created an assessment');
+        
+                $this->reset('problem_presented', 'swa');
+                $this->dispatch('notification:alert', [
+                    'type' => 'success',
+                    'text' => 'Assessment created successfully',
+                ]);
+        
+                $this->redirect(route('application.show', $this->application));
+            });
+        } catch (\Throwable $th) {
+            if (app()->hasDebugModeEnabled()) {
+                $this->dispatch('notification:alert', [
+                    'type' => 'error',
+                    'text' => $th->getMessage()
+                ]);
+            } else {
+                $this->dispatch('notification:alert', [
+                    'type' => 'error',
+                    'text' => 'Something went wrong. Try again later.'
+                ]);
 
-        $this->reset('problem_presented', 'swa');
-        $this->dispatch('notification:alert', [
-            'type' => 'success',
-            'text' => 'Assessment created successfully',
-        ]);
-
-        $this->redirect(route('application.show', $this->application));
+                activity()
+                    ->withProperties([
+                        'application' => $this->application->uuid ?? null,
+                        'ip' => request()->ip(),
+                        'browser' => request()->userAgent(),
+                    ])
+                    ->causedBy(Auth::user())
+                    ->log('Failed to create assessment');
+            }
+        }
     }
 
     public function render()

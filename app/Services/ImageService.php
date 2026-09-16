@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Intervention\Image\Drivers\Gd\Driver;
@@ -45,22 +46,6 @@ class ImageService
 
     public function post(string $filename, $file)
     {
-        if (! config('services.fileserver.enable.post')) {
-            $ip = request()->ip();
-            $browser = request()->header('User-Agent');
-
-            activity()
-                ->causedBy(auth()->user())
-                ->withProperties([
-                    'ip' => $ip,
-                    'browser' => $browser,
-                    'filename' => $filename,
-                ])
-                ->log('File upload service skipped');
-
-            return true;
-        }
-
         if (! $file->isValid()) {
             throw new \RuntimeException($filename.' is not a valid file.');
         }
@@ -75,6 +60,7 @@ class ImageService
         if (app()->isLocal()) {
             $filename = 'test-'.$filename;
         }
+
         $filename = Str::slug($filename).'.jpg.enc';
 
         $url = $this->serverUrl;
@@ -88,11 +74,11 @@ class ImageService
             throw new \RuntimeException($filename.' already exists.');
         }
 
-        if (! auth()->check()) {
+        if (! Auth::check()) {
             throw new \RuntimeException('You are not logged in.');
         }
 
-        if (auth()->user()->tokens()->count() === 0) {
+        if (Auth::user()->tokens()->count() === 0) {
             throw new \RuntimeException('No token found. You cannot upload images without a token.');
         }
 
@@ -126,13 +112,30 @@ class ImageService
         $payload = $iv.$hmac.$encrypted;
         // This only works in production
         /** @var PersonalAccessToken $personalAccessToken */
-        $personalAccessToken = auth()->user()->tokens()->first();
+        $personalAccessToken = Auth::user()->tokens()->first();
 
         if ($personalAccessToken == null) {
             throw new \RuntimeException('No token found. You cannot upload images without a token.');
         }
 
         $token = $personalAccessToken->token.now()->format('Ymd');
+        
+        if (! config('services.fileserver.enable.post')) {
+            $ip = request()->ip();
+            $browser = request()->header('User-Agent');
+
+            activity()
+                ->causedBy(Auth::user())
+                ->withProperties([
+                    'ip' => $ip,
+                    'browser' => $browser,
+                    'filename' => $filename,
+                ])
+                ->log('File upload service skipped');
+
+            return true;
+        }
+
         $response = Http::asMultipart()
             ->timeout(15)
             ->retry(3, 200)
@@ -146,7 +149,7 @@ class ImageService
             $browser = request()->header('User-Agent');
 
             activity()
-                ->causedBy(auth()->user())
+                ->causedBy(Auth::user())
                 ->withProperties(['ip' => $ip, 'browser' => $browser])
                 ->log('Failed to upload file: '.$filename);
 

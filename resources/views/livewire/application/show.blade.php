@@ -53,11 +53,12 @@
 			</div>
 		@endif
 	@endrole
-	<div id="documents">
+	<div id="documents"
+		wire:ignore>
 		<x-card>
 			{{-- Documents --}}
 			<x-slot:header>Documents</x-slot:header>
-			@include('application.partials.documents')
+			@include('application.show.partials.documents')
 		</x-card>
 	</div>
 </div>

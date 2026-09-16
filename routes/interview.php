@@ -8,6 +8,4 @@ Route::controller(InterviewController::class)
     ->prefix('interview')
     ->group(function () {
         Route::get('/', 'index')->name('index');
-
-        Route::post('/store/{client}', 'store')->name('store');
     });

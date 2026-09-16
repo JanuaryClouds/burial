@@ -32,8 +32,7 @@ class DatabaseSeeder extends Seeder
             // Workflow
             WorkflowSeeder::class,
             WorkflowStageSeeder::class,
-            WorkflowTransitionSeeder::class,
-            
+
             // Data
             ClientSeeder::class,
             BeneficiarySeeder::class,
