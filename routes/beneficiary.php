@@ -7,11 +7,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::name('beneficiary.')
     ->prefix('beneficiary')
+    ->controller(BeneficiaryController::class)
     ->group(function () {
-        Route::get('/', [BeneficiaryController::class, 'index'])
+        Route::get('/', 'index')
             ->name('index');
 
-        Route::get('/create', Create::class)
+        Route::get('/create', 'create')
             ->name('create');
 
         // Route::post('/store', 'store')
@@ -19,16 +20,13 @@ Route::name('beneficiary.')
 
         Route::prefix('/{beneficiary}')
             ->group(function () {
-                Route::get('', [BeneficiaryController::class, 'show'])
+                Route::get('', 'show')
+                    ->middleware('can:view,beneficiary')
                     ->name('show');
 
-                Route::get('/edit', [BeneficiaryController::class, 'edit'])
+                Route::get('/edit', 'edit')
                     ->middleware('can:update,beneficiary')
                     ->name('edit');
-
-                Route::post('/update', [BeneficiaryController::class, 'update'])
-                    ->middleware('can:update,beneficiary')
-                    ->name('update');
             });
     });
 

@@ -48,17 +48,25 @@ class ClientController extends Controller
 
     public function show(Client $client)
     {
-        return view('client.show', compact(['client']));
+        return view('client.show', [
+            'pageTitle' => $client->fullname(),
+            'client' => $client,
+        ]);
     }
 
     public function create()
     {
-        return view('client.create');
+        return view('client.create', [
+            'pageTitle' => 'Draft a Client Record',
+        ]);
     }
 
     public function edit(Client $client)
     {
-        return view('client.edit', compact('client'));
+        return view('client.edit', [
+            'pageTitle' => 'Edit '.$client->fullname(),
+            'client' => $client,
+        ]);
     }
 
     // public function create()
