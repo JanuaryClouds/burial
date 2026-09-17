@@ -9,19 +9,19 @@
 			{{-- end::Warnings --}}
 
 			{{-- start::Basic Information --}}
-			@include('client.create.partials.basic-information')
+			@include('client.partials.basic-information')
 			{{-- end::Basic Information --}}
 
 			<div class="separator separator-dashed my-4"></div>
 
 			{{-- start::Address --}}
-			@include('client.create.partials.address')
+			@include('client.partials.address')
 			{{-- end::Address --}}
 
 			<div class="separator separator-dashed my-4"></div>
 
 			{{-- start::Social Information --}}
-			@include('client.create.partials.social-information')
+			@include('client.partials.social-information')
 			{{-- end::Social Information --}}
 		</div>
 		<x-slot:footer>

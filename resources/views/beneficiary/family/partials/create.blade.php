@@ -24,55 +24,55 @@
 			</div>
 		</div>
 
-		@forelse ($family as $index => $member)
-			<div wire:key="family-member-{{ $index }}"
+		@forelse ($form->family as $index => $member)
+			<div wire:key="form.family-member-{{ $index }}"
 				class="d-flex flex-column gap-4 border border-2 border-dashed border-gray-200 rounded py-3 px-4">
 				<div class="row">
 					<div class="col-12 col-md-8 col-lg-5">
-						<x-form.input wire:model="family.{{ $index }}.name"
+						<x-form.input wire:model="form.family.{{ $index }}.name"
 							label="Full name"
-							name="family.{{ $index }}.name"
+							name="form.family.{{ $index }}.name"
 							:required="true" />
 					</div>
 					<div class="col-12 col-md-4 col-lg-3">
-						<x-form.input wire:model="family.{{ $index }}.dateOfBirth"
-							label="Date of Birth"
-							name="family.{{ $index }}.dateOfBirth"
+						<x-form.input wire:model="form.family.{{ $index }}.age"
+							label="Age"
+							name="form.family.{{ $index }}.age"
 							:required="true"
-							type="date" />
+							type="number" />
 					</div>
 					<div class="col-6 col-md-3 col-lg-2">
-						<x-form.select wire:model="family.{{ $index }}.civilId"
-							name="family.{{ $index }}.civilId"
+						<x-form.select wire:model="form.family.{{ $index }}.civilId"
+							name="form.family.{{ $index }}.civilId"
 							label="Civil Status"
 							:required="true"
-							:selected="$family[$index]['civilId'] ?? ''"
+							:selected="$form->family[$index]['civilId'] ?? ''"
 							:options="$civilStatus ?? []" />
 					</div>
 					<div class="col-6 col-md-3 col-lg-2">
-						<x-form.select wire:model="family.{{ $index }}.sexId"
-							name="family.{{ $index }}.sexId"
+						<x-form.select wire:model="form.family.{{ $index }}.sexId"
+							name="form.family.{{ $index }}.sexId"
 							label="Sex"
 							:required="true"
-							:selected="$family[$index]['sexId'] ?? ''"
+							:selected="$form->family[$index]['sexId'] ?? ''"
 							:options="$genders ?? []" />
 					</div>
 					<div class="col-12 col-md-6 col-xl-3">
-						<x-form.select wire:model='family.{{ $index }}.relationshipId'
-							name="family.{{ $index }}.relationshipId"
+						<x-form.select wire:model="form.family.{{ $index }}.relationshipId"
+							name="form.family.{{ $index }}.relationshipId"
 							label="Relationship to the Beneficiary"
-							:selected="$family[$index]['relationshipId'] ?? ''"
+							:selected="$form->family[$index]['relationshipId'] ?? ''"
 							:options="$relationships ?? []"
 							:required="true" />
 					</div>
 					<div class="col-12 col-md-6 col-xl-4">
-						<x-form.input wire:model="family.{{ $index }}.occupation"
-							name="family.{{ $index }}.occupation"
+						<x-form.input wire:model="form.family.{{ $index }}.occupation"
+							name="form.family.{{ $index }}.occupation"
 							label="Occupation" />
 					</div>
 					<div class="col-12 col-md-4 col-xl-2">
-						<x-form.input wire:model="family.{{ $index }}.income"
-							name="family.{{ $index }}.income"
+						<x-form.input wire:model="form.family.{{ $index }}.income"
+							name="form.family.{{ $index }}.income"
 							label="Monthly Income" />
 					</div>
 				</div>
@@ -101,7 +101,7 @@
 				</x-slot:options>
 			</x-alert>
 		@endforelse
-		@if (count($family) > 0 && count($family) < 5)
+		@if (count($form->family) > 0 && count($form->family) < 5)
 			<div class="d-flex justify-content-center align-items-center">
 				<x-button wire:click="addFamilyMember"
 					wire:loading.attr="disabled"

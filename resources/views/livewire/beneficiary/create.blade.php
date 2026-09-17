@@ -11,19 +11,19 @@
 		<x-slot:header>Beneficiary's Information</x-slot:header>
 		<div class="d-flex flex-column gap-4">
 			{{-- start::Basic Information --}}
-			@include('beneficiary.create.partials.basic-information')
+			@include('beneficiary.partials.basic-information')
 			{{-- end::Basic Information --}}
 
 			<div class="separator separator-dashed my-4"></div>
 
 			{{-- start::Social Information --}}
-			@include('beneficiary.create.partials.social-information')
+			@include('beneficiary.partials.social-information')
 			{{-- end::Social Information --}}
 
 			<div class="separator separator-dashed my-4"></div>
 
 			{{-- start::Address --}}
-			@include('beneficiary.create.partials.address')
+			@include('beneficiary.partials.address')
 			{{-- end::Address --}}
 		</div>
 	</x-card>
