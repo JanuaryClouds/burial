@@ -1,29 +1,25 @@
-<x-slot:pageTitle>Edit Client</x-slot:pageTitle>
-<x-slot:pageSubTitle>Funeral Assistance System | CSWDO Taguig</x-slot:pageSubTitle>
-
 <x-card>
+	<x-slot:header>Beneficiary's Information</x-slot:header>
 	<div class="d-flex flex-column gap-4">
 		{{-- start::Basic Information --}}
-		@include('client.partials.basic-information')
+		@include('beneficiary.partials.basic-information')
 		{{-- end::Basic Information --}}
 
 		<div class="separator separator-dashed my-4"></div>
 
-		{{-- start::Address --}}
-		@include('client.partials.address')
-		{{-- end::Address --}}
+		{{-- start::Social Information --}}
+		@include('beneficiary.partials.social-information')
+		{{-- end::Social Information --}}
 
 		<div class="separator separator-dashed my-4"></div>
 
-		{{-- start::Social Information --}}
-		@include('client.partials.social-information')
-		{{-- end::Social Information --}}
-
+		{{-- start::Address --}}
+		@include('beneficiary.partials.address')
+		{{-- end::Address --}}
 	</div>
 	<x-slot:footer>
-		<a href="{{ route('client.show', $client) }}"
-			class="btn btn-sm btn-light"
-			role="button">
+		<a href="{{ route('beneficiary.show', $beneficiary) }}"
+			class="btn btn-sm btn-light">
 			<x-icon.font-awesome class="fa-xmark" />
 			Cancel
 		</a>

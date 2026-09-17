@@ -4,6 +4,13 @@
 		<livewire:beneficiary.show :uuid="$beneficiaryUuid"
 			defer />
 		<x-slot:footer>
+			@if ($beneficiaryUuid)
+				<a href="{{ route('beneficiary.edit', $beneficiaryUuid) }}"
+					class="btn btn-sm btn-light">
+					<x-icon.font-awesome class="fa-pencil" />
+					Edit Beneficiary Draft
+				</a>
+			@endif
 			<x-button wire:click="$set('beneficiaryUuid', '')"
 				wire:loading.attr='disabled'
 				class="btn-sm btn-danger">
