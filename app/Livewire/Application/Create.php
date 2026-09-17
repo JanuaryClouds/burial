@@ -43,6 +43,7 @@ class Create extends Component
     public function mount()
     {
         $this->clientOptions = Client::whereDoesntHave('application')
+            ->with('user')
             ->where('user_id', '=', Auth::id())
             ->orderByDesc('created_at')
             ->get()

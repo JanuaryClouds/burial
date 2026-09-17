@@ -23,7 +23,10 @@ class RecommendationSeeder extends Seeder
      */
     public function run(): void
     {
-        $applications = Application::whereHas('assessment')->get();
+        $applications = Application::with(['assessment'])
+            ->whereHas('assessment')
+            ->get();
+            
         dump('Number of Applications to Seed: '.$applications->count());
 
         foreach ($applications as $application) {

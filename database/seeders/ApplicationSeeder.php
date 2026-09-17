@@ -14,7 +14,8 @@ class ApplicationSeeder extends Seeder
      */
     public function run(): void
     {
-        $users = User::whereHas('clients')
+        $users = User::with(['clients', 'beneficiaries'])
+            ->whereHas('clients')
             ->whereHas('beneficiaries')
             ->get();
 

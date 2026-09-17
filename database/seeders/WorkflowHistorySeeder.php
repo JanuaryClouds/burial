@@ -25,7 +25,14 @@ class WorkflowHistorySeeder extends Seeder
      */
     public function run(): void
     {
-        $applications = Application::whereHas('client.interviews')
+        $applications = Application::with([
+            'client.interviews',
+            'recommendations',
+            'recommendations.funeralAssistanceType',
+            'recommendations.workflowHistory',
+            'workflowStage',
+        ])
+            ->whereHas('client.interviews')
             ->whereHas('recommendations', function ($query) {
                 $query->whereIn('status', ['pending']);
             })

@@ -24,7 +24,8 @@ class AssessmentSeeder extends Seeder
      */
     public function run(): void
     {
-        $clients = Client::whereHas('interviews')->get();
+        $clients = Client::with(['application', 'interviews'])
+            ->whereHas('interviews')->get();
 
         dump($clients->count().' Clients with Interviews to Seed');
 

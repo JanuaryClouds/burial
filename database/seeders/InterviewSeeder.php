@@ -24,7 +24,8 @@ class InterviewSeeder extends Seeder
      */
     public function run(): void
     {
-        $clients = Client::whereHas('application')
+        $clients = Client::with(['application', 'user'])
+            ->whereHas('application')
             ->get();
 
         foreach ($clients as $client) {

@@ -49,12 +49,8 @@ class ClientService
             ->orderBy($orderBy, $orderDirection)
             ->get()
             ->map(function (Client $client) {
-                $application = $client->application;
-                if ($application) {
-                    $status = $application->status();
-                } else {
-                    $status = 'Draft';
-                }
+                $application = $client->application?->with('workflowStage')?->first();
+                $status = $application ? $application->status() : 'Draft';
 
                 return [
                     'uuid' => $client->uuid,
