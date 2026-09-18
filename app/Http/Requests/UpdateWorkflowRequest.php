@@ -5,7 +5,6 @@ namespace App\Http\Requests;
 use App\Http\Requests\Traits\NormalizesInput;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Override;
 
 class UpdateWorkflowRequest extends FormRequest
 {

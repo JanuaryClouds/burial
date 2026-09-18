@@ -30,7 +30,7 @@ class Search extends Component
                 ->errorCorrection('H')
                 ->generate($application->qr_code);
 
-            $this->qrCode = 'data:image/svg+xml;base64,' . base64_encode($qrCodeImage);
+            $this->qrCode = 'data:image/svg+xml;base64,'.base64_encode($qrCodeImage);
             $this->barcode = Barcode::generateSvgBase64($application->qr_code);
         }
     }

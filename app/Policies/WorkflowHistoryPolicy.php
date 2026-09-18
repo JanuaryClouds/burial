@@ -5,8 +5,6 @@ namespace App\Policies;
 use App\Models\Application;
 use App\Models\User;
 use App\Models\WorkflowHistory;
-use App\Traits\HasSuperadminByPass;
-use Illuminate\Auth\Access\Response;
 
 class WorkflowHistoryPolicy
 {
@@ -34,11 +32,11 @@ class WorkflowHistoryPolicy
         if (isset($application->referral)) {
             return false;
         }
-        
+
         if (isset($application->cancellation)) {
             return false;
         }
-        
+
         if ($application->recommendations()->count() == 0) {
             return false;
         }

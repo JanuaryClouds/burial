@@ -62,7 +62,6 @@ class Beneficiary extends Model
 
     /**
      * Summary of address
-     * @return string
      */
     public function address(): string
     {

@@ -57,7 +57,7 @@ class BeneficiaryController extends Controller
     {
         return view('beneficiary.edit', [
             'pageTitle' => 'Edit '.$beneficiary->fullname(),
-            'beneficiary' => $beneficiary
+            'beneficiary' => $beneficiary,
         ]);
     }
 

@@ -3,12 +3,8 @@
 namespace App\Livewire\Interview;
 
 use App\Models\Client;
-use App\Models\Interview;
-use App\Models\WorkflowStage;
 use App\Services\ActivityLoggerService;
 use App\Services\InterviewService;
-use App\Services\WorkflowHistoryService;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\On;
@@ -55,21 +51,21 @@ class Create extends Component
         }
 
         try {
-            DB::transaction(function() {
+            DB::transaction(function () {
                 if ($this->client->interviews->where('schedule', '>', now())->count() > 0) {
                     return;
                 }
-        
+
                 $interview = $this->services->store(
                     ['schedule' => $this->schedule],
                     $this->client->uuid
                 );
-        
+
                 $this->dispatch('notification:alert', [
                     'type' => 'success',
                     'text' => 'Interview scheduled successfully',
                 ]);
-        
+
                 $this->reset('schedule');
                 $this->dispatch('interviewCreated');
 
@@ -78,7 +74,7 @@ class Create extends Component
                     'interview_uuid' => $interview->uuid,
                     'interview_schedule' => $$interview->schedule,
                 ]);
-            });  
+            });
         } catch (\Throwable $th) {
             $this->dispatch('notification:alert', [
                 'type' => 'error',

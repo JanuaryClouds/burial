@@ -4,8 +4,6 @@ namespace App\Policies;
 
 use App\Models\Application;
 use App\Models\User;
-use App\Models\WorkflowStage;
-use App\Traits\HasSuperadminByPass;
 
 class RecommendationPolicy
 {
@@ -40,7 +38,7 @@ class RecommendationPolicy
             return false;
         }
 
-        if (!empty(array_intersect(collect($application->status())->pluck('label')->toArray(), ['releasing', 'referred', 'cancelled', 'closed']))) {
+        if (! empty(array_intersect(collect($application->status())->pluck('label')->toArray(), ['releasing', 'referred', 'cancelled', 'closed']))) {
             return false;
         }
 

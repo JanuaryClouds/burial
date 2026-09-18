@@ -16,6 +16,6 @@ return [
     'errors' => [
         'validation' => 'Please make sure all required fields are not empty. Follow the warning below the field.',
         'unauthorized' => 'You do not have the permission for this.',
-        'unknown' => 'Something went wrong. Please try again later. If the problem persists, please contact the administrator.'
+        'unknown' => 'Something went wrong. Please try again later. If the problem persists, please contact the administrator.',
     ],
 ];

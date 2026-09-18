@@ -47,7 +47,7 @@ class Index extends Component
         } catch (ValidationException $e) {
             $this->dispatch('notification:toast', [
                 'type' => 'error',
-                'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation')
+                'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation'),
             ]);
 
             return;
@@ -65,26 +65,26 @@ class Index extends Component
                     'occupation' => $this->form->occupation,
                     'income' => $this->form->income,
                 ]);
-        
+
                 $this->form->reset();
                 $this->dispatch('refreshFamily');
                 $this->dispatch('notification:alert', [
                     'type' => 'success',
-                    'text' => 'Family member added successfully'
+                    'text' => 'Family member added successfully',
                 ]);
             });
         } catch (\Throwable $th) {
             $this->dispatch('notification:alert', [
                 'type' => 'error',
-                'text' => app()->hasDebugModeEnabled() ? $th->getMessage() : config('constants.errors.unknown')
+                'text' => app()->hasDebugModeEnabled() ? $th->getMessage() : config('constants.errors.unknown'),
             ]);
 
             ActivityLoggerService::logException($th, 'Failed to add family member to beneficiary');
 
-            throw($th);
+            throw ($th);
         }
     }
-    
+
     public function removeFamilyMember(string $uuid)
     {
         $member = BeneficiaryFamily::firstWhere('uuid', $uuid);
@@ -101,21 +101,21 @@ class Index extends Component
 
                     $this->dispatch('notification:toast', [
                         'type' => 'success',
-                        'text' => 'Family member removed successfully'
+                        'text' => 'Family member removed successfully',
                     ]);
                 }
             });
         } catch (\Throwable $th) {
             $this->dispatch('notification:toast', [
                 'type' => 'error',
-                'text' => app()->hasDebugModeEnabled() ? $th->getMessage() : config('constants.errors.unknown')
+                'text' => app()->hasDebugModeEnabled() ? $th->getMessage() : config('constants.errors.unknown'),
             ]);
 
             ActivityLoggerService::logException($th, 'Failed to remove family member from beneficiary');
 
             report($th);
         }
-        
+
         $this->dispatch('refreshFamily');
     }
 

@@ -3,14 +3,15 @@
 namespace App\Models;
 
 use App\Traits\HasUuid;
+use Database\Factories\CancellationFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Cancellation extends Model
 {
-    /** @use HasFactory<\Database\Factories\CancellationFactory> */
-    use HasUuid, HasFactory;
+    /** @use HasFactory<CancellationFactory> */
+    use HasFactory, HasUuid;
 
     protected $fillable = [
         'application_uuid',
@@ -24,11 +25,12 @@ class Cancellation extends Model
     |--------------------------------------------------------------------------
     |
     | Relationships for the Cancellation model
-    | 
+    |
     */
 
     /**
      * Summary of application
+     *
      * @return BelongsTo<Application, Cancellation>
      */
     public function application(): BelongsTo
@@ -38,6 +40,7 @@ class Cancellation extends Model
 
     /**
      * Summary of cancelledBy
+     *
      * @return BelongsTo<User, Cancellation>
      */
     public function cancelledBy(): BelongsTo
@@ -51,6 +54,6 @@ class Cancellation extends Model
     |--------------------------------------------------------------------------
     |
     | Scopes for the Cancellation model
-    | 
+    |
     */
 }

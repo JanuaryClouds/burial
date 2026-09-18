@@ -55,10 +55,10 @@ Route::prefix('workflow/')
 
                 //         Route::get('/edit', 'edit')
                 //             ->name('edit');
-        
+
                 //         Route::post('/update', 'update')
                 //             ->name('update');
-        
+
                 //         Route::post('/destroy', 'destroy')
                 //             ->name('destroy');
                 //     });
@@ -84,10 +84,10 @@ Route::prefix('workflow/')
 
                         // Route::get('/edit', 'edit')
                         //     ->name('edit');
-        
+
                         // Route::post('/update', 'update')
                         //     ->name('update');
-        
+
                         // Route::post('/destroy', 'destroy')
                         //     ->name('destroy');
                     });

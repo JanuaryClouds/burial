@@ -10,7 +10,6 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Rule;
@@ -19,17 +18,17 @@ use Livewire\Component;
 class Create extends Component
 {
     public Application $application;
-    
+
     public ?WorkflowStage $toStage;
-    
+
     public Collection $stages;
-    
+
     public bool $revertToRecommendation = false;
-    
+
     public bool $showDateOut = false;
-    
+
     public bool $showForm = false;
-    
+
     #[Rule('required|date')]
     public string $dateIn;
 
@@ -51,7 +50,7 @@ class Create extends Component
             $this->showForm = Auth::user()->can($this->application->toStage()->permission->name) || Auth::user()->hasRole('superadmin');
         }
     }
-    
+
     #[On('refreshWorkflowHistory')]
     public function refresh()
     {
@@ -74,7 +73,7 @@ class Create extends Component
                     return $stage->position < $currentPosition || $stage->position === $currentPosition + 1;
                 });
             })
-            ->when($application->currentStage() === null, function ($stages) use ($application) {
+            ->when($application->currentStage() === null, function ($stages) {
                 return $stages->where('position', '=', 1);
             })
             ->sortBy('position')
@@ -82,7 +81,7 @@ class Create extends Component
                 $name = $stage->name;
 
                 if ($application->currentStage() && $stage->position === $application->currentStage()->position + 1) {
-                    $name = 'Next Stage - ' . $name;
+                    $name = 'Next Stage - '.$name;
                 }
 
                 return [
@@ -118,41 +117,41 @@ class Create extends Component
 
         try {
             DB::transaction(function () {
-                if (Auth::user()->can($this->application->toStage()->permission->name) || !Auth::user()->hasRole('superadmin'))
-                    {
-                        $this->dispatch('refreshWorkflowHistory');
-                        $this->dispatch('notification:alert', [
-                            'type' => 'warning',
-                            'title' => 'Unauthorized',
-                            'text' => 'You are not authorized to log this stage',
-                        ]);
-                        return;
-                    }
-            
-                    $workflowHistory = WorkflowHistory::create([
-                        'recommendation_uuid' => $this->application->currentRecommendation()->uuid,
-                        'from_stage_uuid' => $this->application->previousHistory() ? $this->application->previousHistory()->to_stage_uuid : null,
-                        'to_stage_uuid' => $this->toStageUuid,
-                        'date_in' => $this->dateIn,
-                        'date_out' => $this->dateOut,
-                        'reason' => $this->reason ?? null,
-                        'processed_by' => Auth::id(),
-                    ]);
-            
-                    $this->application->current_workflow_stage_uuid = $this->toStageUuid;
-                    $this->application->save();
-
-                    ActivityLoggerService::logSuccess('Succesfully created workflow history', [
-                        'application_uuid' => $this->application->uuid,
-                        'recommendation_uuid' => $workflowHistory->recommendation->uuid,
-                        'workflow_history_uuid' => $workflowHistory->uuid,
-                    ]);
-
-                    $this->dispatch('notification:alert', [
-                        'type' => 'success',
-                        'title' => 'History created successfully',
-                    ]);
+                if (Auth::user()->can($this->application->toStage()->permission->name) || ! Auth::user()->hasRole('superadmin')) {
                     $this->dispatch('refreshWorkflowHistory');
+                    $this->dispatch('notification:alert', [
+                        'type' => 'warning',
+                        'title' => 'Unauthorized',
+                        'text' => 'You are not authorized to log this stage',
+                    ]);
+
+                    return;
+                }
+
+                $workflowHistory = WorkflowHistory::create([
+                    'recommendation_uuid' => $this->application->currentRecommendation()->uuid,
+                    'from_stage_uuid' => $this->application->previousHistory() ? $this->application->previousHistory()->to_stage_uuid : null,
+                    'to_stage_uuid' => $this->toStageUuid,
+                    'date_in' => $this->dateIn,
+                    'date_out' => $this->dateOut,
+                    'reason' => $this->reason ?? null,
+                    'processed_by' => Auth::id(),
+                ]);
+
+                $this->application->current_workflow_stage_uuid = $this->toStageUuid;
+                $this->application->save();
+
+                ActivityLoggerService::logSuccess('Succesfully created workflow history', [
+                    'application_uuid' => $this->application->uuid,
+                    'recommendation_uuid' => $workflowHistory->recommendation->uuid,
+                    'workflow_history_uuid' => $workflowHistory->uuid,
+                ]);
+
+                $this->dispatch('notification:alert', [
+                    'type' => 'success',
+                    'title' => 'History created successfully',
+                ]);
+                $this->dispatch('refreshWorkflowHistory');
             });
         } catch (\Throwable $th) {
             $this->dispatch('notification:alert', [

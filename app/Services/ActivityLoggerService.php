@@ -10,14 +10,13 @@ class ActivityLoggerService
 {
     /**
      * Log Exception Errors such as invalid forms
-     * @param Throwable $exception
-     * @param string $description
+     *
      * @return \Spatie\Activitylog\Contracts\Activity|null
      */
     public static function logException(Throwable $exception, string $description = 'Application Error'): Activity
     {
         return activity('system-errors')
-            ->tap(function(Activity $activity) {
+            ->tap(function (Activity $activity) {
                 if (Auth::check()) {
                     $activity->causedBy(Auth::user());
                 }
@@ -39,12 +38,13 @@ class ActivityLoggerService
 
     /**
      * Log unauthorized access and requests
+     *
      * @return \Spatie\Activitylog\Contracts\Activity|null
      */
-    public static function logUnauthorized() : Activity
+    public static function logUnauthorized(): Activity
     {
         return activity('permissions')
-            ->tap(function(Activity $activity) {
+            ->tap(function (Activity $activity) {
                 if (Auth::check()) {
                     $activity->causedBy(Auth::user());
                 }
@@ -60,12 +60,13 @@ class ActivityLoggerService
 
     /**
      * Log successful operations
+     *
      * @return \Spatie\Activitylog\Contracts\Activity|null
      */
     public static function logSuccess(string $description = 'Success', array $properties = []): Activity
     {
         return activity('success')
-            ->tap(function(Activity $activity) {
+            ->tap(function (Activity $activity) {
                 if (Auth::check()) {
                     $activity->causedBy(Auth::user());
                 }

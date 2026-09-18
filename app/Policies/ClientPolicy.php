@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\Client;
 use App\Models\User;
-use App\Traits\HasSuperadminByPass;
 
 class ClientPolicy
 {
@@ -60,7 +59,7 @@ class ClientPolicy
         if ($client->application) {
             return false;
         }
-        
+
         if ($user->hasRole('superadmin')) {
             return true;
         }

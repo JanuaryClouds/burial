@@ -88,7 +88,7 @@ class BeneficiaryFamilyPolicy
         if ($user->id === $beneficiaryFamily->beneficiary->user->id) {
             return true;
         }
-        
+
         return false;
     }
 

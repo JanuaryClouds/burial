@@ -3,9 +3,7 @@
 namespace App\Livewire\Beneficiary\Family;
 
 use App\Livewire\Forms\BeneficiaryFamilyForm;
-use App\Models\Beneficiary;
 use App\Models\BeneficiaryFamily;
-use App\Rules\BeneficiaryFamilyRules;
 use App\Services\ActivityLoggerService;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
@@ -20,7 +18,7 @@ class Edit extends Component
     public function mount(BeneficiaryFamily $member)
     {
         $this->member = $member->loadMissing([
-            'beneficiary.application'
+            'beneficiary.application',
         ]);
 
         $this->form->setFamilyMember($member);
@@ -31,9 +29,9 @@ class Edit extends Component
         if ($this->member->isClean()) {
             $this->dispatch('notification:toast', [
                 'type' => 'info',
-                'text' => 'No changes saved'
+                'text' => 'No changes saved',
             ]);
-    
+
             return;
         }
 
@@ -42,7 +40,7 @@ class Edit extends Component
         } catch (ValidationException $e) {
             $this->dispatch('notification:toast', [
                 'type' => 'error',
-                'text' => app()->hasDebugModeEnabled() ? $e->getMessage(): config('constants.errors.validation')
+                'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation'),
             ]);
 
             return;
@@ -63,7 +61,7 @@ class Edit extends Component
 
             $this->dispatch('notification:toast', [
                 'type' => 'success',
-                'text' => 'Family member saved successfully'
+                'text' => 'Family member saved successfully',
             ]);
 
             ActivityLoggerService::logSuccess('Successfully saved Beneficiary Family Member\'s Information', [
@@ -72,7 +70,7 @@ class Edit extends Component
         } catch (\Throwable $th) {
             $this->dispatch('notification:toast', [
                 'type' => 'error',
-                'text' => app()->hasDebugModeEnabled() ? $th->getMessage(): config('constants.errors.unknown')
+                'text' => app()->hasDebugModeEnabled() ? $th->getMessage() : config('constants.errors.unknown'),
             ]);
 
             ActivityLoggerService::logException($th, 'Failed to save beneficiary family member information');

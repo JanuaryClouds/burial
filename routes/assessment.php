@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\AssessmentController;
 use App\Livewire\Assessment\Create;
 use Illuminate\Support\Facades\Route;
 

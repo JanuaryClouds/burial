@@ -6,10 +6,8 @@ use App\Livewire\Forms\AssessmentForm;
 use App\Models\Application;
 use App\Models\Assessment;
 use App\Services\ActivityLoggerService;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
-use Livewire\Attributes\Validate;
 use Livewire\Component;
 
 class Create extends Component
@@ -39,7 +37,7 @@ class Create extends Component
         }
 
         try {
-            DB::transaction(function() {
+            DB::transaction(function () {
                 $assessment = Assessment::updateOrCreate([
                     'application_uuid' => $this->application->uuid,
                     'problem_presented' => $this->form->problem_presented,
@@ -62,7 +60,7 @@ class Create extends Component
         } catch (\Throwable $th) {
             $this->dispatch('notification:alert', [
                 'type' => 'error',
-                'text' => app()->hasDebugModeEnabled ? $th->getMessage() : config('constants.errors.unknown')
+                'text' => app()->hasDebugModeEnabled ? $th->getMessage() : config('constants.errors.unknown'),
             ]);
 
             ActivityLoggerService::logException($th, 'Failed to create assessment');

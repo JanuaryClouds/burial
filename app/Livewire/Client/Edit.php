@@ -5,11 +5,9 @@ namespace App\Livewire\Client;
 use App\Livewire\Forms\ClientForm;
 use App\Models\Barangay;
 use App\Models\Client;
-use App\Rules\ClientRules;
 use App\Services\ActivityLoggerService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
-use Livewire\Attributes\Rule;
 use Livewire\Component;
 
 class Edit extends Component
@@ -30,7 +28,7 @@ class Edit extends Component
         if ($this->client->isClean()) {
             $this->dispatch('notification:toast', [
                 'type' => 'info',
-                'text' => 'No changes saved'
+                'text' => 'No changes saved',
             ]);
 
             return;
@@ -41,7 +39,7 @@ class Edit extends Component
         } catch (ValidationException $e) {
             $this->dispatch('notification:toast', [
                 'type' => 'error',
-                'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation')
+                'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation'),
             ]);
 
             return;
@@ -77,7 +75,7 @@ class Edit extends Component
 
                 $this->dispatch('notification:alert', [
                     'type' => 'success',
-                    'text' => 'Client updated successfully.'
+                    'text' => 'Client updated successfully.',
                 ]);
 
                 ActivityLoggerService::logSuccess('Successfully updated Client\'s information', [
@@ -89,7 +87,7 @@ class Edit extends Component
         } catch (\Exception $e) {
             $this->dispatch('notification:toast', [
                 'type' => 'error',
-                'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.unknown')
+                'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.unknown'),
             ]);
 
             ActivityLoggerService::logException($e, 'Failed to update client information');

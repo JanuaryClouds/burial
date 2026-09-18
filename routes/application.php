@@ -3,7 +3,6 @@
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\ImageController;
 use App\Livewire\Application\Create;
-use App\Livewire\Application\Index;
 use App\Livewire\Application\Search;
 use App\Livewire\Application\Show;
 use App\Livewire\Assessment\Create as AssessmentCreate;
@@ -25,7 +24,7 @@ Route::name('application.')
             ->name('search');
 
         Route::prefix('/{application}')
-            ->group(function() {
+            ->group(function () {
                 Route::get('', Show::class)
                     ->middleware('can:view,\App\Models\Application,application')
                     ->name('show');
@@ -40,7 +39,7 @@ Route::name('application.')
 
                 Route::name('assessment.')
                     ->prefix('assessment')
-                    ->group(function() {
+                    ->group(function () {
                         Route::get('/create', AssessmentCreate::class)
                             ->middleware('can:create,\App\Models\Assessment,application')
                             ->name('create');
@@ -48,7 +47,7 @@ Route::name('application.')
 
                 Route::name('recommendation.')
                     ->prefix('recommendation')
-                    ->group(function() {
+                    ->group(function () {
                         Route::get('/create', RecommendationCreate::class)
                             ->middleware('can:create,\App\Models\Recommendation,application')
                             ->name('create');
@@ -58,10 +57,10 @@ Route::name('application.')
                     ->group(function () {
                         Route::get('/tracker-slip', 'codes')
                             ->name('tracker-slip');
-        
+
                         Route::get('/print', 'print')
                             ->name('print');
-        
+
                         Route::get('/certificate', 'certificate')
                             ->name('certificate');
                     });

@@ -37,7 +37,7 @@ return new class extends Migration
             $table->dropForeign(['workflow_uuid']);
             $table->dropColumn('workflow_uuid');
         });
-        
+
         Schema::dropIfExists('workflows');
     }
 };

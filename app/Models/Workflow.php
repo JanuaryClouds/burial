@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\HasUuid;
+use Database\Factories\WorkflowFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -10,14 +11,14 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Workflow extends Model
 {
-    /** @use HasFactory<\Database\Factories\WorkflowFactory> */
+    /** @use HasFactory<WorkflowFactory> */
     use HasFactory, HasUuid, SoftDeletes;
 
-    protected $table = "workflows";
+    protected $table = 'workflows';
 
     protected $fillable = [
         'name',
-        'description'
+        'description',
     ];
 
     /*
@@ -31,6 +32,7 @@ class Workflow extends Model
 
     /**
      * Summary of stages
+     *
      * @return HasMany<WorkflowStage, Workflow>
      */
     public function stages(): HasMany
@@ -40,6 +42,7 @@ class Workflow extends Model
 
     /**
      * Summary of transitions
+     *
      * @return HasMany<WorkflowTransition, Workflow>
      */
     public function transitions(): HasMany
@@ -49,6 +52,7 @@ class Workflow extends Model
 
     /**
      * Summary of funeralAssistanceTypes
+     *
      * @return HasMany<FuneralAssistanceType, Workflow>
      */
     public function funeralAssistanceTypes(): HasMany
@@ -61,7 +65,7 @@ class Workflow extends Model
         return [
             'stages',
             'transitions',
-            'funeralAssistanceTypes'
+            'funeralAssistanceTypes',
         ];
     }
 }

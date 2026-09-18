@@ -3,13 +3,14 @@
 namespace App\Models;
 
 use App\Traits\HasUuid;
+use Database\Factories\WorkflowHistoryFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class WorkflowHistory extends Model
 {
-    /** @use HasFactory<\Database\Factories\WorkflowHistoryFactory> */
+    /** @use HasFactory<WorkflowHistoryFactory> */
     use HasFactory, HasUuid;
 
     protected $table = 'workflow_histories';
@@ -36,6 +37,7 @@ class WorkflowHistory extends Model
 
     /**
      * Summary of fromStage
+     *
      * @return BelongsTo<WorkflowStage, WorkflowHistory>
      */
     public function fromStage(): BelongsTo
@@ -45,6 +47,7 @@ class WorkflowHistory extends Model
 
     /**
      * Summary of toStage
+     *
      * @return BelongsTo<WorkflowStage, WorkflowHistory>
      */
     public function toStage(): BelongsTo
@@ -54,6 +57,7 @@ class WorkflowHistory extends Model
 
     /**
      * Summary of processedBy
+     *
      * @return BelongsTo<User, WorkflowHistory>
      */
     public function processedBy(): BelongsTo
@@ -63,6 +67,7 @@ class WorkflowHistory extends Model
 
     /**
      * Summary of recommendation
+     *
      * @return BelongsTo<Recommendation, WorkflowHistory>
      */
     public function recommendation(): BelongsTo

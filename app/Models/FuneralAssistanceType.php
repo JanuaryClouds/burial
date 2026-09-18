@@ -20,7 +20,7 @@ class FuneralAssistanceType extends Model
     protected $fillable = [
         'name',
         'description',
-        'workflow_uuid'
+        'workflow_uuid',
     ];
 
     /**
@@ -35,6 +35,7 @@ class FuneralAssistanceType extends Model
 
     /**
      * Summary of workflow
+     *
      * @return BelongsTo<Workflow, FuneralAssistanceType>
      */
     public function workflow(): BelongsTo

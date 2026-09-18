@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\Workflow;
 use App\Models\WorkflowStage;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Permission;
@@ -18,7 +17,7 @@ class WorkflowStageSeeder extends Seeder
     {
         $primaryWorkflow = Workflow::where('name', 'Funeral Assistance')->first();
 
-        foreach($this->stages() as $stage) {
+        foreach ($this->stages() as $stage) {
             $permission = Permission::firstOrCreate([
                 'name' => $stage['permission'],
             ]);
@@ -28,13 +27,14 @@ class WorkflowStageSeeder extends Seeder
                     'name' => $stage['name'],
                     'workflow_uuid' => $primaryWorkflow->uuid,
                     'description' => $stage['description'],
-                    'permission_id' => $permission->id
+                    'permission_id' => $permission->id,
                 ]);
             });
         }
     }
 
-    public static function stages(): array {
+    public static function stages(): array
+    {
         return [
             // [
             //     'name' => 'Interview',

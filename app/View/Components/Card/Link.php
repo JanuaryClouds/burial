@@ -9,11 +9,17 @@ use Illuminate\View\Component;
 class Link extends Component
 {
     public string $route;
+
     public bool $active;
+
     public string $title;
+
     public string $description;
+
     public string $icon;
+
     public int $icon_paths;
+
     public string $classes;
 
     /**

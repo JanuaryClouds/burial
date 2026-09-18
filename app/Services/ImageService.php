@@ -119,7 +119,7 @@ class ImageService
         }
 
         $token = $personalAccessToken->token.now()->format('Ymd');
-        
+
         if (! config('services.fileserver.enable.post')) {
             $ip = request()->ip();
             $browser = request()->header('User-Agent');

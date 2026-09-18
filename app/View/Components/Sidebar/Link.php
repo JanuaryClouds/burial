@@ -30,8 +30,7 @@ class Link extends Component
         int $iconPathsCount,
         string $label,
         ?string $description
-    )
-    {
+    ) {
         $this->route = $route;
         $this->activeLink = $activeLink;
         $this->icon = $icon;

@@ -2,10 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\WorkflowStage;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 
 class PermissionSeeder extends Seeder
 {
@@ -31,12 +29,12 @@ class PermissionSeeder extends Seeder
 
         foreach ($workflowPermissions as $workflowPermission) {
             Permission::firstOrCreate([
-                'name' => $workflowPermission['permission']
+                'name' => $workflowPermission['permission'],
             ]);
         }
     }
 
-    public static function interviewPermissions(): array  
+    public static function interviewPermissions(): array
     {
         return [
             'interview.viewAny',
@@ -47,7 +45,8 @@ class PermissionSeeder extends Seeder
         ];
     }
 
-    public static function assessmentPermissions(): array {
+    public static function assessmentPermissions(): array
+    {
         return [
             'assessment.viewAny',
             'assessment.view',
@@ -57,7 +56,8 @@ class PermissionSeeder extends Seeder
         ];
     }
 
-    public static function recommendationPermissions(): array {
+    public static function recommendationPermissions(): array
+    {
         return [
             'recommendation.viewAny',
             'recommendation.view',
@@ -67,7 +67,8 @@ class PermissionSeeder extends Seeder
         ];
     }
 
-    public static function referralPermissions(): array  { 
+    public static function referralPermissions(): array
+    {
         return [
             'referral.viewAny',
             'referral.view',
@@ -77,7 +78,8 @@ class PermissionSeeder extends Seeder
         ];
     }
 
-    public static function claimantChangePermissions(): array { 
+    public static function claimantChangePermissions(): array
+    {
         return [
             'claimant-change-request.viewAny',
             'claimant-change-request.view',
@@ -87,7 +89,8 @@ class PermissionSeeder extends Seeder
         ];
     }
 
-    public static function  reportPermissions(): array  {
+    public static function reportPermissions(): array
+    {
         return [
             'report.viewAny',
             'report.view',
@@ -95,14 +98,16 @@ class PermissionSeeder extends Seeder
         ];
     }
 
-    public static function logPermissions(): array {
+    public static function logPermissions(): array
+    {
         return [
             'log.viewAny',
             'log.view',
         ];
     }
 
-    public static function rolePermissions(): array {
+    public static function rolePermissions(): array
+    {
         return [
             'role.create',
             'role.viewAny',
@@ -110,9 +115,9 @@ class PermissionSeeder extends Seeder
             'role.edit',
         ];
     }
-    
 
-    public static function workflowPermission(): array  {
+    public static function workflowPermission(): array
+    {
         return [
             'workflow.admin',
             'workflow.maricar',

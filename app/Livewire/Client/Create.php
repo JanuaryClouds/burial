@@ -8,13 +8,10 @@ use App\Models\Client;
 use App\Models\ClientDemographic;
 use App\Models\ClientSocialInfo;
 use App\Models\DocumentRequirement;
-use App\Rules\ClientRules;
 use App\Services\ActivityLoggerService;
-use App\Services\CentralClientService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
-use Livewire\Attributes\Rule;
 use Livewire\Component;
 
 class Create extends Component
@@ -40,13 +37,13 @@ class Create extends Component
             $this->dispatch('notification:alert', [
                 'type' => 'success',
                 'title' => 'Previous Record Found',
-                'text' => 'Successfully loaded your previous record and autofilled out the fields.'
+                'text' => 'Successfully loaded your previous record and autofilled out the fields.',
             ]);
         } else {
             $this->dispatch('notification:alert', [
                 'type' => 'info',
                 'title' => 'No Previous Record Found',
-                'text' => 'No previous record found. Please fill out the fields.'
+                'text' => 'No previous record found. Please fill out the fields.',
             ]);
         }
     }
@@ -72,7 +69,7 @@ class Create extends Component
         try {
             DB::transaction(function () {
                 $districtId = Barangay::firstWhere('id', $this->form->barangayId)->district_id;
-        
+
                 $client = Client::create([
                     'user_id' => Auth::id(),
                     'date_of_birth' => $this->form->dateOfBirth,
@@ -83,14 +80,14 @@ class Create extends Component
                     'city' => 'Taguig City',
                     'contact_number' => $this->form->contactNumber,
                 ]);
-        
+
                 ClientDemographic::create([
                     'client_uuid' => $client->uuid,
                     'sex_id' => $this->form->sexId,
                     'nationality_id' => $this->form->nationalityId,
                     'religion_id' => $this->form->religionId,
                 ]);
-                
+
                 ClientSocialInfo::create([
                     'client_uuid' => $client->uuid,
                     'civil_id' => $this->form->civilId,
@@ -99,20 +96,20 @@ class Create extends Component
                     'philhealth' => $this->form->philhealth,
                     'skill' => $this->form->skill,
                 ]);
-        
+
                 $this->reset();
-        
+
                 session()->put('client_uuid', $client->uuid);
-        
+
                 $this->dispatch('notification:alert', [
                     'type' => 'success',
                     'text' => 'Successfully saved your information as a draft',
                 ]);
 
                 ActivityLoggerService::logSuccess('Successfuly saved client', [
-                    'client_uuid' => $client->uuid
+                    'client_uuid' => $client->uuid,
                 ]);
-        
+
                 $this->redirect(route('beneficiary.create'));
             });
         } catch (\Throwable $th) {

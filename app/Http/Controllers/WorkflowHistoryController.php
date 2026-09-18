@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\WorkflowHistory;
 use App\Http\Requests\StoreWorkflowHistoryRequest;
 use App\Http\Requests\UpdateWorkflowHistoryRequest;
+use App\Models\WorkflowHistory;
 
 class WorkflowHistoryController extends Controller
 {

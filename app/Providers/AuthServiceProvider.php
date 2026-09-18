@@ -5,17 +5,11 @@ namespace App\Providers;
 use App\Models\Assessment;
 use App\Models\Beneficiary;
 use App\Models\BeneficiaryFamily;
-use App\Models\BurialAssistance;
-use App\Models\ClaimantChange;
 use App\Models\Client;
-use App\Models\ClientAssessment;
-use App\Models\ClientRecommendation;
-use App\Models\FuneralAssistance;
 use App\Models\Interview;
 use App\Models\Recommendation;
 use App\Models\Referral;
 use App\Models\User;
-use App\Models\Workflow;
 use App\Models\WorkflowHistory;
 use App\Policies\AssessmentPolicy;
 use App\Policies\BeneficiaryFamilyPolicy;
@@ -28,7 +22,6 @@ use App\Policies\RolePolicy;
 use App\Policies\UserPolicy;
 use App\Policies\WorkflowHistoryPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Gate;
 use Spatie\Permission\Models\Role;
 
 class AuthServiceProvider extends ServiceProvider

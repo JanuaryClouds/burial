@@ -201,9 +201,9 @@ class ApplicationService
 
     public function getQrCodeUri(
         string $format,
-        string $contents, 
-        int $size = 100, 
-        int $margin = 2, 
+        string $contents,
+        int $size = 100,
+        int $margin = 2,
         string $errorCorrection = 'H'
     ) {
         $qrCode = QrCode::format($format)
@@ -212,13 +212,13 @@ class ApplicationService
             ->errorCorrection($errorCorrection)
             ->generate($contents);
 
-        return 'data:image/svg+xml;base64,' . base64_encode($qrCode);
+        return 'data:image/svg+xml;base64,'.base64_encode($qrCode);
     }
 
     public function getBarcodeUri(string $contents)
     {
-        return Barcode::generateSvgBase64($contents);        
-    } 
+        return Barcode::generateSvgBase64($contents);
+    }
 
     public function codes(Application $application)
     {
@@ -229,7 +229,7 @@ class ApplicationService
                 $application->qr_code,
                 200
             ),
-            'barcode' => $this->getBarcodeUri($application->qr_code)
+            'barcode' => $this->getBarcodeUri($application->qr_code),
         ])
             ->setOption('isRemoteEnabled', true)
             ->setPaper([0, 0, 250, 400], 'portrait');

@@ -22,6 +22,7 @@ class Create extends Component
     use WithFileUploads;
 
     public Collection $clientOptions;
+
     public Collection $beneficiaryOptions;
 
     #[Rule('required|exists:clients,uuid')]
@@ -48,14 +49,14 @@ class Create extends Component
             ->where('user_id', '=', Auth::id())
             ->orderByDesc('created_at')
             ->get()
-            ->mapWithKeys(fn($client) => [$client->uuid => $client->fullname() . ' (created in ' . Carbon::parse($client->created_at)->format('d M Y, h:i A') . ')']);
+            ->mapWithKeys(fn ($client) => [$client->uuid => $client->fullname().' (created in '.Carbon::parse($client->created_at)->format('d M Y, h:i A').')']);
 
         $this->beneficiaryOptions = Beneficiary::whereDoesntHave('application')
             ->where('created_by', '=', Auth::id())
             ->orderBy('created_at')
             ->get()
-            ->mapWithKeys(fn($beneficiary) => [$beneficiary->uuid => $beneficiary->fullname() . ' (created in ' . Carbon::parse($beneficiary->created_at)->format('d M Y, h:i A') . ')']);
-    
+            ->mapWithKeys(fn ($beneficiary) => [$beneficiary->uuid => $beneficiary->fullname().' (created in '.Carbon::parse($beneficiary->created_at)->format('d M Y, h:i A').')']);
+
         if (session()->has('client_uuid')) {
             $this->clientUuid = session('client_uuid');
         }
@@ -78,13 +79,13 @@ class Create extends Component
             'relationshipId',
             'images',
             'client',
-            'beneficiary'
+            'beneficiary',
         ]);
-        
+
         $this->dispatch('notification:alert', [
             'type' => 'success',
             'title' => 'Form Cleared',
-            'text' => 'The form has been cleared. You can now start a new application.'
+            'text' => 'The form has been cleared. You can now start a new application.',
         ]);
     }
 
@@ -100,7 +101,7 @@ class Create extends Component
 
             return;
         }
-        
+
         $imageService = App(ImageService::class);
 
         try {
@@ -108,21 +109,21 @@ class Create extends Component
                 $application = Application::create([
                     'client_uuid' => $this->clientUuid,
                     'beneficiary_uuid' => $this->beneficiaryUuid,
-                    'relationship_id' => $this->relationshipId
+                    'relationship_id' => $this->relationshipId,
                 ]);
 
                 foreach ($this->images as $key => $file) {
-                    if (!$file) {
+                    if (! $file) {
                         continue;
                     }
 
-                    $filename = $application->tracking_no .'-'. Str::replace($key, '_', '-');
-                    $imageService->post($filename, $file);    
+                    $filename = $application->tracking_no.'-'.Str::replace($key, '_', '-');
+                    $imageService->post($filename, $file);
                 }
 
                 ActivityLoggerService::logSuccess('Successfully created application', [
                     'application_uuid' => $application->uuid,
-                    'images_submitted' => count($this->images)
+                    'images_submitted' => count($this->images),
                 ]);
 
                 $this->reset();
@@ -131,7 +132,7 @@ class Create extends Component
 
                 $this->dispatch('notification:alert', [
                     'type' => 'success',
-                    'text' => 'Your application has been submitted.'
+                    'text' => 'Your application has been submitted.',
                 ]);
 
                 $this->redirect(route('application.show', $application));
@@ -143,7 +144,7 @@ class Create extends Component
             ]);
 
             ActivityLoggerService::logException($th, 'Failed to submit application');
-            
+
             report($th);
         }
     }

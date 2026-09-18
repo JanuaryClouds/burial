@@ -1,8 +1,6 @@
 <?php
 
 use App\Http\Controllers\ClientController;
-use App\Livewire\Client\Create;
-use App\Livewire\Client\Show;
 use Illuminate\Support\Facades\Route;
 
 Route::name('client.')

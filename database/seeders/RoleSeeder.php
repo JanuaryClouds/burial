@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -44,7 +43,7 @@ class RoleSeeder extends Seeder
         $this->syncPermission($staffRole, 'close');
     }
 
-    public static function queryPermission(string $column = 'name', string $permissionName): array
+    public static function queryPermission(string $column, string $permissionName): array
     {
         $permission = Permission::where($column, 'like', '%'.$permissionName.'%')
             ->get()
@@ -52,7 +51,7 @@ class RoleSeeder extends Seeder
                 return [$permission->id => $permission->name];
             })
             ->toArray();
-        
+
         return $permission;
     }
 

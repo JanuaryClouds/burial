@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\RecommendationController;
 use App\Livewire\Recommendation\Create;
 use Illuminate\Support\Facades\Route;
 

@@ -7,16 +7,11 @@ use App\Models\Application;
 use App\Models\FuneralAssistanceType;
 use App\Models\ModeOfAssistance;
 use App\Models\Recommendation;
-use App\Models\WorkflowHistory;
-use App\Models\WorkflowStage;
 use App\Services\ActivityLoggerService;
-use App\Services\WorkflowHistoryService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\On;
-use Livewire\Attributes\Rule;
-use Livewire\Attributes\Validate;
 use Livewire\Component;
 
 class Create extends Component
@@ -70,7 +65,7 @@ class Create extends Component
         }
 
         try {
-            DB::transaction(function() {
+            DB::transaction(function () {
                 $recommendation = Recommendation::create([
                     'application_uuid' => $this->application->uuid,
                     'funeral_assistance_type_uuid' => $this->form->funeralAssistanceTypeUuid,
@@ -78,18 +73,18 @@ class Create extends Component
                     'mode_of_assistance_id' => $this->form->modeOfAssistanceId,
                     'recommended_by' => Auth::user()->id,
                 ]);
-        
+
                 $this->dispatch('notification:alert', [
                     'type' => 'success',
                     'title' => 'Recommendation created successfully',
                 ]);
 
                 ActivityLoggerService::logSuccess('Successfully saved recommendation', [
-                    'recommendation_uuid' => $recommendation->uuid
+                    'recommendation_uuid' => $recommendation->uuid,
                 ]);
-        
+
                 $this->reset('createNew');
-                
+
                 $this->dispatch('refreshRecommendation');
             });
         } catch (\Throwable $th) {

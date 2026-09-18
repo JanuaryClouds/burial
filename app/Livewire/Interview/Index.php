@@ -29,7 +29,7 @@ class Index extends Component
     public function markAsDone(Interview $interview)
     {
         $interview->update([
-            'status' => 'done'
+            'status' => 'done',
         ]);
 
         $this->refresh();

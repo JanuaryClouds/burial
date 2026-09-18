@@ -195,7 +195,7 @@ class ApplicationController extends Controller
             'funeralAssistanceTypes' => $funeralAssistanceTypes,
             'modes' => $modes,
             'qrCode' => $this->services->getQrCodeUri(
-                'svg', 
+                'svg',
                 $application->qr_code,
                 200
             ),

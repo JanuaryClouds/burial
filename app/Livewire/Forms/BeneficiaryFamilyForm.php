@@ -13,7 +13,7 @@ class BeneficiaryFamilyForm extends Form
 
     #[Validate('required|int|exists:sexes,id')]
     public ?int $sexId = null;
-    
+
     #[Validate('nullable|int')]
     public ?int $age = null;
 
