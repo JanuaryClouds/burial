@@ -2,128 +2,89 @@
 
 namespace App\Livewire\Beneficiary;
 
+use App\Livewire\Forms\UpdateBeneficiaryForm;
 use App\Models\Barangay;
 use App\Models\Beneficiary;
-use App\Rules\BeneficiaryRules;
+use App\Services\ActivityLoggerService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
-use Livewire\Attributes\Rule;
 use Livewire\Component;
 
 class Edit extends Component
 {
     public Beneficiary $beneficiary;
 
-    public ?string $firstName = null;
-
-    public ?string $middleName = null;
-
-    public ?string $lastName = null;
-
-    public ?string $suffix = null;
-
-    public ?int $sexId = null;
-
-    public ?int $religionId = null;
-
-    #[Rule('required|date|before_or_equal:today')]
-    public ?string $dateOfBirth = null;
-
-    #[Rule('required|date|after_or_equal:dateOfBirth')]
-    public ?string $dateOfDeath = null;
-
-    public ?bool $lethal = null;
-    
-    public ?bool $pwd = null;
-    
-    public ?string $houseNo = null;
-
-    public ?string $street = null;
-
-    public ?int $barangayId = null;
-
-    public ?string $city = null;
+    public UpdateBeneficiaryForm $form;
 
     public function mount(Beneficiary $beneficiary)
     {
         $this->beneficiary = $beneficiary;
 
-        $this->firstName = $this->beneficiary->first_name;
-        $this->middleName = $this->beneficiary->middle_name;
-        $this->lastName = $this->beneficiary->last_name;
-        $this->suffix = $this->beneficiary->suffix;
-        $this->sexId = $this->beneficiary->sex_id;
-        $this->religionId = $this->beneficiary->religion_id;
-        $this->dateOfBirth = $this->beneficiary->date_of_birth;
-        $this->dateOfDeath = $this->beneficiary->date_of_death;
-        $this->lethal = $this->beneficiary->lethal;
-        $this->pwd = $this->beneficiary->pwd;
-        $this->houseNo = $this->beneficiary->house_no;
-        $this->street = $this->beneficiary->street;
-        $this->barangayId = $this->beneficiary->barangay_id;
-        $this->city = $this->beneficiary->city;
-    }
-
-    protected function rules(): array
-    {
-        return BeneficiaryRules::rules();
+        $this->form->setBeneficiary($beneficiary);
     }
 
     public function save()
     {
-        try {
-            $data = $this->validate();
-        } catch (ValidationException $e) {
+        if ($this->beneficiary->isClean()) {
             $this->dispatch('notification:toast', [
-                'type' => 'error',
-                'text' => 'Please fill up all the required fields',
+                'type' => 'info',
+                'text' => 'No changes were saved',
             ]);
 
-            report($e);
             return;
         }
 
         try {
-            DB::transaction(function () use ($data) {
-                $barangay = Barangay::find($data['barangayId']);
+            $this->form->validate();
+        } catch (ValidationException $e) {
+            $this->dispatch('notification:toast', [
+                'type' => 'error',
+                'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation'),
+            ]);
+
+            return;
+        }
+
+        try {
+            DB::transaction(function () {
+                $barangay = Barangay::find($this->form->barangayId);
 
                 $this->beneficiary->update([
-                    'first_name' => $data['firstName'],
-                    'middle_name' => $data['middleName'],
-                    'last_name' => $data['lastName'],
-                    'suffix' => $data['suffix'],
-                    'sex_id' => $data['sexId'],
-                    'religion_id' => $data['religionId'],
-                    'date_of_birth' => $data['dateOfBirth'],
-                    'date_of_death' => $data['dateOfDeath'],
-                    'pwd' => $data['pwd'],
-                    'lethal' => $data['lethal'],
-                    'house_no' => $data['houseNo'],
-                    'street' => $data['street'],
+                    'first_name' => $this->form->firstName,
+                    'middle_name' => $this->form->middleName,
+                    'last_name' => $this->form->lastName,
+                    'suffix' => $this->form->suffix,
+                    'sex_id' => $this->form->sexId,
+                    'religion_id' => $this->form->religionId,
+                    'date_of_birth' => $this->form->dateOfBirth,
+                    'date_of_death' => $this->form->dateOfDeath,
+                    'pwd' => $this->form->pwd,
+                    'lethal' => $this->form->lethal,
+                    'house_no' => $this->form->houseNo,
+                    'street' => $this->form->street,
                     'barangay_id' => $barangay->id,
                     'district_id' => $barangay->district_id,
+                    'city' => 'Taguig City',
                 ]);
 
                 $this->dispatch('notification:alert', [
                     'type' => 'success',
-                    'text' => 'Successfully updated beneficiary\'s information'
+                    'text' => 'Successfully updated beneficiary\'s information',
+                ]);
+
+                ActivityLoggerService::logSuccess('Successfully updated beneficiary\'s information', [
+                    'beneficiary_uuid' => $this->beneficiary->uuid,
                 ]);
             });
         } catch (\Throwable $th) {
-            if (app()->hasDebugModeEnabled()) {
-                $this->dispatch('notification:toast', [
-                    'type' => 'error',
-                    'text' => $th->getMessage(),
-                ]);
-            } else {
-                $this->dispatch('notification:toast', [
-                    'type' => 'error',
-                    'text' => 'Something went wrong. Please try again later',
-                ]);
-            }
+            $this->dispatch('notification:alert', [
+                'type' => 'error',
+                'text' => app()->hasDebugModeEnabled() ? $th->getMessage() : config('constants.errors.unknown'),
+            ]);
+
+            ActivityLoggerService::logException($th, 'Failed to save changes to beneficiary information');
 
             report($th);
-            throw $th;
         }
     }
 

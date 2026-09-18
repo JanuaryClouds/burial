@@ -2,97 +2,83 @@
 
 namespace App\Livewire\Beneficiary\Family;
 
+use App\Livewire\Forms\BeneficiaryFamilyForm;
+use App\Models\Beneficiary;
 use App\Models\BeneficiaryFamily;
 use App\Rules\BeneficiaryFamilyRules;
+use App\Services\ActivityLoggerService;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Nette\Schema\ValidationException;
 
 class Edit extends Component
 {
-    public array $member;
+    public BeneficiaryFamily $member;
 
-    public ?string $name = null;
+    public BeneficiaryFamilyForm $form;
 
-    public ?int $sexId = null;
-
-    public ?int $relationshipId = null;
-
-    public ?string $dateOfBirth = null;
-
-    public ?int $civilId = null;
-
-    public ?string $occupation = null;
-
-    public ?float $income = null;
-
-    public function mount(array $member)
+    public function mount(BeneficiaryFamily $member)
     {
-        $this->member = $member;
-        $this->name = $member['name'];
-        $this->sexId = $member['sex_id'];
-        $this->relationshipId = $member['relationship_id'];
-        $this->dateOfBirth = $member['date_of_birth'];
-        $this->civilId = $member['civil_id'];
-        $this->occupation = $member['occupation'];
-        $this->income = $member['income'];
-    }
+        $this->member = $member->loadMissing([
+            'beneficiary.application'
+        ]);
 
-    protected function rules(): array
-    {
-        return BeneficiaryFamilyRules::rules();
+        $this->form->setFamilyMember($member);
     }
 
     public function save()
     {
-        try {
-            $data = $this->validate();
-        } catch (ValidationException $e) {
+        if ($this->member->isClean()) {
             $this->dispatch('notification:toast', [
-                'type' => 'error',
-                'text' => 'Please fill up all the required fields',
+                'type' => 'info',
+                'text' => 'No changes saved'
             ]);
-
-            report($e);
+    
             return;
         }
 
         try {
-            DB::transaction(function() use ($data) {
+            $this->form->validate();
+        } catch (ValidationException $e) {
+            $this->dispatch('notification:toast', [
+                'type' => 'error',
+                'text' => app()->hasDebugModeEnabled() ? $e->getMessage(): config('constants.errors.validation')
+            ]);
+
+            return;
+        }
+
+        try {
+            DB::transaction(function () {
                 $this->member->update([
-                    'name' => $this->name,
-                    'sex_id' => $this->sexId,
-                    'relationship_id' => $this->relationshipId,
-                    'age' => $this->age,
-                    'civil_id' => $this->civilId,
-                    'occupation' => $this->occupation,
-                    'income' => $this->income,
+                    'name' => $this->form->name,
+                    'sex_id' => $this->form->sexId,
+                    'age' => $this->form->age,
+                    'civil_id' => $this->form->civilId,
+                    'relationship_id' => $this->form->relationshipId,
+                    'occupation' => $this->form->occupation,
+                    'income' => $this->form->income,
                 ]);
             });
 
-            $this->dispatch('refreshFamily');
-
-            $this->dispatch('notification:alert', [
+            $this->dispatch('notification:toast', [
                 'type' => 'success',
-                'text' => 'Family member updated successfully',
+                'text' => 'Family member saved successfully'
+            ]);
+
+            ActivityLoggerService::logSuccess('Successfully saved Beneficiary Family Member\'s Information', [
+                'beneficiary_family_member_uuid' => $this->member->uuid,
             ]);
         } catch (\Throwable $th) {
-            if (app()->hasDebugModeEnabled()) {
-                $this->dispatch('notification:alert', [
-                    'type' => 'error',
-                    'text' => $th->getMessage(),
-                ]);
-            } else {
-                $this->dispatch('notification:alert', [
-                    'type' => 'error',
-                    'text' => 'Something went wrong. Please try again later',
-                ]);
-            }
-            
-            throw $th;
-        }
+            $this->dispatch('notification:toast', [
+                'type' => 'error',
+                'text' => app()->hasDebugModeEnabled() ? $th->getMessage(): config('constants.errors.unknown')
+            ]);
 
-        $this->dispatch('refreshFamily');
+            ActivityLoggerService::logException($th, 'Failed to save beneficiary family member information');
+
+            report($th);
+        }
     }
 
     public function render()

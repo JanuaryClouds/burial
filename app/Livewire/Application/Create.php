@@ -5,6 +5,7 @@ namespace App\Livewire\Application;
 use App\Models\Application;
 use App\Models\Beneficiary;
 use App\Models\Client;
+use App\Services\ActivityLoggerService;
 use App\Services\ImageService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -92,13 +93,11 @@ class Create extends Component
         try {
             $this->validate();
         } catch (ValidationException $e) {
-            $this->dispatch('notification:alert', [
+            $this->dispatch('notification:toast', [
                 'type' => 'error',
-                'title' => 'Invalid Form Submitted',
-                'text' => 'Please check your inputs and try again.',
+                'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation'),
             ]);
 
-            report($e);
             return;
         }
         
@@ -121,47 +120,31 @@ class Create extends Component
                     $imageService->post($filename, $file);    
                 }
 
-                activity()
-                    ->causedBy(Auth::user())
-                    ->withProperties([
-                        'ip' => request()->ip(),
-                        'browser' => request()->header('User-Agent'),
-                        'application_uuid' => $application->uuid,
-                    ])
-                    ->log('Application created with '. count($this->images) . ' images');
+                ActivityLoggerService::logSuccess('Successfully created application', [
+                    'application_uuid' => $application->uuid,
+                    'images_submitted' => count($this->images)
+                ]);
 
                 $this->reset();
 
+                session()->forget(['client_uuid', 'beneficiary_uuid']);
+
                 $this->dispatch('notification:alert', [
                     'type' => 'success',
-                    'title' => 'Application Submitted Successfully',
-                    'text' => 'Your application has been submitted. The information you have attached will no longer be available for editing.'
+                    'text' => 'Your application has been submitted.'
                 ]);
 
                 $this->redirect(route('application.show', $application));
             });
         } catch (\Throwable $th) {
-            if (app()->hasDebugModeEnabled()) {
-                $this->dispatch('notification:alert', [
-                    'type' => 'error',
-                    'title' => 'Error',
-                    'text' => $th->getMessage()
-                ]);
-            } else {
-                $this->dispatch('notification:alert', [
-                    'type' => 'error',
-                    'text' => 'Something went wrong. Try again later.'
-                ]);
-            }
+            $this->dispatch('notification:alert', [
+                'type' => 'error',
+                'text' => app()->hasDebugModeEnabled() ? $th->getMessage() : config('constants.errors.unknown'),
+            ]);
 
-            activity()
-                ->withProperties([
-                    'application' => $application->uuid ?? null,
-                    'ip' => request()->ip(),
-                    'browser' => request()->userAgent(),
-                ])
-                ->causedBy(Auth::user())
-                ->log('Failed to create application');
+            ActivityLoggerService::logException($th, 'Failed to submit application');
+            
+            report($th);
         }
     }
 

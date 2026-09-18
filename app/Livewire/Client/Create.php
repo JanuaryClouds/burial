@@ -9,6 +9,7 @@ use App\Models\ClientDemographic;
 use App\Models\ClientSocialInfo;
 use App\Models\DocumentRequirement;
 use App\Rules\ClientRules;
+use App\Services\ActivityLoggerService;
 use App\Services\CentralClientService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -62,11 +63,9 @@ class Create extends Component
         } catch (ValidationException $e) {
             $this->dispatch('notification:toast', [
                 'type' => 'error',
-                'title' => 'Invalid Form Submitted',
-                'text' => 'Please check your inputs and try again.',
+                'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation'),
             ]);
 
-            report($e);
             return;
         }
 
@@ -81,7 +80,7 @@ class Create extends Component
                     'street' => $this->form->street,
                     'district_id' => $districtId,
                     'barangay_id' => $this->form->barangayId,
-                    // 'city' => $this->city,
+                    'city' => 'Taguig City',
                     'contact_number' => $this->form->contactNumber,
                 ]);
         
@@ -109,31 +108,22 @@ class Create extends Component
                     'type' => 'success',
                     'text' => 'Successfully saved your information as a draft',
                 ]);
+
+                ActivityLoggerService::logSuccess('Successfuly saved client', [
+                    'client_uuid' => $client->uuid
+                ]);
         
                 $this->redirect(route('beneficiary.create'));
             });
         } catch (\Throwable $th) {
-            if (app()->hasDebugModeEnabled()) {
-                $this->dispatch('notification:alert', [
-                    'type' => 'error',
-                    'title' => 'Error',
-                    'text' => $th->getMessage(),
-                ]);
-            } else {
-                $this->dispatch('notification:alert', [
-                    'type' => 'error',
-                    'title' => 'Failed to Submit',
-                    'text' => 'Something went wrong. Please try again.',
-                ]);
+            $this->dispatch('notification:alert', [
+                'type' => 'error',
+                'text' => $th->getMessage(),
+            ]);
 
-                activity()
-                    ->withProperties([
-                        'ip' => request()->ip(),
-                        'browser' => request()->userAgent(),
-                    ])
-                    ->causedBy(Auth::user())
-                    ->log('Failed to create client');
-            }
+            ActivityLoggerService::logException($th, 'Failed to create client');
+
+            report($th);
         }
     }
 }

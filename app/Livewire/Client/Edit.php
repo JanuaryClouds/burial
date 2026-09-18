@@ -6,6 +6,7 @@ use App\Livewire\Forms\ClientForm;
 use App\Models\Barangay;
 use App\Models\Client;
 use App\Rules\ClientRules;
+use App\Services\ActivityLoggerService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Rule;
@@ -26,15 +27,23 @@ class Edit extends Component
 
     public function save()
     {
+        if ($this->client->isClean()) {
+            $this->dispatch('notification:toast', [
+                'type' => 'info',
+                'text' => 'No changes saved'
+            ]);
+
+            return;
+        }
+
         try {
             $this->form->validate();
         } catch (ValidationException $e) {
             $this->dispatch('notification:toast', [
                 'type' => 'error',
-                'text' => 'Please fill up all the required fields.'
+                'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation')
             ]);
 
-            report($e);
             return;
         }
 
@@ -71,13 +80,21 @@ class Edit extends Component
                     'text' => 'Client updated successfully.'
                 ]);
 
+                ActivityLoggerService::logSuccess('Successfully updated Client\'s information', [
+                    'client_uuid' => $this->client->uuid,
+                ]);
+
                 $this->client->refresh();
             });
         } catch (\Exception $e) {
             $this->dispatch('notification:toast', [
                 'type' => 'error',
-                'text' => 'Failed to update client. Please try again later.'
+                'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.unknown')
             ]);
+
+            ActivityLoggerService::logException($e, 'Failed to update client information');
+
+            report($e);
         }
     }
 

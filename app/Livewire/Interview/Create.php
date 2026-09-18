@@ -5,6 +5,7 @@ namespace App\Livewire\Interview;
 use App\Models\Client;
 use App\Models\Interview;
 use App\Models\WorkflowStage;
+use App\Services\ActivityLoggerService;
 use App\Services\InterviewService;
 use App\Services\WorkflowHistoryService;
 use Illuminate\Support\Facades\Auth;
@@ -47,11 +48,9 @@ class Create extends Component
         } catch (ValidationException $e) {
             $this->dispatch('notification:toast', [
                 'type' => 'error',
-                'title' => 'Invalid Form Submitted',
-                'text' => 'Please check your inputs and try again.',
+                'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation'),
             ]);
 
-            report($e);
             return;
         }
 
@@ -61,7 +60,7 @@ class Create extends Component
                     return;
                 }
         
-                $this->services->store(
+                $interview = $this->services->store(
                     ['schedule' => $this->schedule],
                     $this->client->uuid
                 );
@@ -73,19 +72,22 @@ class Create extends Component
         
                 $this->reset('schedule');
                 $this->dispatch('interviewCreated');
+
+                ActivityLoggerService::logSuccess('Successfully created an Interview for a client', [
+                    'client_uuid' => $this->client->uuid,
+                    'interview_uuid' => $interview->uuid,
+                    'interview_schedule' => $$interview->schedule,
+                ]);
             });  
         } catch (\Throwable $th) {
-            if (app()->hasDebugModeEnabled()) {
-                $this->dispatch('notification:alert', [
-                    'type' => 'error',
-                    'text' => $th->getMessage(),
-                ]);
-            } else {
-                $this->dispatch('notification:alert', [
-                    'type' => 'error',
-                    'text' => 'Something went wrong. Try again later.',
-                ]);
-            }
+            $this->dispatch('notification:alert', [
+                'type' => 'error',
+                'text' => app()->hasDebugModeEnabled() ? $th->getMessage() : config('constants.errors.unknown'),
+            ]);
+
+            ActivityLoggerService::logException($th, 'Unable to create interview');
+
+            report($th);
         }
     }
 

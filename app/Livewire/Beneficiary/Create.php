@@ -5,13 +5,10 @@ namespace App\Livewire\Beneficiary;
 use App\Livewire\Forms\BeneficiaryForm;
 use App\Models\Barangay;
 use App\Models\Beneficiary;
-use App\Rules\BeneficiaryRules;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Collection;
+use App\Services\ActivityLoggerService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
-use Livewire\Attributes\Rule;
 use Livewire\Component;
 
 class Create extends Component
@@ -46,14 +43,12 @@ class Create extends Component
         } catch (ValidationException $e) {
             $this->dispatch('notification:toast', [
                 'type' => 'error',
-                'title' => 'Invalid Form Submitted',
-                'text' => 'Please check your inputs and try again.',
+                'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation'),
             ]);
 
-            report($e);
             return;
         }
-        
+
         try {
             DB::transaction(function () {
                 $districtId = Barangay::firstWhere('id', $this->form->barangayId)->district_id;
@@ -90,39 +85,29 @@ class Create extends Component
                 }
 
                 session()->put('beneficiary_uuid', $beneficiary->uuid);
-        
+
                 $this->reset();
-        
+
                 $this->dispatch('notification:alert', [
                     'type' => 'success',
                     'text' => 'Beneficiary created successfully',
                 ]);
 
+                ActivityLoggerService::logSuccess('Successfully created beneficiary', [
+                    'beneficiary_uuid' => $beneficiary->uuid,
+                ]);
+
                 $this->redirect(route('application.create'));
             });
         } catch (\Throwable $th) {
-            if (app()->hasDebugModeEnabled()) {
-                $this->dispatch('notification:alert', [
-                    'type' => 'error',
-                    'title' => 'Error Occured',
-                    'text' => $th->getMessage(),
-                ]);
-            } else {
-                $this->dispatch('notification:alert', [
-                    'type' => 'error',
-                    'title' => 'Failed to Submit',
-                    'text' => 'Something went wrong. Please try again.',
-                ]);
-            }
+            $this->dispatch('notification:alert', [
+                'type' => 'error',
+                'text' => app()->hasDebugModeEnabled() ? $th->getMessage() : config('constants.errors.unknown'),
+            ]);
 
-            activity()
-                ->withProperties([
-                    'application' => $this->application->uuid,
-                    'ip' => request()->ip(),
-                    'browser' => request()->userAgent(),
-                ])
-                ->causedBy(Auth::id())
-                ->log('Failed to create a recommendation');
+            ActivityLoggerService::logException($th, 'Unable to create beneficiary');
+
+            report($th);
         }
     }
 

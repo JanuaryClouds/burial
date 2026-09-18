@@ -5,6 +5,7 @@ namespace App\Livewire\Workflow\History;
 use App\Models\Application;
 use App\Models\WorkflowHistory;
 use App\Models\WorkflowStage;
+use App\Services\ActivityLoggerService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -109,11 +110,9 @@ class Create extends Component
         } catch (ValidationException $e) {
             $this->dispatch('notification:toast', [
                 'type' => 'error',
-                'title' => 'Invalid Form Submitted',
-                'text' => 'Please check your inputs and try again.',
+                'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation'),
             ]);
 
-            report($e);
             return;
         }
 
@@ -130,7 +129,7 @@ class Create extends Component
                         return;
                     }
             
-                    WorkflowHistory::create([
+                    $workflowHistory = WorkflowHistory::create([
                         'recommendation_uuid' => $this->application->currentRecommendation()->uuid,
                         'from_stage_uuid' => $this->application->previousHistory() ? $this->application->previousHistory()->to_stage_uuid : null,
                         'to_stage_uuid' => $this->toStageUuid,
@@ -142,7 +141,13 @@ class Create extends Component
             
                     $this->application->current_workflow_stage_uuid = $this->toStageUuid;
                     $this->application->save();
-            
+
+                    ActivityLoggerService::logSuccess('Succesfully created workflow history', [
+                        'application_uuid' => $this->application->uuid,
+                        'recommendation_uuid' => $workflowHistory->recommendation->uuid,
+                        'workflow_history_uuid' => $workflowHistory->uuid,
+                    ]);
+
                     $this->dispatch('notification:alert', [
                         'type' => 'success',
                         'title' => 'History created successfully',
@@ -150,28 +155,14 @@ class Create extends Component
                     $this->dispatch('refreshWorkflowHistory');
             });
         } catch (\Throwable $th) {
-            if (app()->hasDebugModeEnabled()) {
-                $this->dispatch('notification:alert', [
-                    'type' => 'error',
-                    'title' => 'Error',
-                    'text' => $th->getMessage(),
-                ]);
-            } else {
-                $this->dispatch('notification:alert', [
-                    'type' => 'error',
-                    'title' => 'Error',
-                    'text' => 'An error occurred while processing your request. Please try again later.',
-                ]);
+            $this->dispatch('notification:alert', [
+                'type' => 'error',
+                'text' => app()->hasDebugModeEnabled() ? $th->getMessage() : config('constants.errors.unknown'),
+            ]);
 
-                activity()
-                    ->withProperties([
-                        'application' => $this->application->uuid ?? null,
-                        'ip' => request()->ip(),
-                        'browser' => request()->userAgent(),
-                    ])
-                    ->causedBy(Auth::user())
-                    ->log('Failed to create workflow history');
-            }
+            ActivityLoggerService::logException($th, 'Failed to create workflow history');
+
+            report($th);
         }
     }
 
