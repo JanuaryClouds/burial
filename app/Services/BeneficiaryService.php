@@ -26,7 +26,7 @@ class BeneficiaryService
             ->orderBy($orderBy, $orderDirection)
             ->get()
             ->map(function (Beneficiary $beneficiary) {
-                $application = $beneficiary->application?->with('workflowStage')?->first();
+                $application = $beneficiary->application?->load('workflowStage');
                 $status = $application ? $application->status() : 'Draft';
 
                 return [

@@ -49,7 +49,7 @@ class ClientService
             ->orderBy($orderBy, $orderDirection)
             ->get()
             ->map(function (Client $client) {
-                $application = $client->application?->with('workflowStage')?->first();
+                $application = $client->application?->load('workflowStage');
                 $status = $application ? $application->status() : 'Draft';
 
                 return [
