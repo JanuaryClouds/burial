@@ -16,11 +16,19 @@
 					Edit
 				</a>
 			@endcan
+			@if ($beneficiary->application)
+				<a href="{{ route('application.show', $beneficiary->application) }}"
+					class="btn btn-sm btn-info">
+					<x-icon.font-awesome class="fa-external-link" />
+					Application {{ $beneficiary->application->tracking_no }}
+				</a>
+			@endif
 		</x-slot:footer>
 	</x-card>
 
 	<x-card>
 		<x-slot:header>Family Composition</x-slot:header>
-		<livewire:beneficiary.family.index :beneficiary="$beneficiary" />
+		<livewire:beneficiary.family.index :beneficiary="$beneficiary"
+			defer />
 	</x-card>
 @endsection
