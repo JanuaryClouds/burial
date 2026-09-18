@@ -18,7 +18,6 @@
 		{{-- start::Social Information --}}
 		@include('client.partials.social-information')
 		{{-- end::Social Information --}}
-
 	</div>
 	<x-slot:footer>
 		<a href="{{ route('client.show', $client) }}"
@@ -29,14 +28,10 @@
 		</a>
 		<x-button class="btn-sm btn-success"
 			wire:click="save"
+			wire:dirty
 			wire:loading.attr="disabled">
 			<x-icon.font-awesome class="fa-floppy-disk" />
-			<span wire:loading.remove>
-				Update as Draft
-			</span>
-			<span wire:loading>
-				Updating...
-			</span>
+			Update as Draft
 		</x-button>
 	</x-slot:footer>
 </x-card>

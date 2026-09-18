@@ -48,8 +48,7 @@
 				wire:loading.attr='disabled'
 				class="btn-sm btn-success">
 				<x-icon.font-awesome class="fa-floppy-disk" />
-				<span wire:loading.remove>Save As Draft</span>
-				<span wire:loading>Saving...</span>
+				Save As Draft
 			</x-button>
 		</x-slot:footer>
 	</x-card>
