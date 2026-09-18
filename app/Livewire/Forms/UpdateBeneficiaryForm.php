@@ -1,0 +1,66 @@
+<?php
+
+namespace App\Livewire\Forms;
+
+use App\Models\Beneficiary;
+use Livewire\Attributes\Validate;
+use Livewire\Form;
+
+class UpdateBeneficiaryForm extends Form
+{
+    #[Validate('required|string|max:255')]
+    public ?string $firstName = null;
+
+    #[Validate('nullable|string|max:255')]
+    public ?string $middleName = null;
+
+    #[Validate('required|string|max:255')]
+    public ?string $lastName = null;
+
+    #[Validate('nullable|string|max:255')]
+    public ?string $suffix = null;
+
+    #[Validate('required|date|before_or_equal:today')]
+    public ?string $dateOfBirth = null;
+
+    #[Validate('required|date|after_or_equal:dateOfBirth')]
+    public ?string $dateOfDeath = null;
+
+    #[Validate('nullable|boolean')]
+    public ?bool $lethal = null;
+
+    #[Validate('nullable|boolean')]
+    public ?bool $pwd = null;
+
+    #[Validate('required|integer|exists:sexes,id')]
+    public ?int $sexId = null;
+
+    #[Validate('required|integer|exists:religions,id')]
+    public ?int $religionId = null;
+
+    #[Validate('required|integer|exists:barangays,id')]
+    public ?int $barangayId = null;
+
+    #[Validate('required|string|max:255')]
+    public ?string $houseNo = null;
+
+    #[Validate('required|string|max:255')]
+    public ?string $street = null;
+
+    public function setBeneficiary(Beneficiary $beneficiary)
+    {
+        $this->firstName = $beneficiary->first_name;
+        $this->middleName = $beneficiary->middle_name;
+        $this->lastName = $beneficiary->last_name;
+        $this->suffix = $beneficiary->suffix;
+        $this->dateOfBirth = $beneficiary->date_of_birth;
+        $this->dateOfDeath = $beneficiary->date_of_death;
+        $this->lethal = $beneficiary->lethal;
+        $this->pwd = $beneficiary->pwd;
+        $this->sexId = $beneficiary->sex_id;
+        $this->religionId = $beneficiary->religion_id;
+        $this->barangayId = $beneficiary->barangay_id;
+        $this->houseNo = $beneficiary->house_no;
+        $this->street = $beneficiary->street;
+    }
+}

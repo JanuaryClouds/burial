@@ -76,21 +76,21 @@
 					</x-alert>
 				@endif
 				@if ($createNew)
-					<x-form.select name="funeralAssistanceTypeUuid"
-						wire:model.live='funeralAssistanceTypeUuid'
+					<x-form.select name="form.funeralAssistanceTypeUuid"
+						wire:model.live='form.funeralAssistanceTypeUuid'
 						:options="$funeralAssistanceTypes"
 						label="Funeral Assistance Type"
 						:required="true" />
 					@if ($funeralAssistanceTypeUuid)
-						<x-form.input name="amountExtended"
-							wire:model.live.blur='amountExtended'
+						<x-form.input name="form.amountExtended"
+							wire:model.live.blur='form.amountExtended'
 							label="Amount to Extend"
 							required
 							type="number" />
 					@endif
 					@if ($amountExtended)
-						<x-form.select name="modeOfAssistanceId"
-							wire:model.live='modeOfAssistanceId'
+						<x-form.select name="form.modeOfAssistanceId"
+							wire:model.live='form.modeOfAssistanceId'
 							:options="$modeOfAssistances"
 							label="Mode of Assistance"
 							:required="true" />
@@ -109,8 +109,7 @@
 									wire:loading.attr='disabled'
 									class="btn-sm btn-success">
 									<i class="fa-solid fa-floppy-disk"></i>
-									<span wire:loading.remove>Save</span>
-									<span wire:loading>Saving...</span>
+									Save
 								</x-button>
 							</div>
 						</x-slot:footer>
