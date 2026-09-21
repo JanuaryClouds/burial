@@ -28,14 +28,6 @@
 			<x-form.display label="Age"
 				:contents="$beneficiary->age() . ' years old'" />
 		</div>
-		@if (
-			\Carbon\Carbon::parse($beneficiary->date_of_birth)->diffinMonths(
-				\Carbon\Carbon::parse($beneficiary->date_of_death)) < 1)
-			<div class="col-3 col-md-2 col-lg-3 col-xl-2">
-				<x-form.display label="Lethal"
-					:contents="$beneficiary->lethal ? 'Yes' : 'No'" />
-			</div>
-		@endif
 	</div>
 
 	<div class="separator separator-dashed my-4"></div>

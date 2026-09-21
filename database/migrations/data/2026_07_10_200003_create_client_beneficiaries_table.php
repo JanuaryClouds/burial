@@ -17,8 +17,7 @@ return new class extends Migration
             $table->foreignId('sex_id')->constrained('sexes');
             $table->foreignId('religion_id')->constrained('religions')->onDelete('cascade')->onUpdate('cascade');
             $table->date('date_of_birth');
-            $table->date('date_of_death')->nullable();
-            $table->boolean('lethal')->default(false);
+            $table->date('date_of_death');
             $table->boolean('pwd')->default(false);
             $table->text('house_no');
             $table->text('street');

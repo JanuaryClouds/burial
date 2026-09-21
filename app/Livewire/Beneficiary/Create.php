@@ -61,7 +61,6 @@ class Create extends Component
                     'suffix' => $this->form->suffix,
                     'date_of_birth' => $this->form->dateOfBirth,
                     'date_of_death' => $this->form->dateOfDeath,
-                    'lethal' => $this->form->lethal ?? false,
                     'pwd' => $this->form->pwd ?? false,
                     'sex_id' => $this->form->sexId,
                     'religion_id' => $this->form->religionId,

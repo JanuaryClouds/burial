@@ -27,9 +27,6 @@ class BeneficiaryForm extends Form
     public ?string $dateOfDeath = null;
 
     #[Validate('nullable|boolean')]
-    public ?bool $lethal = null;
-
-    #[Validate('nullable|boolean')]
     public ?bool $pwd = null;
 
     #[Validate('required|integer|exists:sexes,id')]
@@ -67,7 +64,6 @@ class BeneficiaryForm extends Form
         $this->suffix = $beneficiary->suffix;
         $this->dateOfBirth = $beneficiary->date_of_birth;
         $this->dateOfDeath = $beneficiary->date_of_death;
-        $this->lethal = $beneficiary->lethal;
         $this->pwd = $beneficiary->pwd;
         $this->sexId = $beneficiary->sex_id;
         $this->religionId = $beneficiary->religion_id;
