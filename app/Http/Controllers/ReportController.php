@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cheque;
-use App\Models\Claimant;
 use App\Services\BeneficiaryService;
 use App\Services\ClientService;
 use App\Services\DatatableService;

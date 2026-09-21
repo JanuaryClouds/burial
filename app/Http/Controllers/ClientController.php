@@ -48,254 +48,283 @@ class ClientController extends Controller
 
     public function show(Client $client)
     {
-        $application = $client->application ?? null;
-
         return view('client.show', [
+            'pageTitle' => $client->fullname(),
             'client' => $client,
-            'application' => $application,
-            'beneficiary' => $application->beneficiary ?? null,
-            'pageTitle' => $client->fullname().' | Client | '.($application ? $application->tracking_no : 'Draft'),
         ]);
     }
 
     public function create()
     {
-        $pageTitle = 'New Client Record';
-        $matched = [];
-        $user = Auth::user();
-        $client = null;
+        $draftedClients = Auth::user()->clients()->where(function ($query) {
+            $query->whereDoesntHave('application');
+        })->get();
 
-        if ($user->hasRole('staff')) {
-            return redirect()->route('dashboard')->with('warning', 'You are not allowed to apply as a client.');
+        $draftedBeneficiaries = Auth::user()->beneficiaries()->where(function ($query) {
+            $query->whereDoesntHave('application');
+        })->get();
+
+        if ($draftedClients->count() == 0) {
+            return view('client.create', [
+                'pageTitle' => 'Draft a Client Record',
+            ]);
         }
 
-        if (session()->has('client_uuid')) {
-            session()->remove('client_uuid');
+        if ($draftedBeneficiaries->count() == 0) {
+            return redirect()->route('beneficiary.create');
         }
 
-        if ($user->clients->count() === 0 && $user->citizen_uuid !== null) {
-            $this->citizenServices->checkIfUser('uuid', $user->citizen_uuid, true);
-        } elseif ($user->clients->count() > 0) {
-            $client = $user->clients->first();
-        }
-
-        $citizen = session('citizen');
-
-        if ($citizen) {
-            $barangays = Barangay::pluck('name', 'id');
-            $genders = Sex::pluck('name', 'id');
-            $civilStatus = CivilStatus::pluck('name', 'id');
-
-            if (isset($citizen['sex'])) {
-                $matched['sex_id'] = $this->services->match($citizen['sex'], $genders, true);
-            }
-
-            if (isset($citizen['barangay'])) {
-                $matched['barangay_id'] = $this->services->match($citizen['barangay'], $barangays, true);
-            }
-
-            if (isset($citizen['civil_status'])) {
-                $matched['civil_id'] = $this->services->match($citizen['civil_status'], $civilStatus, false);
-            }
-        }
-
-        $view = view('client.create', [
-            'pageTitle' => $pageTitle,
-        ]);
-
-        if (! $client && ! $citizen) {
-            session()->flash('info', 'The system could not prefill some fields. We apolagize for the inconvinience.');
-        }
-
-        return $view->with([
-            'client' => $client,
-            'matched' => $matched,
-        ]);
-    }
-
-    public function store(ClientRequest $request)
-    {
-        try {
-            $client = $this->services->store($request->validated());
-
-            session()->put('client_uuid', $client->uuid);
-
-            return redirect()
-                ->route('beneficiary.create')
-                ->with('success', 'Client information added successfully! You may edit the information later when finalizing your application.');
-
-            // $result = $this->clientServices->storeClient($request->validated(), Auth::user(), $request->file('images', []));
-            // $client = $result['client'] ?? null;
-
-            // if (! $client) {
-            //     return redirect()->back()->with('error', 'Failed to add client information!');
-            // }
-
-            // $ip = request()->ip();
-            // $browser = request()->header('User-Agent');
-            // activity()
-            //     ->withProperties(['ip' => $ip, 'browser' => $browser])
-            //     ->log('Added the client details: '.$client->id.(($result['uploadError'] ?? false) ? ' images failed to upload' : ''));
-
-            // return redirect()
-            //     ->route('client.show', $client)
-            //     ->with('success', 'Client information added successfully!'.(($result['uploadError'] ?? false) ? ' However, some images failed to upload.' : '').' Please remember to bring hard copies of the submitted documents during the interview at the CSWDO Office.');
-        } catch (Exception $e) {
-            return redirect()->back()->with('error', 'Failed to add client information!'.(app()->hasDebugModeEnabled() ? ': '.$e->getMessage() : ''));
+        if ($draftedClients->count() > 0 && $draftedBeneficiaries->count() > 0) {
+            return redirect()->route('application.create');
         }
     }
 
     public function edit(Client $client)
     {
         return view('client.edit', [
-            'client' => $client,
             'pageTitle' => 'Edit '.$client->fullname(),
+            'client' => $client,
         ]);
     }
 
-    public function update(UpdateClientRequest $request, Client $client)
-    {
-        try {
-            $this->services->update($request->validated(), $client);
-            activity()
-                ->withProperties(['ip' => request()->ip(), 'browser' => request()->userAgent(), 'client' => $client->uuid])
-                ->causedBy(Auth::user())
-                ->log('Updated the client details: '.$client->uuid);
+    // public function create()
+    // {
+    //     $pageTitle = 'New Client Record';
+    //     $matched = [];
+    //     $user = Auth::user();
+    //     $client = null;
 
-            return redirect()
-                ->route('client.show', $client)
-                ->with('success', 'Client information updated successfully!');
-        } catch (Exception $e) {
-            return redirect()->back()->with('error', 'Failed to update client information!'.(app()->hasDebugModeEnabled() ? ': '.$e->getMessage() : ''));
-        }
-    }
+    //     if ($user->hasRole('staff')) {
+    //         return redirect()->route('dashboard')->with('warning', 'You are not allowed to apply as a client.');
+    //     }
 
-    public function destroy(Client $client)
-    {
-        $client = $this->clientServices->deleteClient($client);
+    //     if (session()->has('client_uuid')) {
+    //         session()->remove('client_uuid');
+    //     }
 
-        activity()
-            ->causedBy(Auth::user())
-            ->log('Deleted a client details: '.$client->id);
+    //     if ($user->clients->count() === 0 && $user->citizen_uuid !== null) {
+    //         $this->citizenServices->checkIfUser('uuid', $user->citizen_uuid, true);
+    //     } elseif ($user->clients->count() > 0) {
+    //         $client = $user->clients->first();
+    //     }
 
-        return redirect()
-            ->route('client.index')
-            ->with('success', 'Client information deleted successfully!');
-    }
+    //     $citizen = session('citizen');
 
-    public function assessment(Request $request, $id)
-    {
-        try {
-            $client = Client::findOrFail($id);
-            $this->authorize('create', [ClientAssessment::class, $client]);
+    //     if ($citizen) {
+    //         $barangays = Barangay::pluck('name', 'id');
+    //         $genders = Sex::pluck('name', 'id');
+    //         $civilStatus = CivilStatus::pluck('name', 'id');
 
-            $request->validate([
-                'problem_presented' => 'required|string|max:255',
-                'assessment' => 'required|string|max:255',
-            ]);
+    //         if (isset($citizen['sex'])) {
+    //             $matched['sex_id'] = $this->services->match($citizen['sex'], $genders, true);
+    //         }
 
-            $client->assessment()->create([
-                'id' => Str::uuid(),
-                'client_id' => $client->id,
-                'problem_presented' => $request['problem_presented'],
-                'assessment' => $request['assessment'],
-            ]);
+    //         if (isset($citizen['barangay'])) {
+    //             $matched['barangay_id'] = $this->services->match($citizen['barangay'], $barangays, true);
+    //         }
 
-            $ip = request()->ip();
-            $browser = request()->header('User-Agent');
-            activity()
-                ->causedBy(auth()->user())
-                ->withProperties(['ip' => $ip, 'browser' => $browser, 'client' => $client->id])
-                ->log('Added an assessment for a client');
+    //         if (isset($citizen['civil_status'])) {
+    //             $matched['civil_id'] = $this->services->match($citizen['civil_status'], $civilStatus, false);
+    //         }
+    //     }
 
-            return redirect()->back()->with('success', 'Assessment created successfully.');
-        } catch (Exception $e) {
-            return redirect()->back()->with('error', $e->getMessage());
-        }
-    }
+    //     $view = view('client.create', [
+    //         'pageTitle' => $pageTitle,
+    //     ]);
 
-    public function recommendedService(Request $request, $id)
-    {
-        try {
-            $client = Client::findOrFail($id);
-            $this->authorize('create', [ClientRecommendation::class, $client]);
+    //     if (! $client && ! $citizen) {
+    //         session()->flash('info', 'The system could not prefill some fields. We apolagize for the inconvinience.');
+    //     }
 
-            $ip = request()->ip();
-            $browser = request()->header('User-Agent');
-            if ($request['type'] == 'burial') {
-                $request->validate([
-                    'referral' => 'nullable|string|max:255',
-                    'amount' => 'nullable|string|max:255',
-                    'moa_id' => 'exists:mode_of_assistances,id',
-                    'type' => 'string|required',
-                ]);
-                $burialAssistance = Assistance::where('name', 'Burial')->first();
-                $client->recommendation()->create([
-                    'id' => Str::uuid(),
-                    'client_id' => $client->id,
-                    'assistance_id' => $burialAssistance->id,
-                    'referral' => $request['referral'],
-                    'amount' => $request['amount'],
-                    'type' => $request['type'],
-                    'remarks' => $request['remarks'],
-                    'moa_id' => $request['moa_id'],
-                ]);
+    //     return $view->with([
+    //         'client' => $client,
+    //         'matched' => $matched,
+    //     ]);
+    // }
 
-                $this->clientServices->transferClient($client->id);
+    // public function store(ClientRequest $request)
+    // {
+    //     try {
+    //         $client = $this->services->store($request->validated());
 
-                $this->notificationServices->send(
-                    $client->user->citizen_uuid,
-                    'burial_assistance',
-                    'Burial Assistance Application',
-                    'Your application for funeral assistance has been approved. You will receive a burial assistance after our process is complete. Thank you for your patience.'
-                );
+    //         session()->put('client_uuid', $client->uuid);
 
-                activity()
-                    ->causedBy(Auth::user())
-                    ->withProperties(['ip' => $ip, 'browser' => $browser, 'client' => $client->id])
-                    ->log('Burial Assistance application created for client');
+    //         return redirect()
+    //             ->route('beneficiary.create')
+    //             ->with('success', 'Client information added successfully! You may edit the information later when finalizing your application.');
 
-                return redirect()->back()->with('success', 'Successfuly created burial assistance application for the client!');
-            } elseif ($request['type'] == 'libreng_libing') {
-                $request->validate([
-                    'referral' => 'nullable|string|max:255',
-                    'type' => 'string|required',
-                ]);
+    //         // $result = $this->clientServices->storeClient($request->validated(), Auth::user(), $request->file('images', []));
+    //         // $client = $result['client'] ?? null;
 
-                $funeralAssistance = Assistance::where('name', 'Burial')->first();
-                $client->recommendation()->create([
-                    'id' => Str::uuid(),
-                    'client_id' => $client->id,
-                    'assistance_id' => $funeralAssistance->id,
-                    'referral' => $request['referral'],
-                    'type' => 'libreng_libing',
-                    'remarks' => $request['remarks'],
-                ]);
+    //         // if (! $client) {
+    //         //     return redirect()->back()->with('error', 'Failed to add client information!');
+    //         // }
 
-                $this->clientServices->transferClient($client->id);
+    //         // $ip = request()->ip();
+    //         // $browser = request()->header('User-Agent');
+    //         // activity()
+    //         //     ->withProperties(['ip' => $ip, 'browser' => $browser])
+    //         //     ->log('Added the client details: '.$client->id.(($result['uploadError'] ?? false) ? ' images failed to upload' : ''));
 
-                $this->notificationServices->send(
-                    $client->user->citizen_uuid,
-                    'funeral_assistance',
-                    'Funeral Assistance Application',
-                    'Your application for funeral assistance has been approved. Your beneficiary will be given a Libreng Libing Service after our process is complete. Thank you for your patience.'
-                );
+    //         // return redirect()
+    //         //     ->route('client.show', $client)
+    //         //     ->with('success', 'Client information added successfully!'.(($result['uploadError'] ?? false) ? ' However, some images failed to upload.' : '').' Please remember to bring hard copies of the submitted documents during the interview at the CSWDO Office.');
+    //     } catch (Exception $e) {
+    //         return redirect()->back()->with('error', 'Failed to add client information!'.(app()->hasDebugModeEnabled() ? ': '.$e->getMessage() : ''));
+    //     }
+    // }
 
-                activity()
-                    ->causedBy(Auth::user())
-                    ->withProperties(['ip' => $ip, 'browser' => $browser, 'client' => $client->id])
-                    ->log('Created a Libreng Libing application for client');
+    // public function edit(Client $client)
+    // {
+    //     return view('client.edit', [
+    //         'client' => $client,
+    //         'pageTitle' => 'Edit '.$client->fullname(),
+    //     ]);
+    // }
 
-                return redirect()->back()->with('success', 'Successfuly created funeral assistance application for the client!');
-            } else {
-                return redirect()->back()->with('error', 'Invalid request.');
-            }
-        } catch (Exception $e) {
-            $client->recommendation()->delete();
+    // public function update(UpdateClientRequest $request, Client $client)
+    // {
+    //     try {
+    //         $this->services->update($request->validated(), $client);
+    //         activity()
+    //             ->withProperties(['ip' => request()->ip(), 'browser' => request()->userAgent(), 'client' => $client->uuid])
+    //             ->causedBy(Auth::user())
+    //             ->log('Updated the client details: '.$client->uuid);
 
-            return redirect()->back()->with('error', $e->getMessage());
-        }
-    }
+    //         return redirect()
+    //             ->route('client.show', $client)
+    //             ->with('success', 'Client information updated successfully!');
+    //     } catch (Exception $e) {
+    //         return redirect()->back()->with('error', 'Failed to update client information!'.(app()->hasDebugModeEnabled() ? ': '.$e->getMessage() : ''));
+    //     }
+    // }
+
+    // public function destroy(Client $client)
+    // {
+    //     $client = $this->clientServices->deleteClient($client);
+
+    //     activity()
+    //         ->causedBy(Auth::user())
+    //         ->log('Deleted a client details: '.$client->id);
+
+    //     return redirect()
+    //         ->route('client.index')
+    //         ->with('success', 'Client information deleted successfully!');
+    // }
+
+    // public function assessment(Request $request, $id)
+    // {
+    //     try {
+    //         $client = Client::findOrFail($id);
+    //         $this->authorize('create', [ClientAssessment::class, $client]);
+
+    //         $request->validate([
+    //             'problem_presented' => 'required|string|max:255',
+    //             'assessment' => 'required|string|max:255',
+    //         ]);
+
+    //         $client->assessment()->create([
+    //             'id' => Str::uuid(),
+    //             'client_id' => $client->id,
+    //             'problem_presented' => $request['problem_presented'],
+    //             'assessment' => $request['assessment'],
+    //         ]);
+
+    //         $ip = request()->ip();
+    //         $browser = request()->header('User-Agent');
+    //         activity()
+    //             ->causedBy(auth()->user())
+    //             ->withProperties(['ip' => $ip, 'browser' => $browser, 'client' => $client->id])
+    //             ->log('Added an assessment for a client');
+
+    //         return redirect()->back()->with('success', 'Assessment created successfully.');
+    //     } catch (Exception $e) {
+    //         return redirect()->back()->with('error', $e->getMessage());
+    //     }
+    // }
+
+    // public function recommendedService(Request $request, $id)
+    // {
+    //     try {
+    //         $client = Client::findOrFail($id);
+    //         $this->authorize('create', [ClientRecommendation::class, $client]);
+
+    //         $ip = request()->ip();
+    //         $browser = request()->header('User-Agent');
+    //         if ($request['type'] == 'burial') {
+    //             $request->validate([
+    //                 'referral' => 'nullable|string|max:255',
+    //                 'amount' => 'nullable|string|max:255',
+    //                 'moa_id' => 'exists:mode_of_assistances,id',
+    //                 'type' => 'string|required',
+    //             ]);
+    //             $burialAssistance = Assistance::where('name', 'Burial')->first();
+    //             $client->recommendation()->create([
+    //                 'id' => Str::uuid(),
+    //                 'client_id' => $client->id,
+    //                 'assistance_id' => $burialAssistance->id,
+    //                 'referral' => $request['referral'],
+    //                 'amount' => $request['amount'],
+    //                 'type' => $request['type'],
+    //                 'remarks' => $request['remarks'],
+    //                 'moa_id' => $request['moa_id'],
+    //             ]);
+
+    //             $this->clientServices->transferClient($client->id);
+
+    //             $this->notificationServices->send(
+    //                 $client->user->citizen_uuid,
+    //                 'burial_assistance',
+    //                 'Burial Assistance Application',
+    //                 'Your application for funeral assistance has been approved. You will receive a burial assistance after our process is complete. Thank you for your patience.'
+    //             );
+
+    //             activity()
+    //                 ->causedBy(Auth::user())
+    //                 ->withProperties(['ip' => $ip, 'browser' => $browser, 'client' => $client->id])
+    //                 ->log('Burial Assistance application created for client');
+
+    //             return redirect()->back()->with('success', 'Successfuly created burial assistance application for the client!');
+    //         } elseif ($request['type'] == 'libreng_libing') {
+    //             $request->validate([
+    //                 'referral' => 'nullable|string|max:255',
+    //                 'type' => 'string|required',
+    //             ]);
+
+    //             $funeralAssistance = Assistance::where('name', 'Burial')->first();
+    //             $client->recommendation()->create([
+    //                 'id' => Str::uuid(),
+    //                 'client_id' => $client->id,
+    //                 'assistance_id' => $funeralAssistance->id,
+    //                 'referral' => $request['referral'],
+    //                 'type' => 'libreng_libing',
+    //                 'remarks' => $request['remarks'],
+    //             ]);
+
+    //             $this->clientServices->transferClient($client->id);
+
+    //             $this->notificationServices->send(
+    //                 $client->user->citizen_uuid,
+    //                 'funeral_assistance',
+    //                 'Funeral Assistance Application',
+    //                 'Your application for funeral assistance has been approved. Your beneficiary will be given a Libreng Libing Service after our process is complete. Thank you for your patience.'
+    //             );
+
+    //             activity()
+    //                 ->causedBy(Auth::user())
+    //                 ->withProperties(['ip' => $ip, 'browser' => $browser, 'client' => $client->id])
+    //                 ->log('Created a Libreng Libing application for client');
+
+    //             return redirect()->back()->with('success', 'Successfuly created funeral assistance application for the client!');
+    //         } else {
+    //             return redirect()->back()->with('error', 'Invalid request.');
+    //         }
+    //     } catch (Exception $e) {
+    //         $client->recommendation()->delete();
+
+    //         return redirect()->back()->with('error', $e->getMessage());
+    //     }
+    // }
 
     public function generateGISForm($id)
     {

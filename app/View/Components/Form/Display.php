@@ -8,20 +8,20 @@ use Illuminate\View\Component;
 
 class Display extends Component
 {
-	public ?string $label;
+    public ?string $label;
 
-	public string $contents;
+    public string $contents;
 
-	public ?string $helpText;
+    public ?string $helpText;
 
     /**
      * Create a new component instance.
      */
     public function __construct(?string $label, string $contents, ?string $helpText = null)
     {
-		$this->label = $label;
-		$this->contents = $contents;
-		$this->helpText = $helpText;
+        $this->label = $label;
+        $this->contents = $contents;
+        $this->helpText = $helpText;
     }
 
     /**

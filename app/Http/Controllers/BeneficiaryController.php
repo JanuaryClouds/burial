@@ -39,10 +39,6 @@ class BeneficiaryController extends Controller
 
     public function create()
     {
-        if (session()->has('beneficiary_uuid')) {
-            session()->remove('beneficiary_uuid');
-        }
-
         return view('beneficiary.create', [
             'pageTitle' => 'Register a Beneficiary',
         ]);
@@ -50,14 +46,18 @@ class BeneficiaryController extends Controller
 
     public function show(Beneficiary $beneficiary)
     {
-        $application = $beneficiary->application;
-
         return view('beneficiary.show', [
-            'pageTitle' => $beneficiary->fullname().' | Beneficiary | '.($application ? $application->tracking_no : 'Draft'),
-            'application' => $application ?? null,
-            'client' => $application?->client,
+            'pageTitle' => $beneficiary->fullname().' | Beneficiary',
             'beneficiary' => $beneficiary,
             'family' => $beneficiary->family,
+        ]);
+    }
+
+    public function edit(Beneficiary $beneficiary)
+    {
+        return view('beneficiary.edit', [
+            'pageTitle' => 'Edit '.$beneficiary->fullname(),
+            'beneficiary' => $beneficiary,
         ]);
     }
 
@@ -77,14 +77,6 @@ class BeneficiaryController extends Controller
                 ->back()
                 ->with('error', 'Unable to save beneficiary. '.(app()->hasDebugModeEnabled() ? $e->getMessage() : ''));
         }
-    }
-
-    public function edit(Beneficiary $beneficiary)
-    {
-        return view('beneficiary.edit', [
-            'beneficiary' => $beneficiary,
-            'pageTitle' => 'Edit '.$beneficiary->fullname(),
-        ]);
     }
 
     public function update(UpdateBeneficiaryRequest $request, Beneficiary $beneficiary)

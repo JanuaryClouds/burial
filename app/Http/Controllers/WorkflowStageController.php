@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\WorkflowStage;
 use App\Http\Requests\StoreWorkflowStageRequest;
 use App\Http\Requests\UpdateWorkflowStageRequest;
+use App\Models\WorkflowStage;
 
 class WorkflowStageController extends Controller
 {

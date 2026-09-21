@@ -2,19 +2,16 @@
 
 namespace App\Livewire\Recommendation;
 
+use App\Livewire\Forms\RecommendationForm;
 use App\Models\Application;
 use App\Models\FuneralAssistanceType;
 use App\Models\ModeOfAssistance;
 use App\Models\Recommendation;
-use App\Models\WorkflowHistory;
-use App\Models\WorkflowStage;
-use App\Services\WorkflowHistoryService;
+use App\Services\ActivityLoggerService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\On;
-use Livewire\Attributes\Rule;
-use Livewire\Attributes\Validate;
 use Livewire\Component;
 
 class Create extends Component
@@ -27,14 +24,7 @@ class Create extends Component
 
     public bool $createNew = false;
 
-    #[Rule('required|exists:funeral_assistance_types,uuid')]
-    public ?string $funeralAssistanceTypeUuid = null;
-
-    #[Rule('required|numeric|min:0')]
-    public ?int $amountExtended = null;
-
-    #[Rule('required|exists:mode_of_assistances,id')]
-    public ?int $modeOfAssistanceId = null;
+    public RecommendationForm $form;
 
     public function boot()
     {
@@ -68,66 +58,44 @@ class Create extends Component
         } catch (ValidationException $e) {
             $this->dispatch('notification:toast', [
                 'type' => 'error',
-                'title' => 'Invalid Form Submitted',
-                'text' => 'Please check your inputs and try again.',
+                'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation'),
             ]);
 
-            report($e);
             return;
         }
 
         try {
-            DB::transaction(function() {
+            DB::transaction(function () {
                 $recommendation = Recommendation::create([
                     'application_uuid' => $this->application->uuid,
-                    'funeral_assistance_type_uuid' => $this->funeralAssistanceTypeUuid,
-                    'amount_extended' => $this->amountExtended,
-                    'mode_of_assistance_id' => $this->modeOfAssistanceId,
+                    'funeral_assistance_type_uuid' => $this->form->funeralAssistanceTypeUuid,
+                    'amount_extended' => $this->form->amountExtended,
+                    'mode_of_assistance_id' => $this->form->modeOfAssistanceId,
                     'recommended_by' => Auth::user()->id,
                 ]);
-                
-                activity()
-                    ->withProperties([
-                        'recommendation' => $recommendation->uuid,
-                        'application' => $this->application->uuid,
-                        'ip' => request()->ip(),
-                        'browser' => request()->userAgent(),
-                    ])
-                    ->causedBy(Auth::user()->id)
-                    ->log('Created a recommendation');
-        
+
                 $this->dispatch('notification:alert', [
                     'type' => 'success',
                     'title' => 'Recommendation created successfully',
                 ]);
-        
+
+                ActivityLoggerService::logSuccess('Successfully saved recommendation', [
+                    'recommendation_uuid' => $recommendation->uuid,
+                ]);
+
                 $this->reset('createNew');
-                
+
                 $this->dispatch('refreshRecommendation');
             });
         } catch (\Throwable $th) {
-            if (app()->hasDebugModeEnabled()) {
-                $this->dispatch('notification:alert', [
-                    'type' => 'error',
-                    'title' => 'Error',
-                    'text' => $th->getMessage(),
-                ]);
-            } else {
-                $this->dispatch('notification:alert', [
-                    'type' => 'error',
-                    'title' => 'Error',
-                    'text' => 'An error occurred while processing your request. Please try again later.',
-                ]);
-            }
+            $this->dispatch('notification:alert', [
+                'type' => 'error',
+                'text' => app()->hasDebugModeEnabled() ? $th->getMessage() : config('constants.errors.unknown'),
+            ]);
 
-            activity()
-                ->withProperties([
-                    'application' => $this->application->uuid,
-                    'ip' => request()->ip(),
-                    'browser' => request()->userAgent(),
-                ])
-                ->causedBy(Auth::id())
-                ->log('Failed to create a recommendation');
+            ActivityLoggerService::logException($th, 'Failed to create a recommendation');
+
+            report($th);
         }
     }
 

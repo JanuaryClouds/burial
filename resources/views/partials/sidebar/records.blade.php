@@ -4,13 +4,9 @@
 	@class([
 		'menu-item',
 		'here' =>
-			Route::is('interview*') ||
 			Route::is('application*') ||
 			Route::is('client*') ||
-			Route::is('beneficiary*') ||
-			Route::is('referral*') ||
-			Route::is('rejection*') ||
-			Route::is('cancellation*'),
+			Route::is('beneficiary*'),
 	])>
 	<!--begin:Menu link-->
 	<span class="menu-link menu-center d-flex flex-column">
@@ -33,12 +29,6 @@
 			text="Clients" />
 		<x-sidebar.sub-link :route="route('beneficiary.index')"
 			text="Beneficiaries" />
-		<x-sidebar.sub-link :route="route('interview.index')"
-			text="Interviews" />
-		<x-sidebar.sub-link :route="route('referral.index')"
-			text="Referrals" />
-		{{-- TODO: include rejections --}}
-		{{-- TODO: include cancellations --}}
 		<x-sidebar.sub-link :route="route('application.index')"
 			text="Applications" />
 	</div>

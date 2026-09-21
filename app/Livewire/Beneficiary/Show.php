@@ -16,7 +16,7 @@ class Show extends Component
         return view('components.card.loading');
     }
 
-    public function mount(?Beneficiary $beneficiary, ?string $uuid)
+    public function mount(?Beneficiary $beneficiary = null, ?string $uuid = null)
     {
         if ($uuid) {
             $this->beneficiary = Beneficiary::where('uuid', $uuid)->firstOrFail();

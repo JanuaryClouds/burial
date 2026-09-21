@@ -23,26 +23,24 @@ class WorkflowService
                     'stages_count' => $workflow->stages->count(),
                     'transitions_count' => $workflow->transitions->count(),
                     'funeral_assistance_types_count' => $workflow->funeralAssistanceTypes()->count(),
-                    'show_route' => route('workflow.show', $workflow)
+                    'show_route' => route('workflow.show', $workflow),
                 ];
             });
     }
 
     /**
      * Summary of store
-     * @param array $data
-     * @return Workflow
      */
     public function store(array $data): Workflow
     {
         $workflow = Workflow::create($data);
+
         return $workflow;
     }
 
     /**
      * Summary of update
-     * @param array $data
-     * @param Workflow $workflow
+     *
      * @return bool|int|mixed
      */
     public function update(array $data, Workflow $workflow): bool

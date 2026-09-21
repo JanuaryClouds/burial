@@ -3,8 +3,8 @@
 namespace App\Livewire\Application;
 
 use App\Models\Application;
-use App\Models\Client;
 use App\Models\Beneficiary;
+use App\Models\Client;
 use App\Services\ApplicationService;
 use Livewire\Component;
 

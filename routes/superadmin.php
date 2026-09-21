@@ -4,7 +4,6 @@ use App\Http\Controllers\Auth\UserController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\EducationController;
-use App\Http\Controllers\HandlerController;
 use App\Http\Controllers\ModeOfAssistanceController;
 use App\Http\Controllers\NationalityController;
 use App\Http\Controllers\RelationshipController;

@@ -4,6 +4,13 @@
 		<livewire:client.show :uuid="$clientUuid"
 			defer />
 		<x-slot:footer>
+			@if ($clientUuid)
+				<a href="{{ route('client.edit', $clientUuid) }}"
+					class="btn btn-sm btn-light">
+					<x-icon.font-awesome class="fa-pen-to-square" />
+					Edit Client Draft
+				</a>
+			@endif
 			<x-button wire:click="$set('clientUuid', '')"
 				wire:loading.attr='disabled'
 				class="btn-sm btn-danger">

@@ -27,18 +27,18 @@
 </div>
 <div class="row">
 	<div class="col-6 col-md-3 col-lg-3 col-xl-2">
-		<x-form.input wire:model='dateOfBirth'
-			name="dateOfBirth"
+		<x-form.input wire:model='form.dateOfBirth'
+			name="form.dateOfBirth"
 			label="Date of Birth"
 			:required="true"
 			max="{{ now() }}"
 			type="date" />
 	</div>
 	<div class="col-6 col-md-3 col-lg-2 col-xl-2">
-		<x-form.select wire:model='sexId'
-			name="sexId"
+		<x-form.select wire:model='form.sexId'
+			name="form.sexId"
 			label="Sex"
-			:selected="$sexId ?? ''"
+			:selected="$form->sexId ?? ''"
 			:options="$genders ?? []"
 			:required="true" />
 	</div>

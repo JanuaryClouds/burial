@@ -3,14 +3,15 @@
 namespace App\Models;
 
 use App\Traits\HasUuid;
+use Database\Factories\RejectionFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Rejection extends Model
 {
-    /** @use HasFactory<\Database\Factories\RejectionFactory> */
-    use HasUuid, HasFactory;
+    /** @use HasFactory<RejectionFactory> */
+    use HasFactory, HasUuid;
 
     protected $fillable = [
         'application_uuid',
@@ -29,6 +30,7 @@ class Rejection extends Model
 
     /**
      * Summary of application
+     *
      * @return BelongsTo<Application, Rejection>
      */
     public function application(): BelongsTo
@@ -38,6 +40,7 @@ class Rejection extends Model
 
     /**
      * Summary of rejectedBy
+     *
      * @return BelongsTo<User, Rejection>
      */
     public function rejectedBy(): BelongsTo
@@ -51,6 +54,6 @@ class Rejection extends Model
     |--------------------------------------------------------------------------
     |
     | Scopes for the Rejection model
-    | 
+    |
     */
 }

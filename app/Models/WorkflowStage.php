@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\HasUuid;
+use Database\Factories\WorkflowStageFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class WorkflowStage extends Model
 {
-    /** @use HasFactory<\Database\Factories\WorkflowStageFactory> */
+    /** @use HasFactory<WorkflowStageFactory> */
     use HasFactory, HasUuid, SoftDeletes;
 
     protected $table = 'workflow_stages';
@@ -21,7 +22,7 @@ class WorkflowStage extends Model
         'position',
         'description',
         'workflow_uuid',
-        'permission_id'
+        'permission_id',
     ];
 
     protected static function booted(): void
@@ -53,6 +54,7 @@ class WorkflowStage extends Model
 
     /**
      * Summary of applications
+     *
      * @return HasMany<Application, WorkflowStage>
      */
     public function applications(): HasMany
@@ -62,6 +64,7 @@ class WorkflowStage extends Model
 
     /**
      * Summary of workflow
+     *
      * @return BelongsTo<Workflow, WorkflowStage>
      */
     public function workflow(): BelongsTo
@@ -71,6 +74,7 @@ class WorkflowStage extends Model
 
     /**
      * Summary of incomingStages
+     *
      * @return HasMany<WorkflowTransition, WorkflowStage>
      */
     public function incomingStages(): HasMany
@@ -80,6 +84,7 @@ class WorkflowStage extends Model
 
     /**
      * Summary of outgoingStages
+     *
      * @return HasMany<WorkflowTransition, WorkflowStage>
      */
     public function outgoingStages(): HasMany
@@ -89,6 +94,7 @@ class WorkflowStage extends Model
 
     /**
      * Summary of workflowHistories
+     *
      * @return HasMany<WorkflowHistory, WorkflowStage>
      */
     public function nextStages(): HasMany
@@ -98,6 +104,7 @@ class WorkflowStage extends Model
 
     /**
      * Summary of previousSteps
+     *
      * @return HasMany<WorkflowHistory, WorkflowStage>
      */
     public function previousStages(): HasMany
@@ -107,6 +114,7 @@ class WorkflowStage extends Model
 
     /**
      * Summary of permission
+     *
      * @return BelongsTo<Permission, WorkflowTransition>
      */
     public function permission(): BelongsTo

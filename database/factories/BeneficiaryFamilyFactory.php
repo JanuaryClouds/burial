@@ -28,7 +28,7 @@ class BeneficiaryFamilyFactory extends Factory
             'relationship_id' => Relationship::inRandomOrder()->first()->id,
             'occupation' => $this->faker->jobTitle(),
             'income' => $this->faker->randomFloat(0, 100, 10000),
-            'created_at' => $this->faker->dateTimeBetween(now()->subWeek(), now())
+            'created_at' => $this->faker->dateTimeBetween(now()->subWeek(), now()),
         ];
     }
 }

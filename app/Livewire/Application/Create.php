@@ -5,6 +5,7 @@ namespace App\Livewire\Application;
 use App\Models\Application;
 use App\Models\Beneficiary;
 use App\Models\Client;
+use App\Services\ActivityLoggerService;
 use App\Services\ImageService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -21,6 +22,7 @@ class Create extends Component
     use WithFileUploads;
 
     public Collection $clientOptions;
+
     public Collection $beneficiaryOptions;
 
     #[Rule('required|exists:clients,uuid')]
@@ -43,17 +45,18 @@ class Create extends Component
     public function mount()
     {
         $this->clientOptions = Client::whereDoesntHave('application')
+            ->with('user')
             ->where('user_id', '=', Auth::id())
             ->orderByDesc('created_at')
             ->get()
-            ->mapWithKeys(fn($client) => [$client->uuid => $client->fullname() . ' (created in ' . Carbon::parse($client->created_at)->format('d M Y, h:i A') . ')']);
+            ->mapWithKeys(fn ($client) => [$client->uuid => $client->fullname().' (created in '.Carbon::parse($client->created_at)->format('d M Y, h:i A').')']);
 
         $this->beneficiaryOptions = Beneficiary::whereDoesntHave('application')
             ->where('created_by', '=', Auth::id())
             ->orderBy('created_at')
             ->get()
-            ->mapWithKeys(fn($beneficiary) => [$beneficiary->uuid => $beneficiary->fullname() . ' (created in ' . Carbon::parse($beneficiary->created_at)->format('d M Y, h:i A') . ')']);
-    
+            ->mapWithKeys(fn ($beneficiary) => [$beneficiary->uuid => $beneficiary->fullname().' (created in '.Carbon::parse($beneficiary->created_at)->format('d M Y, h:i A').')']);
+
         if (session()->has('client_uuid')) {
             $this->clientUuid = session('client_uuid');
         }
@@ -76,13 +79,13 @@ class Create extends Component
             'relationshipId',
             'images',
             'client',
-            'beneficiary'
+            'beneficiary',
         ]);
-        
+
         $this->dispatch('notification:alert', [
             'type' => 'success',
             'title' => 'Form Cleared',
-            'text' => 'The form has been cleared. You can now start a new application.'
+            'text' => 'The form has been cleared. You can now start a new application.',
         ]);
     }
 
@@ -91,16 +94,14 @@ class Create extends Component
         try {
             $this->validate();
         } catch (ValidationException $e) {
-            $this->dispatch('notification:alert', [
+            $this->dispatch('notification:toast', [
                 'type' => 'error',
-                'title' => 'Invalid Form Submitted',
-                'text' => 'Please check your inputs and try again.',
+                'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation'),
             ]);
 
-            report($e);
             return;
         }
-        
+
         $imageService = App(ImageService::class);
 
         try {
@@ -108,59 +109,43 @@ class Create extends Component
                 $application = Application::create([
                     'client_uuid' => $this->clientUuid,
                     'beneficiary_uuid' => $this->beneficiaryUuid,
-                    'relationship_id' => $this->relationshipId
+                    'relationship_id' => $this->relationshipId,
                 ]);
 
                 foreach ($this->images as $key => $file) {
-                    if (!$file) {
+                    if (! $file) {
                         continue;
                     }
 
-                    $filename = $application->tracking_no .'-'. Str::replace($key, '_', '-');
-                    $imageService->post($filename, $file);    
+                    $filename = $application->tracking_no.'-'.Str::replace($key, '_', '-');
+                    $imageService->post($filename, $file);
                 }
 
-                activity()
-                    ->causedBy(Auth::user())
-                    ->withProperties([
-                        'ip' => request()->ip(),
-                        'browser' => request()->header('User-Agent'),
-                        'application_uuid' => $application->uuid,
-                    ])
-                    ->log('Application created with '. count($this->images) . ' images');
+                ActivityLoggerService::logSuccess('Successfully created application', [
+                    'application_uuid' => $application->uuid,
+                    'images_submitted' => count($this->images),
+                ]);
 
                 $this->reset();
 
+                session()->forget(['client_uuid', 'beneficiary_uuid']);
+
                 $this->dispatch('notification:alert', [
                     'type' => 'success',
-                    'title' => 'Application Submitted Successfully',
-                    'text' => 'Your application has been submitted. The information you have attached will no longer be available for editing.'
+                    'text' => 'Your application has been submitted.',
                 ]);
 
                 $this->redirect(route('application.show', $application));
             });
         } catch (\Throwable $th) {
-            if (app()->hasDebugModeEnabled()) {
-                $this->dispatch('notification:alert', [
-                    'type' => 'error',
-                    'title' => 'Error',
-                    'text' => $th->getMessage()
-                ]);
-            } else {
-                $this->dispatch('notification:alert', [
-                    'type' => 'error',
-                    'text' => 'Something went wrong. Try again later.'
-                ]);
-            }
+            $this->dispatch('notification:alert', [
+                'type' => 'error',
+                'text' => app()->hasDebugModeEnabled() ? $th->getMessage() : config('constants.errors.unknown'),
+            ]);
 
-            activity()
-                ->withProperties([
-                    'application' => $application->uuid ?? null,
-                    'ip' => request()->ip(),
-                    'browser' => request()->userAgent(),
-                ])
-                ->causedBy(Auth::user())
-                ->log('Failed to create application');
+            ActivityLoggerService::logException($th, 'Failed to submit application');
+
+            report($th);
         }
     }
 

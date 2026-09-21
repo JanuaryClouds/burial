@@ -28,8 +28,8 @@ class BeneficiaryFamilyController extends Controller
     public function edit(BeneficiaryFamily $member)
     {
         return view('beneficiary.family.edit', [
+            'member' => $member->loadMissing(['beneficiary.application']),
             'pageTitle' => 'Edit '.$member->name,
-            'member' => $member,
         ]);
     }
 

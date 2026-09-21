@@ -14,7 +14,8 @@ class ApplicationSeeder extends Seeder
      */
     public function run(): void
     {
-        $users = User::whereHas('clients')
+        $users = User::with(['clients', 'beneficiaries'])
+            ->whereHas('clients')
             ->whereHas('beneficiaries')
             ->get();
 
@@ -26,7 +27,7 @@ class ApplicationSeeder extends Seeder
                     'created_at' => Carbon::generateRandomDateTime(
                         Carbon::now()->subWeek(),
                         Carbon::now()->subWeek()->addDays(rand(1, 6))
-                    )
+                    ),
                 ]);
             }
         }

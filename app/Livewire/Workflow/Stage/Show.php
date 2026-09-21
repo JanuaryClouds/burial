@@ -2,15 +2,14 @@
 
 namespace App\Livewire\Workflow\Stage;
 
-use App\Models\Workflow;
+use App\Models\Permission;
 use App\Models\WorkflowStage;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
-use App\Models\Permission;
-use Illuminate\Support\Collection;
 
 class Show extends Component
 {
@@ -42,13 +41,13 @@ class Show extends Component
 
         $this->loadStage();
     }
-    
+
     #[On('refreshWorkflow')]
     #[On('refreshPosition-{position}')]
     public function loadStage()
     {
         $stage = WorkflowStage::firstWhere('position', $this->position);
-        
+
         if ($stage) {
             $this->stage = $stage;
             $this->name = $this->stage->name;
@@ -74,7 +73,7 @@ class Show extends Component
             // permission name; create the permission on the fly.
             if (is_null($permission)) {
                 $permission = Permission::firstOrCreate([
-                    'name' => 'workflow.' . Str::slug($permissionId),
+                    'name' => 'workflow.'.Str::slug($permissionId),
                     'guard_name' => 'web',
                 ]);
             }
@@ -85,7 +84,7 @@ class Show extends Component
         $this->stage->update([
             'name' => $validated['name'],
             'description' => $validated['description'],
-            'permission_id' => $permissionId ?: null
+            'permission_id' => $permissionId ?: null,
         ]);
 
         $this->stage->refresh();
@@ -102,11 +101,11 @@ class Show extends Component
 
             $stage->update([
                 'position' => null,
-                'permission_id' => null
+                'permission_id' => null,
             ]);
 
             $stage->delete();
-            
+
             WorkflowStage::where('workflow_uuid', $stage->workflow_uuid)
                 ->where('position', '>', $emptyPosition)
                 ->decrement('position');
@@ -152,11 +151,11 @@ class Show extends Component
             ->where('position', $stage->position - 1)
             ->lockForUpdate()
             ->first();
-        
-        if (!$previous) {
+
+        if (! $previous) {
             return;
         }
-        
+
         DB::transaction(function () use ($stage, $previous) {
             $currentposition = $stage->position;
             $previousPosition = $previous->position;
@@ -179,7 +178,7 @@ class Show extends Component
             ->lockForUpdate()
             ->first();
 
-        if (!$next) {
+        if (! $next) {
             return;
         }
 

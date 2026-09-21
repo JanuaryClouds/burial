@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class Application extends Model
@@ -25,7 +24,7 @@ class Application extends Model
         'current_workflow_stage_uuid',
         'client_uuid',
         'beneficiary_uuid',
-        'relationship_id'
+        'relationship_id',
     ];
 
     protected static function booted()
@@ -34,7 +33,7 @@ class Application extends Model
             $year = now()->format('Y');
             $count = self::whereYear('created_at', $year)->count() + 1;
             $application->tracking_no = sprintf('%s-%04d', $year, $count);
-            $application->qr_code = 'FUNERAL-' . Str::upper(Str::random(8));
+            $application->qr_code = 'FUNERAL-'.Str::upper(Str::random(8));
         });
     }
 
@@ -87,6 +86,7 @@ class Application extends Model
 
     /**
      * Summary of workflow
+     *
      * @return BelongsTo<WorkflowStage, Application>
      */
     public function workflowStage(): BelongsTo
@@ -106,6 +106,7 @@ class Application extends Model
 
     /**
      * Summary of relationship
+     *
      * @return BelongsTo<Relationship, Application>
      */
     public function relationship(): BelongsTo
@@ -115,6 +116,7 @@ class Application extends Model
 
     /**
      * Summary of rejection
+     *
      * @return HasOne<Rejection, Application>
      */
     public function rejection(): HasOne
@@ -124,6 +126,7 @@ class Application extends Model
 
     /**
      * Summary of cancellation
+     *
      * @return HasOne<Cancellation, Application>
      */
     public function cancellation(): HasOne
@@ -197,7 +200,7 @@ class Application extends Model
     {
         $status[] = [
             'label' => 'pending',
-            'badgeColor' => 'primary'
+            'badgeColor' => 'primary',
         ];
 
         $interviews = $this->client->interviews;
@@ -207,14 +210,14 @@ class Application extends Model
         if ($interviews->count() > 0) {
             $status[] = [
                 'label' => 'assessment',
-                'badgeColor' => 'secondary'
+                'badgeColor' => 'secondary',
             ];
         }
 
         if ($workflowStage !== null) {
             $status[] = [
                 'label' => 'processing',
-                'badgeColor' => 'primary'
+                'badgeColor' => 'primary',
             ];
 
             if ($workflowStage->name === 'Releasing') {
@@ -261,7 +264,6 @@ class Application extends Model
 
     /**
      * Summary of finishedInterview
-     * @return bool
      */
     public function finishedInterview(): bool
     {
@@ -270,7 +272,6 @@ class Application extends Model
 
     /**
      * Summary of currentRecommendation
-     * @return Recommendation|null
      */
     public function currentRecommendation(): ?Recommendation
     {
@@ -281,7 +282,6 @@ class Application extends Model
 
     /**
      * Summary of currentWorkflow
-     * @return Workflow|null
      */
     public function currentWorkflow(): ?Workflow
     {
@@ -290,7 +290,6 @@ class Application extends Model
 
     /**
      * Summary of currentWorkflowHistory
-     * @return Collection|null
      */
     public function currentWorkflowHistory(): ?Collection
     {
@@ -299,7 +298,6 @@ class Application extends Model
 
     /**
      * Summary of currentStage
-     * @return WorkflowStage|null
      */
     public function currentStage(): ?WorkflowStage
     {
@@ -308,13 +306,12 @@ class Application extends Model
 
     /**
      * Summary of fromStage
-     * @return WorkflowStage|null
      */
     public function fromStage(): ?WorkflowStage
     {
         $workflow = $this->currentWorkflow();
-        
-        if (!$workflow) {
+
+        if (! $workflow) {
             return null;
         }
 
@@ -332,19 +329,20 @@ class Application extends Model
 
     /**
      * Summary of toStage
-     * @return WorkflowStage|null
      */
     public function toStage(): ?WorkflowStage
     {
         $workflow = $this->currentWorkflow();
 
-        if (!$workflow) {
+        if (! $workflow) {
             return null;
         }
 
         $position = $this->workflowStage?->position + 1;
 
-        if ($position == 0 || $position == null) $position = 1;
+        if ($position == 0 || $position == null) {
+            $position = 1;
+        }
 
         if ($position > $workflow->stages()->count()) {
             return null;
@@ -356,7 +354,6 @@ class Application extends Model
 
     /**
      * Summary of previousHistory
-     * @return WorkflowHistory|null
      */
     public function previousHistory(): ?WorkflowHistory
     {
@@ -372,7 +369,6 @@ class Application extends Model
 
     /**
      * Summary of nextHistory
-     * @return WorkflowHistory|null
      */
     public function nextHistory(): ?WorkflowHistory
     {

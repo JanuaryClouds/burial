@@ -2,78 +2,23 @@
 
 namespace App\Livewire\Client;
 
+use App\Livewire\Forms\ClientForm;
 use App\Models\Barangay;
 use App\Models\Client;
 use App\Models\ClientDemographic;
 use App\Models\ClientSocialInfo;
 use App\Models\DocumentRequirement;
-use App\Services\CentralClientService;
+use App\Services\ActivityLoggerService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
-use Livewire\Attributes\Rule;
 use Livewire\Component;
 
 class Create extends Component
 {
     public ?Client $previousRecord = null;
 
-    // #[Rule('required|string|max:255')]
-    // public string $firstName;
-    
-    // #[Rule('nullable|string|max:255')]
-    // public ?string $middleName;
-    
-    // #[Rule('required|string|max:255')]
-    // public string $lastName;
-    
-    // #[Rule('nullable|string|max:255')]
-    // public ?string $suffix;
-
-    #[Rule('required|date|before:today')]
-    public string $dateOfBirth;
-
-    #[Rule('required|exists:sexes,id')]
-    public int $sexId;
-
-    #[Rule('required|exists:civil_statuses,id')]
-    public int $civilId;
-
-    #[Rule('required|exists:nationalities,id')]
-    public int $nationalityId;
-
-    #[Rule('required|exists:religions,id')]
-    public int $religionId;
-
-    #[Rule('required|string|max:255')]
-    public string $houseNo;
-
-    #[Rule('required|string|max:255')]
-    public string $street;
-
-    #[Rule('required|exists:barangays,id')]
-    public int $barangayId;
-
-    // #[Rule('required|exists:districts,id')]
-    // public int $districtId;
-
-    #[Rule('required|string|max:255')]
-    public string $city = 'Taguig City';
-
-    #[Rule('required|string|max:255')]
-    public string $contactNumber;
-
-    #[Rule('nullable|exists:educations,id')]
-    public ?int $educationId = null;
-
-    #[Rule('nullable|string|max:255')]
-    public ?string $philhealth = null;
-
-    #[Rule('nullable|string|max:255')]
-    public ?string $skill = null;
-
-    #[Rule('nullable|string|max:255')]
-    public ?string $income = null;
+    public ClientForm $form;
 
     public array $requiredDocuments;
 
@@ -82,35 +27,23 @@ class Create extends Component
         $this->requiredDocuments = DocumentRequirement::burial();
 
         if (Auth::user()->clients->count() > 0) {
-            $this->previousRecord = Auth::user()->clients->sortByDesc('created_at')->first();
+            $this->previousRecord = Auth::user()->clients->sortByDesc('created_at')->first()
+                ->loadMissing(['demographic', 'socialInfo']);
         }
 
         if ($this->previousRecord) {
-            $this->dateOfBirth = $this->previousRecord->date_of_birth;
-            $this->sexId = $this->previousRecord->demographic->sex_id;
-            $this->civilId = $this->previousRecord->socialInfo->civil_id;
-            $this->nationalityId = $this->previousRecord->demographic->nationality_id;
-            $this->religionId = $this->previousRecord->demographic->religion_id;
-            $this->houseNo = $this->previousRecord->house_no;
-            $this->street = $this->previousRecord->street;
-            $this->barangayId = $this->previousRecord->barangay_id;
-            $this->city = $this->previousRecord->city;
-            $this->contactNumber = $this->previousRecord->contact_number;
-            $this->educationId = $this->previousRecord->socialInfo->education_id;
-            $this->philhealth = $this->previousRecord->socialInfo->philhealth;
-            $this->skill = $this->previousRecord->socialInfo->skill;
-            $this->income = $this->previousRecord->socialInfo->income;
+            $this->form->setClient($this->previousRecord);
 
             $this->dispatch('notification:alert', [
                 'type' => 'success',
                 'title' => 'Previous Record Found',
-                'text' => 'Successfully loaded your previous record and autofilled out the fields.'
+                'text' => 'Successfully loaded your previous record and autofilled out the fields.',
             ]);
         } else {
             $this->dispatch('notification:alert', [
                 'type' => 'info',
                 'title' => 'No Previous Record Found',
-                'text' => 'No previous record found. Please fill out the fields.'
+                'text' => 'No previous record found. Please fill out the fields.',
             ]);
         }
     }
@@ -123,82 +56,71 @@ class Create extends Component
     public function save()
     {
         try {
-            $this->validate();
+            $this->form->validate();
         } catch (ValidationException $e) {
             $this->dispatch('notification:toast', [
                 'type' => 'error',
-                'title' => 'Invalid Form Submitted',
-                'text' => 'Please check your inputs and try again.',
+                'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation'),
             ]);
 
-            report($e);
             return;
         }
 
         try {
             DB::transaction(function () {
-                $districtId = Barangay::firstWhere('id', $this->barangayId)->district_id;
-        
+                $districtId = Barangay::firstWhere('id', $this->form->barangayId)->district_id;
+
                 $client = Client::create([
                     'user_id' => Auth::id(),
-                    'date_of_birth' => $this->dateOfBirth,
-                    'house_no' => $this->houseNo,
-                    'street' => $this->street,
+                    'date_of_birth' => $this->form->dateOfBirth,
+                    'house_no' => $this->form->houseNo,
+                    'street' => $this->form->street,
                     'district_id' => $districtId,
-                    'barangay_id' => $this->barangayId,
-                    'city' => $this->city,
-                    'contact_number' => $this->contactNumber,
+                    'barangay_id' => $this->form->barangayId,
+                    'city' => 'Taguig City',
+                    'contact_number' => $this->form->contactNumber,
                 ]);
-        
+
                 ClientDemographic::create([
                     'client_uuid' => $client->uuid,
-                    'sex_id' => $this->sexId,
-                    'nationality_id' => $this->nationalityId,
-                    'religion_id' => $this->religionId,
+                    'sex_id' => $this->form->sexId,
+                    'nationality_id' => $this->form->nationalityId,
+                    'religion_id' => $this->form->religionId,
                 ]);
-                
+
                 ClientSocialInfo::create([
                     'client_uuid' => $client->uuid,
-                    'civil_id' => $this->civilId,
-                    'education_id' => $this->educationId,
-                    'income' => $this->income,
-                    'philhealth' => $this->philhealth,
-                    'skill' => $this->skill,
+                    'civil_id' => $this->form->civilId,
+                    'education_id' => $this->form->educationId,
+                    'income' => $this->form->income,
+                    'philhealth' => $this->form->philhealth,
+                    'skill' => $this->form->skill,
                 ]);
-        
+
                 $this->reset();
-        
+
                 session()->put('client_uuid', $client->uuid);
-        
+
                 $this->dispatch('notification:alert', [
                     'type' => 'success',
                     'text' => 'Successfully saved your information as a draft',
                 ]);
-        
+
+                ActivityLoggerService::logSuccess('Successfuly saved client', [
+                    'client_uuid' => $client->uuid,
+                ]);
+
                 $this->redirect(route('beneficiary.create'));
             });
         } catch (\Throwable $th) {
-            if (app()->hasDebugModeEnabled()) {
-                $this->dispatch('notification:alert', [
-                    'type' => 'error',
-                    'title' => 'Error',
-                    'text' => $th->getMessage(),
-                ]);
-            } else {
-                $this->dispatch('notification:alert', [
-                    'type' => 'error',
-                    'title' => 'Failed to Submit',
-                    'text' => 'Something went wrong. Please try again.',
-                ]);
+            $this->dispatch('notification:alert', [
+                'type' => 'error',
+                'text' => $th->getMessage(),
+            ]);
 
-                activity()
-                    ->withProperties([
-                        'ip' => request()->ip(),
-                        'browser' => request()->userAgent(),
-                    ])
-                    ->causedBy(Auth::user())
-                    ->log('Failed to create client');
-            }
+            ActivityLoggerService::logException($th, 'Failed to create client');
+
+            report($th);
         }
     }
 }

@@ -16,9 +16,8 @@ class BeneficiaryService
             'application.client.interviews',
             'application.assessment',
             'application.recommendations',
-            'application.recommendations.assistance',
+            'application.recommendations.funeralAssistanceType',
             'application.referral',
-            'application.processLogs',
             'religion',
         ])
             ->when($user_id, function ($query) use ($user_id) {
@@ -27,7 +26,7 @@ class BeneficiaryService
             ->orderBy($orderBy, $orderDirection)
             ->get()
             ->map(function (Beneficiary $beneficiary) {
-                $application = $beneficiary->application;
+                $application = $beneficiary->application?->load('workflowStage');
                 $status = $application ? $application->status() : 'Draft';
 
                 return [

@@ -17,7 +17,7 @@ class EducationSeeder extends Seeder
             'Vocational (TESDA)',
             'College Level (Undergraduate)',
             'College Level (Graduate)',
-            'Postgraduate Level (Master and Doctorate)'
+            'Postgraduate Level (Master and Doctorate)',
         ];
 
         foreach ($educations as $education) {

@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\FuneralAssistanceType;
 use App\Models\Workflow;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class WorkflowSeeder extends Seeder

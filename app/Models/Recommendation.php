@@ -7,9 +7,7 @@ use Database\Factories\RecommendationFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Recommendation extends Model
 {
@@ -70,6 +68,7 @@ class Recommendation extends Model
 
     /**
      * Summary of workflowHistory
+     *
      * @return HasMany<WorkflowHistory, Recommendation>
      */
     public function workflowHistory(): HasMany

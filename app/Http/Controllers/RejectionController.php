@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Rejection;
 use App\Http\Requests\StoreRejectionRequest;
 use App\Http\Requests\UpdateRejectionRequest;
+use App\Models\Rejection;
 
 class RejectionController extends Controller
 {

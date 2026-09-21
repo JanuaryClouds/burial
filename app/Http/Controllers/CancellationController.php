@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Cancellation;
 use App\Http\Requests\StoreCancellationRequest;
 use App\Http\Requests\UpdateCancellationRequest;
+use App\Models\Cancellation;
 
 class CancellationController extends Controller
 {

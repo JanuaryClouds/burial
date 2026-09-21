@@ -6,12 +6,7 @@ use App\Models\Client;
 use App\Models\Interview;
 use App\Models\Notification;
 use App\Models\User;
-use App\Models\Workflow;
-use App\Models\WorkflowHistory;
-use App\Models\WorkflowStage;
-use App\Models\WorkflowTransition;
 use App\Traits\HasWorkflowHistory;
-use App\Traits\HasWorkHours;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 
@@ -24,7 +19,8 @@ class InterviewSeeder extends Seeder
      */
     public function run(): void
     {
-        $clients = Client::whereHas('application')
+        $clients = Client::with(['application', 'user'])
+            ->whereHas('application')
             ->get();
 
         foreach ($clients as $client) {

@@ -9,14 +9,17 @@ use Illuminate\View\Component;
 class Modal extends Component
 {
     public string $modalId;
+
     public ?string $buttonClass;
+
     public string $modalTitle;
+
     public ?string $modalSize;
 
     /**
      * Create a new component instance.
      */
-    public function __construct(string $modalId, ?string $buttonClass = '', string $modalTitle, ?string $modalSize = 'sm')
+    public function __construct(string $modalId, ?string $buttonClass, string $modalTitle, ?string $modalSize = 'sm')
     {
         $this->modalId = $modalId;
         $this->buttonClass = $buttonClass;

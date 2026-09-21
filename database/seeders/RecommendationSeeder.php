@@ -7,8 +7,6 @@ use App\Models\FuneralAssistanceType;
 use App\Models\Recommendation;
 use App\Models\User;
 use App\Models\WorkflowHistory;
-use App\Models\WorkflowStage;
-use App\Models\WorkflowTransition;
 use App\Traits\HasWorkflowHistory;
 use App\Traits\HasWorkHours;
 use Illuminate\Database\Seeder;
@@ -16,14 +14,17 @@ use Illuminate\Support\Carbon;
 
 class RecommendationSeeder extends Seeder
 {
-    use HasWorkHours, HasWorkflowHistory;
+    use HasWorkflowHistory, HasWorkHours;
 
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        $applications = Application::whereHas('assessment')->get();
+        $applications = Application::with(['assessment'])
+            ->whereHas('assessment')
+            ->get();
+
         dump('Number of Applications to Seed: '.$applications->count());
 
         foreach ($applications as $application) {

@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Workflow;
 use App\Http\Requests\StoreWorkflowRequest;
 use App\Http\Requests\UpdateWorkflowRequest;
+use App\Models\Workflow;
 use App\Services\DatatableService;
 use App\Services\WorkflowService;
 use Illuminate\Support\Facades\Auth;
@@ -97,6 +97,7 @@ class WorkflowController extends Controller
                 ->withProperties(['ip' => request()->ip(), 'browser' => request()->userAgent(), 'workflow' => $workflow->uuid])
                 ->causedBy(Auth::user())
                 ->log('Updated the workflow details: '.$workflow->uuid);
+
             return redirect()
                 ->route('workflow.show', $workflow)
                 ->with('success', 'Updated successfully');

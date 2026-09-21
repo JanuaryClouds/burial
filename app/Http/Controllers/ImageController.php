@@ -29,7 +29,7 @@ class ImageController extends Controller
         return view('application.image', [
             'src' => $src,
             'alt' => Str::title(Str::replace('_', ' ', $filename)),
-            'pageTitle' => $application->tracking_no . ' | ' . Str::title(Str::replace('_', ' ', $filename))
+            'pageTitle' => $application->tracking_no.' | '.Str::title(Str::replace('_', ' ', $filename)),
         ]);
     }
 }

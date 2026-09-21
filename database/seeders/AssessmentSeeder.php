@@ -6,10 +6,6 @@ use App\Models\Assessment;
 use App\Models\Client;
 use App\Models\Notification;
 use App\Models\User;
-use App\Models\Workflow;
-use App\Models\WorkflowHistory;
-use App\Models\WorkflowStage;
-use App\Models\WorkflowTransition;
 use App\Traits\HasWorkflowHistory;
 use App\Traits\HasWorkHours;
 use Illuminate\Database\Seeder;
@@ -17,14 +13,15 @@ use Illuminate\Support\Carbon;
 
 class AssessmentSeeder extends Seeder
 {
-    use HasWorkHours, HasWorkflowHistory;
+    use HasWorkflowHistory, HasWorkHours;
 
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        $clients = Client::whereHas('interviews')->get();
+        $clients = Client::with(['application', 'interviews'])
+            ->whereHas('interviews')->get();
 
         dump($clients->count().' Clients with Interviews to Seed');
 

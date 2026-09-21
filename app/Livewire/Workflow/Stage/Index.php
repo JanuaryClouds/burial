@@ -13,8 +13,11 @@ use Livewire\Component;
 class Index extends Component
 {
     public Workflow $workflow;
+
     public Collection $stages;
+
     public Collection $trashedStages;
+
     public Collection $workflowPermissions;
 
     public function mount(Workflow $workflow): void

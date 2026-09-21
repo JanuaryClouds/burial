@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Models\Beneficiary;
 use App\Models\BeneficiaryFamily;
 use App\Models\User;
 
@@ -34,13 +35,17 @@ class BeneficiaryFamilyPolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user): bool
+    public function create(User $user, Beneficiary $beneficiary): bool
     {
-        if ($user->roles()->count() > 0) {
-            return false;
+        if ($user->roles()->count() == 0) {
+            return true;
         }
 
-        return true;
+        if ($user->id === $beneficiary->created_by) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -64,6 +69,10 @@ class BeneficiaryFamilyPolicy
      */
     public function delete(User $user, BeneficiaryFamily $beneficiaryFamily): bool
     {
+        if ($beneficiaryFamily->beneficiary->application !== null) {
+            return false;
+        }
+
         if ($user->id === $beneficiaryFamily->beneficiary->user->id) {
             return true;
         }
@@ -79,7 +88,7 @@ class BeneficiaryFamilyPolicy
         if ($user->id === $beneficiaryFamily->beneficiary->user->id) {
             return true;
         }
-        
+
         return false;
     }
 
