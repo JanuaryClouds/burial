@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Forms;
 
+use App\Models\Client;
 use Livewire\Attributes\Validate;
 use Livewire\Form;
 
@@ -72,7 +73,7 @@ class ClientForm extends Form
     //     ];
     // }
 
-    public function setClient($client)
+    public function setClient(Client $client)
     {
         $this->dateOfBirth = $client->date_of_birth;
         $this->sexId = $client->demographic->sex_id;
