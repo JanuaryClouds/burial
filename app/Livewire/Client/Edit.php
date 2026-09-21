@@ -5,6 +5,8 @@ namespace App\Livewire\Client;
 use App\Livewire\Forms\ClientForm;
 use App\Models\Barangay;
 use App\Models\Client;
+use App\Models\ClientDemographic;
+use App\Models\ClientSocialInfo;
 use App\Services\ActivityLoggerService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -14,26 +16,23 @@ class Edit extends Component
 {
     public Client $client;
 
+    public ?ClientDemographic $demographic = null;
+
+    public ?ClientSocialInfo $socialInfo = null;
+
     public ClientForm $form;
 
     public function mount(Client $client)
     {
         $this->client = $client;
+        $this->demographic = $client->demographic;
+        $this->socialInfo = $client->socialInfo;
 
         $this->form->setClient($this->client);
     }
 
     public function save()
     {
-        if ($this->client->isClean()) {
-            $this->dispatch('notification:toast', [
-                'type' => 'info',
-                'text' => 'No changes saved',
-            ]);
-
-            return;
-        }
-
         try {
             $this->form->validate();
         } catch (ValidationException $e) {
@@ -59,13 +58,13 @@ class Edit extends Component
                     'contact_number' => $this->form->contactNumber,
                 ]);
 
-                $this->client->demographic->update([
+                $this->demographic->update([
                     'sex_id' => $this->form->sexId,
                     'nationality_id' => $this->form->nationalityId,
                     'religion_id' => $this->form->religionId,
                 ]);
 
-                $this->client->socialInfo->update([
+                $this->socialInfo->update([
                     'civil_id' => $this->form->civilId,
                     'education_id' => $this->form->educationId,
                     'philhealth' => $this->form->philhealth,

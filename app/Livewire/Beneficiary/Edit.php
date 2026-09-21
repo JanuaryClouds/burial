@@ -25,15 +25,6 @@ class Edit extends Component
 
     public function save()
     {
-        if ($this->beneficiary->isClean()) {
-            $this->dispatch('notification:toast', [
-                'type' => 'info',
-                'text' => 'No changes were saved',
-            ]);
-
-            return;
-        }
-
         try {
             $this->form->validate();
         } catch (ValidationException $e) {
