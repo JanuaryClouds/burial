@@ -56,9 +56,27 @@ class ClientController extends Controller
 
     public function create()
     {
-        return view('client.create', [
-            'pageTitle' => 'Draft a Client Record',
-        ]);
+        $draftedClients = Auth::user()->clients()->where(function ($query) {
+            $query->whereDoesntHave('application');
+        })->get();
+
+        $draftedBeneficiaries = Auth::user()->beneficiaries()->where(function ($query) {
+            $query->whereDoesntHave('application');
+        })->get();
+
+        if ($draftedClients->count() == 0) {
+            return view('client.create', [
+                'pageTitle' => 'Draft a Client Record',
+            ]);
+        }
+
+        if ($draftedBeneficiaries->count() == 0) {
+            return redirect()->route('beneficiary.create');
+        }
+
+        if ($draftedClients->count() > 0 && $draftedBeneficiaries->count() > 0) {
+            return redirect()->route('application.create');
+        }
     }
 
     public function edit(Client $client)
