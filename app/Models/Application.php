@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class Application extends Model
@@ -262,6 +263,11 @@ class Application extends Model
         return $status;
     }
 
+    public function currentStatus(): array
+    {
+        return $this->status()[count($this->status()) - 1];
+    }
+
     /**
      * Summary of finishedInterview
      */
@@ -383,4 +389,33 @@ class Application extends Model
     | Model scopes.
     |
     */
+
+    public function scopeTotal($query)
+    {
+        return $query->when(Auth::user()->roles()->count() == 0, function ($query) {
+            $query->whereHas('client', function ($query) {
+                $query->where('user_id', Auth::id());
+            });
+        });
+    }
+
+    public function scopePerStatus($query)
+    {
+        return $query->with([
+            'workflowStage',
+            'client.interviews',
+            'assessment',
+            'recommendations',
+            'referral',
+            'cancellation',
+            'rejection'
+        ]);
+    }
+
+    public function scopePerRelationship($query)
+    {
+        return $query->with(['relationship'])
+            ->groupBy('relationship_id')
+            ->selectRaw('relationship_id, count(*) as total');
+    }
 }

@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class Beneficiary extends Model
@@ -196,7 +197,55 @@ class Beneficiary extends Model
         });
     }
 
-    public function scopeAgeGroup($query)
+    public function scopePerMonth($query)
+    {
+        if (! Auth::user()) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        $query->with(['application']);
+
+        if (Auth::user()->roles()->count() > 0) {
+            $query->whereHas('application');
+        } else {
+            $query->whereHas('user', function ($query) {
+                $query->where('id', Auth::id());
+            })
+            ->whereHas('application');
+        }
+
+        return $query
+            ->selectRaw('YEAR(created_at) as year')
+            ->selectRaw('MONTH(created_at) as month')
+            ->selectRaw('COUNT(*) as total')
+            ->groupByRaw('YEAR(created_at), MONTH(created_at)')
+            ->orderByRaw('YEAR(created_at), MONTH(created_at)');
+    }
+
+    public function scopeCurrentMonth($query)
+    {
+        if (! Auth::user()) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        $query->with(['application']);
+
+        if (Auth::user()->roles()->count() > 0) {
+            $query->with(['application']);
+        } else {
+            $query->with(['application'])
+                ->whereHas('user', function ($query) {
+                    $query->where('id', Auth::id());
+                });
+        }
+
+        return $query->whereHas('application', function ($query) {
+            $query->whereYear('created_at', Carbon::now()->year)
+                ->whereMonth('created_at', Carbon::now()->month);
+        });
+    }
+
+    public function scopePerAgeGroup($query)
     {
         return $query
             ->selectRaw("
@@ -212,7 +261,7 @@ class Beneficiary extends Model
             ->groupBy('age_group');
     }
 
-    public function scopeReligionGroup($query)
+    public function scopePerReligion($query)
     {
         return $query
             ->selectRaw('religion_id, COUNT(*) as total')
@@ -220,7 +269,7 @@ class Beneficiary extends Model
             ->groupBy('religion_id');
     }
 
-    public function scopeNatalityGroup($query)
+    public function scopePerNatality($query)
     {
         return $query
             ->whereRaw("TIMESTAMPDIFF(DAY, date_of_birth, date_of_death) < 30")
@@ -235,7 +284,7 @@ class Beneficiary extends Model
             ->groupBy('natality_group');
     }
 
-    public function scopePwdGroup($query)
+    public function scopeOnlyPwd($query)
     {
         return $query
             ->where('pwd', 1);

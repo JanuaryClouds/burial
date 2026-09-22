@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class Client extends Model
@@ -187,55 +188,65 @@ class Client extends Model
     */
 
     // Scopes
-    public function scopeTotal(Builder $query)
+    public function scopeTotal($query)
     {
-        if (! auth()->user()) {
+        if (! Auth::user()) {
             return $query->whereRaw('1 = 0');
         }
 
-        if (auth()->user()->roles()->count() > 0) {
-            return $query;
+        if (Auth::user()->roles()->count() > 0) {
+            return $query->whereHas('application');
         }
 
-        return $query->where('user_id', auth()->user()->id);
+        return $query->where('user_id', Auth::id())
+            ->whereHas('application');
     }
 
-    public function scopeReferral($query)
+    public function scopePerMonth($query)
     {
-        if (! auth()->user()) {
+        if (! Auth::user()) {
             return $query->whereRaw('1 = 0');
         }
 
-        if (auth()->user()->roles()->count() > 0) {
-            return $query->whereHas('referral');
+        $query->with(['application']);
+
+        if (Auth::user()->roles()->count() > 0) {
+            $query->whereHas('application');
+        } else {
+            $query->whereHas('user', function ($query) {
+                $query->where('id', Auth::id());
+            })
+            ->whereHas('application');
         }
 
-        return $query->where('user_id', auth()->user()->id)->whereHas('referral');
+        return $query
+            ->selectRaw('YEAR(created_at) as year')
+            ->selectRaw('MONTH(created_at) as month')
+            ->selectRaw('COUNT(*) as total')
+            ->groupByRaw('YEAR(created_at), MONTH(created_at)')
+            ->orderByRaw('YEAR(created_at), MONTH(created_at)');
     }
 
-    public function scopeBurialAssistance($query)
+    public function scopeCurrentMonth($query)
     {
-        if (! auth()->user()) {
+        if (! Auth::user()) {
             return $query->whereRaw('1 = 0');
         }
 
-        if (auth()->user()->roles()->count() > 0) {
-            return $query->whereHas('claimant');
+        $query->with(['application']);
+
+        if (Auth::user()->roles()->count() > 0) {
+            $query->with(['application']);
+        } else {
+            $query->with(['application'])
+                ->whereHas('user', function ($query) {
+                    $query->where('id', Auth::id());
+                });
         }
 
-        return $query->where('user_id', auth()->user()->id)->whereHas('claimant');
-    }
-
-    public function scopeFuneralAssistance($query)
-    {
-        if (! auth()->user()) {
-            return $query->whereRaw('1 = 0');
-        }
-
-        if (auth()->user()->roles()->count() > 0) {
-            return $query->whereHas('funeralAssistance');
-        }
-
-        return $query->where('user_id', auth()->user()->id)->whereHas('funeralAssistance');
+        return $query->whereHas('application', function ($query) {
+            $query->whereYear('created_at', Carbon::now()->year)
+                ->whereMonth('created_at', Carbon::now()->month);
+        });
     }
 }
