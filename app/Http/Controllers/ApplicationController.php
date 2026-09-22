@@ -53,45 +53,26 @@ class ApplicationController extends Controller
      */
     public function create()
     {
-        $user = Auth::user();
+        $draftedClients = Auth::user()->clients()->where(function ($query) {
+            $query->whereDoesntHave('application');
+        })->get();
 
-        if ($user->roles->isNotEmpty()) {
-            return redirect()->route('dashboard')
-                ->with('warning', 'You are not allowed to apply as a client');
+        $draftedBeneficiaries = Auth::user()->beneficiaries()->where(function ($query) {
+            $query->whereDoesntHave('application');
+        })->get();
+
+        if ($draftedClients->count() == 0) {
+            return redirect()->route('client.create', [
+                'pageTitle' => 'Draft a Client Record',
+            ]);
         }
 
-        $draftClients = Client::with(Client::relations())
-            ->whereDoesntHave('application')
-            ->where('user_id', $user->id)
-            ->get();
-
-        $draftBeneficiaries = Beneficiary::with(Beneficiary::relations())
-            ->whereDoesntHave('application')
-            ->where('created_by', $user->id)
-            ->get();
-
-        $clientOptions = $draftClients
-            ->mapWithKeys(function (Client $client) {
-                return [
-                    $client->uuid => $client->fullname().' - created at '.$client->created_at->format('M d, Y : h:m a'),
-                ];
-            })
-            ->toArray();
-
-        $beneficiaryOptions = $draftBeneficiaries
-            ->mapWithKeys(function (Beneficiary $beneficiary) {
-                return [
-                    $beneficiary->uuid => $beneficiary->fullname().' - created at '.$beneficiary->created_at->format('M d, Y : h:m a'),
-                ];
-            })
-            ->toArray();
+        if ($draftedBeneficiaries->count() == 0) {
+            return redirect()->route('beneficiary.create');
+        }
 
         return view('application.create', [
             'pageTitle' => 'Create Application',
-            'draftClients' => $draftClients,
-            'draftBeneficiaries' => $draftBeneficiaries,
-            'clientOptions' => $clientOptions,
-            'beneficiaryOptions' => $beneficiaryOptions,
         ]);
     }
 
@@ -160,46 +141,8 @@ class ApplicationController extends Controller
      */
     public function show(Application $application)
     {
-        $application->loadMissing(Application::relations(
-            'client',
-            'beneficiary',
-            'recommendation',
-            'assessment',
-            'processLogs',
-            'referral',
-            'relationship',
-        ));
-
-        $client = $application->client;
-        $beneficiary = $application->beneficiary;
-        $family = $beneficiary->family;
-        $interviews = $client->interviews;
-        $assessment = $application->assessment;
-        $recommendations = $application->recommendations;
-        $referral = $application->referral;
-        $funeralAssistanceTypes = FuneralAssistanceType::select(['name', 'uuid'])->get();
-        $modes = ModeOfAssistance::select(['id', 'name'])->get();
-
-        $conditions = $this->services->workflowState($application);
-
         return view('application.show', [
             'application' => $application,
-            'client' => $client,
-            'beneficiary' => $beneficiary,
-            'family' => $family,
-            'interviews' => $interviews,
-            'assessment' => $assessment,
-            'recommendations' => $recommendations,
-            'referral' => $referral,
-            'conditions' => $conditions,
-            'funeralAssistanceTypes' => $funeralAssistanceTypes,
-            'modes' => $modes,
-            'qrCode' => $this->services->getQrCodeUri(
-                'svg',
-                $application->qr_code,
-                200
-            ),
-            'barcode' => $this->services->getBarcodeUri($application->qr_code),
             'pageTitle' => $application->tracking_no,
         ]);
     }

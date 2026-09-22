@@ -20,7 +20,7 @@ Route::name('client.')
                     ->middleware('can:view,App\Models\Client,client')
                     ->name('show');
 
-                Route::get('/edit', [ClientController::class, 'edit'])
+                Route::get('/edit', 'edit')
                     ->middleware('can:update,client')
                     ->name('edit');
             });
