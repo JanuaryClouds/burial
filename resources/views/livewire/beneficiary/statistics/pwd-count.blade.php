@@ -1,4 +1,4 @@
-<div wire:poll.30s="refresh">
+<div wire:poll.30s="getCount">
 	<livewire:counter :label="$label"
 		:count="$count"
 		:icon-name="$iconName"
