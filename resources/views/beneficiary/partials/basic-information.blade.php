@@ -47,15 +47,6 @@
 			type="date" />
 	</div>
 	<div class="col-12 col-md-12 col-lg-6 col-xl-4 d-flex gap-4">
-		@if (
-			$form->dateOfBirth &&
-				$form->dateOfDeath &&
-				\Carbon\Carbon::parse($form->dateOfBirth)->diffInHours(\Carbon\Carbon::parse($form->dateOfDeath)) < 24)
-			<x-form.check wire:model='form.lethal'
-				name="form.lethal"
-				label="Lethal"
-				:checked="$form->lethal" />
-		@endif
 		<x-form.check wire:model='form.pwd'
 			name="form.pwd"
 			label="Person with Disability"

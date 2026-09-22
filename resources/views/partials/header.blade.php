@@ -6,6 +6,7 @@
 	style="background-color: #00000000;">
 	<!--begin::Container-->
 	<div class="header-container container-xxl">
+		@include('partials.mobile-nav')
 		<!--begin::Page title-->
 		<div
 			class="page-title d-flex flex-column align-items-start justify-content-center flex-wrap me-lg-20 py-3 py-lg-0 me-3">
@@ -27,8 +28,19 @@
 		<!--end::Page title--->
 		<!--begin::Wrapper-->
 		<div class="d-flex align-items-center justify-content-end flex-wrap gap-3">
-			@include('partials.mobile-nav')
 			<!-- begin::Theme mode -->
+			@role('staff')
+				<a href="{{ route('application.search') }}"
+					class="btn btn-icon btn-custom btn-active-color-primary menu-dropdown"
+					data-bs-toggle="tooltip"
+					data-bs-placement="bottom"
+					title="Search Application">
+					<x-icon.keen :icon="'scan-barcode'"
+						:size="'1'"
+						:pathsCount="8" />
+				</a>
+			@endrole
+
 			<livewire:notification.button />
 
 			<div class="menu menu-sub menu-sub-dropdown menu-column w-350px w-lg-375px"

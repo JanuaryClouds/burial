@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class Beneficiary extends Model
@@ -27,7 +28,6 @@ class Beneficiary extends Model
         'religion_id',
         'date_of_birth',
         'date_of_death',
-        'lethal',
         'pwd',
         'house_no',
         'street',
@@ -171,7 +171,14 @@ class Beneficiary extends Model
         ];
     }
 
-    // Scopes
+    /*
+    |--------------------------------------------------------------------------
+    | Model Scopes
+    |--------------------------------------------------------------------------
+    |
+    | Scope functions to be used in the model.
+    |
+    */
 
     public function scopeTotal($query)
     {
@@ -190,54 +197,96 @@ class Beneficiary extends Model
         });
     }
 
-    public function scopeReferral($query)
+    public function scopePerMonth($query)
     {
-        $user = auth()->user();
-
-        if (! $user) {
+        if (! Auth::user()) {
             return $query->whereRaw('1 = 0');
         }
 
-        if ($user->roles()->exists()) {
-            return $query->whereHas('client.referral');
+        $query->with(['application']);
+
+        if (Auth::user()->roles()->count() > 0) {
+            $query->whereHas('application');
+        } else {
+            $query->whereHas('user', function ($query) {
+                $query->where('id', Auth::id());
+            })
+            ->whereHas('application');
         }
 
-        return $query->whereHas('client', function ($query) use ($user) {
-            $query->whereIn('id', $user->clients->pluck('id'))->whereHas('referral');
+        return $query
+            ->selectRaw('YEAR(created_at) as year')
+            ->selectRaw('MONTH(created_at) as month')
+            ->selectRaw('COUNT(*) as total')
+            ->groupByRaw('YEAR(created_at), MONTH(created_at)')
+            ->orderByRaw('YEAR(created_at), MONTH(created_at)');
+    }
+
+    public function scopeCurrentMonth($query)
+    {
+        if (! Auth::user()) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        $query->with(['application']);
+
+        if (Auth::user()->roles()->count() > 0) {
+            $query->with(['application']);
+        } else {
+            $query->with(['application'])
+                ->whereHas('user', function ($query) {
+                    $query->where('id', Auth::id());
+                });
+        }
+
+        return $query->whereHas('application', function ($query) {
+            $query->whereYear('created_at', Carbon::now()->year)
+                ->whereMonth('created_at', Carbon::now()->month);
         });
     }
 
-    public function scopeBurialAssistance($query)
+    public function scopePerAgeGroup($query)
     {
-        $user = auth()->user();
-
-        if (! $user) {
-            return $query->whereRaw('1 = 0');
-        }
-
-        if ($user->roles()->exists()) {
-            return $query->whereHas('client.claimant');
-        }
-
-        return $query->whereHas('client', function ($query) use ($user) {
-            $query->whereIn('id', $user->clients->pluck('id'))->whereHas('claimant');
-        });
+        return $query
+            ->selectRaw("
+                CASE
+                    WHEN TIMESTAMPDIFF(YEAR, date_of_birth, date_of_death) BETWEEN 0 AND 17 THEN '0-17'
+                    WHEN TIMESTAMPDIFF(YEAR, date_of_birth, date_of_death) BETWEEN 18 AND 30 THEN '18-30'
+                    WHEN TIMESTAMPDIFF(YEAR, date_of_birth, date_of_death) BETWEEN 31 AND 45 THEN '31-45'
+                    WHEN TIMESTAMPDIFF(YEAR, date_of_birth, date_of_death) BETWEEN 46 AND 60 THEN '46-60'
+                    ELSE '61+'
+                END AS age_group,
+                COUNT(*) AS total
+            ")
+            ->groupBy('age_group');
     }
 
-    public function scopeFuneralAssistance($query)
+    public function scopePerReligion($query)
     {
-        $user = auth()->user();
+        return $query
+            ->selectRaw('religion_id, COUNT(*) as total')
+            ->with('religion')
+            ->groupBy('religion_id');
+    }
 
-        if (! $user) {
-            return $query->whereRaw('1 = 0');
-        }
+    public function scopePerNatality($query)
+    {
+        return $query
+            ->whereRaw("TIMESTAMPDIFF(DAY, date_of_birth, date_of_death) < 30")
+            ->selectRaw("
+                CASE
+                    WHEN TIMESTAMPDIFF(DAY, date_of_birth, date_of_death) BETWEEN 0 AND 7 THEN 'Perinatal Group'
+                    WHEN TIMESTAMPDIFF(DAY, date_of_birth, date_of_death) BETWEEN 7 AND 28 THEN 'Neonatal Group'
+                    ELSE ''
+                END AS natality_group
+            ")
+            ->selectRaw('COUNT(*) as total')
+            ->groupBy('natality_group');
+    }
 
-        if ($user->roles()->count() > 0) {
-            return $query->whereHas('client.funeralAssistance');
-        }
-
-        return $query->whereHas('client', function ($query) use ($user) {
-            $query->whereIn('id', $user->clients->pluck('id'))->whereHas('funeralAssistance');
-        });
+    public function scopeOnlyPwd($query)
+    {
+        return $query
+            ->where('pwd', 1);
     }
 }

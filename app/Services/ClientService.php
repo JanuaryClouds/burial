@@ -50,7 +50,7 @@ class ClientService
             ->get()
             ->map(function (Client $client) {
                 $application = $client->application?->load('workflowStage');
-                $status = $application ? $application->status() : 'Draft';
+                $status = $application ? $application->currentStatus() : 'Draft';
 
                 return [
                     'uuid' => $client->uuid,

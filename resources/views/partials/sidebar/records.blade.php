@@ -1,4 +1,4 @@
-<!--begin:records-->
+{{-- <!--begin:records-->
 <div data-kt-menu-trigger="{default: 'click'}"
 	data-kt-menu-placement="right-start"
 	@class([
@@ -34,4 +34,25 @@
 	</div>
 	<!--end:Menu sub-->
 </div>
-<!--end:records-->
+<!--end:records--> --}}
+@include('components.sidebar.link', [
+	'route' => route('application.index'),
+	'activeLink' => 'application.*',
+	'icon' => 'some-files',
+	'iconPathsCount' => 2,
+	'label' => 'Applications',
+])
+@include('components.sidebar.link', [
+	'route' => route('client.index'),
+	'activeLink' => 'client.*',
+	'icon' => 'people',
+	'iconPathsCount' => 5,
+	'label' => 'Clients',
+])
+@include('components.sidebar.link', [
+	'route' => route('beneficiary.index'),
+	'activeLink' => 'beneficiary.*',
+	'icon' => 'profile-circle',
+	'iconPathsCount' => 3,
+	'label' => 'Beneficiaries',
+])

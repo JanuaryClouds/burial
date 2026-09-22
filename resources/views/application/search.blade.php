@@ -1,4 +1,4 @@
 @extends('layouts.app')
 @section('content')
-	@livewire('application.search')
+	<livewire:application.search />
 @endsection

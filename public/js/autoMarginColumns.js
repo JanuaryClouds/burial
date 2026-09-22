@@ -3,7 +3,7 @@ export default function autoMarginColumns() {
         const totalCols = $(element).children();
 
         totalCols.each(function(index, element) {
-            $(element).addClass('mb-2');
+            $(element).addClass('mb-6');
 
             if ($(element).is('[class^="col-"')) {
                 return;

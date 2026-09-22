@@ -14,7 +14,6 @@
 							Please enter your credentials to access the dashboard.
 						</p>
 					</div>
-					@include('components.notification.modal')
 					<div class="col">
 						<form action="{{ route('login.check') }}"
 							method="POST">

@@ -10,7 +10,7 @@
 import updateDistrict from './districts.js';
 import initSelect2 from './select2.js';
 import randomizeMulticolorBorder from './multicolorBorder.js';
-import checkAndRenderCharts from './chart.js';
+import { checkCharts, refreshChart } from './chart.js';
 import theme from './theme.js';
 import autoMarginColumns from './autoMarginColumns.js';
 import sweetAlert from './sweetAlert2.js';
@@ -26,7 +26,8 @@ theme();
 initSelect2();
 
 document.addEventListener('DOMContentLoaded', () => {
-    checkAndRenderCharts();
+    checkCharts();
+    refreshChart();
     randomizeMulticolorBorder();
     theme();
     autoMarginColumns();
@@ -54,6 +55,7 @@ window.initSelect2 = initSelect2;
 
 document.addEventListener('livewire:init', () => {
     autoMarginColumns();
+    refreshChart();
     sweetAlert();
     toast();
 

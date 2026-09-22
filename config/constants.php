@@ -18,4 +18,8 @@ return [
         'unauthorized' => 'You do not have the permission for this.',
         'unknown' => 'Something went wrong. Please try again later. If the problem persists, please contact the administrator.',
     ],
+    'title' => [
+        'main' => 'Funeral Assistance System',
+        'sub' => 'CSWDO Taguig City'
+    ]
 ];

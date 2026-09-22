@@ -15,17 +15,17 @@ Route::name('application.')
         Route::get('/', [ApplicationController::class, 'index'])
             ->name('index');
 
-        Route::get('/create', Create::class)
+        Route::get('/create', [ApplicationController::class, 'create'])
             ->middleware('can:create,\App\Models\Application')
             ->name('create');
 
-        Route::get('/search', Search::class)
+        Route::get('/search', [ApplicationController::class, 'search'])
             ->middleware('can:viewAny,\App\Models\Application')
             ->name('search');
 
         Route::prefix('/{application}')
             ->group(function () {
-                Route::get('', Show::class)
+                Route::get('', [ApplicationController::class, 'show'])
                     ->middleware('can:view,\App\Models\Application,application')
                     ->name('show');
 

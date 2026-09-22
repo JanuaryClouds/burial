@@ -50,7 +50,6 @@ class Edit extends Component
                     'date_of_birth' => $this->form->dateOfBirth,
                     'date_of_death' => $this->form->dateOfDeath,
                     'pwd' => $this->form->pwd,
-                    'lethal' => $this->form->lethal,
                     'house_no' => $this->form->houseNo,
                     'street' => $this->form->street,
                     'barangay_id' => $barangay->id,

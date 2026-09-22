@@ -39,7 +39,7 @@ class ApplicationService
                 $client = $application->client;
                 $beneficiary = $application->beneficiary;
 
-                $status = array_last($application->status());
+                $status = $application->currentStatus();
 
                 return [
                     'uuid' => $application->uuid,

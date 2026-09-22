@@ -27,7 +27,7 @@ class BeneficiaryService
             ->get()
             ->map(function (Beneficiary $beneficiary) {
                 $application = $beneficiary->application?->load('workflowStage');
-                $status = $application ? $application->status() : 'Draft';
+                $status = $application ? $application->currentStatus() : 'Draft';
 
                 return [
                     'application_tracking_no' => $application ? $application->tracking_no : 'Draft',

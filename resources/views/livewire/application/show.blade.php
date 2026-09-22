@@ -1,5 +1,3 @@
-<x-slot:pageTitle>{{ $application->tracking_no }} | Application</x-slot:pageTitle>
-<x-slot:pageSubTitle>Funeral Assistance System | CSWDO Taguig</x-slot:pageTitle>
 <div class="d-flex flex-column gap-6">
 	<div class="row">
 		<div class="col-12 col-lg-8"
