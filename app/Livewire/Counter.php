@@ -16,13 +16,13 @@ class Counter extends Component
 
     public int $iconPathsCount;
 
-    public string $route;
+    public ?string $route = null;
 
     public function mount(
         string $label,
         string $iconName,
         int $iconPathsCount,
-        string $route
+        ?string $route = null
     ) {
         $this->label = $label;
         $this->iconName = $iconName;
