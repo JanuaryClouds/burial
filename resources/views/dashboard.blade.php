@@ -1,28 +1,31 @@
 @extends('layouts.app')
 @section('content')
-	@role('staff')
-		@include('user.partials.quick-links')
-	@endrole
-	<div class="row">
-		<div class="col-12 d-flex flex-column gap-6 mb-6">
-			@unlessrole('staff')
-				@include('user.partials.quick-links')
-			@endunlessrole
-			@role('staff')
-				<div class="card multicolor-border">
-					<div class="card-header">
-						<h4 class="card-title">
-							Recent Applications
-						</h4>
-					</div>
-					<div class="card-body">
-						@include('partials.datatable.index', [
-							'src' => 'data',
-							'columns' => $columns,
-						])
-					</div>
-				</div>
-			@endrole
+	<x-card>
+		<div class="d-flex justify-content-between align-items-center">
+			<h4>Applications</h4>
+			<a href="{{ route('application.index') }}"
+				class="fs-4 btn btn-primary">
+				Total Applications : {{ \App\Models\Application::total()->get()?->count() }}
+			</a>
 		</div>
-	</div>
+	</x-card>
+
+	{{-- start::Statistics --}}
+	@include('dashboard.partials.statistics')
+	{{-- end::Statistics --}}
+
+	@unlessrole('staff')
+		<x-card>
+			@include('partials.datatable.index', [
+				'columns' => $columns,
+				'src' => 'data',
+			])
+		</x-card>
+	@endunlessrole
+
+	@role('staff')
+		{{-- start::Charts --}}
+		@include('dashboard.partials.charts')
+		{{-- end::Charts --}}
+	@endrole
 @endsection

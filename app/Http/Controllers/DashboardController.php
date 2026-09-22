@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\ApplicationService;
 use App\Services\ClientService;
 use App\Services\DatatableService;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
@@ -27,7 +28,15 @@ class DashboardController extends Controller
 
     public function staff()
     {
-        $data = $this->services->index(null, 'tracking_no', 'desc');
+
+        return view('dashboard', [
+            'pageTitle' => 'Dashboard',
+        ]);
+    }
+
+    public function user()
+    {
+        $data = $this->services->index(Auth::id(), 'tracking_no', 'desc');
 
         if (request()->expectsJson()) {
             return response()->json([
@@ -39,13 +48,6 @@ class DashboardController extends Controller
             'pageTitle' => 'Dashboard',
             'data' => $data,
             'columns' => $this->datatableServices->getColumns($data),
-        ]);
-    }
-
-    public function user()
-    {
-        return view('dashboard', [
-            'pageTitle' => 'Dashboard',
         ]);
     }
 }
