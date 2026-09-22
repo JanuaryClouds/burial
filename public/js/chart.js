@@ -96,6 +96,19 @@ function renderLineChart(chartData, chartId, chartLabels, chartTitle) {
             },
             options: {
                 responsive: true,
+                scales: {
+                    y: {
+                        ticks: {
+                            callback: function(value) {
+                                // Only show the label if it's an integer
+                                if (value % 1 === 0) {
+                                    return value;
+                                }
+                            }
+                        },
+                        beginAtZero: true,
+                    },
+                },
                 plugins: {
                     whiteBackground: {
                         color: '#ffffff'
