@@ -31,6 +31,7 @@ class BeneficiaryFactory extends Factory
             'religion_id' => Religion::inRandomOrder()->first()->id,
             'date_of_birth' => $this->faker->date('Y-m-d'),
             'date_of_death' => $this->faker->dateTimeBetween('-1 week', now()),
+            'pwd' => rand(0, 9) === 0 ? true : false,
             'house_no' => $this->faker->randomNumber(),
             'street' => $this->faker->streetName(),
             'city' => $this->faker->city(),
