@@ -43,7 +43,11 @@
 					</div>
 				</div>
 				@php
-					$workflowHistory = $recommendation->workflowHistory()->orderBy('date_in')->get();
+					$workflowHistory = $recommendation
+					    ->workflowHistory()
+					    ->with(['toStage', 'fromStage'])
+					    ->orderBy('date_in')
+					    ->get();
 				@endphp
 				@foreach ($workflowHistory as $history)
 					@if ($history->toStage)

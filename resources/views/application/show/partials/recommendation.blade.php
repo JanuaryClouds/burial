@@ -6,6 +6,12 @@
 				defer />
 			@can('create', [\App\Models\Recommendation::class, $application])
 				<x-slot:footer>
+					<a href="{{ route('application.certificate', $application) }}"
+						target="_blank"
+						class="btn btn-sm btn-light">
+						<x-icon.font-awesome class="fa-certificate" />
+						Print Certificate
+					</a>
 					<a href="{{ route('application.recommendation.create', $application) }}"
 						class="btn btn-sm btn-danger">
 						<x-icon.font-awesome class="fa-pencil-square" />

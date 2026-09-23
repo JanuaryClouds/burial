@@ -13,6 +13,14 @@
 			<x-icon.font-awesome class="fa-up-right-from-square" />
 			Show Beneficiary
 		</a>
+		@role('staff')
+			<a href="{{ route('application.print', $application) }}"
+				target="_blank"
+				class="btn btn-sm btn-light">
+				<x-icon.font-awesome class="fa-print" />
+				Print GIS Form
+			</a>
+		@endrole
 		<x-modal :modalId="'tracker-slip-modal'"
 			:modalTitle="'Tracker Slip'"
 			:modalSize="'md'"
