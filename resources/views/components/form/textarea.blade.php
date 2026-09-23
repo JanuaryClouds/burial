@@ -1,7 +1,6 @@
 @props(['name', 'id' => null, 'label' => null, 'required' => false])
 
-<div class="mb-3"
-	wire:loading.remove>
+<div class="mb-3">
 	<label for="{{ $name ?? $id }}"
 		class="form-label {{ $required ? 'required' : '' }}">{{ $label }}</label>
 	<textarea {{ $attributes->merge(['class' => 'form-control']) }}
