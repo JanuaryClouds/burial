@@ -26,6 +26,8 @@ class ApplicationService
             'assessment',
             'recommendations',
             'referral',
+            'rejection',
+            'cancellation',
             'workflowStage',
         ])
             ->when($userId, function ($query) use ($userId) {
