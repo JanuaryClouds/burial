@@ -123,12 +123,12 @@ class ApplicationService
             'demographic.religion',
             'demographic.nationality',
             'socialInfo',
-            'socialInfo.relationship',
             'socialInfo.civil',
             'socialInfo.education',
+            'application.relationship',
             'barangay',
         ])->find($client->uuid);
-        $family = $beneficiary->family ?? [];
+        $family = $beneficiary->family()->with(['sex', 'relationship', 'civil'])->get() ?? [];
         $assessment = $application->assessment ?? null;
         $recommendation = $application->recommendations->first() ?? null;
         $referral = $application->referral ?? null;
@@ -145,7 +145,7 @@ class ApplicationService
                     '5. Present Address' => $client->address(),
                 ],
                 [
-                    '6. Relationship to Beneficiary' => $client->socialInfo?->relationship?->name ?? 'N/A',
+                    '6. Relationship to Beneficiary' => $client->application?->relationship?->name ?? 'N/A',
                     '7. Civil Status' => $client->socialInfo?->civil?->name ?? 'N/A',
                 ],
                 [
@@ -159,7 +159,7 @@ class ApplicationService
                 ],
                 [
                     '13. PhilHealth Number' => $client->socialInfo?->philhealth ?? 'N/A',
-                    '14. Contact Number' => $client->user?->contact_number ?? 'N/A',
+                    '14. Contact Number' => $client->contact_number ?? 'N/A',
                 ],
             ],
             'beneficiary' => [
@@ -169,12 +169,12 @@ class ApplicationService
                 ],
                 [
                     '3. Date of Birth' => $beneficiary?->date_of_birth ? Carbon::parse($beneficiary->date_of_birth)->format('F d, Y') : 'N/A',
-                    '4. Place of Birth' => $beneficiary?->place_of_birth ?? 'N/A',
+                    '4. Place of Birth' => $beneficiary?->address() ?? 'N/A',
                 ],
             ],
             'assessment' => [
                 'problem_presented' => $assessment?->problem_presented ?? 'N/A',
-                'swa' => $assessment?->assessment ?? 'N/A',
+                'swa' => $assessment?->swa ?? 'N/A',
             ],
         ];
 
