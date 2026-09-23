@@ -194,6 +194,10 @@ class ApplicationController extends Controller
      */
     public function certificate(Application $application)
     {
+        if (! $application->recommendations()->exists()) {
+            abort(403);
+        }
+
         return $this->services->certificate($application);
     }
 }
