@@ -6,6 +6,7 @@ use App\Livewire\Forms\BeneficiaryFamilyForm;
 use App\Models\Beneficiary;
 use App\Models\BeneficiaryFamily;
 use App\Services\ActivityLoggerService;
+use App\Traits\Livewire\HasPlaceholder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -14,6 +15,8 @@ use Livewire\Component;
 
 class Index extends Component
 {
+    use HasPlaceholder;
+
     public Beneficiary $beneficiary;
 
     public BeneficiaryFamilyForm $form;
@@ -24,11 +27,6 @@ class Index extends Component
     {
         $this->beneficiary = $beneficiary;
         $this->family = $this->beneficiary->family;
-    }
-
-    public function placeholder()
-    {
-        return view('components.card.loading');
     }
 
     #[On('refreshFamily')]

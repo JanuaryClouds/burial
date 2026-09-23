@@ -3,11 +3,14 @@
 namespace App\Livewire\Notification;
 
 use App\Models\Notification;
+use App\Traits\Livewire\HasPlaceholder;
 use Carbon\Carbon;
 use Livewire\Component;
 
 class Index extends Component
 {
+    use HasPlaceholder;
+
     public ?array $notifications = [];
 
     public ?int $unreadCount = 0;
@@ -51,22 +54,6 @@ class Index extends Component
             ->update(['read_at' => now()]);
 
         $this->dispatch('$refresh');
-    }
-
-    public function placeholder()
-    {
-        return <<<'HTML'
-            <div class="card">
-                <div class="card-header">
-                    <h4 class="card-title">Updates</h4>
-                </div>
-                <div class="card-body d-flex justify-content-center">
-                    @include('partials.loader.bar')
-                </div>
-                <div class="card-footer">
-                </div>
-            </div>
-        HTML;
     }
 
     public function render()
