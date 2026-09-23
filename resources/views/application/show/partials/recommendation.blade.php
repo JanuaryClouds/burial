@@ -41,7 +41,7 @@
 					<x-slot:icon>
 						<x-icon.font-awesome class="fa-exclamation-circle fs-2" />
 					</x-slot:icon>
-					Set an interview first before making an assessment.
+					Set an interview first before making a recommendation.
 					@can('create', [\App\Models\Interview::class, $application->client])
 						<x-slot:options>
 							<a href="{{ route('client.show', $application->client) }}"
