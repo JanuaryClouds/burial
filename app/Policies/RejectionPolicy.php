@@ -20,6 +20,14 @@ class RejectionPolicy
      */
     public function view(User $user, Rejection $rejection): bool
     {
+        if ($user->roles()->count() > 0) {
+            return true;
+        }
+
+        if ($user->id === $rejection->application->client->user_id) {
+            return true;
+        }
+
         return false;
     }
 
@@ -28,6 +36,10 @@ class RejectionPolicy
      */
     public function create(User $user): bool
     {
+        if ($user->roles()->count() > 0) {
+            return true;
+        }
+
         return false;
     }
 
