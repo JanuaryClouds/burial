@@ -27,7 +27,7 @@
 			@endforeach
 		</div>
 	</div>
-	@if ($application->cancellation || $application->referral)
+	@if ($application->cancellation || $application->referral || $application->rejection)
 		<div class="separator separator-dashed my-4"></div>
 		<div class="stepper stepper-pills">
 			<div class="stepper-nav flex-wrap flex-lg-nowrap d-flex justify-content-around align-items-center">
@@ -42,7 +42,7 @@
 									Cancelled
 								</h3>
 								<div class="stepper-desc completed text-success">
-									{{ $application->cancellation->reason }}
+									Application has been cancelled
 								</div>
 							@endif
 							@if ($application->referral)
@@ -51,6 +51,14 @@
 								</h3>
 								<div class="stepper-desc completed text-success">
 									Referred to {{ $application->referral->referral_to }}
+								</div>
+							@endif
+							@if ($application->rejection)
+								<h3 class="stepper-title completed text-success">
+									Rejected
+								</h3>
+								<div class="stepper-desc completed text-success">
+									Application has been rejected
 								</div>
 							@endif
 						</div>

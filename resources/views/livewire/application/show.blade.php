@@ -21,7 +21,7 @@
 	</div>
 	@role('staff')
 		<div class="row">
-			<div class="col-12 col-lg-6 mb-6 mb-lg-0"
+			<div class="col-12 col-lg-6"
 				id="assessment"
 				wire:poll.300s>
 				{{-- Assessment --}}
@@ -33,6 +33,11 @@
 				{{-- Recommendation --}}
 				@include('application.show.partials.recommendation')
 			</div>
+			<div class="col-12 col-lg-6"
+				wire:poll.120s>
+				{{-- Rejection --}}
+				@include('application.show.partials.rejection')
+			</div>
 		</div>
 		@if ($application->recommendations->count() > 0)
 			<div class="row">
@@ -42,7 +47,7 @@
 					{{-- Workflow History --}}
 					@include('application.show.partials.workflow.history.index')
 				</div>
-				<div class="col-12 col-xl-5"
+				<div class="col-12 col-xl-5 d-flex flex-column gap-6"
 					id="workflow-history-create-form"
 					wire:poll.60s>
 					{{-- Create Workflow History --}}
