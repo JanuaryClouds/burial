@@ -10,6 +10,9 @@
 			@if ($application->cancellation)
 				Application has been cancelled
 			@endif
+			@if ($application->rejection)
+				Application has been rejected
+			@endif
 		</p>
 	</x-card.unauthorized>
 @endcan
