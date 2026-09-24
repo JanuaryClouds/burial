@@ -5,6 +5,7 @@ namespace App\Exceptions;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Exceptions\UnauthorizedException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -32,7 +33,7 @@ class Handler extends ExceptionHandler
                 ], 403);
             }
 
-            return redirect()->route(auth()->check() ? 'dashboard' : 'landing.page')
+            return redirect()->route(Auth::check() ? 'dashboard' : 'landing.page')
                 ->with('error', 'You do not have permission to access this page.');
         } elseif ($exception instanceof NotFoundHttpException) {
             if ($request->expectsJson()) {
@@ -41,7 +42,7 @@ class Handler extends ExceptionHandler
                 ], 404);
             }
 
-            return redirect()->route(auth()->check() ? 'dashboard' : 'landing.page')
+            return redirect()->route(Auth::check() ? 'dashboard' : 'landing.page')
                 ->with('error', 'The page you requested could not be found.');
         } elseif ($exception instanceof AuthenticationException) {
             if ($request->expectsJson()) {
@@ -59,13 +60,13 @@ class Handler extends ExceptionHandler
                 ], 403);
             }
 
-            return redirect()->route(auth()->check() ? 'dashboard' : 'landing.page')
+            return redirect()->route(Auth::check() ? 'dashboard' : 'landing.page')
                 ->with('error', 'You do not have permission to access this page.');
         }
 
         if (! ($exception instanceof HttpExceptionInterface) && app()->isProduction()) {
             activity()
-                ->causedBy(auth()->user())
+                ->causedBy(Auth::user())
                 ->withProperties([
                     'message' => $exception->getMessage(),
                     'file' => $exception->getFile(),
