@@ -126,6 +126,19 @@ class ApplicationController extends Controller
         }
     }
 
+    public function stop(Application $application)
+    {
+        if ($application->referral || $application->rejection || $application->cancellation) {
+            return redirect()->route('application.show', $application)
+                ->with('info', 'Application cannot be stopped as it has already been processed.');
+        }
+
+        return view('application.stop', [
+            'pageTitle' => 'Stop Application',
+            'application' => $application
+        ]);
+    }
+
     /**
      * Display the search page to utilize the QR and Barcodes.
      */

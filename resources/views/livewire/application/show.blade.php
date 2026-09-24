@@ -33,11 +33,6 @@
 				{{-- Recommendation --}}
 				@include('application.show.partials.recommendation')
 			</div>
-			<div class="col-12 col-lg-6"
-				wire:poll.120s>
-				{{-- Rejection --}}
-				@include('application.show.partials.rejection')
-			</div>
 		</div>
 		@if ($application->recommendations->count() > 0)
 			<div class="row">
@@ -64,4 +59,15 @@
 			@include('application.show.partials.documents')
 		</x-card>
 	</div>
+	@if (Auth::user()->can('cancel', [$application]) ||
+			Auth::user()->can('reject', [$application]) ||
+			Auth::user()->can('refer', [$application]))
+		<div class="d-flex flex-center">
+			<a href="{{ route('application.stop', $application) }}"
+				class="btn btn-danger">
+				<x-icon.font-awesome class="fa-stop" />
+				Stop Application
+			</a>
+		</div>
+	@endif
 </div>
