@@ -20,13 +20,13 @@ class ImageController extends Controller
 
     public function webView(Application $application, string $filename)
     {
-        $src = route('application.image', [$application->uuid, $filename]);
+        $src = route('application.image.get', [$application->uuid, $filename]);
 
         if (! Auth::user()->can('view', $application)) {
             abort(403);
         }
 
-        return view('application.image', [
+        return view('application.image.get', [
             'src' => $src,
             'alt' => Str::title(Str::replace('_', ' ', $filename)),
             'pageTitle' => $application->tracking_no.' | '.Str::title(Str::replace('_', ' ', $filename)),
