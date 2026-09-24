@@ -18,7 +18,8 @@ class PermissionSeeder extends Seeder
             $this->reportPermissions(),
             $this->logPermissions(),
             $this->rolePermissions(),
-            $this->workflowPermission(),
+            $this->workflowPermissions(),
+            $this->rejectionPermissions(),
         );
 
         foreach ($basePermissions as $permission) {
@@ -116,7 +117,7 @@ class PermissionSeeder extends Seeder
         ];
     }
 
-    public static function workflowPermission(): array
+    public static function workflowPermissions(): array
     {
         return [
             'workflow.admin',
@@ -129,6 +130,17 @@ class PermissionSeeder extends Seeder
             'workflow.treasury',
             'workflow.releasing',
             'workflow.closing',
+        ];
+    }
+
+    public static function rejectionPermissions(): array
+    {
+        return [
+            'rejection.view',
+            'rejection.viewAny',
+            'rejection.create',
+            'rejection.update',
+            'rejection.delete',
         ];
     }
 }

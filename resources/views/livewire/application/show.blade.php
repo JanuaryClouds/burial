@@ -21,7 +21,7 @@
 	</div>
 	@role('staff')
 		<div class="row">
-			<div class="col-12 col-lg-6 mb-6 mb-lg-0"
+			<div class="col-12 col-lg-6"
 				id="assessment"
 				wire:poll.300s>
 				{{-- Assessment --}}
@@ -42,7 +42,7 @@
 					{{-- Workflow History --}}
 					@include('application.show.partials.workflow.history.index')
 				</div>
-				<div class="col-12 col-xl-5"
+				<div class="col-12 col-xl-5 d-flex flex-column gap-6"
 					id="workflow-history-create-form"
 					wire:poll.60s>
 					{{-- Create Workflow History --}}
@@ -59,4 +59,15 @@
 			@include('application.show.partials.documents')
 		</x-card>
 	</div>
+	@if (Auth::user()->can('cancel', [$application]) ||
+			Auth::user()->can('reject', [$application]) ||
+			Auth::user()->can('refer', [$application]))
+		<div class="d-flex flex-center">
+			<a href="{{ route('application.stop', $application) }}"
+				class="btn btn-danger">
+				<x-icon.font-awesome class="fa-stop" />
+				Stop Application
+			</a>
+		</div>
+	@endif
 </div>

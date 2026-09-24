@@ -6,6 +6,7 @@ use App\Models\Application;
 use App\Models\WorkflowHistory;
 use App\Models\WorkflowStage;
 use App\Services\ActivityLoggerService;
+use App\Traits\Livewire\HasPlaceholder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -17,6 +18,8 @@ use Livewire\Component;
 
 class Create extends Component
 {
+    use HasPlaceholder;
+
     public Application $application;
 
     public ?WorkflowStage $toStage;
@@ -65,6 +68,10 @@ class Create extends Component
 
     private function loadStages(Application $application): Collection
     {
+        if (! $this->application->currentWorkflow()) {
+            return collect();
+        }
+
         return $application->currentWorkflow()->stages
             ->when($application->currentStage(), function ($stages) use ($application) {
                 $currentPosition = $application->currentStage()->position;
@@ -163,11 +170,6 @@ class Create extends Component
 
             report($th);
         }
-    }
-
-    public function placeholder()
-    {
-        return view('components.card.loading');
     }
 
     public function render()

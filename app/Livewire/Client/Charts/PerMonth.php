@@ -15,13 +15,13 @@ class PerMonth extends Component
 
     public string $chartType = 'line';
 
-    public string $chartTitle = "Clients Per Month";
+    public string $chartTitle = 'Clients Per Month';
 
     public function mount()
     {
         $this->getData();
     }
-    
+
     public function refresh()
     {
         $this->getData();
@@ -33,7 +33,7 @@ class PerMonth extends Component
             ],
         ]);
     }
-    
+
     private function getData()
     {
         $this->perMonth = Client::perMonth()->get()

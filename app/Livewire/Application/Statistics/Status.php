@@ -34,7 +34,10 @@ class Status extends Component
             'referral',
             'workflowStage',
             'assessment',
-            'recommendations'
+            'recommendations',
+            'referral',
+            'rejection',
+            'cancellation',
         ])
             ->when(Auth::user()->roles()->count() == 0, function ($query) {
                 $query->whereHas('client', function ($query) {

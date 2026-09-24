@@ -17,9 +17,10 @@ return new class extends Migration
                 ->constrained('applications', 'uuid')
                 ->cascadeOnDelete();
             $table->foreignUuid('funeral_assistance_type_uuid')
+                ->nullable()
                 ->constrained('funeral_assistance_types', 'uuid')
                 ->cascadeOnUpdate()
-                ->cascadeOnDelete();
+                ->nullOnDelete();
             $table->decimal('amount_extended', 10, 2)->nullable();
             $table->foreignId('mode_of_assistance_id')
                 ->nullable()

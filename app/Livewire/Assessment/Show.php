@@ -3,20 +3,18 @@
 namespace App\Livewire\Assessment;
 
 use App\Models\Assessment;
+use App\Traits\Livewire\HasPlaceholder;
 use Livewire\Component;
 
 class Show extends Component
 {
+    use HasPlaceholder;
+
     public Assessment $assessment;
 
     public function mount(Assessment $assessment)
     {
         $this->assessment = $assessment;
-    }
-
-    public function placeholder()
-    {
-        return view('components.card.loading');
     }
 
     public function render()

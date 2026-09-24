@@ -211,7 +211,7 @@ class Beneficiary extends Model
             $query->whereHas('user', function ($query) {
                 $query->where('id', Auth::id());
             })
-            ->whereHas('application');
+                ->whereHas('application');
         }
 
         return $query
@@ -272,7 +272,7 @@ class Beneficiary extends Model
     public function scopePerNatality($query)
     {
         return $query
-            ->whereRaw("TIMESTAMPDIFF(DAY, date_of_birth, date_of_death) < 30")
+            ->whereRaw('TIMESTAMPDIFF(DAY, date_of_birth, date_of_death) < 30')
             ->selectRaw("
                 CASE
                     WHEN TIMESTAMPDIFF(DAY, date_of_birth, date_of_death) BETWEEN 0 AND 7 THEN 'Perinatal Group'

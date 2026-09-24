@@ -3,11 +3,14 @@
 namespace App\Livewire\Recommendation;
 
 use App\Models\Recommendation;
+use App\Traits\Livewire\HasPlaceholder;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
 class Show extends Component
 {
+    use HasPlaceholder;
+
     public Recommendation $recommendation;
 
     public function mount(Recommendation $recommendation)
@@ -19,11 +22,6 @@ class Show extends Component
     public function refresh()
     {
         $this->recommendation = $this->recommendation->application->currentRecommendation();
-    }
-
-    public function placeholder()
-    {
-        return view('components.card.loading');
     }
 
     public function render()

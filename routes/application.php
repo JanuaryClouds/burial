@@ -2,9 +2,6 @@
 
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\ImageController;
-use App\Livewire\Application\Create;
-use App\Livewire\Application\Search;
-use App\Livewire\Application\Show;
 use App\Livewire\Assessment\Create as AssessmentCreate;
 use App\Livewire\Recommendation\Create as RecommendationCreate;
 use Illuminate\Support\Facades\Route;
@@ -29,13 +26,21 @@ Route::name('application.')
                     ->middleware('can:view,\App\Models\Application,application')
                     ->name('show');
 
-                Route::get('/image/{filename}', [ImageController::class, 'get'])
-                    ->where('filename', '[a-zA-Z0-9_\-\.]+')
-                    ->name('image');
+                Route::get('/stop', [ApplicationController::class, 'stop'])
+                    ->name('stop');
 
-                Route::get('/image/{filename}/webView', [ImageController::class, 'webView'])
-                    ->where('filename', '[a-zA-Z0-9_\-\.]+')
-                    ->name('image.webView');
+                Route::prefix('image')
+                    ->name('image.')
+                    ->controller(ImageController::class)
+                    ->group(function () {
+                        Route::get('/{filename}', 'get')
+                            ->where('filename', '[a-zA-Z0-9_\-\.]+')
+                            ->name('get');
+
+                        Route::get('/{filename}/webView', 'webView')
+                            ->where('filename', '[a-zA-Z0-9_\-\.]+')
+                            ->name('webView');
+                    });
 
                 Route::name('assessment.')
                     ->prefix('assessment')

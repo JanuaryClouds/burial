@@ -206,6 +206,8 @@ class Application extends Model
 
         $interviews = $this->client->interviews;
         $referral = $this->referral;
+        $rejection = $this->rejection;
+        $cancellation = $this->cancellation;
         $workflowStage = $this->workflowStage;
 
         if ($interviews->count() > 0) {
@@ -253,9 +255,16 @@ class Application extends Model
             ];
         }
 
-        if ($this->recommendations->count() > 0 && $this->currentRecommendation()->status == 'cancelled') {
+        if ($cancellation) {
             $status[] = [
                 'label' => 'cancelled',
+                'badgeColor' => 'danger',
+            ];
+        }
+
+        if ($rejection) {
+            $status[] = [
+                'label' => 'rejected',
                 'badgeColor' => 'danger',
             ];
         }
@@ -408,7 +417,7 @@ class Application extends Model
             'recommendations',
             'referral',
             'cancellation',
-            'rejection'
+            'rejection',
         ]);
     }
 

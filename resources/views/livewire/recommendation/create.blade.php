@@ -81,21 +81,21 @@
 						:options="$funeralAssistanceTypes"
 						label="Funeral Assistance Type"
 						:required="true" />
-					@if ($funeralAssistanceTypeUuid)
+					@if ($form->funeralAssistanceTypeUuid)
 						<x-form.input name="form.amountExtended"
 							wire:model.live.blur='form.amountExtended'
 							label="Amount to Extend"
 							required
 							type="number" />
 					@endif
-					@if ($amountExtended)
+					@if ($form->amountExtended)
 						<x-form.select name="form.modeOfAssistanceId"
 							wire:model.live='form.modeOfAssistanceId'
 							:options="$modeOfAssistances"
 							label="Mode of Assistance"
 							:required="true" />
 					@endif
-					@if ($funeralAssistanceTypeUuid && $modeOfAssistanceId && $amountExtended)
+					@if ($form->funeralAssistanceTypeUuid && $form->modeOfAssistanceId && $form->amountExtended)
 						<x-slot:footer>
 							@if ($createNew)
 								<x-button wire:click="$set('createNew', false)"

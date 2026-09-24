@@ -3,18 +3,16 @@
 namespace App\Livewire\Beneficiary;
 
 use App\Models\Beneficiary;
+use App\Traits\Livewire\HasPlaceholder;
 use Livewire\Component;
 
 class Show extends Component
 {
+    use HasPlaceholder;
+
     public ?Beneficiary $beneficiary = null;
 
     public ?string $uuid = null;
-
-    public function placeholder()
-    {
-        return view('components.card.loading');
-    }
 
     public function mount(?Beneficiary $beneficiary = null, ?string $uuid = null)
     {

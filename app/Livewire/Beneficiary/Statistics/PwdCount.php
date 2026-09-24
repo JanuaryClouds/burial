@@ -7,7 +7,7 @@ use Livewire\Component;
 
 class PwdCount extends Component
 {
-    public string $label = "PWD Beneficiaries";
+    public string $label = 'PWD Beneficiaries';
 
     public int $count = 0;
 

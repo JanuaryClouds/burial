@@ -14,13 +14,13 @@ class PerAgeGroup extends Component
 
     public string $chartType = 'pie';
 
-    public string $chartTitle = "Beneficiaries Per Age Group";
+    public string $chartTitle = 'Beneficiaries Per Age Group';
 
     public function mount()
     {
         $this->getData();
     }
-    
+
     public function refresh()
     {
         $this->getData();
@@ -32,7 +32,7 @@ class PerAgeGroup extends Component
             ],
         ]);
     }
-    
+
     private function getData(): void
     {
         $this->perAgeGroups = Beneficiary::perAgeGroup()

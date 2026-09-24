@@ -14,7 +14,7 @@ class PerStatus extends Component
 
     public string $chartType = 'pie';
 
-    public string $chartTitle = "Applications Per Status";
+    public string $chartTitle = 'Applications Per Status';
 
     public function mount()
     {

@@ -5,10 +5,12 @@ namespace App\Providers;
 use App\Models\Assessment;
 use App\Models\Beneficiary;
 use App\Models\BeneficiaryFamily;
+use App\Models\Cancellation;
 use App\Models\Client;
 use App\Models\Interview;
 use App\Models\Recommendation;
 use App\Models\Referral;
+use App\Models\Rejection;
 use App\Models\User;
 use App\Models\WorkflowHistory;
 use App\Policies\AssessmentPolicy;
@@ -18,6 +20,7 @@ use App\Policies\ClientPolicy;
 use App\Policies\InterviewPolicy;
 use App\Policies\RecommendationPolicy;
 use App\Policies\ReferralPolicy;
+use App\Policies\RejectionPolicy;
 use App\Policies\RolePolicy;
 use App\Policies\UserPolicy;
 use App\Policies\WorkflowHistoryPolicy;
@@ -41,7 +44,9 @@ class AuthServiceProvider extends ServiceProvider
         Assessment::class => AssessmentPolicy::class,
         Recommendation::class => RecommendationPolicy::class,
         WorkflowHistory::class => WorkflowHistoryPolicy::class,
-        Referral::class => ReferralPolicy::class,
+        // Referral::class => ReferralPolicy::class,
+        // Rejection::class => RejectionPolicy::class,
+        // Cancellation::class => Cancellation::class,
     ];
 
     /**

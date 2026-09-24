@@ -3,11 +3,14 @@
 namespace App\Livewire\Application;
 
 use App\Models\Application;
+use App\Traits\Livewire\HasPlaceholder;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
 class StatusTimeline extends Component
 {
+    use HasPlaceholder;
+
     public Application $application;
 
     public array $status;
@@ -34,8 +37,8 @@ class StatusTimeline extends Component
 
                 if (
                     $this->application->referral ||
-                    ($this->application->recommendations->count() > 0 &&
-                        $this->application->currentRecommendation()->status == 'cancelled')
+                    $this->application->cancellation ||
+                    $this->application->rejection
                 ) {
                     $this->statusIndicators[$i][$currentLabel] = 'completed';
                 }
@@ -64,11 +67,6 @@ class StatusTimeline extends Component
     public function refresh()
     {
         $this->status = $this->application->status();
-    }
-
-    public function placeholder()
-    {
-        return view('card.loading');
     }
 
     public function render()

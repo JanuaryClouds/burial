@@ -14,7 +14,7 @@ class PerReligion extends Component
 
     public string $chartType = 'pie';
 
-    public string $chartTitle = "Beneficiaries Per Religion";
+    public string $chartTitle = 'Beneficiaries Per Religion';
 
     public function mount()
     {
@@ -32,7 +32,7 @@ class PerReligion extends Component
             ],
         ]);
     }
-    
+
     private function getData(): void
     {
         $this->perReligion = Beneficiary::perReligion()

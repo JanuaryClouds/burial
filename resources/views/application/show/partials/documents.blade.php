@@ -9,7 +9,7 @@
 			@endif
 			<div class="col-12 col-lg-6 p-4">
 				<div class="d-flex flex-column gap-4">
-					<x-image.viewer src="{{ route('application.image', [$application, $document['key']]) }}"
+					<x-image.viewer src="{{ route('application.image.get', [$application, $document['key']]) }}"
 						:applicationUuid="$application->uuid"
 						:alt="$document['name']" />
 				</div>

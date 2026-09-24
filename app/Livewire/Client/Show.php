@@ -3,10 +3,13 @@
 namespace App\Livewire\Client;
 
 use App\Models\Client;
+use App\Traits\Livewire\HasPlaceholder;
 use Livewire\Component;
 
 class Show extends Component
 {
+    use HasPlaceholder;
+
     public ?Client $client = null;
 
     public ?string $uuid = null;
@@ -18,11 +21,6 @@ class Show extends Component
         } else {
             $this->client = $client;
         }
-    }
-
-    public function placeholder()
-    {
-        return view('components.card.loading');
     }
 
     public function render()

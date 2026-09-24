@@ -6,10 +6,13 @@ use App\Models\Application;
 use App\Models\Beneficiary;
 use App\Models\Client;
 use App\Services\ApplicationService;
+use App\Traits\Livewire\HasPlaceholder;
 use Livewire\Component;
 
 class Summary extends Component
 {
+    use HasPlaceholder;
+
     public Application $application;
 
     private ApplicationService $services;
@@ -34,11 +37,6 @@ class Summary extends Component
         $this->beneficiary = $application->beneficiary;
         $this->qrCode = $this->services->getQrCodeUri('svg', $application->qr_code, 200);
         $this->barcode = $this->services->getBarcodeUri($application->qr_code);
-    }
-
-    public function placeholder()
-    {
-        return view('components.card.loading');
     }
 
     public function render()

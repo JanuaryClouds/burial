@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Models\Application;
 use App\Models\Cancellation;
 use App\Models\User;
 
@@ -26,9 +27,21 @@ class CancellationPolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user): bool
+    public function create(User $user, Application $application): bool
     {
-        return false;
+        if ($application->referral) {
+            return false;
+        }
+
+        if ($application->rejection) {
+            return false;
+        }
+
+        if ($application->cancellation) {
+            return false;
+        }
+
+        return $user->id === $application->client->user_id;
     }
 
     /**

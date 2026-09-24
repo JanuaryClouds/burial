@@ -37,6 +37,10 @@ class WorkflowHistoryPolicy
             return false;
         }
 
+        if (isset($application->rejection)) {
+            return false;
+        }
+
         if ($application->recommendations()->count() == 0) {
             return false;
         }

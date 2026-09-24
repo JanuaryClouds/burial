@@ -2,8 +2,6 @@
 
 namespace App\Livewire;
 
-use Illuminate\Database\Eloquent\Model;
-use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 class Counter extends Component

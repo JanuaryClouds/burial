@@ -20,6 +20,6 @@ return [
     ],
     'title' => [
         'main' => 'Funeral Assistance System',
-        'sub' => 'CSWDO Taguig City'
-    ]
+        'sub' => 'CSWDO Taguig City',
+    ],
 ];
