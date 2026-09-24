@@ -19,6 +19,10 @@ class Cancellation extends Model
         'cancelled_by',
     ];
 
+    protected $casts = [
+        'reason' => 'encrypted',
+    ];
+
     /*
     |--------------------------------------------------------------------------
     | Model Relationships

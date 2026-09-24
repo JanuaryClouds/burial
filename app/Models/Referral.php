@@ -16,7 +16,13 @@ class Referral extends Model
 
     protected $fillable = [
         'application_uuid',
-        'referral_to',
+        'referred_to',
+        'reason',
+    ];
+
+    protected $casts = [
+        'referred_to' => 'encrypted',
+        'reason' => 'encrypted',
     ];
 
     /**

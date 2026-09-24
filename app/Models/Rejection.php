@@ -19,6 +19,10 @@ class Rejection extends Model
         'rejected_by',
     ];
 
+    protected $casts = [
+        'reason' => 'encrypted',
+    ];
+
     /*
     |--------------------------------------------------------------------------
     | Model Relationships
