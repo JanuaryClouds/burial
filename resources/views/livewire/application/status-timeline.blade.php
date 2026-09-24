@@ -50,7 +50,7 @@
 									Referred
 								</h3>
 								<div class="stepper-desc completed text-success">
-									Referred to {{ $application->referral->referral_to }}
+									Referred to {{ $application->referral->referred_to }}
 								</div>
 							@endif
 							@if ($application->rejection)

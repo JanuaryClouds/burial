@@ -18,7 +18,8 @@ class ReferralFactory extends Factory
     public function definition(): array
     {
         return [
-            'referral_to' => $this->faker->name(),
+            'referred_to' => $this->faker->name(),
+            'reason' => $this->faker->sentences(3),
         ];
     }
 }

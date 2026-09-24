@@ -127,7 +127,7 @@
 						{{-- Stage:Extra Fields --}}
 						<span>
 							@if ($application->referral)
-								Referred to {{ $application->referral->referral_to }}
+								Referred to {{ $application->referral->referred_to }}
 							@endif
 							@if ($application->cancellation)
 								Reason for Cancellation: {{ $application->cancellation->reason }}
