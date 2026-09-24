@@ -7,8 +7,6 @@ use App\Http\Requests\UpdateApplicationRequest;
 use App\Models\Application;
 use App\Models\Beneficiary;
 use App\Models\Client;
-use App\Models\FuneralAssistanceType;
-use App\Models\ModeOfAssistance;
 use App\Services\ApplicationService;
 use App\Services\BeneficiaryFamilyService;
 use App\Services\BeneficiaryService;
@@ -135,7 +133,7 @@ class ApplicationController extends Controller
 
         return view('application.stop', [
             'pageTitle' => 'Stop Application',
-            'application' => $application
+            'application' => $application,
         ]);
     }
 

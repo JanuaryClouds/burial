@@ -124,7 +124,7 @@ class ApplicationPolicy
         if ($user->hasRole('superadmin')) {
             return true;
         }
-        
+
         return $user->id === $application->client->user_id;
     }
 

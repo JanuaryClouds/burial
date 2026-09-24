@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
@@ -216,7 +215,7 @@ class Client extends Model
             $query->whereHas('user', function ($query) {
                 $query->where('id', Auth::id());
             })
-            ->whereHas('application');
+                ->whereHas('application');
         }
 
         return $query

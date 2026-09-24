@@ -4,9 +4,7 @@ namespace App\Livewire\Rejection;
 
 use App\Livewire\Forms\RejectionForm;
 use App\Models\Application;
-use App\Models\Recommendation;
 use App\Models\Rejection;
-use App\Models\WorkflowHistory;
 use App\Services\ActivityLoggerService;
 use App\Traits\Livewire\HasPlaceholder;
 use Illuminate\Support\Facades\Auth;
@@ -25,7 +23,7 @@ class Create extends Component
     {
         $this->application = $application;
 
-        if($this->application->rejection){
+        if ($this->application->rejection) {
             $this->form->setRejection($this->application->rejection);
         }
     }
@@ -48,7 +46,7 @@ class Create extends Component
                 Rejection::updateOrCreate([
                     'application_uuid' => $this->application->uuid,
                     'reason' => $this->form->reason,
-                    'rejected_by' => Auth::id()
+                    'rejected_by' => Auth::id(),
                 ]);
 
                 if ($this->application->currentRecommendation()) {
@@ -59,15 +57,15 @@ class Create extends Component
 
                 ActivityLoggerService::logSuccess('Successfully rejected application', [
                     'application_uuid' => $this->application->uuid,
-                    'reason' => $this->form->reason, 
-                    'rejected_by' => Auth::user()
+                    'reason' => $this->form->reason,
+                    'rejected_by' => Auth::user(),
                 ]);
 
                 $this->dispatch('refreshWorkflowHistory');
 
                 $this->dispatch('notification:alert', [
                     'type' => 'success',
-                    'text' => 'Successfully rejected the application'
+                    'text' => 'Successfully rejected the application',
                 ]);
 
                 $this->redirect(route('application.show', $this->application));

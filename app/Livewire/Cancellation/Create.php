@@ -5,7 +5,6 @@ namespace App\Livewire\Cancellation;
 use App\Livewire\Forms\CancellationForm;
 use App\Models\Application;
 use App\Models\Cancellation;
-use App\Models\WorkflowHistory;
 use App\Services\ActivityLoggerService;
 use App\Traits\Livewire\HasPlaceholder;
 use Illuminate\Support\Facades\Auth;
@@ -40,7 +39,7 @@ class Create extends Component
         }
 
         try {
-            DB::transaction(function() {
+            DB::transaction(function () {
                 Cancellation::create([
                     'application_uuid' => $this->application->uuid,
                     'reason' => $this->form->reason,
@@ -56,12 +55,12 @@ class Create extends Component
                 ActivityLoggerService::logSuccess('Successfully cancelled an application', [
                     'application_uuid' => $this->application->uuid,
                     'reason' => $this->form->reason,
-                    'rejected_by' => Auth::id()
+                    'rejected_by' => Auth::id(),
                 ]);
 
                 $this->dispatch('notification:alert', [
                     'type' => 'success',
-                    'text' => 'This application has been cancelled.'
+                    'text' => 'This application has been cancelled.',
                 ]);
 
                 $this->redirect(route('application.show', $this->application));

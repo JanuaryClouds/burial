@@ -16,7 +16,7 @@ class Stop extends Component
 
     public array $stopModes = [
         'rejection' => 'Rejection',
-        'referral' => 'Referral'
+        'referral' => 'Referral',
     ];
 
     public function mount(Application $application)

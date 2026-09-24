@@ -5,7 +5,6 @@ namespace App\Livewire\Referral;
 use App\Livewire\Forms\ReferralForm;
 use App\Models\Application;
 use App\Models\Referral;
-use App\Models\WorkflowHistory;
 use App\Services\ActivityLoggerService;
 use App\Traits\Livewire\HasPlaceholder;
 use Illuminate\Support\Facades\Auth;
@@ -44,12 +43,12 @@ class Create extends Component
                 Referral::create([
                     'application_uuid' => $this->application->uuid,
                     'referred_to' => $this->form->referred_to,
-                    'reason' => $this->form->reason
+                    'reason' => $this->form->reason,
                 ]);
 
                 if ($this->application->currentRecommendation()) {
                     $this->application->currentRecommendation()->update([
-                        'status' => 'referred'
+                        'status' => 'referred',
                     ]);
                 }
 
@@ -62,7 +61,7 @@ class Create extends Component
                     'application_uuid' => $this->application->uuid,
                     'reason' => $this->form->reason,
                     'referred_to' => $this->form->referred_to,
-                    'rejected_by' => Auth::id()
+                    'rejected_by' => Auth::id(),
                 ]);
 
                 $this->redirect(route('application.show', $this->application));

@@ -40,7 +40,7 @@ class RejectionPolicy
         if ($user->roles()->count() == 0) {
             return false;
         }
-        
+
         if ($application->referral) {
             return false;
         }

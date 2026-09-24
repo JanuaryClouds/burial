@@ -417,7 +417,7 @@ class Application extends Model
             'recommendations',
             'referral',
             'cancellation',
-            'rejection'
+            'rejection',
         ]);
     }
 

@@ -2,9 +2,6 @@
 
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\ImageController;
-use App\Livewire\Application\Create;
-use App\Livewire\Application\Search;
-use App\Livewire\Application\Show;
 use App\Livewire\Assessment\Create as AssessmentCreate;
 use App\Livewire\Recommendation\Create as RecommendationCreate;
 use Illuminate\Support\Facades\Route;
