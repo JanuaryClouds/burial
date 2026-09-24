@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Models\Application;
 use App\Models\Rejection;
 use App\Models\User;
 
@@ -34,13 +35,25 @@ class RejectionPolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user): bool
+    public function create(User $user, Application $application): bool
     {
-        if ($user->roles()->count() > 0) {
-            return true;
+        if ($user->roles()->count() == 0) {
+            return false;
+        }
+        
+        if ($application->referral) {
+            return false;
         }
 
-        return false;
+        if ($application->rejection) {
+            return false;
+        }
+
+        if ($application->cancellation) {
+            return false;
+        }
+
+        return $user->hasRole('rejection.create');
     }
 
     /**

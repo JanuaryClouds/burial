@@ -106,4 +106,67 @@ class ApplicationPolicy
 
         return false;
     }
+
+    public function cancel(User $user, Application $application): bool
+    {
+        if ($application->cancellation) {
+            return false;
+        }
+
+        if ($application->referral) {
+            return false;
+        }
+
+        if ($application->rejection) {
+            return false;
+        }
+
+        if ($user->hasRole('superadmin')) {
+            return true;
+        }
+        
+        return $user->id === $application->client->user_id;
+    }
+
+    public function reject(User $user, Application $application): bool
+    {
+        if ($application->cancellation) {
+            return false;
+        }
+
+        if ($application->referral) {
+            return false;
+        }
+
+        if ($application->rejection) {
+            return false;
+        }
+
+        if ($user->hasRole('superadmin')) {
+            return true;
+        }
+
+        return $user->hasPermissionTo('rejection.create');
+    }
+
+    public function refer(User $user, Application $application): bool
+    {
+        if ($application->cancellation) {
+            return false;
+        }
+
+        if ($application->referral) {
+            return false;
+        }
+
+        if ($application->rejection) {
+            return false;
+        }
+
+        if ($user->hasRole('superadmin')) {
+            return true;
+        }
+
+        return $user->hasPermissionTo('referral.create');
+    }
 }

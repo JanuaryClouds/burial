@@ -13,11 +13,19 @@ class ReferralPolicy
      */
     public function create(User $user, Application $application): bool
     {
-        if ($user->id === $application->client->user_id) {
+        if ($application->referral) {
             return false;
         }
 
-        return $user->can('create-referrals');
+        if ($application->rejection) {
+            return false;
+        }
+
+        if ($application->cancellation) {
+            return false;
+        }
+
+        return $user->can('referral.create');
     }
 
     /**
