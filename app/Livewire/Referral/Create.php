@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Livewire\Rejection;
+namespace App\Livewire\Referral;
 
-use App\Livewire\Forms\RejectionForm;
+use App\Livewire\Forms\ReferralForm;
 use App\Models\Application;
-use App\Models\Recommendation;
-use App\Models\Rejection;
+use App\Models\Referral;
 use App\Models\WorkflowHistory;
 use App\Services\ActivityLoggerService;
 use App\Traits\Livewire\HasPlaceholder;
@@ -19,25 +18,22 @@ class Create extends Component
 
     public Application $application;
 
-    public RejectionForm $form;
+    public ReferralForm $form;
 
     public function mount(Application $application)
     {
         $this->application = $application;
-
-        if($this->application->rejection){
-            $this->form->setRejection($this->application->rejection);
-        }
     }
 
     public function save()
     {
         try {
             $this->form->validate();
-        } catch (\Throwable $th) {
+        } catch (\Exception $e) {
             $this->dispatch('notification:toast', [
                 'type' => 'error',
-                'text' => app()->hasDebugModeEnabled() ? $th->getMessage() : config('constants.errors.validation'),
+                'title' => 'Unable to save application',
+                'message' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation'),
             ]);
 
             return;
@@ -45,40 +41,39 @@ class Create extends Component
 
         try {
             DB::transaction(function () {
-                Rejection::updateOrCreate([
+                Referral::create([
                     'application_uuid' => $this->application->uuid,
-                    'reason' => $this->form->reason,
-                    'rejected_by' => Auth::id()
+                    'referred_to' => $this->form->referred_to,
+                    'reason' => $this->form->reason
                 ]);
 
                 if ($this->application->currentRecommendation()) {
                     $this->application->currentRecommendation()->update([
-                        'status' => 'rejected',
+                        'status' => 'referred'
                     ]);
                 }
 
-                ActivityLoggerService::logSuccess('Successfully rejected application', [
-                    'application_uuid' => $this->application->uuid,
-                    'reason' => $this->form->reason, 
-                    'rejected_by' => Auth::user()
-                ]);
-
-                $this->dispatch('refreshWorkflowHistory');
-
                 $this->dispatch('notification:alert', [
                     'type' => 'success',
-                    'text' => 'Successfully rejected the application'
+                    'title' => 'Application referred successfully',
+                ]);
+
+                ActivityLoggerService::logSuccess('Successfully referred an application', [
+                    'application_uuid' => $this->application->uuid,
+                    'reason' => $this->form->reason,
+                    'referred_to' => $this->form->referred_to,
+                    'rejected_by' => Auth::id()
                 ]);
 
                 $this->redirect(route('application.show', $this->application));
             });
         } catch (\Throwable $th) {
-            $this->dispatch('notification:alert', [
+            $this->dispatch('notification:toast', [
                 'type' => 'error',
                 'text' => app()->hasDebugModeEnabled() ? $th->getMessage() : config('constants.errors.unknown'),
             ]);
 
-            ActivityLoggerService::logException($th, 'Unable to reject an application');
+            ActivityLoggerService::logException($th, 'Unable to refer an application');
 
             report($th);
         }
@@ -86,6 +81,6 @@ class Create extends Component
 
     public function render()
     {
-        return view('livewire.rejection.create');
+        return view('livewire.referral.create');
     }
 }

@@ -6,10 +6,10 @@
 		:required="true" />
 
 	<div class="d-flex justify-content-end">
-		<x-modal modalId="confirm-rejection"
-			modalTitle="Confirm Rejection"
-			modalSize="md"
-			buttonClass="btn btn-sm btn-danger">
+		<x-modal :modalId="'confirm-rejection'"
+			:modalTitle="'Confirm Rejection'"
+			:modalSize="'md'"
+			:buttonClass="'btn btn-sm btn-danger'">
 			<x-slot:triggerButton>
 				<x-icon.font-awesome class="fa-xmark-circle" />
 				Reject Application

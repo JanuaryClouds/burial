@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Livewire\Rejection;
+namespace App\Livewire\Cancellation;
 
-use App\Livewire\Forms\RejectionForm;
+use App\Livewire\Forms\CancellationForm;
 use App\Models\Application;
-use App\Models\Recommendation;
-use App\Models\Rejection;
+use App\Models\Cancellation;
 use App\Models\WorkflowHistory;
 use App\Services\ActivityLoggerService;
 use App\Traits\Livewire\HasPlaceholder;
@@ -19,55 +18,50 @@ class Create extends Component
 
     public Application $application;
 
-    public RejectionForm $form;
+    public CancellationForm $form;
 
     public function mount(Application $application)
     {
         $this->application = $application;
-
-        if($this->application->rejection){
-            $this->form->setRejection($this->application->rejection);
-        }
     }
 
     public function save()
     {
         try {
             $this->form->validate();
-        } catch (\Throwable $th) {
+        } catch (\Exception $e) {
             $this->dispatch('notification:toast', [
                 'type' => 'error',
-                'text' => app()->hasDebugModeEnabled() ? $th->getMessage() : config('constants.errors.validation'),
+                'title' => 'Unable to save application',
+                'message' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation'),
             ]);
 
             return;
         }
 
         try {
-            DB::transaction(function () {
-                Rejection::updateOrCreate([
+            DB::transaction(function() {
+                Cancellation::create([
+                    'application_uuid' => $this->application->uuid,
+                    'reason' => $this->form->reason,
+                    'cancelled_by' => Auth::id(),
+                ]);
+
+                if ($this->application->currentRecommendation()) {
+                    $this->application->currentRecommendation()->update([
+                        'status' => 'cancelled',
+                    ]);
+                }
+
+                ActivityLoggerService::logSuccess('Successfully cancelled an application', [
                     'application_uuid' => $this->application->uuid,
                     'reason' => $this->form->reason,
                     'rejected_by' => Auth::id()
                 ]);
 
-                if ($this->application->currentRecommendation()) {
-                    $this->application->currentRecommendation()->update([
-                        'status' => 'rejected',
-                    ]);
-                }
-
-                ActivityLoggerService::logSuccess('Successfully rejected application', [
-                    'application_uuid' => $this->application->uuid,
-                    'reason' => $this->form->reason, 
-                    'rejected_by' => Auth::user()
-                ]);
-
-                $this->dispatch('refreshWorkflowHistory');
-
                 $this->dispatch('notification:alert', [
                     'type' => 'success',
-                    'text' => 'Successfully rejected the application'
+                    'text' => 'This application has been cancelled.'
                 ]);
 
                 $this->redirect(route('application.show', $this->application));
@@ -78,7 +72,7 @@ class Create extends Component
                 'text' => app()->hasDebugModeEnabled() ? $th->getMessage() : config('constants.errors.unknown'),
             ]);
 
-            ActivityLoggerService::logException($th, 'Unable to reject an application');
+            ActivityLoggerService::logException($th, 'Unable to cancel an application');
 
             report($th);
         }
@@ -86,6 +80,6 @@ class Create extends Component
 
     public function render()
     {
-        return view('livewire.rejection.create');
+        return view('livewire.cancellation.create');
     }
 }
