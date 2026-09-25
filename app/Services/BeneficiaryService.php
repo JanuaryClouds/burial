@@ -9,21 +9,13 @@ class BeneficiaryService
 {
     public function index(?string $user_id = null, string $orderBy = 'created_at', string $orderDirection = 'asc')
     {
-        return Beneficiary::with([
-            'application',
-            'application.client',
-            'application.client.user',
-            'application.client.interviews',
-            'application.assessment',
-            'application.recommendations',
-            'application.recommendations.funeralAssistanceType',
-            'application.referral',
-            'religion',
-        ])
-            ->when($user_id, function ($query) use ($user_id) {
-                $query->where('created_by', $user_id);
-            })
-            ->orderBy($orderBy, $orderDirection)
+        return Beneficiary::index(
+            $user_id,
+            null,
+            null,
+            null,
+            null,
+        )
             ->get()
             ->map(function (Beneficiary $beneficiary) {
                 $application = $beneficiary->application?->load('workflowStage');

@@ -197,18 +197,38 @@ class Application extends Model
     |
     */
 
-    public function status(): array
+    public function status(?string $startDate = null, ?string $endDate = null): array
     {
         $status[] = [
             'label' => 'pending',
             'badgeColor' => 'primary',
         ];
 
-        $interviews = $this->client->interviews;
-        $referral = $this->referral;
-        $rejection = $this->rejection;
-        $cancellation = $this->cancellation;
-        $workflowStage = $this->workflowStage;
+        $interviews = $this->client
+            ->interviews ? $this->client->interviews
+            ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('schedule', [$startDate, $endDate]);
+            }) : null;
+
+        $referral = $this->referral ? $this->referral
+            ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('created_at', [$startDate, $endDate]);
+            }) : null;
+
+        $rejection = $this->rejection ? $this->rejection
+            ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('created_at', [$startDate, $endDate]);
+            }) : null;
+
+        $cancellation = $this->cancellation ? $this->cancellation
+            ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('created_at', [$startDate, $endDate]);
+            }) : null;
+
+        $workflowStage = $this->workflowStage ? $this->workflowStage
+            ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('created_at', [$startDate, $endDate]);
+            })->latest()->first() : null;
 
         if ($interviews->count() > 0) {
             $status[] = [
@@ -216,7 +236,7 @@ class Application extends Model
                 'badgeColor' => 'secondary',
             ];
         }
-
+                
         if ($workflowStage !== null) {
             $status[] = [
                 'label' => 'processing',
@@ -399,16 +419,51 @@ class Application extends Model
     |
     */
 
-    public function scopeTotal($query)
+    public function scopeIndex(
+        $query, 
+        ?int $userId = null, 
+        ?string $startDate = null, 
+        ?string $endDate = null, 
+        ?string $orderBy = 'created_at', 
+        ?string $orderDirection = 'asc'
+    ) {
+        return $query->with([
+            'client',
+            'client.interviews',
+            'client.user',
+            'beneficiary',
+            'relationship',
+            'assessment',
+            'recommendations',
+            'referral',
+            'rejection',
+            'cancellation',
+            'workflowStage',
+        ])
+            ->when($userId, function ($query) use ($userId) {
+                $query->whereHas('client.user', function ($subQuery) use ($userId) {
+                    $subQuery->where('id', $userId);
+                });
+            })
+            ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('created_at', [$startDate, $endDate]);
+            })
+            ->orderBy($orderBy, $orderDirection);
+    }
+
+    public function scopeTotal($query, ?string $startDate = null, ?string $endDate = null)
     {
         return $query->when(Auth::user()->roles()->count() == 0, function ($query) {
             $query->whereHas('client', function ($query) {
                 $query->where('user_id', Auth::id());
             });
-        });
+        })
+            ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('created_at', [$startDate, $endDate]);
+            });
     }
 
-    public function scopePerStatus($query)
+    public function scopePerStatus($query, ?string $startDate = null, ?string $endDate = null)
     {
         return $query->with([
             'workflowStage',
@@ -418,7 +473,10 @@ class Application extends Model
             'referral',
             'cancellation',
             'rejection',
-        ]);
+        ])
+            ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('created_at', [$startDate, $endDate]);
+            });
     }
 
     public function scopePerRelationship($query)

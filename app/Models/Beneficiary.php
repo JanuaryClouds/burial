@@ -180,7 +180,37 @@ class Beneficiary extends Model
     |
     */
 
-    public function scopeTotal($query)
+    public function scopeIndex(
+        $query, 
+        ?string $userId = null, 
+        ?string $orderBy = 'created_at',
+        ?string $orderDirection = 'desc',
+        ?string $startDate = null,
+        ?string $endDate = null
+    ) {
+        return $query->with([
+            'application',
+            'application.client',
+            'application.client.user',
+            'application.client.interviews',
+            'application.assessment',
+            'application.recommendations',
+            'application.recommendations.funeralAssistanceType',
+            'application.referral',
+            'application.rejection',
+            'application.cancellation',
+            'religion',
+        ])
+            ->when($userId, function ($query) use ($userId) {
+                $query->where('created_by', $userId);
+            })
+            ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('date_of_death', [$startDate, $endDate]);
+            })
+            ->orderBy($orderBy ?? 'created_at', $orderDirection ?? 'asc');
+    }
+
+    public function scopeTotal($query, ?string $startDate = null, ?string $endDate = null)
     {
         $user = auth()->user();
 
@@ -189,7 +219,9 @@ class Beneficiary extends Model
         }
 
         if ($user->roles()->exists()) {
-            return $query;
+            return $query->when($startDate && $endDate, function ($query) use ($startDate, $endDate){
+                $query->whereBetween('date_of_death', [$startDate, $endDate]);
+            });
         }
 
         return $query->whereHas('client', function ($query) use ($user) {
@@ -245,9 +277,17 @@ class Beneficiary extends Model
         });
     }
 
-    public function scopePerAgeGroup($query)
-    {
+    public function scopePerAgeGroup(
+        $query,
+        ?string $startDate = null,
+        ?string $endDate = null,
+    ) {
         return $query
+            ->with('application')
+            ->whereHas('application')
+            ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('date_of_death', [$startDate, $endDate]);
+            })
             ->selectRaw("
                 CASE
                     WHEN TIMESTAMPDIFF(YEAR, date_of_birth, date_of_death) BETWEEN 0 AND 17 THEN '0-17'
@@ -261,17 +301,33 @@ class Beneficiary extends Model
             ->groupBy('age_group');
     }
 
-    public function scopePerReligion($query)
-    {
+    public function scopePerReligion(
+        $query,
+        ?string $startDate = null,
+        ?string $endDate = null,
+    ) {
         return $query
+            ->with('application')
+            ->whereHas('application')
+            ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('date_of_death', [$startDate, $endDate]);
+            })
             ->selectRaw('religion_id, COUNT(*) as total')
             ->with('religion')
             ->groupBy('religion_id');
     }
 
-    public function scopePerNatality($query)
-    {
+    public function scopePerNatality(
+        $query,
+        ?string $startDate = null,
+        ?string $endDate = null,
+    ) {
         return $query
+            ->with('application')
+            ->whereHas('application')
+            ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('date_of_death', [$startDate, $endDate]);
+            })
             ->whereRaw('TIMESTAMPDIFF(DAY, date_of_birth, date_of_death) < 30')
             ->selectRaw("
                 CASE
@@ -284,9 +340,14 @@ class Beneficiary extends Model
             ->groupBy('natality_group');
     }
 
-    public function scopeOnlyPwd($query)
+    public function scopeOnlyPwd($query, ?string $startDate = null, ?string $endDate = null)
     {
         return $query
-            ->where('pwd', 1);
+            ->with('application')
+            ->whereHas('application')
+            ->where('pwd', 1)
+            ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('date_of_death', [$startDate, $endDate]);
+            });
     }
 }

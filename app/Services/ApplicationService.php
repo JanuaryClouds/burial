@@ -16,26 +16,20 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class ApplicationService
 {
-    public function index(?string $userId = null, string $orderBy = 'created_at', string $orderDirection = 'asc')
-    {
-        return Application::with([
-            'client',
-            'client.interviews',
-            'client.user',
-            'beneficiary',
-            'assessment',
-            'recommendations',
-            'referral',
-            'rejection',
-            'cancellation',
-            'workflowStage',
-        ])
-            ->when($userId, function ($query) use ($userId) {
-                $query->whereHas('client.user', function ($subQuery) use ($userId) {
-                    $subQuery->where('id', $userId);
-                });
-            })
-            ->orderBy($orderBy, $orderDirection)
+    public function index(
+        ?string $userId = null, 
+        ?string $orderBy = 'created_at', 
+        ?string $orderDirection = 'asc',
+        ?string $startDate = null,
+        ?string $endDate = null
+    ) {
+        return Application::index(
+            $userId,
+            $startDate,
+            $endDate,
+            $orderBy,
+            $orderDirection
+        )
             ->get()
             ->map(function (Application $application) {
                 $client = $application->client;

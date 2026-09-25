@@ -3,11 +3,14 @@
 namespace App\Livewire\Application\Charts;
 
 use App\Models\Application;
+use App\Traits\Livewire\HasPlaceholder;
 use Illuminate\Support\Collection;
 use Livewire\Component;
 
 class PerStatus extends Component
 {
+    use HasPlaceholder;
+
     public Collection $perStatus;
 
     public string $chartId = 'application-per-status';
@@ -16,8 +19,14 @@ class PerStatus extends Component
 
     public string $chartTitle = 'Applications Per Status';
 
-    public function mount()
+    public ?string $startDate = null;
+
+    public ?string $endDate = null;
+
+    public function mount(?string $startDate = null, ?string $endDate = null)
     {
+        $this->startDate = $startDate;
+        $this->endDate = $endDate;
         $this->getData();
     }
 
@@ -35,7 +44,7 @@ class PerStatus extends Component
 
     private function getData(): void
     {
-        $this->perStatus = Application::perStatus()
+        $this->perStatus = Application::perStatus($this->startDate, $this->endDate)
             ->get()
             ->map(function (Application $application) {
                 return [
