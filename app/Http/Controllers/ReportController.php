@@ -19,6 +19,13 @@ class ReportController extends Controller
         protected BeneficiaryService $beneficiaryServices,
     ) {}
 
+    public function index()
+    {
+        return view('report.index', [
+            'pageTitle' => 'Reports'
+        ]);
+    }
+
     public function clients(Request $request)
     {
         $model = 'clients';
