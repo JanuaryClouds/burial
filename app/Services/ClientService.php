@@ -38,6 +38,8 @@ class ClientService
             'application.beneficiary',
             'application.assessment',
             'application.referral',
+            'application.rejection',
+            'application.cancellation',
             'application.recommendations',
             'application.relationship',
             'socialInfo',
