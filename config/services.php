@@ -97,4 +97,12 @@ return [
         'endpoint' => env('SMS_ENDPOINT', ''),
         'key' => env('SMS_API_KEY', ''),
     ],
+
+    'psa_classification' => [
+        'get' => env('PSA_CLASSIFICATION', false),
+        'post' => false,
+        'endpoint' => env('PSA_CLASSIFICATION_ENDPOINT', ''),
+        'version' => env('PSA_CLASSIFICATION_VERSION', ''),
+        'api_key' => env('PSA_CLASSIFICATION_API_KEY', ''),
+    ]
 ];
