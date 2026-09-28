@@ -9,6 +9,7 @@ use App\Models\ClientDemographic;
 use App\Models\ClientSocialInfo;
 use App\Models\DocumentRequirement;
 use App\Services\ActivityLoggerService;
+use App\Services\PsaClassificationService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -20,11 +21,25 @@ class Create extends Component
 
     public ClientForm $form;
 
+    public array $regions = [];
+
+    public array $provinces = [];
+
+    public array $barangays = [];
+
     public array $requiredDocuments;
 
     public function mount()
     {
         $this->requiredDocuments = DocumentRequirement::burial();
+
+        $psaServices = app(PsaClassificationService::class);
+
+        $this->regions = collect($psaServices->getRegions())
+            ->mapWithKeys(function ($item) {
+                return [$item['reg'] => $item['area_name']];
+            })
+            ->toArray();
 
         if (Auth::user()->clients->count() > 0) {
             $this->previousRecord = Auth::user()->clients->sortByDesc('created_at')->first()
@@ -48,6 +63,34 @@ class Create extends Component
         }
     }
 
+    public function updatedFormRegionId(string $regionId)
+    {
+        $this->reset(['form.provinceId', 'form.barangayId', 'provinces', 'barangays']);
+        $this->form->reset(['provinceId', 'barangayId', 'houseNo', 'street']);
+        
+        $psaServices = app(PsaClassificationService::class);
+    
+        $this->provinces = collect($psaServices->getProvinces($regionId))
+            ->mapWithKeys(function ($item) {
+                return [$item['prv'] => $item['area_name']];
+            })
+            ->toArray();
+    }
+
+    public function updatedFormProvinceId(string $provinceId)
+    {
+        $this->reset(['form.barangayId']);
+        $this->form->reset(['barangayId', 'houseNo', 'street']);
+        
+        $psaServices = app(PsaClassificationService::class);
+
+        $this->barangays = collect($psaServices->getBarangays($provinceId))
+            ->mapWithKeys(function ($item) {
+                return [$item['bgy'] => $item['area_name']];
+            })
+            ->toArray();
+    }
+
     public function render()
     {
         return view('livewire.client.create');
@@ -65,6 +108,8 @@ class Create extends Component
 
             return;
         }
+
+        dd($this->form->validate());
 
         try {
             DB::transaction(function () {

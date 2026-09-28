@@ -22,15 +22,21 @@ class ClientForm extends Form
 
     #[Validate('required|exists:religions,id')]
     public ?int $religionId = null;
+    
+    #[Validate('required|string')]
+    public ?string $regionId = null;
 
-    #[Validate('required|string|max:255')]
-    public ?string $houseNo = null;
+    #[Validate('required|string')]
+    public ?string $provinceId = null;
+
+    #[Validate('required|string')]
+    public ?string $barangayId = null;
 
     #[Validate('required|string|max:255')]
     public ?string $street = null;
 
-    #[Validate('required|exists:barangays,id')]
-    public ?int $barangayId = null;
+    #[Validate('required|string|max:255')]
+    public ?string $houseNo = null;
 
     // #[Validate('required|exists:districts,id')]
     // public int $districtId;
@@ -82,7 +88,7 @@ class ClientForm extends Form
         $this->religionId = $client->demographic->religion_id;
         $this->houseNo = $client->house_no;
         $this->street = $client->street;
-        $this->barangayId = $client->barangay_id;
+        // $this->barangayId = $client->barangay_id;
         // $this->form->city = $this->previousRecord->city;
         $this->contactNumber = $client->contact_number;
         $this->educationId = $client->socialInfo->education_id;
