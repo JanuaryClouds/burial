@@ -1,25 +1,50 @@
 <h4>Address</h4>
 <div class="row">
-	<div class="col-5 col-md-3 col-lg-3 col-xl-2">
-		<x-form.input wire:model='form.houseNo'
-			name="form.houseNo"
-			label="House Number"
+	<div class="col-12">
+		<x-form.select wire:model.live='form.regionId'
+			name="form.regionId"
+			label="Region"
+			:options="$regions ?? []"
 			:required="true" />
 	</div>
+	@if ($form->regionId)
+		<div class="col-12 col-lg-6">
+			<x-form.select wire:model.live='form.provinceId'
+				name="form.provinceId"
+				label="Province/City"
+				:options="$provinces ?? []"
+				:required="true" />
+		</div>
+	@endif
+	@if ($form->provinceId)
+		<div class="col-12 col-lg-6">
+			<x-form.select wire:model.live='form.barangayId'
+				name="form.barangayId"
+				label="Barangay"
+				:options="$barangays ?? []"
+				:required="true" />
+		</div>
+	@endif
 	<div class="col-7 col-md-5 col-lg-5 col-xl-5">
 		<x-form.input wire:model='form.street'
 			name="form.street"
 			label="Street"
 			:required="true" />
 	</div>
-	<div class="col-12 col-md-4 col-lg-4 col-xl-3">
+	<div class="col-5 col-md-3 col-lg-3 col-xl-2">
+		<x-form.input wire:model='form.houseNo'
+			name="form.houseNo"
+			label="House Number"
+			:required="true" />
+	</div>
+	{{-- <div class="col-12 col-md-4 col-lg-4 col-xl-3">
 		<x-form.select wire:model='form.barangayId'
 			name="form.barangayId"
 			label="Barangay"
 			:selected="$form->barangayId ?? ''"
 			:options="$barangays ?? []"
 			:required="true" />
-	</div>
+	</div> --}}
 	{{-- <div class="col-4 col-md-2 col-lg-2 col-xl-1">
         <input type="hidden"
             wire:model='districtId'
@@ -30,11 +55,11 @@
             label="District"
             :readonly="true" />
     </div> --}}
-	<div class="col-12 col-lg-3 col-xl-2">
+	{{-- <div class="col-12 col-lg-3 col-xl-2">
 		<x-form.input name="city"
 			label="City"
 			type="text"
 			:value="'Taguig City'"
 			:readonly="true" />
-	</div>
+	</div> --}}
 </div>

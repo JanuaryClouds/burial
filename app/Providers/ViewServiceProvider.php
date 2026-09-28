@@ -38,7 +38,7 @@ class ViewServiceProvider extends ServiceProvider
             'religions' => Religion::class,
             'nationalities' => Nationality::class,
             'educations' => Education::class,
-            'barangays' => Barangay::class,
+            // 'barangays' => Barangay::class,
             'districts' => District::class,
             'assistances' => Assistance::class,
             'modes' => ModeOfAssistance::class,

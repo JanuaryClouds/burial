@@ -1,5 +1,3 @@
-<x-slot:pageTitle>Create Client</x-slot:pageTitle>
-<x-slot:pageSubTitle>Funeral Assistance System | CSWDO Taguig</x-slot:pageSubTitle>
 <div class="d-flex flex-column gap-4">
 	@include('client.create.partials.documents')
 	<x-card>

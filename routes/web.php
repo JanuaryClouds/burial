@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\UserController;
 use App\Http\Controllers\CitizenAccessController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExportController;
+use App\Livewire\Form\Select\Region;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [CitizenAccessController::class, 'index'])
@@ -24,6 +25,9 @@ Route::post('/login/check', [UserController::class, 'login'])
     ->middleware('throttle:3,1')
     ->name('login.check');
 Route::post('/logout', [UserController::class, 'logout'])->name('logout');
+
+Route::get('test/component', Region::class)
+    ->name('test.component');
 
 Route::middleware(['auth', 'active.check'])
     ->group(function () {
