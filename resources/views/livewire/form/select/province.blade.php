@@ -1,9 +1,0 @@
-<x-form.select wire:model.live='{{ $name }}'
-	wire:change="selectedProvince"
-	wire:key='provinceSelect'
-	name="{{ $name }}"
-	label="{{ $label }}"
-	helpText="{{ $helpText }}"
-	:selected="$selected"
-	:options="$options"
-	:required="$required" />
