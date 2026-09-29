@@ -25,6 +25,8 @@ class Create extends Component
 
     public array $provinces = [];
 
+    public array $municipalities = [];
+
     public array $barangays = [];
 
     public array $requiredDocuments;
@@ -49,6 +51,30 @@ class Create extends Component
         if ($this->previousRecord) {
             $this->form->setClient($this->previousRecord);
 
+            // Autofill the dropdown option arrays from the previous record
+            // so the live selects render the saved values in their dropdowns.
+            if ($this->previousRecord->region_code) {
+                $this->provinces = collect(app(PsaClassificationService::class)->getProvinces($this->previousRecord->region_code))
+                    ->mapWithKeys(function ($item) {
+                        return [$item['prv'] => $item['area_name']];
+                    })
+                    ->toArray();
+
+                $this->municipalities = collect(app(PsaClassificationService::class)->getMunicipalities($this->previousRecord->region_code))
+                    ->mapWithKeys(function ($item) {
+                        return [$item['prv'] => $item['area_name']];
+                    })
+                    ->toArray();
+
+                if ($this->previousRecord->barangay_code) {
+                    $this->barangays = collect(app(PsaClassificationService::class)->getBarangays($this->previousRecord->province_code))
+                        ->mapWithKeys(function ($item) {
+                            return [$item['bgy'] => $item['area_name']];
+                        })
+                        ->toArray();
+                }
+            }
+
             $this->dispatch('notification:alert', [
                 'type' => 'success',
                 'title' => 'Previous Record Found',
@@ -63,32 +89,75 @@ class Create extends Component
         }
     }
 
-    public function updatedFormRegionId(string $regionId)
+    public function updatedFormRegionCode(?string $regionCode)
     {
-        $this->reset(['form.provinceId', 'form.barangayId', 'provinces', 'barangays']);
-        $this->form->reset(['provinceId', 'barangayId', 'houseNo', 'street']);
-        
+        $this->form->reset(['proviceCode', 'municipalityCode', 'barangayCode', 'street', 'houseNo']);
+
+        $this->provinces = [];
+        $this->municipalities = [];
+        $this->barangays = [];
+
+        if (!$regionCode) {
+            return;
+        }
+
         $psaServices = app(PsaClassificationService::class);
-    
-        $this->provinces = collect($psaServices->getProvinces($regionId))
+
+        $this->provinces = collect($psaServices->getProvinces($regionCode))
+            ->mapWithKeys(function ($item) {
+                return [$item['prv'] => $item['area_name']];
+            })
+            ->toArray();
+
+        $this->municipalities = collect($psaServices->getMunicipalities($regionCode))
             ->mapWithKeys(function ($item) {
                 return [$item['prv'] => $item['area_name']];
             })
             ->toArray();
     }
 
-    public function updatedFormProvinceId(string $provinceId)
+    public function updatedFormProvinceCode(?string $provinceCode)
     {
-        $this->reset(['form.barangayId']);
-        $this->form->reset(['barangayId', 'houseNo', 'street']);
+        $this->form->reset(['municipalityCode', 'barangayCode', 'houseNo', 'street']);
+
+        $this->barangays = [];
+
+        if (!$provinceCode) {
+            return;
+        }
         
         $psaServices = app(PsaClassificationService::class);
 
-        $this->barangays = collect($psaServices->getBarangays($provinceId))
+        $this->barangays = collect($psaServices->getBarangays($provinceCode))
             ->mapWithKeys(function ($item) {
                 return [$item['bgy'] => $item['area_name']];
             })
             ->toArray();
+    }
+
+    public function updatedFormMunicipalityCode(?string $municipalityCode)
+    {
+        $this->form->reset(['provinceCode', 'barangayCode', 'houseNo', 'street']);
+
+        $this->barangays = [];
+
+        if (!$municipalityCode) {
+            return;
+        }
+        
+        $psaServices = app(PsaClassificationService::class);
+
+        $this->barangays = collect($psaServices->getBarangays($municipalityCode))
+            ->mapWithKeys(function ($item) {
+                return [$item['bgy'] => $item['area_name']];
+            })
+            ->toArray();
+    }
+
+    public function updatedFormBarangayCode(?string $barangayCode)
+    {
+        // Street and house no are already enabled via readonly logic in the view
+        // based on regionCode + (provinceCode || municipalityCode) being set
     }
 
     public function render()
@@ -109,19 +178,17 @@ class Create extends Component
             return;
         }
 
-        dd($this->form->validate());
-
         try {
             DB::transaction(function () {
-                $districtId = Barangay::firstWhere('id', $this->form->barangayId)->district_id;
-
                 $client = Client::create([
                     'user_id' => Auth::id(),
                     'date_of_birth' => $this->form->dateOfBirth,
-                    'house_no' => $this->form->houseNo,
+                    'region_code' => $this->form->regionCode,
+                    'province_code' => $this->form->provinceCode,
+                    'municipality_code' => $this->form->municipalityCode,
+                    'barangay_code' => $this->form->barangayCode,
                     'street' => $this->form->street,
-                    'district_id' => $districtId,
-                    'barangay_id' => $this->form->barangayId,
+                    'house_no' => $this->form->houseNo,
                     'city' => 'Taguig City',
                     'contact_number' => $this->form->contactNumber,
                 ]);

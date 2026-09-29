@@ -35,14 +35,23 @@ class BeneficiaryForm extends Form
     #[Validate('required|integer|exists:religions,id')]
     public ?int $religionId = null;
 
-    #[Validate('required|integer|exists:barangays,id')]
-    public ?int $barangayId = null;
+    #[Validate('required|string')]
+    public ?string $regionCode = null;
 
-    #[Validate('required|string|max:255')]
-    public ?string $houseNo = null;
+    #[Validate('nullable|required_without:municipalityCode|string')]
+    public ?string $provinceCode = null;
+
+    #[Validate('nullable|required_without:provinceCode|string')]
+    public ?string $municipalityCode = null;
+
+    #[Validate('required|string')]
+    public ?string $barangayCode = null;
 
     #[Validate('required|string|max:255')]
     public ?string $street = null;
+
+    #[Validate('required|string|max:255')]
+    public ?string $houseNo = null;
 
     #[Validate([
         'family' => ['array'],
@@ -67,9 +76,12 @@ class BeneficiaryForm extends Form
         $this->pwd = $beneficiary->pwd;
         $this->sexId = $beneficiary->sex_id;
         $this->religionId = $beneficiary->religion_id;
-        $this->barangayId = $beneficiary->barangay_id;
-        $this->houseNo = $beneficiary->house_no;
+        $this->regionCode = $beneficiary->region_code;
+        $this->provinceCode = $beneficiary->province_code;
+        $this->municipalityCode = $beneficiary->municipality_code;
+        $this->barangayCode = $beneficiary->barangay_code;
         $this->street = $beneficiary->street;
+        $this->houseNo = $beneficiary->house_no;
         $this->family = $beneficiary->family->toArray();
     }
 }

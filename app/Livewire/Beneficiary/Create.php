@@ -6,6 +6,7 @@ use App\Livewire\Forms\BeneficiaryForm;
 use App\Models\Barangay;
 use App\Models\Beneficiary;
 use App\Services\ActivityLoggerService;
+use App\Services\PsaClassificationService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -14,6 +15,97 @@ use Livewire\Component;
 class Create extends Component
 {
     public BeneficiaryForm $form;
+
+    public array $regions = [];
+
+    public array $provinces = [];
+
+    public array $municipalities = [];
+
+    public array $barangays = [];
+
+    public function mount()
+    {
+        $psaServices = app(PsaClassificationService::class);
+
+        $this->regions = collect($psaServices->getRegions())
+            ->mapWithKeys(function ($item) {
+                return [$item['reg'] => $item['area_name']];
+            })
+            ->toArray();
+    }
+
+    public function updatedFormRegionCode(?string $regionCode)
+    {
+        $this->form->reset(['provinceCode', 'barangayCode', 'houseNo', 'street']);
+
+        $this->provinces = [];
+        $this->municipalities = [];
+        $this->barangays = [];
+
+        if (!$regionCode) {
+            return;
+        }
+
+        $psaServices = app(PsaClassificationService::class);
+
+        $this->provinces = collect($psaServices->getProvinces($regionCode))
+            ->mapWithKeys(function ($item) {
+                return [$item['prv'] => $item['area_name']];
+            })
+            ->toArray();
+
+        $this->municipalities = collect($psaServices->getMunicipalities($regionCode))
+            ->mapWithKeys(function ($item) {
+                return [$item['prv'] => $item['area_name']];
+            })
+            ->toArray();
+    }
+
+    public function updatedFormProvinceCode(?string $provinceCode)
+    {
+        $this->form->reset(['municipalityCode', 'barangayCode', 'houseNo', 'street']);
+
+        $this->barangays = [];
+
+        if (!$provinceCode) {
+            return;
+        }
+        
+        $psaServices = app(PsaClassificationService::class);
+
+        $this->barangays = collect($psaServices->getBarangays($provinceCode))
+            ->mapWithKeys(function ($item) {
+                return [$item['bgy'] => $item['area_name']];
+            })
+            ->toArray();
+    }
+
+    public function updatedFormMunicipalityCode(?string $municipalityCode)
+    {
+        $this->form->reset(['provinceCode', 'barangayCode', 'houseNo', 'street']);
+
+        $this->barangays = [];
+
+        if (!$municipalityCode) {
+            return;
+        }
+        
+        $psaServices = app(PsaClassificationService::class);
+
+        $this->barangays = collect($psaServices->getBarangays($municipalityCode))
+            ->mapWithKeys(function ($item) {
+                return [$item['bgy'] => $item['area_name']];
+            })
+            ->toArray();
+    }
+
+    public function updatedFormBarangayCode(?string $barangayCode)
+    {
+        // Street and house no are already enabled via readonly logic in the view
+        // based on regionCode + (provinceCode || municipalityCode) being set
+    }
+
 
     public function addFamilyMember()
     {
@@ -51,8 +143,6 @@ class Create extends Component
 
         try {
             DB::transaction(function () {
-                $districtId = Barangay::firstWhere('id', $this->form->barangayId)->district_id;
-
                 $beneficiary = Beneficiary::create([
                     'created_by' => Auth::id(),
                     'first_name' => $this->form->firstName,
@@ -64,9 +154,10 @@ class Create extends Component
                     'pwd' => $this->form->pwd ?? false,
                     'sex_id' => $this->form->sexId,
                     'religion_id' => $this->form->religionId,
-                    'barangay_id' => $this->form->barangayId,
-                    'district_id' => $districtId,
-                    'city' => 'Taguig City',
+                    'region_code' => $this->form->regionCode,
+                    'province_code' => $this->form->provinceCode,
+                    'municipality_code' => $this->form->municipalityCode,
+                    'barangay_code' => $this->form->barangayCode,
                     'house_no' => $this->form->houseNo,
                     'street' => $this->form->street,
                 ]);
