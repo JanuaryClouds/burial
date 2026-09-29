@@ -84,7 +84,38 @@ class PsaClassificationService
         }
     }
 
-    public function getBarangays(string $provinceCode)
+    public function getMunicipalities(string $regionCode)
+    {
+        try {
+            $url = $this->endpoint . '/' . $this->version . '/municipalities';
+
+            $response = Http::withQueryParameters([
+                'token' => $this->apiKey,
+                'reg' => $regionCode,
+            ])
+                ->timeout(15)
+                ->retry(3, 200)
+                ->get($url);
+
+            if ($response->failed()) {
+                return [];
+            }
+
+            $decodedResponse = $response->json();
+
+            if ($decodedResponse['count'] === 0) {
+                return [];
+            }
+
+            $data = $decodedResponse['results'] ?? [];
+
+            return $data;
+        } catch (\Exception $e) {
+            throw $e;
+        }
+    }
+
+    public function getBarangays(?string $provinceCode = null)
     {
         try {
             $url = $this->endpoint . '/' . $this->version . '/barangays';
