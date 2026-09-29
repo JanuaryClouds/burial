@@ -26,9 +26,6 @@ Route::post('/login/check', [UserController::class, 'login'])
     ->name('login.check');
 Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
-Route::get('test/component', Region::class)
-    ->name('test.component');
-
 Route::middleware(['auth', 'active.check'])
     ->group(function () {
         Route::resource('/user', UserController::class)
