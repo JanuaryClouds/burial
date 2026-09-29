@@ -6,9 +6,7 @@
 	@endisset
 	<div class="d-flex flex-column">
 		@isset($title)
-			<p class="fw-bold">
-				{{ $title }}
-			</p>
+			{{ $title }}
 		@endisset
 		<div>
 			{{ $slot }}
