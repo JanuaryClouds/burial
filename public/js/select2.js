@@ -4,10 +4,6 @@ export default function initSelect2(root = document) {
     }
 
     root.querySelectorAll('[data-control="select2"], [data-kt-select2="true"]').forEach((element) => {
-        if (element.getAttribute('data-kt-initialized') === '1') {
-            return;
-        }
-
         // If Livewire morphed this element in place (without wire:ignore), the
         // previous select2 instance and its container may still be attached.
         // Tear those down first so we never end up with a stale instance or
@@ -15,6 +11,9 @@ export default function initSelect2(root = document) {
         if ($(element).data('select2')) {
             $(element).select2('destroy');
         }
+
+        // Re-initialize even if already initialized, to pick up new options
+        // from Livewire updates
 
         let sibling = element.nextElementSibling;
         while (sibling && sibling.classList.contains('select2-container')) {
