@@ -15,11 +15,12 @@ return new class extends Migration
             $table->uuid()->primary();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->date('date_of_birth');
-            $table->text('house_no');
+            $table->string('region_code');
+            $table->string('province_code')->nullable();
+            $table->string('municipality_code')->nullable();
+            $table->string('barangay_code');
             $table->text('street');
-            $table->foreignId('district_id')->constrained('districts');
-            $table->foreignId('barangay_id')->constrained('barangays');
-            $table->string('city')->default('Taguig City');
+            $table->text('house_no');
             $table->string('contact_number');
             $table->timestamps();
         });

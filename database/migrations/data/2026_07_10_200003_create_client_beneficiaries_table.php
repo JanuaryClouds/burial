@@ -19,13 +19,14 @@ return new class extends Migration
             $table->date('date_of_birth');
             $table->date('date_of_death');
             $table->boolean('pwd')->default(false);
-            $table->text('house_no');
+            $table->string('region_code');
+            $table->string('province_code')->nullable();
+            $table->string('municipality_code')->nullable();
+            $table->string('barangay_code');
             $table->text('street');
-            $table->string('city');
-            $table->foreignId('district_id');
-            $table->foreignId('barangay_id')->constrained('barangays')->onDelete('cascade')->onUpdate('cascade');
+            $table->text('house_no');
             $table->foreignId('created_by')
-                ->constrained('users', 'id')
+                ->constrained('users')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->timestamps();

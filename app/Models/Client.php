@@ -21,18 +21,18 @@ class Client extends Model
     protected $fillable = [
         'user_id',
         'date_of_birth',
-        'house_no',
+        'region_code',
+        'province_code',
+        'municipality_code',
+        'barangay_code',
         'street',
-        'district_id',
-        'barangay_id',
-        'city',
+        'house_no',
         'contact_number',
     ];
 
     protected $casts = [
         'house_no' => 'encrypted',
         'street' => 'encrypted',
-        'city' => 'encrypted',
     ];
 
     /*

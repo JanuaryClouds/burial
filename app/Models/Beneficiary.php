@@ -29,11 +29,12 @@ class Beneficiary extends Model
         'date_of_birth',
         'date_of_death',
         'pwd',
-        'house_no',
+        'region_code',
+        'province_code',
+        'municipality_code',
+        'barangay_code',
         'street',
-        'barangay_id',
-        'district_id',
-        'city',
+        'house_no',
         'created_by',
     ];
 
