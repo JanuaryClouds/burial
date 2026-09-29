@@ -19,7 +19,7 @@ class ReferralFactory extends Factory
     {
         return [
             'referred_to' => $this->faker->name(),
-            'reason' => $this->faker->sentences(3),
+            'reason' => $this->faker->sentences(3, true),
         ];
     }
 }
