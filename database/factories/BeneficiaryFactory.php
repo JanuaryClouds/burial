@@ -22,6 +22,8 @@ class BeneficiaryFactory extends Factory
      */
     public function definition(): array
     {
+        // $isFromPateros = rand(0, 9) == 9;
+
         return [
             'first_name' => $this->faker->firstName(),
             'middle_name' => $this->faker->optional()->lastName(),
@@ -32,11 +34,12 @@ class BeneficiaryFactory extends Factory
             'date_of_birth' => $this->faker->date('Y-m-d'),
             'date_of_death' => $this->faker->dateTimeBetween('-1 week', now()),
             'pwd' => rand(0, 9) === 0 ? true : false,
-            'house_no' => $this->faker->randomNumber(),
+            'region_code' => '13',
+            // 'province_code' => $isFromPateros ? '817' : null,
+            // 'municipality_code' => $isFromPateros ? '815' : null,
+            // 'barangay_code' => $isFromPateros ? (string) rand(1, 10) : (string) rand(1, 38),
             'street' => $this->faker->streetName(),
-            'city' => $this->faker->city(),
-            'district_id' => District::inRandomOrder()->first()->id,
-            'barangay_id' => Barangay::inRandomOrder()->first()->id,
+            'house_no' => $this->faker->randomNumber(),
             'created_at' => $this->faker->dateTimeBetween(now()->subWeek(), now()),
         ];
     }

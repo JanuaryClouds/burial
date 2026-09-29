@@ -8,6 +8,7 @@ use App\Models\ClientDemographic;
 use App\Models\ClientSocialInfo;
 use App\Models\District;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
  * @extends Factory<Client>
@@ -23,13 +24,16 @@ class ClientFactory extends Factory
 
     public function definition()
     {
+        // $isFromPateros = rand(0, 9) == 9;
+
         return [
             'date_of_birth' => $this->faker->date('Y-m-d'),
-            'house_no' => $this->faker->buildingNumber(),
+            'region_code' => '13',
+            // 'province_code' => $isFromPateros ? '815' : null,
+            // 'municipality_code' => $isFromPateros ? '817' : null,
+            // 'barangay_code' => $isFromPateros ? (string) rand(1, 10) : (string) rand(1, 38),
             'street' => $this->faker->streetName(),
-            'barangay_id' => Barangay::inRandomOrder()->first()->id,
-            'district_id' => District::inRandomOrder()->first()->id,
-            'city' => 'Taguig City',
+            'house_no' => $this->faker->buildingNumber(),
             'contact_number' => $this->faker->regexify('09[0-9]{9}'),
             'created_at' => $this->faker->dateTimeBetween(now()->subWeek(), now()),
         ];
