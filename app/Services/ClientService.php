@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Address;
 use App\Models\Assistance;
 use App\Models\Beneficiary;
 use App\Models\BeneficiaryFamily;
@@ -77,7 +78,7 @@ class ClientService
                     'tracking_no' => $client->tracking_no,
                     'client' => $client->fullname().' ('.$client->socialInfo?->relationship?->name.')',
                     'beneficiary' => $client->beneficiary?->fullname(),
-                    'address' => $client->address(),
+                    'address' => $client->fullAddress(),
                     'created_at' => $client->created_at->format('F d, Y H:i'),
                 ];
             });
@@ -86,30 +87,39 @@ class ClientService
     public function store(array $data)
     {
         $client = Client::create([
-            'user_id' => Auth::user()->id,
+            'user_id' => Auth::id(),
             'date_of_birth' => $data['date_of_birth'],
-            'house_no' => $data['house_no'],
-            'street' => $data['street'],
-            'district_id' => $data['district_id'],
-            'barangay_id' => $data['barangay_id'],
-            'city' => $data['city'],
             'contact_number' => $data['contact_number'],
+        ]);
+
+        Address::create([
+            'client_uuid' => $client->uuid,
+            'region_code' => $data['region_code'],
+            'region_name' => $data['region_name'],
+            'province_code' => $data['province_code'],
+            'province_name' => $data['province_name'],
+            'municipality_code' => $data['municipality_code'],
+            'municipality_name' => $data['municipality_name'],
+            'barangay_code' => $data['barangay_code'],
+            'barangay_name' => $data['barangay_name'],
+            'street' => $data['street'],
+            'house_no' => $data['house_no'],
         ]);
 
         ClientDemographic::create([
             'client_uuid' => $client->uuid,
-            'sex_id' => $data['sex_id'],
-            'religion_id' => $data['religion_id'],
-            'nationality_id' => $data['nationality_id'],
+            'sex_id' => $this->form->sexId,
+            'nationality_id' => $this->form->nationalityId,
+            'religion_id' => $this->form->religionId,
         ]);
 
         ClientSocialInfo::create([
             'client_uuid' => $client->uuid,
-            'civil_id' => $data['civil_id'],
-            'education_id' => $data['education_id'],
-            'income' => $data['income'],
-            'philhealth' => $data['philhealth'],
-            'skill' => $data['skill'],
+            'civil_id' => $this->form->civilId,
+            'education_id' => $this->form->educationId,
+            'income' => $this->form->income,
+            'philhealth' => $this->form->philhealth,
+            'skill' => $this->form->skill,
         ]);
 
         return $client;
@@ -434,7 +444,7 @@ class ClientService
                 ],
                 [
                     '4. Date of Birth' => Carbon::parse($client->date_of_birth)->format('F d, Y'),
-                    '5. Present Address' => $client->address(),
+                    '5. Present Address' => $client->fullAddress(),
                 ],
                 [
                     '6. Relationship to Beneficiary' => $client->socialInfo?->relationship?->name ?? 'N/A',

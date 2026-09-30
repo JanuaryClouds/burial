@@ -348,7 +348,7 @@
 					<tr>
 						<td style="border: none;">Address:</td>
 						<td style="border: none; border-bottom: 1px solid #000000; width: 300px;">
-							{{ $client->address() }}
+							{{ $client->fullAddress() }}
 						</td>
 					</tr>
 				</table>

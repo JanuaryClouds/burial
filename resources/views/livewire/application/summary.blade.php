@@ -24,7 +24,7 @@
 						<strong>Name:</strong> {{ $client->fullname() }}
 					</span>
 					<span>
-						<strong>Address:</strong> {{ $client->address() }}
+						<strong>Address:</strong> {{ $client->fullAddress() }}
 					</span>
 					<span>
 						<strong>Contact Number:</strong> {{ $client->contact_number }}

@@ -83,7 +83,7 @@ class ExportController extends Controller
             $sheet->setCellValue("O{$row}", $age);
             $sheet->setCellValue("P{$row}", $beneficiary->sex?->name);
             $sheet->setCellValue("Q{$row}", $firstClaimant?->barangay?->name);
-            $sheet->setCellValue("R{$row}", $firstClaimant?->address);
+            $sheet->setCellValue("R{$row}", $firstClaimant?->fullAddress);
             $sheet->setCellValue("S{$row}", $burialAssistance?->funeraria);
             $sheet->setCellValue("T{$row}", $burialAssistance?->amount);
             $sheet->setCellValue("U{$row}", $beneficiary?->date_of_death);

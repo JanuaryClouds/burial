@@ -49,19 +49,28 @@
 	<div class="row">
 		<div class="col-12 col-md-5 col-xl-3">
 			<x-form.display label="House Number"
-				:contents="$beneficiary->house_no" />
+				:contents="$beneficiary->address->house_number" />
 		</div>
 		<div class="col-12 col-md-7 col-xl-5">
 			<x-form.display label="Street"
-				:contents="$beneficiary->street" />
+				:contents="$beneficiary->address->street" />
 		</div>
 		<div class="col-6 col-md-6 col-xl-2">
 			<x-form.display label="Barangay"
-				:contents="$beneficiary->barangay->name" />
+				:contents="$beneficiary->address->barangay_name" />
 		</div>
 		<div class="col-6 col-xl-2">
-			<x-form.display label="City"
-				:contents="$beneficiary->city" />
+			@if ($beneficiary->address->municipality_code)
+				<x-form.display label="Municipality"
+					:contents="$beneficiary->address->municipality_name" />
+			@else
+				<x-form.display label="Province/City"
+					:contents="$beneficiary->address->province_name" />
+			@endif
+		</div>
+		<div class="col-6 col-xl-4">
+			<x-form.display label="Region"
+				:contents="$beneficiary->address->region_name" />
 		</div>
 	</div>
 	{{-- end::Address --}}

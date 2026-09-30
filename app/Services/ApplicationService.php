@@ -138,7 +138,7 @@ class ApplicationService
                 ],
                 [
                     '4. Date of Birth' => Carbon::parse($client->date_of_birth)->format('F d, Y'),
-                    '5. Present Address' => $client->address(),
+                    '5. Present Address' => $client->fullAddress(),
                 ],
                 [
                     '6. Relationship to Beneficiary' => $client->application?->relationship?->name ?? 'N/A',
@@ -165,7 +165,7 @@ class ApplicationService
                 ],
                 [
                     '3. Date of Birth' => $beneficiary?->date_of_birth ? Carbon::parse($beneficiary->date_of_birth)->format('F d, Y') : 'N/A',
-                    '4. Place of Birth' => $beneficiary?->address() ?? 'N/A',
+                    '4. Place of Birth' => $beneficiary?->fullAddress() ?? 'N/A',
                 ],
             ],
             'assessment' => [

@@ -22,23 +22,32 @@
 	<div class="separator separator-dashed my-4"></div>
 
 	{{-- start::Address --}}
-	<h4>Address</h4>
+	<h4>Present Address</h4>
 	<div class="row">
 		<div class="col-12 col-md-4 col-lg-4 col-xl-2">
 			<x-form.display label="House Number"
-				:contents="$client->house_no" />
+				:contents="$client->address->house_number" />
 		</div>
 		<div class="col-12 col-md-8 col-lg-8 col-xl-5">
 			<x-form.display label="Street"
-				:contents="$client->street" />
+				:contents="$client->address->street" />
 		</div>
 		<div class="col-8 col-lg-6 col-xl-3">
 			<x-form.display label="Barangay"
-				:contents="$client->barangay->name" />
+				:contents="$client->address->barangay_name" />
 		</div>
-		<div class="col-4 col-lg-6 col-xl-2">
-			<x-form.display label="City"
-				:contents="$client->city" />
+		<div class="col-4 col-lg-6 col-xl-4">
+			@if ($client->address->municipality_code)
+				<x-form.display label="Municipality"
+					:contents="$client->address->municipality_name" />
+			@else
+				<x-form.display label="Province/City"
+					:contents="$client->address->province_name" />
+			@endif
+		</div>
+		<div class="col-4 col-lg-6 col-xl-4">
+			<x-form.display label="Region"
+				:contents="$client->address->region_name" />
 		</div>
 	</div>
 	{{-- end::Address --}}
