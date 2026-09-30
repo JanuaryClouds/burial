@@ -19,12 +19,6 @@ return new class extends Migration
             $table->date('date_of_birth');
             $table->date('date_of_death');
             $table->boolean('pwd')->default(false);
-            $table->string('region_code');
-            $table->string('province_code')->nullable();
-            $table->string('municipality_code')->nullable();
-            $table->string('barangay_code');
-            $table->text('street');
-            $table->text('house_no');
             $table->foreignId('created_by')
                 ->constrained('users')
                 ->cascadeOnDelete()
