@@ -40,9 +40,9 @@
 	@endif
 
 	<div>
-		<select {{ $attributes->except('wire:model') }}
-			name="{{ $name }}_display"
-			id="{{ $id ?? $name }}_display"
+		<select {{ $attributes->whereStartsWith('wire:model') }}
+			name="{{ $name }}_select"
+			id="{{ $id ?? $name }}_select"
 			{{ $required ? 'required' : '' }}
 			{{ $readonly ? 'disabled' : '' }}
 			class="form-control {{ $readonly ? 'bg-light' : '' }}"
@@ -57,6 +57,17 @@
 			@endforeach
 		</select>
 	</div>
+	@php
+		$modifiedAttributes = new \Illuminate\View\ComponentAttributeBag(
+		    collect($attributes->whereStartsWith('wire:model')->getAttributes())
+		        ->map(fn($value) => $value . '_display')
+		        ->all(),
+		);
+	@endphp
+	<input {{ $modifiedAttributes }}
+		type="hidden"
+		name="{{ $name }}_display"
+		id="{{ $id ?? $name }}_display">
 	<input type="hidden"
 		name="{{ $name }}"
 		id="{{ $id ?? $name }}"

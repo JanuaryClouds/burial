@@ -65,12 +65,12 @@ export default function initSelect2(root = document) {
             .on('change.livewire', function () {
                 const value = $(this).val();
 
-                const livewireId = element.id.replace('_display', '');
-                const input = document.getElementById(livewireId);
+                const livewireId = element.id.replace('_select', '');
+                const valueInput = document.getElementById(livewireId);
 
-                if (input) {
-                    input.value = value;
-                    input.dispatchEvent(new Event('input', {
+                if (valueInput) {
+                    valueInput.value = value;
+                    valueInput.dispatchEvent(new Event('input', {
                         bubbles: true
                     }));
                 }
