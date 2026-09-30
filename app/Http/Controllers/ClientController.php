@@ -10,6 +10,7 @@ use App\Models\CivilStatus;
 use App\Models\Client;
 use App\Models\ClientAssessment;
 use App\Models\ClientRecommendation;
+use App\Models\DocumentRequirement;
 use App\Models\Sex;
 use App\Services\CentralClientService;
 use App\Services\ClientService;
@@ -67,6 +68,7 @@ class ClientController extends Controller
         if ($draftedClients->count() == 0) {
             return view('client.create', [
                 'pageTitle' => 'Draft a Client Record',
+                'requiredDocuments' => DocumentRequirement::burial(),
             ]);
         }
 
