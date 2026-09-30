@@ -24,16 +24,8 @@ class ClientFactory extends Factory
 
     public function definition()
     {
-        // $isFromPateros = rand(0, 9) == 9;
-
         return [
             'date_of_birth' => $this->faker->date('Y-m-d'),
-            'region_code' => '13',
-            // 'province_code' => $isFromPateros ? '815' : null,
-            // 'municipality_code' => $isFromPateros ? '817' : null,
-            // 'barangay_code' => $isFromPateros ? (string) rand(1, 10) : (string) rand(1, 38),
-            'street' => $this->faker->streetName(),
-            'house_no' => $this->faker->buildingNumber(),
             'contact_number' => $this->faker->regexify('09[0-9]{9}'),
             'created_at' => $this->faker->dateTimeBetween(now()->subWeek(), now()),
         ];

@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
@@ -29,12 +31,6 @@ class Beneficiary extends Model
         'date_of_birth',
         'date_of_death',
         'pwd',
-        'region_code',
-        'province_code',
-        'municipality_code',
-        'barangay_code',
-        'street',
-        'house_no',
         'created_by',
     ];
 
@@ -43,9 +39,6 @@ class Beneficiary extends Model
         'middle_name' => 'encrypted',
         'last_name' => 'encrypted',
         'suffix' => 'encrypted',
-        'house_no' => 'encrypted',
-        'street' => 'encrypted',
-        'city' => 'encrypted',
     ];
 
     /**
@@ -59,14 +52,6 @@ class Beneficiary extends Model
             ($this->middle_name ? Str::substr($this->middle_name, 0, 1).'. ' : '').
             $this->last_name.
             ($this->suffix ? ' '.$this->suffix : '');
-    }
-
-    /**
-     * Summary of address
-     */
-    public function address(): string
-    {
-        return $this->house_no.' '.$this->street.', '.$this->barangay->name.', '.$this->district->name.', '.$this->city;
     }
 
     /**
@@ -149,6 +134,15 @@ class Beneficiary extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    /**
+     * Summary of address
+     * @return MorphOne<Address, Beneficiary>
+     */
+    public function address(): MorphOne
+    {
+        return $this->morphOne(Address::class, 'addressable');
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Model Functions
@@ -158,13 +152,26 @@ class Beneficiary extends Model
     |
     */
 
+    /**
+     * Summary of address
+     */
+    public function fullAddress(): string
+    {
+        $address = $this->address;
+
+        if (! $address) {
+            return '';
+        }
+
+        return $address->full();
+    }
+
     public static function relations()
     {
         return [
             'sex',
             'religion',
-            'barangay',
-            'district',
+            'address',
             'family',
             'family.sex',
             'family.civil',
