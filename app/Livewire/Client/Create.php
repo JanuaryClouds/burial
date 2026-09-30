@@ -2,7 +2,9 @@
 
 namespace App\Livewire\Client;
 
+use App\Livewire\Forms\AddressForm;
 use App\Livewire\Forms\ClientForm;
+use App\Models\Address;
 use App\Models\Barangay;
 use App\Models\Client;
 use App\Models\ClientDemographic;
@@ -10,6 +12,7 @@ use App\Models\ClientSocialInfo;
 use App\Models\DocumentRequirement;
 use App\Services\ActivityLoggerService;
 use App\Services\PsaClassificationService;
+use App\Traits\Livewire\HasPlaceholder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -17,9 +20,13 @@ use Livewire\Component;
 
 class Create extends Component
 {
+    use HasPlaceholder;
+
     public ?Client $previousRecord = null;
 
     public ClientForm $form;
+
+    public AddressForm $addressForm;
 
     public array $regions = [];
 
@@ -29,12 +36,8 @@ class Create extends Component
 
     public array $barangays = [];
 
-    public array $requiredDocuments;
-
     public function mount()
     {
-        $this->requiredDocuments = DocumentRequirement::burial();
-
         $psaServices = app(PsaClassificationService::class);
 
         $this->regions = collect($psaServices->getRegions())
@@ -45,29 +48,31 @@ class Create extends Component
 
         if (Auth::user()->clients->count() > 0) {
             $this->previousRecord = Auth::user()->clients->sortByDesc('created_at')->first()
-                ->loadMissing(['demographic', 'socialInfo']);
+                ->loadMissing(['demographic', 'socialInfo', 'address']);
         }
 
         if ($this->previousRecord) {
             $this->form->setClient($this->previousRecord);
 
+            $this->addressForm->setAddress($this->previousRecord);
+
             // Autofill the dropdown option arrays from the previous record
             // so the live selects render the saved values in their dropdowns.
-            if ($this->previousRecord->region_code) {
-                $this->provinces = collect(app(PsaClassificationService::class)->getProvinces($this->previousRecord->region_code))
+            if ($this->previousRecord->address) {
+                $this->provinces = collect(app(PsaClassificationService::class)->getProvinces($this->previousRecord->address->region_code))
                     ->mapWithKeys(function ($item) {
                         return [$item['prv'] => $item['area_name']];
                     })
                     ->toArray();
 
-                $this->municipalities = collect(app(PsaClassificationService::class)->getMunicipalities($this->previousRecord->region_code))
+                $this->municipalities = collect(app(PsaClassificationService::class)->getMunicipalities($this->previousRecord->address->region_code))
                     ->mapWithKeys(function ($item) {
-                        return [$item['prv'] => $item['area_name']];
+                        return [$item['mun'] => $item['area_name']];
                     })
                     ->toArray();
 
-                if ($this->previousRecord->barangay_code) {
-                    $this->barangays = collect(app(PsaClassificationService::class)->getBarangays($this->previousRecord->province_code))
+                if ($this->previousRecord->address->barangay_code) {
+                    $this->barangays = collect(app(PsaClassificationService::class)->getBarangays($this->previousRecord->address->province_code))
                         ->mapWithKeys(function ($item) {
                             return [$item['bgy'] => $item['area_name']];
                         })
@@ -89,9 +94,18 @@ class Create extends Component
         }
     }
 
-    public function updatedFormRegionCode(?string $regionCode)
+    public function updatedAddressFormRegionCode(?string $regionCode)
     {
-        $this->form->reset(['proviceCode', 'municipalityCode', 'barangayCode', 'street', 'houseNo']);
+        $this->addressForm->reset([
+            'proviceCode', 
+            'proviceCode_display', 
+            'municipalityCode', 
+            'municipalityCode_display', 
+            'barangayCode', 
+            'barangayCode_display', 
+            'street', 
+            'houseNumber'
+        ]);
 
         $this->provinces = [];
         $this->municipalities = [];
@@ -100,6 +114,8 @@ class Create extends Component
         if (!$regionCode) {
             return;
         }
+
+        $this->addressForm->regionCode_display = $this->regions[$regionCode];
 
         $psaServices = app(PsaClassificationService::class);
 
@@ -111,20 +127,29 @@ class Create extends Component
 
         $this->municipalities = collect($psaServices->getMunicipalities($regionCode))
             ->mapWithKeys(function ($item) {
-                return [$item['prv'] => $item['area_name']];
+                return [$item['mun'] => $item['area_name']];
             })
             ->toArray();
     }
 
-    public function updatedFormProvinceCode(?string $provinceCode)
+    public function updatedAddressFormProvinceCode(?string $provinceCode)
     {
-        $this->form->reset(['municipalityCode', 'barangayCode', 'houseNo', 'street']);
+        $this->addressForm->reset([
+            'municipalityCode', 
+            'municipalityCode_display', 
+            'barangayCode', 
+            'barangayCode_display', 
+            'houseNumber', 
+            'street'
+        ]);
 
         $this->barangays = [];
 
         if (!$provinceCode) {
             return;
         }
+
+        $this->addressForm->provinceCode_display = $this->provinces[$provinceCode];
         
         $psaServices = app(PsaClassificationService::class);
 
@@ -135,15 +160,24 @@ class Create extends Component
             ->toArray();
     }
 
-    public function updatedFormMunicipalityCode(?string $municipalityCode)
+    public function updatedAddressFormMunicipalityCode(?string $municipalityCode)
     {
-        $this->form->reset(['provinceCode', 'barangayCode', 'houseNo', 'street']);
+        $this->addressForm->reset([
+            'provinceCode', 
+            'provinceCode_display', 
+            'barangayCode',
+            'barangayCode_display', 
+            'houseNumber', 
+            'street'
+        ]);
 
         $this->barangays = [];
 
         if (!$municipalityCode) {
             return;
         }
+
+        $this->addressForm->municipalityCode_display = $this->municipalities[$municipalityCode];
         
         $psaServices = app(PsaClassificationService::class);
 
@@ -154,8 +188,14 @@ class Create extends Component
             ->toArray();
     }
 
-    public function updatedFormBarangayCode(?string $barangayCode)
+    public function updatedAddressFormBarangayCode(?string $barangayCode)
     {
+        if (!$barangayCode) {
+            return;
+        }
+
+        $this->addressForm->barangayCode_display = $this->barangays[$barangayCode];
+
         // Street and house no are already enabled via readonly logic in the view
         // based on regionCode + (provinceCode || municipalityCode) being set
     }
@@ -169,6 +209,7 @@ class Create extends Component
     {
         try {
             $this->form->validate();
+            $this->addressForm->validate();
         } catch (ValidationException $e) {
             $this->dispatch('notification:toast', [
                 'type' => 'error',
@@ -177,20 +218,28 @@ class Create extends Component
 
             return;
         }
-
+        
         try {
             DB::transaction(function () {
                 $client = Client::create([
                     'user_id' => Auth::id(),
                     'date_of_birth' => $this->form->dateOfBirth,
-                    'region_code' => $this->form->regionCode,
-                    'province_code' => $this->form->provinceCode,
-                    'municipality_code' => $this->form->municipalityCode,
-                    'barangay_code' => $this->form->barangayCode,
-                    'street' => $this->form->street,
-                    'house_no' => $this->form->houseNo,
-                    'city' => 'Taguig City',
                     'contact_number' => $this->form->contactNumber,
+                ]);
+
+                Address::create([
+                    'addressable_type' => Client::class,
+                    'addressable_id' => $client->uuid,
+                    'region_code' => $this->addressForm->regionCode,
+                    'region_name' => $this->addressForm->regionCode_display,
+                    'province_code' => $this->addressForm->provinceCode,
+                    'province_name' => $this->addressForm->provinceCode_display,
+                    'municipality_code' => $this->addressForm->municipalityCode,
+                    'municipality_name' => $this->addressForm->municipalityCode_display,
+                    'barangay_code' => $this->addressForm->barangayCode,
+                    'barangay_name' => $this->addressForm->barangayCode_display,
+                    'street' => $this->addressForm->street,
+                    'house_number' => $this->addressForm->houseNumber,
                 ]);
 
                 ClientDemographic::create([
@@ -208,6 +257,7 @@ class Create extends Component
                     'philhealth' => $this->form->philhealth,
                     'skill' => $this->form->skill,
                 ]);
+
 
                 $this->reset();
 
