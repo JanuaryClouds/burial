@@ -3,7 +3,7 @@
 	<div class="col-12 col-lg-6">
 		<x-callout class="bg-info-subtle border-info text-info">
 			<x-slot:icon>
-				<x-icon.font-awesome class="fs-4 text-info fa-info-circle" />
+				<x-icon.font-awesome class="fs-2 text-info fa-info-circle" />
 			</x-slot:icon>
 			<x-slot:title>
 				<p class="fs-6 fw-bold">About Provinces/Cities and Municipalities</p>
@@ -16,7 +16,7 @@
 	<div class="col-12 col-lg-6">
 		<x-callout class="bg-info-subtle border-info text-info">
 			<x-slot:icon>
-				<x-icon.font-awesome class="fs-4 text-info fa-info-circle" />
+				<x-icon.font-awesome class="fs-2 text-info fa-info-circle" />
 			</x-slot:icon>
 			<x-slot:title>
 				<p class="fs-6 fw-bold">Start from Region</p>
@@ -28,54 +28,54 @@
 </div>
 <div class="row">
 	<div class="col-12 col-lg-6">
-		<x-form.select wire:model.live='form.regionCode'
-			name="form.regionCode"
+		<x-form.select wire:model.live='addressForm.regionCode'
+			name="addressForm.regionCode"
 			label="Region"
 			:options="$regions ?? []"
-			:selected="$form->regionCode ?? null"
+			:selected="$addressForm->regionCode ?? null"
 			:required="true" />
 	</div>
 	<div class="col-12 col-lg-3">
-		<x-form.select wire:model.live='form.provinceCode'
-			name="form.provinceCode"
-			:readonly="$form->regionCode ? false : true"
+		<x-form.select wire:model.live='addressForm.provinceCode'
+			name="addressForm.provinceCode"
+			:readonly="$addressForm->regionCode ? false : true"
 			label="Province/City"
 			:options="$provinces ?? []"
-			:selected="$form->proviceCode ?? null" />
+			:selected="$addressForm->provinceCode ?? null" />
 	</div>
 	<div class="col-12 col-lg-3">
-		<x-form.select wire:model.live='form.municipalityCode'
-			name="form.municipalityCode"
-			:readonly="$form->regionCode ? false : true"
+		<x-form.select wire:model.live='addressForm.municipalityCode'
+			name="addressForm.municipalityCode"
+			:readonly="$addressForm->regionCode ? false : true"
 			label="Municipality"
 			:options="$municipalities ?? []"
-			:selected="$form->municipalityCode ?? null" />
+			:selected="$addressForm->provinceCode ?? null" />
 	</div>
 	<div class="col-12 col-lg-4">
-		<x-form.select wire:model.live='form.barangayCode'
-			name="form.barangayCode"
-			:readonly="$form->regionCode && ($form->provinceCode || $form->municipalityCode) ? false : true"
+		<x-form.select wire:model.live='addressForm.barangayCode'
+			name="addressForm.barangayCode"
+			:readonly="$addressForm->regionCode && ($addressForm->provinceCode || $addressForm->municipalityCode) ? false : true"
 			label="Barangay"
 			:options="$barangays ?? []"
-			:selected="$form->barangayCode ?? null"
+			:selected="$addressForm->barangayCode ?? null"
 			:required="true" />
 	</div>
 	<div class="col-7 col-lg-5">
-		<x-form.input wire:model='form.street'
-			name="form.street"
-			:readonly="$form->barangayCode ? false : true"
+		<x-form.input wire:model='addressForm.street'
+			name="addressForm.street"
+			:readonly="$addressForm->barangayCode ? false : true"
 			label="Street"
 			:required="true" />
 	</div>
 	<div class="col-5 col-lg-3">
-		<x-form.input wire:model='form.houseNo'
-			name="form.houseNo"
-			:readonly="$form->barangayCode ? false : true"
+		<x-form.input wire:model='addressForm.houseNumber'
+			name="addressForm.houseNumber"
+			:readonly="$addressForm->barangayCode ? false : true"
 			label="House Number"
 			:required="true" />
 	</div>
 	<div class="col-12"
-		wire:loading.delay.longer="form.regionCode, form.provinceCode, form.municipalityCode, form.barangayCode">
+		wire:loading.delay.longer="addressForm.regionCode, addressForm.provinceCode, addressForm.municipalityCode, addressForm.barangayCode">
 		<x-alert>
 			<x-slot:icon>
 				<span class="spinner-border text-primary"></span>

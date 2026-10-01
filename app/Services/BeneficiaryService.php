@@ -38,11 +38,25 @@ class BeneficiaryService
         $beneficiary->update($data);
     }
 
-    public function store(array $data)
+    /**
+     * Summary of store
+     * @param array $data
+     * @return Beneficiary
+     */
+    public function store(array $data): Beneficiary
     {
-        $data['created_by'] = Auth::user()->id;
-
-        return Beneficiary::create($data);
+        return Beneficiary::create([
+            'first_name' => $data['firstName'],
+            'middle_name' => $data['middleName'],
+            'last_name' => $data['lastName'],
+            'suffix' => $data['suffix'],
+            'sex_id' => $data['sexId'],
+            'religion_id' => $data['religionId'],
+            'date_of_birth' => $data['dateOfBirth'],
+            'date_of_death' => $data['dateOfDeath'],
+            'pwd' => $data['pwd'] ?? false,
+            'created_by' => Auth::id(),
+        ]);
     }
 
     public function reportIndex($startDate, $endDate)

@@ -2,11 +2,16 @@
 
 namespace App\Livewire\Beneficiary;
 
+use App\Livewire\Forms\AddressForm;
 use App\Livewire\Forms\BeneficiaryForm;
 use App\Models\Barangay;
 use App\Models\Beneficiary;
 use App\Services\ActivityLoggerService;
+use App\Services\AddressService;
+use App\Services\BeneficiaryService;
 use App\Services\PsaClassificationService;
+use App\Traits\Livewire\Address\HasOptions;
+use App\Traits\Livewire\HasPlaceholder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -14,30 +19,29 @@ use Livewire\Component;
 
 class Create extends Component
 {
+    use HasPlaceholder, HasOptions;
+
     public BeneficiaryForm $form;
 
-    public array $regions = [];
-
-    public array $provinces = [];
-
-    public array $municipalities = [];
-
-    public array $barangays = [];
+    public AddressForm $addressForm;
 
     public function mount()
     {
-        $psaServices = app(PsaClassificationService::class);
-
-        $this->regions = collect($psaServices->getRegions())
-            ->mapWithKeys(function ($item) {
-                return [$item['reg'] => $item['area_name']];
-            })
-            ->toArray();
+        $this->regions = app(PsaClassificationService::class)->getRegionOptions();
     }
 
-    public function updatedFormRegionCode(?string $regionCode)
+    public function updatedAddressFormRegionCode(?string $regionCode)
     {
-        $this->form->reset(['provinceCode', 'barangayCode', 'houseNo', 'street']);
+        $this->addressForm->reset([
+            'provinceCode', 
+            'provinceCode_display',
+            'municipalityCode',
+            'municipalityCode_display', 
+            'barangayCode', 
+            'barangayCode_display', 
+            'street',
+            'houseNumber', 
+        ]);
 
         $this->provinces = [];
         $this->municipalities = [];
@@ -47,61 +51,74 @@ class Create extends Component
             return;
         }
 
+        $this->addressForm->regionCode_display = $this->regions[$regionCode];
+
         $psaServices = app(PsaClassificationService::class);
 
-        $this->provinces = collect($psaServices->getProvinces($regionCode))
-            ->mapWithKeys(function ($item) {
-                return [$item['prv'] => $item['area_name']];
-            })
-            ->toArray();
+        $this->provinces = $psaServices->getProvinceOptions($regionCode);
 
-        $this->municipalities = collect($psaServices->getMunicipalities($regionCode))
-            ->mapWithKeys(function ($item) {
-                return [$item['prv'] => $item['area_name']];
-            })
-            ->toArray();
+        $this->municipalities = $psaServices->getMunicipalityOptions($regionCode);
     }
 
-    public function updatedFormProvinceCode(?string $provinceCode)
+    public function updatedAddressFormProvinceCode(?string $provinceCode)
     {
-        $this->form->reset(['municipalityCode', 'barangayCode', 'houseNo', 'street']);
+        $this->addressForm->reset([
+            'municipalityCode',
+            'municipalityCode_display', 
+            'barangayCode', 
+            'barangayCode_display', 
+            'houseNumber',
+            'street', 
+        ]);
 
         $this->barangays = [];
 
         if (!$provinceCode) {
             return;
         }
+
+        $this->addressForm->provinceCode_display = $this->provinces[$provinceCode];
         
         $psaServices = app(PsaClassificationService::class);
 
-        $this->barangays = collect($psaServices->getBarangays($provinceCode))
-            ->mapWithKeys(function ($item) {
-                return [$item['bgy'] => $item['area_name']];
-            })
-            ->toArray();
+        $this->barangays = $psaServices->getBarangayOptions($provinceCode);
     }
 
-    public function updatedFormMunicipalityCode(?string $municipalityCode)
+    public function updatedAddressFormMunicipalityCode(?string $municipalityCode)
     {
-        $this->form->reset(['provinceCode', 'barangayCode', 'houseNo', 'street']);
+        // ! The municipality code is technically the `prv` key. Using `mun` key for barangay filtering will return barangays from other municipalities.
+        // * The `prv` key is being used instead because provinces and municipalities do have unique `prv` keys
+
+        $this->addressForm->reset([
+            'provinceCode', 
+            'provinceCode_display', 
+            'barangayCode', 
+            'barangayCode_display', 
+            'street',
+            'houseNumber', 
+        ]);
 
         $this->barangays = [];
 
         if (!$municipalityCode) {
             return;
         }
+
+        $this->addressForm->municipalityCode_display = $this->municipalities[$municipalityCode];
         
         $psaServices = app(PsaClassificationService::class);
 
-        $this->barangays = collect($psaServices->getBarangays($municipalityCode))
-            ->mapWithKeys(function ($item) {
-                return [$item['bgy'] => $item['area_name']];
-            })
-            ->toArray();
+        $this->barangays = $psaServices->getBarangayOptions($municipalityCode);
     }
 
-    public function updatedFormBarangayCode(?string $barangayCode)
+    public function updatedAddressFormBarangayCode(?string $barangayCode)
     {
+        if (! $barangayCode) {
+            return;
+        }
+
+        $this->addressForm->barangayCode_display = $this->barangays[$barangayCode];
+
         // Street and house no are already enabled via readonly logic in the view
         // based on regionCode + (provinceCode || municipalityCode) being set
     }
@@ -132,6 +149,7 @@ class Create extends Component
     {
         try {
             $this->form->validate();
+            $this->addressForm->validate();
         } catch (ValidationException $e) {
             $this->dispatch('notification:toast', [
                 'type' => 'error',
@@ -143,24 +161,12 @@ class Create extends Component
 
         try {
             DB::transaction(function () {
-                $beneficiary = Beneficiary::create([
-                    'created_by' => Auth::id(),
-                    'first_name' => $this->form->firstName,
-                    'middle_name' => $this->form->middleName,
-                    'last_name' => $this->form->lastName,
-                    'suffix' => $this->form->suffix,
-                    'date_of_birth' => $this->form->dateOfBirth,
-                    'date_of_death' => $this->form->dateOfDeath,
-                    'pwd' => $this->form->pwd ?? false,
-                    'sex_id' => $this->form->sexId,
-                    'religion_id' => $this->form->religionId,
-                    'region_code' => $this->form->regionCode,
-                    'province_code' => $this->form->provinceCode,
-                    'municipality_code' => $this->form->municipalityCode,
-                    'barangay_code' => $this->form->barangayCode,
-                    'house_no' => $this->form->houseNo,
-                    'street' => $this->form->street,
-                ]);
+                $beneficiary = app(BeneficiaryService::class)->store($this->form->all());
+
+                app(AddressService::class)->store(
+                    $this->addressForm->all(), 
+                    $beneficiary
+                );
 
                 foreach ($this->form->family as $member) {
                     $beneficiary->family()->create([
