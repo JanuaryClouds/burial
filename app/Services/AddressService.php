@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Address;
+use Illuminate\Database\Eloquent\Model;
 
 class AddressService
 {
@@ -11,9 +12,26 @@ class AddressService
         //
     }
 
-    public function store(array $data): Address
+    public function store(array $data, Model $model): Address
     {
-        return Address::create($data);
+        $psa = app(PsaClassificationService::class);
+
+        $address = Address::create([
+            'addressable_type' => get_class($model),
+            'addressable_id' => $model->uuid,
+            'region_code' => $psa->parseKey($data['regionCode'])['reg'],
+            'region_name' => $data['regionCode_display'],
+            'province_code' => $psa->parseKey($data['provinceCode'])['prv'],
+            'province_name' => $data['provinceCode_display'],
+            'municipality_code' => $psa->parseKey($data['municipalityCode'])['mun'],
+            'municipality_name' => $data['municipalityCode_display'],
+            'barangay_code' => $psa->parseKey($data['barangayCode'])['bgy'],
+            'barangay_name' => $data['barangayCode_display'],
+            'house_number' => $data['houseNumber'],
+            'street' => $data['street'],
+        ]);
+
+        return $address;
     }
 
     public function edit(string $uuid): Address
@@ -23,7 +41,20 @@ class AddressService
 
     public function update(Address $address, array $data): Address
     {
-        $address->update($data);
+        $psa = app(PsaClassificationService::class);
+
+        $address->update([
+            'region_code' => $psa->parseKey($data['regionCode'])['reg'],
+            'region_name' => $data['regionCode_display'],
+            'province_code' => $psa->parseKey($data['provinceCode'])['prv'],
+            'province_name' => $data['provinceCode_display'],
+            'municipality_code' => $psa->parseKey($data['municipalityCode'])['mun'],
+            'municipality_name' => $data['municipalityCode_display'],
+            'barangay_code' => $psa->parseKey($data['barangayCode'])['bgy'],
+            'barangay_name' => $data['barangayCode_display'],
+            'house_number' => $data['houseNumber'],
+            'street' => $data['street'],
+        ]);
 
         return $address->fresh();
     }
