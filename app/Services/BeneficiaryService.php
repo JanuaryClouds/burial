@@ -40,8 +40,6 @@ class BeneficiaryService
 
     /**
      * Summary of store
-     * @param array $data
-     * @return Beneficiary
      */
     public function store(array $data): Beneficiary
     {

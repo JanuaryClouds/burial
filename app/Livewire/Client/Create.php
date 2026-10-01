@@ -22,7 +22,7 @@ use Livewire\Component;
 
 class Create extends Component
 {
-    use HasPlaceholder, HasOptions;
+    use HasOptions, HasPlaceholder;
 
     public ?Client $previousRecord = null;
 
@@ -55,15 +55,15 @@ class Create extends Component
             // so the live selects render the saved values in their dropdowns.
             if ($this->previousRecord->address) {
                 $this->provinces = $psaServices->getProvinceOptions(
-                    $this->previousRecord->address->region_code . ':0:0:0'
+                    $this->previousRecord->address->region_code.':0:0:0'
                 );
                 $this->municipalities = $psaServices->getMunicipalityOptions(
-                    $this->previousRecord->address->region_code . ':0:0:0'
+                    $this->previousRecord->address->region_code.':0:0:0'
                 );
                 $this->barangays = $psaServices->getBarangayOptions(
-                    $this->previousRecord->address->region_code . ':' .
-                    ($this->previousRecord->address->province_code ?? '0') . ':' .
-                    ($this->previousRecord->address->municipality_code ?? '0') . ':0'
+                    $this->previousRecord->address->region_code.':'.
+                    ($this->previousRecord->address->province_code ?? '0').':'.
+                    ($this->previousRecord->address->municipality_code ?? '0').':0'
                 );
             }
 

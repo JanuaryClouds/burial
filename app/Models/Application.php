@@ -236,7 +236,7 @@ class Application extends Model
                 'badgeColor' => 'secondary',
             ];
         }
-                
+
         if ($workflowStage !== null) {
             $status[] = [
                 'label' => 'processing',
@@ -420,11 +420,11 @@ class Application extends Model
     */
 
     public function scopeIndex(
-        $query, 
-        ?int $userId = null, 
-        ?string $startDate = null, 
-        ?string $endDate = null, 
-        ?string $orderBy = 'created_at', 
+        $query,
+        ?int $userId = null,
+        ?string $startDate = null,
+        ?string $endDate = null,
+        ?string $orderBy = 'created_at',
         ?string $orderDirection = 'asc'
     ) {
         return $query->with([

@@ -7,7 +7,6 @@ use App\Livewire\Forms\ClientDemographicsForm;
 use App\Livewire\Forms\ClientForm;
 use App\Livewire\Forms\ClientSocialInfoForm;
 use App\Models\Address;
-use App\Models\Barangay;
 use App\Models\Client;
 use App\Models\ClientDemographic;
 use App\Models\ClientSocialInfo;
@@ -25,7 +24,7 @@ use Livewire\Component;
 
 class Edit extends Component
 {
-    use HasPlaceholder, HasOptions;
+    use HasOptions, HasPlaceholder;
 
     public Client $client;
 
@@ -60,15 +59,15 @@ class Edit extends Component
         $this->regions = $psaServices->getRegionOptions();
 
         $this->provinces = $psaServices->getProvinceOptions(
-            $this->client->address->region_code . ':0:0:0'
+            $this->client->address->region_code.':0:0:0'
         );
         $this->municipalities = $psaServices->getMunicipalityOptions(
-            $this->client->address->region_code . ':0:0:0'
+            $this->client->address->region_code.':0:0:0'
         );
         $this->barangays = $psaServices->getBarangayOptions(
-            $this->client->address->region_code . ':' .
-            ($this->client->address->province_code ?? '0') . ':' .
-            ($this->client->address->municipality_code ?? '0') . ':0'
+            $this->client->address->region_code.':'.
+            ($this->client->address->province_code ?? '0').':'.
+            ($this->client->address->municipality_code ?? '0').':0'
         );
     }
 

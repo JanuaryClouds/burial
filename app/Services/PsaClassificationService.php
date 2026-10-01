@@ -14,8 +14,8 @@ class PsaClassificationService
 
     public function __construct()
     {
-        if (!config('services.psa_classification')) {
-            throw new \Exception("PSA Classification not enabled");
+        if (! config('services.psa_classification')) {
+            throw new \Exception('PSA Classification not enabled');
         }
 
         $this->endpoint = config('services.psa_classification.endpoint');
@@ -42,7 +42,7 @@ class PsaClassificationService
     private function callApi(string $endpoint, array $parameters = [])
     {
         try {
-            $url = $this->endpoint . '/' . $this->version . '/' . $endpoint;
+            $url = $this->endpoint.'/'.$this->version.'/'.$endpoint;
 
             $response = Http::withQueryParameters([
                 'token' => $this->apiKey,
@@ -74,7 +74,7 @@ class PsaClassificationService
     {
         try {
             return $this->callApi(
-                "regions"
+                'regions'
             );
         } catch (\Exception $e) {
             throw $e;
@@ -85,7 +85,7 @@ class PsaClassificationService
     {
         return collect($this->getRegions())
             ->mapWithKeys(function ($item) {
-                return [$item['reg'] . ':0:0:0' => $item['area_name']];
+                return [$item['reg'].':0:0:0' => $item['area_name']];
             })
             ->toArray();
     }
@@ -94,7 +94,7 @@ class PsaClassificationService
     {
         try {
             return $this->callApi(
-                "provinces",
+                'provinces',
                 $this->parseKey($key),
             );
         } catch (\Exception $e) {
@@ -107,7 +107,7 @@ class PsaClassificationService
         return collect($this->getProvinces($regionCode))
             ->sortBy('area_name')
             ->mapWithKeys(function ($item) {
-                return [$item['reg'] . ':' . $item['prv'] . ':' . '0:0' => $item['area_name']];
+                return [$item['reg'].':'.$item['prv'].':'.'0:0' => $item['area_name']];
             })
             ->toArray();
     }
@@ -116,7 +116,7 @@ class PsaClassificationService
     {
         try {
             return $this->callApi(
-                "municipalities",
+                'municipalities',
                 $this->parseKey($key),
             );
         } catch (\Exception $e) {
@@ -126,13 +126,13 @@ class PsaClassificationService
 
     public function getMunicipalityOptions(string $key): array
     {
-        // ! The `prv` key is then used for filtering barangays because using `mun` would return barangays from other municipalities 
+        // ! The `prv` key is then used for filtering barangays because using `mun` would return barangays from other municipalities
         // * The `prv` key is used here because municipalities and provinces do have unique `prv` keys
 
         return collect($this->getMunicipalities($key))
             ->sortBy('area_name')
             ->mapWithKeys(function ($item) {
-                return [$item['reg'] . ':' . $item['prv'] . ':' . $item['mun'] . ':0' => $item['area_name']];
+                return [$item['reg'].':'.$item['prv'].':'.$item['mun'].':0' => $item['area_name']];
             })
             ->toArray();
     }
@@ -141,7 +141,7 @@ class PsaClassificationService
     {
         try {
             return $this->callApi(
-                "barangays", 
+                'barangays',
                 $this->parseKey($key)
             );
         } catch (\Exception $e) {
@@ -154,7 +154,7 @@ class PsaClassificationService
         return collect($this->getBarangays($key))
             ->sortBy('area_name')
             ->mapWithKeys(function ($item) {
-                return [$item['reg'] . ':' . $item['prv'] . ':' . $item['mun'] . ':' . $item['bgy'] => $item['area_name']];
+                return [$item['reg'].':'.$item['prv'].':'.$item['mun'].':'.$item['bgy'] => $item['area_name']];
             })
             ->toArray();
     }

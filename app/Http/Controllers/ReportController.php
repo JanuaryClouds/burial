@@ -22,7 +22,7 @@ class ReportController extends Controller
     public function index()
     {
         return view('report.index', [
-            'pageTitle' => 'Reports'
+            'pageTitle' => 'Reports',
         ]);
     }
 

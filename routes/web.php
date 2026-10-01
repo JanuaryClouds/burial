@@ -5,7 +5,6 @@ use App\Http\Controllers\Auth\UserController;
 use App\Http\Controllers\CitizenAccessController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExportController;
-use App\Livewire\Form\Select\Region;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [CitizenAccessController::class, 'index'])

@@ -106,6 +106,7 @@ class Client extends Model
 
     /**
      * Summary of address
+     *
      * @return MorphOne<Address, Client>
      */
     public function address(): MorphOne

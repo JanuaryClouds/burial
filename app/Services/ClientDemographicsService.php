@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\Client;
 use App\Models\ClientDemographic;
-use Illuminate\Database\Eloquent\Model;
 
 class ClientDemographicsService
 {
@@ -20,9 +19,6 @@ class ClientDemographicsService
 
     /**
      * Summary of store
-     * @param array $data
-     * @param Client $client
-     * @return ClientDemographic
      */
     public function store(array $data, Client $client): ClientDemographic
     {
@@ -41,8 +37,7 @@ class ClientDemographicsService
 
     /**
      * Summary of update
-     * @param ClientDemographic $demographic
-     * @param array $data
+     *
      * @return ClientDemographic|null
      */
     public function update(ClientDemographic $demographic, array $data): ClientDemographic

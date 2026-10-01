@@ -104,5 +104,5 @@ return [
         'endpoint' => env('PSA_CLASSIFICATION_ENDPOINT', ''),
         'version' => env('PSA_CLASSIFICATION_VERSION', ''),
         'api_key' => env('PSA_CLASSIFICATION_API_KEY', ''),
-    ]
+    ],
 ];

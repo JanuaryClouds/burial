@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\Address;
 use App\Models\Assistance;
 use App\Models\Beneficiary;
 use App\Models\BeneficiaryFamily;
@@ -86,8 +85,6 @@ class ClientService
 
     /**
      * Summary of store
-     * @param array $data
-     * @return Client
      */
     public function store(array $data): Client
     {

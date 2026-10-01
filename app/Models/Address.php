@@ -3,13 +3,14 @@
 namespace App\Models;
 
 use App\Traits\HasUuid;
+use Database\Factories\AddressFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Address extends Model
 {
-    /** @use HasFactory<\Database\Factories\AddressFactory> */
+    /** @use HasFactory<AddressFactory> */
     use HasFactory, HasUuid;
 
     protected $table = 'addresses';
@@ -31,7 +32,7 @@ class Address extends Model
 
     protected $casts = [
         'street' => 'encrypted',
-        'house_number' => 'encrypted'
+        'house_number' => 'encrypted',
     ];
 
     /*
@@ -50,6 +51,7 @@ class Address extends Model
 
     /**
      * Summary of client
+     *
      * @return BelongsTo<Client, Address>
      */
     public function client(): BelongsTo
@@ -59,6 +61,7 @@ class Address extends Model
 
     /**
      * Summary of beneficiary
+     *
      * @return BelongsTo<Beneficiary, Address>
      */
     public function beneficiary(): BelongsTo

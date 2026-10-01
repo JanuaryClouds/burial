@@ -19,7 +19,7 @@ class AddressFactory extends Factory
     {
         return [
             'street' => $this->faker->streetName(),
-            'house_number' => (string) rand(1, 999)
+            'house_number' => (string) rand(1, 999),
         ];
     }
 }

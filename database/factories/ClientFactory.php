@@ -2,13 +2,10 @@
 
 namespace Database\Factories;
 
-use App\Models\Barangay;
 use App\Models\Client;
 use App\Models\ClientDemographic;
 use App\Models\ClientSocialInfo;
-use App\Models\District;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
 /**
  * @extends Factory<Client>

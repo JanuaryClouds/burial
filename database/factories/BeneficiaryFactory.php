@@ -2,10 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\Barangay;
 use App\Models\Beneficiary;
 use App\Models\BeneficiaryFamily;
-use App\Models\District;
 use App\Models\Religion;
 use App\Models\Sex;
 use Illuminate\Database\Eloquent\Factories\Factory;

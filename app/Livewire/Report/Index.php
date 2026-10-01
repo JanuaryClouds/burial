@@ -5,7 +5,6 @@ namespace App\Livewire\Report;
 use App\Models\Application;
 use App\Models\Barangay;
 use App\Models\Beneficiary;
-use App\Services\ApplicationService;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -51,7 +50,7 @@ class Index extends Component
     public function filter()
     {
         $this->getData();
-        
+
         $this->dispatch('refresh-chart', [
             'chartId' => 'application-per-status',
             'chartData' => [
@@ -62,7 +61,7 @@ class Index extends Component
 
         $this->dispatch('notification:alert', [
             'type' => 'success',
-            'text' => 'Successfully filtered data'
+            'text' => 'Successfully filtered data',
         ]);
 
         // dd(
@@ -99,7 +98,7 @@ class Index extends Component
                     'client' => $application->client->fullname(),
                     'relationship_with_beneficiary' => $application->relationship->name,
                     'beneficiary' => $application->beneficiary->fullname(),
-                    'age' => $application->beneficiary->age() . ' years old',
+                    'age' => $application->beneficiary->age().' years old',
                     'PWD' => $application->beneficiary->pwd == 1 ? 'Yes' : 'No',
                     'status' => $application->currentStatus()['label'],
                 ];
@@ -135,14 +134,14 @@ class Index extends Component
                     'name' => (string) $item->age_group,
                     'count' => (int) $item->total,
                 ];
-            });;
+            });
     }
 
     private function getBarangays()
     {
         $this->barangaysWithBeneficiaryCount = Barangay::with([
-                'beneficiary.application',
-            ])
+            'beneficiary.application',
+        ])
             ->when($this->startDate && $this->endDate, function ($query) {
                 $query->whereHas('beneficiary.application', function ($query) {
                     $query->whereBetween('created_at', [$this->startDate, $this->endDate]);

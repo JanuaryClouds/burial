@@ -3,8 +3,6 @@
 namespace Tests\Feature;
 
 use App\Services\PsaClassificationService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class PsaClassificationTest extends TestCase

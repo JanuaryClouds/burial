@@ -3,7 +3,6 @@
 namespace App\Livewire\Forms;
 
 use App\Models\Client;
-use Illuminate\Database\Eloquent\Model;
 use Livewire\Attributes\Validate;
 use Livewire\Form;
 

@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
@@ -136,6 +135,7 @@ class Beneficiary extends Model
 
     /**
      * Summary of address
+     *
      * @return MorphOne<Address, Beneficiary>
      */
     public function address(): MorphOne
@@ -189,8 +189,8 @@ class Beneficiary extends Model
     */
 
     public function scopeIndex(
-        $query, 
-        ?string $userId = null, 
+        $query,
+        ?string $userId = null,
         ?string $orderBy = 'created_at',
         ?string $orderDirection = 'desc',
         ?string $startDate = null,
@@ -227,7 +227,7 @@ class Beneficiary extends Model
         }
 
         if ($user->roles()->exists()) {
-            return $query->when($startDate && $endDate, function ($query) use ($startDate, $endDate){
+            return $query->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
                 $query->whereBetween('date_of_death', [$startDate, $endDate]);
             });
         }

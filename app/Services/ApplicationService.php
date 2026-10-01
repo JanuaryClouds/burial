@@ -17,8 +17,8 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 class ApplicationService
 {
     public function index(
-        ?string $userId = null, 
-        ?string $orderBy = 'created_at', 
+        ?string $userId = null,
+        ?string $orderBy = 'created_at',
         ?string $orderDirection = 'asc',
         ?string $startDate = null,
         ?string $endDate = null

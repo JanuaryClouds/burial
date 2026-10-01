@@ -5,21 +5,19 @@ namespace App\Livewire\Beneficiary;
 use App\Livewire\Forms\AddressForm;
 use App\Livewire\Forms\BeneficiaryForm;
 use App\Models\Barangay;
-use App\Models\Beneficiary;
 use App\Services\ActivityLoggerService;
 use App\Services\AddressService;
 use App\Services\BeneficiaryService;
 use App\Services\PsaClassificationService;
 use App\Traits\Livewire\Address\HasOptions;
 use App\Traits\Livewire\HasPlaceholder;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Livewire\Component;
 
 class Create extends Component
 {
-    use HasPlaceholder, HasOptions;
+    use HasOptions, HasPlaceholder;
 
     public BeneficiaryForm $form;
 
@@ -33,21 +31,21 @@ class Create extends Component
     public function updatedAddressFormRegionCode(?string $regionCode)
     {
         $this->addressForm->reset([
-            'provinceCode', 
+            'provinceCode',
             'provinceCode_display',
             'municipalityCode',
-            'municipalityCode_display', 
-            'barangayCode', 
-            'barangayCode_display', 
+            'municipalityCode_display',
+            'barangayCode',
+            'barangayCode_display',
             'street',
-            'houseNumber', 
+            'houseNumber',
         ]);
 
         $this->provinces = [];
         $this->municipalities = [];
         $this->barangays = [];
 
-        if (!$regionCode) {
+        if (! $regionCode) {
             return;
         }
 
@@ -64,21 +62,21 @@ class Create extends Component
     {
         $this->addressForm->reset([
             'municipalityCode',
-            'municipalityCode_display', 
-            'barangayCode', 
-            'barangayCode_display', 
+            'municipalityCode_display',
+            'barangayCode',
+            'barangayCode_display',
             'houseNumber',
-            'street', 
+            'street',
         ]);
 
         $this->barangays = [];
 
-        if (!$provinceCode) {
+        if (! $provinceCode) {
             return;
         }
 
         $this->addressForm->provinceCode_display = $this->provinces[$provinceCode];
-        
+
         $psaServices = app(PsaClassificationService::class);
 
         $this->barangays = $psaServices->getBarangayOptions($provinceCode);
@@ -90,22 +88,22 @@ class Create extends Component
         // * The `prv` key is being used instead because provinces and municipalities do have unique `prv` keys
 
         $this->addressForm->reset([
-            'provinceCode', 
-            'provinceCode_display', 
-            'barangayCode', 
-            'barangayCode_display', 
+            'provinceCode',
+            'provinceCode_display',
+            'barangayCode',
+            'barangayCode_display',
             'street',
-            'houseNumber', 
+            'houseNumber',
         ]);
 
         $this->barangays = [];
 
-        if (!$municipalityCode) {
+        if (! $municipalityCode) {
             return;
         }
 
         $this->addressForm->municipalityCode_display = $this->municipalities[$municipalityCode];
-        
+
         $psaServices = app(PsaClassificationService::class);
 
         $this->barangays = $psaServices->getBarangayOptions($municipalityCode);
@@ -122,7 +120,6 @@ class Create extends Component
         // Street and house no are already enabled via readonly logic in the view
         // based on regionCode + (provinceCode || municipalityCode) being set
     }
-
 
     public function addFamilyMember()
     {
@@ -164,7 +161,7 @@ class Create extends Component
                 $beneficiary = app(BeneficiaryService::class)->store($this->form->all());
 
                 app(AddressService::class)->store(
-                    $this->addressForm->all(), 
+                    $this->addressForm->all(),
                     $beneficiary
                 );
 
