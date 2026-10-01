@@ -65,7 +65,7 @@ class ClientController extends Controller
             $query->whereDoesntHave('application');
         })->get();
 
-        if ($draftedClients->count() == 0) {
+        if ($draftedClients->count() == 0 || app()->hasDebugModeEnabled()) {
             return view('client.create', [
                 'pageTitle' => 'Draft a Client Record',
                 'requiredDocuments' => DocumentRequirement::burial(),
