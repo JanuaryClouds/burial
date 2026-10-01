@@ -84,45 +84,28 @@ class ClientService
             });
     }
 
-    public function store(array $data)
+    /**
+     * Summary of store
+     * @param array $data
+     * @return Client
+     */
+    public function store(array $data): Client
     {
-        $client = Client::create([
+        return Client::create([
             'user_id' => Auth::id(),
-            'date_of_birth' => $data['date_of_birth'],
-            'contact_number' => $data['contact_number'],
+            'date_of_birth' => $data['dateOfBirth'],
+            'contact_number' => $data['contactNumber'],
+        ]);
+    }
+
+    public function update(Client $client, array $data): Client
+    {
+        $client->update([
+            'date_of_birth' => $data['dateOfBirth'],
+            'contact_number' => $data['contactNumber'],
         ]);
 
-        Address::create([
-            'client_uuid' => $client->uuid,
-            'region_code' => $data['region_code'],
-            'region_name' => $data['region_name'],
-            'province_code' => $data['province_code'],
-            'province_name' => $data['province_name'],
-            'municipality_code' => $data['municipality_code'],
-            'municipality_name' => $data['municipality_name'],
-            'barangay_code' => $data['barangay_code'],
-            'barangay_name' => $data['barangay_name'],
-            'street' => $data['street'],
-            'house_no' => $data['house_no'],
-        ]);
-
-        ClientDemographic::create([
-            'client_uuid' => $client->uuid,
-            'sex_id' => $this->form->sexId,
-            'nationality_id' => $this->form->nationalityId,
-            'religion_id' => $this->form->religionId,
-        ]);
-
-        ClientSocialInfo::create([
-            'client_uuid' => $client->uuid,
-            'civil_id' => $this->form->civilId,
-            'education_id' => $this->form->educationId,
-            'income' => $this->form->income,
-            'philhealth' => $this->form->philhealth,
-            'skill' => $this->form->skill,
-        ]);
-
-        return $client;
+        return $client->fresh();
     }
 
     /**
@@ -349,55 +332,6 @@ class ClientService
         }
 
         return null;
-    }
-
-    /**
-     * Summary of updateClient
-     */
-    public function update(array $data, Client $client): void
-    {
-        $client->update($data);
-
-        $client->demographic->update([
-            'sex_id' => $data['sex_id'],
-            'religion_id' => $data['religion_id'],
-            'nationality_id' => $data['nationality_id'],
-        ]);
-
-        $client->socialInfo->update([
-            'civil_id' => $data['civil_id'],
-            'education_id' => $data['education_id'],
-            'income' => $data['income'],
-            'philhealth' => $data['philhealth'],
-            'skill' => $data['skill'],
-        ]);
-
-        // $client->beneficiary->update([
-        //     'first_name' => $data['ben_first_name'],
-        //     'middle_name' => $data['ben_middle_name'],
-        //     'last_name' => $data['ben_last_name'],
-        //     'suffix' => $data['ben_suffix'] ?? '',
-        //     'religion_id' => $data['ben_religion_id'],
-        //     'barangay_id' => $data['ben_barangay_id'],
-        //     'sex_id' => $data['ben_sex_id'],
-        //     'date_of_birth' => $data['ben_date_of_birth'],
-        //     'date_of_death' => $data['ben_date_of_death'],
-        //     'place_of_birth' => $data['ben_place_of_birth'],
-        // ]);
-
-        // $families = $client->family()->orderBy('id')->get();
-
-        // foreach ($families as $index => $family) {
-        //     $family->update([
-        //         'name' => $data['fam_name'][$index],
-        //         'sex_id' => $data['fam_sex_id'][$index],
-        //         'age' => $data['fam_age'][$index],
-        //         'civil_id' => $data['fam_civil_id'][$index],
-        //         'relationship_id' => $data['fam_relationship_id'][$index],
-        //         'occupation' => $data['fam_occupation'][$index],
-        //         'income' => $data['fam_income'][$index],
-        //     ]);
-        // }
     }
 
     public function deleteClient($client): Client
