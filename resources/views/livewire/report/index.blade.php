@@ -15,8 +15,10 @@
 	{{-- end::Beneficiary Summary --}}
 
 	{{-- start::Beneficiary Per Barangay Distribution --}}
+	@include('report.index.partials.client.per-region')
 	{{-- end::Beneficiary Per Barangay Distribution --}}
 
 	{{-- start::Application Details --}}
+	@include('report.index.partials.application.table')
 	{{-- end::Application Details --}}
 </div>

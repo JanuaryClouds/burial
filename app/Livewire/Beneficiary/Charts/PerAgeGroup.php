@@ -16,8 +16,14 @@ class PerAgeGroup extends Component
 
     public string $chartTitle = 'Beneficiaries Per Age Group';
 
-    public function mount()
+    public ?string $startDate = null;
+
+    public ?string $endDate = null;
+
+    public function mount(?string $startDate = null, ?string $endDate = null)
     {
+        $this->startDate = $startDate ?? now()->startOfYear()->format('Y-m-d');
+        $this->endDate = $endDate ?? now()->format('Y-m-d');
         $this->getData();
     }
 
@@ -35,7 +41,7 @@ class PerAgeGroup extends Component
 
     private function getData(): void
     {
-        $this->perAgeGroups = Beneficiary::perAgeGroup()
+        $this->perAgeGroups = Beneficiary::perAgeGroup($this->startDate, $this->endDate)
             ->get()
             ->map(function ($item) {
                 return [
