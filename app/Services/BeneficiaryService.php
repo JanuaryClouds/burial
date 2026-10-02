@@ -7,14 +7,10 @@ use Illuminate\Support\Facades\Auth;
 
 class BeneficiaryService
 {
-    public function index(?string $user_id = null, string $orderBy = 'created_at', string $orderDirection = 'asc')
+    public function index(?string $user_id = null)
     {
         return Beneficiary::index(
             $user_id,
-            null,
-            null,
-            null,
-            null,
         )
             ->get()
             ->map(function (Beneficiary $beneficiary) {

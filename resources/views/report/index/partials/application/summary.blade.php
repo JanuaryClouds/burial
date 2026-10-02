@@ -1,7 +1,7 @@
 <div class="d-flex flex-column gap-6">
 	<div class="row">
 		{{-- start::Table --}}
-		<div class="col-12 col-lg-8 h-100">
+		<div class="col-12 col-lg-8 min-h-100">
 			<x-card>
 				<x-slot:header>Applications Per Status</x-slot:header>
 				<table class="table table-bordered">
