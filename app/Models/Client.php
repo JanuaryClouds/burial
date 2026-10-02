@@ -251,4 +251,25 @@ class Client extends Model
                 ->whereMonth('created_at', Carbon::now()->month);
         });
     }
+
+    public function scopePerRegion($query, ?string $startDate = null, ?string $endDate = null)
+    {
+        return $query
+            ->with('application')
+            ->whereHas('application')
+            ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
+                $query->whereHas('application', function ($query) use ($startDate, $endDate) {
+                    $query->whereBetween('created_at', [$startDate, $endDate]);
+                });
+            })
+            ->join('addresses', 'addresses.addressable_id', '=', 'clients.uuid')
+            ->select([
+                'addresses.region_code',
+                'addresses.region_name'
+            ])
+            ->selectRaw('COUNT(DISTINCT clients.uuid) as total')
+            ->groupBy('addresses.region_code', 'addresses.region_name')
+            ->orderBy('total', 'desc')
+            ->toBase();
+    }
 }
