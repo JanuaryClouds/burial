@@ -18,8 +18,6 @@ class ApplicationService
 {
     public function index(
         ?string $userId = null,
-        ?string $orderBy = 'created_at',
-        ?string $orderDirection = 'asc',
         ?string $startDate = null,
         ?string $endDate = null
     ) {
@@ -27,8 +25,6 @@ class ApplicationService
             $userId,
             $startDate,
             $endDate,
-            $orderBy,
-            $orderDirection
         )
             ->get()
             ->map(function (Application $application) {

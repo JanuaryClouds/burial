@@ -424,8 +424,6 @@ class Application extends Model
         ?int $userId = null,
         ?string $startDate = null,
         ?string $endDate = null,
-        ?string $orderBy = 'created_at',
-        ?string $orderDirection = 'asc'
     ) {
         return $query->with([
             'client',
@@ -447,8 +445,7 @@ class Application extends Model
             })
             ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
                 $query->whereBetween('created_at', [$startDate, $endDate]);
-            })
-            ->orderBy($orderBy, $orderDirection);
+            });
     }
 
     public function scopeTotal($query, ?string $startDate = null, ?string $endDate = null)

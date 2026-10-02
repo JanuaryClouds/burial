@@ -36,7 +36,7 @@ class DashboardController extends Controller
 
     public function user()
     {
-        $data = $this->services->index(Auth::id(), 'tracking_no', 'desc');
+        $data = $this->services->index(Auth::id());
 
         if (request()->expectsJson()) {
             return response()->json([
