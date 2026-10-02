@@ -42,11 +42,11 @@ class AddressForm extends Form
     {
         $this->regionCode = $model->address->region_code.':0:0:0';
         $this->regionCode_display = $model->address->region_name;
-        $this->provinceCode = $model->address->region_code.':'.$model->address->province_code.':0:0';
+        $this->provinceCode = $model->address->region_code.':'.($model->address->province_code ?? '0').':0:0';
         $this->provinceCode_display = $model->address->province_name;
-        $this->municipalityCode = $model->address->region_code.':'.$model->address->province_code.':'.$model->address->municipality_code.':0';
+        $this->municipalityCode = $model->address->region_code.':'.($model->address->province_code ?? '0').':'.($model->address->municipality_code ?? '0').':0';
         $this->municipalityCode_display = $model->address->municipality_name;
-        $this->barangayCode = $model->address->region_code.':'.$model->address->province_code.':'.$model->address->municipality_code.':'.$model->address->barangay_code;
+        $this->barangayCode = $model->address->region_code.':'.($model->address->province_code ?? '0').':'.($model->address->municipality_code ?? '0').':'.$model->address->barangay_code;
         $this->barangayCode_display = $model->address->barangay_name;
         $this->street = $model->address->street;
         $this->houseNumber = $model->address->house_number;
