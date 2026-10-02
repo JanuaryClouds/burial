@@ -35,15 +35,6 @@ class UpdateBeneficiaryForm extends Form
     #[Validate('required|integer|exists:religions,id')]
     public ?int $religionId = null;
 
-    #[Validate('required|integer|exists:barangays,id')]
-    public ?int $barangayId = null;
-
-    #[Validate('required|string|max:255')]
-    public ?string $houseNo = null;
-
-    #[Validate('required|string|max:255')]
-    public ?string $street = null;
-
     public function setBeneficiary(Beneficiary $beneficiary)
     {
         $this->firstName = $beneficiary->first_name;
@@ -55,8 +46,5 @@ class UpdateBeneficiaryForm extends Form
         $this->pwd = $beneficiary->pwd;
         $this->sexId = $beneficiary->sex_id;
         $this->religionId = $beneficiary->religion_id;
-        $this->barangayId = $beneficiary->barangay_id;
-        $this->houseNo = $beneficiary->house_no;
-        $this->street = $beneficiary->street;
     }
 }

@@ -1,4 +1,5 @@
 @extends('layouts.app')
 @section('content')
-	<livewire:beneficiary.edit :beneficiary="$beneficiary" />
+	<livewire:beneficiary.edit :beneficiary="$beneficiary"
+		defer />
 @endsection
