@@ -23,6 +23,11 @@ class PsaClassificationService
         $this->apiKey = config('services.psa_classification.api_key');
     }
 
+    /**
+     * Summary of parseKey
+     *
+     * @return array|array{bgy: string|null, mun: string|null, prv: string|null, reg: string|null}
+     */
     public function parseKey(string $code): array
     {
         $codeArray = explode(':', $code);
@@ -39,7 +44,13 @@ class PsaClassificationService
         ];
     }
 
-    private function callApi(string $endpoint, array $parameters = [])
+    /**
+     * Summary of callApi
+     *
+     * @param  string  $endpoint  Geographic level to fetch from
+     * @param  array  $parameters  Query parameters to pass to the API
+     */
+    private function callApi(string $endpoint, array $parameters = []): array
     {
         try {
             $url = $this->endpoint.'/'.$this->version.'/'.$endpoint;
@@ -70,7 +81,10 @@ class PsaClassificationService
         }
     }
 
-    public function getRegions()
+    /**
+     * Summary of getRegions
+     */
+    public function getRegions(): array
     {
         try {
             return $this->callApi(
@@ -81,6 +95,9 @@ class PsaClassificationService
         }
     }
 
+    /**
+     * Summary of getRegionOptions
+     */
     public function getRegionOptions(): array
     {
         return collect($this->getRegions())
@@ -90,7 +107,12 @@ class PsaClassificationService
             ->toArray();
     }
 
-    public function getProvinces(string $key)
+    /**
+     * Summary of getProvinces
+     *
+     * @param  string  $key  Region Code to filter provinces
+     */
+    public function getProvinces(string $key): array
     {
         try {
             return $this->callApi(
@@ -102,6 +124,11 @@ class PsaClassificationService
         }
     }
 
+    /**
+     * Summary of getProvinceOptions
+     *
+     * @param  string  $regionCode  Region code to filter provinces from
+     */
     public function getProvinceOptions(string $regionCode): array
     {
         return collect($this->getProvinces($regionCode))
@@ -112,7 +139,12 @@ class PsaClassificationService
             ->toArray();
     }
 
-    public function getMunicipalities(string $key)
+    /**
+     * Summary of getMunicipalities
+     *
+     * @param  string  $key  Region code to filter municipalities from
+     */
+    public function getMunicipalities(string $key): array
     {
         try {
             return $this->callApi(
@@ -124,11 +156,13 @@ class PsaClassificationService
         }
     }
 
+    /**
+     * Summary of getMunicipalityOptions
+     *
+     * @param  string  $key  Region code to filter municipalities from
+     */
     public function getMunicipalityOptions(string $key): array
     {
-        // ! The `prv` key is then used for filtering barangays because using `mun` would return barangays from other municipalities
-        // * The `prv` key is used here because municipalities and provinces do have unique `prv` keys
-
         return collect($this->getMunicipalities($key))
             ->sortBy('area_name')
             ->mapWithKeys(function ($item) {
@@ -137,7 +171,12 @@ class PsaClassificationService
             ->toArray();
     }
 
-    public function getBarangays(string $key)
+    /**
+     * Summary of getBarangays
+     *
+     * @param  string  $key  Municipality or Province code to filter barangays from
+     */
+    public function getBarangays(string $key): array
     {
         try {
             return $this->callApi(
@@ -149,6 +188,11 @@ class PsaClassificationService
         }
     }
 
+    /**
+     * Summary of getBarangayOptions
+     *
+     * @param  string  $key  Region code, province code, or municipality code to filter barangays from
+     */
     public function getBarangayOptions(string $key): array
     {
         return collect($this->getBarangays($key))
