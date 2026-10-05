@@ -1,9 +1,9 @@
 <div class="d-flex flex-column gap-6">
-	<div class="row">
-		{{-- start::Counts Table --}}
-		<div class="col-12 col-lg-8 h-100">
-			<x-card>
-				<x-slot:header>Beneficiary Statistics</x-slot:header>
+	<x-card>
+		<x-slot:header>Beneficiary Summary</x-slot:header>
+		<div class="row">
+			{{-- start::Counts Table --}}
+			<div class="col-12 col-lg-8">
 				<table class="table table-bordered">
 					<thead>
 						<tr>
@@ -28,19 +28,13 @@
 						@endforeach
 					</tbody>
 				</table>
-			</x-card>
-		</div>
-		{{-- end::Counts Table --}}
-		<div class="col-12 col-lg-4 h-100">
-			<x-card>
-				<x-slot:header>Beneficiaries per Age Group</x-slot:header>
+			</div>
+			{{-- end::Counts Table --}}
+			{{-- start::Per Age Group Chart --}}
+			<div class="col-12 col-lg-4">
 				<livewire:beneficiary.charts.per-age-group :startDate="$startDate"
 					:endDate="$endDate" />
 			</x-card>
 		</div>
-	</div>
-	{{-- end::Counts Table --}}
-
-	{{-- start::Per Age Group Chart --}}
-	{{-- end::Per Age Group Chart --}}
+	</x-card>
 </div>

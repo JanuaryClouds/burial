@@ -1,9 +1,9 @@
 <div class="d-flex flex-column gap-6">
-	<div class="row">
-		{{-- start::Table --}}
-		<div class="col-12 col-lg-8 h-100">
-			<x-card>
-				<x-slot:header>Clients Per Region</x-slot:header>
+	<x-card>
+		<x-slot:header>Clients Per Region</x-slot:header>
+		<div class="row">
+			<div class="col-12">
+				{{-- start::Table --}}
 				<table class="table table-bordered">
 					<thead>
 						<tr>
@@ -24,8 +24,8 @@
 						</tr>
 					</tbody>
 				</table>
-			</x-card>
+				{{-- end::Table --}}
+			</div>
 		</div>
-		{{-- end::Table --}}
-	</div>
+	</x-card>
 </div>
