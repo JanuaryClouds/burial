@@ -64,26 +64,29 @@
 </head>
 
 <body>
-	<table>
+	<table style="margin-top: -3rem;">
 		<tr>
-			<td style="width: 30%; text-align: center;"
+			<td style="width: 25%; text-align: center;"
 				class="no-border">
 				<img src="./images/CSWDO.webp"
 					alt=""
 					class="logo">
 			</td>
-			<td class="no-border">
-				<h1 class="title text-center">Taguig City CSWDO</h1>
-				<p class="subtitle text-center"
-					style="font-weight: bold;">Funeral Assistance</p>
-				<h2 class="text-center"
-					style="font-family: serif; text-transform: uppercase;">Clients Report</h2>
+			<td class="no-border text-center">
+				<p class="bold"
+					style="font-family: serif; font-size: 1rem; text-transform: uppercase; font-weight: bold; letter-spacing: 0.1rem;">
+					Republika ng Pilipinas<br />
+					Lungsod ng Taguig<br />
+					Tanggapang Panlungsod sa Kagalingang Panlipunan at Pagpapaunlad</p>
+				<p class="text-center"
+					style="font-family: serif; font-size: 1rem; text-transform: uppercase; font-weight: bold; letter-spacing: 0.1rem;">
+					FUNERAL ASSISTANCE REPORT</p>
 				<p class="text-center"
 					style="font-family: serif;">
 					{{ \Carbon\Carbon::parse($startDate)->format('F d, Y') }} to
 					{{ \Carbon\Carbon::parse($endDate)->format('F d, Y') }}</p>
 			</td>
-			<td style="width: 30%; text-align: center;"
+			<td style="width: 25%; text-align: center;"
 				class="no-border">
 				<img src="./images/city_logo.webp"
 					alt=""
@@ -93,16 +96,24 @@
 	</table>
 	<hr>
 
-	<img src="{{ $applicationPerStatusUri }}"
-		alt=""
-		style="max-width:100%; height:auto;"
-		class="text-center">
-
+	<h1>Applications Summary</h1>
 	{{-- start::Application Summary --}}
 	<table>
 		<tbody>
+			{{-- start::Applications Per Status Chart --}}
 			<td class="no-border"
-				style="min-width: 60%;">
+				style="width: 30%; text-align: center;">
+				<p>Applications Per Status</p>
+				<div class="chart">
+					<img src="{{ $charts['applications-per-status'] }}"
+						alt="Applications Per Status"
+						style="max-width:100%; height:auto;"
+						class="text-center">
+				</div>
+			</td>
+			{{-- end::Applications Per Status Chart --}}
+			<td class="no-border"
+				style="min-width: 70%;">
 				{{-- start::Application Summary --}}
 				<table class="table">
 					<thead>
@@ -126,25 +137,30 @@
 				</table>
 				{{-- end::Application Summary --}}
 			</td>
-			{{-- start::Applications Per Status Chart --}}
-			<td class="no-border"
-				style="max-width: 40%;">
-				<img src="{{ $applicationPerStatusUri }}"
-					alt="Applications Per Status"
-					style="max-width:100%; height:auto;"
-					class="text-center">
-			</td>
-			{{-- end::Applications Per Status Chart --}}
 		</tbody>
 	</table>
 	{{-- end::Application Summary --}}
+	<br />
 
+	<h1>Beneficiaries Summary</h1>
 	{{-- start::Beneficiary Summary --}}
 	<table>
 		<tbody>
+			{{-- start::Beneficiary Per Age Group Chart --}}
+			<td class="no-border"
+				style="width: 30%; text-align: center;">
+				<p>Beneficiaries Per Age Group</p>
+				<div class="chart">
+					<img src="{{ $charts['beneficiaries-per-age-group'] }}"
+						alt="Beneficiaries Per Age Group"
+						style="max-width:100%; height:auto;"
+						class="text-center">
+				</div>
+			</td>
+			{{-- end::Beneficiary Per Age Group Chart --}}
 			{{-- start::Beneficiary Statistics --}}
 			<td class="no-border"
-				style="min-width: 60%">
+				style="min-width: 70%">
 				<table class="table table-bordered">
 					<thead>
 						<tr>
@@ -171,19 +187,12 @@
 				</table>
 			</td>
 			{{-- end::Beneficiary Statistics --}}
-			{{-- start::Beneficiary Per Age Group Chart --}}
-			<td class="no-border"
-				style="max-width: 40%;">
-				<img src="{{ $beneficiaryPerAgeGroupUri }}"
-					alt="Beneficiary Per Age Group"
-					style="max-width:100%; height:auto;"
-					class="text-center">
-			</td>
-			{{-- end::Beneficiary Per Age Group Chart --}}
 		</tbody>
 	</table>
 	{{-- end::Beneficiary Summary --}}
+	<br />
 
+	<h1>Clients Per Region</h1>
 	{{-- start::Clients Per Region --}}
 	<table class="table table-bordered">
 		<thead>
@@ -206,7 +215,9 @@
 		</tbody>
 	</table>
 	{{-- end::Clients Per Region --}}
+	<br />
 
+	<h1>Applications</h1>
 	{{-- start::Applications --}}
 	<table class="table table-bordered">
 		<thead>
