@@ -20,13 +20,13 @@ class DatabaseSeeder extends Seeder
             AssistanceSeeder::class,
             MoaSeeder::class,
             CivilSeeder::class,
-            DistrictSeeder::class,
+            // DistrictSeeder::class,
             EducationSeeder::class,
             NationalitySeeder::class,
             RelationshipSeeder::class,
             ReligionSeeder::class,
             SexSeeder::class,
-            BarangaySeeder::class,
+            // BarangaySeeder::class,
             FuneralAssistanceTypeSeeder::class,
 
             // Workflow

@@ -209,7 +209,6 @@ class NationalitySeeder extends Seeder
         foreach ($Nationalities as $Nationality) {
             Nationality::firstOrCreate([
                 'name' => $Nationality,
-                'remarks' => 'seeder generated',
             ]);
         }
     }

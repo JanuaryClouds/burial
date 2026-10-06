@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('relationships', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
-            $table->string('remarks')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

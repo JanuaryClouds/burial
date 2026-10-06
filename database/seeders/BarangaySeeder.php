@@ -58,7 +58,6 @@ class BarangaySeeder extends Seeder
                 Barangay::firstOrCreate([
                     'district_id' => $key,
                     'name' => $name,
-                    'remarks' => 'seeder generated',
                 ]);
             }
         }

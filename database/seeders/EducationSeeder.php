@@ -23,7 +23,6 @@ class EducationSeeder extends Seeder
         foreach ($educations as $education) {
             Education::firstOrCreate([
                 'name' => $education,
-                'remarks' => 'seeder generated',
             ]);
         }
     }

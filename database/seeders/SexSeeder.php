@@ -17,7 +17,6 @@ class SexSeeder extends Seeder
         foreach ($sexes as $sex) {
             Sex::firstOrCreate([
                 'name' => $sex,
-                'remarks' => 'seeder generated',
             ]);
         }
     }

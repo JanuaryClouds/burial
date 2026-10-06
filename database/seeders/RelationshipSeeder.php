@@ -25,7 +25,6 @@ class RelationshipSeeder extends Seeder
         foreach ($Relationships as $Relationship) {
             Relationship::firstOrCreate([
                 'name' => $Relationship,
-                'remarks' => 'seeder generated',
             ]);
         }
     }

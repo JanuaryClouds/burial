@@ -17,7 +17,6 @@ class DistrictSeeder extends Seeder
         foreach ($District as $district) {
             District::firstOrCreate([
                 'name' => $district,
-                'remarks' => 'seeder generated',
             ]);
         }
     }

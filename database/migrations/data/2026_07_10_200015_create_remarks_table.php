@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('remarks', function (Blueprint $table) {
             $table->uuid()->primary();
             $table->text('content');
-            $table->morphs('remarkable');
-            $table->foreignUuid('parent_id')->nullable()
+            $table->uuidMorphs('remarkable');
+            $table->foreignUuid('parent_uuid')->nullable()
                 ->constrained('remarks', 'uuid')
                 ->nullOnDelete()
                 ->cascadeOnUpdate();

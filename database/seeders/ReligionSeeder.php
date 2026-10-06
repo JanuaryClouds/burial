@@ -26,7 +26,6 @@ class ReligionSeeder extends Seeder
         foreach ($Religions as $Religion) {
             Religion::firstOrCreate([
                 'name' => $Religion,
-                'remarks' => 'seeder generated',
             ]);
         }
     }
