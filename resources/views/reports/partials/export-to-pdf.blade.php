@@ -16,8 +16,8 @@
 
 	// List all chart IDs you want to include in the PDF
 	const chartIds = [
-		'application-per-status',
-		'beneficiary-per-age-group',
+		'applications-per-status',
+		'beneficiaries-per-age-group',
 	];
 
 	function getChartImage(chartId) {
