@@ -18,7 +18,7 @@ class RemarkFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'content' => implode(' ', $this->faker->sentences(3)),
         ];
     }
 }

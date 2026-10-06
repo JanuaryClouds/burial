@@ -2,10 +2,12 @@
 
 namespace App\Livewire\Workflow\History;
 
+use App\Livewire\Forms\RemarkForm;
 use App\Models\Application;
 use App\Models\WorkflowHistory;
 use App\Models\WorkflowStage;
 use App\Services\ActivityLoggerService;
+use App\Services\RemarkService;
 use App\Traits\Livewire\HasPlaceholder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -43,6 +45,8 @@ class Create extends Component
 
     #[Rule('nullable|string')]
     public ?string $reason;
+
+    public RemarkForm $remarkForm;
 
     public function mount(Application $application)
     {
@@ -113,6 +117,7 @@ class Create extends Component
     {
         try {
             $this->validate();
+            $this->remarkForm->validate();
         } catch (ValidationException $e) {
             $this->dispatch('notification:toast', [
                 'type' => 'error',
@@ -145,6 +150,13 @@ class Create extends Component
                     'processed_by' => Auth::id(),
                 ]);
 
+                if ($this->remarkForm->content != null) {
+                    app(RemarkService::class)->store(
+                        $this->remarkForm->only('content'),
+                        $workflowHistory
+                    );
+                }
+
                 $this->application->current_workflow_stage_uuid = $this->toStageUuid;
                 $this->application->save();
 
@@ -154,10 +166,13 @@ class Create extends Component
                     'workflow_history_uuid' => $workflowHistory->uuid,
                 ]);
 
+                $this->remarkForm->reset('content');
+
                 $this->dispatch('notification:alert', [
                     'type' => 'success',
                     'title' => 'History created successfully',
                 ]);
+
                 $this->dispatch('refreshWorkflowHistory');
             });
         } catch (\Throwable $th) {
