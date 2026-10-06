@@ -33,7 +33,7 @@ class ApplicationController extends Controller
     public function index()
     {
         $data = $this->services->index(
-            Auth::user()->roles->isNotEmpty() ? null : Auth::user()->id, 'tracking_no', 'desc'
+            Auth::user()->roles->isNotEmpty() ? null : Auth::user()->id
         );
 
         if (request()->expectsJson()) {

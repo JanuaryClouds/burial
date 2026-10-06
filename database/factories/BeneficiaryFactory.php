@@ -2,10 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\Barangay;
 use App\Models\Beneficiary;
 use App\Models\BeneficiaryFamily;
-use App\Models\District;
 use App\Models\Religion;
 use App\Models\Sex;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -32,11 +30,6 @@ class BeneficiaryFactory extends Factory
             'date_of_birth' => $this->faker->date('Y-m-d'),
             'date_of_death' => $this->faker->dateTimeBetween('-1 week', now()),
             'pwd' => rand(0, 9) === 0 ? true : false,
-            'house_no' => $this->faker->randomNumber(),
-            'street' => $this->faker->streetName(),
-            'city' => $this->faker->city(),
-            'district_id' => District::inRandomOrder()->first()->id,
-            'barangay_id' => Barangay::inRandomOrder()->first()->id,
             'created_at' => $this->faker->dateTimeBetween(now()->subWeek(), now()),
         ];
     }

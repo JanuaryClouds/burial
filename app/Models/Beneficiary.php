@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
@@ -29,11 +30,6 @@ class Beneficiary extends Model
         'date_of_birth',
         'date_of_death',
         'pwd',
-        'house_no',
-        'street',
-        'barangay_id',
-        'district_id',
-        'city',
         'created_by',
     ];
 
@@ -42,9 +38,6 @@ class Beneficiary extends Model
         'middle_name' => 'encrypted',
         'last_name' => 'encrypted',
         'suffix' => 'encrypted',
-        'house_no' => 'encrypted',
-        'street' => 'encrypted',
-        'city' => 'encrypted',
     ];
 
     /**
@@ -58,14 +51,6 @@ class Beneficiary extends Model
             ($this->middle_name ? Str::substr($this->middle_name, 0, 1).'. ' : '').
             $this->last_name.
             ($this->suffix ? ' '.$this->suffix : '');
-    }
-
-    /**
-     * Summary of address
-     */
-    public function address(): string
-    {
-        return $this->house_no.' '.$this->street.', '.$this->barangay->name.', '.$this->district->name.', '.$this->city;
     }
 
     /**
@@ -148,6 +133,16 @@ class Beneficiary extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    /**
+     * Summary of address
+     *
+     * @return MorphOne<Address, Beneficiary>
+     */
+    public function address(): MorphOne
+    {
+        return $this->morphOne(Address::class, 'addressable');
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Model Functions
@@ -157,13 +152,26 @@ class Beneficiary extends Model
     |
     */
 
+    /**
+     * Summary of address
+     */
+    public function fullAddress(): string
+    {
+        $address = $this->address;
+
+        if (! $address) {
+            return '';
+        }
+
+        return $address->full();
+    }
+
     public static function relations()
     {
         return [
             'sex',
             'religion',
-            'barangay',
-            'district',
+            'address',
             'family',
             'family.sex',
             'family.civil',
@@ -180,21 +188,50 @@ class Beneficiary extends Model
     |
     */
 
-    public function scopeTotal($query)
+    public function scopeIndex(
+        $query,
+        ?string $userId = null,
+    ) {
+        return $query->with([
+            'application',
+            'application.client',
+            'application.client.user',
+            'application.client.interviews',
+            'application.assessment',
+            'application.recommendations',
+            'application.recommendations.funeralAssistanceType',
+            'application.referral',
+            'application.rejection',
+            'application.cancellation',
+            'religion',
+        ])
+            ->when($userId, function ($query) use ($userId) {
+                $query->where('created_by', $userId);
+            });
+    }
+
+    public function scopeTotal($query, ?string $startDate = null, ?string $endDate = null)
     {
-        $user = auth()->user();
+        $user = Auth::user();
 
         if (! $user) {
             return $query->whereRaw('1 = 0');
         }
 
         if ($user->roles()->exists()) {
-            return $query;
+            return $query->with('application')
+                ->whereHas('application', function ($query) use ($startDate, $endDate) {
+                    $query->whereBetween('created_at', [$startDate, $endDate]);
+                });
         }
 
-        return $query->whereHas('client', function ($query) use ($user) {
-            $query->whereIn('id', $user->clients->pluck('id'));
-        });
+        return $query->with('application')
+            ->whereHas('application', function ($query) use ($startDate, $endDate, $user) {
+                $query->whereBetween('created_at', [$startDate, $endDate]);
+                $query->whereHas('client', function ($query) use ($user) {
+                    $query->where('created_by', $user->id);
+                });
+            });
     }
 
     public function scopePerMonth($query)
@@ -245,9 +282,16 @@ class Beneficiary extends Model
         });
     }
 
-    public function scopePerAgeGroup($query)
-    {
+    public function scopePerAgeGroup(
+        $query,
+        ?string $startDate = null,
+        ?string $endDate = null,
+    ) {
         return $query
+            ->with('application')
+            ->whereHas('application', function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('created_at', [$startDate, $endDate]);
+            })
             ->selectRaw("
                 CASE
                     WHEN TIMESTAMPDIFF(YEAR, date_of_birth, date_of_death) BETWEEN 0 AND 17 THEN '0-17'
@@ -261,22 +305,37 @@ class Beneficiary extends Model
             ->groupBy('age_group');
     }
 
-    public function scopePerReligion($query)
-    {
+    public function scopePerReligion(
+        $query,
+        ?string $startDate = null,
+        ?string $endDate = null,
+    ) {
         return $query
+            ->with('application')
+            ->whereHas('application')
+            ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('date_of_death', [$startDate, $endDate]);
+            })
             ->selectRaw('religion_id, COUNT(*) as total')
             ->with('religion')
             ->groupBy('religion_id');
     }
 
-    public function scopePerNatality($query)
-    {
+    public function scopePerNatality(
+        $query,
+        ?string $startDate = null,
+        ?string $endDate = null,
+    ) {
         return $query
-            ->whereRaw('TIMESTAMPDIFF(DAY, date_of_birth, date_of_death) < 30')
+            ->with('application')
+            ->whereHas('application', function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('created_at', [$startDate, $endDate]);
+            })
+            ->whereRaw('TIMESTAMPDIFF(DAY, date_of_birth, date_of_death) BETWEEN 0 AND 28')
             ->selectRaw("
                 CASE
-                    WHEN TIMESTAMPDIFF(DAY, date_of_birth, date_of_death) BETWEEN 0 AND 7 THEN 'Perinatal Group'
-                    WHEN TIMESTAMPDIFF(DAY, date_of_birth, date_of_death) BETWEEN 7 AND 28 THEN 'Neonatal Group'
+                    WHEN TIMESTAMPDIFF(DAY, date_of_birth, date_of_death) BETWEEN 0 AND 7 THEN 'Perinatal Deaths'
+                    WHEN TIMESTAMPDIFF(DAY, date_of_birth, date_of_death) BETWEEN 8 AND 28 THEN 'Neonatal Deaths'
                     ELSE ''
                 END AS natality_group
             ")
@@ -284,9 +343,13 @@ class Beneficiary extends Model
             ->groupBy('natality_group');
     }
 
-    public function scopeOnlyPwd($query)
+    public function scopeOnlyPwd($query, ?string $startDate = null, ?string $endDate = null)
     {
         return $query
-            ->where('pwd', 1);
+            ->where('pwd', 1)
+            ->with('application')
+            ->whereHas('application', function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('created_at', [$startDate, $endDate]);
+            });
     }
 }

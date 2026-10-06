@@ -12,6 +12,15 @@ function checkCharts() {
         const chartType = canvas.dataset.chartType;
 
         renderChart(chartType, chartData, chartId, chartLabels, chartTitle);
+
+        const chart = window.renderedCharts[chartId];
+
+        const uriInput = document.getElementById(`${chartId}_uri`);
+
+        if (uriInput) {
+            uriInput.value = canvas.toDataURL('image/png');
+            uriInput.dispatchEvent(new Event('input', { bubbles:true }));
+        }
     });
 
     const whiteBackgroundPlugin = {
@@ -74,8 +83,6 @@ function renderPieChart(chartData, chartId, chartLabels, chartTitle) {
                 }
             }
         });
-
-        window.renderedCharts[chartId] = chart;
     }
 }
 
@@ -123,8 +130,6 @@ function renderLineChart(chartData, chartId, chartLabels, chartTitle) {
                 }
             }
         })
-        
-        window.renderedCharts[chartId] = chart;
     }
 }
 
@@ -181,8 +186,6 @@ function renderBarChart(chartData, chartId, chartLabels, chartTitle) {
                 }
             }
         })
-        
-        window.renderedCharts[chartId] = chart;
     }
 }
 
@@ -200,4 +203,26 @@ function refreshChart() {
     });
 }
 
-export {checkCharts, refreshChart};
+function getChartImage(chartId) {
+    let chart = window.renderedCharts[chartId];
+
+    if (!chart) return;
+
+    return chart.toDataURL('image/png');
+}
+
+function collectCharts() {
+    let charts = window.renderedCharts;
+
+    const chartImages = Object.fromEntries(
+        Object.entries(charts)
+            .map(([id, chart]) => [
+                id,
+                chart.canvas.toDataURL('image/png')
+            ])
+    );
+
+    return chartImages;
+}
+
+export {checkCharts, refreshChart, getChartImage, collectCharts};

@@ -8,7 +8,7 @@
 	data-kt-drawer-direction="start"
 	data-kt-drawer-toggle="#kt_aside_toggle">
 	<!--begin::Logo-->
-	<div class="aside-logo flex-column-auto pt-10 pt-lg-7"
+	<div class="aside-logo flex-column-auto pt-15"
 		id="kt_aside_logo">
 		<a href="{{ route('dashboard') }}"
 			aria-label="Go to dashboard">
@@ -20,7 +20,7 @@
 	<!--end::Logo-->
 
 	<!--begin::Nav-->
-	<div class="aside-menu flex-column-fluid pt-0 pb-7 py-lg-10"
+	<div class="aside-menu flex-column-fluid pt-0 pb-7"
 		id="kt_aside_menu">
 		<!--begin::Aside menu-->
 		<div class="w-100 hover-scroll-y scroll-lg-ms d-flex ps-lg-3"

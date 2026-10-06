@@ -63,4 +63,64 @@ class BarangaySeeder extends Seeder
             }
         }
     }
+
+    public function taguigBarangays(): array
+    {
+        return [
+            'Tanyag',
+            'Bagumbayan',
+            'Bambang',
+            'Calzada',
+            'Hagonoy',
+            'Ibayo-Tipas',
+            'Ligid-Tipas',
+            'Lower Bicutan',
+            'Maharlika Village',
+            'Napindan',
+            'Palingon',
+            'Santa Ana',
+            'Central Signal Village',
+            'Tuktukan',
+            'Upper Bicutan',
+            'Ususan',
+            'Wawa',
+            'Western Bicutan',
+            'Central Bicutan',
+            'Fort Bonifacio',
+            'Katuparan',
+            'New Lower Bicutan',
+            'North Daang Hari',
+            'North Signal Village',
+            'Pinagsama',
+            'San Miguel',
+            'South Daang Hari',
+            'South Signal Village',
+            'Cembo',
+            'Comembo',
+            'East Rembo',
+            'Pembo',
+            'Pitogo',
+            'Post Proper Northside',
+            'Post Proper Southside',
+            'Rizal',
+            'South Cembo',
+            'West Rembo',
+        ];
+    }
+
+    public function paterosBarangays(): array
+    {
+        return [
+            'Aguho',
+            'Magtanggol',
+            'Martires Del 96',
+            'Poblacion',
+            'San Pedro',
+            'San Roque',
+            'Santa Ana',
+            'Santo Rosario-Kanluran',
+            'Santo Rosario-Silangan',
+            'Tabacalera',
+        ];
+    }
 }

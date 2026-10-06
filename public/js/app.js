@@ -10,7 +10,7 @@
 import updateDistrict from './districts.js';
 import initSelect2 from './select2.js';
 import randomizeMulticolorBorder from './multicolorBorder.js';
-import { checkCharts, refreshChart } from './chart.js';
+import { checkCharts, refreshChart, collectCharts } from './chart.js';
 import theme from './theme.js';
 import autoMarginColumns from './autoMarginColumns.js';
 import sweetAlert from './sweetAlert2.js';
@@ -32,21 +32,6 @@ document.addEventListener('DOMContentLoaded', () => {
     theme();
     autoMarginColumns();
     initSelect2();
-
-    $('#barangayId_display').on('change', function() {
-        let text = $(this).find('option:selected').text();
-        updateDistrict(text.trim());
-    });
-
-    $('#client_uuid_select').on('change', function(event) {
-        const uuid = $(this).val();
-        Livewire.dispatch('client-selected', uuid);
-    });
-
-    $('#beneficiary_uuid_select').on('change', function(event) {
-        const uuid = $(this).val();
-        Livewire.dispatch('beneficiary-selected', uuid);
-    });
 });
 
 // Expose for vanilla JS that adds dynamic selects (e.g. the beneficiary family
@@ -88,6 +73,10 @@ document.addEventListener('livewire:init', () => {
             initSelect2(el);
             autoMarginColumns();
         });
+    });
+
+    Livewire.on('export-report', () => {
+        
     });
 });
 

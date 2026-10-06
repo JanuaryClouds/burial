@@ -28,7 +28,6 @@
 		</a>
 		<x-button class="btn-sm btn-success"
 			wire:click="save"
-			wire:dirty
 			wire:loading.attr="disabled">
 			<x-icon.font-awesome class="fa-floppy-disk" />
 			Update as Draft

@@ -2,13 +2,19 @@
 
 namespace App\Livewire\Client;
 
+use App\Livewire\Forms\AddressForm;
+use App\Livewire\Forms\ClientDemographicsForm;
 use App\Livewire\Forms\ClientForm;
-use App\Models\Barangay;
+use App\Livewire\Forms\ClientSocialInfoForm;
 use App\Models\Client;
-use App\Models\ClientDemographic;
-use App\Models\ClientSocialInfo;
-use App\Models\DocumentRequirement;
 use App\Services\ActivityLoggerService;
+use App\Services\AddressService;
+use App\Services\ClientDemographicsService;
+use App\Services\ClientService;
+use App\Services\ClientSocialInfoService;
+use App\Services\PsaClassificationService;
+use App\Traits\Livewire\Address\HasOptions;
+use App\Traits\Livewire\HasPlaceholder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -16,23 +22,50 @@ use Livewire\Component;
 
 class Create extends Component
 {
+    use HasOptions, HasPlaceholder;
+
     public ?Client $previousRecord = null;
 
     public ClientForm $form;
 
-    public array $requiredDocuments;
+    public AddressForm $addressForm;
+
+    public ClientDemographicsForm $demographicsForm;
+
+    public ClientSocialInfoForm $socialInfoForm;
 
     public function mount()
     {
-        $this->requiredDocuments = DocumentRequirement::burial();
+        $psaServices = app(PsaClassificationService::class);
+
+        $this->regions = $psaServices->getRegionOptions();
 
         if (Auth::user()->clients->count() > 0) {
             $this->previousRecord = Auth::user()->clients->sortByDesc('created_at')->first()
-                ->loadMissing(['demographic', 'socialInfo']);
+                ->loadMissing(['demographic', 'socialInfo', 'address']);
         }
 
         if ($this->previousRecord) {
             $this->form->setClient($this->previousRecord);
+            $this->addressForm->setAddress($this->previousRecord);
+            $this->demographicsForm->setDemographics($this->previousRecord);
+            $this->socialInfoForm->setSocialInfo($this->previousRecord);
+
+            // Autofill the dropdown option arrays from the previous record
+            // so the live selects render the saved values in their dropdowns.
+            if ($this->previousRecord->address) {
+                $this->provinces = $psaServices->getProvinceOptions(
+                    $this->previousRecord->address->region_code.':0:0:0'
+                );
+                $this->municipalities = $psaServices->getMunicipalityOptions(
+                    $this->previousRecord->address->region_code.':0:0:0'
+                );
+                $this->barangays = $psaServices->getBarangayOptions(
+                    $this->previousRecord->address->region_code.':'.
+                    ($this->previousRecord->address->province_code ?? '0').':'.
+                    ($this->previousRecord->address->municipality_code ?? '0').':0'
+                );
+            }
 
             $this->dispatch('notification:alert', [
                 'type' => 'success',
@@ -48,6 +81,96 @@ class Create extends Component
         }
     }
 
+    public function updatedAddressFormRegionCode(?string $regionCode)
+    {
+        $this->addressForm->reset([
+            'provinceCode',
+            'provinceCode_display',
+            'municipalityCode',
+            'municipalityCode_display',
+            'barangayCode',
+            'barangayCode_display',
+            'street',
+            'houseNumber',
+        ]);
+
+        $this->provinces = [];
+        $this->municipalities = [];
+        $this->barangays = [];
+
+        if (! $regionCode) {
+            return;
+        }
+
+        $this->addressForm->regionCode_display = $this->regions[$regionCode];
+
+        $psaServices = app(PsaClassificationService::class);
+
+        $this->provinces = $psaServices->getProvinceOptions($regionCode);
+
+        $this->municipalities = $psaServices->getMunicipalityOptions($regionCode);
+    }
+
+    public function updatedAddressFormProvinceCode(?string $provinceCode)
+    {
+        $this->addressForm->reset([
+            'municipalityCode',
+            'municipalityCode_display',
+            'barangayCode',
+            'barangayCode_display',
+            'houseNumber',
+            'street',
+        ]);
+
+        $this->barangays = [];
+
+        if (! $provinceCode) {
+            return;
+        }
+
+        $this->addressForm->provinceCode_display = $this->provinces[$provinceCode];
+
+        $psaServices = app(PsaClassificationService::class);
+
+        $this->barangays = $psaServices->getBarangayOptions($provinceCode);
+    }
+
+    public function updatedAddressFormMunicipalityCode(?string $municipalityCode)
+    {
+        $this->addressForm->reset([
+            'provinceCode',
+            'provinceCode_display',
+            'barangayCode',
+            'barangayCode_display',
+            'houseNumber',
+            'street',
+        ]);
+
+        $this->barangays = [];
+
+        if (! $municipalityCode) {
+            return;
+        }
+
+        $this->addressForm->municipalityCode_display = $this->municipalities[$municipalityCode];
+
+        $psaServices = app(PsaClassificationService::class);
+
+        $this->barangays = $psaServices->getBarangayOptions($municipalityCode);
+    }
+
+    public function updatedAddressFormBarangayCode(?string $barangayCode)
+    {
+        if (! $barangayCode) {
+            return;
+        }
+
+        $this->addressForm->barangayCode_display = $this->barangays[$barangayCode];
+
+        // Street and house no are already enabled via readonly logic in the view
+        // based on regionCode + (provinceCode || municipalityCode) being set
+    }
+
     public function render()
     {
         return view('livewire.client.create');
@@ -57,6 +180,9 @@ class Create extends Component
     {
         try {
             $this->form->validate();
+            $this->addressForm->validate();
+            $this->demographicsForm->validate();
+            $this->socialInfoForm->validate();
         } catch (ValidationException $e) {
             $this->dispatch('notification:toast', [
                 'type' => 'error',
@@ -68,34 +194,24 @@ class Create extends Component
 
         try {
             DB::transaction(function () {
-                $districtId = Barangay::firstWhere('id', $this->form->barangayId)->district_id;
+                $client = app(ClientService::class)->store(
+                    $this->form->all()
+                );
 
-                $client = Client::create([
-                    'user_id' => Auth::id(),
-                    'date_of_birth' => $this->form->dateOfBirth,
-                    'house_no' => $this->form->houseNo,
-                    'street' => $this->form->street,
-                    'district_id' => $districtId,
-                    'barangay_id' => $this->form->barangayId,
-                    'city' => 'Taguig City',
-                    'contact_number' => $this->form->contactNumber,
-                ]);
+                app(AddressService::class)->store(
+                    $this->addressForm->all(),
+                    $client
+                );
 
-                ClientDemographic::create([
-                    'client_uuid' => $client->uuid,
-                    'sex_id' => $this->form->sexId,
-                    'nationality_id' => $this->form->nationalityId,
-                    'religion_id' => $this->form->religionId,
-                ]);
+                app(ClientDemographicsService::class)->store(
+                    $this->demographicsForm->all(),
+                    $client
+                );
 
-                ClientSocialInfo::create([
-                    'client_uuid' => $client->uuid,
-                    'civil_id' => $this->form->civilId,
-                    'education_id' => $this->form->educationId,
-                    'income' => $this->form->income,
-                    'philhealth' => $this->form->philhealth,
-                    'skill' => $this->form->skill,
-                ]);
+                app(ClientSocialInfoService::class)->store(
+                    $this->socialInfoForm->all(),
+                    $client
+                );
 
                 $this->reset();
 

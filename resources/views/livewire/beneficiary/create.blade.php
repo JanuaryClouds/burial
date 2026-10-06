@@ -1,11 +1,4 @@
-<x-slot:pageTitle>Create New Beneficiary</x-slot:pageTitle>
-<x-slot:pageSubTitle>Funeral Assistance System | CSWDO Taguig</x-slot:pageSubTitle>
-
 <div class="d-flex flex-column gap-4">
-	{{-- start::Warnings --}}
-	@include('beneficiary.create.partials.warnings')
-	{{-- end::Warnings --}}
-
 	{{-- start::Beneficiary Information --}}
 	<x-card>
 		<x-slot:header>Beneficiary's Information</x-slot:header>
@@ -29,8 +22,9 @@
 	</x-card>
 	{{-- end::Beneficiary Information --}}
 
-	{{-- Family Composition --}}
+	{{-- start::Family Composition --}}
 	@include('beneficiary.family.partials.create')
+	{{-- end::Family Composition --}}
 
 	<x-card>
 		<p class="">

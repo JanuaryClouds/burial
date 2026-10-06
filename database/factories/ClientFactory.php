@@ -2,11 +2,9 @@
 
 namespace Database\Factories;
 
-use App\Models\Barangay;
 use App\Models\Client;
 use App\Models\ClientDemographic;
 use App\Models\ClientSocialInfo;
-use App\Models\District;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -25,11 +23,6 @@ class ClientFactory extends Factory
     {
         return [
             'date_of_birth' => $this->faker->date('Y-m-d'),
-            'house_no' => $this->faker->buildingNumber(),
-            'street' => $this->faker->streetName(),
-            'barangay_id' => Barangay::inRandomOrder()->first()->id,
-            'district_id' => District::inRandomOrder()->first()->id,
-            'city' => 'Taguig City',
             'contact_number' => $this->faker->regexify('09[0-9]{9}'),
             'created_at' => $this->faker->dateTimeBetween(now()->subWeek(), now()),
         ];

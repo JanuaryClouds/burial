@@ -16,8 +16,14 @@ class PerNatality extends Component
 
     public string $chartTitle = 'Perinatal and Neonatal Deaths';
 
-    public function mount()
+    public ?string $startDate = null;
+
+    public ?string $endDate = null;
+
+    public function mount(?string $startDate = null, ?string $endDate = null)
     {
+        $this->startDate = $startDate ?? now()->startOfYear()->format('Y-m-d');
+        $this->endDate = $endDate ?? now()->format('Y-m-d');
         $this->getData();
     }
 
@@ -35,7 +41,7 @@ class PerNatality extends Component
 
     public function getData()
     {
-        $this->perNatality = Beneficiary::perNatality()
+        $this->perNatality = Beneficiary::perNatality($this->startDate, $this->endDate)
             ->get()
             ->map(function ($item) {
                 return [

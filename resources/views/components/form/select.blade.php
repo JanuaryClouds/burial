@@ -1,4 +1,15 @@
-@props(['name', 'id' => null, 'label' => null, 'selected' => null, 'options' => [], 'helpText' => false, 'errorname' => null, 'required' => false, 'readonly' => false])
+@props([
+    'name',
+    'id' => null,
+    'label' => null,
+    'selected' => null,
+    'options' => [],
+    'helpText' => false,
+    'errorname' => null,
+    'required' => false,
+    'readonly' => false,
+    'multiple' => false,
+])
 
 @php
 	if ($errorname == null) {
@@ -28,20 +39,35 @@
 		@endif
 	@endif
 
-	<div wire:ignore>
-		<select {{ $attributes->except('wire:model') }}
-			name="{{ $name }}_display"
-			id="{{ $id ?? $name }}_display"
+	<div>
+		<select {{ $attributes->whereStartsWith('wire:model') }}
+			name="{{ $name }}_select"
+			id="{{ $id ?? $name }}_select"
 			{{ $required ? 'required' : '' }}
 			{{ $readonly ? 'disabled' : '' }}
 			class="form-control {{ $readonly ? 'bg-light' : '' }}"
-			data-control="select2">
+			data-control="select2"
+			{{ $multiple ? "multiple='multiple'" : '' }}>
 			<option value="">Select one</option>
 			@foreach ($options as $key => $value)
-				<option value="{{ $key }}" {{ $selected == $key ? 'selected' : '' }}>{{ $value }}</option>
+				<option value="{{ $key }}"
+					{{ $selected == $key ? 'selected' : '' }}>
+					{{ $value }}
+				</option>
 			@endforeach
 		</select>
 	</div>
+	@php
+		$modifiedAttributes = new \Illuminate\View\ComponentAttributeBag(
+		    collect($attributes->whereStartsWith('wire:model')->getAttributes())
+		        ->map(fn($value) => $value . '_display')
+		        ->all(),
+		);
+	@endphp
+	<input {{ $modifiedAttributes }}
+		type="hidden"
+		name="{{ $name }}_display"
+		id="{{ $id ?? $name }}_display">
 	<input type="hidden"
 		name="{{ $name }}"
 		id="{{ $id ?? $name }}"
@@ -51,6 +77,7 @@
 		<span class="text-danger">{{ $message }}</span>
 	@enderror
 	@if (app()->hasDebugModeEnabled())
-		<span id="debug-selected-{{ $id ?? $name }}" class="text-muted text-small"></span>
+		<span id="debug-selected-{{ $id ?? $name }}"
+			class="text-muted text-small"></span>
 	@endif
 </div>

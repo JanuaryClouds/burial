@@ -8,7 +8,7 @@
 				:size="'2x'"
 				:pathsCount="$iconPathsCount" />
 		</span>
-		<small class="text-center text-gray-400 fw-semibold mt-1">{{ $label }}</small>
+		<small class="text-center text-gray-400 fw-semibold mt-2">{{ $label }}</small>
 	</span>
 	<!--end:Menu link-->
 	<!--begin:Menu sub-->

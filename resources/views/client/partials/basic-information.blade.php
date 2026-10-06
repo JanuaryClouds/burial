@@ -35,10 +35,10 @@
 			type="date" />
 	</div>
 	<div class="col-6 col-md-3 col-lg-2 col-xl-2">
-		<x-form.select wire:model='form.sexId'
-			name="form.sexId"
+		<x-form.select wire:model='demographicsForm.sexId'
+			name="demographicsForm.sexId"
 			label="Sex"
-			:selected="$form->sexId ?? ''"
+			:selected="$demographicsForm->sexId ?? ''"
 			:options="$genders ?? []"
 			:required="true" />
 	</div>

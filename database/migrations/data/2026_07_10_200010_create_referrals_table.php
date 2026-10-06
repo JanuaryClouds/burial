@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('referrals', function (Blueprint $table) {
             $table->uuid()->primary();
             $table->foreignUuid('application_uuid')->constrained('applications', 'uuid')->onDelete('CASCADE');
-            $table->string('referred_to');
-            $table->string('reason');
+            $table->text('referred_to');
+            $table->text('reason');
             $table->timestamps();
         });
     }

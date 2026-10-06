@@ -8,49 +8,49 @@
 			:required="true" />
 	</div>
 	<div class="col-6 col-md-4 col-lg-3 col-xl-2">
-		<x-form.select wire:model='form.civilId'
-			name="form.civilId"
+		<x-form.select wire:model='socialInfoForm.civilId'
+			name="socialInfoForm.civilId"
 			label="Civil Status"
-			:selected="$form->civilId ?? ''"
+			:selected="$socialInfoForm->civilId ?? ''"
 			:options="$civilStatus ?? []"
 			:required="true" />
 	</div>
 	<div class="col-12 col-md-4 col-lg-6 col-xl-4">
-		<x-form.select wire:model='form.nationalityId'
-			name="form.nationalityId"
+		<x-form.select wire:model='demographicsForm.nationalityId'
+			name="demographicsForm.nationalityId"
 			label="Nationality"
-			:selected="$form->nationalityId ?? ''"
+			:selected="$demographicsForm->nationalityId ?? ''"
 			:options="$nationalities ?? []"
 			:required="true" />
 	</div>
 	<div class="col-12 col-md-6 col-lg-6 col-xl-4">
-		<x-form.select wire:model='form.religionId'
-			name="form.religionId"
+		<x-form.select wire:model='demographicsForm.religionId'
+			name="demographicsForm.religionId"
 			label="Religion"
-			:selected="$form->religionId ?? ''"
+			:selected="$demographicsForm->religionId ?? ''"
 			:options="$religions ?? []"
 			:required="true" />
 	</div>
 	<div class="col-12 col-md-6 col-lg-6 col-xl-3">
-		<x-form.select wire:model='form.educationId'
-			name="form.educationId"
+		<x-form.select wire:model='socialInfoForm.educationId'
+			name="socialInfoForm.educationId"
 			label="Educational Attainment"
-			:selected="$form->educationId ?? ''"
+			:selected="$socialInfoForm->educationId ?? ''"
 			:options="$educations ?? []" />
 	</div>
 	<div class="col-12 col-md-4 col-lg-6 col-xl-3">
-		<x-form.input wire:model='form.philhealth'
-			name="form.philhealth"
+		<x-form.input wire:model='socialInfoForm.philhealth'
+			name="socialInfoForm.philhealth"
 			label="PhilHealth ID" />
 	</div>
 	<div class="col-12 col-md-4 col-lg-6 col-xl-3">
-		<x-form.input wire:model='form.skill'
-			name="form.skills"
+		<x-form.input wire:model='socialInfoForm.skill'
+			name="socialInfoForm.skills"
 			label="Skills/Occupation" />
 	</div>
 	<div class="col-12 col-md-4 col-lg-4 col-xl-3">
-		<x-form.input wire:model='form.income'
-			name="form.income"
+		<x-form.input wire:model='socialInfoForm.income'
+			name="socialInfoForm.income"
 			label="Estimated Monthly Income" />
 	</div>
 </div>

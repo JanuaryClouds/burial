@@ -38,6 +38,8 @@ class ClientService
             'application.beneficiary',
             'application.assessment',
             'application.referral',
+            'application.rejection',
+            'application.cancellation',
             'application.recommendations',
             'application.relationship',
             'socialInfo',
@@ -75,42 +77,32 @@ class ClientService
                     'tracking_no' => $client->tracking_no,
                     'client' => $client->fullname().' ('.$client->socialInfo?->relationship?->name.')',
                     'beneficiary' => $client->beneficiary?->fullname(),
-                    'address' => $client->address(),
+                    'address' => $client->fullAddress(),
                     'created_at' => $client->created_at->format('F d, Y H:i'),
                 ];
             });
     }
 
-    public function store(array $data)
+    /**
+     * Summary of store
+     */
+    public function store(array $data): Client
     {
-        $client = Client::create([
-            'user_id' => Auth::user()->id,
-            'date_of_birth' => $data['date_of_birth'],
-            'house_no' => $data['house_no'],
-            'street' => $data['street'],
-            'district_id' => $data['district_id'],
-            'barangay_id' => $data['barangay_id'],
-            'city' => $data['city'],
-            'contact_number' => $data['contact_number'],
+        return Client::create([
+            'user_id' => Auth::id(),
+            'date_of_birth' => $data['dateOfBirth'],
+            'contact_number' => $data['contactNumber'],
+        ]);
+    }
+
+    public function update(Client $client, array $data): Client
+    {
+        $client->update([
+            'date_of_birth' => $data['dateOfBirth'],
+            'contact_number' => $data['contactNumber'],
         ]);
 
-        ClientDemographic::create([
-            'client_uuid' => $client->uuid,
-            'sex_id' => $data['sex_id'],
-            'religion_id' => $data['religion_id'],
-            'nationality_id' => $data['nationality_id'],
-        ]);
-
-        ClientSocialInfo::create([
-            'client_uuid' => $client->uuid,
-            'civil_id' => $data['civil_id'],
-            'education_id' => $data['education_id'],
-            'income' => $data['income'],
-            'philhealth' => $data['philhealth'],
-            'skill' => $data['skill'],
-        ]);
-
-        return $client;
+        return $client->fresh();
     }
 
     /**
@@ -339,55 +331,6 @@ class ClientService
         return null;
     }
 
-    /**
-     * Summary of updateClient
-     */
-    public function update(array $data, Client $client): void
-    {
-        $client->update($data);
-
-        $client->demographic->update([
-            'sex_id' => $data['sex_id'],
-            'religion_id' => $data['religion_id'],
-            'nationality_id' => $data['nationality_id'],
-        ]);
-
-        $client->socialInfo->update([
-            'civil_id' => $data['civil_id'],
-            'education_id' => $data['education_id'],
-            'income' => $data['income'],
-            'philhealth' => $data['philhealth'],
-            'skill' => $data['skill'],
-        ]);
-
-        // $client->beneficiary->update([
-        //     'first_name' => $data['ben_first_name'],
-        //     'middle_name' => $data['ben_middle_name'],
-        //     'last_name' => $data['ben_last_name'],
-        //     'suffix' => $data['ben_suffix'] ?? '',
-        //     'religion_id' => $data['ben_religion_id'],
-        //     'barangay_id' => $data['ben_barangay_id'],
-        //     'sex_id' => $data['ben_sex_id'],
-        //     'date_of_birth' => $data['ben_date_of_birth'],
-        //     'date_of_death' => $data['ben_date_of_death'],
-        //     'place_of_birth' => $data['ben_place_of_birth'],
-        // ]);
-
-        // $families = $client->family()->orderBy('id')->get();
-
-        // foreach ($families as $index => $family) {
-        //     $family->update([
-        //         'name' => $data['fam_name'][$index],
-        //         'sex_id' => $data['fam_sex_id'][$index],
-        //         'age' => $data['fam_age'][$index],
-        //         'civil_id' => $data['fam_civil_id'][$index],
-        //         'relationship_id' => $data['fam_relationship_id'][$index],
-        //         'occupation' => $data['fam_occupation'][$index],
-        //         'income' => $data['fam_income'][$index],
-        //     ]);
-        // }
-    }
-
     public function deleteClient($client): Client
     {
         return $client->delete() ? $client : null;
@@ -432,7 +375,7 @@ class ClientService
                 ],
                 [
                     '4. Date of Birth' => Carbon::parse($client->date_of_birth)->format('F d, Y'),
-                    '5. Present Address' => $client->address(),
+                    '5. Present Address' => $client->fullAddress(),
                 ],
                 [
                     '6. Relationship to Beneficiary' => $client->socialInfo?->relationship?->name ?? 'N/A',

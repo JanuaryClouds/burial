@@ -35,15 +35,6 @@ class BeneficiaryForm extends Form
     #[Validate('required|integer|exists:religions,id')]
     public ?int $religionId = null;
 
-    #[Validate('required|integer|exists:barangays,id')]
-    public ?int $barangayId = null;
-
-    #[Validate('required|string|max:255')]
-    public ?string $houseNo = null;
-
-    #[Validate('required|string|max:255')]
-    public ?string $street = null;
-
     #[Validate([
         'family' => ['array'],
         'family.*.name' => ['required', 'string', 'max:255'],
@@ -67,9 +58,6 @@ class BeneficiaryForm extends Form
         $this->pwd = $beneficiary->pwd;
         $this->sexId = $beneficiary->sex_id;
         $this->religionId = $beneficiary->religion_id;
-        $this->barangayId = $beneficiary->barangay_id;
-        $this->houseNo = $beneficiary->house_no;
-        $this->street = $beneficiary->street;
         $this->family = $beneficiary->family->toArray();
     }
 }

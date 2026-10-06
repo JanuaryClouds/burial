@@ -7,23 +7,11 @@ use Illuminate\Support\Facades\Auth;
 
 class BeneficiaryService
 {
-    public function index(?string $user_id = null, string $orderBy = 'created_at', string $orderDirection = 'asc')
+    public function index(?string $user_id = null)
     {
-        return Beneficiary::with([
-            'application',
-            'application.client',
-            'application.client.user',
-            'application.client.interviews',
-            'application.assessment',
-            'application.recommendations',
-            'application.recommendations.funeralAssistanceType',
-            'application.referral',
-            'religion',
-        ])
-            ->when($user_id, function ($query) use ($user_id) {
-                $query->where('created_by', $user_id);
-            })
-            ->orderBy($orderBy, $orderDirection)
+        return Beneficiary::index(
+            $user_id,
+        )
             ->get()
             ->map(function (Beneficiary $beneficiary) {
                 $application = $beneficiary->application?->load('workflowStage');
@@ -41,16 +29,40 @@ class BeneficiaryService
             });
     }
 
-    public function update(array $data, Beneficiary $beneficiary): void
+    public function update(Beneficiary $beneficiary, array $data): Beneficiary
     {
-        $beneficiary->update($data);
+        $beneficiary->update([
+            'first_name' => $data['firstName'],
+            'middle_name' => $data['middleName'],
+            'last_name' => $data['lastName'],
+            'suffix' => $data['suffix'],
+            'sex_id' => $data['sexId'],
+            'religion_id' => $data['religionId'],
+            'date_of_birth' => $data['dateOfBirth'],
+            'date_of_death' => $data['dateOfDeath'],
+            'pwd' => $data['pwd'] ?? false,
+        ]);
+
+        return $beneficiary->fresh();
     }
 
-    public function store(array $data)
+    /**
+     * Summary of store
+     */
+    public function store(array $data): Beneficiary
     {
-        $data['created_by'] = Auth::user()->id;
-
-        return Beneficiary::create($data);
+        return Beneficiary::create([
+            'first_name' => $data['firstName'],
+            'middle_name' => $data['middleName'],
+            'last_name' => $data['lastName'],
+            'suffix' => $data['suffix'],
+            'sex_id' => $data['sexId'],
+            'religion_id' => $data['religionId'],
+            'date_of_birth' => $data['dateOfBirth'],
+            'date_of_death' => $data['dateOfDeath'],
+            'pwd' => $data['pwd'] ?? false,
+            'created_by' => Auth::id(),
+        ]);
     }
 
     public function reportIndex($startDate, $endDate)

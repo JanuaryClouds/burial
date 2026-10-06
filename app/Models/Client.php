@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
@@ -21,18 +22,7 @@ class Client extends Model
     protected $fillable = [
         'user_id',
         'date_of_birth',
-        'house_no',
-        'street',
-        'district_id',
-        'barangay_id',
-        'city',
         'contact_number',
-    ];
-
-    protected $casts = [
-        'house_no' => 'encrypted',
-        'street' => 'encrypted',
-        'city' => 'encrypted',
     ];
 
     /*
@@ -114,6 +104,16 @@ class Client extends Model
         return $this->hasMany(Interview::class);
     }
 
+    /**
+     * Summary of address
+     *
+     * @return MorphOne<Address, Client>
+     */
+    public function address(): MorphOne
+    {
+        return $this->morphOne(Address::class, 'addressable');
+    }
+
     public static function relations(): array
     {
         return [
@@ -125,8 +125,7 @@ class Client extends Model
             'socialInfo',
             'socialInfo.education',
             'socialInfo.civil',
-            'district',
-            'barangay',
+            'address',
             'interviews',
         ];
     }
@@ -169,12 +168,16 @@ class Client extends Model
 
     /**
      * Summary of address
-     *
-     * @return string joins the house number, street, and barangay name
      */
-    public function address(): string
+    public function fullAddress(): string
     {
-        return $this->house_no.' '.$this->street.', '.$this->barangay->name;
+        $address = $this->address;
+
+        if (! $address) {
+            return '';
+        }
+
+        return $address->full();
     }
 
     /*
@@ -247,5 +250,26 @@ class Client extends Model
             $query->whereYear('created_at', Carbon::now()->year)
                 ->whereMonth('created_at', Carbon::now()->month);
         });
+    }
+
+    public function scopePerRegion($query, ?string $startDate = null, ?string $endDate = null)
+    {
+        return $query
+            ->with('application')
+            ->whereHas('application')
+            ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
+                $query->whereHas('application', function ($query) use ($startDate, $endDate) {
+                    $query->whereBetween('created_at', [$startDate, $endDate]);
+                });
+            })
+            ->join('addresses', 'addresses.addressable_id', '=', 'clients.uuid')
+            ->select([
+                'addresses.region_code',
+                'addresses.region_name',
+            ])
+            ->selectRaw('COUNT(DISTINCT clients.uuid) as total')
+            ->groupBy('addresses.region_code', 'addresses.region_name')
+            ->orderBy('total', 'desc')
+            ->toBase();
     }
 }
