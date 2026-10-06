@@ -10,7 +10,7 @@ Route::name('report.')
     ->prefix('report')
     ->controller(ReportController::class)
     ->group(function () {
-        Route::match(['get', 'post'], '/{startDate?}/{endDate?}', 'index')
+        Route::match(['get', 'post'], '/', 'index')
             ->name('index');
 
         Route::post('/print/{startDate?}/{endDate?}', 'print')

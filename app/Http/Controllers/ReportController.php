@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Application;
 use App\Models\Beneficiary;
 use App\Models\Cheque;
+use App\Services\ApplicationService;
 use App\Services\BeneficiaryService;
 use App\Services\ClientService;
 use App\Services\DatatableService;
@@ -17,16 +19,41 @@ class ReportController extends Controller
     public function __construct(
         protected ReportService $reportServices,
         protected DatatableService $datatableServices,
+        protected ApplicationService $applicationServices,
         protected ClientService $clientServices,
         protected BeneficiaryService $beneficiaryServices,
     ) {}
 
-    public function index(?string $startDate = null, ?string $endDate = null)
+    public function index(Request $request)
     {
+        if ($request->input('startDate')) {
+            $startDate = Carbon::parse($request->input('startDate'))->format('Y-m-d\TH:i');
+        } else {
+            $startDate = now()->startOfYear()->format('Y-m-d\TH:i');
+        }
+
+        if ($request->input('endDate')) {
+            $endDate = Carbon::parse($request->input('endDate'))->format('Y-m-d\TH:i');
+        } else {
+            $endDate = now()->endOfYear()->format('Y-m-d\TH:i');
+        }
+
+        $applications = $this->reportServices->indexApplications(null, $startDate, $endDate);
+        $columns = $this->datatableServices->getColumns($applications, []);
+
         return view('report.index', [
             'pageTitle' => 'Reports',
-            'startDate' => $startDate ? Carbon::parse($startDate)->format('Y-m-d\TH:i') : Carbon::now()->startOfYear()->format('Y-m-d\TH:i'),
-            'endDate' => $endDate ? Carbon::parse($endDate)->format('Y-m-d\TH:i') : Carbon::now()->endOfYear()->format('Y-m-d\TH:i'),
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'applications' => $applications,
+            'columns' => $columns,
+            'applicationsTotal' => $applications->count(),
+            'applicationsPerStatus' => $this->reportServices->perStatus($startDate, $endDate),
+            'beneficiariesTotal' => $this->reportServices->beneficiariesTotal(null, $startDate, $endDate),
+            'beneficiariesPwd' => Beneficiary::onlyPwd($startDate, $endDate)->count(),
+            'beneficiariesNatality' => $this->reportServices->beneficiariesNatality($startDate, $endDate),
+            'beneficiariesAgeGroups' => $this->reportServices->beneficiaryAgeGroups($startDate, $endDate),
+            'clientsPerRegion' => $this->reportServices->clientsPerRegion($startDate, $endDate)
         ]);
     }
 
