@@ -3,6 +3,7 @@
 namespace App\Livewire\Workflow\History;
 
 use App\Models\Application;
+use App\Models\WorkflowHistory;
 use App\Traits\Livewire\HasPlaceholder;
 use Illuminate\Database\Eloquent\Collection;
 use Livewire\Attributes\On;
@@ -16,16 +17,42 @@ class Index extends Component
 
     public Collection $recommendations;
 
+    public WorkflowHistory $selectedHistory;
+
     public function mount(Application $application)
     {
         $this->application = $application;
-        $this->recommendations = $application->recommendations()->with(['workflowHistory', 'funeralAssistanceType'])->oldest()->get();
+        $this->loadTimeline($application);
     }
 
     #[On('refreshWorkflowHistory')]
     public function refresh()
     {
-        $this->recommendations = $this->application->recommendations()->with(['workflowHistory', 'funeralAssistanceType'])->oldest()->get();
+        $this->loadTimeline($this->application);
+    }
+
+    public function loadTimeline(Application $application)
+    {
+        $this->recommendations = $application
+            ->recommendations()
+            ->with([
+                'remarks',
+                'workflowHistory.toStage',
+                'workflowHistory.fromStage',
+                'workflowHistory.remarks.user',
+                'funeralAssistanceType',
+            ])
+            ->oldest()
+            ->get();
+    }
+
+    public function showHistoryDetails(string $uuid)
+    {
+        $history = WorkflowHistory::with('remarks.user')
+            ->where('uuid', $uuid)
+            ->firstOrFail();
+
+        $this->dispatch('load-remarks', model: $history);
     }
 
     public function render()
