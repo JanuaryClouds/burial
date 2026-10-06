@@ -32,9 +32,12 @@
 			{{-- end::Counts Table --}}
 			{{-- start::Per Age Group Chart --}}
 			<div class="col-12 col-lg-4">
-				<livewire:beneficiary.charts.per-age-group :startDate="$startDate"
-					:endDate="$endDate" />
-			</x-card>
+				<canvas id="beneficiaries-per-age-group"
+					data-chart-data='@json($beneficiariesAgeGroups->pluck('count'))'
+					data-chart-labels='@json($beneficiariesAgeGroups->pluck('name'))'
+					data-chart-type="pie"
+					data-empty="{{ $beneficiariesAgeGroups->isEmpty() ? 'true' : 'false' }}"></canvas>
+			</div>
 		</div>
 	</x-card>
 </div>

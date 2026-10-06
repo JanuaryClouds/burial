@@ -1,8 +1,8 @@
 <div class="d-flex flex-column gap-6">
-	<div class="row">
-		{{-- start::Table --}}
-		<div class="col-12 col-lg-8 min-h-100">
-			<x-card>
+	<x-card>
+		<div class="row">
+			{{-- start::Table --}}
+			<div class="col-12 col-lg-8 min-h-100">
 				<x-slot:header>Applications Per Status</x-slot:header>
 				<table class="table table-bordered">
 					<thead>
@@ -24,17 +24,17 @@
 						</tr>
 					</tbody>
 				</table>
-			</x-card>
-		</div>
-		{{-- end::Table --}}
-		<div class="col-12 col-lg-4">
+			</div>
+			{{-- end::Table --}}
 			{{-- start::Chart --}}
-			<x-card>
-				<x-slot:header>Applications Per Status Chart</x-slot:header>
-				<livewire:application.charts.per-status :startDate="$startDate"
-					:endDate="$endDate" />
-			</x-card>
+			<div class="col-12 col-lg-4">
+				<canvas id="applications-per-status"
+					data-chart-data='@json($applicationsPerStatus->pluck('count'))'
+					data-chart-labels='@json($applicationsPerStatus->pluck('name'))'
+					data-chart-type="pie"
+					data-empty="{{ $applicationsPerStatus->isEmpty() ? 'true' : 'false' }}"></canvas>
+			</div>
 			{{-- end::Chart --}}
 		</div>
-	</div>
+	</x-card>
 </div>
