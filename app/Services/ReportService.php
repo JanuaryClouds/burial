@@ -13,16 +13,14 @@ use Illuminate\Support\Collection;
 
 class ReportService
 {
-    public function print(?string $startDate, ?string $endDate)
-    {
-        
-    }
+    public function print(?string $startDate, ?string $endDate) {}
 
     /**
      * Summary of indexApplications
-     * @param mixed $userId
-     * @param mixed $startDate
-     * @param mixed $endDate
+     *
+     * @param  mixed  $userId
+     * @param  mixed  $startDate
+     * @param  mixed  $endDate
      * @return Collection<int, array{PWD: string, age: string, beneficiary: string, client: string, "relationship_with_beneficiary": string, status: mixed, "tracking_number": string>|\Illuminate\Database\Eloquent\Collection<int, array{PWD: string, age: string, beneficiary: string, client: string, "relationship_with_beneficiary": string, status: mixed, "tracking_number": string}>}
      */
     public function indexApplications(
@@ -48,8 +46,9 @@ class ReportService
 
     /**
      * Summary of perStatus
-     * @param mixed $startDate
-     * @param mixed $endDate
+     *
+     * @param  mixed  $startDate
+     * @param  mixed  $endDate
      * @return Collection<int, array{count: int, name: string>|\Illuminate\Database\Eloquent\Collection<int, array{count: int, name: string}>}
      */
     public function perStatus(
@@ -76,10 +75,10 @@ class ReportService
 
     /**
      * Summary of beneficiariesTotal
-     * @param mixed $userId
-     * @param mixed $startDate
-     * @param mixed $endDate
-     * @return int
+     *
+     * @param  mixed  $userId
+     * @param  mixed  $startDate
+     * @param  mixed  $endDate
      */
     public function beneficiariesTotal(
         ?int $userId = null,
@@ -96,8 +95,9 @@ class ReportService
 
     /**
      * Summary of beneficiariesNatality
-     * @param mixed $startDate
-     * @param mixed $endDate
+     *
+     * @param  mixed  $startDate
+     * @param  mixed  $endDate
      * @return Collection<int, array{count: int, group: string>|\Illuminate\Database\Eloquent\Collection<int, array{count: int, group: string}>}
      */
     public function beneficiariesNatality(
@@ -109,15 +109,16 @@ class ReportService
             ->map(function ($item) {
                 return [
                     'group' => (string) $item->natality_group,
-                    'count' => (int) $item->total
+                    'count' => (int) $item->total,
                 ];
             });
     }
 
     /**
      * Summary of beneficiaryAgeGroups
-     * @param mixed $startDate
-     * @param mixed $endDate
+     *
+     * @param  mixed  $startDate
+     * @param  mixed  $endDate
      * @return Collection<int, array{count: int, name: string>|\Illuminate\Database\Eloquent\Collection<int, array{count: int, name: string}>}
      */
     public function beneficiaryAgeGroups(
@@ -136,8 +137,9 @@ class ReportService
 
     /**
      * Summary of clientsPerRegion
-     * @param mixed $startDate
-     * @param mixed $endDate
+     *
+     * @param  mixed  $startDate
+     * @param  mixed  $endDate
      * @return Collection<int, array{count: mixed, "region_name": string>|\Illuminate\Database\Eloquent\Collection<int, array{count: mixed, "region_name": string}>}
      */
     public function clientsPerRegion(

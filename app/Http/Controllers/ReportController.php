@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Application;
 use App\Models\Beneficiary;
 use App\Models\Cheque;
 use App\Services\ApplicationService;
@@ -53,17 +52,17 @@ class ReportController extends Controller
             'beneficiariesPwd' => Beneficiary::onlyPwd($startDate, $endDate)->count(),
             'beneficiariesNatality' => $this->reportServices->beneficiariesNatality($startDate, $endDate),
             'beneficiariesAgeGroups' => $this->reportServices->beneficiaryAgeGroups($startDate, $endDate),
-            'clientsPerRegion' => $this->reportServices->clientsPerRegion($startDate, $endDate)
+            'clientsPerRegion' => $this->reportServices->clientsPerRegion($startDate, $endDate),
         ]);
     }
 
     public function print(
         Request $request,
-        string $startDate, 
+        string $startDate,
         string $endDate,
     ) {
-        $documentName = config('constants.title.main') . '-' . config('constants.title.sub') . '-'.
-            "report-" . $startDate . "-to-" . $endDate . ".pdf";
+        $documentName = config('constants.title.main').'-'.config('constants.title.sub').'-'.
+            'report-'.$startDate.'-to-'.$endDate.'.pdf';
 
         $charts = $request->input('charts', []);
 
@@ -83,7 +82,7 @@ class ReportController extends Controller
             'beneficiariesPwd' => Beneficiary::onlyPwd($startDate, $endDate)->count(),
             'beneficiariesNatality' => $this->reportServices->beneficiariesNatality($startDate, $endDate),
             'beneficiariesAgeGroups' => $this->reportServices->beneficiaryAgeGroups($startDate, $endDate),
-            'clientsPerRegion' => $this->reportServices->clientsPerRegion($startDate, $endDate)
+            'clientsPerRegion' => $this->reportServices->clientsPerRegion($startDate, $endDate),
         ])
             ->setPaper('letter', 'portrait');
 

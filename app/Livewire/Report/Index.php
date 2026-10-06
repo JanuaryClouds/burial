@@ -2,9 +2,7 @@
 
 namespace App\Livewire\Report;
 
-use App\Models\Address;
 use App\Models\Application;
-use App\Models\Barangay;
 use App\Models\Beneficiary;
 use App\Models\Client;
 use Illuminate\Support\Collection;
@@ -86,7 +84,7 @@ class Index extends Component
             ->map(function ($item) {
                 return [
                     'group' => (string) $item->natality_group,
-                    'count' => (int) $item->total
+                    'count' => (int) $item->total,
                 ];
             });
         $this->getBeneficiaryAgeGroups();

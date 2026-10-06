@@ -265,7 +265,7 @@ class Client extends Model
             ->join('addresses', 'addresses.addressable_id', '=', 'clients.uuid')
             ->select([
                 'addresses.region_code',
-                'addresses.region_name'
+                'addresses.region_name',
             ])
             ->selectRaw('COUNT(DISTINCT clients.uuid) as total')
             ->groupBy('addresses.region_code', 'addresses.region_name')
