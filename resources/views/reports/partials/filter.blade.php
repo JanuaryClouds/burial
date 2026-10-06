@@ -10,14 +10,14 @@
 			<div class="row">
 				<div class="col-12 col-lg-6">
 					<x-form.input type="datetime-local"
-						name="start_date"
+						name="startDate"
 						label="Start Date"
 						id="start_date_{{ $uid }}"
 						value="{{ \Carbon\Carbon::parse($startDate)->format('Y-m-d\TH:i') }}" />
 				</div>
 				<div class="col-12 col-lg-6">
 					<x-form.input type="datetime-local"
-						name="end_date"
+						name="endDate"
 						label="End Date"
 						id="end_date_{{ $uid }}"
 						value="{{ \Carbon\Carbon::parse($endDate)->format('Y-m-d\TH:i') }}" />
