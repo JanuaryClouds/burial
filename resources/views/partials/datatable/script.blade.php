@@ -6,7 +6,7 @@
 		if (dataTable.length == 0) return;
 
 		let columns = dataTable.data('columns') || [];
-		let route = dataTable.data('route') ?? null;
+		let route = dataTable.data('route') ?? '#';
 		let dataset = dataTable.data('rows') || [];
 		let dataSrc = dataTable.data('src') || null;
 		let countPerPage = dataTable.data('count-per-page') || 10;
