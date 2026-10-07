@@ -13,7 +13,13 @@
 			@include('workflow.history.index.partials.application-stop')
 			{{-- end::Application Stop --}}
 
-			<livewire:workflow.history.show />
+			{{-- start::Show Workflow History Modal --}}
+			@include('workflow.history.index.partials.show.modal')
+			{{-- end::Show Workflow History Modal --}}
+
+			{{-- start::Show Remarks Modal --}}
+			@include('workflow.history.index.partials.remarks.modal')
+			{{-- end::Show Remarks Modal --}}
 		</div>
 	@else
 		<div class="d-flex flex-center">
