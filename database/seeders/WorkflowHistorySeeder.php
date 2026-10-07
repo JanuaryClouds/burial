@@ -260,6 +260,9 @@ class WorkflowHistorySeeder extends Seeder
             'date_out' => $dateOut,
             'from_stage_uuid' => $fromStage?->uuid,
             'to_stage_uuid' => $toStage?->uuid,
+            'processed_by' => User::whereHas('roles', function ($query) {
+                $query->where('name', 'staff');
+            })->inRandomOrder()->first()->id,
             'reason' => $reason,
         ]);
 
