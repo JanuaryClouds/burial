@@ -65,7 +65,7 @@ class Create extends Component
         $this->application->fresh();
         $this->stages = $this->loadStages($this->application);
 
-        if ($this->stages) {
+        if ($this->stages && $this->application->toStage()) {
             $this->showForm = Auth::user()->can($this->application->toStage()->permission->name) || Auth::user()->hasRole('superadmin');
         }
     }

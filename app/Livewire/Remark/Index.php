@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Remark;
 
+use App\Models\WorkflowHistory;
 use App\Traits\Livewire\HasPlaceholder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
@@ -14,16 +15,46 @@ class Index extends Component
 
     public ?Model $model = null;
 
+    public ?string $modelClass = null;
+
+    public ?string $id = null;
+
     public ?Collection $remarks = null;
 
+    public bool $loading = true;
+
     #[On('load-remarks')]
-    public function loadRemarks(Model $model)
+    public function loadRemarks(?string $modelClass = null, ?string $id = null)
     {
-        $this->model = $model;
-        $this->remarks = $model->remarks()
-            ->orderBy('created_at', 'desc')
-            ->with('user')
-            ->get();
+        $this->modelClass = $modelClass;
+        $this->id = $id;
+
+        if ($this->modelClass && $this->id) {
+            dd($this->modelClass);
+
+            $this->model = $this->modelClass::where('uuid', $this->id)->first();
+
+            if ($this->model) {
+                $this->remarks = $this->model
+                    ->remarks()
+                    ->with('user')
+                    ->oldest()
+                    ->get();
+            } else {
+                $this->remarks = collect();
+            }
+        } else {
+            $this->reset('model', 'remarks');
+        }
+
+        $this->loading = false;
+    }
+
+    public function refreshRemarks()
+    {
+        if ($this->modelClass && $this->id) {
+            $this->loadRemarks($this->modelClass, $this->id);
+        }
     }
 
     public function render()
