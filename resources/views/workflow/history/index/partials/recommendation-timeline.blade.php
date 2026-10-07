@@ -17,6 +17,15 @@
 				Recommendation: {{ $recommendation->funeralAssistanceType?->name ?? 'N/A' }}
 			</span>
 			@if ($recommendation->remarks)
+				<span>
+					<button type="button"
+						class="btn btn-sm btn-info"
+						data-bs-toggle="modal"
+						data-bs-target="#showRemarksModal"
+						wire:click="showRemarks('{{ class_basename($recommendation) }}','{{ $recommendation->uuid }}')">
+						<x-icon.font-awesome class="fa-message me-0" />
+					</button>
+				</span>
 			@endif
 		</div>
 	</div>
@@ -49,18 +58,30 @@
 					</span>
 					{{-- end::Stage Name --}}
 
+					{{-- start::Extra Fields --}}
+					{{-- <span>
+						<button type="button"
+							class="btn btn-sm btn-info"
+							data-bs-toggle="modal"
+							data-bs-target="#showHistoryDetailsModal"
+							wire:click="showHistoryDetails('{{ $history->uuid }}')">
+							<x-icon.font-awesome class="fa-message" />
+						</button>
+					</span> --}}
+					{{-- end::Extra Fields --}}
+
 					@if ($history->remarks?->count() > 0)
-						{{-- start::Details Button --}}
+						{{-- start::Remarks Modal Button --}}
 						<span>
 							<button type="button"
-								class="btn btn-info btn-sm"
+								class="btn btn-sm btn-info"
 								data-bs-toggle="modal"
-								data-bs-target="#showHistoryDetailsModal"
-								wire:click="showHistoryDetails('{{ $history->uuid }}')">
-								Details
+								data-bs-target="#showRemarksModal"
+								wire:click="showRemarks('{{ class_basename($history) }}','{{ $history->uuid }}')">
+								<x-icon.font-awesome class="fa-message me-0" />
 							</button>
 						</span>
-						{{-- end::Details Button --}}
+						{{-- end::Remarks Modal Button --}}
 					@endif
 				</div>
 			</div>

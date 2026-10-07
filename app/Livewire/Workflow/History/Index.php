@@ -35,6 +35,7 @@ class Index extends Component
     {
         $this->recommendations = $application
             ->recommendations()
+            ->oldest()
             ->with([
                 'remarks',
                 'workflowHistory.toStage',
@@ -42,18 +43,27 @@ class Index extends Component
                 'workflowHistory.remarks.user',
                 'funeralAssistanceType',
             ])
-            ->oldest()
             ->get();
     }
 
-    public function showHistoryDetails(string $uuid)
+    public function showRemarks(?string $modelClass, ?string $uuid)
     {
-        $history = WorkflowHistory::with('remarks.user')
-            ->where('uuid', $uuid)
-            ->firstOrFail();
+        $this->dispatch('load-remarks', modelClass: null, id: null);
 
-        $this->dispatch('load-remarks', model: $history);
+        $this->dispatch('load-remarks', modelClass: (string) 'App\\Models\\'.$modelClass, id: $uuid);
     }
+
+    // public function showHistoryDetails(string $uuid)
+    // {
+    //     $historyUuid = WorkflowHistory::firstWhere('uuid', $uuid)?->uuid;
+
+    //     $this->dispatch('load-details', historyUuid: $historyUuid);
+    // }
+
+    // public function clearSelectedHistory()
+    // {
+    //     $this->dispatch('load-details', historyUuid: null);
+    // }
 
     public function render()
     {
