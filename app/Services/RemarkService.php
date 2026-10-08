@@ -30,7 +30,7 @@ class RemarkService
             'remarkable_id' => $model->uuid ?? $model->id,
             'remarkable_type' => get_class($model),
             'content' => $data['content'],
-            'author_id' => Auth::id(),
+            'user_id' => Auth::id(),
         ]);
     }
 

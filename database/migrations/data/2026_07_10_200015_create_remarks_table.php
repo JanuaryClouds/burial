@@ -19,7 +19,7 @@ return new class extends Migration
                 ->constrained('remarks', 'uuid')
                 ->nullOnDelete()
                 ->cascadeOnUpdate();
-            $table->foreignId('author_id')
+            $table->foreignId('user_id')
                 ->constrained('users', 'id')
                 ->noActionOnDelete()
                 ->cascadeOnUpdate();

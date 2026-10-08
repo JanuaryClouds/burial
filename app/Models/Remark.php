@@ -20,7 +20,7 @@ class Remark extends Model
         'content',
         'remarkable_id',
         'remarkable_type',
-        'author_id',
+        'user_id',
         'parent_uuid',
     ];
 
@@ -58,6 +58,6 @@ class Remark extends Model
      */
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'author_id', 'id');
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 }
