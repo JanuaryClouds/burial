@@ -20,6 +20,8 @@ class Create extends Component
 
     public RemarkForm $form;
 
+    public bool $enableSubmission = true;
+
     #[On(('load-remarks'))]
     public function loadModel(?string $modelClass = null, ?string $id = null)
     {
@@ -33,6 +35,8 @@ class Create extends Component
 
     public function save()
     {
+        $this->enableSubmission = false;
+
         try {
             $this->form->validate();
         } catch (\Exception $e) {
@@ -68,6 +72,8 @@ class Create extends Component
             ]);
 
             report($th);
+        } finally {
+            $this->enableSubmission = true;
         }
     }
 
