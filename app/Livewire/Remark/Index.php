@@ -30,8 +30,6 @@ class Index extends Component
         $this->id = $id;
 
         if ($this->modelClass && $this->id) {
-            dd($this->modelClass);
-
             $this->model = $this->modelClass::where('uuid', $this->id)->first();
 
             if ($this->model) {

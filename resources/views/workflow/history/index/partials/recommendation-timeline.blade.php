@@ -1,4 +1,7 @@
 @foreach ($recommendations as $recommendation)
+	@php
+		$recommendation->loadMissing(['funeralAssistanceType', 'remarks']);
+	@endphp
 	<div class="timeline-item">
 		<div class="timeline-label">
 			<span class="text-uppercase fw-bold">
@@ -16,17 +19,18 @@
 			<span class="text-uppercase fw-bold">
 				Recommendation: {{ $recommendation->funeralAssistanceType?->name ?? 'N/A' }}
 			</span>
-			@if ($recommendation->remarks)
-				<span>
-					<button type="button"
-						class="btn btn-sm btn-info"
-						data-bs-toggle="modal"
-						data-bs-target="#showRemarksModal"
-						wire:click="showRemarks('{{ class_basename($recommendation) }}','{{ $recommendation->uuid }}')">
-						<x-icon.font-awesome class="fa-message me-0" />
-					</button>
-				</span>
-			@endif
+			<span>
+				<button type="button"
+					class="btn btn-sm p-0 text-primary"
+					data-bs-toggle="modal"
+					data-bs-target="#showRemarksModal"
+					wire:click="showRemarks('{{ class_basename($recommendation) }}','{{ $recommendation->uuid }}')">
+					<x-icon.font-awesome class="fa-message text-primary pe-1" />
+					@if ($recommendation->remarks->count() > 0)
+						{{ $recommendation->remarks->count() }}
+					@endif
+				</button>
+			</span>
 		</div>
 	</div>
 	@php
@@ -70,19 +74,20 @@
 					</span> --}}
 					{{-- end::Extra Fields --}}
 
-					@if ($history->remarks?->count() > 0)
-						{{-- start::Remarks Modal Button --}}
-						<span>
-							<button type="button"
-								class="btn btn-sm btn-info"
-								data-bs-toggle="modal"
-								data-bs-target="#showRemarksModal"
-								wire:click="showRemarks('{{ class_basename($history) }}','{{ $history->uuid }}')">
-								<x-icon.font-awesome class="fa-message me-0" />
-							</button>
-						</span>
-						{{-- end::Remarks Modal Button --}}
-					@endif
+					{{-- start::Remarks Modal Button --}}
+					<span>
+						<button type="button"
+							class="btn btn-sm p-0 text-primary"
+							data-bs-toggle="modal"
+							data-bs-target="#showRemarksModal"
+							wire:click="showRemarks('{{ class_basename($history) }}','{{ $history->uuid }}')">
+							<x-icon.font-awesome class="fa-message text-primary pe-1" />
+							@if ($history->remarks->count() > 0)
+								{{ $history->remarks->count() }}
+							@endif
+						</button>
+					</span>
+					{{-- end::Remarks Modal Button --}}
 				</div>
 			</div>
 		@endif

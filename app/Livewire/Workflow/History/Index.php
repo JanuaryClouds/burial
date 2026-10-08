@@ -37,11 +37,11 @@ class Index extends Component
             ->recommendations()
             ->oldest()
             ->with([
+                'funeralAssistanceType',
                 'remarks',
                 'workflowHistory.toStage',
                 'workflowHistory.fromStage',
                 'workflowHistory.remarks.user',
-                'funeralAssistanceType',
             ])
             ->get();
     }
