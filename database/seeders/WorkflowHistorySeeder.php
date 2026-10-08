@@ -226,19 +226,29 @@ class WorkflowHistorySeeder extends Seeder
             'Client has been referred to another department'
         );
 
-        // Update that recommendation to rejected
+        // Update that recommendation to referred
         $application->currentRecommendation()->update([
-            'status' => 'rejected',
+            'status' => 'referred',
         ]);
 
-        // Create a recommendation model
-        Recommendation::factory()->create([
+        // Create a new recommendation model
+        $recommendation = Recommendation::factory()->create([
             'application_uuid' => $application->uuid,
             'recommended_by' => User::whereHas('roles', function ($query) {
                 $query->where('name', 'staff');
             })->inRandomOrder()->first()->id,
             'created_at' => $dateOut,
         ]);
+
+        if (rand(0, 1) == 1) {
+            Remark::factory()->create([
+                'remarkable_type' => get_class($recommendation),
+                'remarkable_id' => $recommendation->uuid,
+                'user_id' => User::whereHas('roles', function ($query) {
+                    $query->where('name', 'staff');
+                })->inRandomOrder()->first()->id,
+            ]);
+        }
 
         dump('[INFO]['.$application->tracking_no.']: Returned application to recommendation stage');
     }
@@ -270,7 +280,7 @@ class WorkflowHistorySeeder extends Seeder
             Remark::factory()->create([
                 'remarkable_type' => WorkflowHistory::class,
                 'remarkable_id' => $workflowHistory->uuid,
-                'author_id' => User::whereHas('roles', function ($query) {
+                'user_id' => User::whereHas('roles', function ($query) {
                     $query->where('name', 'staff');
                 })->inRandomOrder()->first()->id,
             ]);

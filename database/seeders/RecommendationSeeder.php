@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Application;
 use App\Models\FuneralAssistanceType;
 use App\Models\Recommendation;
+use App\Models\Remark;
 use App\Models\User;
 use App\Models\WorkflowHistory;
 use App\Traits\HasWorkflowHistory;
@@ -42,6 +43,14 @@ class RecommendationSeeder extends Seeder
             'application_uuid' => $application->uuid,
             'recommended_by' => $staff->random(1)->first()->id ?? 1,
         ]);
+
+        if (rand(0,1) == 1) {
+            Remark::factory()->create([
+                'remarkable_type' => get_class($recommendation),
+                'remarkable_id' => $recommendation->uuid,
+                'user_id' => $staff->random(1)->first()->id ?? 1,
+            ]);
+        }
 
         // $workflow = $recommendation->funeralAssistanceType->workflow;
         // $firstStage = $workflow->stages()->where('position', 1)->first();
