@@ -7,13 +7,12 @@ use App\Models\Client;
 use App\Models\Notification;
 use App\Models\User;
 use App\Traits\HasWorkflowHistory;
-use App\Traits\HasWorkHours;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 
 class AssessmentSeeder extends Seeder
 {
-    use HasWorkflowHistory, HasWorkHours;
+    use HasWorkflowHistory;
 
     /**
      * Run the database seeds.
