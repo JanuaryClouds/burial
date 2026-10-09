@@ -63,8 +63,6 @@ class Create extends Component
                     'referred_to' => $this->form->referred_to,
                     'rejected_by' => Auth::id(),
                 ]);
-
-                $this->redirect(route('application.show', $this->application));
             });
         } catch (\Throwable $th) {
             $this->dispatch('notification:toast', [

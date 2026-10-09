@@ -67,8 +67,6 @@ class Create extends Component
                     'type' => 'success',
                     'text' => 'Successfully rejected the application',
                 ]);
-
-                $this->redirect(route('application.show', $this->application));
             });
         } catch (\Throwable $th) {
             $this->dispatch('notification:alert', [
