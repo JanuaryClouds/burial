@@ -6,15 +6,15 @@ use App\Models\Application;
 use App\Traits\Livewire\HasPlaceholder;
 use Livewire\Component;
 
-class Stop extends Component
+class Close extends Component
 {
     use HasPlaceholder;
 
     public Application $application;
 
-    public ?string $stopMode = null;
+    public ?string $closeMode = null;
 
-    public array $stopModes = [
+    public array $closeModes = [
         'rejection' => 'Rejection',
         'referral' => 'Referral',
     ];
@@ -26,6 +26,6 @@ class Stop extends Component
 
     public function render()
     {
-        return view('livewire.application.stop');
+        return view('livewire.application.close');
     }
 }
