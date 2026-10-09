@@ -23,7 +23,6 @@ class FuneralAssistanceSeeder extends Seeder
         foreach ($clients as $client) {
             $funeralAssistance = FuneralAssistance::factory()->create([
                 'client_id' => $client->id,
-                'remarks' => $client->recommendation->first()->remarks,
             ]);
 
             Notification::factory()->create([

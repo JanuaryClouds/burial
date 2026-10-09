@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('name')->unique();
             $table->foreignId('district_id')->constrained('districts');
-            $table->string('remarks')->nullable();
             $table->timestamps();
         });
     }

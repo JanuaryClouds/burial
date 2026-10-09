@@ -3,6 +3,7 @@
 namespace App\Livewire\Workflow\History;
 
 use App\Models\Application;
+use App\Models\WorkflowHistory;
 use App\Traits\Livewire\HasPlaceholder;
 use Illuminate\Database\Eloquent\Collection;
 use Livewire\Attributes\On;
@@ -16,17 +17,53 @@ class Index extends Component
 
     public Collection $recommendations;
 
+    public WorkflowHistory $selectedHistory;
+
     public function mount(Application $application)
     {
         $this->application = $application;
-        $this->recommendations = $application->recommendations()->with(['workflowHistory', 'funeralAssistanceType'])->oldest()->get();
+        $this->loadTimeline($application);
     }
 
     #[On('refreshWorkflowHistory')]
     public function refresh()
     {
-        $this->recommendations = $this->application->recommendations()->with(['workflowHistory', 'funeralAssistanceType'])->oldest()->get();
+        $this->loadTimeline($this->application);
     }
+
+    public function loadTimeline(Application $application)
+    {
+        $this->recommendations = $application
+            ->recommendations()
+            ->oldest()
+            ->with([
+                'funeralAssistanceType',
+                'remarks',
+                'workflowHistory.toStage',
+                'workflowHistory.fromStage',
+                'workflowHistory.remarks.user',
+            ])
+            ->get();
+    }
+
+    public function showRemarks(?string $modelClass, ?string $uuid)
+    {
+        $this->dispatch('load-remarks', modelClass: null, id: null);
+
+        $this->dispatch('load-remarks', modelClass: (string) 'App\\Models\\'.$modelClass, id: $uuid);
+    }
+
+    // public function showHistoryDetails(string $uuid)
+    // {
+    //     $historyUuid = WorkflowHistory::firstWhere('uuid', $uuid)?->uuid;
+
+    //     $this->dispatch('load-details', historyUuid: $historyUuid);
+    // }
+
+    // public function clearSelectedHistory()
+    // {
+    //     $this->dispatch('load-details', historyUuid: null);
+    // }
 
     public function render()
     {

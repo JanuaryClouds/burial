@@ -18,7 +18,7 @@ class Show extends Component
 
     public function mount(Application $application, ApplicationService $applicationServices)
     {
-        $this->$application = $application;
+        $this->application = $application;
         $this->services = $applicationServices;
 
         if ($this->application) {

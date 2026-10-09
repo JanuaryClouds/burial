@@ -4,6 +4,7 @@
 			<x-slot:header>
 				Log Processing
 			</x-slot:header>
+			{{-- start::Date In --}}
 			<div class="row">
 				<div class="col-4">
 					<x-button wire:click="setDateInToNow"
@@ -22,27 +23,32 @@
 						step="1" />
 				</div>
 			</div>
+			{{-- end::Date In --}}
 			@if ($dateIn)
 				<div class="separator separator-dashed my-4"></div>
 				{{-- Extra fields --}}
 
-				{{-- Choose Stage to go to --}}
+				{{-- start::Stage selector --}}
 				<x-form.select :options="$stages->pluck('name', 'uuid')"
 					wire:model.live='toStageUuid'
 					wire:loading.remove
 					name="toStageUuid"
 					label="Target Stage"
 					required />
+				{{-- end::Stage selector --}}
 				@if ($toStageUuid && $toStageUuid !== $application->toStage()->uuid)
+					{{-- start::Reason --}}
 					<x-form.textarea wire:model='reason'
 						wire:loading.remove
 						required
 						name="reason"
 						label="Reason" />
+					{{-- end::Reason --}}
 				@endif
 			@endif
 			@if ($toStageUuid)
 				<div class="separator separator-dashed my-4"></div>
+				{{-- start::Date Out --}}
 				<div class="row">
 					<div class="col-4">
 						<x-button wire:click="setDateOutToNow"
@@ -60,8 +66,17 @@
 							step="1" />
 					</div>
 				</div>
+				{{-- end::Date Out --}}
+				{{-- start::Remarks --}}
+				<div class="row">
+					<div class="col-12">
+						<x-form.textarea wire:model.live="remarkForm.content"
+							name="remarkForm.content"
+							label="Remarks" />
+					</div>
+				</div>
+				{{-- end::Remarks --}}
 			@endif
-			{{-- Remarks --}}
 			@if ($dateOut)
 				<x-slot:footer>
 					<x-button wire:click="submit"

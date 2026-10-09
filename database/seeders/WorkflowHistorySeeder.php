@@ -6,6 +6,7 @@ use App\Models\Application;
 use App\Models\Cancellation;
 use App\Models\Recommendation;
 use App\Models\Rejection;
+use App\Models\Remark;
 use App\Models\User;
 use App\Models\WorkflowHistory;
 use App\Models\WorkflowStage;
@@ -225,19 +226,29 @@ class WorkflowHistorySeeder extends Seeder
             'Client has been referred to another department'
         );
 
-        // Update that recommendation to rejected
+        // Update that recommendation to referred
         $application->currentRecommendation()->update([
-            'status' => 'rejected',
+            'status' => 'referred',
         ]);
 
-        // Create a recommendation model
-        Recommendation::factory()->create([
+        // Create a new recommendation model
+        $recommendation = Recommendation::factory()->create([
             'application_uuid' => $application->uuid,
             'recommended_by' => User::whereHas('roles', function ($query) {
                 $query->where('name', 'staff');
             })->inRandomOrder()->first()->id,
             'created_at' => $dateOut,
         ]);
+
+        if (rand(0, 1) == 1) {
+            Remark::factory()->create([
+                'remarkable_type' => get_class($recommendation),
+                'remarkable_id' => $recommendation->uuid,
+                'user_id' => User::whereHas('roles', function ($query) {
+                    $query->where('name', 'staff');
+                })->inRandomOrder()->first()->id,
+            ]);
+        }
 
         dump('[INFO]['.$application->tracking_no.']: Returned application to recommendation stage');
     }
@@ -259,8 +270,21 @@ class WorkflowHistorySeeder extends Seeder
             'date_out' => $dateOut,
             'from_stage_uuid' => $fromStage?->uuid,
             'to_stage_uuid' => $toStage?->uuid,
+            'processed_by' => User::whereHas('roles', function ($query) {
+                $query->where('name', 'staff');
+            })->inRandomOrder()->first()->id,
             'reason' => $reason,
         ]);
+
+        if (rand(0, 1) == 0) {
+            Remark::factory()->create([
+                'remarkable_type' => WorkflowHistory::class,
+                'remarkable_id' => $workflowHistory->uuid,
+                'user_id' => User::whereHas('roles', function ($query) {
+                    $query->where('name', 'staff');
+                })->inRandomOrder()->first()->id,
+            ]);
+        }
 
         dump('  [SUCCESS]['.$recommendation->application->tracking_no.']: UUID: '.$workflowHistory->uuid.' | Recommendation : '.$recommendation->uuid.' | '.' Date In: '.$dateIn.' Date Out: '.$dateOut);
     }

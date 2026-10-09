@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('educations', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
-            $table->string('remarks')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

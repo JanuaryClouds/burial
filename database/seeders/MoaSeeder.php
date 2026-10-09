@@ -18,7 +18,6 @@ class MoaSeeder extends Seeder
         foreach ($moas as $moa) {
             ModeOfAssistance::firstOrCreate([
                 'name' => $moa,
-                'remarks' => 'seeder generated',
             ]);
         }
     }

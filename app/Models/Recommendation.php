@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\HasRemarks;
 use App\Traits\HasUuid;
 use Database\Factories\RecommendationFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Recommendation extends Model
 {
     /** @use HasFactory<RecommendationFactory> */
-    use HasFactory, HasUuid;
+    use HasFactory, HasRemarks, HasUuid;
 
     protected $table = 'recommendations';
 
