@@ -2,7 +2,7 @@
 @section('content')
 	<div class="d-flex flex-column gap-6">
 		{{-- start::Filter --}}
-		@include('reports.partials.filter')
+		@include('report.index.partials.filter')
 		{{-- end::Filter --}}
 
 		{{-- start::Applications Summary --}}
@@ -24,7 +24,7 @@
 		{{-- start::Export Button --}}
 		<div class="d-flex flex-center">
 			<div>
-				@include('reports.partials.export-to-pdf', [
+				@include('report.index.partials.export-to-pdf', [
 					'startDate' => $startDate,
 					'endDate' => $endDate,
 				])
