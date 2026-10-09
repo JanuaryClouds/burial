@@ -26,6 +26,7 @@ class ApplicationService
             $startDate,
             $endDate,
         )
+            ->orderBy('tracking_no', 'desc')
             ->get()
             ->map(function (Application $application) {
                 $client = $application->client;
