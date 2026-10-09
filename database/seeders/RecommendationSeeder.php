@@ -44,7 +44,7 @@ class RecommendationSeeder extends Seeder
             'recommended_by' => $staff->random(1)->first()->id ?? 1,
         ]);
 
-        if (rand(0,1) == 1) {
+        if (rand(0, 1) == 1) {
             Remark::factory()->create([
                 'remarkable_type' => get_class($recommendation),
                 'remarkable_id' => $recommendation->uuid,

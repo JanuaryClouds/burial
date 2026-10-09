@@ -2,7 +2,6 @@
 
 namespace App\Livewire\Remark;
 
-use App\Models\WorkflowHistory;
 use App\Traits\Livewire\HasPlaceholder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;

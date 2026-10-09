@@ -25,7 +25,7 @@ class Remark extends Model
     ];
 
     protected $casts = [
-        'content' => 'encrypted'
+        'content' => 'encrypted',
     ];
 
     /*
@@ -36,6 +36,7 @@ class Remark extends Model
 
     /**
      * Summary of parentRemark
+     *
      * @return BelongsTo<Remark, Remark>
      */
     public function parentRemark(): BelongsTo
@@ -45,6 +46,7 @@ class Remark extends Model
 
     /**
      * Summary of childRemarks
+     *
      * @return HasMany<Remark>
      */
     public function childRemarks(): HasMany
@@ -54,6 +56,7 @@ class Remark extends Model
 
     /**
      * Summary of user
+     *
      * @return BelongsTo<User, Remark>
      */
     public function user(): BelongsTo

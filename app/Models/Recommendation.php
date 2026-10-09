@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Recommendation extends Model
 {
     /** @use HasFactory<RecommendationFactory> */
-    use HasFactory, HasUuid, HasRemarks;
+    use HasFactory, HasRemarks, HasUuid;
 
     protected $table = 'recommendations';
 

@@ -3,10 +3,8 @@
 namespace App\Livewire\Remark;
 
 use App\Livewire\Forms\RemarkForm;
-use App\Models\Remark;
 use App\Services\RemarkService;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -54,8 +52,8 @@ class Create extends Component
                 $this->model
             );
 
-            $this->dispatch('load-remarks', 
-                modelClass: get_class($this->model), 
+            $this->dispatch('load-remarks',
+                modelClass: get_class($this->model),
                 id: $this->model->uuid
             );
 

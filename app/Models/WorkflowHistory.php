@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class WorkflowHistory extends Model
 {
     /** @use HasFactory<WorkflowHistoryFactory> */
-    use HasFactory, HasUuid, HasRemarks;
+    use HasFactory, HasRemarks, HasUuid;
 
     protected $table = 'workflow_histories';
 

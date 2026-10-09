@@ -20,9 +20,6 @@ class RemarkService
 
     /**
      * Summary of store
-     * @param array $data
-     * @param Model $model
-     * @return Remark
      */
     public function store(array $data, Model $model): Remark
     {

@@ -23,11 +23,11 @@ class Show extends Component
     {
         if ($historyUuid) {
             $this->selectedHistory = WorkflowHistory::with([
-                    'remarks',
-                    'toStage',
-                    'fromStage',
-                    'remarks.user',
-                ])
+                'remarks',
+                'toStage',
+                'fromStage',
+                'remarks.user',
+            ])
                 ->firstWhere('uuid', $historyUuid);
 
             $this->dispatch(
