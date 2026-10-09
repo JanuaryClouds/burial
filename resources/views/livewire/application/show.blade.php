@@ -59,15 +59,15 @@
 			@include('application.show.partials.documents')
 		</x-card>
 	</div>
-	@if (Auth::user()->can('cancel', [$application]) ||
-			Auth::user()->can('reject', [$application]) ||
-			Auth::user()->can('refer', [$application]))
-		<div class="d-flex flex-center">
-			<a href="{{ route('application.stop', $application) }}"
+	<div class="d-flex flex-center">
+		@if ($application->closure)
+			<p class="text-muted">Application has been closed</p>
+		@else
+			<a href="{{ route('application.close', $application) }}"
 				class="btn btn-danger">
 				<x-icon.font-awesome class="fa-stop" />
-				Stop Application
+				Close Application
 			</a>
-		</div>
-	@endif
+		@endif
+	</div>
 </div>

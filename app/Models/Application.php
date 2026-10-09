@@ -135,6 +135,15 @@ class Application extends Model
         return $this->hasOne(Cancellation::class, 'application_uuid', 'uuid');
     }
 
+    /**
+     * Summary of closure
+     * @return HasOne<Closure, Application>
+     */
+    public function closure(): HasOne
+    {
+        return $this->hasOne(Closure::class, 'application_uuid', 'uuid');
+    }
+
     protected static function clientRelations(): array
     {
         return self::prefixRelations(
@@ -178,6 +187,7 @@ class Application extends Model
                 'referral' => ['referral'],
                 'rejection' => ['rejection'],
                 'cancellation' => ['cancellation'],
+                'closure' => ['closure'],
                 'workflow' => self::workflowRelations(),
                 'workflowHistory' => ['workflowHistory'],
                 'relationship' => ['relationship'],

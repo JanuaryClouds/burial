@@ -169,4 +169,21 @@ class ApplicationPolicy
 
         return $user->hasPermissionTo('referral.create');
     }
+
+    public function close(User $user, Application $application): bool
+    {
+        if ($application->closure) {
+            return false;
+        }
+
+        if (!$application->rejection && !$application->referral && !$application->cancellation) {
+            return false;
+        }
+
+        if ($user->hasRole('superadmin')) {
+            return true;
+        }
+
+        return $user->hasPermissionTo('closure.create');
+    }
 }

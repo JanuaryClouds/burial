@@ -15,5 +15,9 @@
 			<livewire:cancellation.show :application="$application"
 				defer />
 		@endif
+		@if ($application->closure)
+			<livewire:closure.show :application="$application"
+				defer />
+		@endif
 	</div>
 </x-card>

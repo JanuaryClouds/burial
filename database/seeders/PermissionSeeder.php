@@ -20,6 +20,7 @@ class PermissionSeeder extends Seeder
             $this->rolePermissions(),
             $this->workflowPermissions(),
             $this->rejectionPermissions(),
+            $this->closurePermissions(),
         );
 
         foreach ($basePermissions as $permission) {
@@ -141,6 +142,16 @@ class PermissionSeeder extends Seeder
             'rejection.create',
             'rejection.update',
             'rejection.delete',
+        ];
+    }
+
+    public static function closurePermissions(): array
+    {
+        return [
+            'closure.view',
+            'closure.create',
+            'closure.update',
+            'closure.delete',
         ];
     }
 }
