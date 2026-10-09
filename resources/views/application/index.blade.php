@@ -12,16 +12,20 @@
 		])
 		<x-slot:footer>
 			@role('staff')
+				<a href="{{ route('report.index') }}"
+					class="btn btn-primary">
+					<x-icon.font-awesome class="fa-chart-bar" />
+					Generate Report
+				</a>
 				<a href="{{ route('application.search') }}"
-					class="btn btn-sm btn-primary"
-					role="button">
+					class="btn btn-primary">
 					<x-icon.font-awesome class="fa-qrcode" />
 					Scan Barcode
 				</a>
 			@endrole
 			@unlessrole('staff')
 				<a href="{{ route('application.create') }}"
-					class="btn btn-sm btn-primary">
+					class="btn btn-primary">
 					<x-icon.font-awesome class="fa-plus" />
 					New Application
 				</a>
