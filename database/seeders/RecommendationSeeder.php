@@ -9,13 +9,12 @@ use App\Models\Remark;
 use App\Models\User;
 use App\Models\WorkflowHistory;
 use App\Traits\HasWorkflowHistory;
-use App\Traits\HasWorkHours;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 
 class RecommendationSeeder extends Seeder
 {
-    use HasWorkflowHistory, HasWorkHours;
+    use HasWorkflowHistory;
 
     /**
      * Run the database seeds.

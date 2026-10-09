@@ -11,13 +11,12 @@ use App\Models\User;
 use App\Models\WorkflowHistory;
 use App\Models\WorkflowStage;
 use App\Traits\HasWorkflowHistory;
-use App\Traits\HasWorkHours;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 
 class WorkflowHistorySeeder extends Seeder
 {
-    use HasWorkflowHistory, HasWorkHours;
+    use HasWorkflowHistory;
 
     /**
      * Run the database seeds.
