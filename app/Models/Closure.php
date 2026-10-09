@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Closure extends Model
 {
-    use HasUuid, HasFactory;
+    use HasUuid, HasFactory, SoftDeletes;
 
     protected $fillable = [
         'application_uuid',
