@@ -1,7 +1,7 @@
 <div class="d-flex flex-column gap-2">
 	<x-callout class="bg-info-subtle border-info text-info">
 		<x-slot:icon>
-			<x-icon.font-awesome class="fs-2 fa-forward text-info" />
+			<x-icon.font-awesome class="fa-forward text-info" />
 		</x-slot:icon>
 		<x-slot:title>
 			Application has been cancelled
