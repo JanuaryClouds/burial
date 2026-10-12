@@ -41,12 +41,12 @@ class Edit extends Component
                     'maintenance_mode' => $this->form->maintenanceMode,
                     'social_welfare_officer' => $this->form->socialWelfareOfficer,
                     'dept_head' => $this->form->deptHead,
-                    'dept_email' => $this->form->deptEmail
+                    'dept_email' => $this->form->deptEmail,
                 ]);
-                
+
                 $this->dispatch('notification:alert', [
                     'type' => 'success',
-                    'text' => 'Successfully updated settings'
+                    'text' => 'Successfully updated settings',
                 ]);
 
                 ActivityLoggerService::logSuccess('Successfully updated system settings');
@@ -54,7 +54,7 @@ class Edit extends Component
         } catch (\Throwable $th) {
             $this->dispatch('notification:alert', [
                 'type' => 'error',
-                'text' => app()->hasDebugModeEnabled() ? $th->getMessage() : config('constants.errors.unknown')
+                'text' => app()->hasDebugModeEnabled() ? $th->getMessage() : config('constants.errors.unknown'),
             ]);
 
             ActivityLoggerService::logException($th, 'Failed to update system settings');

@@ -1,19 +1,10 @@
 <?php
 
 use App\Http\Controllers\Auth\UserController;
-use App\Http\Controllers\ClientController;
-use App\Http\Controllers\DistrictController;
-use App\Http\Controllers\EducationController;
 use App\Http\Controllers\FuneralAssistanceTypeController;
 use App\Http\Controllers\ModeOfAssistanceController;
-use App\Http\Controllers\NationalityController;
-use App\Http\Controllers\RelationshipController;
-use App\Http\Controllers\ReligionController;
 use App\Http\Controllers\RoleController;
-use App\Http\Controllers\SexController;
 use App\Http\Controllers\SystemController;
-use App\Http\Controllers\SystemSettingController;
-use App\Http\Controllers\WorkflowController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('role:superadmin')
