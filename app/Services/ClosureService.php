@@ -24,7 +24,7 @@ class ClosureService
             'application_uuid' => $application->uuid,
             'reason' => $data['reason'],
             'closed_by' => Auth::id(),
-            'closed_at' => now()
+            'closed_at' => now(),
         ]);
     }
 
