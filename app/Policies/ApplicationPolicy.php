@@ -107,8 +107,15 @@ class ApplicationPolicy
         return false;
     }
 
+    /**
+     * Summary of cancel
+     */
     public function cancel(User $user, Application $application): bool
     {
+        if ($application->closure) {
+            return false;
+        }
+
         if ($application->cancellation) {
             return false;
         }
@@ -128,8 +135,15 @@ class ApplicationPolicy
         return $user->id === $application->client->user_id;
     }
 
+    /**
+     * Summary of reject
+     */
     public function reject(User $user, Application $application): bool
     {
+        if ($application->closure) {
+            return false;
+        }
+
         if ($application->cancellation) {
             return false;
         }
@@ -149,8 +163,15 @@ class ApplicationPolicy
         return $user->hasPermissionTo('rejection.create');
     }
 
+    /**
+     * Summary of refer
+     */
     public function refer(User $user, Application $application): bool
     {
+        if ($application->closure) {
+            return false;
+        }
+
         if ($application->cancellation) {
             return false;
         }
@@ -170,13 +191,16 @@ class ApplicationPolicy
         return $user->hasPermissionTo('referral.create');
     }
 
+    /**
+     * Summary of close
+     */
     public function close(User $user, Application $application): bool
     {
         if ($application->closure) {
             return false;
         }
 
-        if (!$application->rejection && !$application->referral && !$application->cancellation) {
+        if (! $application->rejection && ! $application->referral && ! $application->cancellation) {
             return false;
         }
 
