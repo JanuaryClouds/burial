@@ -36,8 +36,11 @@
 		</x-card>
 		{{-- end::Warning --}}
 
-		<div class="row"
-			wire:poll.60s>
+		{{-- start::Status Timeline --}}
+		@include('application.show.partials.status-timeline')
+		{{-- end::Status Timeline --}}
+
+		<div class="row">
 			{{-- start::Cancellation --}}
 			@can('cancel', [$application])
 				<div class="col-12 col-lg-6">
