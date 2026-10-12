@@ -29,21 +29,11 @@ class Status extends Component
 
     public function getCount(): void
     {
-        $this->count = Application::with([
-            'client.interviews',
-            'referral',
-            'workflowStage',
-            'assessment',
-            'recommendations',
-            'referral',
-            'rejection',
-            'cancellation',
-        ])
-            ->when(Auth::user()->roles()->count() == 0, function ($query) {
-                $query->whereHas('client', function ($query) {
-                    $query->where('user_id', Auth::id());
-                });
-            })
+        $this->count = Application::index(
+            Auth::user()->roles()->count() == 0 ? Auth::id() : null,
+            null,
+            null,
+        )
             ->get()
             ->map(function (Application $application) {
                 return [

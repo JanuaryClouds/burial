@@ -5,6 +5,7 @@ namespace App\Livewire\Application\Charts;
 use App\Models\Application;
 use App\Traits\Livewire\HasPlaceholder;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class PerStatus extends Component
@@ -44,7 +45,11 @@ class PerStatus extends Component
 
     private function getData(): void
     {
-        $this->perStatus = Application::perStatus($this->startDate, $this->endDate)
+        $this->perStatus = Application::index(
+            Auth::user()->roles()->count() == 0 ? Auth::id() : null,
+            $this->startDate,
+            $this->endDate
+        )
             ->get()
             ->map(function (Application $application) {
                 return [
