@@ -27,7 +27,6 @@ class StatusTimeline extends Component
             ['assessment' => false],
             ['processing' => false],
             ['releasing' => false],
-            ['closed' => false],
         ];
 
         for ($i = 0; $i < count($this->statusIndicators); $i++) {
@@ -35,21 +34,13 @@ class StatusTimeline extends Component
             if (collect($this->status)->pluck('label')->contains($currentLabel)) {
                 $this->statusIndicators[$i][$currentLabel] = 'current';
 
-                if (
-                    $this->application->referral ||
-                    $this->application->cancellation ||
-                    $this->application->rejection
-                ) {
-                    $this->statusIndicators[$i][$currentLabel] = 'completed';
-                }
-
                 if ($i !== 0) {
                     $previousLabel = key($this->statusIndicators[$i - 1]);
                     $this->statusIndicators[$i - 1][$previousLabel] = 'completed';
                 }
 
-                if ($i === count($this->statusIndicators) - 1) {
-                    $this->statusIndicators[$i][$currentLabel] = 'completed';
+                if ($this->application->closure) {
+                    $this->statusIndicators[$i][$currentLabel] = false;
                 }
             }
         }
