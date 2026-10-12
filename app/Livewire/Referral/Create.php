@@ -64,7 +64,7 @@ class Create extends Component
                     'rejected_by' => Auth::id(),
                 ]);
 
-                $this->redirect(route('application.show', $this->application));
+                $this->redirect(route('application.close', $this->application));
             });
         } catch (\Throwable $th) {
             $this->dispatch('notification:toast', [

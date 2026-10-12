@@ -26,8 +26,8 @@ Route::name('application.')
                     ->middleware('can:view,\App\Models\Application,application')
                     ->name('show');
 
-                Route::get('/stop', [ApplicationController::class, 'stop'])
-                    ->name('stop');
+                Route::get('/close', [ApplicationController::class, 'close'])
+                    ->name('close');
 
                 Route::prefix('image')
                     ->name('image.')

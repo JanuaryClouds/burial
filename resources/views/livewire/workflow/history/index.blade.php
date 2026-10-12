@@ -9,9 +9,9 @@
 			@include('workflow.history.index.partials.recommendation-timeline')
 			{{-- end::Per Recommendation Timeline --}}
 
-			{{-- start::Application Stop --}}
-			@include('workflow.history.index.partials.application-stop')
-			{{-- end::Application Stop --}}
+			{{-- start::Application Close --}}
+			@include('workflow.history.index.partials.application-close')
+			{{-- end::Application Close --}}
 
 			{{-- start::Show Workflow History Modal --}}
 			@include('workflow.history.index.partials.show.modal')

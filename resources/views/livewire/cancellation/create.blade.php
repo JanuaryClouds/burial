@@ -1,4 +1,5 @@
-<div class="d-flex flex-column gap-6">
+<div class="d-flex flex-column gap-6"
+	wire:poll.60s>
 	{{-- start::Form --}}
 	<div class="row">
 		<div class="col-12">
