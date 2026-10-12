@@ -4,7 +4,7 @@
 		<livewire:application.status-timeline :application="$application"
 			defer />
 		<div class="row">
-			<div class="col-12 col-lg-6">
+			<div class="col-12 col-lg-auto">
 				@if ($application->rejection)
 					<livewire:rejection.show :application="$application"
 						defer />
@@ -18,7 +18,7 @@
 						defer />
 				@endif
 			</div>
-			<div class="col-12 col-lg-6">
+			<div class="col-12 col-lg-auto">
 				@if ($application->closure)
 					<livewire:closure.show :application="$application"
 						defer />
