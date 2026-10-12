@@ -31,7 +31,7 @@ class Create extends Component
         } catch (\Throwable $th) {
             $this->dispatch('notification:toast', [
                 'type' => 'error',
-                'text' => app()->hasDebugModeEnabled() ? $th->getMessage() : config('constants.errors.validation')
+                'text' => app()->hasDebugModeEnabled() ? $th->getMessage() : config('constants.errors.validation'),
             ]);
         }
 
@@ -43,18 +43,20 @@ class Create extends Component
                 );
 
                 ActivityLoggerService::logSuccess('Successfully closed an application', [
-                    'application_uuid' => $this->application->uuid
+                    'application_uuid' => $this->application->uuid,
                 ]);
 
                 $this->dispatch('notification:alert', [
                     'type' => 'success',
-                    'text' => 'Successfully closed this application'
+                    'text' => 'Successfully closed this application',
                 ]);
+
+                $this->redirect(route('application.show', $this->application));
             });
         } catch (\Throwable $th) {
             $this->dispatch('notification:alert', [
                 'type' => 'error',
-                'text' => app()->hasDebugModeEnabled() ? $th->getMessage() : config('constants.errors.unknown')
+                'text' => app()->hasDebugModeEnabled() ? $th->getMessage() : config('constants.errors.unknown'),
             ]);
 
             ActivityLoggerService::logException($th, 'Failed to close an application');
