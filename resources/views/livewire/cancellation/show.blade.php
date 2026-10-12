@@ -4,7 +4,7 @@
 			<x-icon.font-awesome class="fa-forward text-info" />
 		</x-slot:icon>
 		<x-slot:title>
-			Application has been cancelled
+			<p class="fw-bold">Application has been cancelled</p>
 		</x-slot:title>
 		<p class="mb-0">{{ $cancellation->reason }}</p>
 		<p class="text-muted small mb-0">{{ \Carbon\Carbon::parse($cancellation->created_at)->format('d F Y h:i A') }}</p>

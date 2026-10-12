@@ -6,10 +6,10 @@
 		<x-slot:title>
 			<p class="fw-bold">Application has been closed</p>
 		</x-slot:title>
-		<p class="text-info">
+		<p class="text-info mb-0">
 			{{ $application->closure->reason }}
 		</p>
-		<p class="text-muted">
+		<p class="text-muted small mb-0">
 			Closed at {{ \Carbon\Carbon::parse($application->closure->closed_at)->format('F d Y, h:i s a') }} by
 			{{ $application->closure->closedBy->fullname() }}
 		</p>
