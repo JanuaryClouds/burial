@@ -11,13 +11,16 @@ class RoleService
     /**
      * Summary of storeRole
      */
-    public function storeRole(array $data): RoleContract
+    public function store(array $data): RoleContract
     {
         if (empty($data['guard_name'])) {
             $data['guard_name'] = 'web';
         }
 
-        return Role::create($data);
+        return Role::create([
+            'name' => $data['name'],
+            'guard_name' => $data['guard_name'],
+        ])->syncPermissions($data['permissions']);
     }
 
     public function updateRole(array $data, Role $role): Role
