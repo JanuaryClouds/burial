@@ -27,8 +27,12 @@ Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
 Route::middleware(['auth', 'active.check'])
     ->group(function () {
-        Route::resource('/user', UserController::class)
-            ->only(['edit', 'update']);
+        Route::get('/user/{user}', [UserController::class, 'show'])
+            ->name('user.show');
+
+        Route::get('/user/{user}/edit', [UserController::class, 'edit'])
+            ->middleware('can:edit,user')
+            ->name('user.edit');
 
         Route::get('/checksession', [UserController::class, 'checkSession'])
             ->name('checksession');
