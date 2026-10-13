@@ -32,10 +32,10 @@ class DatatableService
         return $columns;
     }
 
-    public function ajax(Collection $data)
+    public function ajax(Collection $data, ?string $dataName = 'data')
     {
         return response()->json([
-            'data' => $data->values(),
+            $dataName => $data->values(),
         ]);
     }
 }
