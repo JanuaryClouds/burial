@@ -12,4 +12,11 @@ class ModeOfAssistanceService
             'name' => $data['name'],
         ]);
     }
+
+    public function update(array $data, ModeOfAssistance $modeOfAssistance)
+    {
+        return $modeOfAssistance->update([
+            'name' => $data['name'],
+        ]);
+    }
 }
