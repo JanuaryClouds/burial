@@ -42,4 +42,18 @@ class FuneralAssistanceType extends Model
     {
         return $this->belongsTo(Workflow::class, 'workflow_uuid', 'uuid');
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Model Scopes
+    |--------------------------------------------------------------------------
+    */
+
+    public function scopeIndex($query)
+    {
+        return $query->with([
+            'workflow',
+            'recommendations',
+        ]);
+    }
 }
