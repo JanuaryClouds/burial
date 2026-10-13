@@ -48,10 +48,20 @@ class UserService
             });
     }
 
-    public function storeUser(array $data)
+    public function store(array $data)
     {
-        $user = User::create($data);
-        $user->assignRole('staff');
+        $user = User::create([
+            'first_name' => $data['firstName'],
+            'middle_name' => $data['middleName'],
+            'last_name' => $data['lastName'],
+            'suffix' => $data['suffix'],
+            'email' => $data['email'],
+            'contact_number' => $data['contactNumber'],
+            'is_active' => true,
+            'password' => bcrypt($data['password'])
+        ]);
+
+        $user->assignRole($data['roles']);
 
         return $user;
     }
@@ -62,7 +72,14 @@ class UserService
             $data['password'] = $user->password;
         }
 
-        $user->update($data);
+        $user->update([
+            'first_name' => $data['firstName'],
+            'middle_name' => $data['middleName'],
+            'last_name' => $data['lastName'],
+            'suffix' => $data['suffix'],
+            'email' => $data['email'],
+            'contact_number' => $data['contactNumber'],
+        ]);
 
         if (isset($data['is_active'])) {
             $user->is_active = true;
