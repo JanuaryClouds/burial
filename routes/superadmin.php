@@ -48,9 +48,6 @@ Route::middleware('role:superadmin')
             ->group(function () {
                 Route::get('/', 'index')
                     ->name('index');
-
-                Route::get('/{user}/edit', 'edit')
-                    ->name('edit');
             });
     });
 
