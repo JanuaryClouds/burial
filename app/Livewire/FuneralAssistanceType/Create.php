@@ -6,10 +6,13 @@ use App\Livewire\Forms\FuneralAssistanceTypeForm;
 use App\Models\Workflow;
 use App\Services\ActivityLoggerService;
 use App\Services\FuneralAssistanceTypeService;
+use App\Traits\Livewire\HasPlaceholder;
 use Livewire\Component;
 
 class Create extends Component
 {
+    use HasPlaceholder;
+
     public FuneralAssistanceTypeForm $form;
 
     public ?array $workflows = null;

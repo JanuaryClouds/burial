@@ -7,10 +7,13 @@ use App\Models\FuneralAssistanceType;
 use App\Models\Workflow;
 use App\Services\ActivityLoggerService;
 use App\Services\FuneralAssistanceTypeService;
+use App\Traits\Livewire\HasPlaceholder;
 use Livewire\Component;
 
 class Edit extends Component
 {
+    use HasPlaceholder;
+
     public ?FuneralAssistanceType $funeralAssistanceType = null;
 
     public FuneralAssistanceTypeForm $form;
@@ -53,8 +56,6 @@ class Edit extends Component
             ActivityLoggerService::logSuccess('Successfully updated funeral assistance type', [
                 'uuid' => $this->funeralAssistanceType->uuid,
             ]);
-
-            $this->form->reset();
         } catch (\Throwable $th) {
             $this->dispatch('notification:alert', [
                 'type' => 'error',
