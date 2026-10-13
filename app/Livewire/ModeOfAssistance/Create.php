@@ -5,10 +5,13 @@ namespace App\Livewire\ModeOfAssistance;
 use App\Livewire\Forms\ModeOfAssistanceForm;
 use App\Services\ActivityLoggerService;
 use App\Services\ModeOfAssistanceService;
+use App\Traits\Livewire\HasPlaceholder;
 use Livewire\Component;
 
 class Create extends Component
 {
+    use HasPlaceholder;
+
     public ModeOfAssistanceForm $form;
 
     public function clearForm()

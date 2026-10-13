@@ -6,10 +6,13 @@ use App\Livewire\Forms\ModeOfAssistanceForm;
 use App\Models\ModeOfAssistance;
 use App\Services\ActivityLoggerService;
 use App\Services\ModeOfAssistanceService;
+use App\Traits\Livewire\HasPlaceholder;
 use Livewire\Component;
 
 class Edit extends Component
 {
+    use HasPlaceholder;
+
     public ModeOfAssistanceForm $form;
 
     public ?ModeOfAssistance $modeOfAssistance;
@@ -46,8 +49,6 @@ class Edit extends Component
             ActivityLoggerService::logSuccess('Successfully updated mode of assistance', [
                 'id' => $this->modeOfAssistance->id,
             ]);
-
-            $this->form->reset();
         } catch (\Throwable $th) {
             $this->dispatch('notification:alert', [
                 'type' => 'error',
