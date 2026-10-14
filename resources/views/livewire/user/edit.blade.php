@@ -53,12 +53,15 @@
 				:required="true" />
 		</div>
 	</div>
-	<x-form.select wire:model.live='form.roleIds'
-		name="form.roleIds"
-		label="Roles"
-		:required="true"
-		:options="$roles"
-		:multiple="true" />
+	@role('superadmin')
+		<x-form.select wire:model.live='form.roleIds'
+			name="form.roleIds"
+			label="Roles"
+			:required="true"
+			:options="$roles"
+			:selected="$user->roles->pluck('id')->toArray()"
+			:multiple="true" />
+	@endrole
 	<div class="d-flex justify-content-end align-items-center gap-4">
 		@role('superadmin')
 			<a href="{{ route('user.index') }}"
