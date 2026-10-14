@@ -11,12 +11,17 @@ class RoleForm extends Form
     #[Validate('required|string|max:255|unique:roles,name')]
     public ?string $name = null;
 
-    #[Validate('nullable|array|exists:permissions,id')]
-    public ?array $permissions = [];
+    #[Validate('nullable|string')]
+    public mixed $permissions = null;
 
     public function setRole(Role $role)
     {
         $this->name = $role->name;
-        $this->permissions = $role->permissions()->pluck('id')->toArray();
+
+        $permissions = $role->permissions()
+            ->pluck('name')
+            ->toArray();
+
+        $this->permissions = implode(',', $permissions);
     }
 }
