@@ -19,16 +19,10 @@ class Create extends Component
 
     public function mount()
     {
-        $this->permissions = Permission::query()
-            ->whereNotIn('name', ['workflow.*'])
+        $this->permissions = Permission::orderBy('name', 'asc')
             ->get()
             ->mapWithKeys(fn($permission) => [$permission->name => $permission->name])
             ->toArray();
-    }
-
-    public function clearForm()
-    {
-        $this->form->reset();
     }
 
     public function save()
@@ -55,6 +49,8 @@ class Create extends Component
             ]);
 
             $this->form->reset();
+
+            $this->redirect(route('role.index'));
         } catch (\Throwable $th) {
             $this->dispatch('notification:alert', [
                 'type' => 'error',

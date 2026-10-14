@@ -2,10 +2,11 @@
 
 namespace App\Livewire\Role;
 
-use App\Livewire\Forms\RoleForm;
 use App\Services\RoleService;
 use App\Services\ActivityLoggerService;
 use App\Traits\Livewire\HasPlaceholder;
+use Livewire\Attributes\Rule;
+use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -16,26 +17,50 @@ class Edit extends Component
 
     public ?Role $role = null;
 
-    public RoleForm $form;
+    #[Validate]
+    public ?string $name = null;
 
+    #[Validate('nullable|array')]
     public array $permissions = [];
+
+    public array $permissionsOptions = [];
 
     public function mount(Role $role)
     {
         $this->role = $role;
         
-        $this->permissions = Permission::whereNotIn('name', ['workflow.*'])
+        $this->permissionsOptions = Permission::orderBy('name', 'asc')
             ->get()
             ->mapWithKeys(fn($permission) => [$permission->name => $permission->name])
             ->toArray();
 
-        $this->form->setRole($role);
+        $this->name = $role->name;
+        $this->permissions = $role->permissions->pluck('name')
+            ->mapWithKeys(fn($permission) => [$permission => $permission])
+            ->toArray();
+    }
+
+    protected function rules()
+    {
+        return [
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                \Illuminate\Validation\Rule::unique('roles')->ignore($this->role->id),
+            ],
+        ];
+    }
+
+    public function clearPermissions()
+    {
+        $this->permissions = [];
     }
 
     public function save()
     {
         try {
-            $this->form->validate();
+            $this->validate();
         } catch (\Exception $e) {
             $this->dispatch('notification:toast', [
                 'type' => 'error',
@@ -44,7 +69,7 @@ class Edit extends Component
         }
 
         try {
-            $role = app(RoleService::class)->update($this->form->all(), $this->role);
+            $role = app(RoleService::class)->update($this->all(), $this->role);
 
             $this->dispatch('notification:alert', [
                 'type' => 'success',
