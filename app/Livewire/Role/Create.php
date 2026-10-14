@@ -19,9 +19,10 @@ class Create extends Component
 
     public function mount()
     {
-        $this->permissions = Permission::whereNotIn('name', ['workflow.*'])
+        $this->permissions = Permission::query()
+            ->whereNotIn('name', ['workflow.*'])
             ->get()
-            ->mapWithKeys(fn($permission) => [$permission->id => $permission->name])
+            ->mapWithKeys(fn($permission) => [$permission->name => $permission->name])
             ->toArray();
     }
 
