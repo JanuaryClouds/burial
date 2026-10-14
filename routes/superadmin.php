@@ -38,6 +38,9 @@ Route::middleware('role:superadmin')
                 Route::get('/', 'index')
                     ->name('index');
 
+                Route::get('/create', 'create')
+                    ->name('create');
+
                 Route::get('/{role}/edit', 'edit')
                     ->name('edit');
             });

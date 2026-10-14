@@ -58,6 +58,13 @@ class RoleController extends Controller
         ]);
     }
 
+    public function create()
+    {
+        return view('role.create', [
+            'pageTitle' => 'Create a new role',
+        ]);
+    }
+
     public function edit(Role $role)
     {
         return view('role.edit', [
