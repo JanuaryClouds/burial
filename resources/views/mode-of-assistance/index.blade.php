@@ -2,7 +2,7 @@
 @section('content')
 	<div class="d-flex flex-column gap-6">
 		<x-card>
-			@include('partials.datatable', [
+			@include('partials.datatable.index', [
 				'columns' => $columns,
 				'src' => 'data',
 			])
