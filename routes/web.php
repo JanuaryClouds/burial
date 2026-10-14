@@ -41,12 +41,12 @@ Route::middleware(['auth', 'active.check'])
             ->name('dashboard');
 
         Route::get('/applications/export', [ExportController::class, 'applications'])
-            ->middleware('permission:create-reports')
+            ->middleware('permission:Create Report')
             ->name('applications.export.all');
 
-        Route::get('/activity-logs', [ActivityLogController::class, 'index'])
-            ->middleware('permission:view-logs')
-            ->name('activity.logs');
+        // Route::get('/activity-logs', [ActivityLogController::class, 'index'])
+        //     ->middleware('permission:View Log')
+        //     ->name('activity.logs');
 
         require __DIR__.'/application.php';
         require __DIR__.'/client.php';

@@ -3,19 +3,24 @@
 		name="form.name"
 		label="Role Name"
 		:required="true" />
-	<x-form.select wire:model='form.permissions'
-		wire:ignore
-		name="form.permission"
-		label="Permissions"
-		:options="$permissions"
-		:multiple="true" />
-	<div class="d-flex justify-content-end align-items-center gap-6">
-		<x-button wire:click='clearForm'
-			class="btn-sm btn-light">
+	<div class="row">
+		@foreach ($permissions as $permissionKey => $permissionLabel)
+			<div class="col-12 col-lg-4">
+				<x-form.check :name="'form.permissions.' . $permissionKey"
+					wire:model="form.permissions.{{ $permissionKey }}"
+					wire:key="{{ $permissionKey }}"
+					:value="$permissionKey"
+					:label="$permissionLabel" />
+			</div>
+		@endforeach
+	</div>
+	<div class="d-flex justify-content-end align-items-center gap-4">
+		<a href="{{ route('role.index') }}"
+			class="btn btn-sm btn-light">
 			<x-icon.font-awesome class="fa-xmark" />
 			Cancel
-		</x-button>
-		<x-button class="btn-sm btn-primary"
+		</a>
+		<x-button class="btn-sm btn-success"
 			wire:click='save'>
 			<x-icon.font-awesome class="fa-floppy-disk" />
 			Save

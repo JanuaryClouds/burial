@@ -6,9 +6,13 @@
 				'columns' => $columns,
 				'src' => 'data',
 			])
-		</x-card>
-		<x-card>
-			<livewire:role.create defer />
+			<x-slot:footer>
+				<a href="{{ route('role.create') }}"
+					class="btn btn-primary">
+					<x-icon.font-awesome class="fa-plus-circle" />
+					Create New Role
+				</a>
+			</x-slot:footer>
 		</x-card>
 	</div>
 @endsection
