@@ -17,19 +17,15 @@ class RoleService
             $data['guard_name'] = 'web';
         }
 
-        $permissions = explode(',', $data['permissions']);
-
         return Role::create([
             'name' => $data['name'],
             'guard_name' => $data['guard_name'],
-        ])->syncPermissions($permissions);
+        ])->syncPermissions(array_keys($data['permissions']));
     }
 
     public function update(array $data, Role $role): Role
     {
-        $permissions = explode(',', $data['permissions']);
-
-        $role->syncPermissions($permissions);
+        $role->syncPermissions(array_keys($data['permissions']));
 
         $role->update([
             'name' => $data['name'],

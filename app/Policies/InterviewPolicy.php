@@ -45,7 +45,7 @@ class InterviewPolicy
             return true;
         }
 
-        return $user->can('interview.create');
+        return $user->can('Create Interview');
     }
 
     /**

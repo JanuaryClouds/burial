@@ -25,7 +25,7 @@ class ReferralPolicy
             return false;
         }
 
-        return $user->can('referral.create');
+        return $user->can('Create Referral');
     }
 
     /**

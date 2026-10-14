@@ -46,6 +46,6 @@ class RecommendationPolicy
             return true;
         }
 
-        return $user->can('recommendation.create');
+        return $user->can('Create Recommendation');
     }
 }

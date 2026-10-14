@@ -39,119 +39,119 @@ class PermissionSeeder extends Seeder
     public static function interviewPermissions(): array
     {
         return [
-            'interview.viewAny',
-            'interview.view',
-            'interview.create',
-            'interview.update',
-            'interview.delete',
+            'View Any Interview',
+            'View Interview',
+            'Create Interview',
+            'Update Interview',
+            'Delete Interview',
         ];
     }
 
     public static function assessmentPermissions(): array
     {
         return [
-            'assessment.viewAny',
-            'assessment.view',
-            'assessment.create',
-            'assessment.update',
-            'assessment.delete',
+            'View Any Assessment',
+            'View Assessment',
+            'Create Assessment',
+            'Update Assessment',
+            'Delete Assessment',
         ];
     }
 
     public static function recommendationPermissions(): array
     {
         return [
-            'recommendation.viewAny',
-            'recommendation.view',
-            'recommendation.create',
-            'recommendation.update',
-            'recommendation.delete',
+            'View Any Recommendation',
+            'View Recommendation',
+            'Create Recommendation',
+            'Update Recommendation',
+            'Delete Recommendation',
         ];
     }
 
     public static function referralPermissions(): array
     {
         return [
-            'referral.viewAny',
-            'referral.view',
-            'referral.create',
-            'referral.update',
-            'referral.delete',
+            'View Any Referral',
+            'View Referral',
+            'Create Referral',
+            'Update Referral',
+            'Delete Referral',
         ];
     }
 
     public static function claimantChangePermissions(): array
     {
         return [
-            'claimant-change-request.viewAny',
-            'claimant-change-request.view',
-            'claimant-change-request.create',
-            'claimant-change-request.update',
-            'claimant-change-request.delete',
+            'View Any Claimant Change',
+            'View Claimant Change',
+            'Create Claimant Change',
+            'Update Claimant Change',
+            'Delete Claimant Change',
         ];
     }
 
     public static function reportPermissions(): array
     {
         return [
-            'report.viewAny',
-            'report.view',
-            'report.create',
+            'View Any Report',
+            'View Report',
+            'Create Report',
         ];
     }
 
     public static function logPermissions(): array
     {
         return [
-            'log.viewAny',
-            'log.view',
+            'View Any Log',
+            'View Log',
         ];
     }
 
     public static function rolePermissions(): array
     {
         return [
-            'role.create',
-            'role.viewAny',
-            'role.view',
-            'role.edit',
+            'View Any Role',
+            'View Role',
+            'Create Role',
+            'Update Role',
         ];
     }
 
     public static function workflowPermissions(): array
     {
         return [
-            'workflow.admin',
-            'workflow.maricar',
-            'workflow.emma',
-            'workflow.nikki',
-            'workflow.bao',
-            'workflow.budget',
-            'workflow.accounting',
-            'workflow.treasury',
-            'workflow.releasing',
-            'workflow.closing',
+            'Workflow Admin',
+            'Workflow Maricar',
+            'Workflow Emma',
+            'Workflow Nikki',
+            'Workflow Bao',
+            'Workflow Budget',
+            'Workflow Accounting',
+            'Workflow Treasury',
+            'Workflow Releasing',
         ];
     }
 
     public static function rejectionPermissions(): array
     {
         return [
-            'rejection.view',
-            'rejection.viewAny',
-            'rejection.create',
-            'rejection.update',
-            'rejection.delete',
+            'View Any Rejection',
+            'View Rejection',
+            'Create Rejection',
+            'Update Rejection',
+            'Delete Rejection',
         ];
     }
 
     public static function closurePermissions(): array
     {
         return [
-            'closure.view',
-            'closure.create',
-            'closure.update',
-            'closure.delete',
+            'View Any Closure',
+            'View Closure',
+            'Create Closure',
+            'Update Closure',
+            'Delete Closure',
         ];
     }
 }
