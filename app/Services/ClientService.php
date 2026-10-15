@@ -31,28 +31,11 @@ class ClientService
 
     public function index(?string $user_id = null, string $orderBy = 'created_at', string $orderDirection = 'asc')
     {
-        return Client::with([
-            'user',
-            'interviews',
-            'application',
-            'application.beneficiary',
-            'application.assessment',
-            'application.referral',
-            'application.rejection',
-            'application.cancellation',
-            'application.recommendations',
-            'application.relationship',
-            'application.closure',
-            'socialInfo',
-            'application.client.interviews',
-        ])
-            ->when($user_id, function ($query) use ($user_id) {
-                $query->where('user_id', $user_id);
-            })
+        return Client::index($user_id)
             ->orderBy($orderBy, $orderDirection)
             ->get()
             ->map(function (Client $client) {
-                $application = $client->application?->load('workflowStage');
+                $application = $client->application;
                 $status = $application ? $application->currentStatus() : 'Draft';
 
                 return [

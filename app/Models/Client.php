@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
@@ -188,6 +189,38 @@ class Client extends Model
     | Model scopes.
     |
     */
+
+    public function scopeIndex(
+        Builder $query,
+        ?int $userId = null,
+        ?string $startDate = null,
+        ?string $endDate = null
+    ): Builder {
+        return $query->with([
+            'user',
+            'interviews',
+            'application',
+            'application.beneficiary',
+            'application.assessment',
+            'application.referral',
+            'application.rejection',
+            'application.cancellation',
+            'application.recommendations',
+            'application.relationship',
+            'application.closure',
+            'application.workflowStage',
+            'socialInfo',
+            'application.client.interviews',
+        ])
+            ->when($userId, function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            })
+            ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
+                $query->whereHas('application', function ($query) use ($startDate, $endDate) {
+                    $query->whereBetween('created_at', [$startDate, $endDate]);
+                });
+            });
+    }
 
     // Scopes
     public function scopeTotal($query)

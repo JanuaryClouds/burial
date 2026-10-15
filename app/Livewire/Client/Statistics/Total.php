@@ -3,6 +3,7 @@
 namespace App\Livewire\Client\Statistics;
 
 use App\Models\Client;
+use Illuminate\Support\Collection;
 use Livewire\Component;
 
 class Total extends Component
