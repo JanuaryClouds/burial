@@ -8,6 +8,8 @@ use Livewire\Component;
 
 class PerRelationship extends Component
 {
+    public Collection $applications;
+
     public Collection $perRelationship;
 
     public string $chartId = 'application-per-relationship';
@@ -16,8 +18,9 @@ class PerRelationship extends Component
 
     public string $chartType = 'bar';
 
-    public function mount()
+    public function mount(Collection $applications)
     {
+        $this->applications = $applications;
         $this->getData();
     }
 
@@ -35,18 +38,20 @@ class PerRelationship extends Component
 
     private function getData()
     {
-        $this->perRelationship = Application::perRelationship()
-            ->get()
-            ->map(function ($item) {
+        $this->perRelationship = $this->applications
+            ->groupBy('relationship_id')
+            ->map(function ($relationship) {
                 return [
-                    'name' => (string) $item->relationship->name,
-                    'count' => (int) $item->total,
+                    'name' => (string) $relationship->first()->relationship->name,
+                    'count' => (int) $relationship->count(),
                 ];
             });
     }
 
     public function render()
     {
+        $this->refresh();
+
         return view('livewire.application.charts.per-relationship');
     }
 }

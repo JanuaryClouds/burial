@@ -3,11 +3,14 @@
 namespace App\Livewire\Application\Statistics;
 
 use App\Models\Application;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class Status extends Component
 {
+    public Collection $applications;
+
     public string $status;
 
     public int $count = 0;
@@ -18,8 +21,9 @@ class Status extends Component
 
     public ?string $route = null;
 
-    public function mount(string $status, string $iconName, int $iconPathsCount, ?string $route = null)
+    public function mount(Collection $applications, string $status, string $iconName, int $iconPathsCount, ?string $route = null)
     {
+        $this->applications = $applications;
         $this->status = $status;
         $this->getCount();
         $this->iconName = $iconName;
@@ -29,12 +33,7 @@ class Status extends Component
 
     public function getCount(): void
     {
-        $this->count = Application::index(
-            Auth::user()->roles()->count() == 0 ? Auth::id() : null,
-            null,
-            null,
-        )
-            ->get()
+        $this->count = $this->applications
             ->map(function (Application $application) {
                 return [
                     'uuid' => $application->uuid,
