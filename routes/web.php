@@ -27,8 +27,12 @@ Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
 Route::middleware(['auth', 'active.check'])
     ->group(function () {
-        Route::resource('/user', UserController::class)
-            ->only(['edit', 'update']);
+        Route::get('/user/{user}', [UserController::class, 'show'])
+            ->name('user.show');
+
+        Route::get('/user/{user}/edit', [UserController::class, 'edit'])
+            ->middleware('can:update,user')
+            ->name('user.edit');
 
         Route::get('/checksession', [UserController::class, 'checkSession'])
             ->name('checksession');
@@ -37,12 +41,12 @@ Route::middleware(['auth', 'active.check'])
             ->name('dashboard');
 
         Route::get('/applications/export', [ExportController::class, 'applications'])
-            ->middleware('permission:create-reports')
+            ->middleware('permission:Create Report')
             ->name('applications.export.all');
 
-        Route::get('/activity-logs', [ActivityLogController::class, 'index'])
-            ->middleware('permission:view-logs')
-            ->name('activity.logs');
+        // Route::get('/activity-logs', [ActivityLogController::class, 'index'])
+        //     ->middleware('permission:View Log')
+        //     ->name('activity.logs');
 
         require __DIR__.'/application.php';
         require __DIR__.'/client.php';

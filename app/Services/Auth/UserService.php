@@ -4,7 +4,6 @@ namespace App\Services\Auth;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Spatie\Permission\Models\Role;
 
 class UserService
 {
@@ -48,9 +47,19 @@ class UserService
             });
     }
 
-    public function storeUser(array $data)
+    public function store(array $data)
     {
-        $user = User::create($data);
+        $user = User::create([
+            'first_name' => $data['firstName'],
+            'middle_name' => $data['middleName'],
+            'last_name' => $data['lastName'],
+            'suffix' => $data['suffix'],
+            'email' => $data['email'],
+            'contact_number' => $data['contactNumber'],
+            'is_active' => true,
+            'password' => bcrypt($data['password']),
+        ]);
+
         $user->assignRole('staff');
 
         return $user;
@@ -58,28 +67,34 @@ class UserService
 
     public function update(array $data, User $user)
     {
-        if ($data['password'] == null || $data['password'] == '') {
-            $data['password'] = $user->password;
-        }
-
-        $user->update($data);
-
-        if (isset($data['is_active'])) {
-            $user->is_active = true;
-        } else {
-            $user->is_active = false;
-        }
+        $user->update([
+            'first_name' => $data['firstName'],
+            'middle_name' => $data['middleName'],
+            'last_name' => $data['lastName'],
+            'suffix' => $data['suffix'],
+            'email' => $data['email'],
+            'contact_number' => $data['contactNumber'],
+            'password' => $data['newPassword'] ?? $user->password,
+            'is_active' => $data['isActive'],
+        ]);
 
         $user->save();
 
-        $staffRole = Role::where('name', 'staff')->first();
-        if (! isset($data['roles']) || empty($data['roles']) || $data['roles'] == []) {
-            $user->roles()->detach();
-        } else {
-            if (! in_array($staffRole->id, $data['roles'])) {
-                $user->roles()->detach();
+        // if (! isset($data['roles']) || empty($data['roles']) || $data['roles'] == []) {
+        //     $user->roles()->detach();
+        // } else {
+        //     if (! in_array($staffRole->id, $data['roles'])) {
+        //         $user->roles()->detach();
+        //     } else {
+        //         $user->roles()->sync($data['roles']);
+        //     }
+        // }
+
+        foreach ($data['roles'] as $roleName => $value) {
+            if ($value == true || $value == 'true') {
+                $user->assignRole($roleName);
             } else {
-                $user->roles()->sync($data['roles']);
+                $user->removeRole($roleName);
             }
         }
 

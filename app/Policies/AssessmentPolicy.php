@@ -12,7 +12,7 @@ class AssessmentPolicy
 
     public function __construct()
     {
-        $permissions = Permission::where('name', 'like', 'assessment.%')->get();
+        $permissions = Permission::where('name', 'like', '% Assessment')->get();
         foreach ($permissions as $permission) {
             $this->permissions[] = $permission->name;
         }
@@ -46,6 +46,6 @@ class AssessmentPolicy
             return true;
         }
 
-        return $user->hasDirectPermission('assessment.create');
+        return $user->hasDirectPermission('Create Assessment');
     }
 }

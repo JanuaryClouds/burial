@@ -26,26 +26,30 @@ class RoleSeeder extends Seeder
         $accountingRole = Role::firstOrCreate(['name' => 'accounting']);
         $treasuryRole = Role::firstOrCreate(['name' => 'treasury']);
 
-        $this->syncPermission($reporterRole, 'report');
-        $this->syncPermission($assessorRole, 'interview');
-        $this->syncPermission($assessorRole, 'assesment');
-        $this->syncPermission($assessorRole, 'recommendation');
-        $this->syncPermission($assessorRole, 'referral');
-        $this->syncPermission($lguAdminRole, 'admin');
-        $this->syncPermission($maricarRole, 'maricar');
-        $this->syncPermission($emmaRole, 'emma');
-        $this->syncPermission($nikkiRole, 'nikki');
-        $this->syncPermission($baoRole, 'bao');
-        $this->syncPermission($budgetRole, 'budget');
-        $this->syncPermission($accountingRole, 'accounting');
-        $this->syncPermission($treasuryRole, 'treasury');
-        $this->syncPermission($staffRole, 'releasing');
-        $this->syncPermission($staffRole, 'close');
+        $permissionSeeder = new PermissionSeeder;
+
+        $this->syncPermission($reporterRole, $permissionSeeder->reportPermissions());
+        $this->syncPermission($assessorRole, array_merge(
+            $permissionSeeder->interviewPermissions(),
+            $permissionSeeder->assessmentPermissions(),
+            $permissionSeeder->recommendationPermissions(),
+            $permissionSeeder->referralPermissions()
+        ));
+        $this->syncPermission($lguAdminRole, ['Workflow Admin']);
+        $this->syncPermission($maricarRole, ['Workflow Admin']);
+        $this->syncPermission($emmaRole, ['Workflow Admin']);
+        $this->syncPermission($nikkiRole, ['Workflow Admin']);
+        $this->syncPermission($baoRole, ['Workflow Admin']);
+        $this->syncPermission($budgetRole, ['Workflow Budget']);
+        $this->syncPermission($accountingRole, ['Workflow Accounting']);
+        $this->syncPermission($treasuryRole, ['Workflow Treasury']);
+        $this->syncPermission($staffRole, ['Workflow Releasing']);
+        $this->syncPermission($staffRole, $permissionSeeder->closurePermissions());
     }
 
     public static function queryPermission(string $column, string $permissionName): array
     {
-        $permission = Permission::where($column, 'like', '%'.$permissionName.'%')
+        $permission = Permission::where($column, 'like', '%'.$permissionName)
             ->get()
             ->mapWithKeys(function (Permission $permission) {
                 return [$permission->id => $permission->name];
@@ -55,10 +59,8 @@ class RoleSeeder extends Seeder
         return $permission;
     }
 
-    protected function syncPermission(Role $role, string $permissionName): void
+    protected function syncPermission(Role $role, array $permissions): void
     {
-        $permissions = $this->queryPermission('name', $permissionName);
-
         $role->syncPermissions(array_values($permissions));
     }
 }

@@ -6,27 +6,17 @@ use App\Models\ModeOfAssistance;
 
 class ModeOfAssistanceService
 {
-    /**
-     * Summary of storeModeOfAssistance
-     */
-    public function storeModeOfAssistance(array $data): ModeOfAssistance
+    public function store(array $data)
     {
-        return ModeOfAssistance::create($data);
+        return ModeOfAssistance::create([
+            'name' => $data['name'],
+        ]);
     }
 
-    /**
-     * Summary of updateModeOfAssistance
-     */
-    public function updateModeOfAssistance(array $data, ModeOfAssistance $moa): bool
+    public function update(array $data, ModeOfAssistance $modeOfAssistance)
     {
-        return $moa->update($data);
-    }
-
-    /**
-     * Summary of deleteModeOfAssistance
-     */
-    public function deleteModeOfAssistance(ModeOfAssistance $moa): bool
-    {
-        return $moa->delete();
+        return $modeOfAssistance->update([
+            'name' => $data['name'],
+        ]);
     }
 }

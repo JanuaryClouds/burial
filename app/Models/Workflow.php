@@ -41,16 +41,6 @@ class Workflow extends Model
     }
 
     /**
-     * Summary of transitions
-     *
-     * @return HasMany<WorkflowTransition, Workflow>
-     */
-    public function transitions(): HasMany
-    {
-        return $this->hasMany(WorkflowTransition::class, 'workflow_uuid', 'uuid');
-    }
-
-    /**
      * Summary of funeralAssistanceTypes
      *
      * @return HasMany<FuneralAssistanceType, Workflow>
@@ -64,8 +54,21 @@ class Workflow extends Model
     {
         return [
             'stages',
-            'transitions',
             'funeralAssistanceTypes',
         ];
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Model Scopes
+    |--------------------------------------------------------------------------
+    */
+
+    public function scopeIndex($query)
+    {
+        return Workflow::with([
+            'stages',
+            'funeralAssistanceTypes',
+        ]);
     }
 }

@@ -13,11 +13,21 @@ class ModeOfAssistance extends Model
 
     protected $fillable = [
         'name',
-        'remarks',
     ];
 
     public static function getAllMoas()
     {
         return self::all();
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Model Scopes
+    |--------------------------------------------------------------------------
+    */
+
+    public function scopeIndex($query)
+    {
+        return $query;
     }
 }

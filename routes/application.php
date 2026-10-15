@@ -23,7 +23,7 @@ Route::name('application.')
         Route::prefix('/{application}')
             ->group(function () {
                 Route::get('', [ApplicationController::class, 'show'])
-                    ->middleware('can:view,\App\Models\Application,application')
+                    ->middleware('can:view,application')
                     ->name('show');
 
                 Route::get('/close', [ApplicationController::class, 'close'])

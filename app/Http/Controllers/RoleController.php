@@ -4,15 +4,16 @@ namespace App\Http\Controllers;
 
 use App\DataTables\CmsDataTable;
 use App\Http\Requests\RoleRequest;
+use App\Services\DatatableService;
 use App\Services\RoleService;
 use Illuminate\Support\Facades\Auth;
-use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
 {
     public function __construct(
-        protected RoleService $roleServices
+        protected RoleService $roleServices,
+        protected DatatableService $datatableService
     ) {}
 
     // boilerplate code
@@ -45,30 +46,30 @@ class RoleController extends Controller
                     'show_route' => route('role.edit', $role->id),
                 ];
             });
-        $columns = collect(['name'])->map(fn ($key) => [
-            'data' => $key,
-        ]);
-        $pageTitle = 'Role';
-        $resource = 'role';
-        $permissions = Permission::select('id', 'name')->get();
 
         if (request()->expectsJson()) {
-            return response()->json([
-                'data' => $data->values(),
-            ]);
+            return $this->datatableService->ajax($data);
         }
 
-        return view('cms.index', compact('data', 'pageTitle', 'resource', 'permissions', 'columns'));
+        return view('role.index', [
+            'pageTitle' => 'Roles',
+            'columns' => $this->datatableService->getColumns($data),
+        ]);
+    }
+
+    public function create()
+    {
+        return view('role.create', [
+            'pageTitle' => 'Create a new role',
+        ]);
     }
 
     public function edit(Role $role)
     {
-        $data = Role::where('id', $role->id)->select('id', 'name')->first();
-        $pageTitle = 'Edit Role';
-        $resource = 'role';
-        $permissions = Permission::select('id', 'name')->get();
-
-        return view('cms.edit', compact('data', 'pageTitle', 'resource', 'permissions'));
+        return view('role.edit', [
+            'pageTitle' => 'Edit '.$role->name,
+            'role' => $role,
+        ]);
     }
 
     public function store(RoleRequest $request)

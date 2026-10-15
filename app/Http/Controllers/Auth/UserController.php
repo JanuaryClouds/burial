@@ -11,7 +11,6 @@ use App\Services\Auth\UserService;
 use App\Services\DatatableService;
 use Exception;
 use Illuminate\Support\Facades\Auth;
-use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
@@ -136,37 +135,48 @@ class UserController extends Controller
 
     public function index()
     {
-        $pageTitle = 'Users';
-        $resource = 'user';
-        $data = $this->userServices->index();
+        $data = User::index()
+            ->get()
+            ->map(function (User $user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->fullname(),
+                    'role' => $user->roles()->count() > 0 ? 'Staff' : 'Client',
+                    'active' => $user->is_active,
+                    'email' => $user->email,
+                    'contact_number' => $user->contact_number,
+                    'show_route' => route('user.edit', $user),
+                ];
+            });
 
         if (request()->expectsJson()) {
-            return response()->json([
-                'data' => $data->values(),
-            ]);
+            return $this->datatableServices->ajax($data);
         }
 
-        $columns = $this->datatableServices->getColumns($data, ['is_active']);
+        return view('user.index', [
+            'pageTitle' => 'Users',
+            'columns' => $this->datatableServices->getColumns($data),
+        ]);
+    }
 
-        return view('cms.index', compact('data', 'pageTitle', 'resource', 'columns'));
+    public function show(User $user)
+    {
+        $this->authorize('show', $user);
+
+        return view('user.show', [
+            'pageTitle' => $user->fullname(),
+            'user' => $user,
+        ]);
     }
 
     public function edit(User $user)
     {
         $this->authorize('update', $user);
 
-        $pageTitle = 'Edit User';
-        $resource = 'user';
-
-        $data = User::find($user->id);
-
-        $roles = Role::where('name', '!=', 'superadmin')->orderBy('id', 'desc')->get();
-
-        if ($data->hasRole('superadmin')) {
-            $roles = Role::whereIn('name', ['superadmin', 'staff'])->get();
-        }
-
-        return view('cms.edit', compact('data', 'pageTitle', 'resource', 'roles'));
+        return view('user.edit', [
+            'pageTitle' => 'Edit '.$user->first_name,
+            'user' => $user,
+        ]);
     }
 
     public function update(UpdateUserRequest $request, User $user)

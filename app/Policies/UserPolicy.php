@@ -47,11 +47,11 @@ class UserPolicy
      */
     public function update(User $user, User $model): bool
     {
-        if ($user->id === $model->id) {
+        if ($user->hasRole('superadmin')) {
             return true;
         }
 
-        if ($user->hasRole('superadmin')) {
+        if ($user->id === $model->id) {
             return true;
         }
 

@@ -103,4 +103,18 @@ class User extends Authenticatable
     {
         return $this->hasMany(Cancellation::class, 'cancelled_by', 'id');
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Model Scopes
+    |--------------------------------------------------------------------------
+    */
+
+    public function scopeIndex($query)
+    {
+        return $query->whereHas('roles', function ($query) {
+            $query->where('name', '!=', 'superadmin');
+        })
+            ->orderBy('created_at', 'asc');
+    }
 }

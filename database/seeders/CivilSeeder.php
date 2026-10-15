@@ -11,9 +11,10 @@ class CivilSeeder extends Seeder
     {
         $civils = [
             'Single',
+            'Divorced',
             'Married',
-            'Widowed',
             'Separated',
+            'Widowed',
         ];
 
         foreach ($civils as $civil) {

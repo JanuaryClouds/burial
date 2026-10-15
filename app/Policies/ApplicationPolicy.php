@@ -160,7 +160,7 @@ class ApplicationPolicy
             return true;
         }
 
-        return $user->hasPermissionTo('rejection.create');
+        return $user->hasPermissionTo('Create Rejection');
     }
 
     /**
@@ -188,7 +188,7 @@ class ApplicationPolicy
             return true;
         }
 
-        return $user->hasPermissionTo('referral.create');
+        return $user->hasPermissionTo('Create Referral');
     }
 
     /**
@@ -208,6 +208,6 @@ class ApplicationPolicy
             return true;
         }
 
-        return $user->hasPermissionTo('closure.create');
+        return $user->hasPermissionTo('Create Closure');
     }
 }

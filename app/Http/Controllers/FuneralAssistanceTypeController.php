@@ -2,42 +2,41 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreFuneralAssistanceTypeRequest;
-use App\Http\Requests\UpdateFuneralAssistanceTypeRequest;
 use App\Models\FuneralAssistanceType;
+use App\Models\Workflow;
+use App\Services\DatatableService;
 
 class FuneralAssistanceTypeController extends Controller
 {
+    public function __construct(
+        protected DatatableService $datatableServices,
+    ) {}
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
-    }
+        $data = FuneralAssistanceType::index()
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'uuid' => $item->uuid,
+                    'name' => $item->name,
+                    'description' => $item->description,
+                    'workflow' => $item->workflow,
+                    'show_route' => route('funeral_assistance_types.edit', $item->uuid),
+                ];
+            });
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+        if (request()->expectsJson()) {
+            return $this->datatableServices->ajax($data);
+        }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreFuneralAssistanceTypeRequest $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(FuneralAssistanceType $funeralAssistanceType)
-    {
-        //
+        return view('funeral-assistance-types.index', [
+            'pageTitle' => 'Funeral Assistance Types',
+            'columns' => $this->datatableServices->getColumns($data),
+        ]);
     }
 
     /**
@@ -45,22 +44,10 @@ class FuneralAssistanceTypeController extends Controller
      */
     public function edit(FuneralAssistanceType $funeralAssistanceType)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateFuneralAssistanceTypeRequest $request, FuneralAssistanceType $funeralAssistanceType)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(FuneralAssistanceType $funeralAssistanceType)
-    {
-        //
+        return view('funeral-assistance-types.edit', [
+            'pageTitle' => 'Edit Funeral Assistance Type',
+            'funeralAssistanceType' => $funeralAssistanceType,
+            'workflows' => Workflow::index()->get(),
+        ]);
     }
 }
