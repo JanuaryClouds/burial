@@ -142,7 +142,7 @@ class UserController extends Controller
                 return [
                     'id' => $user->id,
                     'name' => $user->fullname(),
-                    'roles' => $user->roles()->count() > 0 ? 'Staff' : 'Client',
+                    'role' => $user->roles()->count() > 0 ? 'Staff' : 'Client',
                     'active' => $user->is_active,
                     'email' => $user->email,
                     'contact_number' => $user->contact_number,
@@ -151,7 +151,7 @@ class UserController extends Controller
             });
 
         if (request()->expectsJson()) {
-            $this->datatableServices->ajax($data);
+            return $this->datatableServices->ajax($data);
         }
 
         return view('user.index', [

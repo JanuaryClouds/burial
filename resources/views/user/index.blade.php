@@ -4,7 +4,7 @@
 		<x-card>
 			@include('partials.datatable.index', [
 				'columns' => $columns,
-				'data' => 'data',
+				'src' => 'data',
 			])
 		</x-card>
 		<x-card>
