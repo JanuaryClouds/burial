@@ -42,6 +42,7 @@ class ClientService
             'application.cancellation',
             'application.recommendations',
             'application.relationship',
+            'application.closure',
             'socialInfo',
             'application.client.interviews',
         ])
