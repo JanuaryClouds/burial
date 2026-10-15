@@ -21,7 +21,7 @@ class FuneralAssistanceTypeService
         return FuneralAssistanceType::create([
             'name' => $data['name'],
             'description' => $data['description'],
-            'workflow_uuid' => $data['workflowUuid']
+            'workflow_uuid' => $data['workflowUuid'],
         ]);
     }
 
@@ -32,8 +32,7 @@ class FuneralAssistanceTypeService
 
     /**
      * Summary of update
-     * @param array $data
-     * @param FuneralAssistanceType $funeralAssistanceType
+     *
      * @return bool|int
      */
     public function update(array $data, FuneralAssistanceType $funeralAssistanceType)
@@ -41,7 +40,7 @@ class FuneralAssistanceTypeService
         return $funeralAssistanceType->update([
             'name' => $data['name'],
             'description' => $data['description'],
-            'workflow_uuid' => $data['workflowUuid']
+            'workflow_uuid' => $data['workflowUuid'],
         ]);
     }
 

@@ -11,7 +11,6 @@ use App\Services\Auth\UserService;
 use App\Services\DatatableService;
 use Exception;
 use Illuminate\Support\Facades\Auth;
-use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
@@ -166,7 +165,7 @@ class UserController extends Controller
 
         return view('user.show', [
             'pageTitle' => $user->fullname(),
-            'user' => $user
+            'user' => $user,
         ]);
     }
 
@@ -175,8 +174,8 @@ class UserController extends Controller
         $this->authorize('update', $user);
 
         return view('user.edit', [
-            'pageTitle' => 'Edit ' . $user->first_name,
-            'user' => $user
+            'pageTitle' => 'Edit '.$user->first_name,
+            'user' => $user,
         ]);
     }
 

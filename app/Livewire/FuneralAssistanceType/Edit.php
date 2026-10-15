@@ -25,7 +25,7 @@ class Edit extends Component
         $this->funeralAssistanceType = $funeralAssistanceType;
         $this->workflows = Workflow::index()
             ->get()
-            ->mapWithKeys(fn($workflow) => [$workflow->uuid => $workflow->name])
+            ->mapWithKeys(fn ($workflow) => [$workflow->uuid => $workflow->name])
             ->toArray();
 
         $this->form->setFuneralAssistanceType($funeralAssistanceType);
@@ -38,7 +38,7 @@ class Edit extends Component
         } catch (\Exception $e) {
             $this->dispatch('notification:toast', [
                 'type' => 'error',
-                'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation')
+                'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation'),
             ]);
         }
 
@@ -50,7 +50,7 @@ class Edit extends Component
 
             $this->dispatch('notification:alert', [
                 'type' => 'success',
-                'text' => "Successfully updated funeral assistance type"
+                'text' => 'Successfully updated funeral assistance type',
             ]);
 
             ActivityLoggerService::logSuccess('Successfully updated funeral assistance type', [
@@ -59,10 +59,10 @@ class Edit extends Component
         } catch (\Throwable $th) {
             $this->dispatch('notification:alert', [
                 'type' => 'error',
-                'text' => app()->hasDebugModeEnabled() ? $th->getMessage() : config('constants.errors.unknown')
+                'text' => app()->hasDebugModeEnabled() ? $th->getMessage() : config('constants.errors.unknown'),
             ]);
 
-            ActivityLoggerService::logException($th, "Failed to update funeral assistance type");
+            ActivityLoggerService::logException($th, 'Failed to update funeral assistance type');
 
             report($th);
         }

@@ -7,7 +7,6 @@ use App\Services\ActivityLoggerService;
 use App\Services\Auth\UserService;
 use App\Traits\Livewire\HasPlaceholder;
 use Livewire\Component;
-use Spatie\Permission\Models\Role;
 
 class Create extends Component
 {
@@ -27,7 +26,7 @@ class Create extends Component
         } catch (\Exception $e) {
             $this->dispatch('notification:toast', [
                 'type' => 'error',
-                'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation')
+                'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation'),
             ]);
         }
 
@@ -36,7 +35,7 @@ class Create extends Component
 
             $this->dispatch('notification:alert', [
                 'type' => 'success',
-                'text' => "Successfully created new user"
+                'text' => 'Successfully created new user',
             ]);
 
             ActivityLoggerService::logSuccess('Successfully created new user', [
@@ -47,10 +46,10 @@ class Create extends Component
         } catch (\Throwable $th) {
             $this->dispatch('notification:alert', [
                 'type' => 'error',
-                'text' => app()->hasDebugModeEnabled() ? $th->getMessage() : config('constants.errors.unknown')
+                'text' => app()->hasDebugModeEnabled() ? $th->getMessage() : config('constants.errors.unknown'),
             ]);
 
-            ActivityLoggerService::logException($th, "Failed to save new user");
+            ActivityLoggerService::logException($th, 'Failed to save new user');
 
             report($th);
         }

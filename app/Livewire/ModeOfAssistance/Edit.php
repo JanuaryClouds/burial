@@ -31,7 +31,7 @@ class Edit extends Component
         } catch (\Exception $e) {
             $this->dispatch('notification:toast', [
                 'type' => 'error',
-                'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation')
+                'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation'),
             ]);
         }
 
@@ -43,7 +43,7 @@ class Edit extends Component
 
             $this->dispatch('notification:alert', [
                 'type' => 'success',
-                'text' => "Successfully updated mode of assistance"
+                'text' => 'Successfully updated mode of assistance',
             ]);
 
             ActivityLoggerService::logSuccess('Successfully updated mode of assistance', [
@@ -52,10 +52,10 @@ class Edit extends Component
         } catch (\Throwable $th) {
             $this->dispatch('notification:alert', [
                 'type' => 'error',
-                'text' => app()->hasDebugModeEnabled() ? $th->getMessage() : config('constants.errors.unknown')
+                'text' => app()->hasDebugModeEnabled() ? $th->getMessage() : config('constants.errors.unknown'),
             ]);
 
-            ActivityLoggerService::logException($th, "Failed to update mode of assistance");
+            ActivityLoggerService::logException($th, 'Failed to update mode of assistance');
 
             report($th);
         }

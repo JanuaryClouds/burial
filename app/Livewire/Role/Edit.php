@@ -2,10 +2,9 @@
 
 namespace App\Livewire\Role;
 
-use App\Services\RoleService;
 use App\Services\ActivityLoggerService;
+use App\Services\RoleService;
 use App\Traits\Livewire\HasPlaceholder;
-use Livewire\Attributes\Rule;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Spatie\Permission\Models\Permission;
@@ -28,15 +27,15 @@ class Edit extends Component
     public function mount(Role $role)
     {
         $this->role = $role;
-        
+
         $this->permissionsOptions = Permission::orderBy('name', 'asc')
             ->get()
-            ->mapWithKeys(fn($permission) => [$permission->name => $permission->name])
+            ->mapWithKeys(fn ($permission) => [$permission->name => $permission->name])
             ->toArray();
 
         $this->name = $role->name;
         $this->permissions = $role->permissions->pluck('name')
-            ->mapWithKeys(fn($permission) => [$permission => $permission])
+            ->mapWithKeys(fn ($permission) => [$permission => $permission])
             ->toArray();
     }
 
@@ -64,7 +63,7 @@ class Edit extends Component
         } catch (\Exception $e) {
             $this->dispatch('notification:toast', [
                 'type' => 'error',
-                'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation')
+                'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation'),
             ]);
         }
 
@@ -73,7 +72,7 @@ class Edit extends Component
 
             $this->dispatch('notification:alert', [
                 'type' => 'success',
-                'text' => "Successfully updated role"
+                'text' => 'Successfully updated role',
             ]);
 
             ActivityLoggerService::logSuccess('Successfully updated role', [
@@ -82,10 +81,10 @@ class Edit extends Component
         } catch (\Throwable $th) {
             $this->dispatch('notification:alert', [
                 'type' => 'error',
-                'text' => app()->hasDebugModeEnabled() ? $th->getMessage() : config('constants.errors.unknown')
+                'text' => app()->hasDebugModeEnabled() ? $th->getMessage() : config('constants.errors.unknown'),
             ]);
 
-            ActivityLoggerService::logException($th, "Failed to update role");
+            ActivityLoggerService::logException($th, 'Failed to update role');
 
             report($th);
         }

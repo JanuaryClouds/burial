@@ -3,12 +3,10 @@
 namespace App\Livewire\User;
 
 use App\Livewire\Forms\EditUserForm;
-use App\Livewire\Forms\UserForm;
 use App\Models\User;
 use App\Services\ActivityLoggerService;
 use App\Services\Auth\UserService;
 use App\Traits\Livewire\HasPlaceholder;
-use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Spatie\Permission\Models\Role;
 
@@ -29,9 +27,9 @@ class Edit extends Component
         $this->user = $user;
         $this->form->setUser($user);
         $this->roleOptions = Role::pluck('name')
-            ->filter(fn($role) => !in_array($role, ['staff', 'superadmin']))
+            ->filter(fn ($role) => ! in_array($role, ['staff', 'superadmin']))
             ->sort()
-            ->mapWithKeys(fn($role) => [$role => $role])
+            ->mapWithKeys(fn ($role) => [$role => $role])
             ->toArray();
     }
 
@@ -42,7 +40,7 @@ class Edit extends Component
         } catch (\Exception $e) {
             $this->dispatch('notification:toast', [
                 'type' => 'error',
-                'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation')
+                'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation'),
             ]);
         }
 
@@ -54,7 +52,7 @@ class Edit extends Component
 
             $this->dispatch('notification:alert', [
                 'type' => 'success',
-                'text' => "Successfully created updated user"
+                'text' => 'Successfully created updated user',
             ]);
 
             ActivityLoggerService::logSuccess('Successfully updated user', [
@@ -63,10 +61,10 @@ class Edit extends Component
         } catch (\Throwable $th) {
             $this->dispatch('notification:alert', [
                 'type' => 'error',
-                'text' => app()->hasDebugModeEnabled() ? $th->getMessage() : config('constants.errors.unknown')
+                'text' => app()->hasDebugModeEnabled() ? $th->getMessage() : config('constants.errors.unknown'),
             ]);
 
-            ActivityLoggerService::logException($th, "Failed to updated user");
+            ActivityLoggerService::logException($th, 'Failed to updated user');
 
             report($th);
         }

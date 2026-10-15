@@ -50,7 +50,7 @@ class UserPolicy
         if ($user->hasRole('superadmin')) {
             return true;
         }
-        
+
         if ($user->id === $model->id) {
             return true;
         }

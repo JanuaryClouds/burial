@@ -7,7 +7,6 @@ use App\Http\Requests\RoleRequest;
 use App\Services\DatatableService;
 use App\Services\RoleService;
 use Illuminate\Support\Facades\Auth;
-use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
@@ -47,7 +46,7 @@ class RoleController extends Controller
                     'show_route' => route('role.edit', $role->id),
                 ];
             });
-            
+
         if (request()->expectsJson()) {
             return $this->datatableService->ajax($data);
         }
@@ -68,7 +67,7 @@ class RoleController extends Controller
     public function edit(Role $role)
     {
         return view('role.edit', [
-            'pageTitle' => 'Edit ' . $role->name,
+            'pageTitle' => 'Edit '.$role->name,
             'role' => $role,
         ]);
     }

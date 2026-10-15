@@ -26,7 +26,7 @@ class RoleSeeder extends Seeder
         $accountingRole = Role::firstOrCreate(['name' => 'accounting']);
         $treasuryRole = Role::firstOrCreate(['name' => 'treasury']);
 
-        $permissionSeeder = new PermissionSeeder();
+        $permissionSeeder = new PermissionSeeder;
 
         $this->syncPermission($reporterRole, $permissionSeeder->reportPermissions());
         $this->syncPermission($assessorRole, array_merge(

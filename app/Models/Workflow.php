@@ -68,7 +68,7 @@ class Workflow extends Model
     {
         return Workflow::with([
             'stages',
-            'funeralAssistanceTypes'
+            'funeralAssistanceTypes',
         ]);
     }
 }

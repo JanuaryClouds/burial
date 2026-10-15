@@ -21,7 +21,7 @@ class Create extends Component
     {
         $this->permissions = Permission::orderBy('name', 'asc')
             ->get()
-            ->mapWithKeys(fn($permission) => [$permission->name => $permission->name])
+            ->mapWithKeys(fn ($permission) => [$permission->name => $permission->name])
             ->toArray();
     }
 
@@ -32,7 +32,7 @@ class Create extends Component
         } catch (\Exception $e) {
             $this->dispatch('notification:toast', [
                 'type' => 'error',
-                'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation')
+                'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation'),
             ]);
         }
 
@@ -41,7 +41,7 @@ class Create extends Component
 
             $this->dispatch('notification:alert', [
                 'type' => 'success',
-                'text' => "Successfully created new role"
+                'text' => 'Successfully created new role',
             ]);
 
             ActivityLoggerService::logSuccess('Successfully created new role', [
@@ -54,10 +54,10 @@ class Create extends Component
         } catch (\Throwable $th) {
             $this->dispatch('notification:alert', [
                 'type' => 'error',
-                'text' => app()->hasDebugModeEnabled() ? $th->getMessage() : config('constants.errors.unknown')
+                'text' => app()->hasDebugModeEnabled() ? $th->getMessage() : config('constants.errors.unknown'),
             ]);
 
-            ActivityLoggerService::logException($th, "Failed to save new role");
+            ActivityLoggerService::logException($th, 'Failed to save new role');
 
             report($th);
         }

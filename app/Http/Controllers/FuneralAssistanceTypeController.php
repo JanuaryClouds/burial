@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreFuneralAssistanceTypeRequest;
-use App\Http\Requests\UpdateFuneralAssistanceTypeRequest;
 use App\Models\FuneralAssistanceType;
 use App\Models\Workflow;
 use App\Services\DatatableService;

@@ -4,7 +4,6 @@ namespace App\Services\Auth;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Spatie\Permission\Models\Role;
 
 class UserService
 {
@@ -58,7 +57,7 @@ class UserService
             'email' => $data['email'],
             'contact_number' => $data['contactNumber'],
             'is_active' => true,
-            'password' => bcrypt($data['password'])
+            'password' => bcrypt($data['password']),
         ]);
 
         $user->assignRole('staff');

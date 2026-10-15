@@ -115,6 +115,6 @@ class User extends Authenticatable
         return $query->whereHas('roles', function ($query) {
             $query->where('name', '!=', 'superadmin');
         })
-        ->orderBy('created_at', 'asc');
+            ->orderBy('created_at', 'asc');
     }
 }

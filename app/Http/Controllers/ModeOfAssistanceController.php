@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ModeOfAssistanceRequest;
 use App\Models\ModeOfAssistance;
 use App\Services\DatatableService;
 use App\Services\ModeOfAssistanceService;
-use Illuminate\Support\Facades\Auth;
 
 class ModeOfAssistanceController extends Controller
 {
@@ -40,8 +38,8 @@ class ModeOfAssistanceController extends Controller
     public function edit(ModeOfAssistance $modeOfAssistance)
     {
         return view('mode-of-assistance.edit', [
-            'pageTitle' => 'Edit ' . $modeOfAssistance->name,
-            'modeOfAssistance' => $modeOfAssistance
+            'pageTitle' => 'Edit '.$modeOfAssistance->name,
+            'modeOfAssistance' => $modeOfAssistance,
         ]);
     }
 }

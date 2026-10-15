@@ -20,8 +20,8 @@ class Create extends Component
     public function mount()
     {
         $this->workflows = Workflow::index()
-            ->get() 
-            ->mapWithKeys(fn($workflow) => [$workflow->uuid => $workflow->name])
+            ->get()
+            ->mapWithKeys(fn ($workflow) => [$workflow->uuid => $workflow->name])
             ->toArray();
     }
 
@@ -37,7 +37,7 @@ class Create extends Component
         } catch (\Exception $e) {
             $this->dispatch('notification:toast', [
                 'type' => 'error',
-                'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation')
+                'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation'),
             ]);
         }
 
@@ -46,7 +46,7 @@ class Create extends Component
 
             $this->dispatch('notification:alert', [
                 'type' => 'success',
-                'text' => "Successfully created new type of funeral assistance"
+                'text' => 'Successfully created new type of funeral assistance',
             ]);
 
             ActivityLoggerService::logSuccess('Successfully created new type of funeral assistance', [
@@ -57,10 +57,10 @@ class Create extends Component
         } catch (\Throwable $th) {
             $this->dispatch('notification:alert', [
                 'type' => 'error',
-                'text' => app()->hasDebugModeEnabled() ? $th->getMessage() : config('constants.errors.unknown')
+                'text' => app()->hasDebugModeEnabled() ? $th->getMessage() : config('constants.errors.unknown'),
             ]);
 
-            ActivityLoggerService::logException($th, "Failed to save new type of funeral assistance");
+            ActivityLoggerService::logException($th, 'Failed to save new type of funeral assistance');
 
             report($th);
         }
