@@ -61,17 +61,13 @@ class UserService
             'password' => bcrypt($data['password'])
         ]);
 
-        $user->assignRole($data['roles']);
+        $user->assignRole('staff');
 
         return $user;
     }
 
     public function update(array $data, User $user)
     {
-        if ($data['password'] == null || $data['password'] == '') {
-            $data['password'] = $user->password;
-        }
-
         $user->update([
             'first_name' => $data['firstName'],
             'middle_name' => $data['middleName'],
@@ -79,24 +75,27 @@ class UserService
             'suffix' => $data['suffix'],
             'email' => $data['email'],
             'contact_number' => $data['contactNumber'],
+            'password' => $data['newPassword'] ?? $user->password,
+            'is_active' => $data['isActive'],
         ]);
-
-        if (isset($data['is_active'])) {
-            $user->is_active = true;
-        } else {
-            $user->is_active = false;
-        }
 
         $user->save();
 
-        $staffRole = Role::where('name', 'staff')->first();
-        if (! isset($data['roles']) || empty($data['roles']) || $data['roles'] == []) {
-            $user->roles()->detach();
-        } else {
-            if (! in_array($staffRole->id, $data['roles'])) {
-                $user->roles()->detach();
+        // if (! isset($data['roles']) || empty($data['roles']) || $data['roles'] == []) {
+        //     $user->roles()->detach();
+        // } else {
+        //     if (! in_array($staffRole->id, $data['roles'])) {
+        //         $user->roles()->detach();
+        //     } else {
+        //         $user->roles()->sync($data['roles']);
+        //     }
+        // }
+
+        foreach ($data['roles'] as $roleName => $value) {
+            if ($value == true || $value == 'true') {
+                $user->assignRole($roleName);
             } else {
-                $user->roles()->sync($data['roles']);
+                $user->removeRole($roleName);
             }
         }
 
