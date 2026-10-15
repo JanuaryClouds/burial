@@ -1,24 +1,24 @@
 <div class="d-flex flex-column gap-4">
 	<div class="row">
 		<div class="col-12 col-md-8 col-lg-4">
-			<x-form.input wire:model.live.blur='form.firstName'
+			<x-form.input wire:model='form.firstName'
 				name="form.firstName"
 				label="First Name"
 				:required="true" />
 		</div>
 		<div class="col-12 col-md-4 col-lg-3">
-			<x-form.input wire:model.live.blur='form.middleName'
+			<x-form.input wire:model='form.middleName'
 				name="form.middleName"
 				label="Middle Name" />
 		</div>
 		<div class="col-12 col-md-8 col-lg-3">
-			<x-form.input wire:model.live.blur='form.lastName'
+			<x-form.input wire:model='form.lastName'
 				name="form.lastName"
 				label="Last Name"
 				:required="true" />
 		</div>
 		<div class="col-12 col-md-4 col-lg-2">
-			<x-form.input wire:model.live.blur='form.suffix'
+			<x-form.input wire:model='form.suffix'
 				name="form.suffix"
 				label="Suffix" />
 		</div>
@@ -31,36 +31,53 @@
 				:required="true" />
 		</div>
 		<div class="col-12 col-md-6">
-			<x-form.input wire:model.live.blur='form.contactNumber'
+			<x-form.input wire:model='form.contactNumber'
 				name="form.contactNumber"
 				label="Contact Number"
 				:required="true" />
 		</div>
 	</div>
 	<div class="row">
-		<div class="col-12 col-md-6">
-			<x-form.input wire:model.live.blur='form.password'
-				name="form.password"
-				label="Password"
-				type="password"
-				:required="true" />
-		</div>
-		<div class="col-12 col-md-6">
-			<x-form.input wire:model.live.blur='form.confirmPassword'
-				name="form.confirmPassword"
-				label="Confirm Password"
-				type="password"
-				:required="true" />
-		</div>
+		@if (Auth::id() === $user->id)
+			<div class="col-12 col-md-4">
+				<x-form.input wire:model.live.blur='form.currentPassword'
+					name="form.currentPassword"
+					label="Current Password"
+					type="password" />
+			</div>
+		@endif
+		@role('superadmin')
+			<div class="col-12 col-md-4">
+				<x-form.input wire:model.live.blur='form.newPassword'
+					name="form.newPassword"
+					label="New Password"
+					type="password" />
+			</div>
+			<div class="col-12 col-md-4">
+				<x-form.input wire:model.live.blur='form.confirmNewPassword'
+					name="form.confirmNewPassword"
+					label="Confirm Password"
+					type="password" />
+			</div>
+		@endrole
 	</div>
 	@role('superadmin')
-		<x-form.select wire:model.live='form.roleIds'
-			name="form.roleIds"
-			label="Roles"
-			:required="true"
-			:options="$roles"
-			:selected="$user->roles->pluck('id')->toArray()"
-			:multiple="true" />
+		<x-form.check wire:model='form.isActive'
+			name="form.isActive"
+			:checked="$user->is_active"
+			label="Active" />
+		<div class="row">
+			@foreach ($roleOptions as $roleKey => $roleLabel)
+				<div class="col-12 col-md-6 col-lg-4">
+					<x-form.check wire:model='form.roles.{{ $roleKey }}'
+						:name="'form.roles.' . $roleKey"
+						wire:key='{{ $roleKey }}'
+						:value="$roleKey"
+						:checked="in_array($roleKey, $user->roles->pluck('name')->toArray())"
+						:label="$roleLabel" />
+				</div>
+			@endforeach
+		</div>
 	@endrole
 	<div class="d-flex justify-content-end align-items-center gap-4">
 		@role('superadmin')

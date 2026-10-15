@@ -2,7 +2,7 @@
 
 namespace App\Livewire\User;
 
-use App\Livewire\Forms\UserForm;
+use App\Livewire\Forms\CreateUserForm;
 use App\Services\ActivityLoggerService;
 use App\Services\Auth\UserService;
 use App\Traits\Livewire\HasPlaceholder;
@@ -13,17 +13,7 @@ class Create extends Component
 {
     use HasPlaceholder;
 
-    public UserForm $form;
-
-    public ?array $roles = null;
-
-    public function mount()
-    {
-        $this->roles = Role::select(['id', 'name'])
-            ->get()
-            ->mapWithKeys(fn($role) => [$role->id => $role->name])
-            ->toArray();
-    }
+    public CreateUserForm $form;
 
     public function clearForm()
     {

@@ -31,7 +31,7 @@ Route::middleware(['auth', 'active.check'])
             ->name('user.show');
 
         Route::get('/user/{user}/edit', [UserController::class, 'edit'])
-            ->middleware('can:edit,user')
+            ->middleware('can:update,user')
             ->name('user.edit');
 
         Route::get('/checksession', [UserController::class, 'checkSession'])

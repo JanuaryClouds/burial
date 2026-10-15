@@ -6,7 +6,7 @@ use App\Models\User;
 use Livewire\Attributes\Validate;
 use Livewire\Form;
 
-class UserForm extends Form
+class EditUserForm extends Form
 {
     #[Validate('required|string|max:255')]
     public ?string $firstName = null;
@@ -20,23 +20,26 @@ class UserForm extends Form
     #[Validate('nullable|string|max:255')]
     public ?string $suffix = null;
 
-    #[Validate('required|email|unique:users,email')]
+    #[Validate('required|email|max:255')]
     public ?string $email = null;
 
     #[Validate('required|string|max:255')]
-    public ?string $password = null;
-
-    #[Validate('required|string|same:password')]
-    public ?string $confirmPassword = null;
-
-    #[Validate('required|string|regex:^09\d{9}$')]
     public ?string $contactNumber = null;
-
-    #[Validate('nullable|array|in:roles,id')]
-    public ?array $roleIds = null;
 
     #[Validate('nullable|boolean')]
     public bool $isActive = true;
+
+    #[Validate('nullable|string|max:255|password')]
+    public ?string $currentPassword = null;
+
+    #[Validate('nullable|string|max:255|required_with:currentPassword')]
+    public ?string $newPassword = null;
+
+    #[Validate('nullable|string|max:255|same:newPassword|required_with:currentPassword')]
+    public ?string $confirmNewPassword = null;
+
+    #[Validate('nullable|array')]
+    public array $roles = [];
 
     public function setUser(User $user)
     {
@@ -46,7 +49,9 @@ class UserForm extends Form
         $this->suffix = $user->suffix;
         $this->email = $user->email;
         $this->contactNumber = $user->contact_number;
-        $this->roleIds = $user->roles->pluck('id')->toArray();
         $this->isActive = $user->is_active;
+        $this->roles = $user->roles()->pluck('name')
+            ->mapWithKeys(fn($role) => [$role => $role])
+            ->toArray();
     }
 }

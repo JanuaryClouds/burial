@@ -2,11 +2,13 @@
 
 namespace App\Livewire\User;
 
+use App\Livewire\Forms\EditUserForm;
 use App\Livewire\Forms\UserForm;
 use App\Models\User;
 use App\Services\ActivityLoggerService;
 use App\Services\Auth\UserService;
 use App\Traits\Livewire\HasPlaceholder;
+use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Spatie\Permission\Models\Role;
 
@@ -14,19 +16,22 @@ class Edit extends Component
 {
     use HasPlaceholder;
 
-    public UserForm $form;
+    public EditUserForm $form;
 
     public ?User $user = null;
 
-    public array $roles = [];
+    public ?string $currentPassword = null;
+
+    public array $roleOptions = [];
 
     public function mount(User $user)
     {
         $this->user = $user;
         $this->form->setUser($user);
-        $this->roles = Role::select(['id', 'name'])
-            ->get()
-            ->mapWithKeys(fn($role) => [$role->id => $role->name])
+        $this->roleOptions = Role::pluck('name')
+            ->filter(fn($role) => !in_array($role, ['staff', 'superadmin']))
+            ->sort()
+            ->mapWithKeys(fn($role) => [$role => $role])
             ->toArray();
     }
 

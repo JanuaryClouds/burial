@@ -1,24 +1,24 @@
 <div class="d-flex flex-column gap-4">
 	<div class="row">
 		<div class="col-12 col-md-8 col-lg-4">
-			<x-form.input wire:model.live.blur='form.firstName'
+			<x-form.input wire:model='form.firstName'
 				name="form.firstName"
 				label="First Name"
 				:required="true" />
 		</div>
 		<div class="col-12 col-md-4 col-lg-3">
-			<x-form.input wire:model.live.blur='form.middleName'
+			<x-form.input wire:model='form.middleName'
 				name="form.middleName"
 				label="Middle Name" />
 		</div>
 		<div class="col-12 col-md-8 col-lg-3">
-			<x-form.input wire:model.live.blur='form.lastName'
+			<x-form.input wire:model='form.lastName'
 				name="form.lastName"
 				label="Last Name"
 				:required="true" />
 		</div>
 		<div class="col-12 col-md-4 col-lg-2">
-			<x-form.input wire:model.live.blur='form.suffix'
+			<x-form.input wire:model='form.suffix'
 				name="form.suffix"
 				label="Suffix" />
 		</div>
@@ -31,7 +31,7 @@
 				:required="true" />
 		</div>
 		<div class="col-12 col-md-6">
-			<x-form.input wire:model.live.blur='form.contactNumber'
+			<x-form.input wire:model='form.contactNumber'
 				name="form.contactNumber"
 				label="Contact Number"
 				:required="true" />
@@ -53,12 +53,7 @@
 				:required="true" />
 		</div>
 	</div>
-	<x-form.select wire:model.live='form.roleIds'
-		name="form.roleIds"
-		label="Roles"
-		:required="true"
-		:options="$roles"
-		:multiple="true" />
+	<p class="text-muted text-center small">Configure user's role in their profile after saving</p>
 	<div class="d-flex justify-content-end align-items-center gap-4">
 		<x-button wire:click='clearForm'
 			class="btn-sm btn-light">
@@ -66,6 +61,7 @@
 			Clear
 		</x-button>
 		<x-button wire:click='save'
+			wire:loading.attr='disabled'
 			class="btn-sm btn-success">
 			<x-icon.font-awesome class="fa-floppy-disk" />
 			Save
