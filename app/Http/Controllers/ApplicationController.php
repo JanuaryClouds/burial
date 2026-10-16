@@ -32,16 +32,7 @@ class ApplicationController extends Controller
      */
     public function index()
     {
-        $data = $this->services->index(
-            Auth::user()->roles->isNotEmpty() ? null : Auth::user()->id
-        );
-
-        if (request()->expectsJson()) {
-            return $this->datatableServices->ajax($data);
-        }
-
         return view('application.index', [
-            'columns' => $this->datatableServices->getColumns($data),
             'pageTitle' => 'Applications',
         ]);
     }

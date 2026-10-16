@@ -6,11 +6,12 @@
 	{{-- end::Statistics --}}
 
 	{{-- start::Index --}}
-	<div wire:ignore>
+	<div wire:poll.10s='loadData'>
 		<x-card>
 			@include('partials.datatable.index', [
 				'columns' => $columns,
-				'src' => 'data',
+				'data' => $mappedApplications,
+				'dataTableId' => $datatableId,
 			])
 			<x-slot:footer>
 				@role('staff')
