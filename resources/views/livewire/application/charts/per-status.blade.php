@@ -1,4 +1,4 @@
-<div wire:poll.60s="refresh">
+<div>
 	<livewire:chart :chartData="$perStatus"
 		:chartId="$chartId"
 		:chartType="$chartType"

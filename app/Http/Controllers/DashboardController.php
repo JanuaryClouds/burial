@@ -17,25 +17,15 @@ class DashboardController extends Controller
 
     public function index()
     {
-        if (auth()->user()->roles()->count() == 0) {
-            return $this->user();
+        $isStaff = Auth::user()->roles()->count() > 0;
+
+        if ($isStaff) {
+            return view('dashboard', [
+                'pageTitle' => 'Dashboard',
+                'isStaff' => $isStaff,
+            ]);
         }
 
-        if (auth()->user()->roles()->count() > 0) {
-            return $this->staff();
-        }
-    }
-
-    public function staff()
-    {
-
-        return view('dashboard', [
-            'pageTitle' => 'Dashboard',
-        ]);
-    }
-
-    public function user()
-    {
         $data = $this->services->index(Auth::id());
 
         if (request()->expectsJson()) {
@@ -48,6 +38,7 @@ class DashboardController extends Controller
             'pageTitle' => 'Dashboard',
             'data' => $data,
             'columns' => $this->datatableServices->getColumns($data),
+            'isStaff' => $isStaff,
         ]);
     }
 }

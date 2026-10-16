@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Traits\HasUuid;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -188,6 +189,38 @@ class Client extends Model
     | Model scopes.
     |
     */
+
+    public function scopeIndex(
+        Builder $query,
+        ?int $userId = null,
+        ?string $startDate = null,
+        ?string $endDate = null
+    ): Builder {
+        return $query->with([
+            'user',
+            'interviews',
+            'application',
+            'application.beneficiary',
+            'application.assessment',
+            'application.referral',
+            'application.rejection',
+            'application.cancellation',
+            'application.recommendations',
+            'application.relationship',
+            'application.closure',
+            'application.workflowStage',
+            'socialInfo',
+            'application.client.interviews',
+        ])
+            ->when($userId, function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            })
+            ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
+                $query->whereHas('application', function ($query) use ($startDate, $endDate) {
+                    $query->whereBetween('created_at', [$startDate, $endDate]);
+                });
+            });
+    }
 
     // Scopes
     public function scopeTotal($query)

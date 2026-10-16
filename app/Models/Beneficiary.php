@@ -203,6 +203,7 @@ class Beneficiary extends Model
             'application.referral',
             'application.rejection',
             'application.cancellation',
+            'application.closure',
             'religion',
         ])
             ->when($userId, function ($query) use ($userId) {

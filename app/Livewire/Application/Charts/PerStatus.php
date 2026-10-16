@@ -5,12 +5,13 @@ namespace App\Livewire\Application\Charts;
 use App\Models\Application;
 use App\Traits\Livewire\HasPlaceholder;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class PerStatus extends Component
 {
     use HasPlaceholder;
+
+    public Collection $applications;
 
     public Collection $perStatus;
 
@@ -24,8 +25,9 @@ class PerStatus extends Component
 
     public ?string $endDate = null;
 
-    public function mount(?string $startDate = null, ?string $endDate = null)
+    public function mount(Collection $applications, ?string $startDate = null, ?string $endDate = null)
     {
+        $this->applications = $applications;
         $this->startDate = $startDate;
         $this->endDate = $endDate;
         $this->getData();
@@ -45,12 +47,7 @@ class PerStatus extends Component
 
     private function getData(): void
     {
-        $this->perStatus = Application::index(
-            Auth::user()->roles()->count() == 0 ? Auth::id() : null,
-            $this->startDate,
-            $this->endDate
-        )
-            ->get()
+        $this->perStatus = $this->applications
             ->map(function (Application $application) {
                 return [
                     'status' => $application->currentStatus()['label'],
@@ -69,6 +66,8 @@ class PerStatus extends Component
 
     public function render()
     {
+        $this->refresh();
+
         return view('livewire.application.charts.per-status');
     }
 }

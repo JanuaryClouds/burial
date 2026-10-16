@@ -244,7 +244,7 @@ class Application extends Model
         $workflowStage = $this->workflowStage ? $this->workflowStage
             ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
                 $query->whereBetween('created_at', [$startDate, $endDate]);
-            })->latest()->first() : null;
+            }) : null;
 
         if ($interviews->count() > 0) {
             $status[] = [
@@ -259,24 +259,19 @@ class Application extends Model
                 'badgeColor' => 'primary',
             ];
 
-            if ($workflowStage->name === 'Releasing') {
-                // $status[] = [
-                //     'label' => 'processed',
-                //     'badgeColor' => 'secondary',
-                // ];
+            // if ($workflowStage->name === 'Releasing') {
+            //     $status[] = [
+            //         'label' => 'releasing',
+            //         'badgeColor' => 'success',
+            //     ];
+            // }
 
-                $status[] = [
-                    'label' => 'releasing',
-                    'badgeColor' => 'success',
-                ];
-            }
-
-            if ($workflowStage->name === 'Closing') {
-                $status[] = [
-                    'label' => 'releasing',
-                    'badgeColor' => 'success',
-                ];
-            }
+            // if ($workflowStage->name === 'Closing') {
+            //     $status[] = [
+            //         'label' => 'releasing',
+            //         'badgeColor' => 'success',
+            //     ];
+            // }
         }
 
         if ($referral) {

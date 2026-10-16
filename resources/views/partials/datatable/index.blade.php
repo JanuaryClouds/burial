@@ -31,7 +31,7 @@
 	<table class="table data-table {{ $classes }}"
 		id="dataTable-{{ $dataTableId }}"
 		style="width:100%"
-		data-route="{{ $route ?? request()->url() }}"
+		data-route="{{ $route ?? ($src ? request()->url() : null) }}"
 		data-columns='@json($columns)'
 		data-rows='@json($data)'
 		data-src="{{ $src }}"
