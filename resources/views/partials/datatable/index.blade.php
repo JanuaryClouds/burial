@@ -5,6 +5,7 @@
     'route' => null,
     'src' => null,
     'countPerPage' => 10,
+    'datatableId',
 ])
 @php
 	if ($columns->isNotEmpty()) {
@@ -19,7 +20,7 @@
 	    }
 	}
 
-	$dataTableId = (string) Str::uuid();
+	$dataTableId = $datatableId;
 
 	if ($src === null && $route && $route !== '#' && $route !== '' && $data->isNotEmpty()) {
 	    throw new RuntimeException(
@@ -27,7 +28,8 @@
 	    );
 	}
 @endphp
-<div class="table-responsive overflow-x-hidden">
+<div class="table-responsive overflow-x-hidden"
+	wire:ignore>
 	<table class="table data-table {{ $classes }}"
 		id="dataTable-{{ $dataTableId }}"
 		style="width:100%"
@@ -42,7 +44,15 @@
 			])
 		</thead>
 		<tbody>
+			@include('partials.datatable.body', [
+				'columns' => $columns,
+				'rows' => $data,
+			])
 		</tbody>
 	</table>
 </div>
-@include('partials.datatable.script')
+@push('scripts')
+	@include('partials.datatable.script', [
+		'dataTableId' => $datatableId,
+	])
+@endpush
