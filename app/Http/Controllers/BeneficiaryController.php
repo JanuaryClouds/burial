@@ -32,7 +32,6 @@ class BeneficiaryController extends Controller
 
         return view('beneficiary.index', [
             'pageTitle' => 'Beneficiaries',
-            'beneficiaries' => $beneficiaries,
             'columns' => $columns,
         ]);
     }
