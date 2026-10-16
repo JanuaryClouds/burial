@@ -2,7 +2,6 @@
 
 namespace App\Livewire\Application\Charts;
 
-use App\Models\Application;
 use Illuminate\Support\Collection;
 use Livewire\Component;
 

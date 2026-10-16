@@ -4,7 +4,6 @@ namespace App\Livewire\Application\Statistics;
 
 use App\Models\Application;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class Status extends Component

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Application;
 use App\Services\ApplicationService;
 use App\Services\ClientService;
 use App\Services\DatatableService;
@@ -28,7 +27,7 @@ class DashboardController extends Controller
         }
 
         $data = $this->services->index(Auth::id());
-    
+
         if (request()->expectsJson()) {
             return response()->json([
                 'data' => $data ? $data->values() : [],

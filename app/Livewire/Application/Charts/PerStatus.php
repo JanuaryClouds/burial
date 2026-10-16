@@ -5,7 +5,6 @@ namespace App\Livewire\Application\Charts;
 use App\Models\Application;
 use App\Traits\Livewire\HasPlaceholder;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class PerStatus extends Component

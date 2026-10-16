@@ -3,7 +3,6 @@
 namespace App\Livewire\Application;
 
 use App\Models\Application;
-use App\Services\ApplicationService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -25,7 +24,7 @@ class Index extends Component
         $this->applications = Application::index(
             Auth::user()->roles->isNotEmpty() ? null : Auth::user()->id
         )
-        ->get();
+            ->get();
     }
 
     public function render()

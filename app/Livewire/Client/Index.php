@@ -3,7 +3,6 @@
 namespace App\Livewire\Client;
 
 use App\Models\Client;
-use App\Services\DatatableService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;

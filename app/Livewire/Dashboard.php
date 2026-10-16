@@ -5,7 +5,6 @@ namespace App\Livewire;
 use App\Models\Application;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
-use Livewire\Attributes\On;
 use Livewire\Component;
 
 class Dashboard extends Component
@@ -19,7 +18,7 @@ class Dashboard extends Component
         $this->isStaff = $isStaff;
         $this->loadData();
     }
-    
+
     public function loadData()
     {
         if ($this->isStaff) {
@@ -28,7 +27,7 @@ class Dashboard extends Component
             $this->applications = Application::index(Auth::id())->get();
         }
     }
-    
+
     public function render()
     {
         return view('livewire.dashboard');

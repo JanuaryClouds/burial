@@ -2,7 +2,6 @@
 
 namespace App\Livewire\Beneficiary;
 
-use App\Models\Beneficiary;
 use Illuminate\Support\Collection;
 use Livewire\Component;
 
