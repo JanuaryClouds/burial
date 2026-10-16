@@ -75,8 +75,14 @@ document.addEventListener('livewire:init', () => {
         });
     });
 
-    Livewire.on('export-report', () => {
-        
+    Livewire.on('refresh-datatable', (event) => {
+        const data = event[0];
+
+        const table = $(data.tableId).DataTable();
+
+        table.clear();
+        table.rows.add(data.rows);
+        table.draw(false);
     });
 });
 
