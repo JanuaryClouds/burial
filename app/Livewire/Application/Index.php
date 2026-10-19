@@ -19,6 +19,8 @@ class Index extends Component
 
     public string $dataTableId;
 
+    public array $applicationsPerStatus;
+
     public function mount()
     {
         $this->dataTableId = (string) Str::uuid();
@@ -49,6 +51,10 @@ class Index extends Component
                     'show_route' => route('application.show', $application),
                 ];
             });
+
+        $this->applicationsPerStatus = $this->applications
+            ->countBy(fn (Application $application) => $application->currentStatus()['label'])
+            ->toArray();
 
         $this->dispatch('refresh-dataTable', [
             'dataTableId' => $this->dataTableId,

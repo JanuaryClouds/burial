@@ -8,8 +8,6 @@ use Livewire\Component;
 
 class Status extends Component
 {
-    public Collection $applications;
-
     public string $status;
 
     public int $count = 0;
@@ -20,29 +18,13 @@ class Status extends Component
 
     public ?string $route = null;
 
-    public function mount(Collection $applications, string $status, string $iconName, int $iconPathsCount, ?string $route = null)
+    public function mount(string $status, int $count, string $iconName, int $iconPathsCount, ?string $route = null)
     {
-        $this->applications = $applications;
         $this->status = $status;
-        $this->getCount();
+        $this->count = $count;
         $this->iconName = $iconName;
         $this->iconPathsCount = $iconPathsCount;
         $this->route = $route;
-    }
-
-    public function getCount(): void
-    {
-        $this->count = $this->applications
-            ->map(function (Application $application) {
-                return [
-                    'uuid' => $application->uuid,
-                    'status' => $application->currentStatus()['label'],
-                ];
-            })
-            ->filter(function ($application) {
-                return $application['status'] === $this->status;
-            })
-            ->count();
     }
 
     public function render()
