@@ -15,6 +15,7 @@ import theme from './theme.js';
 import autoMarginColumns from './autoMarginColumns.js';
 import sweetAlert from './sweetAlert2.js';
 import toast from './toast.js';
+import { selectDataTables, refreshDataTable } from './datatable.js';
 
 theme();
 
@@ -43,6 +44,8 @@ document.addEventListener('livewire:init', () => {
     refreshChart();
     sweetAlert();
     toast();
+    selectDataTables();
+    refreshDataTable();
 
     Livewire.hook('morph.updated', ({ el }) => {
         requestAnimationFrame(() => {
@@ -73,16 +76,6 @@ document.addEventListener('livewire:init', () => {
             initSelect2(el);
             autoMarginColumns();
         });
-    });
-
-    Livewire.on('refresh-datatable', (event) => {
-        const data = event[0];
-
-        const table = $(data.tableId).DataTable();
-
-        table.clear();
-        table.rows.add(data.rows);
-        table.draw(false);
     });
 });
 
