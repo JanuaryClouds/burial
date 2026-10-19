@@ -4,6 +4,7 @@ namespace App\Livewire\Client;
 
 use App\Models\Client;
 use App\Services\DataTableService;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -37,10 +38,12 @@ class Index extends Component
             ->map(function (Client $client) {
                 return [
                     'uuid' => $client->uuid,
-                    'application_tracking_no' => $client->application ? $client->application->tracking_no : 'DRAFT',
                     'name' => $client->fullname(),
-                    'beneficiary' => $client->application ? $client->application->beneficiary->fullname() : 'N/A',
-                    'created_at' => $client->created_at->format('M d, Y'),
+                    // 'application_tracking_no' => $client->application ? $client->application->tracking_no : 'DRAFT',
+                    'address' => $client->address->barangay_name.', '.
+                        ($client->address->municipality_name ?? $client->address->province_name).', '.
+                        $client->address->region_name,
+                    'recorded_at' => Carbon::parse($client->created_at)->diffForHumans(),
                     'show_route' => route('client.show', $client->uuid),
                 ];
             });

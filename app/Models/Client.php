@@ -199,6 +199,7 @@ class Client extends Model
         return $query->with([
             'user',
             'interviews',
+            'address',
             'application',
             'application.beneficiary',
             'application.assessment',

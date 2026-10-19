@@ -193,6 +193,7 @@ class Beneficiary extends Model
         ?string $userId = null,
     ) {
         return $query->with([
+            'address',
             'application',
             'application.client',
             'application.client.user',
