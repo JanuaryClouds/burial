@@ -1,18 +1,19 @@
-<div class='d-flex flex-column gap-6'>
+<div class='d-flex flex-column gap-6'
+	wire:poll.10s='loadData'>
 	@role('staff')
 		{{-- start::Statistics --}}
-		<div wire:poll.10s>
+		<div>
 			@include('beneficiary.index.partials.statistics')
 		</div>
 		{{-- end::Statistics --}}
 	@endrole
 
 	{{-- start::Index --}}
-	<div wire:poll.30s>
+	<div>
 		<x-card>
 			@include('partials.dataTable.index', [
-				'src' => 'data',
 				'columns' => $columns,
+				'dataTableId' => $dataTableId,
 			])
 			@unlessrole('staff')
 				<x-slot:footer>
@@ -29,7 +30,7 @@
 
 	@role('staff')
 		{{-- start::Charts --}}
-		<div wire:poll.10s>
+		<div>
 			@include('beneficiary.index.partials.charts')
 		</div>
 		{{-- end::Charts --}}

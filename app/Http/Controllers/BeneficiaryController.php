@@ -22,17 +22,8 @@ class BeneficiaryController extends Controller
 
     public function index()
     {
-        $user = Auth::user();
-        $beneficiaries = $user->roles->isNotEmpty() ? $this->services->index() : $this->services->index($user->id);
-        $columns = $this->dataTableServices->getColumns($beneficiaries);
-
-        if (request()->expectsJson()) {
-            return $this->dataTableServices->ajax($beneficiaries);
-        }
-
         return view('beneficiary.index', [
             'pageTitle' => 'Beneficiaries',
-            'columns' => $columns,
         ]);
     }
 

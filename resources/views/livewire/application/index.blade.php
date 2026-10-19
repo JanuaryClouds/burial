@@ -42,7 +42,7 @@
 	@role('staff')
 		{{-- start::Charts --}}
 		<div>
-			{{-- @include('application.index.partials.charts') --}}
+			@include('application.index.partials.charts')
 		</div>
 		{{-- end::Charts --}}
 	@endrole
