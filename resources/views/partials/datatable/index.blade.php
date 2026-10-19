@@ -5,7 +5,7 @@
     'route' => null,
     'src' => null,
     'countPerPage' => 10,
-    'datatableId',
+    'dataTableId',
 ])
 @php
 	if ($columns->isNotEmpty()) {
@@ -19,8 +19,6 @@
 	        $classes .= ' with-actions';
 	    }
 	}
-
-	$dataTableId = $datatableId;
 
 	if ($src === null && $route && $route !== '#' && $route !== '' && $data->isNotEmpty()) {
 	    throw new RuntimeException(
@@ -39,20 +37,15 @@
 		data-src="{{ $src }}"
 		data-count-per-page="{{ $countPerPage }}">
 		<thead class="border-bottom border-bottom-1 border-gray-200 fw-bold">
-			@include('partials.datatable.head', [
+			@include('partials.dataTable.head', [
 				'columns' => $columns,
 			])
 		</thead>
 		<tbody>
-			@include('partials.datatable.body', [
+			@include('partials.dataTable.body', [
 				'columns' => $columns,
 				'rows' => $data,
 			])
 		</tbody>
 	</table>
 </div>
-@push('scripts')
-	@include('partials.datatable.script', [
-		'dataTableId' => $datatableId,
-	])
-@endpush

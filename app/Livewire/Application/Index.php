@@ -3,7 +3,7 @@
 namespace App\Livewire\Application;
 
 use App\Models\Application;
-use App\Services\DatatableService;
+use App\Services\DataTableService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -17,11 +17,11 @@ class Index extends Component
 
     public Collection $mappedApplications;
 
-    public string $datatableId;
+    public string $dataTableId;
 
     public function mount()
     {
-        $this->datatableId = (string) Str::uuid();
+        $this->dataTableId = (string) Str::uuid();
         $this->loadData();
     }
 
@@ -37,7 +37,6 @@ class Index extends Component
             ->map(function (Application $application) {
                 $client = $application->client;
                 $beneficiary = $application->beneficiary;
-
                 $status = $application->currentStatus();
 
                 return [
@@ -51,12 +50,12 @@ class Index extends Component
                 ];
             });
 
-        $this->dispatch('refresh-datatable', [
-            'tableId' => $this->datatableId,
+        $this->dispatch('refresh-dataTable', [
+            'dataTableId' => $this->dataTableId,
             'rows' => $this->mappedApplications,
         ]);
 
-        $this->columns = app(DatatableService::class)->getColumns($this->mappedApplications);
+        $this->columns = app(DataTableService::class)->getColumns($this->mappedApplications);
     }
 
     public function render()
