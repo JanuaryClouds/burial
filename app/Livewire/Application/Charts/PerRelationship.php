@@ -49,8 +49,6 @@ class PerRelationship extends Component
 
     public function render()
     {
-        $this->refresh();
-
         return view('livewire.application.charts.per-relationship');
     }
 }
