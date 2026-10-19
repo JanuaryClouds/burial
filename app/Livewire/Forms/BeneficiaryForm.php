@@ -42,8 +42,8 @@ class BeneficiaryForm extends Form
         'family.*.civilId' => ['required', 'string', 'max:255'],
         'family.*.sexId' => ['required', 'integer', 'exists:sexes,id'],
         'family.*.relationshipId' => ['required', 'integer', 'exists:relationships,id'],
-        'family.*.occupation' => ['required', 'string', 'max:255'],
-        'family.*.income' => ['required', 'numeric'],
+        'family.*.occupation' => ['nullable', 'string', 'max:255'],
+        'family.*.income' => ['nullable', 'string', 'max:64'],
     ])]
     public array $family = [];
 
