@@ -11,7 +11,7 @@ use App\Services\ApplicationService;
 use App\Services\BeneficiaryFamilyService;
 use App\Services\BeneficiaryService;
 use App\Services\ClientService;
-use App\Services\DatatableService;
+use App\Services\DataTableService;
 use App\Services\ImageService;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Auth;
 class ApplicationController extends Controller
 {
     public function __construct(
-        protected DatatableService $datatableServices,
+        protected DataTableService $dataTableServices,
         protected ApplicationService $services,
         protected ClientService $clientServices,
         protected BeneficiaryService $beneficiaryServices,

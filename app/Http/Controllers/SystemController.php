@@ -3,14 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\SystemSetting;
-use App\Services\DatatableService;
+use App\Services\DataTableService;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Activitylog\Models\Activity;
 
 class SystemController extends Controller
 {
     public function __construct(
-        protected DatatableService $datatableServices
+        protected DataTableService $dataTableServices
     ) {}
 
     /**
@@ -50,10 +50,10 @@ class SystemController extends Controller
                 ];
             });
 
-        $columns = $this->datatableServices->getColumns($logs);
+        $columns = $this->dataTableServices->getColumns($logs);
 
         if (request()->expectsJson()) {
-            return $this->datatableServices->ajax($logs);
+            return $this->dataTableServices->ajax($logs);
         }
 
         return view('system.log.index', [

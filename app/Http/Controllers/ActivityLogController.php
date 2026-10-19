@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\DatatableService;
+use App\Services\DataTableService;
 use Spatie\Activitylog\Models\Activity;
 
 class ActivityLogController extends Controller
 {
     public function __construct(
-        protected DatatableService $datatableServices
+        protected DataTableService $dataTableServices
     ) {}
 
     public function index()
@@ -34,7 +34,7 @@ class ActivityLogController extends Controller
                     'created_at' => $log->created_at->format('Y-m-d H:i:s'),
                 ];
             });
-        $columns = $this->datatableServices->getColumns($data, ['id']);
+        $columns = $this->dataTableServices->getColumns($data, ['id']);
 
         if (request()->expectsJson()) {
             return response()->json([

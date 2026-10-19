@@ -7,7 +7,7 @@ use App\Models\Cheque;
 use App\Services\ApplicationService;
 use App\Services\BeneficiaryService;
 use App\Services\ClientService;
-use App\Services\DatatableService;
+use App\Services\DataTableService;
 use App\Services\ReportService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
@@ -17,7 +17,7 @@ class ReportController extends Controller
 {
     public function __construct(
         protected ReportService $reportServices,
-        protected DatatableService $datatableServices,
+        protected DataTableService $dataTableServices,
         protected ApplicationService $applicationServices,
         protected ClientService $clientServices,
         protected BeneficiaryService $beneficiaryServices,
@@ -38,7 +38,7 @@ class ReportController extends Controller
         }
 
         $applications = $this->reportServices->indexApplications(null, $startDate, $endDate);
-        $columns = $this->datatableServices->getColumns($applications, []);
+        $columns = $this->dataTableServices->getColumns($applications, []);
 
         return view('report.index', [
             'pageTitle' => 'Reports',
@@ -105,7 +105,7 @@ class ReportController extends Controller
     //     }
 
     //     $data = $this->clientServices->reportIndex($startDate, $endDate);
-    //     $columns = $this->datatableServices->getColumns($data, []);
+    //     $columns = $this->dataTableServices->getColumns($data, []);
 
     //     $clientsPerBarangay = $this->reportServices->clientsPerBarangay($startDate, $endDate);
     //     $clientsPerAssistance = $this->reportServices->clientsPerAssistance($startDate, $endDate);
@@ -143,7 +143,7 @@ class ReportController extends Controller
     //     }
 
     //     $data = $this->beneficiaryServices->reportIndex($startDate, $endDate);
-    //     $columns = $this->datatableServices->getColumns($data, []);
+    //     $columns = $this->dataTableServices->getColumns($data, []);
 
     //     if (request()->expectsJson()) {
     //         return response()->json([
@@ -214,7 +214,7 @@ class ReportController extends Controller
     //         ]);
     //     }
 
-    //     $columns = $this->datatableServices->getColumns($data, []);
+    //     $columns = $this->dataTableServices->getColumns($data, []);
     //     $chequesPerStatus = $this->reportServices->chequesPerStatus($startDate, $endDate);
 
     //     return view('reports.index', compact(

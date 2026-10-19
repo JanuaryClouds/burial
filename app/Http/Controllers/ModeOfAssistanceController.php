@@ -3,14 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\ModeOfAssistance;
-use App\Services\DatatableService;
+use App\Services\DataTableService;
 use App\Services\ModeOfAssistanceService;
 
 class ModeOfAssistanceController extends Controller
 {
     public function __construct(
         protected ModeOfAssistanceService $modeOfAssistanceServices,
-        protected DatatableService $datatableService
+        protected DataTableService $dataTableService
     ) {}
 
     public function index()
@@ -26,12 +26,12 @@ class ModeOfAssistanceController extends Controller
             });
 
         if (request()->expectsJson()) {
-            return $this->datatableService->ajax($data);
+            return $this->dataTableService->ajax($data);
         }
 
         return view('mode-of-assistance.index', [
             'pageTitle' => 'Mode of Assistances',
-            'columns' => $this->datatableService->getColumns($data),
+            'columns' => $this->dataTableService->getColumns($data),
         ]);
     }
 

@@ -8,7 +8,7 @@ use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use App\Services\Auth\UserService;
-use App\Services\DatatableService;
+use App\Services\DataTableService;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 
@@ -16,7 +16,7 @@ class UserController extends Controller
 {
     public function __construct(
         protected UserService $userServices,
-        protected DatatableService $datatableServices,
+        protected DataTableService $dataTableServices,
     ) {}
 
     public function login(LoginRequest $request)
@@ -150,12 +150,12 @@ class UserController extends Controller
             });
 
         if (request()->expectsJson()) {
-            return $this->datatableServices->ajax($data);
+            return $this->dataTableServices->ajax($data);
         }
 
         return view('user.index', [
             'pageTitle' => 'Users',
-            'columns' => $this->datatableServices->getColumns($data),
+            'columns' => $this->dataTableServices->getColumns($data),
         ]);
     }
 

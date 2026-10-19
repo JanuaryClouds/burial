@@ -1,17 +1,18 @@
-<div class="d-flex flex-column gap-6">
+<div class="d-flex flex-column gap-6"
+	wire:poll.10s="loadData">
 	{{-- start::Statistics --}}
-	<div wire:poll.10s>
+	<div>
 		@include('application.index.partials.statistics')
 	</div>
 	{{-- end::Statistics --}}
 
 	{{-- start::Index --}}
-	<div wire:poll.10s='loadData'>
+	<div>
 		<x-card>
-			@include('partials.datatable.index', [
+			@include('partials.dataTable.index', [
 				'columns' => $columns,
 				'data' => $mappedApplications,
-				'dataTableId' => $datatableId,
+				'dataTableId' => $dataTableId,
 			])
 			<x-slot:footer>
 				@role('staff')
@@ -40,8 +41,8 @@
 
 	@role('staff')
 		{{-- start::Charts --}}
-		<div wire:poll.10s>
-			@include('application.index.partials.charts')
+		<div>
+			{{-- @include('application.index.partials.charts') --}}
 		</div>
 		{{-- end::Charts --}}
 	@endrole

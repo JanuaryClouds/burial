@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreWorkflowRequest;
 use App\Http\Requests\UpdateWorkflowRequest;
 use App\Models\Workflow;
-use App\Services\DatatableService;
+use App\Services\DataTableService;
 use App\Services\WorkflowService;
 use Illuminate\Support\Facades\Auth;
 
@@ -13,7 +13,7 @@ class WorkflowController extends Controller
 {
     public function __construct(
         private readonly WorkflowService $services,
-        private readonly DatatableService $datatableServices,
+        private readonly DataTableService $dataTableServices,
     ) {}
 
     /**
@@ -24,13 +24,13 @@ class WorkflowController extends Controller
         $workflows = $this->services->index();
 
         if (request()->expectsJson()) {
-            return $this->datatableServices->ajax($workflows);
+            return $this->dataTableServices->ajax($workflows);
         }
 
         return view('workflow.index', [
             'workflows' => $workflows,
             'pageTitle' => 'Workflows',
-            'columns' => $this->datatableServices->getColumns($workflows),
+            'columns' => $this->dataTableServices->getColumns($workflows),
         ]);
     }
 

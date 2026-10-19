@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreInterviewRequest;
 use App\Models\Client;
 use App\Models\SystemSetting;
-use App\Services\DatatableService;
+use App\Services\DataTableService;
 use App\Services\InterviewService;
 use App\Services\NotificationService;
 use App\Services\SmsService;
@@ -17,7 +17,7 @@ class InterviewController extends Controller
 {
     public function __construct(
         protected InterviewService $interviewServices,
-        protected DatatableService $datatableServices,
+        protected DataTableService $dataTableServices,
         protected NotificationService $notificationServices,
         protected SmsService $smsServices
     ) {}
@@ -27,14 +27,14 @@ class InterviewController extends Controller
         $pageTitle = 'Appointment Interviews';
 
         $personalData = $this->interviewServices->index(auth()->user()->id);
-        $personalDataColumns = $this->datatableServices->getColumns($personalData, ['client']);
+        $personalDataColumns = $this->dataTableServices->getColumns($personalData, ['client']);
 
         $allData = [];
         $allDataColumns = [];
 
         if (auth()->user()->hasRole('staff')) {
             $allData = $this->interviewServices->index(null);
-            $allDataColumns = $this->datatableServices->getColumns($allData);
+            $allDataColumns = $this->dataTableServices->getColumns($allData);
         }
 
         if (request()->ajax()) {

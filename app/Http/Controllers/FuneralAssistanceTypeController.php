@@ -4,12 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\FuneralAssistanceType;
 use App\Models\Workflow;
-use App\Services\DatatableService;
+use App\Services\DataTableService;
 
 class FuneralAssistanceTypeController extends Controller
 {
     public function __construct(
-        protected DatatableService $datatableServices,
+        protected DataTableService $dataTableServices,
     ) {}
 
     /**
@@ -30,12 +30,12 @@ class FuneralAssistanceTypeController extends Controller
             });
 
         if (request()->expectsJson()) {
-            return $this->datatableServices->ajax($data);
+            return $this->dataTableServices->ajax($data);
         }
 
         return view('funeral-assistance-types.index', [
             'pageTitle' => 'Funeral Assistance Types',
-            'columns' => $this->datatableServices->getColumns($data),
+            'columns' => $this->dataTableServices->getColumns($data),
         ]);
     }
 

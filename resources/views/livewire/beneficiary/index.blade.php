@@ -10,7 +10,7 @@
 	{{-- start::Index --}}
 	<div wire:poll.30s>
 		<x-card>
-			@include('partials.datatable.index', [
+			@include('partials.dataTable.index', [
 				'src' => 'data',
 				'columns' => $columns,
 			])

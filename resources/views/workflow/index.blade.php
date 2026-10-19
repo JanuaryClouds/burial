@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('content')
 	<x-card>
-		@include('partials.datatable.index', [
+		@include('partials.dataTable.index', [
 			'columns' => $columns,
 			'src' => 'data',
 		])
