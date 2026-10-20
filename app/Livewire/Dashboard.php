@@ -19,6 +19,12 @@ class Dashboard extends Component
 
     public string $dataTableId;
 
+    public Collection $applicationsPerStatus;
+
+    public Collection $applicationsPerRelationship;
+
+    public array $applicationsPerStatusCount;
+
     public function mount()
     {
         $this->dataTableId = (string) Str::uuid();
@@ -29,6 +35,54 @@ class Dashboard extends Component
     {
         if (Auth::user()->roles()->count() > 0) {
             $this->applications = Application::index()->get();
+
+            $this->applicationsPerStatus = $this->applications
+                ->map(function (Application $application) {
+                    return [
+                        'uuid' => $application->uuid,
+                        'status' => $application->currentStatus()['label'],
+                    ];
+                })
+                ->groupBy('status')
+                ->map(function ($collection, $key) {
+                    return [
+                        'name' => ucfirst($key),
+                        'count' => $collection->count(),
+                    ];
+                })
+                ->values();
+
+            $this->applicationsPerRelationship = $this->applications
+                ->map(function (Application $application) {
+                    return [
+                        'uuid' => $application->uuid,
+                        'relationship' => $application->relationship->name,
+                    ];
+                })
+                ->groupBy('relationship')
+                ->map(function ($collection, $key) {
+                    return [
+                        'name' => ucfirst($key),
+                        'count' => $collection->count(),
+                    ];
+                })
+                ->values();
+
+            $this->dispatch('refresh-chart', [
+                'chartId' => 'applications-per-status',
+                'chartData' => [
+                    'count' => $this->applicationsPerStatus->pluck('count'),
+                    'labels' => $this->applicationsPerStatus->pluck('name'),
+                ],
+            ]);
+
+            $this->dispatch('refresh-chart', [
+                'chartId' => 'applications-per-relationship',
+                'chartData' => [
+                    'count' => $this->applicationsPerRelationship->pluck('count'),
+                    'labels' => $this->applicationsPerRelationship->pluck('name'),
+                ],
+            ]);
         } else {
             $this->applications = Application::index(Auth::id())->get();
             $this->mappedApplications = $this->applications
@@ -55,6 +109,10 @@ class Dashboard extends Component
                 'rows' => $this->mappedApplications,
             ]);
         }
+
+        $this->applicationsPerStatusCount = $this->applications
+            ->countBy(fn (Application $application) => $application->currentStatus()['label'])
+            ->toArray();
     }
 
     public function render()
