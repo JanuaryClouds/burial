@@ -1,9 +1,11 @@
 <div class="d-flex flex-column gap-6"
 	wire:poll.10s="loadData">
 	{{-- start::Statistics --}}
-	<div>
-		@include('client.index.partials.statistics')
-	</div>
+	@role('staff')
+		<div>
+			@include('client.index.partials.statistics')
+		</div>
+	@endrole
 	{{-- end::Statistics --}}
 
 	{{-- start::Index --}}
@@ -28,8 +30,10 @@
 	{{-- end::Index --}}
 
 	{{-- start::charts --}}
-	<div>
-		@include('client.index.partials.charts')
-	</div>
+	@role('staff')
+		<div>
+			@include('client.index.partials.charts')
+		</div>
+	@endrole
 	{{-- end::charts --}}
 </div>
