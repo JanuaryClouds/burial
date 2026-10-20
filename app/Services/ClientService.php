@@ -16,6 +16,7 @@ use App\Models\SystemSetting;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -48,6 +49,53 @@ class ClientService
                     'show_route' => route('client.show', $client),
                 ];
             });
+    }
+
+    /**
+     * Summary of groupByMonth
+     * @param Collection $clients
+     * @return Collection
+     */
+    public function groupByMonth(Collection $clients): Collection
+    {
+        return $clients
+            ->map(function (Client $client) {
+                return [
+                    'uuid' => $client->uuid,
+                    'month' => Carbon::parse($client->created_at)->format('M Y'),
+                ];
+            })
+            ->groupBy('month')
+            ->map(function (Collection $collection, $key) {
+                return [
+                    'name' => (string) $key,
+                    'count' => $collection->count(),
+                ];
+            })
+            ->values();
+    }
+
+    /**
+     * Summary of groupByRegion
+     * @param Collection $clients
+     * @return Collection
+     */
+    public function groupByRegion(Collection $clients): Collection
+    {
+        return $clients->map(function (Client $client) {
+            return [
+                'uuid' => $client->uuid,
+                'region_name' => ucfirst($client->address->region_name),
+            ];
+        })
+        ->groupBy('region_name')
+        ->map(function (Collection $collection, $key) {
+            return [
+                'region_name' => $key,
+                'count' => $collection->count(),
+            ];
+        })
+        ->values();
     }
 
     public function reportIndex($startDate, $endDate)
