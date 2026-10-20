@@ -11,6 +11,8 @@ function checkCharts() {
         const chartTitle = canvas.dataset.chartTitle || '';
         const chartType = canvas.dataset.chartType;
 
+        if (!chartData || !chartLabels) return;
+
         renderChart(chartType, chartData, chartId, chartLabels, chartTitle);
 
         const uriInput = document.getElementById(`${chartId}_uri`);
@@ -208,7 +210,7 @@ function refreshChart() {
 
         chart.data.datasets[0].data = data.chartData.count;
         chart.data.labels = data.chartData.labels;
-        chart.update();
+        chart.update('none');
     });
 }
 
