@@ -18,10 +18,6 @@
 								<td>{{ $clientPerRegion['count'] }}</td>
 							</tr>
 						@endforeach
-						<tr>
-							<td class="fw-bold">Total Applications:</td>
-							<td class="fw-bold">{{ $applicationsTotal }}</td>
-						</tr>
 					</tbody>
 				</table>
 				{{-- end::Table --}}
