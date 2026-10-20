@@ -11,6 +11,7 @@ use App\Models\SystemSetting;
 use Barcode\Facades\Barcode;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
@@ -46,59 +47,52 @@ class ApplicationService
             });
     }
 
-    public function workflowState(Application $application): array
+    /**
+     * Summary of groupByStatus
+     * @param Collection $applications
+     * @return Collection
+     */
+    public function groupByStatus(Collection $applications): Collection
     {
-        // This is the default state of newly submitted applications
-        $state = [
-            'canInterview' => null,
-            'canAssess' => app()->isLocal() ? null : 'The client must be interviewed first',
-            'canRefer' => 'This application cannot be referred without an assessment',
-            'canRecommend' => 'This application cannot receive a recommendation without an assessment',
-        ];
+        return $applications
+            ->map(function (Application $application) {
+                return [
+                    'uuid' => $application->uuid,
+                    'status' => $application->currentSTatus()['label']
+                ];
+            })
+            ->groupBy('status')
+            ->map(function ($collection, $key) {
+                return [
+                    'name' => ucfirst($key),
+                    'count' => $collection->count()
+                ];
+            })
+            ->values();
+    }
 
-        if ($application->client->interviews->where('scheduled', '>', now())->isNotEmpty()) {
-            $state['canInterview'] = 'The client has an upcoming interview.';
-            $state['canAssess'] = 'The client must be interviewed first.';
-            $state['canRefer'] = 'This application cannot be referred without an assessment';
-            $state['canRecommend'] = 'This application cannot receive a recommendation without an assessment';
-        } else {
-            if ($application->client->interviews->where('status', 'done')->isNotEmpty()) {
-                $state['canInterview'] = null;
-            }
-
-            $state['canAssess'] = 'The client must be interviewed first';
-            $state['canRefer'] = 'This application cannot be referred without an assessment';
-            $state['canRecommend'] = 'This application cannot receive a recommendation without an assessment';
-        }
-
-        if ($application->assessment) {
-            $state['canInterview'] = 'This application already has an assessment';
-            $state['canAssess'] = 'This applcation already has an assessment';
-            $state['canRefer'] = null;
-            $state['canRecommend'] = null;
-        }
-
-        if ($application->referral) {
-            $state['canInterview'] = 'This application already has a referral';
-            $state['canAssess'] = 'This application already has a referral';
-            $state['canRefer'] = 'This application already has a referral';
-            $state['canRecommend'] = 'This application already has a referral';
-        }
-
-        if ($application->recommendations->isNotEmpty()) {
-            $state['canInterview'] = 'This application has already received a recommendation';
-            $state['canAssess'] = 'This application already has a recommendation';
-
-            if ($application->recommendations->where('status', ['approved', 'canceled'])->isNotEmpty()) {
-                $state['canRefer'] = 'This application already has an approved or canceled recommendation';
-                $state['canRecommend'] = 'This application already has an approved or canceled recommendation';
-            } else {
-                $state['canRefer'] = null;
-                $state['canRecommend'] = null;
-            }
-        }
-
-        return $state;
+    /**
+     * Summary of groupByRelationship
+     * @param Collection $applications
+     * @return Collection
+     */
+    public function groupByRelationship(Collection $applications): Collection
+    {
+        return $applications
+            ->map(function (Application $application) {
+                return [
+                    'uuid' => $application->uuid,
+                    'relationship' => $application->relationship->name,
+                ];
+            })
+            ->groupBy('relationship')
+            ->map(function ($collection, $key) {
+                return [
+                    'name' => ucfirst($key),
+                    'count' => $collection->count(),
+                ];
+            })
+            ->values();
     }
 
     /**
