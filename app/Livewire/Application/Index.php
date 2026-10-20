@@ -19,7 +19,11 @@ class Index extends Component
 
     public string $dataTableId;
 
-    public array $applicationsPerStatus;
+    public Collection $applicationsPerStatus;
+
+    public Collection $applicationsPerRelationship;
+
+    public array $applicationsPerStatusCount;
 
     public function mount()
     {
@@ -52,7 +56,7 @@ class Index extends Component
                 ];
             });
 
-        $this->applicationsPerStatus = $this->applications
+        $this->applicationsPerStatusCount = $this->applications
             ->countBy(fn (Application $application) => $application->currentStatus()['label'])
             ->toArray();
 
@@ -62,6 +66,56 @@ class Index extends Component
         ]);
 
         $this->columns = app(DataTableService::class)->getColumns($this->mappedApplications);
+
+        if (Auth::user()->roles->isNotEmpty()) {
+            $this->applicationsPerStatus = $this->applications
+                ->map(function (Application $application) {
+                    return [
+                        'uuid' => $application->uuid,
+                        'status' => $application->currentSTatus()['label']
+                    ];
+                })
+                ->groupBy('status')
+                ->map(function ($collection, $key) {
+                    return [
+                        'name' => ucfirst($key),
+                        'count' => $collection->count()
+                    ];
+                })
+                ->values();
+
+            $this->applicationsPerRelationship = $this->applications
+                ->map(function (Application $application) {
+                    return [
+                        'uuid' => $application->uuid,
+                        'relationship' => $application->relationship->name,
+                    ];
+                })
+                ->groupBy('relationship')
+                ->map(function ($collection, $key) {
+                    return [
+                        'name' => ucfirst($key),
+                        'count' => $collection->count(),
+                    ];
+                })
+                ->values();
+
+            $this->dispatch('refresh-chart', [
+                'chartId' => 'applications-per-status',
+                'chartData' => [
+                    'count' => $this->applicationsPerStatus->pluck('count'),
+                    'labels' => $this->applicationsPerStatus->pluck('name'),
+                ],
+            ]);
+
+            $this->dispatch('refresh-chart', [
+                'chartId' => 'applications-per-relationship',
+                'chartData' => [
+                    'count' => $this->applicationsPerRelationship->pluck('count'),
+                    'labels' => $this->applicationsPerRelationship->pluck('name'),
+                ],
+            ]);
+        }
     }
 
     public function render()
