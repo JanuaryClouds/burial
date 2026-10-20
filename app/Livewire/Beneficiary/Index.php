@@ -3,6 +3,7 @@
 namespace App\Livewire\Beneficiary;
 
 use App\Models\Beneficiary;
+use App\Services\BeneficiaryService;
 use App\Services\DataTableService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -89,42 +90,8 @@ class Index extends Component
 
     private function loadChartData(): void
     {
-        $this->beneficiariesPerAgeGroup = $this->beneficiaries
-            ->filter(fn (Beneficiary $beneficiary) => $beneficiary->application)
-            ->map(function (Beneficiary $beneficiary) {
-                return [
-                    'uuid' => $beneficiary->uuid,
-                    'age' => $beneficiary->age(),
-                ];
-            })
-            ->groupBy(function ($beneficiary) {
-                $age = $beneficiary['age'];
-
-                if ($age <= 17) {
-                    return '0 - 17';
-                }
-
-                if ($age >= 18 && $age <= 30) {
-                    return '18 - 30';
-                }
-
-                if ($age >= 31 && $age <= 45) {
-                    return '31 - 45';
-                }
-
-                if ($age >= 46 && $age <= 60) {
-                    return '46 - 60';
-                }
-
-                return '61+';
-            })
-            ->map(function ($collection, $key) {
-                return [
-                    'name' => $key,
-                    'count' => $collection->count(),
-                ];
-            })
-            ->values();
+        $this->beneficiariesPerAgeGroup = app(BeneficiaryService::class)
+            ->groupByAgeGroup($this->beneficiaries);
 
         $this->dispatch('refresh-chart', [
             'chartId' => 'beneficiaries-per-age-group',
@@ -134,22 +101,8 @@ class Index extends Component
             ]
         ]);
 
-        $this->beneficiariesPerReligion = $this->beneficiaries
-            ->filter(fn (Beneficiary $beneficiary) => $beneficiary->application)
-            ->map(function (Beneficiary $beneficiary) {
-                return [
-                    'uuid' => $beneficiary->uuid,
-                    'religion' => $beneficiary->religion->name
-                ];
-            })
-            ->groupBy('religion')
-            ->map(function ($collection, $key) {
-                return [
-                    'name' => $key,
-                    'count' => $collection->count(),
-                ];
-            })
-            ->values();
+        $this->beneficiariesPerReligion = app(BeneficiaryService::class)
+            ->groupByReligion($this->beneficiaries);
 
         $this->dispatch('refresh-chart', [
             'chartId' => 'beneficiaries-per-religion',
@@ -159,39 +112,8 @@ class Index extends Component
             ]
         ]);
 
-        $this->beneficiariesPerNatality = $this->beneficiaries
-            ->filter(fn (Beneficiary $beneficiary) => $beneficiary->application)
-            ->map(function (Beneficiary $beneficiary) {
-                return [
-                    'uuid' => $beneficiary->uuid,
-                    'date_of_birth' => $beneficiary->date_of_birth,
-                    'date_of_death' => $beneficiary->date_of_death,
-                ];
-            })
-            ->filter(function ($beneficiary) {
-                return Carbon::parse($beneficiary['date_of_death'])
-                    ->diffInDays(Carbon::parse($beneficiary['date_of_birth'])) <= 28;
-            })
-            ->groupBy(function ($beneficiary) {
-                $age = Carbon::parse($beneficiary['date_of_death'])->diffInDays(
-                    Carbon::parse($beneficiary['date_of_birth'])
-                );
-
-                if ($age <= 7) {
-                    return 'Perinatal';
-                }
-
-                if ($age >= 8 && $age <= 28) {
-                    return 'Neonatal';
-                }
-            })
-            ->map(function ($collection, $key) {
-                return [
-                    'name' => $key,
-                    'count' => $collection->count(),
-                ];
-            })
-            ->values();
+        $this->beneficiariesPerNatality = app(BeneficiaryService::class)
+            ->groupByNatality($this->beneficiaries);
 
         $this->dispatch('refresh-chart', [
             'chartId' => 'beneficiaries-per-natality',
@@ -201,24 +123,8 @@ class Index extends Component
             ]
         ]);
 
-        $this->beneficiariesPerMonth = $this->beneficiaries
-            ->filter(fn (Beneficiary $beneficiary) => $beneficiary->application)
-            ->map(function (Beneficiary $beneficiary) {
-                return [
-                    'uuid' => $beneficiary->uuid,
-                    'registered_at' => $beneficiary->application->created_at,
-                ];
-            })
-            ->groupBy(function ($beneficiary) {
-                return Carbon::parse($beneficiary['registered_at'])->format('F Y');
-            })
-            ->map(function ($collection, $key) {
-                return [
-                    'name' => $key,
-                    'count' => $collection->count(),
-                ];
-            })
-            ->values();
+        $this->beneficiariesPerMonth = app(BeneficiaryService::class)
+            ->groupPerMonth($this->beneficiaries);
 
         $this->dispatch('refresh-chart', [
             'chartId' => 'beneficiaries-per-month',
