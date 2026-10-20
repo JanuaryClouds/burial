@@ -20,6 +20,12 @@ class Index extends Component
 
     public Collection $mappedClients;
 
+    public int $totalClientsCount;
+
+    public int $currentMonthClientsCount;
+
+    public Collection $clientsPerMonth;
+
     public function mount()
     {
         $this->dataTableId = (string) Str::uuid();
@@ -39,11 +45,11 @@ class Index extends Component
                 return [
                     'uuid' => $client->uuid,
                     'name' => $client->fullname(),
-                    // 'application_tracking_no' => $client->application ? $client->application->tracking_no : 'DRAFT',
                     'address' => $client->address->barangay_name.', '.
                         ($client->address->municipality_name ?? $client->address->province_name).', '.
                         $client->address->region_name,
                     'recorded_at' => Carbon::parse($client->created_at)->diffForHumans(),
+                    'application_tracking_no' => $client->application ? $client->application->tracking_no : 'DRAFT',
                     'show_route' => route('client.show', $client->uuid),
                 ];
             });
@@ -53,6 +59,39 @@ class Index extends Component
         $this->dispatch('refresh-dataTable', [
             'dataTableId' => $this->dataTableId,
             'rows' => $this->mappedClients,
+        ]);
+
+        $this->totalClientsCount = $this->clients
+            ->filter(fn (Client $client) => $client->application)
+            ->count();
+
+        $this->currentMonthClientsCount = $this->clients
+            ->filter(fn (Client $client) => $client->application)
+            ->filter(fn (Client $client) => Carbon::parse($client->created_at)->isSameMonth(now()))
+            ->count();
+
+        $this->clientsPerMonth = $this->clients
+            ->map(function (Client $client) {
+                return [
+                    'uuid' => $client->uuid,
+                    'month' => Carbon::parse($client->created_at)->format('M Y'),
+                ];
+            })
+            ->groupBy('month')
+            ->map(function (Collection $collection, $key) {
+                return [
+                    'name' => (string) $key,
+                    'count' => $collection->count(),
+                ];
+            })
+            ->values();
+
+        $this->dispatch('refresh-chart', [
+            'chartId' => 'client-per-month',
+            'chartData' => [
+                'labels' => $this->clientsPerMonth->pluck('name'),
+                'count' => $this->clientsPerMonth->pluck('count'),
+            ]
         ]);
     }
 
