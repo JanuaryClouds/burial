@@ -6,7 +6,7 @@
 				@include('partials.dataTable.index', [
 					'data' => $applications,
 					'columns' => $columns,
-					'route' => '#',
+					'dataTableId' => 'applications-table',
 				])
 			</x-card>
 		</div>
