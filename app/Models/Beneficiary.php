@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\HasRelationSets;
 use App\Traits\HasUuid;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -189,8 +190,10 @@ class Beneficiary extends Model
     */
 
     public function scopeIndex(
-        $query,
+        Builder $query,
         ?string $userId = null,
+        ?string $startDate = null,
+        ?string $endDate = null
     ) {
         return $query->with([
             'address',
@@ -209,6 +212,9 @@ class Beneficiary extends Model
         ])
             ->when($userId, function ($query) use ($userId) {
                 $query->where('created_by', $userId);
+            })
+            ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('created_at', [$startDate, $endDate]);
             });
     }
 
