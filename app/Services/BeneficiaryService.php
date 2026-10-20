@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Models\Beneficiary;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
 class BeneficiaryService
@@ -27,6 +29,145 @@ class BeneficiaryService
                     'show_route' => route('beneficiary.show', $beneficiary),
                 ];
             });
+    }
+
+    /**
+     * Summary of groupByAgeGroup
+     * @param Collection $beneficiaries
+     * @return Collection
+     */
+    public function groupByAgeGroup(Collection $beneficiaries): Collection
+    {
+        return $beneficiaries
+            ->filter(fn (Beneficiary $beneficiary) => $beneficiary->application)
+            ->map(function (Beneficiary $beneficiary) {
+                return [
+                    'uuid' => $beneficiary->uuid,
+                    'age' => $beneficiary->age(),
+                ];
+            })
+            ->groupBy(function ($beneficiary) {
+                $age = $beneficiary['age'];
+
+                if ($age <= 17) {
+                    return '0 - 17';
+                }
+
+                if ($age >= 18 && $age <= 30) {
+                    return '18 - 30';
+                }
+
+                if ($age >= 31 && $age <= 45) {
+                    return '31 - 45';
+                }
+
+                if ($age >= 46 && $age <= 60) {
+                    return '46 - 60';
+                }
+
+                return '61+';
+            })
+            ->map(function ($collection, $key) {
+                return [
+                    'name' => $key,
+                    'count' => $collection->count(),
+                ];
+            })
+            ->values();
+    }
+
+    /**
+     * Summary of groupByReligion
+     * @param Collection $beneficiaries
+     * @return Collection
+     */
+    public function groupByReligion(Collection $beneficiaries): Collection
+    {
+        return $beneficiaries
+            ->filter(fn (Beneficiary $beneficiary) => $beneficiary->application)
+            ->map(function (Beneficiary $beneficiary) {
+                return [
+                    'uuid' => $beneficiary->uuid,
+                    'religion' => $beneficiary->religion->name
+                ];
+            })
+            ->groupBy('religion')
+            ->map(function ($collection, $key) {
+                return [
+                    'name' => $key,
+                    'count' => $collection->count(),
+                ];
+            })
+            ->values();
+    }
+
+    /**
+     * Summary of groupByNatality
+     * @param Collection $beneficiaries
+     * @return Collection
+     */
+    public function groupByNatality(Collection $beneficiaries): Collection
+    {
+        return $beneficiaries
+            ->filter(fn (Beneficiary $beneficiary) => $beneficiary->application)
+            ->map(function (Beneficiary $beneficiary) {
+                return [
+                    'uuid' => $beneficiary->uuid,
+                    'date_of_birth' => $beneficiary->date_of_birth,
+                    'date_of_death' => $beneficiary->date_of_death,
+                ];
+            })
+            ->filter(function ($beneficiary) {
+                return Carbon::parse($beneficiary['date_of_death'])
+                    ->diffInDays(Carbon::parse($beneficiary['date_of_birth'])) <= 28;
+            })
+            ->groupBy(function ($beneficiary) {
+                $age = Carbon::parse($beneficiary['date_of_death'])->diffInDays(
+                    Carbon::parse($beneficiary['date_of_birth'])
+                );
+
+                if ($age <= 7) {
+                    return 'Perinatal';
+                }
+
+                if ($age >= 8 && $age <= 28) {
+                    return 'Neonatal';
+                }
+            })
+            ->map(function ($collection, $key) {
+                return [
+                    'name' => $key,
+                    'count' => $collection->count(),
+                ];
+            })
+            ->values();
+    }
+
+    /**
+     * Summary of groupPerMonth
+     * @param Collection $beneficiaries
+     * @return Collection
+     */
+    public function groupPerMonth(Collection $beneficiaries): Collection
+    {
+        return $beneficiaries
+            ->filter(fn (Beneficiary $beneficiary) => $beneficiary->application)
+            ->map(function (Beneficiary $beneficiary) {
+                return [
+                    'uuid' => $beneficiary->uuid,
+                    'registered_at' => $beneficiary->application->created_at,
+                ];
+            })
+            ->groupBy(function ($beneficiary) {
+                return Carbon::parse($beneficiary['registered_at'])->format('F Y');
+            })
+            ->map(function ($collection, $key) {
+                return [
+                    'name' => $key,
+                    'count' => $collection->count(),
+                ];
+            })
+            ->values();
     }
 
     public function update(Beneficiary $beneficiary, array $data): Beneficiary
