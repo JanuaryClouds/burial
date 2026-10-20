@@ -3,6 +3,7 @@
 namespace App\Livewire\Client;
 
 use App\Models\Client;
+use App\Services\ClientService;
 use App\Services\DataTableService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -70,21 +71,7 @@ class Index extends Component
             ->filter(fn (Client $client) => Carbon::parse($client->created_at)->isSameMonth(now()))
             ->count();
 
-        $this->clientsPerMonth = $this->clients
-            ->map(function (Client $client) {
-                return [
-                    'uuid' => $client->uuid,
-                    'month' => Carbon::parse($client->created_at)->format('M Y'),
-                ];
-            })
-            ->groupBy('month')
-            ->map(function (Collection $collection, $key) {
-                return [
-                    'name' => (string) $key,
-                    'count' => $collection->count(),
-                ];
-            })
-            ->values();
+        $this->clientsPerMonth = app(ClientService::class)->groupByMonth($this->clients);
 
         $this->dispatch('refresh-chart', [
             'chartId' => 'client-per-month',
