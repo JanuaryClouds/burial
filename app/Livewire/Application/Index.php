@@ -3,6 +3,7 @@
 namespace App\Livewire\Application;
 
 use App\Models\Application;
+use App\Services\ApplicationService;
 use App\Services\DataTableService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -68,37 +69,11 @@ class Index extends Component
         $this->columns = app(DataTableService::class)->getColumns($this->mappedApplications);
 
         if (Auth::user()->roles->isNotEmpty()) {
-            $this->applicationsPerStatus = $this->applications
-                ->map(function (Application $application) {
-                    return [
-                        'uuid' => $application->uuid,
-                        'status' => $application->currentSTatus()['label']
-                    ];
-                })
-                ->groupBy('status')
-                ->map(function ($collection, $key) {
-                    return [
-                        'name' => ucfirst($key),
-                        'count' => $collection->count()
-                    ];
-                })
-                ->values();
+            $this->applicationsPerStatus = app(ApplicationService::class)
+                ->groupByStatus($this->applications);
 
-            $this->applicationsPerRelationship = $this->applications
-                ->map(function (Application $application) {
-                    return [
-                        'uuid' => $application->uuid,
-                        'relationship' => $application->relationship->name,
-                    ];
-                })
-                ->groupBy('relationship')
-                ->map(function ($collection, $key) {
-                    return [
-                        'name' => ucfirst($key),
-                        'count' => $collection->count(),
-                    ];
-                })
-                ->values();
+            $this->applicationsPerRelationship = app(ApplicationService::class)
+                ->groupByRelationship($this->applications);
 
             $this->dispatch('refresh-chart', [
                 'chartId' => 'applications-per-status',
