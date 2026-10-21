@@ -17,25 +17,8 @@ class FuneralAssistanceTypeController extends Controller
      */
     public function index()
     {
-        $data = FuneralAssistanceType::index()
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'uuid' => $item->uuid,
-                    'name' => $item->name,
-                    'description' => $item->description,
-                    'workflow' => $item->workflow,
-                    'show_route' => route('funeral_assistance_types.edit', $item->uuid),
-                ];
-            });
-
-        if (request()->expectsJson()) {
-            return $this->dataTableServices->ajax($data);
-        }
-
-        return view('funeral-assistance-types.index', [
+        return view('funeral-assistance-type.index', [
             'pageTitle' => 'Funeral Assistance Types',
-            'columns' => $this->dataTableServices->getColumns($data),
         ]);
     }
 
