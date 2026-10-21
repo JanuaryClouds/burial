@@ -36,24 +36,8 @@ class RoleController extends Controller
 
     public function index()
     {
-        $data = Role::select('id', 'name')
-            ->whereNotIn('name', ['superadmin', 'staff'])
-            ->get()
-            ->map(function ($role) {
-                return [
-                    'id' => $role->id,
-                    'name' => $role->name,
-                    'show_route' => route('role.edit', $role->id),
-                ];
-            });
-
-        if (request()->expectsJson()) {
-            return $this->dataTableService->ajax($data);
-        }
-
         return view('role.index', [
             'pageTitle' => 'Roles',
-            'columns' => $this->dataTableService->getColumns($data),
         ]);
     }
 
