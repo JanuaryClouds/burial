@@ -44,8 +44,8 @@ class Index extends Component
         $this->beneficiaries = Beneficiary::index(
             Auth::user()->roles()->count() > 0 ? null : Auth::id()
         )
-        ->orderBy('created_at', 'desc')
-        ->get();
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         $this->mappedBeneficiaries = $this->beneficiaries
             ->map(function (Beneficiary $beneficiary) {
@@ -61,7 +61,7 @@ class Index extends Component
                         $beneficiary->address->region_name,
                     'application' => $beneficiary->application?->tracking_no ?? 'DRAFT',
                     'recorded' => Carbon::parse($beneficiary->created_at)->diffForHumans(),
-                    'show_route' => route('beneficiary.show', $beneficiary)
+                    'show_route' => route('beneficiary.show', $beneficiary),
                 ];
             });
 
@@ -97,8 +97,8 @@ class Index extends Component
             'chartId' => 'beneficiaries-per-age-group',
             'chartData' => [
                 'labels' => $this->beneficiariesPerAgeGroup->pluck('name'),
-                'count' => $this->beneficiariesPerAgeGroup->pluck('count')
-            ]
+                'count' => $this->beneficiariesPerAgeGroup->pluck('count'),
+            ],
         ]);
 
         $this->beneficiariesPerReligion = app(BeneficiaryService::class)
@@ -108,8 +108,8 @@ class Index extends Component
             'chartId' => 'beneficiaries-per-religion',
             'chartData' => [
                 'labels' => $this->beneficiariesPerReligion->pluck('name'),
-                'count' => $this->beneficiariesPerReligion->pluck('count')
-            ]
+                'count' => $this->beneficiariesPerReligion->pluck('count'),
+            ],
         ]);
 
         $this->beneficiariesPerNatality = app(BeneficiaryService::class)
@@ -119,8 +119,8 @@ class Index extends Component
             'chartId' => 'beneficiaries-per-natality',
             'chartData' => [
                 'labels' => $this->beneficiariesPerNatality->pluck('name'),
-                'count' => $this->beneficiariesPerNatality->pluck('count')
-            ]
+                'count' => $this->beneficiariesPerNatality->pluck('count'),
+            ],
         ]);
 
         $this->beneficiariesPerMonth = app(BeneficiaryService::class)
@@ -130,8 +130,8 @@ class Index extends Component
             'chartId' => 'beneficiaries-per-month',
             'chartData' => [
                 'labels' => $this->beneficiariesPerMonth->pluck('name'),
-                'count' => $this->beneficiariesPerMonth->pluck('count')
-            ]
+                'count' => $this->beneficiariesPerMonth->pluck('count'),
+            ],
         ]);
     }
 

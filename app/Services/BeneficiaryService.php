@@ -33,8 +33,6 @@ class BeneficiaryService
 
     /**
      * Summary of groupByAgeGroup
-     * @param Collection $beneficiaries
-     * @return Collection
      */
     public function groupByAgeGroup(Collection $beneficiaries): Collection
     {
@@ -78,8 +76,6 @@ class BeneficiaryService
 
     /**
      * Summary of groupByReligion
-     * @param Collection $beneficiaries
-     * @return Collection
      */
     public function groupByReligion(Collection $beneficiaries): Collection
     {
@@ -88,7 +84,7 @@ class BeneficiaryService
             ->map(function (Beneficiary $beneficiary) {
                 return [
                     'uuid' => $beneficiary->uuid,
-                    'religion' => $beneficiary->religion->name
+                    'religion' => $beneficiary->religion->name,
                 ];
             })
             ->groupBy('religion')
@@ -103,8 +99,6 @@ class BeneficiaryService
 
     /**
      * Summary of groupByNatality
-     * @param Collection $beneficiaries
-     * @return Collection
      */
     public function groupByNatality(Collection $beneficiaries): Collection
     {
@@ -145,8 +139,6 @@ class BeneficiaryService
 
     /**
      * Summary of groupPerMonth
-     * @param Collection $beneficiaries
-     * @return Collection
      */
     public function groupPerMonth(Collection $beneficiaries): Collection
     {

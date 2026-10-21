@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Services\ApplicationService;
 use App\Services\ClientService;
 use App\Services\DataTableService;
-use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {

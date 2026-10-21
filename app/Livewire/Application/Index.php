@@ -39,7 +39,7 @@ class Index extends Component
         )
             ->orderBy('tracking_no', 'desc')
             ->get();
-        
+
         $this->mappedApplications = $this->applications
             ->map(function (Application $application) {
                 $client = $application->client;

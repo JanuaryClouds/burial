@@ -51,7 +51,7 @@ class ReportController extends Controller
 
         $clients = Client::with([
             'application',
-            'address'
+            'address',
         ])
             ->whereIn('uuid', $applications->pluck('client_uuid'))
             ->get();
@@ -68,7 +68,7 @@ class ReportController extends Controller
                     'status' => $application->currentStatus()['label'],
                 ];
             });
-        
+
         $columns = $this->dataTableServices->getColumns($mappedApplications, []);
 
         $applicationsPerStatus = $this->applicationServices->groupByStatus($applications);
@@ -130,11 +130,11 @@ class ReportController extends Controller
 
         $clients = Client::with([
             'application',
-            'address'
+            'address',
         ])
             ->whereIn('uuid', $applications->pluck('client_uuid'))
             ->get();
-        
+
         $applicationsPerStatus = $this->applicationServices->groupByStatus($applications);
 
         $beneficiariesPwd = $beneficiaries->where('pwd', 1)->count();

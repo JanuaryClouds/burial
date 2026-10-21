@@ -5,6 +5,7 @@ namespace App\Livewire\Role;
 use App\Services\ActivityLoggerService;
 use App\Services\RoleService;
 use App\Traits\Livewire\HasPlaceholder;
+use Illuminate\Validation\Rule;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Spatie\Permission\Models\Permission;
@@ -46,7 +47,7 @@ class Edit extends Component
                 'required',
                 'string',
                 'max:255',
-                \Illuminate\Validation\Rule::unique('roles')->ignore($this->role->id),
+                Rule::unique('roles')->ignore($this->role->id),
             ],
         ];
     }

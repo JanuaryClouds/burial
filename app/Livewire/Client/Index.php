@@ -78,7 +78,7 @@ class Index extends Component
             'chartData' => [
                 'labels' => $this->clientsPerMonth->pluck('name'),
                 'count' => $this->clientsPerMonth->pluck('count'),
-            ]
+            ],
         ]);
     }
 

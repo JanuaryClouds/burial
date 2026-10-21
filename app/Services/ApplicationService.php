@@ -49,8 +49,6 @@ class ApplicationService
 
     /**
      * Summary of groupByStatus
-     * @param Collection $applications
-     * @return Collection
      */
     public function groupByStatus(Collection $applications): Collection
     {
@@ -58,14 +56,14 @@ class ApplicationService
             ->map(function (Application $application) {
                 return [
                     'uuid' => $application->uuid,
-                    'status' => $application->currentSTatus()['label']
+                    'status' => $application->currentSTatus()['label'],
                 ];
             })
             ->groupBy('status')
             ->map(function ($collection, $key) {
                 return [
                     'name' => ucfirst($key),
-                    'count' => $collection->count()
+                    'count' => $collection->count(),
                 ];
             })
             ->values();
@@ -73,8 +71,6 @@ class ApplicationService
 
     /**
      * Summary of groupByRelationship
-     * @param Collection $applications
-     * @return Collection
      */
     public function groupByRelationship(Collection $applications): Collection
     {

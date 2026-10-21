@@ -53,8 +53,6 @@ class ClientService
 
     /**
      * Summary of groupByMonth
-     * @param Collection $clients
-     * @return Collection
      */
     public function groupByMonth(Collection $clients): Collection
     {
@@ -77,8 +75,6 @@ class ClientService
 
     /**
      * Summary of groupByRegion
-     * @param Collection $clients
-     * @return Collection
      */
     public function groupByRegion(Collection $clients): Collection
     {
@@ -88,14 +84,14 @@ class ClientService
                 'region_name' => ucfirst($client->address->region_name),
             ];
         })
-        ->groupBy('region_name')
-        ->map(function (Collection $collection, $key) {
-            return [
-                'region_name' => $key,
-                'count' => $collection->count(),
-            ];
-        })
-        ->values();
+            ->groupBy('region_name')
+            ->map(function (Collection $collection, $key) {
+                return [
+                    'region_name' => $key,
+                    'count' => $collection->count(),
+                ];
+            })
+            ->values();
     }
 
     public function reportIndex($startDate, $endDate)
