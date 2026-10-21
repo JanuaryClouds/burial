@@ -4,12 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\FuneralAssistanceType;
 use App\Models\Workflow;
-use App\Services\DatatableService;
+use App\Services\DataTableService;
 
 class FuneralAssistanceTypeController extends Controller
 {
     public function __construct(
-        protected DatatableService $datatableServices,
+        protected DataTableService $dataTableServices,
     ) {}
 
     /**
@@ -17,25 +17,8 @@ class FuneralAssistanceTypeController extends Controller
      */
     public function index()
     {
-        $data = FuneralAssistanceType::index()
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'uuid' => $item->uuid,
-                    'name' => $item->name,
-                    'description' => $item->description,
-                    'workflow' => $item->workflow,
-                    'show_route' => route('funeral_assistance_types.edit', $item->uuid),
-                ];
-            });
-
-        if (request()->expectsJson()) {
-            return $this->datatableServices->ajax($data);
-        }
-
-        return view('funeral-assistance-types.index', [
+        return view('funeral-assistance-type.index', [
             'pageTitle' => 'Funeral Assistance Types',
-            'columns' => $this->datatableServices->getColumns($data),
         ]);
     }
 

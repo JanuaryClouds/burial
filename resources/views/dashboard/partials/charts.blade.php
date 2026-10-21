@@ -2,13 +2,17 @@
 	<div class="col-12 col-lg-6">
 		<x-card>
 			<x-slot:header>Applications Per Status</x-slot:header>
-			<livewire:application.charts.per-status :applications="$applications" />
+			<x-chart chartId="applications-per-status"
+				chartType="pie"
+				:chartData="$applicationsPerStatus" />
 		</x-card>
 	</div>
 	<div class="col-12 col-lg-6">
 		<x-card>
 			<x-slot:header>Applications Per Relationship</x-slot:header>
-			<livewire:application.charts.per-relationship :applications="$applications" />
+			<x-chart chartId="applications-per-relationship"
+				chartType="bar"
+				:chartData="$applicationsPerRelationship" />
 		</x-card>
 	</div>
 </div>

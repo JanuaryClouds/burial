@@ -5,6 +5,7 @@
     'route' => null,
     'src' => null,
     'countPerPage' => 10,
+    'dataTableId',
 ])
 @php
 	if ($columns->isNotEmpty()) {
@@ -19,15 +20,14 @@
 	    }
 	}
 
-	$dataTableId = (string) Str::uuid();
-
 	if ($src === null && $route && $route !== '#' && $route !== '' && $data->isNotEmpty()) {
 	    throw new RuntimeException(
 	        'Src is required when data is present and route is present. Please provide a src or route.',
 	    );
 	}
 @endphp
-<div class="table-responsive overflow-x-hidden">
+<div class="table-responsive overflow-x-hidden"
+	wire:ignore>
 	<table class="table data-table {{ $classes }}"
 		id="dataTable-{{ $dataTableId }}"
 		style="width:100%"
@@ -37,12 +37,15 @@
 		data-src="{{ $src }}"
 		data-count-per-page="{{ $countPerPage }}">
 		<thead class="border-bottom border-bottom-1 border-gray-200 fw-bold">
-			@include('partials.datatable.head', [
+			@include('partials.dataTable.head', [
 				'columns' => $columns,
 			])
 		</thead>
 		<tbody>
+			@include('partials.dataTable.body', [
+				'columns' => $columns,
+				'rows' => $data,
+			])
 		</tbody>
 	</table>
 </div>
-@include('partials.datatable.script')

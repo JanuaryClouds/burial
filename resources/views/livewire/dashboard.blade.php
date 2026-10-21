@@ -1,7 +1,7 @@
-<div class="d-flex flex-column gap-6">
+<div class="d-flex flex-column gap-6"
+	wire:poll.10s="loadData">
 	<x-card>
-		<div class="d-flex justify-content-between align-items-center"
-			wire:poll.10s>
+		<div class="d-flex justify-content-between align-items-center">
 			<h4>Applications</h4>
 			<a href="{{ route('application.index') }}"
 				class="fs-4 btn btn-primary">
@@ -11,27 +11,30 @@
 	</x-card>
 
 	{{-- start::Statistics --}}
-	<div wire:poll.10s>
+	<div>
 		@include('dashboard.partials.statistics')
 	</div>
 	{{-- end::Statistics --}}
 
 	@unlessrole('staff')
-		<div wire:ignore>
+		{{-- start::Datatable --}}
+		<div>
 			<x-card>
-				@include('partials.datatable.index', [
+				@include('partials.dataTable.index', [
 					'columns' => $columns,
-					'src' => 'data',
+					'data' => $mappedApplications,
+					'dataTableId' => $dataTableId,
 				])
 			</x-card>
 		</div>
+		{{-- end::Datatable --}}
 	@endunlessrole
 
 	@role('staff')
-		<div wire:poll.10s>
-			{{-- start::Charts --}}
+		{{-- start::Charts --}}
+		<div>
 			@include('dashboard.partials.charts')
-			{{-- end::Charts --}}
 		</div>
+		{{-- end::Charts --}}
 	@endrole
 </div>

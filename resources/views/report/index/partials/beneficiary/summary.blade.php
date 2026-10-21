@@ -22,7 +22,7 @@
 						</tr>
 						@foreach ($beneficiariesNatality as $group)
 							<tr>
-								<td>{{ $group['group'] }}</td>
+								<td>{{ $group['name'] }}</td>
 								<td>{{ $group['count'] }}</td>
 							</tr>
 						@endforeach

@@ -6,7 +6,7 @@ use App\Http\Requests\StoreReferralRequest;
 use App\Http\Requests\UpdateReferralRequest;
 use App\Models\Client;
 use App\Models\Referral;
-use App\Services\DatatableService;
+use App\Services\DataTableService;
 use App\Services\NotificationService;
 use App\Services\ReferralService;
 
@@ -15,7 +15,7 @@ class ReferralController extends Controller
     public function __construct(
         protected ReferralService $referralServices,
         protected NotificationService $notificationServices,
-        protected DatatableService $datatableServices
+        protected DataTableService $dataTableServices
     ) {}
 
     /**
@@ -26,13 +26,13 @@ class ReferralController extends Controller
         $pageTitle = 'Referrals';
 
         $personalData = $this->referralServices->index(auth()->user()->id);
-        $personalDataColumns = $this->datatableServices->getColumns($personalData, ['client']);
+        $personalDataColumns = $this->dataTableServices->getColumns($personalData, ['client']);
 
         $allData = [];
         $allDataColumns = [];
         if (auth()->user()->hasRole('staff')) {
             $allData = $this->referralServices->index();
-            $allDataColumns = $this->datatableServices->getColumns($allData);
+            $allDataColumns = $this->dataTableServices->getColumns($allData);
         }
 
         if (request()->expectsJson()) {

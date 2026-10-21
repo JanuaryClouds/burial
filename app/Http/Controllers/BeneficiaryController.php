@@ -7,7 +7,7 @@ use App\Http\Requests\UpdateBeneficiaryRequest;
 use App\Models\Beneficiary;
 use App\Services\BeneficiaryFamilyService;
 use App\Services\BeneficiaryService;
-use App\Services\DatatableService;
+use App\Services\DataTableService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,22 +17,13 @@ class BeneficiaryController extends Controller
     public function __construct(
         protected BeneficiaryService $services,
         protected BeneficiaryFamilyService $familyServices,
-        protected DatatableService $datatableServices
+        protected DataTableService $dataTableServices
     ) {}
 
     public function index()
     {
-        $user = Auth::user();
-        $beneficiaries = $user->roles->isNotEmpty() ? $this->services->index() : $this->services->index($user->id);
-        $columns = $this->datatableServices->getColumns($beneficiaries);
-
-        if (request()->expectsJson()) {
-            return $this->datatableServices->ajax($beneficiaries);
-        }
-
         return view('beneficiary.index', [
             'pageTitle' => 'Beneficiaries',
-            'columns' => $columns,
         ]);
     }
 

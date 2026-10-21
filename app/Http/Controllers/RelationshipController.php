@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\RelationshipRequest;
 use App\Models\Relationship;
-use App\Services\DatatableService;
+use App\Services\DataTableService;
 use App\Services\RelationshipService;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,7 +12,7 @@ class RelationshipController extends Controller
 {
     public function __construct(
         protected RelationshipService $relationshipServices,
-        protected DatatableService $datatableServices
+        protected DataTableService $dataTableServices
     ) {}
 
     public function index()
@@ -29,7 +29,7 @@ class RelationshipController extends Controller
                     'show_route' => route('relationship.edit', $relationship->id),
                 ];
             });
-        $columns = $this->datatableServices->getColumns($data, ['id', 'show_route']);
+        $columns = $this->dataTableServices->getColumns($data, ['id', 'show_route']);
 
         if (request()->expectsJson()) {
             return response()->json([

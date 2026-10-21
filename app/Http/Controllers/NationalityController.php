@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\NationalityRequest;
 use App\Models\Nationality;
-use App\Services\DatatableService;
+use App\Services\DataTableService;
 use App\Services\NationalityService;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,7 +12,7 @@ class NationalityController extends Controller
 {
     public function __construct(
         protected NationalityService $nationalityServices,
-        protected DatatableService $datatableServices
+        protected DataTableService $dataTableServices
     ) {}
 
     public function index()
@@ -29,7 +29,7 @@ class NationalityController extends Controller
                     'show_route' => route('nationality.edit', $nationality->id),
                 ];
             });
-        $columns = $this->datatableServices->getColumns($data, ['id', 'show_route']);
+        $columns = $this->dataTableServices->getColumns($data, ['id', 'show_route']);
 
         if (request()->expectsJson()) {
             return response()->json([

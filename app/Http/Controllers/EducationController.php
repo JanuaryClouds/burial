@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\EducationRequest;
 use App\Models\Education;
-use App\Services\DatatableService;
+use App\Services\DataTableService;
 use App\Services\EducationService;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,7 +12,7 @@ class EducationController extends Controller
 {
     public function __construct(
         protected EducationService $educationServices,
-        protected DatatableService $datatableServices
+        protected DataTableService $dataTableServices
     ) {}
 
     public function index()
@@ -29,7 +29,7 @@ class EducationController extends Controller
                     'show_route' => route('education.edit', $education->id),
                 ];
             });
-        $columns = $this->datatableServices->getColumns($data, ['id', 'show_route']);
+        $columns = $this->dataTableServices->getColumns($data, ['id', 'show_route']);
 
         if (request()->expectsJson()) {
             return response()->json([

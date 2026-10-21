@@ -117,15 +117,15 @@
 			}
 		});
 
-		if (route && route !== '#') {
-			if (window.datatableRefreshInterval) {
-				clearInterval(window.datatableRefreshInterval);
-			}
+		// if (route && route !== '#') {
+		// 	if (window.datatableRefreshInterval) {
+		// 		clearInterval(window.datatableRefreshInterval);
+		// 	}
 
-			window.datatableRefreshInterval = setInterval(() => {
-				dataTable.DataTable().ajax.reload(null, false);
-			}, 10000);
-		}
+		// 	window.datatableRefreshInterval = setInterval(() => {
+		// 		dataTable.DataTable().ajax.reload(null, false);
+		// 	}, 10000);
+		// }
 	});
 
 	$('.data-table').on('click', 'a', function(e) {
