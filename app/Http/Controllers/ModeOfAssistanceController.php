@@ -15,23 +15,8 @@ class ModeOfAssistanceController extends Controller
 
     public function index()
     {
-        $data = ModeOfAssistance::index()
-            ->get()
-            ->map(function ($modeOfAssistance) {
-                return [
-                    'id' => $modeOfAssistance->id,
-                    'name' => $modeOfAssistance->name,
-                    'show_route' => route('mode_of_assistances.edit', $modeOfAssistance->id),
-                ];
-            });
-
-        if (request()->expectsJson()) {
-            return $this->dataTableService->ajax($data);
-        }
-
         return view('mode-of-assistance.index', [
             'pageTitle' => 'Mode of Assistances',
-            'columns' => $this->dataTableService->getColumns($data),
         ]);
     }
 
