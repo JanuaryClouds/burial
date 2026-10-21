@@ -38,28 +38,8 @@ class SystemController extends Controller
 
     public function logs()
     {
-        $logs = Activity::latest()->get()
-            ->map(function ($log) {
-                $properties = $log->properties;
-
-                return [
-                    'id' => $log->id,
-                    'description' => $log->description,
-                    'logged_at' => $log->created_at->format('Y-m-d H:i:s'),
-                    'show_route' => route('system.logs.show', $log->id),
-                ];
-            });
-
-        $columns = $this->dataTableServices->getColumns($logs);
-
-        if (request()->expectsJson()) {
-            return $this->dataTableServices->ajax($logs);
-        }
-
         return view('system.log.index', [
             'pageTitle' => 'System Logs',
-            'logs' => $logs,
-            'columns' => $columns,
         ]);
     }
 
