@@ -4,7 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Collection;
 
-class DatatableService
+class DataTableService
 {
     /**
      * Summary of getColumns

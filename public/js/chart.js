@@ -1,5 +1,5 @@
 function checkCharts() {
-    window.renderedCharts = window.renderedCharts || {};
+    window.renderedCharts = window.renderedCharts || [];
     const canvases = document.querySelectorAll('canvas')
 
     canvases.forEach(canvas => {
@@ -11,9 +11,9 @@ function checkCharts() {
         const chartTitle = canvas.dataset.chartTitle || '';
         const chartType = canvas.dataset.chartType;
 
-        renderChart(chartType, chartData, chartId, chartLabels, chartTitle);
+        if (!chartData || !chartLabels) return;
 
-        const chart = window.renderedCharts[chartId];
+        renderChart(chartType, chartData, chartId, chartLabels, chartTitle);
 
         const uriInput = document.getElementById(`${chartId}_uri`);
 
@@ -41,12 +41,18 @@ function checkCharts() {
 }
 
 function renderChart(chartType, chartData, chartId, chartLabels, chartTitle) {
+    let chart = null;
+
     if (chartType === 'pie') {
-        renderPieChart(chartData, chartId, chartLabels, chartTitle);
+        chart = renderPieChart(chartData, chartId, chartLabels, chartTitle);
     } else if (chartType === 'line') {
-        renderLineChart(chartData, chartId, chartLabels, chartTitle);
+        chart = renderLineChart(chartData, chartId, chartLabels, chartTitle);
     } else if (chartType === 'bar') {
-        renderBarChart(chartData, chartId, chartLabels, chartTitle);
+        chart = renderBarChart(chartData, chartId, chartLabels, chartTitle);
+    }
+
+    if (chart) {
+        window.renderedCharts.push(chart);
     }
 }
 
@@ -83,6 +89,8 @@ function renderPieChart(chartData, chartId, chartLabels, chartTitle) {
                 }
             }
         });
+
+        return chart;
     }
 }
 
@@ -130,6 +138,8 @@ function renderLineChart(chartData, chartId, chartLabels, chartTitle) {
                 }
             }
         })
+
+        return chart;
     }
 }
 
@@ -185,21 +195,22 @@ function renderBarChart(chartData, chartId, chartLabels, chartTitle) {
                     }
                 }
             }
-        })
+        });
+
+        return chart;
     }
 }
 
 function refreshChart() {
     Livewire.on('refresh-chart', (event) => {
         let data = event[0];
-
-        let chart = window.renderedCharts[data.chartId];
+        let chart = Chart.getChart(data.chartId);
 
         if (!chart) return;
 
         chart.data.datasets[0].data = data.chartData.count;
         chart.data.labels = data.chartData.labels;
-        chart.update();
+        chart.update('none');
     });
 }
 

@@ -14,7 +14,7 @@ use App\Models\DocumentRequirement;
 use App\Models\Sex;
 use App\Services\CentralClientService;
 use App\Services\ClientService;
-use App\Services\DatatableService;
+use App\Services\DataTableService;
 use App\Services\NotificationService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Exception;
@@ -27,23 +27,14 @@ class ClientController extends Controller
     public function __construct(
         protected ClientService $services,
         protected CentralClientService $citizenServices,
-        protected DatatableService $datatableServices,
+        protected DataTableService $dataTableServices,
         protected NotificationService $notificationServices,
     ) {}
 
     public function index()
     {
-        $user = Auth::user();
-
-        $clients = $user->roles->isNotEmpty() ? $this->services->index() : $this->services->index($user->id);
-
-        if (request()->expectsJson()) {
-            return $this->datatableServices->ajax($clients);
-        }
-
         return view('client.index', [
             'pageTitle' => 'Clients',
-            'columns' => $this->datatableServices->getColumns($clients),
         ]);
     }
 

@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\DataTables\CmsDataTable;
 use App\Http\Requests\RoleRequest;
-use App\Services\DatatableService;
+use App\Services\DataTableService;
 use App\Services\RoleService;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Role;
@@ -13,7 +13,7 @@ class RoleController extends Controller
 {
     public function __construct(
         protected RoleService $roleServices,
-        protected DatatableService $datatableService
+        protected DataTableService $dataTableService
     ) {}
 
     // boilerplate code
@@ -36,24 +36,8 @@ class RoleController extends Controller
 
     public function index()
     {
-        $data = Role::select('id', 'name')
-            ->whereNotIn('name', ['superadmin', 'staff'])
-            ->get()
-            ->map(function ($role) {
-                return [
-                    'id' => $role->id,
-                    'name' => $role->name,
-                    'show_route' => route('role.edit', $role->id),
-                ];
-            });
-
-        if (request()->expectsJson()) {
-            return $this->datatableService->ajax($data);
-        }
-
         return view('role.index', [
             'pageTitle' => 'Roles',
-            'columns' => $this->datatableService->getColumns($data),
         ]);
     }
 

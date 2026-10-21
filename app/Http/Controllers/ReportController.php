@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Application;
 use App\Models\Beneficiary;
 use App\Models\Cheque;
+use App\Models\Client;
 use App\Services\ApplicationService;
 use App\Services\BeneficiaryService;
 use App\Services\ClientService;
-use App\Services\DatatableService;
+use App\Services\DataTableService;
 use App\Services\ReportService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
@@ -17,7 +19,7 @@ class ReportController extends Controller
 {
     public function __construct(
         protected ReportService $reportServices,
-        protected DatatableService $datatableServices,
+        protected DataTableService $dataTableServices,
         protected ApplicationService $applicationServices,
         protected ClientService $clientServices,
         protected BeneficiaryService $beneficiaryServices,
@@ -37,22 +39,59 @@ class ReportController extends Controller
             $endDate = now()->endOfYear()->format('Y-m-d\TH:i');
         }
 
-        $applications = $this->reportServices->indexApplications(null, $startDate, $endDate);
-        $columns = $this->datatableServices->getColumns($applications, []);
+        $applications = Application::index(null, $startDate, $endDate)
+            ->orderBy('tracking_no', 'asc')
+            ->get();
+
+        $beneficiaries = Beneficiary::with([
+            'application',
+        ])
+            ->whereIn('uuid', $applications->pluck('beneficiary_uuid'))
+            ->get();
+
+        $clients = Client::with([
+            'application',
+            'address',
+        ])
+            ->whereIn('uuid', $applications->pluck('client_uuid'))
+            ->get();
+
+        $mappedApplications = $applications
+            ->map(function (Application $application) {
+                return [
+                    'tracking_number' => $application->tracking_no,
+                    'client' => $application->client->fullname(),
+                    'relationship_with_beneficiary' => $application->relationship->name,
+                    'beneficiary' => $application->beneficiary->fullname(),
+                    'age' => $application->beneficiary->age().' years old',
+                    'PWD' => $application->beneficiary->pwd == 1 ? 'Yes' : 'No',
+                    'status' => $application->currentStatus()['label'],
+                ];
+            });
+
+        $columns = $this->dataTableServices->getColumns($mappedApplications, []);
+
+        $applicationsPerStatus = $this->applicationServices->groupByStatus($applications);
+
+        $beneficiariesPwd = $beneficiaries->where('pwd', 1)->count();
+        $beneficiariesNatality = $this->beneficiaryServices->groupByNatality($beneficiaries);
+        $beneficiariesAgeGroups = $this->beneficiaryServices->groupByAgeGroup($beneficiaries);
+
+        $clientsPerRegion = $this->clientServices->groupByRegion($clients);
 
         return view('report.index', [
             'pageTitle' => 'Reports',
             'startDate' => $startDate,
             'endDate' => $endDate,
-            'applications' => $applications,
+            'applications' => $mappedApplications,
             'columns' => $columns,
             'applicationsTotal' => $applications->count(),
-            'applicationsPerStatus' => $this->reportServices->perStatus($startDate, $endDate),
-            'beneficiariesTotal' => $this->reportServices->beneficiariesTotal(null, $startDate, $endDate),
-            'beneficiariesPwd' => Beneficiary::onlyPwd($startDate, $endDate)->count(),
-            'beneficiariesNatality' => $this->reportServices->beneficiariesNatality($startDate, $endDate),
-            'beneficiariesAgeGroups' => $this->reportServices->beneficiaryAgeGroups($startDate, $endDate),
-            'clientsPerRegion' => $this->reportServices->clientsPerRegion($startDate, $endDate),
+            'applicationsPerStatus' => $applicationsPerStatus,
+            'beneficiariesTotal' => $beneficiaries->count(),
+            'beneficiariesPwd' => $beneficiariesPwd,
+            'beneficiariesNatality' => $beneficiariesNatality,
+            'beneficiariesAgeGroups' => $beneficiariesAgeGroups,
+            'clientsPerRegion' => $clientsPerRegion,
         ]);
     }
 
@@ -66,23 +105,57 @@ class ReportController extends Controller
 
         $charts = $request->input('charts', []);
 
-        $applications = $this->reportServices->indexApplications(
-            null, $startDate, $endDate
-        );
+        $applications = Application::index(null, $startDate, $endDate)
+            ->orderBy('tracking_no', 'asc')
+            ->get();
+
+        $mappedApplications = $applications
+            ->map(function (Application $application) {
+                return [
+                    'tracking_number' => $application->tracking_no,
+                    'client' => $application->client->fullname(),
+                    'relationship_with_beneficiary' => $application->relationship->name,
+                    'beneficiary' => $application->beneficiary->fullname(),
+                    'age' => $application->beneficiary->age().' years old',
+                    'PWD' => $application->beneficiary->pwd == 1 ? 'Yes' : 'No',
+                    'status' => $application->currentStatus()['label'],
+                ];
+            });
+
+        $beneficiaries = Beneficiary::with([
+            'application',
+        ])
+            ->whereIn('uuid', $applications->pluck('beneficiary_uuid'))
+            ->get();
+
+        $clients = Client::with([
+            'application',
+            'address',
+        ])
+            ->whereIn('uuid', $applications->pluck('client_uuid'))
+            ->get();
+
+        $applicationsPerStatus = $this->applicationServices->groupByStatus($applications);
+
+        $beneficiariesPwd = $beneficiaries->where('pwd', 1)->count();
+        $beneficiariesNatality = $this->beneficiaryServices->groupByNatality($beneficiaries);
+        $beneficiariesAgeGroups = $this->beneficiaryServices->groupByAgeGroup($beneficiaries);
+
+        $clientsPerRegion = $this->clientServices->groupByRegion($clients);
 
         $pdf = Pdf::loadView('report.index.pdf', [
             'pageTitle' => $documentName,
             'charts' => $charts,
             'startDate' => $startDate,
             'endDate' => $endDate,
-            'applications' => $applications,
+            'applications' => $mappedApplications,
             'applicationsTotal' => $applications->count(),
-            'applicationsPerStatus' => $this->reportServices->perStatus($startDate, $endDate),
-            'beneficiariesTotal' => $this->reportServices->beneficiariesTotal(null, $startDate, $endDate),
-            'beneficiariesPwd' => Beneficiary::onlyPwd($startDate, $endDate)->count(),
-            'beneficiariesNatality' => $this->reportServices->beneficiariesNatality($startDate, $endDate),
-            'beneficiariesAgeGroups' => $this->reportServices->beneficiaryAgeGroups($startDate, $endDate),
-            'clientsPerRegion' => $this->reportServices->clientsPerRegion($startDate, $endDate),
+            'applicationsPerStatus' => $applicationsPerStatus,
+            'beneficiariesTotal' => $beneficiaries->count(),
+            'beneficiariesPwd' => $beneficiariesPwd,
+            'beneficiariesNatality' => $beneficiariesNatality,
+            'beneficiariesAgeGroups' => $beneficiariesAgeGroups,
+            'clientsPerRegion' => $clientsPerRegion,
         ])
             ->setPaper('letter', 'portrait');
 
@@ -105,7 +178,7 @@ class ReportController extends Controller
     //     }
 
     //     $data = $this->clientServices->reportIndex($startDate, $endDate);
-    //     $columns = $this->datatableServices->getColumns($data, []);
+    //     $columns = $this->dataTableServices->getColumns($data, []);
 
     //     $clientsPerBarangay = $this->reportServices->clientsPerBarangay($startDate, $endDate);
     //     $clientsPerAssistance = $this->reportServices->clientsPerAssistance($startDate, $endDate);
@@ -143,7 +216,7 @@ class ReportController extends Controller
     //     }
 
     //     $data = $this->beneficiaryServices->reportIndex($startDate, $endDate);
-    //     $columns = $this->datatableServices->getColumns($data, []);
+    //     $columns = $this->dataTableServices->getColumns($data, []);
 
     //     if (request()->expectsJson()) {
     //         return response()->json([
@@ -214,7 +287,7 @@ class ReportController extends Controller
     //         ]);
     //     }
 
-    //     $columns = $this->datatableServices->getColumns($data, []);
+    //     $columns = $this->dataTableServices->getColumns($data, []);
     //     $chequesPerStatus = $this->reportServices->chequesPerStatus($startDate, $endDate);
 
     //     return view('reports.index', compact(

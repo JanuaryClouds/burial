@@ -3,14 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\SystemSetting;
-use App\Services\DatatableService;
+use App\Services\DataTableService;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Activitylog\Models\Activity;
 
 class SystemController extends Controller
 {
     public function __construct(
-        protected DatatableService $datatableServices
+        protected DataTableService $dataTableServices
     ) {}
 
     /**
@@ -38,28 +38,8 @@ class SystemController extends Controller
 
     public function logs()
     {
-        $logs = Activity::latest()->get()
-            ->map(function ($log) {
-                $properties = $log->properties;
-
-                return [
-                    'id' => $log->id,
-                    'description' => $log->description,
-                    'logged_at' => $log->created_at->format('Y-m-d H:i:s'),
-                    'show_route' => route('system.logs.show', $log->id),
-                ];
-            });
-
-        $columns = $this->datatableServices->getColumns($logs);
-
-        if (request()->expectsJson()) {
-            return $this->datatableServices->ajax($logs);
-        }
-
         return view('system.log.index', [
             'pageTitle' => 'System Logs',
-            'logs' => $logs,
-            'columns' => $columns,
         ]);
     }
 

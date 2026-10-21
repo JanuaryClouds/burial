@@ -1,4 +1,4 @@
 @extends('layouts.app')
 @section('content')
-	<livewire:application.index :columns="$columns" />
+	<livewire:application.index />
 @endsection

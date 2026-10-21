@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ReligionRequest;
 use App\Models\Religion;
-use App\Services\DatatableService;
+use App\Services\DataTableService;
 use App\Services\ReligionService;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,7 +12,7 @@ class ReligionController extends Controller
 {
     public function __construct(
         protected ReligionService $religionServices,
-        protected DatatableService $datatableServices
+        protected DataTableService $dataTableServices
     ) {}
 
     public function index()
@@ -29,7 +29,7 @@ class ReligionController extends Controller
                     'show_route' => route('religion.edit', $religion->id),
                 ];
             });
-        $columns = $this->datatableServices->getColumns($data, ['id', 'show_route']);
+        $columns = $this->dataTableServices->getColumns($data, ['id', 'show_route']);
 
         if (request()->expectsJson()) {
             return response()->json([

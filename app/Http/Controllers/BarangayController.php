@@ -6,7 +6,7 @@ use App\Http\Requests\BarangayRequest;
 use App\Models\Barangay;
 use App\Models\District;
 use App\Services\BarangayService;
-use App\Services\DatatableService;
+use App\Services\DataTableService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -14,12 +14,12 @@ class BarangayController extends Controller
 {
     protected $BarangayServices;
 
-    protected $datatableServices;
+    protected $dataTableServices;
 
-    public function __construct(BarangayService $BarangayServices, DatatableService $datatableService)
+    public function __construct(BarangayService $BarangayServices, DataTableService $dataTableService)
     {
         $this->BarangayServices = $BarangayServices;
-        $this->datatableServices = $datatableService;
+        $this->dataTableServices = $dataTableService;
     }
 
     public function index()
@@ -35,7 +35,7 @@ class BarangayController extends Controller
                 'show_route' => route('barangay.edit', $barangay->id),
             ];
         });
-        $columns = $this->datatableServices->getColumns($data, ['id']);
+        $columns = $this->dataTableServices->getColumns($data, ['id']);
         // $subRecords = District::getAllDistricts();
 
         if (request()->expectsJson()) {

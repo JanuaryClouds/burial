@@ -3,8 +3,11 @@
 namespace App\Livewire\Application;
 
 use App\Models\Application;
+use App\Services\ApplicationService;
+use App\Services\DataTableService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Livewire\Component;
 
 class Index extends Component
@@ -13,9 +16,19 @@ class Index extends Component
 
     public Collection $applications;
 
-    public function mount(Collection $columns)
+    public Collection $mappedApplications;
+
+    public string $dataTableId;
+
+    public Collection $applicationsPerStatus;
+
+    public Collection $applicationsPerRelationship;
+
+    public array $applicationsPerStatusCount;
+
+    public function mount()
     {
-        $this->columns = $columns;
+        $this->dataTableId = (string) Str::uuid();
         $this->loadData();
     }
 
@@ -24,7 +37,60 @@ class Index extends Component
         $this->applications = Application::index(
             Auth::user()->roles->isNotEmpty() ? null : Auth::user()->id
         )
+            ->orderBy('tracking_no', 'desc')
             ->get();
+
+        $this->mappedApplications = $this->applications
+            ->map(function (Application $application) {
+                $client = $application->client;
+                $beneficiary = $application->beneficiary;
+                $status = $application->currentStatus();
+
+                return [
+                    'uuid' => $application->uuid,
+                    'tracking_no' => $application->tracking_no,
+                    'client' => $client->fullname(),
+                    'beneficiary' => $beneficiary->fullname(),
+                    'application_date' => $application->created_at->format('F d, Y'),
+                    'status' => $status,
+                    'show_route' => route('application.show', $application),
+                ];
+            });
+
+        $this->applicationsPerStatusCount = $this->applications
+            ->countBy(fn (Application $application) => $application->currentStatus()['label'])
+            ->toArray();
+
+        $this->dispatch('refresh-dataTable', [
+            'dataTableId' => $this->dataTableId,
+            'rows' => $this->mappedApplications,
+        ]);
+
+        $this->columns = app(DataTableService::class)->getColumns($this->mappedApplications);
+
+        if (Auth::user()->roles->isNotEmpty()) {
+            $this->applicationsPerStatus = app(ApplicationService::class)
+                ->groupByStatus($this->applications);
+
+            $this->applicationsPerRelationship = app(ApplicationService::class)
+                ->groupByRelationship($this->applications);
+
+            $this->dispatch('refresh-chart', [
+                'chartId' => 'applications-per-status',
+                'chartData' => [
+                    'count' => $this->applicationsPerStatus->pluck('count'),
+                    'labels' => $this->applicationsPerStatus->pluck('name'),
+                ],
+            ]);
+
+            $this->dispatch('refresh-chart', [
+                'chartId' => 'applications-per-relationship',
+                'chartData' => [
+                    'count' => $this->applicationsPerRelationship->pluck('count'),
+                    'labels' => $this->applicationsPerRelationship->pluck('name'),
+                ],
+            ]);
+        }
     }
 
     public function render()

@@ -16,7 +16,7 @@
 		table {
 			width: 100%;
 			border-collapse: collapse;
-			margin-top: 20px;
+			/* margin-top: 20px; */
 		}
 
 		.text-center {
@@ -96,26 +96,14 @@
 	</table>
 	<hr>
 
-	<h1>Applications Summary</h1>
 	{{-- start::Application Summary --}}
+	<h2>Applications Summary</h2>
 	<table>
 		<tbody>
-			{{-- start::Applications Per Status Chart --}}
+			{{-- start::Application Summary --}}
 			<td class="no-border"
-				style="width: 30%; text-align: center;">
-				<p>Applications Per Status</p>
-				<div class="chart">
-					<img src="{{ $charts['applications-per-status'] }}"
-						alt="Applications Per Status"
-						style="max-width:100%; height:auto;"
-						class="text-center">
-				</div>
-			</td>
-			{{-- end::Applications Per Status Chart --}}
-			<td class="no-border"
-				style="min-width: 70%;">
-				{{-- start::Application Summary --}}
-				<table class="table">
+				style="min-width: 70%; text-align: start; vertical-align: top;">
+				<table>
 					<thead>
 						<tr>
 							<th>Status</th>
@@ -135,32 +123,32 @@
 						</tr>
 					</tbody>
 				</table>
-				{{-- end::Application Summary --}}
 			</td>
+			{{-- end::Application Summary --}}
+			{{-- start::Applications Per Status Chart --}}
+			<td class="no-border"
+				style="width: 30%; text-align: center; vertical-align: top;">
+				<p>Applications Per Status</p>
+				<div class="chart">
+					<img src="{{ $charts['applications-per-status'] }}"
+						alt="Applications Per Status"
+						style="max-width:100%; height:auto;"
+						class="text-center">
+				</div>
+			</td>
+			{{-- end::Applications Per Status Chart --}}
 		</tbody>
 	</table>
 	{{-- end::Application Summary --}}
 	<br />
 
-	<h1>Beneficiaries Summary</h1>
 	{{-- start::Beneficiary Summary --}}
+	<h2>Beneficiaries Summary</h2>
 	<table>
 		<tbody>
-			{{-- start::Beneficiary Per Age Group Chart --}}
-			<td class="no-border"
-				style="width: 30%; text-align: center;">
-				<p>Beneficiaries Per Age Group</p>
-				<div class="chart">
-					<img src="{{ $charts['beneficiaries-per-age-group'] }}"
-						alt="Beneficiaries Per Age Group"
-						style="max-width:100%; height:auto;"
-						class="text-center">
-				</div>
-			</td>
-			{{-- end::Beneficiary Per Age Group Chart --}}
 			{{-- start::Beneficiary Statistics --}}
 			<td class="no-border"
-				style="min-width: 70%">
+				style="min-width: 70%; vertical-align: top;">
 				<table class="table table-bordered">
 					<thead>
 						<tr>
@@ -179,7 +167,7 @@
 						</tr>
 						@foreach ($beneficiariesNatality as $group)
 							<tr>
-								<td>{{ $group['group'] }}</td>
+								<td>{{ $group['name'] }}</td>
 								<td>{{ $group['count'] }}</td>
 							</tr>
 						@endforeach
@@ -187,39 +175,55 @@
 				</table>
 			</td>
 			{{-- end::Beneficiary Statistics --}}
+			{{-- start::Beneficiary Per Age Group Chart --}}
+			<td class="no-border"
+				style="width: 30%; text-align: center; vertical-align: top;">
+				<p>Beneficiaries Per Age Group</p>
+				<div class="chart">
+					<img src="{{ $charts['beneficiaries-per-age-group'] }}"
+						alt="Beneficiaries Per Age Group"
+						style="max-width:100%; height:auto;"
+						class="text-center">
+				</div>
+			</td>
+			{{-- end::Beneficiary Per Age Group Chart --}}
 		</tbody>
 	</table>
 	{{-- end::Beneficiary Summary --}}
 	<br />
 
-	<h1>Clients Per Region</h1>
 	{{-- start::Clients Per Region --}}
-	<table class="table table-bordered">
-		<thead>
-			<tr>
-				<th>Region</th>
-				<th>Count</th>
-			</tr>
-		</thead>
+	<h2>Clients Per Region</h2>
+	<table>
 		<tbody>
-			@foreach ($clientsPerRegion as $clientPerRegion)
-				<tr>
-					<td>{{ $clientPerRegion['region_name'] }}</td>
-					<td>{{ $clientPerRegion['count'] }}</td>
-				</tr>
-			@endforeach
-			<tr>
-				<td class="fw-bold">Total Applications:</td>
-				<td class="fw-bold">{{ $applicationsTotal }}</td>
-			</tr>
+			<table>
+				<thead>
+					<tr>
+						<th>Region</th>
+						<th>Count</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach ($clientsPerRegion as $clientPerRegion)
+						<tr>
+							<td>{{ $clientPerRegion['region_name'] }}</td>
+							<td>{{ $clientPerRegion['count'] }}</td>
+						</tr>
+					@endforeach
+					<tr>
+						<td class="fw-bold">Total Applications:</td>
+						<td class="fw-bold">{{ $applicationsTotal }}</td>
+					</tr>
+				</tbody>
+			</table>
 		</tbody>
 	</table>
 	{{-- end::Clients Per Region --}}
 	<br />
 
-	<h1>Applications</h1>
 	{{-- start::Applications --}}
-	<table class="table table-bordered">
+	<h2>Applications</h2>
+	<table>
 		<thead>
 			<tr>
 				<th>Tracking Number</th>

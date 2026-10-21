@@ -8,7 +8,7 @@ use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use App\Services\Auth\UserService;
-use App\Services\DatatableService;
+use App\Services\DataTableService;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 
@@ -16,7 +16,7 @@ class UserController extends Controller
 {
     public function __construct(
         protected UserService $userServices,
-        protected DatatableService $datatableServices,
+        protected DataTableService $dataTableServices,
     ) {}
 
     public function login(LoginRequest $request)
@@ -135,27 +135,8 @@ class UserController extends Controller
 
     public function index()
     {
-        $data = User::index()
-            ->get()
-            ->map(function (User $user) {
-                return [
-                    'id' => $user->id,
-                    'name' => $user->fullname(),
-                    'role' => $user->roles()->count() > 0 ? 'Staff' : 'Client',
-                    'active' => $user->is_active,
-                    'email' => $user->email,
-                    'contact_number' => $user->contact_number,
-                    'show_route' => route('user.edit', $user),
-                ];
-            });
-
-        if (request()->expectsJson()) {
-            return $this->datatableServices->ajax($data);
-        }
-
         return view('user.index', [
             'pageTitle' => 'Users',
-            'columns' => $this->datatableServices->getColumns($data),
         ]);
     }
 
