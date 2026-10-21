@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\Auth\UserController;
 use App\Http\Controllers\CitizenAccessController;
 use App\Http\Controllers\DashboardController;
@@ -43,10 +42,6 @@ Route::middleware(['auth', 'active.check'])
         Route::get('/applications/export', [ExportController::class, 'applications'])
             ->middleware('permission:Create Report')
             ->name('applications.export.all');
-
-        // Route::get('/activity-logs', [ActivityLogController::class, 'index'])
-        //     ->middleware('permission:View Log')
-        //     ->name('activity.logs');
 
         require __DIR__.'/application.php';
         require __DIR__.'/client.php';
