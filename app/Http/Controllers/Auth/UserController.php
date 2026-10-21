@@ -135,27 +135,8 @@ class UserController extends Controller
 
     public function index()
     {
-        $data = User::index()
-            ->get()
-            ->map(function (User $user) {
-                return [
-                    'id' => $user->id,
-                    'name' => $user->fullname(),
-                    'role' => $user->roles()->count() > 0 ? 'Staff' : 'Client',
-                    'active' => $user->is_active,
-                    'email' => $user->email,
-                    'contact_number' => $user->contact_number,
-                    'show_route' => route('user.edit', $user),
-                ];
-            });
-
-        if (request()->expectsJson()) {
-            return $this->dataTableServices->ajax($data);
-        }
-
         return view('user.index', [
             'pageTitle' => 'Users',
-            'columns' => $this->dataTableServices->getColumns($data),
         ]);
     }
 

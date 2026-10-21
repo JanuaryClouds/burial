@@ -1,15 +1,4 @@
 @extends('layouts.app')
 @section('content')
-	<div class="d-flex flex-column gap-6">
-		<x-card>
-			@include('partials.dataTable.index', [
-				'columns' => $columns,
-				'src' => 'data',
-			])
-		</x-card>
-		<x-card>
-			<x-slot:header>Create User</x-slot:header>
-			<livewire:user.create defer />
-		</x-card>
-	</div>
+	<livewire:user.index />
 @endsection
