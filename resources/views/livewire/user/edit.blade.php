@@ -45,8 +45,6 @@
 					label="Current Password"
 					type="password" />
 			</div>
-		@endif
-		@role('superadmin')
 			<div class="col-12 col-md-4">
 				<x-form.input wire:model.live.blur='form.newPassword'
 					name="form.newPassword"
@@ -59,7 +57,7 @@
 					label="Confirm Password"
 					type="password" />
 			</div>
-		@endrole
+		@endif
 	</div>
 	@role('superadmin')
 		<x-form.check wire:model='form.isActive'
