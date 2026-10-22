@@ -50,7 +50,6 @@ class WorkflowHistorySeeder extends Seeder
             $workflowStages->where('name', 'Accounting')->first()->uuid,
             $workflowStages->where('name', 'Treasury')->first()->uuid,
             $workflowStages->where('name', 'Releasing')->first()->uuid,
-            $workflowStages->where('name', 'Closing')->first()->uuid,
         ]; // prevent reverting back to recommendation stage
 
         $staff = User::whereHas('roles')->get();

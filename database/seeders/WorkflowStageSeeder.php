@@ -101,11 +101,6 @@ class WorkflowStageSeeder extends Seeder
                 'description' => 'Assistance is ready to be picked up by the client or claimant.',
                 'permission' => array_values(RoleSeeder::queryPermission('name', 'releasing')),
             ],
-            [
-                'name' => 'Closing',
-                'description' => 'Client/Claimant has received the funeral assistance.',
-                'permission' => array_values(RoleSeeder::queryPermission('name', 'closing')),
-            ],
         ];
     }
 }
