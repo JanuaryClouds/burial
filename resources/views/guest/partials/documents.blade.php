@@ -15,7 +15,7 @@
 							<div class="card-body">
 								<span class="ribbon">For Burial Assistance</span>
 								<ol class="list-check">
-									@foreach ($burialDocuments as $document)
+									@foreach ($documents as $document)
 										@if (!$document['for_muslim'])
 											<li class="">
 												{{ $document['name'] }}
@@ -26,7 +26,7 @@
 								<div class="callout-highlight">
 									<strong>For Deceased Muslim Citizens, also bring:</strong>
 									<ol class="list-check">
-										@foreach ($burialDocuments as $document)
+										@foreach ($documents as $document)
 											@if ($document['for_muslim'])
 												<li class="">
 													{{ $document['name'] }}
@@ -43,7 +43,7 @@
 							<div class="card-body">
 								<span class="ribbon">For Libreng Libing</span>
 								<ol class="list-check">
-									@foreach ($funeralDocuments as $document)
+									@foreach ($documents as $document)
 										<li class="">
 											{{ $document['name'] }}
 										</li>
