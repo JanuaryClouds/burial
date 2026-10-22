@@ -13,10 +13,16 @@
 			<div class="row">
 				@foreach ($documents as $document)
 					@php
+						$beneficiaryReligion = \App\Models\Beneficiary::where('uuid', $beneficiaryUuid)->with('religion')->first();
+
 						$displayName = $document['name'];
 
-						if ($document['for_muslim']) {
+						if ($document['for_muslim'] && $beneficiaryReligion->religion->name === 'Islam') {
 						    $displayName .= ' (For Muslim Citizen Only)';
+						}
+
+						if ($document['for_muslim'] && $beneficiaryReligion->religion->name !== 'Islam') {
+						    continue;
 						}
 
 						$nameKey = str_replace(' ', '_', strtolower($document['name']));
@@ -78,16 +84,3 @@
 		</x-alert>
 	@endif
 </x-card>
-@script
-	<script nonce="{{ $nonce ?? '' }}">
-		$(document).ready(function() {
-			const beneficiaryReligion = $('#beneficiary_religion').find('option:selected').text();
-
-			if (beneficiaryReligion === 'Muslim') {
-				$('.muslim-requirements').show();
-			} else {
-				$('.muslim-requirements').hide();
-			}
-		});
-	</script>
-@endscript
