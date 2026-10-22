@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\UserController;
+use App\Http\Controllers\DocumentRequirementController;
 use App\Http\Controllers\FuneralAssistanceTypeController;
 use App\Http\Controllers\ModeOfAssistanceController;
 use App\Http\Controllers\RoleController;
@@ -9,6 +10,17 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('role:superadmin')
     ->group(function () {
+        Route::controller(DocumentRequirementController::class)
+            ->prefix('document-requirements')
+            ->name('document_requirements.')
+            ->group(function () {
+                Route::get('/', 'index')
+                    ->name('index');
+
+                Route::get('/{document}/edit', 'edit')
+                    ->name('edit');
+            });
+
         Route::controller(FuneralAssistanceTypeController::class)
             ->prefix('funeral-assistance-types')
             ->name('funeral_assistance_types.')
