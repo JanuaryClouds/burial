@@ -67,6 +67,10 @@ class UserService
 
     public function update(array $data, User $user)
     {
+        if (Auth::id() !== $user->id) {
+            $data['newPassword'] == $user->password;
+        }
+
         $user->update([
             'first_name' => $data['firstName'],
             'middle_name' => $data['middleName'],

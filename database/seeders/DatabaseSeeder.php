@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
             SexSeeder::class,
             // BarangaySeeder::class,
             FuneralAssistanceTypeSeeder::class,
+            DocumentRequirementSeeder::class,
 
             // Workflow
             WorkflowSeeder::class,

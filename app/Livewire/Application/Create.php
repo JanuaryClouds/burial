@@ -5,6 +5,7 @@ namespace App\Livewire\Application;
 use App\Models\Application;
 use App\Models\Beneficiary;
 use App\Models\Client;
+use App\Models\DocumentRequirement;
 use App\Services\ActivityLoggerService;
 use App\Services\ImageService;
 use Illuminate\Support\Carbon;
@@ -24,6 +25,8 @@ class Create extends Component
     public Collection $clientOptions;
 
     public Collection $beneficiaryOptions;
+
+    public Collection $documents;
 
     #[Rule('required|exists:clients,uuid')]
     public ?string $clientUuid = null;
@@ -64,6 +67,10 @@ class Create extends Component
         if (session()->has('beneficiary_uuid')) {
             $this->beneficiaryUuid = session('beneficiary_uuid');
         }
+
+        $this->documents = DocumentRequirement::index()
+            ->where('is_active', true)
+            ->get();
     }
 
     public function removeImage(string $key)

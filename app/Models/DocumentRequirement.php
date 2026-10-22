@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -13,7 +14,9 @@ class DocumentRequirement extends Model
         'name',
         'description',
         'source',
-        'is_mandatory',
+        'is_required',
+        'for_muslim',
+        'is_active'
     ];
 
     public static function burial()
@@ -88,5 +91,27 @@ class DocumentRequirement extends Model
                 'is_mandatory' => true,
             ],
         ];
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Model Scopes
+    |--------------------------------------------------------------------------
+    */
+
+    public function scopeIndex(Builder $query)
+    {
+        return $query->select(
+            'id',
+            'name',
+            'description',
+            'source',
+            'is_required',
+            'for_muslim',
+            'is_active',
+            'created_at',
+            'updated_at'
+        )
+        ->orderBy('updated_at', 'desc');
     }
 }
