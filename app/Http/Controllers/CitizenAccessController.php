@@ -25,14 +25,16 @@ class CitizenAccessController extends Controller
             return response()->view('error.maintenance', [], 503);
         }
 
-        if (auth()->user()) {
+        if (Auth::user()) {
             return redirect()->route('dashboard');
         }
 
         $pageTitle = 'Funeral Assistance System - Taguig CSWDO';
         $steps = ApplicationStep::steps();
-        $burialDocuments = DocumentRequirement::burial();
-        $funeralDocuments = DocumentRequirement::funeral();
+        
+        $documents = DocumentRequirement::index()
+            ->where('is_active', true)
+            ->get();
 
         if (config('services.portal.users.mock')) {
             $citizens = User::orderBy('created_at')
@@ -75,8 +77,7 @@ class CitizenAccessController extends Controller
 
         return view('landing', compact(
             'steps',
-            'burialDocuments',
-            'funeralDocuments',
+            'documents',
             'pageTitle',
         ));
     }
