@@ -1,6 +1,3 @@
-@php
-	$documents = App\Models\DocumentRequirement::burial();
-@endphp
 <x-card>
 	<x-slot:header>Documents</x-slot:header>
 	@if ($clientUuid && $beneficiaryUuid && $relationshipId)
@@ -18,18 +15,20 @@
 					@php
 						$displayName = $document['name'];
 
-						if ($document['is_muslim']) {
+						if ($document['for_muslim']) {
 						    $displayName .= ' (For Muslim Citizen Only)';
 						}
 
-						$model = "images.{$document['key']}";
-						$image = data_get($images, $document['key']);
+						$nameKey = str_replace(' ', '_', strtolower($document['name']));
+
+						$model = "images.{$nameKey}";
+						$image = data_get($images, $nameKey);
 
 						$preview =
 						    $image instanceof \Livewire\Features\SupportFileUploads\TemporaryUploadedFile ? $image->temporaryUrl() : null;
 					@endphp
 
-					<div class="col-12 col-md-6 d-flex flex-column gap-4 {{ $document['is_muslim'] ? 'muslim-requirements' : '' }}">
+					<div class="col-12 col-md-6 d-flex flex-column gap-4 {{ $document['for_muslim'] ? 'muslim-requirements' : '' }}">
 						<x-form.image :wire:model="$model"
 							:label="$displayName" />
 						<div
@@ -51,7 +50,7 @@
 						</div>
 						@if ($preview)
 							<span class="align-self-center">
-								<x-button wire:click="removeImage('{{ $document['key'] }}')"
+								<x-button wire:click="removeImage('{{ $nameKey }}')"
 									wire:loading.attr="disabled"
 									class="btn-sm btn-danger">
 									<x-icon.font-awesome class="fa-trash" />
