@@ -8,7 +8,7 @@
 @unlessrole('staff')
 	@include('components.sidebar.link', [
 		'route' => route('client.create'),
-		'activeLink' => 'client.create',
+		'activeLink' => '',
 		'icon' => 'add-files',
 		'iconPathsCount' => 3,
 		'label' => 'Apply',
