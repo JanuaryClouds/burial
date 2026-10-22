@@ -3,12 +3,12 @@
 	or photos of the following documents. These are to be submitted when finalizing your application.
 
 	<div class="d-flex flex-column gap-2 border border-2 rounded border-info bg-info-subtle p-4">
-		<span class="fw-bold fs-6">Required Documents:</span>
-		<ul class="list-unstyled m-0">
+		<span class="fw-bold fs-6 text-info">Required Documents:</span>
+		<ul class="list-unstyled m-0 text-info">
 			@foreach ($requiredDocuments as $document)
 				<li>
 					<x-icon.font-awesome class="fa-check" />
-					{{ Str::title(Str::replace('_', ' ', $document['name'])) . ($document['is_muslim'] ? ' (For Muslim Beneficiaries)' : '') }}
+					{{ Str::title(Str::replace('_', ' ', $document['name'])) . ($document['for_muslim'] ? ' (For Muslim Beneficiaries)' : '') }}
 				</li>
 			@endforeach
 		</ul>

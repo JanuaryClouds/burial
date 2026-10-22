@@ -59,7 +59,9 @@ class ClientController extends Controller
         if ($draftedClients->count() == 0 || app()->hasDebugModeEnabled()) {
             return view('client.create', [
                 'pageTitle' => 'Draft a Client Record',
-                'requiredDocuments' => DocumentRequirement::burial(),
+                'requiredDocuments' => DocumentRequirement::index()
+                    ->where('is_active', true)
+                    ->get(),
             ]);
         }
 
