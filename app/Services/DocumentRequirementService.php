@@ -40,9 +40,9 @@ class DocumentRequirementService
             'name' => $data['name'],
             'description' => $data['description'] ?? null,
             'source' => $data['source'],
-            'is_required' => $data['is_required'] ?? false,
-            'for_muslim' => $data['for_muslim'] ?? false,
-            'is_active' => $data['is_active'] ?? true,
+            'is_required' => $data['isRequired'] ?? false,
+            'for_muslim' => $data['forMuslim'] ?? false,
+            'is_active' => $data['isActive'] ?? true,
         ]);
 
         return $document;

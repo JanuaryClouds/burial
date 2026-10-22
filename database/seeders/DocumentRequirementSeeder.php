@@ -40,7 +40,7 @@ class DocumentRequirementSeeder extends Seeder
                 'for_muslim' => false,
             ],
             [
-                'name' => 'Certificate of Burial Rites (signed by IMAM)',
+                'name' => 'Certificate of Burial Rites with signature of IMAM',
                 'source' => 'Muslim/Islam Religious Community',
                 'is_required' => true,
                 'for_muslim' => true,
