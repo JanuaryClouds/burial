@@ -20,11 +20,11 @@ class DocumentRequirementController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(DocumentRequirement $documentRequirement)
+    public function edit(DocumentRequirement $document)
     {
         return view('document-requirement.edit', [
             'pageTitle' => 'Edit Document',
-            'document' => $documentRequirement
+            'document' => $document
         ]);
     }
 }
