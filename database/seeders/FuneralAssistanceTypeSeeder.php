@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\FuneralAssistanceType;
+use App\Models\Workflow;
 use Illuminate\Database\Seeder;
 
 class FuneralAssistanceTypeSeeder extends Seeder
@@ -19,10 +20,13 @@ class FuneralAssistanceTypeSeeder extends Seeder
             'Exhumation' => 'Assistance for the transfer of remains',
         ];
 
+        $primaryWorkflow = Workflow::firstWhere('name', 'Funeral Assistance');
+
         foreach ($types as $name => $description) {
             FuneralAssistanceType::create([
                 'name' => $name,
                 'description' => $description,
+                'workflow_uuid' => $primaryWorkflow->uuid,
             ]);
         }
     }

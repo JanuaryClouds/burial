@@ -27,12 +27,12 @@ class DatabaseSeeder extends Seeder
             ReligionSeeder::class,
             SexSeeder::class,
             // BarangaySeeder::class,
-            FuneralAssistanceTypeSeeder::class,
-            DocumentRequirementSeeder::class,
-
             // Workflow
             WorkflowSeeder::class,
             WorkflowStageSeeder::class,
+
+            FuneralAssistanceTypeSeeder::class,
+            DocumentRequirementSeeder::class,
 
             // Data
             ClientSeeder::class,
