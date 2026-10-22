@@ -15,6 +15,11 @@ class Create extends Component
     
     public DocumentRequirementForm $form;
 
+    public function clear()
+    {
+        $this->form->reset();
+    }
+
     public function save()
     {
         try {

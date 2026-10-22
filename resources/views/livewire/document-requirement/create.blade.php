@@ -16,8 +16,7 @@
 	<div>
 		<x-form.textarea wire:model='form.description'
 			name="form.description"
-			label="Description"
-			:required="true" />
+			label="Description" />
 	</div>
 	<div class="row">
 		<div class="col-6 col-md-4 col-lg-3">
@@ -32,6 +31,12 @@
 		</div>
 	</div>
 	<div class="d-flex justify-content-end align-items-center gap-2">
+		<x-button wire:click='clear'
+			wire:loading.attr='disabled'
+			class="btn-sm btn-light">
+			<x-icon.font-awesome class="fa-xmark" />
+			Clear
+		</x-button>
 		<x-button wire:click='save'
 			wire:loading.attr='disabled'
 			class="btn-sm btn-success">
