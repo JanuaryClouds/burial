@@ -32,7 +32,6 @@ class Index extends Component
                 return [
                     'id' => $documentRequirement->id,
                     'name' => $documentRequirement->name,
-                    'description' => $documentRequirement->description,
                     'source' => $documentRequirement->source,
                     'updated_at' => $documentRequirement->updated_at->diffForHumans(),
                     'show_route' => route('document_requirements.edit', $documentRequirement)
