@@ -50,9 +50,9 @@ class Edit extends Component
         $this->name = $document->name;
         $this->description = $document->description;
         $this->source = $document->source;
-        $this->isRequired = $document->isRequired;
-        $this->forMuslim = $document->forMuslim;
-        $this->isActive = $document->isActive;
+        $this->isRequired = $document->is_required;
+        $this->forMuslim = $document->for_muslim;
+        $this->isActive = $document->is_active;
     }
 
     public function update()
