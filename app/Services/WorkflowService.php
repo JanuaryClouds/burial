@@ -33,9 +33,10 @@ class WorkflowService
      */
     public function store(array $data): Workflow
     {
-        $workflow = Workflow::create($data);
-
-        return $workflow;
+        return Workflow::create([
+            'name' => $data['name'],
+            'description' => $data['description'],
+        ]);
     }
 
     /**
