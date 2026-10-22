@@ -39,8 +39,8 @@ Route::prefix('workflow/')
             ->prefix('stages/')
             ->name('stage.')
             ->group(function () {
-                Route::get('/', 'index')
-                    ->name('index');
+                // Route::get('/', 'index')
+                //     ->name('index');
 
                 // Route::get('create', 'create')
                 //     ->name('create');
@@ -48,20 +48,20 @@ Route::prefix('workflow/')
                 // Route::post('/store', 'store')
                 //     ->name('store');
 
-                // Route::prefix('/{stage}')
-                //     ->group(function () {
+                Route::prefix('/{stage}')
+                    ->group(function () {
                 //         Route::get('', 'show')
                 //             ->name('show');
 
-                //         Route::get('/edit', 'edit')
-                //             ->name('edit');
+                        Route::get('/edit', 'edit')
+                            ->name('edit');
 
                 //         Route::post('/update', 'update')
                 //             ->name('update');
 
                 //         Route::post('/destroy', 'destroy')
                 //             ->name('destroy');
-                //     });
+                    });
             });
 
         Route::controller(WorkflowHistoryController::class)

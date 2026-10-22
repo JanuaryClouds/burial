@@ -6,6 +6,8 @@ use App\Http\Controllers\FuneralAssistanceTypeController;
 use App\Http\Controllers\ModeOfAssistanceController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SystemController;
+use App\Http\Controllers\WorkflowController;
+use App\Http\Controllers\WorkflowStageController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('role:superadmin')
@@ -41,6 +43,28 @@ Route::middleware('role:superadmin')
 
                 Route::get('/{mode-of-assistance}/edit', 'edit')
                     ->name('edit');
+            });
+
+        Route::controller(WorkflowController::class)
+            ->prefix('workflows')
+            ->name('workflows.')
+            ->group(function () {
+                Route::get('/', 'index')
+                    ->name('index');
+
+                Route::get('/create', 'create')
+                    ->name('create');
+
+                Route::get('/{workflow}/edit', 'edit')
+                    ->name('edit');
+
+                Route::controller(WorkflowStageController::class)
+                    ->prefix('{workflow}/edit/{stage}/edit')
+                    ->name('stage.')
+                    ->group(function () {
+                        Route::get('/', 'edit')
+                            ->name('edit');
+                    });
             });
 
         Route::controller(RoleController::class)
