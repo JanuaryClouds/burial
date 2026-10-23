@@ -41,6 +41,8 @@ class Summary extends Component
 
     public function render()
     {
+        $this->application->loadMissing('activeRecommendation.workflow');
+
         return view('livewire.application.summary');
     }
 }

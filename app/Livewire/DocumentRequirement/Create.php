@@ -12,7 +12,7 @@ use Livewire\Component;
 class Create extends Component
 {
     use HasPlaceholder;
-    
+
     public DocumentRequirementForm $form;
 
     public function clear()

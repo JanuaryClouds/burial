@@ -10,30 +10,31 @@ trait HasWorkflowHistory
 {
     protected function currentStage(Application $application): ?WorkflowStage
     {
-        return WorkflowStage::firstWhere('uuid', $application->current_workflow_stage_uuid);
+        return $application->currentStage();
     }
 
     protected function previousStage(Application $application): ?WorkflowStage
     {
-        return WorkflowStage::firstWhere('position', $this->currentStage($application)->position - 1);
+        $current = $application->currentStage();
+
+        return $application->currentWorkflow()?->stages()
+            ->where('position', ($current ? $current->position : 0) - 1)->first();
     }
 
     protected function nextStage(Application $application): ?WorkflowStage
     {
-        return WorkflowStage::firstWhere('position', $this->currentStage($application)->position + 1);
+        return $application->toStage();
     }
 
     protected function previousStageHistory(Application $application): ?WorkflowHistory
     {
-        return WorkflowHistory::where('to_stage_uuid', $this->currentStage($application)->uuid)
-            ->latest()
-            ->first();
+        return $application->currentRecommendation()?->workflowHistory()
+            ->where('to_stage_uuid', $application->current_workflow_stage_uuid)->latest()->first();
     }
 
     protected function nextStageHistory(Application $application): ?WorkflowHistory
     {
-        return WorkflowHistory::where('from_stage_uuid', $this->currentStage($application)->uuid)
-            ->oldest()
-            ->first();
+        return $application->currentRecommendation()?->workflowHistory()
+            ->where('from_stage_uuid', $application->current_workflow_stage_uuid)->oldest()->first();
     }
 }

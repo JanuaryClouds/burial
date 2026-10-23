@@ -43,7 +43,7 @@
 			<x-card>
 				<x-slot:header>Previous Recommendation</x-slot:header>
 				@if ($application->currentRecommendation())
-					<livewire:recommendation.show :recommendation="$application->currentRecommendation()"
+					<livewire:recommendation.show :recommendation="$application->currentRecommendation()" :key="'recommendation-' . $application->current_recommendation_uuid"
 						defer />
 				@else
 					<div class="d-flex flex-center flex-column h-200px gap-5">
@@ -81,7 +81,10 @@
 						:options="$funeralAssistanceTypes"
 						label="Funeral Assistance Type"
 						:required="true" />
-					@if ($form->funeralAssistanceTypeUuid)
+					<x-form.select name="form.workflowUuid" wire:model="form.workflowUuid" :options="$workflows"
+                        :selected="$form->workflowUuid" label="Assigned Workflow Version" required />
+                    <p class="text-muted small">The assistance type suggests a workflow. You can choose another available workflow. Saving a new recommendation restarts processing and preserves previous history.</p>
+                    @if ($form->funeralAssistanceTypeUuid)
 						<x-form.input name="form.amountExtended"
 							wire:model.live.blur='form.amountExtended'
 							label="Amount to Extend"
@@ -95,7 +98,7 @@
 							label="Mode of Assistance"
 							:required="true" />
 					@endif
-					@if ($form->funeralAssistanceTypeUuid && $form->modeOfAssistanceId && $form->amountExtended)
+					@if ($form->funeralAssistanceTypeUuid && $form->workflowUuid && $form->modeOfAssistanceId && $form->amountExtended)
 						<x-slot:footer>
 							@if ($createNew)
 								<x-button wire:click="$set('createNew', false)"

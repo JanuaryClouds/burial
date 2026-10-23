@@ -46,6 +46,8 @@ class Create extends Component
                     'reason' => $this->form->reason,
                 ]);
 
+                $this->application->loadMissing('activeRecommendation');
+
                 if ($this->application->currentRecommendation()) {
                     $this->application->currentRecommendation()->update([
                         'status' => 'referred',

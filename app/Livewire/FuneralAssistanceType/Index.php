@@ -33,7 +33,7 @@ class Index extends Component
                     'uuid' => $funeralAssistanceType->uuid,
                     'name' => $funeralAssistanceType->name,
                     'description' => $funeralAssistanceType->description,
-                    'workflow' => $funeralAssistanceType->workflow,
+                    'workflow' => $funeralAssistanceType->workflow->name ?? null,
                     'show_route' => route('funeral_assistance_types.edit', $funeralAssistanceType->uuid),
                 ];
             });

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ApplicationStep;
 use App\Models\DocumentRequirement;
 use App\Models\FuneralAssistanceType;
 use App\Models\SystemSetting;
@@ -34,7 +33,7 @@ class CitizenAccessController extends Controller
 
         $services = FuneralAssistanceType::select(['name', 'description'])
             ->get();
-        
+
         $documents = DocumentRequirement::index()
             ->where('is_active', true)
             ->get();

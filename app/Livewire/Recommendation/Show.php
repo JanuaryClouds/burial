@@ -21,7 +21,7 @@ class Show extends Component
     #[On('refreshRecommendation')]
     public function refresh()
     {
-        $this->recommendation = $this->recommendation->application->currentRecommendation();
+        $this->recommendation->refresh();
     }
 
     public function render()

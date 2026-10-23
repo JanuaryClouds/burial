@@ -18,6 +18,7 @@
 				<div class="content d-flex flex-column flex-column-fluid">
 					<div class="container-xxl">
 						<div class="d-flex flex-column gap-6">
+							<x-page-navigation :current-label="$pageTitle ?? null" />
 							@yield('content')
 							@if ($errors->any())
 								<div class="alert alert-warning alert-dismissible fade show"

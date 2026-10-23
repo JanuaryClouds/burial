@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\DocumentRequirement;
-use Illuminate\Http\Request;
 
 class DocumentRequirementController extends Controller
 {
@@ -24,7 +23,7 @@ class DocumentRequirementController extends Controller
     {
         return view('document-requirement.edit', [
             'pageTitle' => 'Edit Document',
-            'document' => $document
+            'document' => $document,
         ]);
     }
 }

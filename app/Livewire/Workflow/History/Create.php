@@ -4,18 +4,12 @@ namespace App\Livewire\Workflow\History;
 
 use App\Livewire\Forms\RemarkForm;
 use App\Models\Application;
-use App\Models\WorkflowHistory;
-use App\Models\WorkflowStage;
-use App\Services\ActivityLoggerService;
-use App\Services\RemarkService;
+use App\Services\WorkflowHistoryService;
 use App\Traits\Livewire\HasPlaceholder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\ValidationException;
+use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
-use Livewire\Attributes\Rule;
 use Livewire\Component;
 
 class Create extends Component
@@ -24,167 +18,81 @@ class Create extends Component
 
     public Application $application;
 
-    public ?WorkflowStage $toStage;
-
     public Collection $stages;
-
-    public bool $revertToRecommendation = false;
-
-    public bool $showDateOut = false;
 
     public bool $showForm = false;
 
-    #[Rule('required|date')]
-    public string $dateIn;
+    public bool $paused = false;
 
-    #[Rule('required|uuid|exists:workflow_stages,uuid')]
-    public ?string $toStageUuid;
+    public ?string $workflowLabel = null;
 
-    #[Rule('required|date|after_or_equal:dateIn')]
-    public ?string $dateOut;
+    public ?string $dateIn = null;
 
-    #[Rule('nullable|string')]
-    public ?string $reason;
+    public ?string $dateOut = null;
+
+    public ?string $toStageUuid = null;
+
+    public ?string $reason = null;
 
     public RemarkForm $remarkForm;
 
-    public function mount(Application $application)
+    #[Locked]
+    public ?string $recommendationUuid = null;
+
+    #[Locked]
+    public ?string $expectedStageUuid = null;
+
+    public function mount(Application $application): void
     {
         $this->application = $application;
-        $this->stages = $this->loadStages($application);
-
-        if ($this->stages && $this->application->toStage()) {
-            $this->showForm = Auth::user()->can($this->application->toStage()->permission->name) || Auth::user()->hasRole('superadmin');
-        }
+        $this->refresh();
     }
 
     #[On('refreshWorkflowHistory')]
-    public function refresh()
+    #[On('refreshRecommendation')]
+    public function refresh(): void
     {
         $this->reset('dateIn', 'dateOut', 'reason', 'toStageUuid');
-        $this->application->fresh();
-        $this->stages = $this->loadStages($this->application);
-
-        if ($this->stages && $this->application->toStage()) {
-            $this->showForm = Auth::user()->can($this->application->toStage()->permission->name) || Auth::user()->hasRole('superadmin');
-        }
+        $this->application->refresh();
+        $this->application->loadMissing(['activeRecommendation.workflow', 'workflowStage']);
+        $this->recommendationUuid = $this->application->current_recommendation_uuid;
+        $this->expectedStageUuid = $this->application->current_workflow_stage_uuid;
+        $version = $this->application->currentWorkflow();
+        $this->workflowLabel = $version?->label();
+        $this->paused = $version !== null && ! $version->is_active;
+        $currentStage = $this->application->currentStage();
+        $position = $currentStage ? $currentStage->position : 0;
+        $this->stages = $version ? $version->stages()->with('permission')->orderBy('position')->get()
+            ->filter(fn ($stage) => $stage->position === $position + 1 || ($position > 0 && $stage->position < $position))
+            ->filter(fn ($stage) => auth()->user()?->hasRole('superadmin') || ($stage->permission && auth()->user()?->can($stage->permission->name)))
+            ->map(fn ($stage) => ['uuid' => $stage->uuid, 'name' => $stage->name]) : collect();
+        $this->showForm = ! $this->paused && $this->stages->isNotEmpty() &&
+            ! $this->application->closure()->exists() && ! $this->application->rejection()->exists() &&
+            ! $this->application->cancellation()->exists() && ! $this->application->referral()->exists();
     }
 
-    private function loadStages(Application $application): Collection
+    public function setDateInToNow(): void
     {
-        if (! $this->application->currentWorkflow()) {
-            return collect();
-        }
-
-        return $application->currentWorkflow()->stages
-            ->when($application->currentStage(), function ($stages) use ($application) {
-                $currentPosition = $application->currentStage()->position;
-
-                return $stages->filter(function ($stage) use ($currentPosition) {
-                    return $stage->position < $currentPosition || $stage->position === $currentPosition + 1;
-                });
-            })
-            ->when($application->currentStage() === null, function ($stages) {
-                return $stages->where('position', '=', 1);
-            })
-            ->sortBy('position')
-            ->map(function ($stage) use ($application) {
-                $name = $stage->name;
-
-                if ($application->currentStage() && $stage->position === $application->currentStage()->position + 1) {
-                    $name = 'Next Stage - '.$name;
-                }
-
-                return [
-                    'name' => $name,
-                    'uuid' => $stage->uuid,
-                ];
-            });
-    }
-
-    public function setDateInToNow()
-    {
-        $this->dateIn = Carbon::now()->format('Y-m-d\TH:i:s');
+        $this->dateIn = Carbon::now()->format('Y-m-d\\TH:i:s');
         $this->dateOut = null;
     }
 
-    public function setDateOutToNow()
+    public function setDateOutToNow(): void
     {
-        $this->dateOut = Carbon::now()->format('Y-m-d\TH:i:s');
+        $this->dateOut = Carbon::now()->format('Y-m-d\\TH:i:s');
     }
 
-    public function submit()
+    public function submit(): void
     {
-        try {
-            $this->validate();
-            $this->remarkForm->validate();
-        } catch (ValidationException $e) {
-            $this->dispatch('notification:toast', [
-                'type' => 'error',
-                'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation'),
-            ]);
-
-            return;
-        }
-
-        try {
-            DB::transaction(function () {
-                if (Auth::user()->can($this->application->toStage()->permission->name) || ! Auth::user()->hasRole('superadmin')) {
-                    $this->dispatch('refreshWorkflowHistory');
-                    $this->dispatch('notification:alert', [
-                        'type' => 'warning',
-                        'title' => 'Unauthorized',
-                        'text' => 'You are not authorized to log this stage',
-                    ]);
-
-                    return;
-                }
-
-                $workflowHistory = WorkflowHistory::create([
-                    'recommendation_uuid' => $this->application->currentRecommendation()->uuid,
-                    'from_stage_uuid' => $this->application->previousHistory() ? $this->application->previousHistory()->to_stage_uuid : null,
-                    'to_stage_uuid' => $this->toStageUuid,
-                    'date_in' => $this->dateIn,
-                    'date_out' => $this->dateOut,
-                    'reason' => $this->reason ?? null,
-                    'processed_by' => Auth::id(),
-                ]);
-
-                if ($this->remarkForm->content != null) {
-                    app(RemarkService::class)->store(
-                        $this->remarkForm->only('content'),
-                        $workflowHistory
-                    );
-                }
-
-                $this->application->current_workflow_stage_uuid = $this->toStageUuid;
-                $this->application->save();
-
-                ActivityLoggerService::logSuccess('Succesfully created workflow history', [
-                    'application_uuid' => $this->application->uuid,
-                    'recommendation_uuid' => $workflowHistory->recommendation->uuid,
-                    'workflow_history_uuid' => $workflowHistory->uuid,
-                ]);
-
-                $this->remarkForm->reset('content');
-
-                $this->dispatch('notification:alert', [
-                    'type' => 'success',
-                    'title' => 'History created successfully',
-                ]);
-
-                $this->dispatch('refreshWorkflowHistory');
-            });
-        } catch (\Throwable $th) {
-            $this->dispatch('notification:alert', [
-                'type' => 'error',
-                'text' => app()->hasDebugModeEnabled() ? $th->getMessage() : config('constants.errors.unknown'),
-            ]);
-
-            ActivityLoggerService::logException($th, 'Failed to create workflow history');
-
-            report($th);
-        }
+        app(WorkflowHistoryService::class)->store([
+            'recommendation_uuid' => $this->recommendationUuid, 'expected_stage_uuid' => $this->expectedStageUuid,
+            'to_stage_uuid' => $this->toStageUuid, 'date_in' => $this->dateIn, 'date_out' => $this->dateOut,
+            'reason' => $this->reason, 'remark' => $this->remarkForm->content,
+        ]);
+        $this->remarkForm->reset();
+        $this->refresh();
+        $this->dispatch('refreshWorkflowHistory');
+        $this->dispatch('notification:toast', ['type' => 'success', 'text' => 'Stage processing recorded.']);
     }
 
     public function render()

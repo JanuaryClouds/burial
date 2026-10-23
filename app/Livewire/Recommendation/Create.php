@@ -7,10 +7,10 @@ use App\Models\Application;
 use App\Models\FuneralAssistanceType;
 use App\Models\ModeOfAssistance;
 use App\Models\Recommendation;
-use App\Services\ActivityLoggerService;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\ValidationException;
+use App\Models\Workflow;
+use App\Services\RecommendationService;
+use Illuminate\Support\Facades\Gate;
+use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -22,92 +22,65 @@ class Create extends Component
 
     public array $modeOfAssistances = [];
 
+    public array $workflows = [];
+
     public bool $createNew = false;
 
     public RecommendationForm $form;
 
-    public function boot()
+    #[Locked]
+    public ?string $expectedRecommendationUuid = null;
+
+    public function boot(): void
     {
-        $this->funeralAssistanceTypes = FuneralAssistanceType::query()
-            ->get()
-            ->mapWithKeys(function ($item) {
-                return [
-                    $item->uuid => $item->name,
-                ];
-            })
-            ->toArray();
-        $this->modeOfAssistances = ModeOfAssistance::query()
-            ->get()
-            ->mapWithKeys(function ($mode) {
-                return [
-                    $mode->id => $mode->name,
-                ];
-            })
-            ->toArray();
+        $this->funeralAssistanceTypes = FuneralAssistanceType::orderBy('name')->pluck('name', 'uuid')->all();
+        $this->modeOfAssistances = ModeOfAssistance::orderBy('name')->pluck('name', 'id')->all();
+        $this->workflows = Workflow::selectable()->orderBy('name')->get()->mapWithKeys(fn ($workflow) => [$workflow->uuid => $workflow->label()])->all();
     }
 
-    public function mount(Application $application)
+    public function mount(Application $application): void
     {
+        Gate::authorize('create', [Recommendation::class, $application]);
         $this->application = $application;
+        $this->expectedRecommendationUuid = $application->current_recommendation_uuid;
     }
 
-    public function save()
+    public function updatedFormFuneralAssistanceTypeUuid(): void
     {
-        try {
-            $this->validate();
-        } catch (ValidationException $e) {
-            $this->dispatch('notification:toast', [
-                'type' => 'error',
-                'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation'),
-            ]);
+        $suggestion = FuneralAssistanceType::whereKey($this->form->funeralAssistanceTypeUuid)->value('workflow_uuid');
+        $this->form->workflowUuid = $suggestion && array_key_exists($suggestion, $this->workflows) ? $suggestion : null;
+        $this->resetValidation('form.workflowUuid');
+    }
 
-            return;
-        }
-
-        try {
-            DB::transaction(function () {
-                $recommendation = Recommendation::create([
-                    'application_uuid' => $this->application->uuid,
-                    'funeral_assistance_type_uuid' => $this->form->funeralAssistanceTypeUuid,
-                    'amount_extended' => $this->form->amountExtended,
-                    'mode_of_assistance_id' => $this->form->modeOfAssistanceId,
-                    'recommended_by' => Auth::user()->id,
-                ]);
-
-                $this->dispatch('notification:alert', [
-                    'type' => 'success',
-                    'title' => 'Recommendation created successfully',
-                ]);
-
-                ActivityLoggerService::logSuccess('Successfully saved recommendation', [
-                    'recommendation_uuid' => $recommendation->uuid,
-                ]);
-
-                $this->reset('createNew');
-
-                $this->dispatch('refreshRecommendation');
-            });
-        } catch (\Throwable $th) {
-            $this->dispatch('notification:alert', [
-                'type' => 'error',
-                'text' => app()->hasDebugModeEnabled() ? $th->getMessage() : config('constants.errors.unknown'),
-            ]);
-
-            ActivityLoggerService::logException($th, 'Failed to create a recommendation');
-
-            report($th);
-        }
+    public function save(): void
+    {
+        $this->form->validate();
+        app(RecommendationService::class)->store([
+            'funeral_assistance_type_uuid' => $this->form->funeralAssistanceTypeUuid,
+            'workflow_uuid' => $this->form->workflowUuid,
+            'amount_extended' => $this->form->amountExtended,
+            'mode_of_assistance_id' => $this->form->modeOfAssistanceId,
+            'expected_recommendation_uuid' => $this->expectedRecommendationUuid,
+        ], $this->application->uuid);
+        $this->refresh();
+        $this->createNew = false;
+        $this->dispatch('refreshRecommendation');
+        $this->dispatch('refreshWorkflowHistory');
+        $this->dispatch('notification:toast', ['type' => 'success', 'text' => 'Recommendation saved. Its workflow starts at the beginning.']);
     }
 
     #[On('refreshRecommendation')]
-    public function refresh()
+    public function refresh(): void
     {
-        $this->reset('funeralAssistanceTypeUuid', 'amountExtended', 'modeOfAssistanceId');
+        $this->form->reset();
         $this->application->refresh();
+        $this->expectedRecommendationUuid = $this->application->current_recommendation_uuid;
     }
 
     public function render()
     {
+        $this->application->loadMissing('activeRecommendation');
+
         return view('livewire.recommendation.create');
     }
 }

@@ -19,6 +19,7 @@ class Recommendation extends Model
 
     protected $fillable = [
         'application_uuid',
+        'workflow_uuid',
         'funeral_assistance_type_uuid',
         'amount_extended',
         'mode_of_assistance_id',
@@ -27,10 +28,26 @@ class Recommendation extends Model
         'approved_at',
     ];
 
+    protected static function booted(): void
+    {
+        static::updating(function (Recommendation $recommendation) {
+            if ($recommendation->isDirty(['workflow_uuid', 'application_uuid'])) {
+                throw new \LogicException('A recommendation stays pinned to its original workflow. Create a new recommendation.');
+            }
+        });
+        static::deleting(fn () => throw new \LogicException('Recommendations and their workflow history must be preserved.'));
+    }
+
+    /** @return BelongsTo<Workflow, $this> */
+    public function workflow(): BelongsTo
+    {
+        return $this->belongsTo(Workflow::class, 'workflow_uuid', 'uuid')->withTrashed();
+    }
+
     /**
      * Summary of application
      *
-     * @return BelongsTo<Application, Recommendation>
+     * @return BelongsTo<Application, $this>
      */
     public function application(): BelongsTo
     {
@@ -40,7 +57,7 @@ class Recommendation extends Model
     /**
      * Summary of modeOfAssistance
      *
-     * @return BelongsTo<ModeOfAssistance, Recommendation>
+     * @return BelongsTo<ModeOfAssistance, $this>
      */
     public function modeOfAssistance(): BelongsTo
     {
@@ -50,7 +67,7 @@ class Recommendation extends Model
     /**
      * Summary of recommendedBy
      *
-     * @return BelongsTo<User, Recommendation>
+     * @return BelongsTo<User, $this>
      */
     public function recommendedBy(): BelongsTo
     {
@@ -60,7 +77,7 @@ class Recommendation extends Model
     /**
      * Summary of assistance
      *
-     * @return BelongsTo<FuneralAssistanceType, Recommendation>
+     * @return BelongsTo<FuneralAssistanceType, $this>
      */
     public function funeralAssistanceType(): BelongsTo
     {
@@ -70,7 +87,7 @@ class Recommendation extends Model
     /**
      * Summary of workflowHistory
      *
-     * @return HasMany<WorkflowHistory, Recommendation>
+     * @return HasMany<WorkflowHistory, $this>
      */
     public function workflowHistory(): HasMany
     {
@@ -84,6 +101,7 @@ class Recommendation extends Model
             'modeOfAssistance',
             'recommendedBy',
             'funeralAssistanceType',
+            'workflow',
             'workflowHistory',
         ];
     }

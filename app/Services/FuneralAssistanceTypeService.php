@@ -3,49 +3,46 @@
 namespace App\Services;
 
 use App\Models\FuneralAssistanceType;
+use App\Models\Workflow;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class FuneralAssistanceTypeService
 {
-    public function __construct()
+    public function store(array $data): FuneralAssistanceType
     {
-        //
+        $hint = filled($data['workflowUuid'] ?? null) ? Workflow::whereKey($data['workflowUuid'])->firstOrFail() : null;
+
+        return DB::transaction(function () use ($data, $hint) {
+            $this->validateSuggestion($hint);
+
+            return FuneralAssistanceType::create([
+                'name' => $data['name'], 'description' => $data['description'],
+                'workflow_uuid' => $data['workflowUuid'] ?: null,
+            ]);
+        }, 3);
     }
 
-    public function index()
+    public function update(array $data, FuneralAssistanceType $type): bool
     {
-        //
+        $hint = filled($data['workflowUuid'] ?? null) ? Workflow::whereKey($data['workflowUuid'])->firstOrFail() : null;
+
+        return DB::transaction(function () use ($data, $type, $hint) {
+            $this->validateSuggestion($hint);
+
+            return $type->update(['name' => $data['name'], 'description' => $data['description'],
+                'workflow_uuid' => $data['workflowUuid'] ?: null]);
+        }, 3);
     }
 
-    public function store(array $data)
+    private function validateSuggestion(?Workflow $workflow): void
     {
-        return FuneralAssistanceType::create([
-            'name' => $data['name'],
-            'description' => $data['description'],
-            'workflow_uuid' => $data['workflowUuid'],
-        ]);
-    }
-
-    public function edit()
-    {
-        //
-    }
-
-    /**
-     * Summary of update
-     *
-     * @return bool|int
-     */
-    public function update(array $data, FuneralAssistanceType $funeralAssistanceType)
-    {
-        return $funeralAssistanceType->update([
-            'name' => $data['name'],
-            'description' => $data['description'],
-            'workflow_uuid' => $data['workflowUuid'],
-        ]);
-    }
-
-    public function destroy()
-    {
-        //
+        if (! $workflow) {
+            return;
+        }
+        app(WorkflowVersionService::class)->lockGroup($workflow);
+        if (! $workflow->isSelectable()) {
+            throw ValidationException::withMessages(['form.workflowUuid' => 'Choose the latest active, complete workflow version or clear the suggestion.']);
+        }
     }
 }
