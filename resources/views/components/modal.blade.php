@@ -8,7 +8,7 @@
 
 <!-- Modal Body -->
 <!-- if you want to close by clicking outside the modal, delete the last endpoint:data-bs-backdrop and data-bs-keyboard -->
-<div class="modal fade"
+<div {{ $attributes->merge(['class' => 'modal fade']) }}
 	id="{{ $modalId }}"
 	tabindex="-1"
 	data-bs-backdrop="static"
