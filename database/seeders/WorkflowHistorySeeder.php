@@ -3,287 +3,38 @@
 namespace Database\Seeders;
 
 use App\Models\Application;
-use App\Models\Cancellation;
-use App\Models\Recommendation;
-use App\Models\Rejection;
-use App\Models\Remark;
 use App\Models\User;
-use App\Models\WorkflowHistory;
-use App\Models\WorkflowStage;
-use App\Traits\HasWorkflowHistory;
+use App\Services\WorkflowHistoryService;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Carbon;
 
 class WorkflowHistorySeeder extends Seeder
 {
-    use HasWorkflowHistory;
-
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        $applications = Application::with([
-            'client.interviews',
-            'recommendations',
-            'recommendations.funeralAssistanceType',
-            'recommendations.workflowHistory',
-            'workflowStage',
-        ])
-            ->whereHas('client.interviews')
-            ->whereHas('recommendations', function ($query) {
-                $query->whereIn('status', ['pending']);
-            })
-            ->orderBy('tracking_no', 'asc')
-            ->get();
-
-        $workflowStages = WorkflowStage::all();
-        $lastStagePosition = WorkflowStage::max('position');
-
-        if ($lastStagePosition === null) {
-            dump('No workflow stages found. Skipping WorkflowHistorySeeder.');
-
-            return;
-        }
-        $undoableStageUuids = [
-            $workflowStages->where('name', 'Budget')->first()->uuid,
-            $workflowStages->where('name', 'Accounting')->first()->uuid,
-            $workflowStages->where('name', 'Treasury')->first()->uuid,
-            $workflowStages->where('name', 'Releasing')->first()->uuid,
-        ]; // prevent reverting back to recommendation stage
-
-        $staff = User::whereHas('roles')->get();
-
-        foreach ($applications as $application) {
-            while (true) {
-                $updatedApplication = $application->fresh();
-
-                $currentStage = $updatedApplication->workflowStage;
-
-                // Stop if the application has already reached the last stage
-                if ($currentStage != null && $currentStage->position >= $lastStagePosition) {
-                    break;
+        $previous = auth()->user();
+        auth()->setUser(User::role('superadmin')->firstOrFail());
+        try {
+            foreach (Application::with(['activeRecommendation.workflow', 'workflowStage'])->whereNotNull('current_recommendation_uuid')->get() as $application) {
+                $version = $application->currentWorkflow();
+                if (! $version || ! $version->is_active || $application->closure()->exists() ||
+                    $application->rejection()->exists() || $application->cancellation()->exists() || $application->referral()->exists()) {
+                    continue;
                 }
-
-                dump('[INFO]: Seeding '.$application->tracking_no.' for '.$application->currentRecommendation()->funeralAssistanceType?->name);
-
-                $fromStage = $updatedApplication->fromStage();
-                $toStage = $updatedApplication->toStage();
-                $previousHistory = $updatedApplication->previousHistory();
-
-                dump('[INFO]['.$application->tracking_no.']: From Stage: '.$fromStage?->name);
-                dump('[INFO]['.$application->tracking_no.']: To Stage: '.$toStage?->name);
-                dump('[INFO]['.$application->tracking_no.']: Previous History: '.$previousHistory?->uuid);
-
-                $chances = rand(1, 100);
-                dump('[INFO]['.$application->tracking_no.']: Chance: '.$chances);
-
-                if ($chances <= 80) {
-                    $this->toNextStage(
-                        $updatedApplication,
-                        $fromStage,
-                        $toStage,
-                        $previousHistory,
-                    );
-
-                    if (rand(0, 9) === 9) {
-                        dump('[INFO]['.$application->tracking_no.']: Paused for manual testing.');
+                while ($target = $application->toStage()) {
+                    $run = $application->currentRecommendation();
+                    app(WorkflowHistoryService::class)->store([
+                        'recommendation_uuid' => $run->uuid,
+                        'expected_stage_uuid' => $application->current_workflow_stage_uuid,
+                        'to_stage_uuid' => $target->uuid, 'date_in' => now(), 'date_out' => now()->addMinutes(5),
+                    ]);
+                    $application->refresh();
+                    if (random_int(0, 2) === 0) {
                         break;
-                    }
-                } else {
-                    if (in_array($updatedApplication->current_workflow_stage_uuid, $undoableStageUuids)) {
-                        continue;
-                    }
-
-                    if ($chances >= 81 && $chances <= 90) {
-                        $this->revertToRecommendation(
-                            $updatedApplication,
-                            $previousHistory,
-                            $currentStage
-                        );
-                    } elseif ($chances >= 91 && $chances <= 95) {
-                        // Chanced to be canceled
-                        Cancellation::create([
-                            'application_uuid' => $updatedApplication->uuid,
-                            'reason' => 'Client has cancelled their application',
-                            'cancelled_by' => $updatedApplication->client->user->id,
-                        ]);
-
-                        $updatedApplication->currentRecommendation()->update([
-                            'status' => 'cancelled',
-                        ]);
-
-                        dump('[INFO]['.$application->tracking_no.']: Cancelled.');
-                        break;
-                    } elseif ($chances >= 96 && $chances <= 100) {
-                        if (rand(0, 1) === 0) {
-                            // Rejection
-                            Rejection::create([
-                                'application_uuid' => $updatedApplication->uuid,
-                                'reason' => 'Client has been rejected',
-                                'rejected_by' => $staff->random()->id,
-                            ]);
-
-                            $updatedApplication->currentRecommendation()->update([
-                                'status' => 'rejected',
-                            ]);
-
-                            dump('[INFO]['.$application->tracking_no.']: Rejected.');
-                            break;
-                        } else {
-                            // Referral
-                            $updatedApplication->currentRecommendation()->update([
-                                'status' => 'referred',
-                            ]);
-
-                            dump('[INFO]['.$application->tracking_no.']: Referred.');
-                            break;
-                        }
                     }
                 }
             }
+        } finally {
+            $previous ? auth()->setUser($previous) : auth()->forgetUser();
         }
-    }
-
-    /**
-     * Summary of toNextStage
-     */
-    public function toNextStage(
-        Application $application,
-        ?WorkflowStage $fromStage,
-        ?WorkflowStage $toStage,
-        ?WorkflowHistory $previousHistory,
-    ): void {
-        // Update that recommendation to approved
-        if ($application->currentRecommendation()->status == 'pending') {
-            $application->currentRecommendation()->update([
-                'status' => 'approved',
-                'approved_at' => now(),
-            ]);
-        }
-
-        $base = $previousHistory
-            ? Carbon::parse($previousHistory->date_out)
-            : Carbon::parse($application->currentRecommendation()->created_at);
-
-        $dateIn = Carbon::parse($base)->addMinutes(5);
-        $dateOut = Carbon::parse($dateIn)->addMinutes(5);
-
-        if ($previousHistory != null) {
-            dump('[INFO]['.$application->tracking_no.']: Previous Date Out: '.$previousHistory->date_out);
-            dump('[INFO]['.$application->tracking_no.']: Date In: '.$dateIn);
-        }
-
-        $application->update([
-            'current_workflow_stage_uuid' => $toStage?->uuid,
-        ]);
-
-        $this->createWorkflowHistory(
-            $application->currentRecommendation(),
-            $fromStage,
-            $toStage,
-            $dateIn,
-            $dateOut,
-        );
-
-        dump('[SUCCESS]['.$application->tracking_no.']: Seeded');
-    }
-
-    /**
-     * Summary of revertToRecommendation
-     */
-    public function revertToRecommendation(
-        Application $application,
-        ?WorkflowHistory $previousHistory,
-        ?WorkflowStage $currentStage
-    ): void {
-        // Add a chance for the recommendation to be rejected and set the next stage to be the recommendation stage
-        $base = $previousHistory
-            ? Carbon::parse($previousHistory->date_out)
-            : Carbon::parse($application->currentRecommendation()->created_at);
-
-        $dateIn = Carbon::parse($base)->addMinutes(5);
-        $dateOut = Carbon::parse($dateIn)->addMinutes(5);
-
-        if ($previousHistory != null) {
-            dump('[INFO]['.$application->tracking_no.']: Previous Date Out: '.$previousHistory->date_out);
-            dump('[INFO]['.$application->tracking_no.']: Date In: '.$dateIn);
-        }
-
-        $application->update([
-            'current_workflow_stage_uuid' => null,
-        ]);
-
-        // Create workflowHistory using the latest as the previous stage
-        $this->createWorkflowHistory(
-            $application->currentRecommendation(),
-            $currentStage,
-            null,
-            $dateIn,
-            $dateOut,
-            'Client has been referred to another department'
-        );
-
-        // Update that recommendation to referred
-        $application->currentRecommendation()->update([
-            'status' => 'referred',
-        ]);
-
-        // Create a new recommendation model
-        $recommendation = Recommendation::factory()->create([
-            'application_uuid' => $application->uuid,
-            'recommended_by' => User::whereHas('roles', function ($query) {
-                $query->where('name', 'staff');
-            })->inRandomOrder()->first()->id,
-            'created_at' => $dateOut,
-        ]);
-
-        if (rand(0, 1) == 1) {
-            Remark::factory()->create([
-                'remarkable_type' => get_class($recommendation),
-                'remarkable_id' => $recommendation->uuid,
-                'user_id' => User::whereHas('roles', function ($query) {
-                    $query->where('name', 'staff');
-                })->inRandomOrder()->first()->id,
-            ]);
-        }
-
-        dump('[INFO]['.$application->tracking_no.']: Returned application to recommendation stage');
-    }
-
-    /**
-     * Summary of createWorkflowHistory
-     */
-    public function createWorkflowHistory(
-        Recommendation $recommendation,
-        ?WorkflowStage $fromStage,
-        ?WorkflowStage $toStage,
-        Carbon $dateIn,
-        Carbon $dateOut,
-        ?string $reason = null,
-    ): void {
-        $workflowHistory = WorkflowHistory::factory()->create([
-            'recommendation_uuid' => $recommendation->uuid,
-            'date_in' => $dateIn,
-            'date_out' => $dateOut,
-            'from_stage_uuid' => $fromStage?->uuid,
-            'to_stage_uuid' => $toStage?->uuid,
-            'processed_by' => User::whereHas('roles', function ($query) {
-                $query->where('name', 'staff');
-            })->inRandomOrder()->first()->id,
-            'reason' => $reason,
-        ]);
-
-        if (rand(0, 1) == 0) {
-            Remark::factory()->create([
-                'remarkable_type' => WorkflowHistory::class,
-                'remarkable_id' => $workflowHistory->uuid,
-                'user_id' => User::whereHas('roles', function ($query) {
-                    $query->where('name', 'staff');
-                })->inRandomOrder()->first()->id,
-            ]);
-        }
-
-        dump('  [SUCCESS]['.$recommendation->application->tracking_no.']: UUID: '.$workflowHistory->uuid.' | Recommendation : '.$recommendation->uuid.' | '.' Date In: '.$dateIn.' Date Out: '.$dateOut);
     }
 }

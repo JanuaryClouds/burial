@@ -23,6 +23,7 @@ class Application extends Model
 
     protected $fillable = [
         'current_workflow_stage_uuid',
+        'current_recommendation_uuid',
         'client_uuid',
         'beneficiary_uuid',
         'relationship_id',
@@ -50,7 +51,7 @@ class Application extends Model
     /**
      * Get the client that owns the application.
      *
-     * @return BelongsTo<Client, Application>
+     * @return BelongsTo<Client, $this>
      */
     public function client(): BelongsTo
     {
@@ -58,7 +59,7 @@ class Application extends Model
     }
 
     /**
-     * @return BelongsTo<Beneficiary, Application>
+     * @return BelongsTo<Beneficiary, $this>
      */
     public function beneficiary(): BelongsTo
     {
@@ -68,18 +69,20 @@ class Application extends Model
     /**
      * Summary of assessment
      *
-     * @return HasOne<Assessment>
+     * @return HasOne<Assessment, $this>
      */
     public function assessment(): HasOne
     {
         return $this->hasOne(Assessment::class);
     }
 
-    /**
-     * Summary of recommendation
-     *
-     * @return HasMany<Recommendation, Application>
-     */
+    /** @return BelongsTo<Recommendation, $this> */
+    public function activeRecommendation(): BelongsTo
+    {
+        return $this->belongsTo(Recommendation::class, 'current_recommendation_uuid', 'uuid');
+    }
+
+    /** @return HasMany<Recommendation, $this> */
     public function recommendations(): HasMany
     {
         return $this->hasMany(Recommendation::class, 'application_uuid', 'uuid');
@@ -88,17 +91,17 @@ class Application extends Model
     /**
      * Summary of workflow
      *
-     * @return BelongsTo<WorkflowStage, Application>
+     * @return BelongsTo<WorkflowStage, $this>
      */
     public function workflowStage(): BelongsTo
     {
-        return $this->belongsTo(WorkflowStage::class, 'current_workflow_stage_uuid', 'uuid');
+        return $this->belongsTo(WorkflowStage::class, 'current_workflow_stage_uuid', 'uuid')->withTrashed();
     }
 
     /**
      * Summary of referral
      *
-     * @return HasOne<Referral, Application>
+     * @return HasOne<Referral, $this>
      */
     public function referral(): HasOne
     {
@@ -108,7 +111,7 @@ class Application extends Model
     /**
      * Summary of relationship
      *
-     * @return BelongsTo<Relationship, Application>
+     * @return BelongsTo<Relationship, $this>
      */
     public function relationship(): BelongsTo
     {
@@ -118,7 +121,7 @@ class Application extends Model
     /**
      * Summary of rejection
      *
-     * @return HasOne<Rejection, Application>
+     * @return HasOne<Rejection, $this>
      */
     public function rejection(): HasOne
     {
@@ -128,7 +131,7 @@ class Application extends Model
     /**
      * Summary of cancellation
      *
-     * @return HasOne<Cancellation, Application>
+     * @return HasOne<Cancellation, $this>
      */
     public function cancellation(): HasOne
     {
@@ -138,7 +141,7 @@ class Application extends Model
     /**
      * Summary of closure
      *
-     * @return HasOne<Closure, Application>
+     * @return HasOne<Closure, $this>
      */
     public function closure(): HasOne
     {
@@ -163,16 +166,16 @@ class Application extends Model
 
     protected static function recommendationRelations(): array
     {
-        return self::prefixRelations(
-            'recommendations',
-            Recommendation::relations()
-        );
+        return [
+            ...self::prefixRelations('recommendations', Recommendation::relations()),
+            ...self::prefixRelations('activeRecommendation', Recommendation::relations()),
+        ];
     }
 
     protected static function workflowRelations(): array
     {
         return self::prefixRelations(
-            'workflow',
+            'activeRecommendation.workflow',
             Workflow::relations()
         );
     }
@@ -215,11 +218,10 @@ class Application extends Model
             'badgeColor' => 'primary',
         ];
 
-        $interviews = $this->client
-            ->interviews ? $this->client->interviews
-            ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
-                $query->whereBetween('schedule', [$startDate, $endDate]);
-            }) : null;
+        $interviews = $this->client->interviews;
+        if ($startDate && $endDate) {
+            $interviews = $interviews->whereBetween('schedule', [$startDate, $endDate]);
+        }
 
         $referral = $this->referral ? $this->referral
             ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
@@ -323,9 +325,7 @@ class Application extends Model
      */
     public function currentRecommendation(): ?Recommendation
     {
-        return $this->recommendations()
-            ?->latest()
-            ->first();
+        return $this->activeRecommendation;
     }
 
     /**
@@ -333,7 +333,7 @@ class Application extends Model
      */
     public function currentWorkflow(): ?Workflow
     {
-        return $this->currentRecommendation()?->funeralAssistanceType?->workflow;
+        return $this->currentRecommendation()?->workflow;
     }
 
     /**
@@ -357,22 +357,9 @@ class Application extends Model
      */
     public function fromStage(): ?WorkflowStage
     {
-        $workflow = $this->currentWorkflow();
+        $stage = $this->currentStage();
 
-        if (! $workflow) {
-            return null;
-        }
-
-        $position = $this->workflowStage?->position;
-
-        if ($position < 0) {
-            if ($this->currentWorkflowHistory()->count() > 0) {
-                $position = 1;
-            }
-        }
-
-        return $workflow->stages()
-            ->firstWhere('position', '=', $position);
+        return $stage && $stage->workflow_uuid === $this->currentWorkflow()?->uuid ? $stage : null;
     }
 
     /**
@@ -381,23 +368,15 @@ class Application extends Model
     public function toStage(): ?WorkflowStage
     {
         $workflow = $this->currentWorkflow();
-
         if (! $workflow) {
             return null;
         }
-
-        $position = $this->workflowStage?->position + 1;
-
-        if ($position == 0 || $position == null) {
-            $position = 1;
-        }
-
-        if ($position > $workflow->stages()->count()) {
+        $current = $this->currentStage();
+        if ($current && $current->workflow_uuid !== $workflow->uuid) {
             return null;
         }
 
-        return $workflow->stages()
-            ->firstWhere('position', '=', $position);
+        return $workflow->stages()->where('position', ($current ? $current->position : 0) + 1)->first();
     }
 
     /**
@@ -405,14 +384,12 @@ class Application extends Model
      */
     public function previousHistory(): ?WorkflowHistory
     {
-        $workflowHistory = $this->currentWorkflowHistory();
-        $stage = $this->workflowStage;
-
-        if ($workflowHistory == null || $stage == null) {
+        if (! $this->current_workflow_stage_uuid) {
             return null;
         }
 
-        return $workflowHistory->firstWhere('to_stage_uuid', '=', $stage->uuid);
+        return $this->currentRecommendation()?->workflowHistory()
+            ->where('to_stage_uuid', $this->current_workflow_stage_uuid)->latest()->first();
     }
 
     /**
@@ -420,7 +397,7 @@ class Application extends Model
      */
     public function nextHistory(): ?WorkflowHistory
     {
-        return $this->currentWorkflowHistory()?->where('from_stage_uuid', '=', $this->workflowStage?->uuid)?->latest()->first();
+        return $this->currentRecommendation()?->workflowHistory()->where('from_stage_uuid', $this->workflowStage?->uuid)->latest()->first();
     }
 
     /*
@@ -446,6 +423,7 @@ class Application extends Model
             'relationship',
             'assessment',
             'recommendations',
+            'activeRecommendation.workflow',
             'referral',
             'rejection',
             'cancellation',

@@ -46,6 +46,8 @@ class Create extends Component
                     'cancelled_by' => Auth::id(),
                 ]);
 
+                $this->application->loadMissing('activeRecommendation');
+
                 if ($this->application->currentRecommendation()) {
                     $this->application->currentRecommendation()->update([
                         'status' => 'cancelled',
