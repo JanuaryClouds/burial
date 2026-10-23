@@ -84,9 +84,14 @@
         }
 
         document.querySelectorAll('form').forEach(defaultForm => {
+            // Livewire owns these submissions. Native submit() bypasses its handler
+            // and causes a full navigation after the AJAX update.
+            if (defaultForm.getAttributeNames().some(name => name === 'wire:submit' || name.startsWith('wire:submit.'))) return;
+            if (defaultForm.hasAttribute('data-no-loader')) return;
+
             defaultForm.addEventListener("submit", function(e) {
+                if (e.defaultPrevented) return;
                 e.preventDefault();
-                if (defaultForm.hasAttribute('data-no-loader')) return;
                 triggerLoading(0.3);
                 setTimeout(() => {
                     this.submit();
