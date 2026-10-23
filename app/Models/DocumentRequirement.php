@@ -16,7 +16,7 @@ class DocumentRequirement extends Model
         'source',
         'is_required',
         'for_muslim',
-        'is_active'
+        'is_active',
     ];
 
     public static function burial()
@@ -112,6 +112,6 @@ class DocumentRequirement extends Model
             'created_at',
             'updated_at'
         )
-        ->orderBy('updated_at', 'desc');
+            ->orderBy('updated_at', 'desc');
     }
 }

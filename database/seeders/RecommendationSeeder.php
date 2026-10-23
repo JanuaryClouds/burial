@@ -3,14 +3,11 @@
 namespace Database\Seeders;
 
 use App\Models\Application;
-use App\Models\FuneralAssistanceType;
 use App\Models\Recommendation;
 use App\Models\Remark;
 use App\Models\User;
-use App\Models\WorkflowHistory;
 use App\Traits\HasWorkflowHistory;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Carbon;
 
 class RecommendationSeeder extends Seeder
 {
@@ -40,7 +37,7 @@ class RecommendationSeeder extends Seeder
 
         $recommendation = Recommendation::factory()->create([
             'application_uuid' => $application->uuid,
-            'recommended_by' => $staff->random(1)->first()->id ?? 1,
+            'recommended_by' => User::role('superadmin')->firstOrFail()->id,
         ]);
 
         if (rand(0, 1) == 1) {
@@ -51,22 +48,5 @@ class RecommendationSeeder extends Seeder
             ]);
         }
 
-        // $workflow = $recommendation->funeralAssistanceType->workflow;
-        // $firstStage = $workflow->stages()->where('position', 1)->first();
-
-        // $dateIn = Carbon::parse($application->created_at)->addMinutes(rand(5, 10));
-        // $dateOut = Carbon::parse($dateIn)->addMinutes(rand(5, 10));
-
-        // WorkflowHistory::factory()->create([
-        //     'recommendation_uuid' => $recommendation->fresh()->uuid,
-        //     'from_stage_uuid' => null,
-        //     'to_stage_uuid' => $firstStage->uuid,
-        //     'date_in' => $dateIn,
-        //     'date_out' => $dateOut,
-        // ]);
-
-        // $application->update([
-        //     'current_workflow_stage_uuid' => null,
-        // ]);
     }
 }

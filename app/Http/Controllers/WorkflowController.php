@@ -2,12 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreWorkflowRequest;
-use App\Http\Requests\UpdateWorkflowRequest;
 use App\Models\Workflow;
 use App\Services\DataTableService;
 use App\Services\WorkflowService;
-use Illuminate\Support\Facades\Auth;
 
 class WorkflowController extends Controller
 {

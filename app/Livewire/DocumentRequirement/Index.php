@@ -34,7 +34,7 @@ class Index extends Component
                     'name' => $documentRequirement->name,
                     'source' => $documentRequirement->source,
                     'updated_at' => $documentRequirement->updated_at->diffForHumans(),
-                    'show_route' => route('document_requirements.edit', $documentRequirement)
+                    'show_route' => route('document_requirements.edit', $documentRequirement),
                 ];
             });
 
