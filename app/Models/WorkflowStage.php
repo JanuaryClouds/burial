@@ -9,114 +9,63 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Permission\Models\Permission;
 
 class WorkflowStage extends Model
 {
     /** @use HasFactory<WorkflowStageFactory> */
     use HasFactory, HasUuid, SoftDeletes;
 
-    protected $table = 'workflow_stages';
+    protected $fillable = ['name', 'position', 'description', 'workflow_uuid', 'permission_id'];
 
-    protected $fillable = [
-        'name',
-        'position',
-        'description',
-        'workflow_uuid',
-        'permission_id',
-    ];
+    protected $casts = ['position' => 'integer'];
 
     protected static function booted(): void
     {
         static::creating(function (WorkflowStage $stage) {
-            if ($stage->position !== null) {
-                WorkflowStage::where('workflow_uuid', $stage->workflow_uuid)
-                    ->where('position', '>=', $stage->position)
-                    ->increment('position');
-
-                return;
-            }
-
-            $stage->position = (
-                WorkflowStage::where('workflow_uuid', $stage->workflow_uuid)
-                    ->max('position') ?? 0
-            ) + 1;
+            $stage->assertMutableParent($stage->workflow_uuid);
+            $stage->position ??= (self::where('workflow_uuid', $stage->workflow_uuid)->max('position') ?? 0) + 1;
         });
+        static::updating(function (WorkflowStage $stage) {
+            $stage->assertMutableParent($stage->getOriginal('workflow_uuid'));
+            $stage->assertMutableParent($stage->workflow_uuid);
+        });
+        static::deleting(fn (WorkflowStage $stage) => $stage->assertMutableParent($stage->workflow_uuid));
+        static::restoring(fn (WorkflowStage $stage) => $stage->assertMutableParent($stage->workflow_uuid));
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Relationships
-    |--------------------------------------------------------------------------
-    |
-    | Model Relationships.
-    |
-    */
+    private function assertMutableParent(string $uuid): void
+    {
+        if (Workflow::withTrashed()->whereKey($uuid)->value('published_at')) {
+            throw new \LogicException('Published stages are immutable. Edit a draft and publish a new version.');
+        }
+    }
 
-    /**
-     * Summary of applications
-     *
-     * @return HasMany<Application, WorkflowStage>
-     */
+    /** @return HasMany<Application, $this> */
     public function applications(): HasMany
     {
         return $this->hasMany(Application::class, 'current_workflow_stage_uuid', 'uuid');
     }
 
-    /**
-     * Summary of workflow
-     *
-     * @return BelongsTo<Workflow, WorkflowStage>
-     */
+    /** @return BelongsTo<Workflow, $this> */
     public function workflow(): BelongsTo
     {
-        return $this->belongsTo(Workflow::class, 'workflow_uuid', 'uuid');
+        return $this->belongsTo(Workflow::class, 'workflow_uuid', 'uuid')->withTrashed();
     }
 
-    /**
-     * Summary of incomingStages
-     *
-     * @return HasMany<WorkflowTransition, WorkflowStage>
-     */
-    public function incomingStages(): HasMany
-    {
-        return $this->HasMany(WorkflowTransition::class, 'to_stage_uuid', 'uuid');
-    }
-
-    /**
-     * Summary of outgoingStages
-     *
-     * @return HasMany<WorkflowTransition, WorkflowStage>
-     */
-    public function outgoingStages(): HasMany
-    {
-        return $this->hasMany(WorkflowTransition::class, 'from_stage_uuid', 'uuid');
-    }
-
-    /**
-     * Summary of workflowHistories
-     *
-     * @return HasMany<WorkflowHistory, WorkflowStage>
-     */
+    /** @return HasMany<WorkflowHistory, $this> */
     public function nextStages(): HasMany
     {
         return $this->hasMany(WorkflowHistory::class, 'to_stage_uuid', 'uuid');
     }
 
-    /**
-     * Summary of previousSteps
-     *
-     * @return HasMany<WorkflowHistory, WorkflowStage>
-     */
+    /** @return HasMany<WorkflowHistory, $this> */
     public function previousStages(): HasMany
     {
         return $this->hasMany(WorkflowHistory::class, 'from_stage_uuid', 'uuid');
     }
 
-    /**
-     * Summary of permission
-     *
-     * @return BelongsTo<Permission, WorkflowTransition>
-     */
+    /** @return BelongsTo<Permission, $this> */
     public function permission(): BelongsTo
     {
         return $this->belongsTo(Permission::class, 'permission_id', 'id');
