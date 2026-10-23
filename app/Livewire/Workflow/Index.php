@@ -5,6 +5,7 @@ namespace App\Livewire\Workflow;
 use App\Models\Workflow;
 use App\Services\DataTableService;
 use Illuminate\Support\Collection;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class Index extends Component
@@ -17,11 +18,17 @@ class Index extends Component
 
     public string $dataTableId = 'workflow-dataTable';
 
+    public function boot(): void
+    {
+        abort_unless(auth()->user()?->hasRole('superadmin'), 403);
+    }
+
     public function mount()
     {
         $this->loadData();
     }
 
+    #[On('workflow-created')]
     public function loadData()
     {
         $this->workflows = Workflow::index()
@@ -32,8 +39,13 @@ class Index extends Component
                 return [
                     'uuid' => $workflow->uuid,
                     'name' => $workflow->name,
-                    'assigned_funeral_assistance_types' => $workflow->funeralAssistanceTypes->count(),
-                    'show_route' => route('workflows.edit', $workflow)
+                    'version' => $workflow->version_number,
+                    'status' => [
+                        'label' => $workflow->is_active ? 'Active' : 'Inactive',
+                        'badgeColor' => $workflow->is_active ? 'success' : 'secondary',
+                    ],
+                    'assigned_funeral_assistance_types' => $workflow->funeral_assistance_types_count,
+                    'show_route' => route('workflows.edit', $workflow),
                 ];
             });
 

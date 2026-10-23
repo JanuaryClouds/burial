@@ -7,7 +7,7 @@ use Livewire\Form;
 
 class WorkflowForm extends Form
 {
-    #[Validate('required|string|max:255')]
+    #[Validate('required|string|max:255|unique:workflows,name')]
     public string $name;
 
     #[Validate('required|string|max:65535')]

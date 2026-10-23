@@ -2,34 +2,16 @@
 
 namespace App\Livewire\Workflow;
 
+use App\Livewire\Workflow\Concerns\EditsWorkflowVersion;
 use App\Models\Workflow;
-use Livewire\Attributes\Validate;
 use Livewire\Component;
 
 class Edit extends Component
 {
-    public Workflow $workflow;
+    use EditsWorkflowVersion;
 
-    #[Validate]
-    public string $name;
-
-    #[Validate('required|string|max:65535')]
-    public string $description;
-
-    public function mount(Workflow $workflow)
+    public function mount(Workflow $workflow): void
     {
-        $this->workflow = $workflow;
-        $this->name = $workflow->name;
-        $this->description = $workflow->description;
-    }
-
-    public function update()
-    {
-        
-    }
-
-    public function render()
-    {
-        return view('livewire.workflow.edit');
+        $this->initializeEditor($workflow);
     }
 }
