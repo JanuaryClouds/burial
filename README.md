@@ -1,4 +1,4 @@
-﻿# Funeral Assistance System
+# Funeral Assistance System
 
 Taguig City CSWDO application for managing funeral assistance requests, including Burial Assistance and Libreng Libing. Citizens enter through TLC Portal SSO; staff process applications through role-controlled workflows.
 
@@ -6,7 +6,7 @@ Taguig City CSWDO application for managing funeral assistance requests, includin
 
 - Client, deceased beneficiary, family composition, and supporting document records.
 - Interviews, assessments, recommendations, referrals, rejections, cancellations, and closure.
-- Configurable assistance processing stages and workflow history.
+- Immutable workflow versions, pinned recommendation processing runs, and workflow history. See [Workflow versioning](docs/architecture/workflow-versioning.md) for publishing, pauses, and migration procedures.
 - GIS forms, certificates, QR/barcode documents, PDF reports, and Excel exports.
 - Portal citizen records, notifications, SMS, encrypted image storage, and geographic address lookups.
 
