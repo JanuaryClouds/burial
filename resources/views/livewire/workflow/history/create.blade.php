@@ -1,4 +1,15 @@
 <div>
+    @if ($workflowLabel)
+        <div class="alert {{ $paused ? 'alert-warning' : 'alert-info' }}">
+            Assigned workflow: <strong>{{ $workflowLabel }}</strong>.
+            @if ($paused)
+                Stage processing is paused. Wait for this version to resume or create a new recommendation to restart on an available workflow.
+            @endif
+        </div>
+    @endif
+    @foreach (['toStageUuid', 'reason', 'recommendation_uuid', 'date_in', 'date_out'] as $errorField)
+        @error($errorField) <div class="text-danger mb-3">{{ $message }}</div> @enderror
+    @endforeach
 	@if ($showForm)
 		<x-card>
 			<x-slot:header>
@@ -36,7 +47,7 @@
 					label="Target Stage"
 					required />
 				{{-- end::Stage selector --}}
-				@if ($toStageUuid && $toStageUuid !== $application->toStage()->uuid)
+				@if ($toStageUuid && $toStageUuid !== $application->toStage()?->uuid)
 					{{-- start::Reason --}}
 					<x-form.textarea wire:model='reason'
 						wire:loading.remove
