@@ -17,12 +17,14 @@ class Create extends Component
 
     public ?array $workflows = null;
 
+    public function boot(): void
+    {
+        abort_unless(auth()->user()?->hasRole('superadmin'), 403);
+    }
+
     public function mount()
     {
-        $this->workflows = Workflow::index()
-            ->get()
-            ->mapWithKeys(fn ($workflow) => [$workflow->uuid => $workflow->name])
-            ->toArray();
+        $this->workflows = Workflow::selectable()->orderBy('name')->get()->mapWithKeys(fn (Workflow $workflow) => [$workflow->uuid => $workflow->label()])->all();
     }
 
     public function clearForm()
@@ -32,14 +34,7 @@ class Create extends Component
 
     public function save()
     {
-        try {
-            $this->form->validate();
-        } catch (\Exception $e) {
-            $this->dispatch('notification:toast', [
-                'type' => 'error',
-                'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation'),
-            ]);
-        }
+        $this->form->validate();
 
         try {
             $funeralAssistanceType = app(FuneralAssistanceTypeService::class)->store($this->form->all());

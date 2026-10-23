@@ -20,33 +20,36 @@ class Edit extends Component
 
     public ?array $workflows = null;
 
+    public ?string $unavailableWorkflowName = null;
+
+    public function boot(): void
+    {
+        abort_unless(auth()->user()?->hasRole('superadmin'), 403);
+    }
+
     public function mount(FuneralAssistanceType $funeralAssistanceType)
     {
         $this->funeralAssistanceType = $funeralAssistanceType;
-        $this->workflows = Workflow::index()
-            ->get()
-            ->mapWithKeys(fn ($workflow) => [$workflow->uuid => $workflow->name])
-            ->toArray();
+        $this->workflows = Workflow::selectable()->orderBy('name')->get()->mapWithKeys(fn (Workflow $workflow) => [$workflow->uuid => $workflow->label()])->all();
+        $assignedWorkflow = $funeralAssistanceType->workflow()->first();
+        if ($assignedWorkflow && ! $assignedWorkflow->isSelectable()) {
+            $this->unavailableWorkflowName = $assignedWorkflow->label();
+        }
 
         $this->form->setFuneralAssistanceType($funeralAssistanceType);
     }
 
     public function save()
     {
-        try {
-            $this->form->validate();
-        } catch (\Exception $e) {
-            $this->dispatch('notification:toast', [
-                'type' => 'error',
-                'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation'),
-            ]);
-        }
+        $this->form->validate();
 
         try {
             app(FuneralAssistanceTypeService::class)->update(
                 $this->form->all(),
                 $this->funeralAssistanceType,
             );
+
+            $this->unavailableWorkflowName = null;
 
             $this->dispatch('notification:alert', [
                 'type' => 'success',

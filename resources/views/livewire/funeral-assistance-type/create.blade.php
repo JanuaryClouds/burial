@@ -10,7 +10,8 @@
 			<x-form.select wire:model.live='form.workflowUuid'
 				name="form.workflowUuid"
 				label="Workflow"
-				:options="$workflows" />
+				:options="$workflows"
+                :selected="$form->workflowUuid" />
 		</div>
 	</div>
 	<x-form.textarea wire:model.live.blur="form.description"

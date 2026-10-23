@@ -20,7 +20,7 @@ class FuneralAssistanceTypeSeeder extends Seeder
             'Exhumation' => 'Assistance for the transfer of remains',
         ];
 
-        $primaryWorkflow = Workflow::firstWhere('name', 'Funeral Assistance');
+        $primaryWorkflow = Workflow::selectable()->where('name', 'Funeral Assistance')->firstOrFail();
 
         foreach ($types as $name => $description) {
             FuneralAssistanceType::create([
