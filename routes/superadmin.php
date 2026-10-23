@@ -30,7 +30,7 @@ Route::middleware('role:superadmin')
                 Route::get('/', 'index')
                     ->name('index');
 
-                Route::get('/{funeral-assistance-type}/edit', 'edit')
+                Route::get('/{funeralAssistanceType}/edit', 'edit')
                     ->name('edit');
             });
 
@@ -41,7 +41,7 @@ Route::middleware('role:superadmin')
                 Route::get('/', 'index')
                     ->name('index');
 
-                Route::get('/{mode-of-assistance}/edit', 'edit')
+                Route::get('/{modeOfAssistance}/edit', 'edit')
                     ->name('edit');
             });
 

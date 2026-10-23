@@ -50,17 +50,17 @@ Route::prefix('workflow/')
 
                 Route::prefix('/{stage}')
                     ->group(function () {
-                //         Route::get('', 'show')
-                //             ->name('show');
+                        //         Route::get('', 'show')
+                        //             ->name('show');
 
                         Route::get('/edit', 'edit')
                             ->name('edit');
 
-                //         Route::post('/update', 'update')
-                //             ->name('update');
+                        //         Route::post('/update', 'update')
+                        //             ->name('update');
 
-                //         Route::post('/destroy', 'destroy')
-                //             ->name('destroy');
+                        //         Route::post('/destroy', 'destroy')
+                        //             ->name('destroy');
                     });
             });
 
