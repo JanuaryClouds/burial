@@ -18,7 +18,6 @@ class WorkflowHistory extends Model
 
     protected $fillable = [
         'recommendation_uuid',
-        'workflow_uuid',
         'from_stage_uuid',
         'to_stage_uuid',
         'date_in',
@@ -39,27 +38,27 @@ class WorkflowHistory extends Model
     /**
      * Summary of fromStage
      *
-     * @return BelongsTo<WorkflowStage, WorkflowHistory>
+     * @return BelongsTo<WorkflowStage, $this>
      */
     public function fromStage(): BelongsTo
     {
-        return $this->belongsTo(WorkflowStage::class, 'from_stage_uuid', 'uuid');
+        return $this->belongsTo(WorkflowStage::class, 'from_stage_uuid', 'uuid')->withTrashed();
     }
 
     /**
      * Summary of toStage
      *
-     * @return BelongsTo<WorkflowStage, WorkflowHistory>
+     * @return BelongsTo<WorkflowStage, $this>
      */
     public function toStage(): BelongsTo
     {
-        return $this->belongsTo(WorkflowStage::class, 'to_stage_uuid', 'uuid');
+        return $this->belongsTo(WorkflowStage::class, 'to_stage_uuid', 'uuid')->withTrashed();
     }
 
     /**
      * Summary of processedBy
      *
-     * @return BelongsTo<User, WorkflowHistory>
+     * @return BelongsTo<User, $this>
      */
     public function processedBy(): BelongsTo
     {
@@ -69,7 +68,7 @@ class WorkflowHistory extends Model
     /**
      * Summary of recommendation
      *
-     * @return BelongsTo<Recommendation, WorkflowHistory>
+     * @return BelongsTo<Recommendation, $this>
      */
     public function recommendation(): BelongsTo
     {
