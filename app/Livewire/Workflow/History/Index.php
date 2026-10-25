@@ -38,6 +38,7 @@ class Index extends Component
             ->oldest()
             ->with([
                 'funeralAssistanceType',
+                'workflow',
                 'remarks',
                 'workflowHistory.toStage',
                 'workflowHistory.fromStage',

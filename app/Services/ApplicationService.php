@@ -96,6 +96,8 @@ class ApplicationService
      */
     public function print(Application $application)
     {
+        $application->loadMissing('activeRecommendation');
+
         $client = $application->client;
         $beneficiary = $application->beneficiary;
 
@@ -113,7 +115,7 @@ class ApplicationService
         ])->find($client->uuid);
         $family = $beneficiary->family()->with(['sex', 'relationship', 'civil'])->get() ?? [];
         $assessment = $application->assessment ?? null;
-        $recommendation = $application->recommendations->first() ?? null;
+        $recommendation = $application->currentRecommendation();
         $referral = $application->referral ?? null;
 
         $data = [

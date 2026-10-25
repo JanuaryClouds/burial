@@ -3,22 +3,48 @@
 namespace App\Livewire\Forms;
 
 use App\Models\FuneralAssistanceType;
+use App\Models\Workflow;
+use Illuminate\Validation\Rule;
 use Livewire\Attributes\Validate;
 use Livewire\Form;
 
 class FuneralAssistanceTypeForm extends Form
 {
-    #[Validate('required|string|max:255|unique:funeral_assistance_types,name')]
+    public ?FuneralAssistanceType $funeralAssistanceType = null;
+
+    #[Validate]
     public ?string $name = null;
 
-    #[Validate('required|string|max:65535')]
+    #[Validate]
     public ?string $description = null;
 
-    #[Validate('nullable|string|exists:workflows,uuid')]
+    #[Validate]
     public ?string $workflowUuid = null;
 
-    public function setFuneralAssistanceType(FuneralAssistanceType $funeralAssistanceType)
+    protected function rules(): array
     {
+        return [
+            'name' => ['required', 'string', 'max:255', Rule::unique('funeral_assistance_types', 'name')->ignore($this->funeralAssistanceType)],
+            'description' => ['required', 'string', 'max:65535'],
+            'workflowUuid' => [
+                'nullable', 'uuid',
+                function ($attribute, $value, $fail) {
+                    if ($value && ! Workflow::selectable()->whereKey($value)->exists()) {
+                        $fail('Choose the latest active, complete workflow version or clear the suggestion.');
+                    }
+                },
+            ],
+        ];
+    }
+
+    protected function messages(): array
+    {
+        return ['workflowUuid.exists' => 'Choose an active workflow or clear the assignment.'];
+    }
+
+    public function setFuneralAssistanceType(FuneralAssistanceType $funeralAssistanceType): void
+    {
+        $this->funeralAssistanceType = $funeralAssistanceType;
         $this->name = $funeralAssistanceType->name;
         $this->description = $funeralAssistanceType->description;
         $this->workflowUuid = $funeralAssistanceType->workflow_uuid;

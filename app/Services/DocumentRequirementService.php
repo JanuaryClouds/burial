@@ -13,8 +13,6 @@ class DocumentRequirementService
 
     /**
      * Summary of store
-     * @param array $data
-     * @return DocumentRequirement
      */
     public function store(array $data): DocumentRequirement
     {
@@ -30,9 +28,6 @@ class DocumentRequirementService
 
     /**
      * Summary of update
-     * @param DocumentRequirement $document
-     * @param array $data
-     * @return DocumentRequirement
      */
     public function update(DocumentRequirement $document, array $data): DocumentRequirement
     {

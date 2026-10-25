@@ -45,7 +45,7 @@
 			id="{{ $id ?? $name }}_select"
 			{{ $required ? 'required' : '' }}
 			{{ $readonly ? 'disabled' : '' }}
-			class="form-control {{ $readonly ? 'bg-light' : '' }}"
+			{{ $attributes->whereDoesntStartWith('wire:model')->merge(['class' => 'form-control' . ($readonly ? ' bg-light' : '')]) }}
 			data-control="select2"
 			{{ $multiple ? "multiple='multiple'" : '' }}>
 			<option value="">Select one</option>

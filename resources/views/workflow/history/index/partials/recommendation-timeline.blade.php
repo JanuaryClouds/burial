@@ -1,6 +1,6 @@
 @foreach ($recommendations as $recommendation)
 	@php
-		$recommendation->loadMissing(['funeralAssistanceType', 'remarks']);
+		$recommendation->loadMissing(['funeralAssistanceType', 'workflow', 'remarks']);
 	@endphp
 	<div class="timeline-item">
 		<div class="timeline-label">
@@ -18,6 +18,7 @@
 		<div class="timeline-content ms-3 d-flex flex-column">
 			<span class="text-uppercase fw-bold">
 				Recommendation: {{ $recommendation->funeralAssistanceType?->name ?? 'N/A' }}
+                <span class="d-block text-muted small">{{ $recommendation->workflow?->label() ?? 'Unassigned legacy workflow' }}</span>
 			</span>
 			<span>
 				<button type="button"

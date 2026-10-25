@@ -48,7 +48,6 @@ Route::middleware(['auth', 'active.check'])
         require __DIR__.'/beneficiary.php';
         require __DIR__.'/referral.php';
         require __DIR__.'/interview.php';
-        require __DIR__.'/workflow.php';
         require __DIR__.'/reports.php';
         require __DIR__.'/superadmin.php';
     });

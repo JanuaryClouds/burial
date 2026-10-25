@@ -15,6 +15,7 @@ return new class extends Migration
             $table->uuid()->primary();
             $table->string('name');
             $table->text('description');
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
             $table->softDeletes();
         });
@@ -22,6 +23,7 @@ return new class extends Migration
         Schema::table('funeral_assistance_types', function (Blueprint $table) {
             $table->foreignUuid('workflow_uuid')
                 ->nullable()
+                ->after('description')
                 ->constrained('workflows', 'uuid')
                 ->nullOnDelete()
                 ->cascadeOnUpdate();
