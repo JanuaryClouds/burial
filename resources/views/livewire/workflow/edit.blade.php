@@ -41,6 +41,7 @@
                         <x-form.select :name="'stages.' . $index . '.permission_id'" :id="'draft-permission-' . $stage['key']" label="Stage Permission"
                             class="select-dynamic" wire:model="stages.{{ $index }}.permission_id"
                             :options="$options" :selected="$stage['permission_id']" :readonly="$historical" required />
+                        @include('livewire.workflow.stage.custom-fields')
                         @unless ($historical)
                             <x-form.input :name="'stagePositions.' . $stage['key']" label="Position" type="number" min="1"
                                 :max="count($stages)" wire:model.change="stagePositions.{{ $stage['key'] }}" />

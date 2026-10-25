@@ -43,9 +43,12 @@ trait EditsWorkflowVersion
         $this->description = $workflow ? $workflow->description : '';
         $this->historical = $workflow !== null && ! $workflow->isLatestVersion();
         $this->removedStages = [];
-        $this->stages = $workflow ? $workflow->stages()->orderBy('position')->get()->map(fn ($stage) => [
+        $this->stages = $workflow ? $workflow->stages()->with('customFields')->orderBy('position')->get()->map(fn ($stage) => [
             'key' => (string) Str::uuid(), 'name' => $stage->name, 'description' => $stage->description,
             'permission_id' => (string) $stage->permission_id,
+            'custom_fields' => $stage->customFields->map(fn ($field) => array_merge(
+                $field->only(['name', 'label', 'input_type', 'required']), ['key' => (string) Str::uuid()]))->all(),
+            'removed_fields' => [],
         ])->all() : [];
         $this->workflowPermissions = Permission::where('guard_name', 'web')
             ->where(fn ($query) => $query->where('name', 'like', 'Workflow %')->orWhere('name', 'like', 'workflow.%'))
@@ -64,7 +67,8 @@ trait EditsWorkflowVersion
     public function addStage(): void
     {
         $this->assertDraft();
-        $this->stages[] = ['key' => (string) Str::uuid(), 'name' => '', 'description' => '', 'permission_id' => ''];
+        $this->stages[] = ['key' => (string) Str::uuid(), 'name' => '', 'description' => '', 'permission_id' => '',
+            'custom_fields' => [], 'removed_fields' => []];
         $this->syncPositions();
     }
 
@@ -126,6 +130,67 @@ trait EditsWorkflowVersion
         $this->stagePositions = [];
         foreach ($this->stages as $index => $stage) {
             $this->stagePositions[$stage['key']] = $index + 1;
+        }
+    }
+
+    private function draftStageIndex(string $stageKey): int
+    {
+        $this->assertDraft();
+        $index = array_search($stageKey, array_column($this->stages, 'key'), true);
+        abort_if($index === false, 404);
+
+        return $index;
+    }
+
+    public function addField(string $stageKey): void
+    {
+        $index = $this->draftStageIndex($stageKey);
+        $this->stages[$index]['custom_fields'][] = ['key' => (string) Str::uuid(), 'name' => '',
+            'label' => '', 'input_type' => 'text', 'required' => true];
+    }
+
+    public function updatedStages($value, string $path): void
+    {
+        $this->assertDraft();
+        if (preg_match('/^(\d+)\.custom_fields\.(\d+)\.label$/', $path, $matches)) {
+            $field = &$this->stages[(int) $matches[1]]['custom_fields'][(int) $matches[2]];
+            if (blank($field['name'] ?? null) && is_string($value)) {
+                $field['name'] = Str::slug($value, '_');
+            }
+        }
+    }
+
+    public function removeField(string $stageKey, string $fieldKey): void
+    {
+        $index = $this->draftStageIndex($stageKey);
+        foreach ($this->stages[$index]['custom_fields'] as $position => $field) {
+            if ($field['key'] === $fieldKey) {
+                $this->stages[$index]['removed_fields'][$fieldKey] = $field;
+                array_splice($this->stages[$index]['custom_fields'], $position, 1);
+                break;
+            }
+        }
+    }
+
+    public function restoreField(string $stageKey, string $fieldKey): void
+    {
+        $index = $this->draftStageIndex($stageKey);
+        if (isset($this->stages[$index]['removed_fields'][$fieldKey])) {
+            $this->stages[$index]['custom_fields'][] = $this->stages[$index]['removed_fields'][$fieldKey];
+            unset($this->stages[$index]['removed_fields'][$fieldKey]);
+        }
+    }
+
+    public function moveField(string $stageKey, string $fieldKey, int $direction): void
+    {
+        $index = $this->draftStageIndex($stageKey);
+        abort_unless(in_array($direction, [-1, 1], true), 422);
+        $fields = &$this->stages[$index]['custom_fields'];
+        $position = array_search($fieldKey, array_column($fields, 'key'), true);
+        if ($position !== false && isset($fields[$position + $direction])) {
+            $field = $fields[$position];
+            array_splice($fields, $position, 1);
+            array_splice($fields, $position + $direction, 0, [$field]);
         }
     }
 

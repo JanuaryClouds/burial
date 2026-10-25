@@ -39,6 +39,7 @@ class WorkflowVersionService
                 'stages.*.name' => ['required', 'string', 'max:255'],
                 'stages.*.description' => ['required', 'string', 'max:65535'],
                 'stages.*.permission_id' => ['required', 'string', 'max:255'],
+                'stages.*.custom_fields' => ['sometimes', 'array'],
             ])->validate();
             $uuid = (string) Str::uuid();
             $group = $base ? $base->workflow_group_uuid : $uuid;
@@ -62,11 +63,15 @@ class WorkflowVersionService
                     throw ValidationException::withMessages(['stages.'.$index.'.permission_id' => $exception->getMessage()]);
                 }
                 $stages[] = ['name' => $stage['name'], 'description' => $stage['description'],
-                    'position' => $index + 1, 'permission_id' => $permission->id];
+                    'position' => $index + 1, 'permission_id' => $permission->id,
+                    'custom_fields' => app(WorkflowCustomFieldService::class)->normalize(
+                        $stage['custom_fields'] ?? [], 'stages.'.$index.'.custom_fields')];
             }
             if ($base && $base->name === $data['name'] && $base->description === $data['description']) {
-                $original = $base->stages()->orderBy('position')->get()
-                    ->map(fn ($stage) => $stage->only(['name', 'description', 'position', 'permission_id']))->all();
+                $original = $base->stages()->with('customFields')->orderBy('position')->get()
+                    ->map(fn ($stage) => array_merge($stage->only(['name', 'description', 'position', 'permission_id']), [
+                        'custom_fields' => $stage->customFields->map(fn ($field) => $field->only(['name', 'label', 'input_type', 'required', 'order_no']))->all(),
+                    ]))->all();
                 if ($original == $stages) {
                     return $base;
                 }
@@ -79,7 +84,10 @@ class WorkflowVersionService
                 'is_active' => $base ? $base->is_active : true, 'created_by' => auth()->id(),
             ]);
             foreach ($stages as $stage) {
-                $workflow->stages()->create($stage);
+                $fields = $stage['custom_fields'];
+                unset($stage['custom_fields']);
+                $createdStage = $workflow->stages()->create($stage);
+                $createdStage->customFields()->createMany($fields);
             }
             $workflow->update(['published_at' => now()]);
             if ($base) {
