@@ -22,6 +22,7 @@ class WorkflowSeeder extends Seeder
                     'description' => 'Funeral Assistance budgeted by the Taguig City Local Government',
                     'stages' => array_map(fn ($stage) => [
                         'name' => $stage['name'], 'description' => $stage['description'], 'permission_id' => $stage['permission'],
+                        'custom_fields' => $stage['custom_fields'] ?? [],
                     ], WorkflowStageSeeder::stages()),
                 ]);
             } finally {
