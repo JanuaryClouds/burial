@@ -47,6 +47,17 @@
 					label="Target Stage"
 					required />
 				{{-- end::Stage selector --}}
+                @error('customValues') <div class="text-danger">{{ $message }}</div> @enderror
+                @foreach ($customFields as $field)
+                    <div wire:key="processing-field-{{ $field['uuid'] }}">
+                        <x-form.input :name="'customValues.' . $field['uuid']" :label="$field['label']"
+                            :type="$field['input_type']" :required="$field['required']"
+                            wire:model="customValues.{{ $field['uuid'] }}"
+                            :step="$field['input_type'] === 'number' ? 'any' : null"
+                            :maxlength="in_array($field['input_type'], ['text', 'password']) ? 255 : null"
+                            autocomplete="off" />
+                    </div>
+                @endforeach
 				@if ($toStageUuid && $toStageUuid !== $application->toStage()?->uuid)
 					{{-- start::Reason --}}
 					<x-form.textarea wire:model='reason'

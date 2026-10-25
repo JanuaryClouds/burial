@@ -34,6 +34,11 @@ class Create extends Component
 
     public ?string $reason = null;
 
+    public array $customValues = [];
+
+    #[Locked]
+    public array $customFields = [];
+
     public RemarkForm $remarkForm;
 
     #[Locked]
@@ -52,7 +57,8 @@ class Create extends Component
     #[On('refreshRecommendation')]
     public function refresh(): void
     {
-        $this->reset('dateIn', 'dateOut', 'reason', 'toStageUuid');
+        $this->reset('dateIn', 'dateOut', 'reason', 'toStageUuid', 'customValues', 'customFields');
+        $this->resetValidation();
         $this->application->refresh();
         $this->application->loadMissing(['activeRecommendation.workflow', 'workflowStage']);
         $this->recommendationUuid = $this->application->current_recommendation_uuid;
@@ -77,6 +83,20 @@ class Create extends Component
         $this->dateOut = null;
     }
 
+    public function updatedToStageUuid(): void
+    {
+        $this->reset('customValues', 'customFields');
+        $this->resetValidation();
+        if (! $this->toStageUuid || ! $this->stages->contains('uuid', $this->toStageUuid)) {
+            return;
+        }
+        $version = $this->application->currentWorkflow();
+        $stage = $version?->stages()->with('customFields')->whereKey($this->toStageUuid)->first();
+        $this->customFields = $stage?->customFields->map(fn ($field) => $field->only([
+            'uuid', 'label', 'input_type', 'required',
+        ]))->all() ?? [];
+    }
+
     public function setDateOutToNow(): void
     {
         $this->dateOut = Carbon::now()->format('Y-m-d\\TH:i:s');
@@ -88,6 +108,7 @@ class Create extends Component
             'recommendation_uuid' => $this->recommendationUuid, 'expected_stage_uuid' => $this->expectedStageUuid,
             'to_stage_uuid' => $this->toStageUuid, 'date_in' => $this->dateIn, 'date_out' => $this->dateOut,
             'reason' => $this->reason, 'remark' => $this->remarkForm->content,
+            'custom_values' => $this->customValues,
         ]);
         $this->remarkForm->reset();
         $this->refresh();

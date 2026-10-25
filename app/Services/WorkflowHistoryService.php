@@ -21,6 +21,7 @@ class WorkflowHistoryService
             'date_out' => ['required', 'date', 'after_or_equal:date_in'],
             'reason' => ['nullable', 'string', 'max:65535'],
             'remark' => ['nullable', 'string', 'max:65535'],
+            'custom_values' => ['sometimes', 'array'],
         ])->validate();
 
         $run = Recommendation::with('workflow')->whereKey($data['recommendation_uuid'])->firstOrFail();
@@ -42,7 +43,7 @@ class WorkflowHistoryService
             }
             abort_if($application->closure()->lockForUpdate()->first() !== null || $application->rejection()->lockForUpdate()->first() !== null ||
                 $application->cancellation()->lockForUpdate()->first() !== null || $application->referral()->lockForUpdate()->first() !== null, 403);
-            $target = $version->stages()->with('permission')->whereKey($data['to_stage_uuid'])->first();
+            $target = $version->stages()->with(['permission', 'customFields'])->whereKey($data['to_stage_uuid'])->first();
             if (! $target) {
                 throw ValidationException::withMessages(['toStageUuid' => 'Choose a stage from the assigned workflow version.']);
             }
@@ -59,11 +60,15 @@ class WorkflowHistoryService
             }
             abort_unless(auth()->user() && (auth()->user()->hasRole('superadmin') ||
                 ($target->permission && auth()->user()->can($target->permission->name))), 403);
+            $values = app(WorkflowCustomFieldService::class)->validateValues($target, $data['custom_values'] ?? []);
             $history = WorkflowHistory::create([
                 'recommendation_uuid' => $run->uuid, 'from_stage_uuid' => $current?->uuid,
                 'to_stage_uuid' => $target->uuid, 'date_in' => $data['date_in'], 'date_out' => $data['date_out'],
                 'reason' => $data['reason'] ?? null, 'processed_by' => auth()->id(),
             ]);
+            foreach ($values as $fieldUuid => $value) {
+                $history->customValues()->create(['custom_field_uuid' => $fieldUuid, 'value' => $value]);
+            }
             if (filled($data['remark'] ?? null)) {
                 app(RemarkService::class)->store(['content' => $data['remark']], $history);
             }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\HasCustomFields;
 use App\Traits\HasUuid;
 use Database\Factories\WorkflowStageFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,7 +15,7 @@ use Spatie\Permission\Models\Permission;
 class WorkflowStage extends Model
 {
     /** @use HasFactory<WorkflowStageFactory> */
-    use HasFactory, HasUuid, SoftDeletes;
+    use HasCustomFields, HasFactory, HasUuid, SoftDeletes;
 
     protected $fillable = ['name', 'position', 'description', 'workflow_uuid', 'permission_id'];
 
