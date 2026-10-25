@@ -17,7 +17,7 @@ class Index extends Component
 
     public Collection $recommendations;
 
-    public WorkflowHistory $selectedHistory;
+    public ?WorkflowHistory $selectedHistory = null;
 
     public function mount(Application $application)
     {
@@ -33,6 +33,8 @@ class Index extends Component
 
     public function loadTimeline(Application $application)
     {
+        $application->loadMissing('client');
+        $this->authorize('view', $application);
         $this->recommendations = $application
             ->recommendations()
             ->oldest()
@@ -40,7 +42,8 @@ class Index extends Component
                 'funeralAssistanceType',
                 'workflow',
                 'remarks',
-                'workflowHistory.toStage',
+                'workflowHistory' => fn ($query) => $query->orderBy('date_in')->withCount('customValues'),
+                'workflowHistory.toStage' => fn ($query) => $query->withCount('customFields'),
                 'workflowHistory.fromStage',
                 'workflowHistory.remarks.user',
             ])
@@ -54,17 +57,18 @@ class Index extends Component
         $this->dispatch('load-remarks', modelClass: (string) 'App\\Models\\'.$modelClass, id: $uuid);
     }
 
-    // public function showHistoryDetails(string $uuid)
-    // {
-    //     $historyUuid = WorkflowHistory::firstWhere('uuid', $uuid)?->uuid;
+    public function showHistoryDetails(string $uuid): void
+    {
+        $this->application->loadMissing('client');
+        $this->authorize('view', $this->application);
+        $history = WorkflowHistory::whereHas('recommendation', fn ($query) => $query->where('application_uuid', $this->application->uuid))->whereKey($uuid)->firstOrFail();
+        $this->dispatch('load-details', historyUuid: $history->uuid);
+    }
 
-    //     $this->dispatch('load-details', historyUuid: $historyUuid);
-    // }
-
-    // public function clearSelectedHistory()
-    // {
-    //     $this->dispatch('load-details', historyUuid: null);
-    // }
+    public function clearSelectedHistory(): void
+    {
+        $this->dispatch('load-details', historyUuid: null);
+    }
 
     public function render()
     {
