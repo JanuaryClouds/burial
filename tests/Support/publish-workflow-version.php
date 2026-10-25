@@ -29,8 +29,10 @@ config([
 DB::statement('PRAGMA busy_timeout=10000');
 auth()->setUser(User::firstOrFail());
 $base = Workflow::findOrFail($baseUuid);
-$data = ['name' => $base->name, 'description' => 'Concurrent revision', 'stages' => $base->stages()->orderBy('position')->get()
-    ->map(fn ($stage) => ['name' => $stage->name, 'description' => $stage->description, 'permission_id' => (string) $stage->permission_id])->all()];
+$data = ['name' => $base->name, 'description' => 'Concurrent revision', 'stages' => $base->stages()->with('customFields')->orderBy('position')->get()
+    ->map(fn ($stage) => ['name' => $stage->name, 'description' => $stage->description, 'permission_id' => (string) $stage->permission_id,
+        'custom_fields' => $stage->customFields->map(fn ($field) => $field->only(['name', 'label', 'input_type', 'required']))->all(),
+    ])->all()];
 file_put_contents($ready, 'ready');
 $deadline = microtime(true) + 15;
 while (! file_exists($go)) {
