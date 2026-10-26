@@ -70,7 +70,7 @@ class WorkflowVersionService
             if ($base && $base->name === $data['name'] && $base->description === $data['description']) {
                 $original = $base->stages()->with('customFields')->orderBy('position')->get()
                     ->map(fn ($stage) => array_merge($stage->only(['name', 'description', 'position', 'permission_id']), [
-                        'custom_fields' => $stage->customFields->map(fn ($field) => $field->only(['name', 'label', 'input_type', 'required', 'order_no']))->all(),
+                        'custom_fields' => $stage->customFields->map(fn ($field) => $field->only(['name', 'label', 'help_text', 'input_type', 'required', 'order_no']))->all(),
                     ]))->all();
                 if ($original == $stages) {
                     return $base;

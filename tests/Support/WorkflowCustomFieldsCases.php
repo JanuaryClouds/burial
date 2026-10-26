@@ -4,6 +4,7 @@ namespace Tests\Support;
 
 use App\Livewire\Workflow\Edit;
 use App\Livewire\Workflow\History\Create;
+use App\Livewire\Workflow\History\Index;
 use App\Livewire\Workflow\History\Show;
 use App\Models\CustomField;
 use App\Models\Recommendation;
@@ -12,6 +13,7 @@ use App\Models\Workflow;
 use App\Models\WorkflowHistory;
 use App\Models\WorkflowStage;
 use App\Services\RemarkService;
+use App\Services\WorkflowCustomFieldService;
 use App\Services\WorkflowHistoryService;
 use App\Services\WorkflowVersionService;
 use Database\Seeders\WorkflowSeeder;
@@ -26,6 +28,69 @@ use Spatie\Permission\Models\Role;
 
 trait WorkflowCustomFieldsCases
 {
+    public function test_help_text_is_versioned_editable_and_rendered_for_the_pinned_stage(): void
+    {
+        $data = $this->customDefinition();
+        $data['stages'][0]['custom_fields'][0]['help_text'] = '  Include leading zeros <exactly as printed>.  ';
+        $version = app(WorkflowVersionService::class)->publish($data);
+        $stage = $version->stages()->with('customFields')->first();
+        $this->assertSame('Include leading zeros <exactly as printed>.', $stage->customFields->first()->help_text);
+        $this->assertSame($version->uuid, app(WorkflowVersionService::class)->publish($data, $version)->uuid);
+        $application = $this->application();
+        $this->recommend($application, $version);
+        $editor = Livewire::test(Edit::class, ['workflow' => $version])
+            ->assertSet('stages.0.custom_fields.0.help_text', 'Include leading zeros <exactly as printed>.')
+            ->set('stages.0.custom_fields.0.help_text', 'A different instruction.')
+            ->call('save')->assertHasNoErrors();
+        $this->assertSame(2, $editor->get('workflow')->version_number);
+        $this->assertSame('Include leading zeros <exactly as printed>.', $stage->customFields->first()->fresh()->help_text);
+        Livewire::test(Create::class, ['application' => $application])
+            ->set('dateIn', '2026-10-26T09:00:00')->set('toStageUuid', $stage->uuid)
+            ->assertSet('customFields.0.help_text', 'Include leading zeros <exactly as printed>.')
+            ->assertSee('Include leading zeros <exactly as printed>.')
+            ->assertDontSee('A different instruction.');
+    }
+
+    public function test_help_text_defaults_to_null_and_rejects_invalid_values(): void
+    {
+        $service = app(WorkflowCustomFieldService::class);
+        foreach ([null, '', '   ', false] as $empty) {
+            $fields = $this->fields();
+            $fields[0]['help_text'] = $empty;
+            $this->assertNull($service->normalize($fields, 'stages.0.custom_fields')[0]['help_text']);
+        }
+        $this->assertNull($service->normalize($this->fields(), 'stages.0.custom_fields')[0]['help_text']);
+        foreach ([str_repeat('a', 1001), ['invalid']] as $invalid) {
+            $fields = $this->fields();
+            $fields[0]['help_text'] = $invalid;
+            try {
+                $service->normalize($fields, 'stages.0.custom_fields');
+                $this->fail('Invalid help text was accepted.');
+            } catch (ValidationException $exception) {
+                $this->assertArrayHasKey('stages.0.custom_fields.0.help_text', $exception->errors());
+            }
+        }
+    }
+
+    public function test_timeline_details_remain_visible_after_clicks_and_polling(): void
+    {
+        (require database_path('migrations/data/2026_07_10_200015_create_remarks_table.php'))->up();
+        $version = app(WorkflowVersionService::class)->publish($this->customDefinition());
+        $stage = $version->stages()->with('customFields')->first();
+        $application = $this->application();
+        $run = $this->recommend($application, $version);
+        $history = $this->record($run, $stage, $this->values($stage));
+        $button = "showHistoryDetails('".$history->uuid."')";
+        Livewire::test(Index::class, ['application' => $application])
+            ->assertSee($button, false)
+            ->call('showHistoryDetails', $history->uuid)
+            ->assertDispatched('load-details', historyUuid: $history->uuid)
+            ->assertSee($button, false)
+            ->call('clearSelectedHistory')->assertSee($button, false)
+            ->call('showRemarks', 'WorkflowHistory', $history->uuid)->assertSee($button, false)
+            ->call('refresh')->assertSee($button, false);
+    }
+
     public function test_timeline_details_are_hidden_only_when_fields_and_values_are_absent(): void
     {
         $recommendation = new Recommendation;

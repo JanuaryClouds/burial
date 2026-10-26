@@ -9,6 +9,9 @@
             <x-form.input :name="$fieldPath . '.label'" label="Field Label"
                 wire:model.blur="stages.{{ $index }}.custom_fields.{{ $fieldIndex }}.label" :readonly="$historical"
                 required />
+            <x-form.textarea :name="$fieldPath . '.help_text'" label="Help Text (Optional)"
+                wire:model="stages.{{ $index }}.custom_fields.{{ $fieldIndex }}.help_text"
+                :readonly="$historical" maxlength="1000" />
             <x-form.input :name="$fieldPath . '.name'" label="Machine Name"
                 wire:model="stages.{{ $index }}.custom_fields.{{ $fieldIndex }}.name" :readonly="$historical"
                 required />
@@ -26,7 +29,7 @@
                     @disabled($historical)>
                 Required before recording processing
             </label>
-            @foreach (['name', 'label', 'input_type', 'required'] as $attribute)
+            @foreach (['name', 'label', 'help_text', 'input_type', 'required'] as $attribute)
                 @error($fieldPath . '.' . $attribute)
                     <div class="text-danger">{{ $message }}</div>
                 @enderror

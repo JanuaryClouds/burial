@@ -10,6 +10,19 @@ use Tests\TestCase;
 
 class WorkflowCustomFieldMigrationTest extends TestCase
 {
+    public function test_help_text_migration_defaults_existing_fields_to_null(): void
+    {
+        $uuid = $this->definition();
+        $migration = require database_path('migrations/custom_fields/2026_10_26_100000_add_help_text_to_custom_fields.php');
+        $migration->up();
+        $this->assertNull(DB::table('custom_fields')->where('uuid', $uuid)->value('help_text'));
+        DB::table('custom_fields')->where('uuid', $uuid)->update(['help_text' => 'Copy the printed reference.']);
+        $this->assertSame('Copy the printed reference.', DB::table('custom_fields')->where('uuid', $uuid)->value('help_text'));
+        $migration->down();
+        $this->assertFalse(Schema::hasColumn('custom_fields', 'help_text'));
+        $this->assertSame(1, DB::table('custom_fields')->count());
+    }
+
     protected function setUp(): void
     {
         parent::setUp();

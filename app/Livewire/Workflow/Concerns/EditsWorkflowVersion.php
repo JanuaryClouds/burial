@@ -47,7 +47,7 @@ trait EditsWorkflowVersion
             'key' => (string) Str::uuid(), 'name' => $stage->name, 'description' => $stage->description,
             'permission_id' => (string) $stage->permission_id,
             'custom_fields' => $stage->customFields->map(fn ($field) => array_merge(
-                $field->only(['name', 'label', 'input_type', 'required']), ['key' => (string) Str::uuid()]))->all(),
+                $field->only(['name', 'label', 'help_text', 'input_type', 'required']), ['key' => (string) Str::uuid()]))->all(),
             'removed_fields' => [],
         ])->all() : [];
         $this->workflowPermissions = Permission::where('guard_name', 'web')
@@ -146,7 +146,7 @@ trait EditsWorkflowVersion
     {
         $index = $this->draftStageIndex($stageKey);
         $this->stages[$index]['custom_fields'][] = ['key' => (string) Str::uuid(), 'name' => '',
-            'label' => '', 'input_type' => 'text', 'required' => true];
+            'label' => '', 'help_text' => '', 'input_type' => 'text', 'required' => true];
     }
 
     public function updatedStages($value, string $path): void

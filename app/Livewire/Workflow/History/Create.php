@@ -93,7 +93,7 @@ class Create extends Component
         $version = $this->application->currentWorkflow();
         $stage = $version?->stages()->with('customFields')->whereKey($this->toStageUuid)->first();
         $this->customFields = $stage?->customFields->map(fn ($field) => $field->only([
-            'uuid', 'label', 'input_type', 'required',
+            'uuid', 'label', 'help_text', 'input_type', 'required',
         ]))->all() ?? [];
     }
 

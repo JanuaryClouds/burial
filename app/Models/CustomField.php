@@ -13,7 +13,7 @@ class CustomField extends Model
     /** @use HasFactory<CustomFieldFactory> */
     use HasFactory, HasUuid;
 
-    protected $fillable = ['name', 'label', 'input_type', 'required', 'order_no'];
+    protected $fillable = ['name', 'label', 'help_text', 'input_type', 'required', 'order_no'];
 
     protected $casts = ['required' => 'boolean', 'order_no' => 'integer'];
 

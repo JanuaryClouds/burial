@@ -10,6 +10,7 @@
 ])
 
 @php
+    $helpId = ($id ?? $name) . '-help';
 	if ($errorname == null) {
 	    if (str_contains($name, '[')) {
 	        $errorname = str_replace('[', '.', str_replace(']', '', $name));
@@ -36,19 +37,26 @@
 			</label>
 		@endif
 	@endif
+    @isset($append)
+        <div class="input-group">
+    @endisset
 	<input type="{{ $type }}"
 		{{ $attributes->merge(['class' => 'form-control ' . ($readonly ? 'bg-light' : '')]) }}
 		{{ $required ? 'required' : '' }}
 		{{ $readonly ? 'readonly' : '' }}
 		name="{{ $name ?? $id }}"
 		{{ $id ? 'id=' . $id : 'id=' . $name }}
-		aria-describedby="{{ $helpText ? 'helpId' : '' }}" />
+		aria-describedby="{{ $helpText ? $helpId : '' }}" />
+    @isset($append)
+            {{ $append }}
+        </div>
+    @endisset
 
 	@error($errorname)
 		<small class="form-text text-danger me-2">{{ $message }}.</small>
 	@enderror
 	@if ($helpText)
-		<small id="helpId"
+		<small id="{{ $helpId }}"
 			class="form-text text-muted">
 			{{ $helpText }}
 		</small>
