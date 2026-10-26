@@ -3,8 +3,6 @@
 namespace App\Services;
 
 use App\Models\Application;
-use App\Models\Closure;
-use Illuminate\Support\Facades\Auth;
 
 class ClosureService
 {
@@ -20,12 +18,9 @@ class ClosureService
 
     public function store(array $data, Application $application)
     {
-        Closure::create([
-            'application_uuid' => $application->uuid,
-            'reason' => $data['reason'],
-            'closed_by' => Auth::id(),
-            'closed_at' => now(),
-        ]);
+        app(ApplicationProcessingService::class)->outcome(
+            $application->uuid, $application->current_claimant_assignment_uuid, 'close', $data
+        );
     }
 
     public function edit()

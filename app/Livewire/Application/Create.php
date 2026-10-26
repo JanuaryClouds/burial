@@ -2,11 +2,11 @@
 
 namespace App\Livewire\Application;
 
-use App\Models\Application;
 use App\Models\Beneficiary;
 use App\Models\Client;
 use App\Models\DocumentRequirement;
 use App\Services\ActivityLoggerService;
+use App\Services\ApplicationService;
 use App\Services\ImageService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -47,7 +47,7 @@ class Create extends Component
 
     public function mount()
     {
-        $this->clientOptions = Client::whereDoesntHave('application')
+        $this->clientOptions = Client::unused()
             ->with('user')
             ->where('user_id', '=', Auth::id())
             ->orderByDesc('created_at')
@@ -113,11 +113,11 @@ class Create extends Component
 
         try {
             DB::transaction(function () use ($imageService) {
-                $application = Application::create([
-                    'client_uuid' => $this->clientUuid,
-                    'beneficiary_uuid' => $this->beneficiaryUuid,
-                    'relationship_id' => $this->relationshipId,
-                ]);
+                $application = app(ApplicationService::class)->store(
+                    Client::findOrFail($this->clientUuid),
+                    Beneficiary::findOrFail($this->beneficiaryUuid),
+                    (int) $this->relationshipId,
+                );
 
                 foreach ($this->images as $key => $file) {
                     if (! $file) {
