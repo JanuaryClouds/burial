@@ -12,6 +12,7 @@ import initSelect2 from './select2.js';
 import randomizeMulticolorBorder from './multicolorBorder.js';
 import { checkCharts, refreshChart, collectCharts } from './chart.js';
 import theme from './theme.js';
+import initDashboard from './dashboard.js';
 import autoMarginColumns from './autoMarginColumns.js';
 import sweetAlert from './sweetAlert2.js';
 import toast from './toast.js';
@@ -40,6 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
 window.initSelect2 = initSelect2;
 
 document.addEventListener('livewire:init', () => {
+    initDashboard();
     autoMarginColumns();
     refreshChart();
     sweetAlert();
