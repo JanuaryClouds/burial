@@ -16,11 +16,12 @@
 					Edit
 				</a>
 			@endcan
-			@if ($client->application)
-				<a href="{{ route('application.show', $client->application) }}"
+            @php($recordApplication = $client->application ?? $client->claimantAssignments->first()?->application)
+			@if ($recordApplication)
+				<a href="{{ route('application.show', $recordApplication) }}"
 					class="btn btn-sm btn-info">
 					<x-icon.font-awesome class="fa-external-link" />
-					Application {{ $client->application->tracking_no }}
+					Application {{ $recordApplication->tracking_no }}
 				</a>
 			@endif
 		</x-slot:footer>
