@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\SystemSetting;
+use Illuminate\Support\Facades\Validator;
 
 class SystemSettingService
 {
@@ -14,6 +15,8 @@ class SystemSettingService
      */
     public function update(array $data)
     {
+        abort_unless(auth()->user()?->hasRole('superadmin'), 403);
+        Validator::make($data, ['claimant_change_limit' => ['sometimes', 'required', 'integer', 'min:0', 'max:4294967295']])->validate();
         $settings = SystemSetting::first();
 
         if ($settings === null) {

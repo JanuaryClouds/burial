@@ -10,9 +10,14 @@ class ApplicationPolicy
     /**
      * Determine whether the user can view any models.
      */
+    public function changeClaimant(User $user, Application $application): bool
+    {
+        return $user->hasRole('superadmin') && ! $application->isFormerClaimant($user->id) && $application->isActive();
+    }
+
     public function viewAny(User $user): bool
     {
-        if ($user->roles()->count() > 0) {
+        if ($user->loadMissing('roles')->roles->isNotEmpty()) {
             return true;
         }
 
@@ -24,11 +29,11 @@ class ApplicationPolicy
      */
     public function view(User $user, Application $application): bool
     {
-        if ($user->roles()->count() > 0) {
+        if ($user->loadMissing('roles')->roles->isNotEmpty()) {
             return true;
         }
 
-        if ($user->id === $application->client->user_id) {
+        if ($user->id === $application->client->user_id || $application->claimantAssignments()->whereHas('client', fn ($q) => $q->where('user_id', $user->id))->exists()) {
             return true;
         }
 
@@ -44,7 +49,7 @@ class ApplicationPolicy
             return true;
         }
 
-        if ($user->roles()->count() == 0) {
+        if ($user->loadMissing('roles')->roles->isEmpty()) {
             return true;
         }
 
@@ -56,6 +61,10 @@ class ApplicationPolicy
      */
     public function update(User $user, Application $application): bool
     {
+        if ($application->isFormerClaimant($user->id)) {
+            return false;
+        }
+
         if ($user->hasRole('superadmin')) {
             return true;
         }
@@ -68,14 +77,6 @@ class ApplicationPolicy
      */
     public function delete(User $user, Application $application): bool
     {
-        if ($user->hasRole('superadmin')) {
-            return true;
-        }
-
-        if ($user->id === $application->client->user_id) {
-            return true;
-        }
-
         return false;
     }
 
@@ -112,6 +113,10 @@ class ApplicationPolicy
      */
     public function cancel(User $user, Application $application): bool
     {
+        if ($application->isFormerClaimant($user->id)) {
+            return false;
+        }
+
         if ($application->closure) {
             return false;
         }
@@ -140,6 +145,10 @@ class ApplicationPolicy
      */
     public function reject(User $user, Application $application): bool
     {
+        if ($application->isFormerClaimant($user->id)) {
+            return false;
+        }
+
         if ($application->closure) {
             return false;
         }
@@ -168,6 +177,10 @@ class ApplicationPolicy
      */
     public function refer(User $user, Application $application): bool
     {
+        if ($application->isFormerClaimant($user->id)) {
+            return false;
+        }
+
         if ($application->closure) {
             return false;
         }
@@ -196,6 +209,10 @@ class ApplicationPolicy
      */
     public function close(User $user, Application $application): bool
     {
+        if ($application->isFormerClaimant($user->id)) {
+            return false;
+        }
+
         if ($application->closure) {
             return false;
         }
