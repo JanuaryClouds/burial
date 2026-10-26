@@ -49,13 +49,29 @@
 				{{-- end::Stage selector --}}
                 @error('customValues') <div class="text-danger">{{ $message }}</div> @enderror
                 @foreach ($customFields as $field)
-                    <div wire:key="processing-field-{{ $field['uuid'] }}">
+                    <div wire:key="processing-field-{{ $field['uuid'] }}" x-data="{ revealed: false }">
                         <x-form.input :name="'customValues.' . $field['uuid']" :label="$field['label']"
                             :type="$field['input_type']" :required="$field['required']"
+                            x-bind:type="revealed ? 'text' : '{{ $field['input_type'] }}'"
+                            :help-text="$field['help_text'] ?? false"
                             wire:model="customValues.{{ $field['uuid'] }}"
                             :step="$field['input_type'] === 'number' ? 'any' : null"
                             :maxlength="in_array($field['input_type'], ['text', 'password']) ? 255 : null"
-                            autocomplete="off" />
+                            autocomplete="off">
+                            @if ($field['input_type'] === 'password')
+                                <x-slot:append>
+                                    <button type="button" class="btn btn-light-primary d-inline-flex align-items-center gap-1"
+                                        x-on:click="revealed = !revealed"
+                                        x-bind:aria-pressed="revealed"
+                                        aria-controls="customValues.{{ $field['uuid'] }}"
+                                        aria-label="Toggle visibility of {{ $field['label'] }}">
+                                        <i class="fa-solid p-0 m-0" aria-hidden="true"
+                                            x-bind:class="revealed ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                        <span x-text="revealed ? 'Hide' : 'Show'">Show</span>
+                                    </button>
+                                </x-slot:append>
+                            @endif
+                        </x-form.input>
                     </div>
                 @endforeach
 				@if ($toStageUuid && $toStageUuid !== $application->toStage()?->uuid)
