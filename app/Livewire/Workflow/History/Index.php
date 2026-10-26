@@ -39,6 +39,7 @@ class Index extends Component
             ->recommendations()
             ->oldest()
             ->with([
+                'claimantAssignment',
                 'funeralAssistanceType',
                 'workflow',
                 'remarks',

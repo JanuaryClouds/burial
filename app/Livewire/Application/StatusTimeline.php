@@ -19,45 +19,55 @@ class StatusTimeline extends Component
 
     public function mount(Application $application)
     {
+        $application->loadMissing(['client.user', 'currentInterviews', 'referral', 'rejection', 'cancellation', 'closure', 'workflowStage']);
         $this->application = $application;
         $this->status = $application->status();
 
-        $this->statusIndicators = [
+        $this->statusIndicators = self::indicators($this->status, $application->closure !== null);
+    }
+
+    public static function indicators(array $status, bool $closed): array
+    {
+        $indicators = [
             ['pending' => 'current'],
             ['assessment' => false],
             ['processing' => false],
             ['releasing' => false],
         ];
 
-        for ($i = 0; $i < count($this->statusIndicators); $i++) {
-            $currentLabel = key($this->statusIndicators[$i]);
-            if (collect($this->status)->pluck('label')->contains($currentLabel)) {
-                $this->statusIndicators[$i][$currentLabel] = 'current';
+        for ($i = 0; $i < count($indicators); $i++) {
+            $currentLabel = key($indicators[$i]);
+            if (collect($status)->pluck('label')->contains($currentLabel)) {
+                $indicators[$i][$currentLabel] = 'current';
 
                 if ($i !== 0) {
-                    $previousLabel = key($this->statusIndicators[$i - 1]);
-                    $this->statusIndicators[$i - 1][$previousLabel] = 'completed';
+                    $previousLabel = key($indicators[$i - 1]);
+                    $indicators[$i - 1][$previousLabel] = 'completed';
                 }
 
-                if ($this->application->closure) {
-                    $this->statusIndicators[$i][$currentLabel] = false;
+                if ($closed) {
+                    $indicators[$i][$currentLabel] = false;
                 }
             }
         }
 
-        foreach ($this->statusIndicators as $key => $value) {
+        foreach ($indicators as $key => $value) {
             if (is_array($value)) {
                 $label = key($value);
-                $this->statusIndicators[$label] = $value[$label];
-                unset($this->statusIndicators[$key]);
+                $indicators[$label] = $value[$label];
+                unset($indicators[$key]);
             }
         }
+
+        return $indicators;
     }
 
     #[On('refreshWorkflowHistory')]
+    #[On('interviewCompleted')]
     public function refresh()
     {
-        $this->status = $this->application->status();
+        $this->application->refresh();
+        $this->mount($this->application);
     }
 
     public function render()
