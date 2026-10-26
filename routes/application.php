@@ -26,7 +26,12 @@ Route::name('application.')
                     ->middleware('can:view,application')
                     ->name('show');
 
+                Route::get('/change-claimant', [ApplicationController::class, 'changeClaimant'])
+                    ->middleware('can:changeClaimant,application')
+                    ->name('change-claimant');
+
                 Route::get('/close', [ApplicationController::class, 'close'])
+                    ->middleware('can:view,application')
                     ->name('close');
 
                 Route::prefix('image')
@@ -61,12 +66,15 @@ Route::name('application.')
                 Route::controller(ApplicationController::class)
                     ->group(function () {
                         Route::get('/tracker-slip', 'codes')
+                            ->middleware('can:view,application')
                             ->name('tracker-slip');
 
                         Route::get('/print', 'print')
+                            ->middleware(['can:view,application', 'role:staff|superadmin'])
                             ->name('print');
 
                         Route::get('/certificate', 'certificate')
+                            ->middleware(['can:view,application', 'role:staff|superadmin'])
                             ->name('certificate');
                     });
             });
