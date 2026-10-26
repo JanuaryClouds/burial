@@ -17,6 +17,7 @@ class Assessment extends Model
     protected $table = 'assessments';
 
     protected $fillable = [
+        'claimant_assignment_uuid',
         'application_uuid',
         'swa',
         'problem_presented',
@@ -36,6 +37,6 @@ class Assessment extends Model
      */
     public function application(): BelongsTo
     {
-        return $this->belongsTo(Application::class, 'application_id', 'id');
+        return $this->belongsTo(Application::class, 'application_uuid', 'uuid');
     }
 }

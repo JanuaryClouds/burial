@@ -53,7 +53,7 @@
 			</x-card>
 			<x-card>
 				<x-slot:header>Scheduled Interviews</x-slot:header>
-				<livewire:interview.index :client="$application->client"
+				<livewire:interview.index :client="$application->client" :assignment-uuid="$application->current_claimant_assignment_uuid"
 					defer />
 			</x-card>
 		</div>

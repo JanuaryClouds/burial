@@ -3,10 +3,12 @@
 namespace App\Livewire\Interview;
 
 use App\Models\Client;
+use App\Models\Interview;
 use App\Services\ActivityLoggerService;
 use App\Services\InterviewService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -14,6 +16,9 @@ use Livewire\Component;
 class Create extends Component
 {
     public Client $client;
+
+    #[Locked]
+    public ?string $expectedAssignmentUuid = null;
 
     private InterviewService $services;
 
@@ -30,9 +35,10 @@ class Create extends Component
     public function mount(Client $client)
     {
         $this->client = $client;
+        $this->expectedAssignmentUuid = $client->application()->value('current_claimant_assignment_uuid');
 
         $this->scheduled = $this->client->interviews()
-            ->where('schedule', '>', now())
+            ->where('claimant_assignment_uuid', $this->expectedAssignmentUuid)
             ->where('status', 'scheduled')
             ->exists();
     }
@@ -52,13 +58,10 @@ class Create extends Component
 
         try {
             DB::transaction(function () {
-                if ($this->client->interviews->where('schedule', '>', now())->count() > 0) {
-                    return;
-                }
-
                 $interview = $this->services->store(
                     ['schedule' => $this->schedule],
-                    $this->client->uuid
+                    $this->client->uuid,
+                    $this->expectedAssignmentUuid
                 );
 
                 $this->dispatch('notification:alert', [
@@ -72,7 +75,7 @@ class Create extends Component
                 ActivityLoggerService::logSuccess('Successfully created an Interview for a client', [
                     'client_uuid' => $this->client->uuid,
                     'interview_uuid' => $interview->uuid,
-                    'interview_schedule' => $$interview->schedule,
+                    'interview_schedule' => $interview->schedule,
                 ]);
             });
         } catch (\Throwable $th) {
@@ -91,13 +94,16 @@ class Create extends Component
     public function refresh()
     {
         $this->scheduled = $this->client->interviews()
-            ->where('schedule', '>', now())
+            ->where('claimant_assignment_uuid', $this->expectedAssignmentUuid)
             ->where('status', 'scheduled')
             ->exists();
     }
 
     public function render()
     {
-        return view('livewire.interview.create');
+        return view('livewire.interview.create', [
+            'completed' => $this->client->interviews()->where('claimant_assignment_uuid', $this->expectedAssignmentUuid)->where('status', 'done')->exists(),
+            'canSchedule' => auth()->user()->can('create', [Interview::class, $this->client]),
+        ]);
     }
 }

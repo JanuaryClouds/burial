@@ -4,11 +4,10 @@ namespace App\Livewire\Rejection;
 
 use App\Livewire\Forms\RejectionForm;
 use App\Models\Application;
-use App\Models\Rejection;
 use App\Services\ActivityLoggerService;
+use App\Services\ApplicationProcessingService;
 use App\Traits\Livewire\HasPlaceholder;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 class Create extends Component
@@ -17,11 +16,15 @@ class Create extends Component
 
     public Application $application;
 
+    #[Locked]
+    public ?string $expectedAssignmentUuid = null;
+
     public RejectionForm $form;
 
     public function mount(Application $application)
     {
         $this->application = $application;
+        $this->expectedAssignmentUuid = $application->current_claimant_assignment_uuid;
 
         if ($this->application->rejection) {
             $this->form->setRejection($this->application->rejection);
@@ -42,36 +45,10 @@ class Create extends Component
         }
 
         try {
-            DB::transaction(function () {
-                Rejection::updateOrCreate([
-                    'application_uuid' => $this->application->uuid,
-                    'reason' => $this->form->reason,
-                    'rejected_by' => Auth::id(),
-                ]);
-
-                $this->application->loadMissing('activeRecommendation');
-
-                if ($this->application->currentRecommendation()) {
-                    $this->application->currentRecommendation()->update([
-                        'status' => 'rejected',
-                    ]);
-                }
-
-                ActivityLoggerService::logSuccess('Successfully rejected application', [
-                    'application_uuid' => $this->application->uuid,
-                    'reason' => $this->form->reason,
-                    'rejected_by' => Auth::user(),
-                ]);
-
-                $this->dispatch('refreshWorkflowHistory');
-
-                $this->dispatch('notification:alert', [
-                    'type' => 'success',
-                    'text' => 'Successfully rejected the application',
-                ]);
-
-                $this->redirect(route('application.close', $this->application));
-            });
+            app(ApplicationProcessingService::class)->outcome(
+                $this->application->uuid, $this->expectedAssignmentUuid, 'reject', $this->form->all()
+            );
+            $this->redirect(route('application.show', $this->application));
         } catch (\Throwable $th) {
             $this->dispatch('notification:alert', [
                 'type' => 'error',

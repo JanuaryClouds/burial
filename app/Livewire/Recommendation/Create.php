@@ -31,6 +31,9 @@ class Create extends Component
     #[Locked]
     public ?string $expectedRecommendationUuid = null;
 
+    #[Locked]
+    public ?string $expectedAssignmentUuid = null;
+
     public function boot(): void
     {
         $this->funeralAssistanceTypes = FuneralAssistanceType::orderBy('name')->pluck('name', 'uuid')->all();
@@ -42,6 +45,7 @@ class Create extends Component
     {
         Gate::authorize('create', [Recommendation::class, $application]);
         $this->application = $application;
+        $this->expectedAssignmentUuid = $application->current_claimant_assignment_uuid;
         $this->expectedRecommendationUuid = $application->current_recommendation_uuid;
     }
 
@@ -61,6 +65,7 @@ class Create extends Component
             'amount_extended' => $this->form->amountExtended,
             'mode_of_assistance_id' => $this->form->modeOfAssistanceId,
             'expected_recommendation_uuid' => $this->expectedRecommendationUuid,
+            'expected_assignment_uuid' => $this->expectedAssignmentUuid,
         ], $this->application->uuid);
         $this->refresh();
         $this->createNew = false;

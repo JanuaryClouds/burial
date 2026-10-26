@@ -34,10 +34,13 @@ class WorkflowHistoryService
             app(WorkflowVersionService::class)->lockGroup($version);
             $version = $version->newQuery()->whereKey($version->uuid)->lockForUpdate()->firstOrFail();
             $application = Application::whereKey($run->application_uuid)->lockForUpdate()->firstOrFail();
-            if ($application->current_recommendation_uuid !== $run->uuid ||
+            if ($application->current_claimant_assignment_uuid !== $run->claimant_assignment_uuid ||
+                $application->current_recommendation_uuid !== $run->uuid ||
                 $application->current_workflow_stage_uuid !== $data['expected_stage_uuid']) {
                 throw ValidationException::withMessages(['toStageUuid' => 'Processing changed after this form was opened. Reload the current run.']);
             }
+            abort_if($application->isFormerClaimant(auth()->id()), 403);
+            abort_unless($application->finishedInterview() && $application->assessment()->exists(), 403);
             if (! $version->is_active) {
                 throw ValidationException::withMessages(['toStageUuid' => 'This workflow version is paused. Wait for reactivation or create a new recommendation.']);
             }

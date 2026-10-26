@@ -44,6 +44,7 @@ class RecommendationFactory extends Factory
                     'workflow_uuid' => $uuid, 'funeral_assistance_type_uuid' => $model->funeral_assistance_type_uuid,
                     'amount_extended' => $model->amount_extended, 'mode_of_assistance_id' => $model->mode_of_assistance_id,
                     'expected_recommendation_uuid' => $application->current_recommendation_uuid,
+                    'expected_assignment_uuid' => $application->current_claimant_assignment_uuid,
                 ], $application->uuid);
                 if ($model->created_at) {
                     $run->update(['created_at' => $model->created_at]);

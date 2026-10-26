@@ -13,7 +13,13 @@ class Interview extends Model
 
     protected $table = 'interviews';
 
+    public function claimantAssignment(): BelongsTo
+    {
+        return $this->belongsTo(ApplicationClaimantAssignment::class, 'claimant_assignment_uuid', 'uuid');
+    }
+
     protected $fillable = [
+        'claimant_assignment_uuid',
         'client_uuid',
         'status',
         'schedule',

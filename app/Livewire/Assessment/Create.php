@@ -6,13 +6,18 @@ use App\Livewire\Forms\AssessmentForm;
 use App\Models\Application;
 use App\Models\Assessment;
 use App\Services\ActivityLoggerService;
+use App\Services\AssessmentService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 class Create extends Component
 {
     public Application $application;
+
+    #[Locked]
+    public ?string $expectedAssignmentUuid = null;
 
     public Assessment $assessment;
 
@@ -21,6 +26,7 @@ class Create extends Component
     public function mount(Application $application)
     {
         $this->application = $application;
+        $this->expectedAssignmentUuid = $application->current_claimant_assignment_uuid;
     }
 
     public function save()
@@ -38,11 +44,9 @@ class Create extends Component
 
         try {
             DB::transaction(function () {
-                $assessment = Assessment::updateOrCreate([
-                    'application_uuid' => $this->application->uuid,
-                    'problem_presented' => $this->form->problem_presented,
-                    'swa' => $this->form->swa,
-                ]);
+                $assessment = app(AssessmentService::class)->store([
+                    ...$this->form->all(), 'expected_assignment_uuid' => $this->expectedAssignmentUuid,
+                ], $this->application->uuid);
 
                 $this->form->reset();
                 $this->dispatch('notification:alert', [
