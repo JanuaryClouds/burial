@@ -38,6 +38,7 @@
 						</div>
 					</div>
 				</div>
+				<x-page-footer />
 			</div>
 		</div>
 	</div>

@@ -37,6 +37,10 @@ class BeneficiaryFamilyPolicy
      */
     public function create(User $user, Beneficiary $beneficiary): bool
     {
+        if ($beneficiary->application()->exists()) {
+            return false;
+        }
+
         if ($user->roles()->count() == 0) {
             return true;
         }

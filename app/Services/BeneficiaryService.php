@@ -6,6 +6,7 @@ use App\Models\Beneficiary;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class BeneficiaryService
 {
@@ -164,6 +165,7 @@ class BeneficiaryService
 
     public function update(Beneficiary $beneficiary, array $data): Beneficiary
     {
+        Gate::authorize('update', $beneficiary);
         $beneficiary->update([
             'first_name' => $data['firstName'],
             'middle_name' => $data['middleName'],

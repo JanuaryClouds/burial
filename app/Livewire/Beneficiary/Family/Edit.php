@@ -26,6 +26,8 @@ class Edit extends Component
 
     public function save()
     {
+        $this->member->loadMissing('beneficiary');
+        $this->authorize('update', $this->member);
         try {
             $this->form->validate();
         } catch (ValidationException $e) {

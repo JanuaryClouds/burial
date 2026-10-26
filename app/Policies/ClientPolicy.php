@@ -32,7 +32,7 @@ class ClientPolicy
             return true;
         }
 
-        return false;
+        return $client->claimantAssignments()->whereHas('application.claimantAssignments.client', fn ($q) => $q->where('user_id', $user->id))->exists();
     }
 
     /**
@@ -56,7 +56,7 @@ class ClientPolicy
      */
     public function update(User $user, Client $client): bool
     {
-        if ($client->application) {
+        if ($client->isUsed()) {
             return false;
         }
 
@@ -76,6 +76,10 @@ class ClientPolicy
      */
     public function delete(User $user, Client $client): bool
     {
+        if ($client->isUsed()) {
+            return false;
+        }
+
         if ($user->hasRole('superadmin')) {
             return true;
         }

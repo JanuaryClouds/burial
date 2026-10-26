@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Application;
 use App\Models\Assessment;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -15,6 +16,15 @@ class AssessmentFactory extends Factory
      *
      * @return array<string, mixed>
      */
+    public function configure(): static
+    {
+        return $this->afterMaking(function (Assessment $assessment) {
+            if (! $assessment->claimant_assignment_uuid && $assessment->application_uuid) {
+                $assessment->claimant_assignment_uuid = Application::whereKey($assessment->application_uuid)->value('current_claimant_assignment_uuid');
+            }
+        });
+    }
+
     public function definition(): array
     {
         return [

@@ -20,6 +20,41 @@ class Client extends Model
 
     protected $table = 'clients';
 
+    public function claimantAssignments(): HasMany
+    {
+        return $this->hasMany(ApplicationClaimantAssignment::class, 'client_uuid', 'uuid');
+    }
+
+    public function scopeUnused($query)
+    {
+        return $query->whereDoesntHave('application')->whereDoesntHave('claimantAssignments');
+    }
+
+    public function isUsed(bool $lock = false): bool
+    {
+        if ($lock) {
+            // A locking read sees committed winners under MySQL REPEATABLE READ.
+            return $this->application()->lockForUpdate()->first() !== null
+                || $this->claimantAssignments()->lockForUpdate()->first() !== null;
+        }
+
+        return $this->application()->exists() || $this->claimantAssignments()->exists();
+    }
+
+    protected static function booted(): void
+    {
+        static::updating(function (Client $client) {
+            if ($client->isUsed()) {
+                throw new \LogicException('Used client records are immutable. Draft a new record.');
+            }
+        });
+        static::deleting(function (Client $client) {
+            if ($client->isUsed()) {
+                throw new \LogicException('Used client records must be preserved.');
+            }
+        });
+    }
+
     protected $fillable = [
         'user_id',
         'date_of_birth',
@@ -197,6 +232,7 @@ class Client extends Model
         ?string $endDate = null
     ): Builder {
         return $query->with([
+            'claimantAssignments.application.beneficiary',
             'user',
             'interviews',
             'address',
@@ -212,6 +248,7 @@ class Client extends Model
             'application.workflowStage',
             'socialInfo',
             'application.client.interviews',
+            'application.currentInterviews',
         ])
             ->when($userId, function ($query) use ($userId) {
                 $query->where('user_id', $userId);

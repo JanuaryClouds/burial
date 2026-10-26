@@ -41,7 +41,7 @@ class WorkflowHistoryPolicy
             return false;
         }
 
-        if ($application->recommendations()->count() == 0) {
+        if (! $application->current_recommendation_uuid) {
             return false;
         }
 

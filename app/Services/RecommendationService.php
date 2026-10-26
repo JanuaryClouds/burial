@@ -19,6 +19,7 @@ class RecommendationService
             'funeral_assistance_type_uuid' => ['required', 'uuid', 'exists:funeral_assistance_types,uuid,deleted_at,NULL'],
             'amount_extended' => ['required', 'numeric', 'min:0'],
             'mode_of_assistance_id' => ['required', 'exists:mode_of_assistances,id'],
+            'expected_assignment_uuid' => ['required', 'uuid'],
             'expected_recommendation_uuid' => ['present', 'nullable', 'uuid'],
         ])->validate();
 
@@ -32,6 +33,8 @@ class RecommendationService
                 throw ValidationException::withMessages(['form.workflowUuid' => 'This version is no longer available. Select the latest active workflow.']);
             }
             $application = Application::whereKey($applicationUuid)->lockForUpdate()->firstOrFail();
+            $application->assertAssignment($data['expected_assignment_uuid']);
+            abort_if($application->isFormerClaimant(auth()->id()), 403);
             $application->load(['client.interviews', 'assessment', 'rejection', 'cancellation', 'referral', 'closure', 'workflowStage']);
             Gate::authorize('create', [Recommendation::class, $application]);
             if ($application->current_recommendation_uuid !== $data['expected_recommendation_uuid']) {
@@ -39,6 +42,7 @@ class RecommendationService
             }
             $recommendation = Recommendation::create([
                 'application_uuid' => $application->uuid,
+                'claimant_assignment_uuid' => $application->current_claimant_assignment_uuid,
                 'workflow_uuid' => $version->uuid,
                 'funeral_assistance_type_uuid' => $data['funeral_assistance_type_uuid'],
                 'amount_extended' => $data['amount_extended'],

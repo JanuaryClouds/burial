@@ -1,9 +1,25 @@
 <x-card>
 	<x-slot:header>Assessment</x-slot:header>
 	@can('view', [\App\Models\Assessment::class])
+        <div class="mb-5" id="interview">
+            @if ($inlineApplicationDetails ?? false)
+                @include('interview.partials.latest', ['canComplete' => $canCompleteInterview])
+            @else
+                <livewire:interview.index :client="$application->client" :assignment-uuid="$application->current_claimant_assignment_uuid" />
+            @endif
+            @if (! $application->finishedInterview() && ! $application->current_recommendation_uuid)
+                @can('create', [\App\Models\Interview::class, $application->client])
+                    <livewire:interview.create :client="$application->client" :key="'interview-create-'.$application->current_claimant_assignment_uuid" />
+                @endcan
+            @endif
+        </div>
+        <div class="separator separator-dashed my-5"></div>
 		@if ($application->assessment)
-			<livewire:assessment.show :assessment="$application->assessment"
-				defer />
+            @if ($inlineApplicationDetails ?? false)
+                @include('livewire.assessment.show', ['assessment' => $application->assessment])
+            @else
+                <livewire:assessment.show :assessment="$application->assessment" defer />
+            @endif
 		@else
 			@if ($application->finishedInterview())
 				@can('create', [\App\Models\Assessment::class, $application])
@@ -33,13 +49,13 @@
 					<x-slot:icon>
 						<x-icon.font-awesome class="fa-exclamation-circle fs-2" />
 					</x-slot:icon>
-					Set an interview first before making an assessment.
+					Complete the current claimant's interview before making an assessment.
 					@can('create', [\App\Models\Interview::class, $application->client])
 						<x-slot:options>
-							<a href="{{ route('client.show', $application->client) }}"
+							<a href="#interview"
 								class="btn btn-sm btn-primary">
 								<x-icon.font-awesome class="fa-up-right-from-square" />
-								Show Client
+								Schedule Interview
 							</a>
 						</x-slot:options>
 					@endcan

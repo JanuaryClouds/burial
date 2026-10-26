@@ -4,11 +4,10 @@ namespace App\Livewire\Cancellation;
 
 use App\Livewire\Forms\CancellationForm;
 use App\Models\Application;
-use App\Models\Cancellation;
 use App\Services\ActivityLoggerService;
+use App\Services\ApplicationProcessingService;
 use App\Traits\Livewire\HasPlaceholder;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 class Create extends Component
@@ -17,11 +16,15 @@ class Create extends Component
 
     public Application $application;
 
+    #[Locked]
+    public ?string $expectedAssignmentUuid = null;
+
     public CancellationForm $form;
 
     public function mount(Application $application)
     {
         $this->application = $application;
+        $this->expectedAssignmentUuid = $application->current_claimant_assignment_uuid;
     }
 
     public function save()
@@ -39,34 +42,10 @@ class Create extends Component
         }
 
         try {
-            DB::transaction(function () {
-                Cancellation::create([
-                    'application_uuid' => $this->application->uuid,
-                    'reason' => $this->form->reason,
-                    'cancelled_by' => Auth::id(),
-                ]);
-
-                $this->application->loadMissing('activeRecommendation');
-
-                if ($this->application->currentRecommendation()) {
-                    $this->application->currentRecommendation()->update([
-                        'status' => 'cancelled',
-                    ]);
-                }
-
-                ActivityLoggerService::logSuccess('Successfully cancelled an application', [
-                    'application_uuid' => $this->application->uuid,
-                    'reason' => $this->form->reason,
-                    'rejected_by' => Auth::id(),
-                ]);
-
-                $this->dispatch('notification:alert', [
-                    'type' => 'success',
-                    'text' => 'This application has been cancelled.',
-                ]);
-
-                $this->redirect(route('application.show', $this->application));
-            });
+            app(ApplicationProcessingService::class)->outcome(
+                $this->application->uuid, $this->expectedAssignmentUuid, 'cancel', $this->form->all()
+            );
+            $this->redirect(route('application.show', $this->application));
         } catch (\Throwable $th) {
             $this->dispatch('notification:alert', [
                 'type' => 'error',

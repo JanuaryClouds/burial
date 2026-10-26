@@ -9,7 +9,7 @@ class RecommendationPolicy
 {
     public function view(User $user): bool
     {
-        if ($user->roles()->count() > 0) {
+        if ($user->loadMissing('roles')->roles->isNotEmpty()) {
             return true;
         }
 
@@ -18,6 +18,10 @@ class RecommendationPolicy
 
     public function create(User $user, Application $application): bool
     {
+        if ($application->isFormerClaimant($user->id) || ! $application->isActive() || ! $application->finishedInterview()) {
+            return false;
+        }
+
         if ($user->id === $application->client->user_id) {
             return false;
         }

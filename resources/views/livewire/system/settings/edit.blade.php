@@ -1,4 +1,7 @@
 <div class="d-flex flex-column gap-2">
+    <label class="form-label" for="claimant-limit">Claimant changes allowed per application (0 disables changes)</label>
+    <input id="claimant-limit" class="form-control" type="number" min="0" step="1" wire:model="form.claimantChangeLimit">
+    @error('form.claimantChangeLimit') <p class="text-danger">{{ $message }}</p> @enderror
 	{{-- start::Social Welfare Officer --}}
 	<x-form.input wire:model='form.socialWelfareOfficer'
 		name="socialWelfareOfficer"

@@ -32,6 +32,7 @@ class Summary extends Component
 
     public function mount(Application $application)
     {
+        $application->loadMissing(['client.user', 'client.address', 'beneficiary', 'relationship']);
         $this->application = $application;
         $this->client = $application->client;
         $this->beneficiary = $application->beneficiary;
@@ -41,8 +42,8 @@ class Summary extends Component
 
     public function render()
     {
-        $this->application->loadMissing('activeRecommendation.workflow');
+        $this->application->loadCount('claimantAssignments');
 
-        return view('livewire.application.summary');
+        return view('livewire.application.summary', ['hasClaimantChanges' => $this->application->claimant_assignments_count > 1]);
     }
 }

@@ -19,6 +19,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 
 class ClientService
@@ -36,16 +37,17 @@ class ClientService
             ->orderBy($orderBy, $orderDirection)
             ->get()
             ->map(function (Client $client) {
-                $application = $client->application;
-                $status = $application ? $application->currentStatus() : 'Draft';
+                $assignment = $client->claimantAssignments->first();
+                $application = $client->application ?? $assignment?->application;
+                $status = $assignment?->ended_at ? ['label' => 'replaced', 'badgeColor' => 'secondary'] : ($application ? $application->currentStatus() : 'Draft');
 
                 return [
                     'uuid' => $client->uuid,
                     'tracking_no' => $application?->tracking_no ?? 'Draft',
-                    'client' => $client->fullname().($application ? ' ('.$application->relationship->name.')' : ''),
+                    'client' => $client->fullname().($client->application ? ' ('.$client->application->relationship?->name.')' : ''),
                     'beneficiary' => $application?->beneficiary?->fullname() ?? 'N/A',
                     'status' => $status,
-                    'applied_at' => $client->application?->created_at->format('F d, Y') ?? 'Draft',
+                    'applied_at' => $application?->created_at->format('F d, Y') ?? 'Draft',
                     'show_route' => route('client.show', $client),
                 ];
             });
@@ -125,6 +127,7 @@ class ClientService
 
     public function update(Client $client, array $data): Client
     {
+        Gate::authorize('update', $client);
         $client->update([
             'date_of_birth' => $data['dateOfBirth'],
             'contact_number' => $data['contactNumber'],

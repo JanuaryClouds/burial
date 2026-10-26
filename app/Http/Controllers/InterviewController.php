@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreInterviewRequest;
 use App\Models\Client;
+use App\Models\Interview;
 use App\Models\SystemSetting;
 use App\Services\DataTableService;
 use App\Services\InterviewService;
@@ -56,9 +57,9 @@ class InterviewController extends Controller
     public function store(StoreInterviewRequest $request, Client $client)
     {
         try {
-            $this->authorize('interview', $client);
+            $this->authorize('create', [Interview::class, $client]);
 
-            $interview = $this->interviewServices->store($request->validated(), $client->uuid);
+            $interview = $this->interviewServices->store($request->validated(), $client->uuid, $request->input('expected_assignment_uuid'));
             if ($interview) {
                 $client = $interview->client;
                 if (! $client->contact_number) {
@@ -113,7 +114,7 @@ class InterviewController extends Controller
             $client = Client::find($id);
             $interview = $client->interviews->first();
 
-            $interview = $this->interviewServices->done($interview->id);
+            $interview = $this->interviewServices->done($interview->uuid);
             if ($interview) {
                 $ip = request()->ip();
                 $browser = request()->header('User-Agent');

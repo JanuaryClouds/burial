@@ -34,7 +34,7 @@ class Dashboard extends Component
 
     public function loadData()
     {
-        if (Auth::user()->roles()->count() > 0) {
+        if (Auth::user()->hasAnyRole(['staff', 'superadmin'])) {
             $this->applications = Application::index()->get();
 
             $this->applicationsPerStatus = app(ApplicationService::class)
@@ -92,6 +92,16 @@ class Dashboard extends Component
 
     public function render()
     {
-        return view('livewire.dashboard');
+        $isStaffDashboard = Auth::user()->hasAnyRole(['staff', 'superadmin']);
+
+        return view('livewire.dashboard', [
+            'isStaffDashboard' => $isStaffDashboard,
+            'recentApplications' => $isStaffDashboard
+                ? $this->applications->sortBy([
+                    ['created_at', 'desc'],
+                    ['uuid', 'desc'],
+                ])->take(20)
+                : collect(),
+        ]);
     }
 }

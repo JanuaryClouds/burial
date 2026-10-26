@@ -17,7 +17,13 @@ class Recommendation extends Model
 
     protected $table = 'recommendations';
 
+    public function claimantAssignment(): BelongsTo
+    {
+        return $this->belongsTo(ApplicationClaimantAssignment::class, 'claimant_assignment_uuid', 'uuid');
+    }
+
     protected $fillable = [
+        'claimant_assignment_uuid',
         'application_uuid',
         'workflow_uuid',
         'funeral_assistance_type_uuid',
@@ -98,6 +104,7 @@ class Recommendation extends Model
     {
         return [
             'application',
+            'claimantAssignment',
             'modeOfAssistance',
             'recommendedBy',
             'funeralAssistanceType',

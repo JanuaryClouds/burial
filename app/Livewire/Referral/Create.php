@@ -4,11 +4,10 @@ namespace App\Livewire\Referral;
 
 use App\Livewire\Forms\ReferralForm;
 use App\Models\Application;
-use App\Models\Referral;
 use App\Services\ActivityLoggerService;
+use App\Services\ApplicationProcessingService;
 use App\Traits\Livewire\HasPlaceholder;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 class Create extends Component
@@ -17,11 +16,15 @@ class Create extends Component
 
     public Application $application;
 
+    #[Locked]
+    public ?string $expectedAssignmentUuid = null;
+
     public ReferralForm $form;
 
     public function mount(Application $application)
     {
         $this->application = $application;
+        $this->expectedAssignmentUuid = $application->current_claimant_assignment_uuid;
     }
 
     public function save()
@@ -39,35 +42,10 @@ class Create extends Component
         }
 
         try {
-            DB::transaction(function () {
-                Referral::create([
-                    'application_uuid' => $this->application->uuid,
-                    'referred_to' => $this->form->referred_to,
-                    'reason' => $this->form->reason,
-                ]);
-
-                $this->application->loadMissing('activeRecommendation');
-
-                if ($this->application->currentRecommendation()) {
-                    $this->application->currentRecommendation()->update([
-                        'status' => 'referred',
-                    ]);
-                }
-
-                $this->dispatch('notification:alert', [
-                    'type' => 'success',
-                    'title' => 'Application referred successfully',
-                ]);
-
-                ActivityLoggerService::logSuccess('Successfully referred an application', [
-                    'application_uuid' => $this->application->uuid,
-                    'reason' => $this->form->reason,
-                    'referred_to' => $this->form->referred_to,
-                    'rejected_by' => Auth::id(),
-                ]);
-
-                $this->redirect(route('application.close', $this->application));
-            });
+            app(ApplicationProcessingService::class)->outcome(
+                $this->application->uuid, $this->expectedAssignmentUuid, 'refer', $this->form->all()
+            );
+            $this->redirect(route('application.show', $this->application));
         } catch (\Throwable $th) {
             $this->dispatch('notification:toast', [
                 'type' => 'error',

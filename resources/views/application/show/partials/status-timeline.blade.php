@@ -1,8 +1,11 @@
 <x-card>
 	<x-slot:header>Status</x-slot:header>
 	<div class="d-flex flex-column gap-4">
-		<livewire:application.status-timeline :application="$application"
-			defer />
+        @if ($inlineApplicationDetails ?? false)
+            @include('livewire.application.status-timeline')
+        @else
+            <livewire:application.status-timeline :application="$application" defer />
+        @endif
 		<div class="row">
 			@if ($application->rejection || $application->referral || $application->cancellation)
 				<div class="col-12 col-lg-6">

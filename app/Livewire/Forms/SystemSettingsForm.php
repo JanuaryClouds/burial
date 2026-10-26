@@ -11,6 +11,9 @@ class SystemSettingsForm extends Form
     #[Validate('sometimes|')]
     public ?bool $maintenanceMode;
 
+    #[Validate('required|integer|min:0|max:4294967295')]
+    public int $claimantChangeLimit = 1;
+
     #[Validate('required|string|max:255')]
     public ?string $socialWelfareOfficer;
 
@@ -22,6 +25,7 @@ class SystemSettingsForm extends Form
 
     public function setSettings(?SystemSetting $settings)
     {
+        $this->claimantChangeLimit = $settings?->claimant_change_limit ?? 1;
         $this->maintenanceMode = $settings->maintenance_mode;
         $this->socialWelfareOfficer = $settings->social_welfare_officer;
         $this->deptHead = $settings->dept_head;

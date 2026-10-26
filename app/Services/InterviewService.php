@@ -2,16 +2,21 @@
 
 namespace App\Services;
 
+use App\Models\Application;
+use App\Models\ApplicationClaimantAssignment;
+use App\Models\Client;
 use App\Models\Interview;
 use Carbon\Carbon;
-use Exception;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class InterviewService
 {
     public function index(?string $userId = null)
     {
-        return Interview::with(['client', 'client.user'])
+        return Interview::with(['client', 'client.user', 'claimantAssignment'])
             ->when($userId, function ($query) use ($userId) {
                 $query->whereHas('client.user', function ($q) use ($userId) {
                     $q->where('id', $userId);
@@ -21,10 +26,10 @@ class InterviewService
             ->get()
             ->map(function ($interview) {
                 return [
-                    'id' => $interview->id,
+                    'id' => $interview->uuid,
                     'client' => $interview->client->fullname(),
                     'schedule' => $interview->schedule ? Carbon::parse($interview->schedule)->format('F j, Y g:i A') : null,
-                    'status' => $interview->status,
+                    'status' => $interview->claimantAssignment?->ended_at ? 'archived ('.$interview->status.')' : $interview->status,
                     'remarks' => $interview->remarks,
                 ];
             });
@@ -33,35 +38,55 @@ class InterviewService
     /**
      * Summary of store
      */
-    public function store(array $data, string $clientUuid): Interview
+    public function store(array $data, string $clientUuid, ?string $expectedAssignmentUuid = null): Interview
     {
-        $data['client_uuid'] = $clientUuid;
+        Validator::make($data, ['schedule' => ['required', 'date', 'after_or_equal:now']])->validate();
 
-        $interview = Interview::create($data);
-
-        activity()
-            ->withProperties([
-                'client_uuid' => $clientUuid,
-                'interview_uuid' => $interview->uuid,
-                'schedule' => $interview->schedule,
-                'ip' => request()->ip(),
-                'browser' => request()->userAgent(),
-            ])
-            ->causedBy(Auth::user()->id)
-            ->log('Scheduled an interview with the client.');
-
-        return $interview;
-    }
-
-    public function done($id)
-    {
-        try {
-            $interview = Interview::findOrFail($id);
-            $interview->update(['status' => 'done']);
+        return DB::transaction(function () use ($data, $clientUuid, $expectedAssignmentUuid) {
+            $application = Application::where('client_uuid', $clientUuid)->lockForUpdate()->first();
+            $client = Client::whereKey($clientUuid)->lockForUpdate()->firstOrFail();
+            Gate::authorize('create', [Interview::class, $client]);
+            if ($application) {
+                $application->assertAssignment($expectedAssignmentUuid);
+                abort_unless($application->isActive(), 403);
+            } else {
+                abort_if($expectedAssignmentUuid || $client->isUsed(true), 403);
+            }
+            $query = Interview::where('client_uuid', $clientUuid)->where('claimant_assignment_uuid', $expectedAssignmentUuid);
+            if ($query->whereIn('status', ['scheduled', 'done'])->exists()) {
+                throw ValidationException::withMessages(['schedule' => 'An interview is already scheduled for this processing cycle.']);
+            }
+            $interview = Interview::create([
+                'client_uuid' => $clientUuid, 'claimant_assignment_uuid' => $expectedAssignmentUuid,
+                'schedule' => $data['schedule'], 'status' => 'scheduled',
+            ]);
+            ActivityLoggerService::logSuccess('Scheduled claimant interview', ['interview_uuid' => $interview->uuid, 'claimant_assignment_uuid' => $expectedAssignmentUuid]);
 
             return $interview;
-        } catch (Exception $e) {
-            throw new \RuntimeException($e->getMessage());
-        }
+        }, 3);
+    }
+
+    public function done(string $uuid): Interview
+    {
+        $hint = Interview::findOrFail($uuid);
+
+        return DB::transaction(function () use ($hint) {
+            $application = null;
+            $assignment = $hint->claimant_assignment_uuid
+                ? ApplicationClaimantAssignment::findOrFail($hint->claimant_assignment_uuid) : null;
+            if ($assignment) {
+                $application = app(ApplicationProcessingService::class)->lock($assignment->application_uuid, $assignment->uuid);
+                abort_unless($application->isActive(), 403);
+            }
+            $client = Client::whereKey($hint->client_uuid)->lockForUpdate()->firstOrFail();
+            abort_if(! $assignment && $client->isUsed(true), 403);
+            $interview = Interview::whereKey($hint->uuid)->lockForUpdate()->firstOrFail();
+            Gate::authorize('complete', [$interview, $application]);
+            abort_unless($interview->status === 'scheduled', 403);
+            $interview->update(['status' => 'done']);
+            ActivityLoggerService::logSuccess('Completed claimant interview', ['interview_uuid' => $interview->uuid]);
+
+            return $interview;
+        }, 3);
     }
 }

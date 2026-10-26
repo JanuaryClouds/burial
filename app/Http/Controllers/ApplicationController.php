@@ -43,7 +43,7 @@ class ApplicationController extends Controller
     public function create()
     {
         $draftedClients = Auth::user()->clients()->where(function ($query) {
-            $query->whereDoesntHave('application');
+            $query->unused();
         })->get();
 
         $draftedBeneficiaries = Auth::user()->beneficiaries()->where(function ($query) {
@@ -81,7 +81,7 @@ class ApplicationController extends Controller
                 ->where('created_by', Auth::user()->id)
                 ->firstOrFail();
 
-            $application = $this->services->store($client, $beneficiary);
+            $application = $this->services->store($client, $beneficiary, $validated['relationship_id'] ?? null);
 
             // Upload any submitted document images (skipped gracefully when the fileserver is disabled)
             $uploadError = false;
@@ -113,6 +113,14 @@ class ApplicationController extends Controller
             return redirect()->back()
                 ->with('error', 'Unable to submit application'.(config('app.debug') ? ': '.$e->getMessage() : ''));
         }
+    }
+
+    public function changeClaimant(Application $application)
+    {
+        return view('application.change-claimant', [
+            'application' => $application,
+            'pageTitle' => 'Change Claimant | '.$application->tracking_no,
+        ]);
     }
 
     public function close(Application $application)
@@ -191,7 +199,7 @@ class ApplicationController extends Controller
      */
     public function certificate(Application $application)
     {
-        if (! $application->recommendations()->exists()) {
+        if (! $application->current_recommendation_uuid) {
             abort(403);
         }
 

@@ -1,9 +1,12 @@
 <x-card>
 	<x-slot:header>Recommendation</x-slot:header>
 	@can('view', [\App\Models\Recommendation::class])
-		@if ($application->recommendations->count() > 0)
-			<livewire:recommendation.show :recommendation="$application->currentRecommendation()"
-				defer />
+		@if ($application->currentRecommendation() !== null)
+            @if ($inlineApplicationDetails ?? false)
+                @include('livewire.recommendation.show', ['recommendation' => $application->currentRecommendation()])
+            @else
+                <livewire:recommendation.show :recommendation="$application->currentRecommendation()" defer />
+            @endif
 			@can('create', [\App\Models\Recommendation::class, $application])
 				<x-slot:footer>
 					<a href="{{ route('application.certificate', $application) }}"
@@ -44,10 +47,10 @@
 					Set an interview first before making a recommendation.
 					@can('create', [\App\Models\Interview::class, $application->client])
 						<x-slot:options>
-							<a href="{{ route('client.show', $application->client) }}"
+							<a href="#interview"
 								class="btn btn-sm btn-primary">
 								<x-icon.font-awesome class="fa-up-right-from-square" />
-								Show Client
+								Go to Interview
 							</a>
 						</x-slot:options>
 					@endcan

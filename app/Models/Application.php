@@ -12,7 +12,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class Application extends Model
 {
@@ -37,6 +39,17 @@ class Application extends Model
             $application->tracking_no = sprintf('%s-%04d', $year, $count);
             $application->qr_code = 'FUNERAL-'.Str::upper(Str::random(8));
         });
+        static::created(function (Application $application) {
+            $assignment = ApplicationClaimantAssignment::create([
+                'application_uuid' => $application->uuid,
+                'client_uuid' => $application->client_uuid,
+                'relationship_id' => $application->relationship_id,
+                'sequence' => 1,
+                'started_at' => $application->created_at,
+                'identity_snapshot' => ApplicationClaimantAssignment::snapshot(Client::findOrFail($application->client_uuid)),
+            ]);
+            $application->forceFill(['current_claimant_assignment_uuid' => $assignment->uuid])->saveQuietly();
+        });
     }
 
     /*
@@ -47,6 +60,57 @@ class Application extends Model
     | Model relationships.
     |
     */
+
+    public function claimantAssignments(): HasMany
+    {
+        return $this->hasMany(ApplicationClaimantAssignment::class, 'application_uuid', 'uuid');
+    }
+
+    public function currentInterviews(): HasMany
+    {
+        return $this->hasMany(Interview::class, 'claimant_assignment_uuid', 'current_claimant_assignment_uuid');
+    }
+
+    public function assertAssignment(?string $expected): void
+    {
+        if (! $expected || $this->current_claimant_assignment_uuid !== $expected) {
+            throw ValidationException::withMessages(['application' => 'The claimant changed. Reload the application before continuing.']);
+        }
+    }
+
+    public function isFormerClaimant(?int $userId): bool
+    {
+        if (! $userId) {
+            return false;
+        }
+        $currentUserId = $this->relationLoaded('client') ? $this->getRelation('client')->user_id
+            : $this->client()->value('user_id');
+        if ($currentUserId === $userId) {
+            return false;
+        }
+        if ($this->relationLoaded('claimantAssignments') && $this->claimantAssignments->every(fn ($assignment) => $assignment->relationLoaded('client'))) {
+            return $this->claimantAssignments->contains(fn ($assignment) => $assignment->client->user_id === $userId);
+        }
+
+        return $this->claimantAssignments()->whereHas('client', fn ($q) => $q->where('user_id', $userId))->exists();
+    }
+
+    public function isActive(): bool
+    {
+        foreach (['rejection', 'cancellation', 'referral', 'closure'] as $relation) {
+            if ($this->relationLoaded($relation) ? $this->getRelation($relation) !== null : $this->{$relation}()->exists()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public function hasPaymentBlock(): bool
+    {
+        return DB::table('cheques')->where('application_uuid', $this->uuid)
+            ->where(fn ($q) => $q->whereIn('status', ['issued', 'claimed'])->orWhereNotNull('date_claimed'))->exists();
+    }
 
     /**
      * Get the client that owns the application.
@@ -73,7 +137,7 @@ class Application extends Model
      */
     public function assessment(): HasOne
     {
-        return $this->hasOne(Assessment::class);
+        return $this->hasOne(Assessment::class, 'claimant_assignment_uuid', 'current_claimant_assignment_uuid');
     }
 
     /** @return BelongsTo<Recommendation, $this> */
@@ -150,10 +214,7 @@ class Application extends Model
 
     protected static function clientRelations(): array
     {
-        return self::prefixRelations(
-            'client',
-            Client::relations()
-        );
+        return [...self::prefixRelations('client', Client::relations()), 'currentInterviews'];
     }
 
     protected static function beneficiaryRelations(): array
@@ -218,7 +279,7 @@ class Application extends Model
             'badgeColor' => 'primary',
         ];
 
-        $interviews = $this->client->interviews;
+        $interviews = $this->currentInterviews;
         if ($startDate && $endDate) {
             $interviews = $interviews->whereBetween('schedule', [$startDate, $endDate]);
         }
@@ -248,7 +309,7 @@ class Application extends Model
                 $query->whereBetween('created_at', [$startDate, $endDate]);
             }) : null;
 
-        if ($interviews->count() > 0) {
+        if ($interviews->where('status', 'done')->count() > 0) {
             $status[] = [
                 'label' => 'assessment',
                 'badgeColor' => 'secondary',
@@ -309,7 +370,9 @@ class Application extends Model
 
     public function currentStatus(): array
     {
-        return $this->status()[count($this->status()) - 1];
+        $status = $this->status();
+
+        return $status[count($status) - 1];
     }
 
     /**
@@ -317,7 +380,9 @@ class Application extends Model
      */
     public function finishedInterview(): bool
     {
-        return $this->client->interviews()->where('status', '=', 'done')->exists();
+        return $this->relationLoaded('currentInterviews')
+            ? $this->currentInterviews->contains('status', 'done')
+            : $this->currentInterviews()->where('status', 'done')->exists();
     }
 
     /**
@@ -418,6 +483,7 @@ class Application extends Model
         return $query->with([
             'client',
             'client.interviews',
+            'currentInterviews',
             'client.user',
             'beneficiary',
             'relationship',
@@ -431,8 +497,9 @@ class Application extends Model
             'workflowStage',
         ])
             ->when($userId, function ($query) use ($userId) {
-                $query->whereHas('client.user', function ($subQuery) use ($userId) {
-                    $subQuery->where('id', $userId);
+                $query->where(function ($q) use ($userId) {
+                    $q->whereHas('client', fn ($c) => $c->where('user_id', $userId))
+                        ->orWhereHas('claimantAssignments.client', fn ($c) => $c->where('user_id', $userId));
                 });
             })
             ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
@@ -443,8 +510,9 @@ class Application extends Model
     public function scopeTotal($query, ?string $startDate = null, ?string $endDate = null)
     {
         return $query->when(Auth::user()->roles()->count() == 0, function ($query) {
-            $query->whereHas('client', function ($query) {
-                $query->where('user_id', Auth::id());
+            $query->where(function ($q) {
+                $q->whereHas('client', fn ($c) => $c->where('user_id', Auth::id()))
+                    ->orWhereHas('claimantAssignments.client', fn ($c) => $c->where('user_id', Auth::id()));
             });
         })
             ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {

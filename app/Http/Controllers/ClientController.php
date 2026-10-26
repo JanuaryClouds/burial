@@ -40,6 +40,8 @@ class ClientController extends Controller
 
     public function show(Client $client)
     {
+        $client->loadMissing(['application', 'claimantAssignments.application', ...Client::relations()]);
+
         return view('client.show', [
             'pageTitle' => $client->fullname(),
             'client' => $client,
@@ -49,7 +51,7 @@ class ClientController extends Controller
     public function create()
     {
         $draftedClients = Auth::user()->clients()->where(function ($query) {
-            $query->whereDoesntHave('application');
+            $query->unused();
         })->get();
 
         $draftedBeneficiaries = Auth::user()->beneficiaries()->where(function ($query) {

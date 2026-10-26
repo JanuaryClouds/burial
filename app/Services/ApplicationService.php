@@ -12,7 +12,10 @@ use Barcode\Facades\Barcode;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class ApplicationService
@@ -96,13 +99,14 @@ class ApplicationService
      */
     public function print(Application $application)
     {
-        $application->loadMissing('activeRecommendation');
+        $application->loadMissing(['activeRecommendation', 'client', 'beneficiary.sex', 'beneficiary.address', 'assessment', 'relationship', 'referral']);
 
         $client = $application->client;
         $beneficiary = $application->beneficiary;
 
         $client = Client::with([
             'user',
+            'address',
             'demographic',
             'demographic.sex',
             'demographic.religion',
@@ -130,7 +134,7 @@ class ApplicationService
                     '5. Present Address' => $client->fullAddress(),
                 ],
                 [
-                    '6. Relationship to Beneficiary' => $client->application?->relationship?->name ?? 'N/A',
+                    '6. Relationship to Beneficiary' => $application->relationship?->name ?? 'N/A',
                     '7. Civil Status' => $client->socialInfo?->civil?->name ?? 'N/A',
                 ],
                 [
@@ -237,11 +241,22 @@ class ApplicationService
         return $pdf->stream($application->tracking_no.'-certificate.pdf');
     }
 
-    public function store(Client $client, Beneficiary $beneficiary)
+    public function store(Client $client, Beneficiary $beneficiary, ?int $relationshipId = null)
     {
-        return Application::create([
-            'client_uuid' => $client->uuid,
-            'beneficiary_uuid' => $beneficiary->uuid,
-        ]);
+        return DB::transaction(function () use ($client, $beneficiary, $relationshipId) {
+            $client = Client::whereKey($client->uuid)->lockForUpdate()->firstOrFail();
+            $beneficiary = Beneficiary::whereKey($beneficiary->uuid)->lockForUpdate()->firstOrFail();
+            Gate::authorize('create', Application::class);
+            abort_unless($client->user_id === auth()->id() && $beneficiary->created_by === auth()->id(), 403);
+            if ($client->isUsed(true) || $beneficiary->application()->exists()) {
+                throw ValidationException::withMessages(['clientUuid' => 'Select unused client and beneficiary drafts.']);
+            }
+
+            return Application::create([
+                'client_uuid' => $client->uuid,
+                'beneficiary_uuid' => $beneficiary->uuid,
+                'relationship_id' => $relationshipId,
+            ]);
+        }, 3);
     }
 }

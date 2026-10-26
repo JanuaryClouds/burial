@@ -13,6 +13,9 @@
         <div
             class="timeline-content ms-3 d-flex flex-column flex-sm-row justify-content-between align-items-start gap-2 w-100">
             <div class="text-uppercase fw-bold text-break">
+                @if ($recommendation->claimantAssignment)
+                    <span class="d-block text-muted small">Claimant cycle {{ $recommendation->claimantAssignment->sequence }}: {{ $recommendation->claimantAssignment->identity_snapshot['name'] ?? 'Client' }}{{ $recommendation->claimantAssignment->ended_at ? ' (replaced, read-only)' : '' }}</span>
+                @endif
                 Recommendation: {{ $recommendation->funeralAssistanceType?->name ?? 'N/A' }}
                 <span
                     class="d-block text-muted small">{{ $recommendation->workflow?->label() ?? 'Unassigned legacy workflow' }}</span>

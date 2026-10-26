@@ -50,17 +50,26 @@ class Create extends Component
     public function mount(Application $application): void
     {
         $this->application = $application;
-        $this->refresh();
+        if ($application->relationLoaded('activeRecommendation')) {
+            $this->initializeForm();
+        } else {
+            $this->refresh();
+        }
     }
 
     #[On('refreshWorkflowHistory')]
     #[On('refreshRecommendation')]
     public function refresh(): void
     {
+        $this->application = Application::findOrFail($this->application->uuid);
+        $this->initializeForm();
+    }
+
+    private function initializeForm(): void
+    {
         $this->reset('dateIn', 'dateOut', 'reason', 'toStageUuid', 'customValues', 'customFields');
         $this->resetValidation();
-        $this->application->refresh();
-        $this->application->loadMissing(['activeRecommendation.workflow', 'workflowStage']);
+        $this->application->loadMissing(['activeRecommendation.workflow', 'workflowStage', 'closure', 'rejection', 'cancellation', 'referral']);
         $this->recommendationUuid = $this->application->current_recommendation_uuid;
         $this->expectedStageUuid = $this->application->current_workflow_stage_uuid;
         $version = $this->application->currentWorkflow();
@@ -73,8 +82,7 @@ class Create extends Component
             ->filter(fn ($stage) => auth()->user()?->hasRole('superadmin') || ($stage->permission && auth()->user()?->can($stage->permission->name)))
             ->map(fn ($stage) => ['uuid' => $stage->uuid, 'name' => $stage->name]) : collect();
         $this->showForm = ! $this->paused && $this->stages->isNotEmpty() &&
-            ! $this->application->closure()->exists() && ! $this->application->rejection()->exists() &&
-            ! $this->application->cancellation()->exists() && ! $this->application->referral()->exists();
+            $this->application->isActive();
     }
 
     public function setDateInToNow(): void

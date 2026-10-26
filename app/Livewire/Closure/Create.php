@@ -5,19 +5,23 @@ namespace App\Livewire\Closure;
 use App\Livewire\Forms\ClosureForm;
 use App\Models\Application;
 use App\Services\ActivityLoggerService;
-use App\Services\ClosureService;
-use Illuminate\Support\Facades\DB;
+use App\Services\ApplicationProcessingService;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 class Create extends Component
 {
     public Application $application;
 
+    #[Locked]
+    public ?string $expectedAssignmentUuid = null;
+
     public ClosureForm $form;
 
     public function mount(Application $application)
     {
         $this->application = $application;
+        $this->expectedAssignmentUuid = $application->current_claimant_assignment_uuid;
 
         if ($application->closure) {
             $this->form->setClosure($application);
@@ -33,26 +37,15 @@ class Create extends Component
                 'type' => 'error',
                 'text' => app()->hasDebugModeEnabled() ? $th->getMessage() : config('constants.errors.validation'),
             ]);
+
+            return;
         }
 
         try {
-            DB::transaction(function () {
-                app(ClosureService::class)->store(
-                    $this->form->all(),
-                    $this->application
-                );
-
-                ActivityLoggerService::logSuccess('Successfully closed an application', [
-                    'application_uuid' => $this->application->uuid,
-                ]);
-
-                $this->dispatch('notification:alert', [
-                    'type' => 'success',
-                    'text' => 'Successfully closed this application',
-                ]);
-
-                $this->redirect(route('application.show', $this->application));
-            });
+            app(ApplicationProcessingService::class)->outcome(
+                $this->application->uuid, $this->expectedAssignmentUuid, 'close', $this->form->all()
+            );
+            $this->redirect(route('application.show', $this->application));
         } catch (\Throwable $th) {
             $this->dispatch('notification:alert', [
                 'type' => 'error',
