@@ -19,10 +19,10 @@
             </div>
             <div class="d-flex align-items-center gap-4 flex-shrink-0">
                 <button type="button"
-                    class="btn btn-sm btn-link p-0 d-inline-flex align-items-center gap-2 text-primary"
+                    class="btn btn-sm btn-link p-0 d-inline-flex align-items-center gap-1 text-primary"
                     data-bs-toggle="modal" data-bs-target="#showRemarksModal"
                     wire:click="showRemarks('{{ class_basename($recommendation) }}','{{ $recommendation->uuid }}')">
-                    <x-icon.font-awesome class="fa-comment-dots" />
+                    <x-icon.font-awesome class="fa-comment-dots p-0 m-0" />
                     Remarks
                     @if ($recommendation->remarks->isNotEmpty())
                         ({{ $recommendation->remarks->count() }})
@@ -32,9 +32,6 @@
         </div>
     </div>
     @foreach ($recommendation->workflowHistory as $history)
-        @php
-            $history->loadMissing(['toStage', 'remarks']);
-        @endphp
         @if ($history->toStage)
             <div class="timeline-item">
                 <div class="timeline-label">
@@ -53,18 +50,18 @@
                     <div class="d-flex align-items-center gap-4 flex-shrink-0">
                         @if ($history->toStage->custom_fields_count > 0 || $history->custom_values_count > 0)
                             <button type="button"
-                                class="btn btn-sm btn-link p-0 d-inline-flex align-items-center gap-2 text-primary"
+                                class="btn btn-sm btn-link p-0 d-inline-flex align-items-center gap-1 text-primary"
                                 data-bs-toggle="modal" data-bs-target="#showHistoryDetailsModal"
                                 wire:click="showHistoryDetails('{{ $history->uuid }}')">
-                                <x-icon.font-awesome class="fa-list-ul" />
+                                <x-icon.font-awesome class="fa-list-ul p-0 m-0" />
                                 Details
                             </button>
                         @endif
                         <button type="button"
-                            class="btn btn-sm btn-link p-0 d-inline-flex align-items-center gap-2 text-primary"
+                            class="btn btn-sm btn-link p-0 d-inline-flex align-items-center gap-1 text-primary"
                             data-bs-toggle="modal" data-bs-target="#showRemarksModal"
                             wire:click="showRemarks('{{ class_basename($history) }}','{{ $history->uuid }}')">
-                            <x-icon.font-awesome class="fa-comment-dots" />
+                            <x-icon.font-awesome class="fa-comment-dots p-0 m-0" />
                             Remarks
                             @if ($history->remarks->isNotEmpty())
                                 ({{ $history->remarks->count() }})
