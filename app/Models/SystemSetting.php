@@ -20,10 +20,13 @@ class SystemSetting extends Model
     protected $fillable = [
         'uuid',
         'maintenance_mode',
+        'claimant_change_limit',
         'social_welfare_officer',
         'dept_head',
         'department_email',
     ];
+
+    protected $casts = ['claimant_change_limit' => 'integer'];
 
     public static function exceptAttributes()
     {

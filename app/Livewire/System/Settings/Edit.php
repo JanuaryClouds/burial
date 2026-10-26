@@ -26,6 +26,7 @@ class Edit extends Component
 
     public function save()
     {
+        abort_unless(auth()->user()?->hasRole('superadmin'), 403);
         try {
             $this->form->validate();
         } catch (\Exception $e) {
@@ -33,15 +34,18 @@ class Edit extends Component
                 'type' => 'error',
                 'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation'),
             ]);
+
+            return;
         }
 
         try {
             DB::transaction(function () {
                 $this->settings->update([
                     'maintenance_mode' => $this->form->maintenanceMode,
+                    'claimant_change_limit' => $this->form->claimantChangeLimit,
                     'social_welfare_officer' => $this->form->socialWelfareOfficer,
                     'dept_head' => $this->form->deptHead,
-                    'dept_email' => $this->form->deptEmail,
+                    'department_email' => $this->form->deptEmail,
                 ]);
 
                 $this->dispatch('notification:alert', [

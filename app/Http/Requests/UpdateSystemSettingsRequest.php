@@ -30,7 +30,7 @@ class UpdateSystemSettingsRequest extends FormRequest
             }
 
             if ($setting['type'] === 'integer') {
-                $rules[$key] = 'integer';
+                $rules[$key] = 'required|integer|min:0|max:4294967295';
             }
 
             if ($setting['type'] === 'string') {
