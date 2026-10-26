@@ -35,7 +35,7 @@ class BeneficiaryPolicy
             return true;
         }
 
-        return false;
+        return $beneficiary->application()->whereHas('claimantAssignments.client', fn ($q) => $q->where('user_id', $user->id))->exists();
     }
 
     /**
@@ -67,6 +67,10 @@ class BeneficiaryPolicy
      */
     public function delete(User $user, Beneficiary $beneficiary): bool
     {
+        if ($beneficiary->application()->exists()) {
+            return false;
+        }
+
         if ($user->id === $beneficiary->created_by) {
             return true;
         }

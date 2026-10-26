@@ -8,24 +8,14 @@ use Spatie\Permission\Models\Permission;
 
 class AssessmentPolicy
 {
-    public array $permissions = [];
-
-    public function __construct()
-    {
-        $permissions = Permission::where('name', 'like', '% Assessment')->get();
-        foreach ($permissions as $permission) {
-            $this->permissions[] = $permission->name;
-        }
-    }
-
     public function viewAny(User $user): bool
     {
-        return $user->hasAnyDirectPermission($this->permissions);
+        return $user->hasAnyDirectPermission(Permission::where('name', 'like', '% Assessment')->pluck('name')->all());
     }
 
     public function view(User $user): bool
     {
-        if ($user->roles()->count() > 0) {
+        if ($user->loadMissing('roles')->roles->isNotEmpty()) {
             return true;
         }
 
@@ -34,6 +24,10 @@ class AssessmentPolicy
 
     public function create(User $user, Application $application): bool
     {
+        if ($application->isFormerClaimant($user->id) || ! $application->isActive() || ! $application->finishedInterview()) {
+            return false;
+        }
+
         if ($user->id === $application->client->user_id) {
             return false;
         }
