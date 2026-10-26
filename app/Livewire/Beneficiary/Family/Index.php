@@ -40,6 +40,7 @@ class Index extends Component
 
     public function save()
     {
+        $this->authorize('create', [BeneficiaryFamily::class, $this->beneficiary]);
         try {
             $this->form->validate();
         } catch (ValidationException $e) {

@@ -179,6 +179,9 @@ class Edit extends Component
 
         try {
             DB::transaction(function () {
+                $this->client = Client::whereKey($this->client->uuid)->lockForUpdate()->firstOrFail();
+                $this->authorize('update', $this->client);
+                $this->client->load(['address', 'demographic', 'socialInfo']);
                 app(ClientService::class)->update(
                     $this->client,
                     $this->form->all()

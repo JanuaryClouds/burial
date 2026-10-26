@@ -2,9 +2,13 @@
 
 namespace App\Services;
 
+use App\Models\Application;
+use App\Models\Recommendation;
 use App\Models\Remark;
+use App\Models\WorkflowHistory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class RemarkService
 {
@@ -23,12 +27,37 @@ class RemarkService
      */
     public function store(array $data, Model $model): Remark
     {
-        return Remark::create([
-            'remarkable_id' => $model->uuid ?? $model->id,
-            'remarkable_type' => get_class($model),
-            'content' => $data['content'],
-            'user_id' => Auth::id(),
-        ]);
+        abort_unless(auth()->user()?->hasAnyRole(['staff', 'superadmin']), 403);
+        $run = $model instanceof Recommendation ? $model
+            : ($model instanceof WorkflowHistory ? $model->recommendation()->firstOrFail() : null);
+        abort_unless($run, 403);
+
+        return DB::transaction(function () use ($data, $model, $run) {
+            $application = app(ApplicationProcessingService::class)->lock($run->application_uuid, $run->claimant_assignment_uuid);
+            abort_unless($application->isActive(), 403);
+
+            return Remark::create([
+                'remarkable_id' => $model->uuid,
+                'remarkable_type' => get_class($model),
+                'content' => $data['content'],
+                'user_id' => Auth::id(),
+            ]);
+        }, 3);
+    }
+
+    public function canWrite(?Model $model): bool
+    {
+        if (! auth()->user()?->hasAnyRole(['staff', 'superadmin'])) {
+            return false;
+        }
+        $run = $model instanceof Recommendation ? $model
+            : ($model instanceof WorkflowHistory ? $model->recommendation()->first() : null);
+        if (! $run) {
+            return false;
+        }
+        $application = Application::find($run->application_uuid);
+
+        return $application && $application->current_claimant_assignment_uuid === $run->claimant_assignment_uuid && $application->isActive();
     }
 
     public function edit()
