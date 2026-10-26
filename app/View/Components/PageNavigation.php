@@ -76,6 +76,12 @@ class PageNavigation extends Component
                 $this->current($name === 'application.assessment.create' ? 'Create Assessment' : 'Create Recommendation')];
         }
 
+        if ($name === 'application.change-claimant') {
+            return [$this->link('Applications', 'application.index'),
+                $this->link('Application details', 'application.show', $route->parameter('application')),
+                $this->current('Change Claimant')];
+        }
+
         if ($name === 'application.search') {
             return [$this->link('Applications', 'application.index'), $this->current('Search Applications')];
         }
