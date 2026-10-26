@@ -1,12 +1,4 @@
 <div>
-	@role('staff')
-		@if ($application->currentWorkflow())
-			<div class="alert {{ $application->currentWorkflow()->is_active ? 'alert-info' : 'alert-warning' }}">
-				Workflow: {{ $application->currentWorkflow()->label() }}
-				@unless ($application->currentWorkflow()->is_active) — Stage processing paused @endunless
-			</div>
-		@endif
-	@endrole
 	<div class="row mb-4">
 		<div class="col-12 col-lg-6">
 			<div class="d-flex flex-column gap-2">
