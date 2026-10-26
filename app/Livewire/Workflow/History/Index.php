@@ -6,6 +6,7 @@ use App\Models\Application;
 use App\Models\WorkflowHistory;
 use App\Traits\Livewire\HasPlaceholder;
 use Illuminate\Database\Eloquent\Collection;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -15,27 +16,26 @@ class Index extends Component
 
     public Application $application;
 
-    public Collection $recommendations;
-
     public ?WorkflowHistory $selectedHistory = null;
 
     public function mount(Application $application)
     {
         $this->application = $application;
-        $this->loadTimeline($application);
     }
 
     #[On('refreshWorkflowHistory')]
     public function refresh()
     {
-        $this->loadTimeline($this->application);
+        unset($this->recommendations);
     }
 
-    public function loadTimeline(Application $application)
+    #[Computed]
+    public function recommendations(): Collection
     {
-        $application->loadMissing('client');
-        $this->authorize('view', $application);
-        $this->recommendations = $application
+        $this->application->loadMissing(['client', 'referral', 'cancellation', 'rejection']);
+        $this->authorize('view', $this->application);
+
+        return $this->application
             ->recommendations()
             ->oldest()
             ->with([
@@ -72,6 +72,6 @@ class Index extends Component
 
     public function render()
     {
-        return view('livewire.workflow.history.index');
+        return view('livewire.workflow.history.index', ['recommendations' => $this->recommendations]);
     }
 }

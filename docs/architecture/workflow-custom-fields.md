@@ -6,6 +6,10 @@ names are generated when the label is first entered, remain stable on label
 changes, and may be edited explicitly. Names must start with a lowercase letter
 and contain only lowercase letters, digits, and underscores (maximum 64 characters).
 Names are unique per stage. Field order follows the draft list.
+Fields can also have optional plain-text help text (up to 1,000 characters),
+shown below the processing input through its `helpText` prop. Omitted, false,
+empty, or whitespace-only help text is stored as `null` and stays hidden.
+Help text is part of the versioned definition; changing it publishes a new version.
 
 ## Publication and processing
 
@@ -15,7 +19,7 @@ create a version; saving an unchanged definition does not. Historical definition
 are read-only. Recommendations continue using their assigned workflow version.
 
 `WorkflowVersionService::publish()` accepts `stages[*].custom_fields`, containing
-`name`, `label`, `input_type`, and `required`. Array order determines `order_no`.
+`name`, `label`, optional `help_text`, `input_type`, and `required`. Array order determines `order_no`.
 An omitted field list means an empty list for that stage; callers publishing a
 complete snapshot must include every field they intend to retain.
 
@@ -53,6 +57,12 @@ runs retain their original fields. Demonstration history seeders/factories provi
 sample values for required definitions; these are not production finance data.
 
 ## Deployment
+
+`2026_10_26_100000_add_help_text_to_custom_fields.php` adds nullable `help_text`
+without changing existing definitions. It runs as part of fresh migrations and
+can also be applied as a normal forward migration on an existing installation.
+Clear/rebuild compiled views when deploying the updated input component
+(`php artisan view:clear`) so its new help-text constructor prop is recognized.
 
 The forward migration is
 `database/migrations/custom_fields/2026_10_25_100000_prepare_versioned_stage_custom_fields.php`.
