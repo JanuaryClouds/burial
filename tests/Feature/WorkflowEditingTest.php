@@ -57,6 +57,7 @@ class WorkflowEditingTest extends TestCase
         app(PermissionRegistrar::class)->forgetCachedPermissions();
         $this->createLegacySchema();
         $this->migration()->up();
+        (require database_path('migrations/data/2026_10_26_120000_add_application_claimant_assignments.php'))->up();
         foreach (glob(database_path('migrations/custom_fields/*.php')) as $path) {
             (require $path)->up();
         }
@@ -125,6 +126,27 @@ class WorkflowEditingTest extends TestCase
             $table->timestamps();
             $table->softDeletes();
         });
+        Schema::create('relationships', fn (Blueprint $table) => $table->id());
+        Schema::create('system_settings', function (Blueprint $table) {
+            $table->uuid('uuid')->primary();
+        });
+        Schema::create('cheques', function (Blueprint $table) {
+            $table->uuid('uuid')->primary();
+            $table->uuid('application_uuid');
+            $table->string('status');
+            $table->date('date_claimed')->nullable();
+        });
+        foreach (['client_demographics', 'client_social_infos'] as $name) {
+            Schema::create($name, function (Blueprint $table) {
+                $table->uuid('uuid')->primary();
+                $table->uuid('client_uuid');
+            });
+        }
+        Schema::create('addresses', function (Blueprint $table) {
+            $table->uuid('uuid')->primary();
+            $table->uuid('addressable_id');
+            $table->string('addressable_type');
+        });
         Schema::create('clients', function (Blueprint $table) {
             $table->uuid('uuid')->primary();
             $table->unsignedBigInteger('user_id');
@@ -140,6 +162,7 @@ class WorkflowEditingTest extends TestCase
             $table->string('qr_code');
             $table->uuid('client_uuid');
             $table->uuid('beneficiary_uuid')->nullable();
+            $table->unsignedBigInteger('relationship_id')->nullable();
             $table->foreignUuid('current_workflow_stage_uuid')->nullable()->constrained('workflow_stages', 'uuid')->nullOnDelete();
             $table->timestamps();
         });
@@ -227,7 +250,8 @@ class WorkflowEditingTest extends TestCase
         $beneficiaryUuid = (string) Str::uuid();
         DB::table('beneficiaries')->insert(['uuid' => $beneficiaryUuid]);
         $application = Application::create(['client_uuid' => $clientUuid, 'beneficiary_uuid' => $beneficiaryUuid]);
-        DB::table('assessments')->insert(['uuid' => (string) Str::uuid(), 'application_uuid' => $application->uuid]);
+        DB::table('assessments')->insert(['uuid' => (string) Str::uuid(), 'application_uuid' => $application->uuid, 'claimant_assignment_uuid' => $application->current_claimant_assignment_uuid]);
+        DB::table('interviews')->insert(['uuid' => (string) Str::uuid(), 'client_uuid' => $clientUuid, 'status' => 'done', 'claimant_assignment_uuid' => $application->current_claimant_assignment_uuid]);
 
         return $application;
     }
@@ -245,6 +269,7 @@ class WorkflowEditingTest extends TestCase
             'workflow_uuid' => $version->uuid, 'funeral_assistance_type_uuid' => $type->uuid,
             'amount_extended' => 1000, 'mode_of_assistance_id' => 1,
             'expected_recommendation_uuid' => $application->fresh()->current_recommendation_uuid,
+            'expected_assignment_uuid' => $application->fresh()->current_claimant_assignment_uuid,
         ], $application->uuid);
     }
 
