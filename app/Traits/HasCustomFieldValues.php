@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 trait HasCustomFieldValues
 {
     /**
-     * Summary of customValues
+     * @return MorphMany<CustomFieldValue, $this>
      */
     public function customValues(): MorphMany
     {

@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Models\Recommendation;
 use App\Models\User;
 use App\Models\WorkflowHistory;
+use App\Models\WorkflowStage;
 use App\Services\WorkflowHistoryService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -27,11 +28,13 @@ class WorkflowHistoryFactory extends Factory
                 auth()->setUser($model->processed_by ? User::findOrFail($model->processed_by) :
                     (auth()->user() ?? User::role('superadmin')->firstOrFail()));
                 $run = Recommendation::with(['application.activeRecommendation.workflow', 'application.workflowStage'])->findOrFail($model->recommendation_uuid);
+                $target = WorkflowStage::with('customFields')->findOrFail($model->to_stage_uuid ?? $run->application->toStage()?->uuid);
 
                 return app(WorkflowHistoryService::class)->store([
                     'recommendation_uuid' => $run->uuid,
                     'expected_stage_uuid' => $run->application->current_workflow_stage_uuid,
-                    'to_stage_uuid' => $model->to_stage_uuid ?? $run->application->toStage()?->uuid,
+                    'to_stage_uuid' => $target->uuid,
+                    'custom_values' => self::sampleValues($target),
                     'date_in' => $model->date_in, 'date_out' => $model->date_out, 'reason' => $model->reason,
                 ]);
             };
@@ -42,5 +45,19 @@ class WorkflowHistoryFactory extends Factory
         } finally {
             $previous ? auth()->setUser($previous) : auth()->forgetUser();
         }
+    }
+
+    /** Demonstration values only; never used by the application processing form. */
+    public static function sampleValues(WorkflowStage $stage): array
+    {
+        $stage->loadMissing('customFields');
+
+        return $stage->customFields->where('required', true)->mapWithKeys(fn ($field) => [
+            $field->uuid => match ($field->input_type) {
+                'date' => now()->format('Y-m-d'),
+                'number' => '1000.00',
+                default => 'DEMO-'.fake()->numerify('########'),
+            },
+        ])->all();
     }
 }

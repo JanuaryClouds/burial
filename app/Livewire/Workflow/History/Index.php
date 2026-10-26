@@ -6,6 +6,7 @@ use App\Models\Application;
 use App\Models\WorkflowHistory;
 use App\Traits\Livewire\HasPlaceholder;
 use Illuminate\Database\Eloquent\Collection;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -15,32 +16,34 @@ class Index extends Component
 
     public Application $application;
 
-    public Collection $recommendations;
-
-    public WorkflowHistory $selectedHistory;
+    public ?WorkflowHistory $selectedHistory = null;
 
     public function mount(Application $application)
     {
         $this->application = $application;
-        $this->loadTimeline($application);
     }
 
     #[On('refreshWorkflowHistory')]
     public function refresh()
     {
-        $this->loadTimeline($this->application);
+        unset($this->recommendations);
     }
 
-    public function loadTimeline(Application $application)
+    #[Computed]
+    public function recommendations(): Collection
     {
-        $this->recommendations = $application
+        $this->application->loadMissing(['client', 'referral', 'cancellation', 'rejection']);
+        $this->authorize('view', $this->application);
+
+        return $this->application
             ->recommendations()
             ->oldest()
             ->with([
                 'funeralAssistanceType',
                 'workflow',
                 'remarks',
-                'workflowHistory.toStage',
+                'workflowHistory' => fn ($query) => $query->orderBy('date_in')->withCount('customValues'),
+                'workflowHistory.toStage' => fn ($query) => $query->withCount('customFields'),
                 'workflowHistory.fromStage',
                 'workflowHistory.remarks.user',
             ])
@@ -54,20 +57,21 @@ class Index extends Component
         $this->dispatch('load-remarks', modelClass: (string) 'App\\Models\\'.$modelClass, id: $uuid);
     }
 
-    // public function showHistoryDetails(string $uuid)
-    // {
-    //     $historyUuid = WorkflowHistory::firstWhere('uuid', $uuid)?->uuid;
+    public function showHistoryDetails(string $uuid): void
+    {
+        $this->application->loadMissing('client');
+        $this->authorize('view', $this->application);
+        $history = WorkflowHistory::whereHas('recommendation', fn ($query) => $query->where('application_uuid', $this->application->uuid))->whereKey($uuid)->firstOrFail();
+        $this->dispatch('load-details', historyUuid: $history->uuid);
+    }
 
-    //     $this->dispatch('load-details', historyUuid: $historyUuid);
-    // }
-
-    // public function clearSelectedHistory()
-    // {
-    //     $this->dispatch('load-details', historyUuid: null);
-    // }
+    public function clearSelectedHistory(): void
+    {
+        $this->dispatch('load-details', historyUuid: null);
+    }
 
     public function render()
     {
-        return view('livewire.workflow.history.index');
+        return view('livewire.workflow.history.index', ['recommendations' => $this->recommendations]);
     }
 }

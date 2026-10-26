@@ -23,7 +23,7 @@
 			</div>
 			<div class="modal-body">
 				{{-- start::Workflow History Details --}}
-				<livewire:workflow.history.show :selectedHistory="$selectedHistory" />
+				<livewire:workflow.history.show :application="$application" />
 				{{-- end::Workflow History Details --}}
 			</div>
 			<div class="modal-footer">

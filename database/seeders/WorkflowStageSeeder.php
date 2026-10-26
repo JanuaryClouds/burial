@@ -68,6 +68,9 @@ class WorkflowStageSeeder extends Seeder
                 'name' => 'Budget',
                 'description' => 'Allocation of funds.',
                 'permission' => 'Workflow Budget',
+                'custom_fields' => [
+                    ['name' => 'obr_number', 'label' => 'OBR Number', 'input_type' => 'text', 'required' => true],
+                ],
             ],
             [
                 'name' => 'Accounting',
@@ -83,6 +86,10 @@ class WorkflowStageSeeder extends Seeder
                 'name' => 'Releasing',
                 'description' => 'Assistance is ready to be picked up by the client or claimant.',
                 'permission' => 'Workflow Releasing',
+                'custom_fields' => [
+                    ['name' => 'check_number', 'label' => 'Check Number', 'input_type' => 'text', 'required' => true],
+                    ['name' => 'check_available_date', 'label' => 'Date Availability of Check', 'input_type' => 'date', 'required' => true],
+                ],
             ],
         ];
     }

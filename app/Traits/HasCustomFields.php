@@ -8,10 +8,10 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 trait HasCustomFields
 {
     /**
-     * Summary of customFields
+     * @return MorphMany<CustomField, $this>
      */
     public function customFields(): MorphMany
     {
-        return $this->morphMany(CustomField::class, 'fieldable');
+        return $this->morphMany(CustomField::class, 'fieldable')->orderBy('order_no');
     }
 }

@@ -7,6 +7,7 @@ use App\Livewire\Workflow\Create;
 use App\Livewire\Workflow\Edit;
 use App\Livewire\Workflow\Index;
 use App\Models\Application;
+use App\Models\CustomField;
 use App\Models\FuneralAssistanceType;
 use App\Models\Recommendation;
 use App\Models\User;
@@ -32,10 +33,13 @@ use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Process\Process;
+use Tests\Support\WorkflowCustomFieldsCases;
 use Tests\TestCase;
 
 class WorkflowEditingTest extends TestCase
 {
+    use WorkflowCustomFieldsCases;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -53,6 +57,9 @@ class WorkflowEditingTest extends TestCase
         app(PermissionRegistrar::class)->forgetCachedPermissions();
         $this->createLegacySchema();
         $this->migration()->up();
+        foreach (glob(database_path('migrations/custom_fields/*.php')) as $path) {
+            (require $path)->up();
+        }
         $user = User::create(['email' => 'editor@example.test']);
         $user->assignRole(Role::findOrCreate('superadmin', 'web'));
         $this->actingAs($user);
@@ -742,10 +749,13 @@ class WorkflowEditingTest extends TestCase
             config(['database.connections.workflow_editor_testing.database' => $database]);
             $this->createLegacySchema();
             $this->migration()->up();
+            foreach (glob(database_path('migrations/custom_fields/*.php')) as $path) {
+                (require $path)->up();
+            }
             $actor = User::create(['email' => 'concurrency@example.test']);
             $actor->assignRole(Role::findOrCreate('superadmin', 'web'));
             $this->actingAs($actor);
-            $base = $this->publish();
+            $base = app(WorkflowVersionService::class)->publish($this->customDefinition());
             foreach ([$readyA, $readyB] as $ready) {
                 $process = new Process([
                     PHP_BINARY, base_path('tests/Support/publish-workflow-version.php'),
@@ -777,6 +787,7 @@ class WorkflowEditingTest extends TestCase
             sort($outcomes);
             $this->assertSame(['published', 'stale'], $outcomes);
             $this->assertSame([1, 2], Workflow::orderBy('version_number')->pluck('version_number')->all());
+            $this->assertSame(8, CustomField::count());
         } finally {
             foreach ($processes as $process) {
                 if ($process->isRunning()) {

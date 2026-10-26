@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Application;
 use App\Models\User;
 use App\Services\WorkflowHistoryService;
+use Database\Factories\WorkflowHistoryFactory;
 use Illuminate\Database\Seeder;
 
 class WorkflowHistorySeeder extends Seeder
@@ -26,6 +27,7 @@ class WorkflowHistorySeeder extends Seeder
                         'recommendation_uuid' => $run->uuid,
                         'expected_stage_uuid' => $application->current_workflow_stage_uuid,
                         'to_stage_uuid' => $target->uuid, 'date_in' => now(), 'date_out' => now()->addMinutes(5),
+                        'custom_values' => WorkflowHistoryFactory::sampleValues($target),
                     ]);
                     $application->refresh();
                     if (random_int(0, 2) === 0) {

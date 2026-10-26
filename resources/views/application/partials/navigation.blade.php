@@ -2,7 +2,7 @@
 	<x-slot:header>
 		Table of Contents
 	</x-slot:header>
-	<div class="list-group">
+	<div class="list-group application-navigation">
 		<a href="#application-summary"
 			class="list-group-item list-group-item-action">Application Summary</a>
 		<a href="#status"

@@ -21,7 +21,15 @@
 	<div class="row">
 		{{-- start::Workflow History Extra Fields --}}
 		<div class="col-12 col-lg-6">
-
+            @if ($selectedHistory)
+                <dl>
+                    @foreach ($selectedHistory->toStage?->customFields ?? [] as $field)
+                        @php($recorded = $selectedHistory->customValues->firstWhere('custom_field_uuid', $field->uuid))
+                        <dt>{{ $field->label }}</dt>
+                        <dd>{{ $recorded ? $recorded->displayValue() : 'Not recorded' }}</dd>
+                    @endforeach
+                </dl>
+            @endif
 		</div>
 		{{-- end::Workflow History Extra Fields --}}
 	</div>

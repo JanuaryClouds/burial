@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\HasCustomFieldValues;
 use App\Traits\HasRemarks;
 use App\Traits\HasUuid;
 use Database\Factories\WorkflowHistoryFactory;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class WorkflowHistory extends Model
 {
     /** @use HasFactory<WorkflowHistoryFactory> */
-    use HasFactory, HasRemarks, HasUuid;
+    use HasCustomFieldValues, HasFactory, HasRemarks, HasUuid;
 
     protected $table = 'workflow_histories';
 
