@@ -3,6 +3,8 @@
 namespace App\Livewire\Remark;
 
 use App\Livewire\Forms\RemarkForm;
+use App\Models\Recommendation;
+use App\Models\WorkflowHistory;
 use App\Services\RemarkService;
 use Illuminate\Database\Eloquent\Model;
 use Livewire\Attributes\On;
@@ -19,6 +21,13 @@ class Create extends Component
     public RemarkForm $form;
 
     public bool $enableSubmission = true;
+
+    public function mount(?Model $model = null): void
+    {
+        $this->model = $model;
+        $this->modelClass = $model ? get_class($model) : null;
+        $this->id = $model?->getKey();
+    }
 
     #[On(('load-remarks'))]
     public function loadModel(?string $modelClass = null, ?string $id = null)
@@ -42,9 +51,12 @@ class Create extends Component
                 'type' => 'error',
                 'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation'),
             ]);
+
+            return;
         }
 
         try {
+            abort_unless(in_array($this->modelClass, [Recommendation::class, WorkflowHistory::class], true), 403);
             $this->model = $this->modelClass::findOrFail($this->id);
 
             app(RemarkService::class)->store(

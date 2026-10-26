@@ -40,7 +40,11 @@
 						Remarks are not visible to clients. This is for internal use only. Keep all remarks confidential and professional.
 					</p>
 				</x-callout>
-				<livewire:remark.create :model="$model" />
+				@if (app(\App\Services\RemarkService::class)->canWrite($model))
+                    <livewire:remark.create :model="$model" :key="'remark-'.$model->uuid" />
+                @else
+                    <p class="text-muted">This processing cycle is read-only.</p>
+                @endif
 			</div>
 		</div>
 	</div>
