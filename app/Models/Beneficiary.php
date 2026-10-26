@@ -201,6 +201,7 @@ class Beneficiary extends Model
             'application.client',
             'application.client.user',
             'application.client.interviews',
+            'application.currentInterviews',
             'application.assessment',
             'application.recommendations',
             'application.recommendations.funeralAssistanceType',
