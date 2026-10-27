@@ -118,6 +118,8 @@ class ClientService
      */
     public function store(array $data): Client
     {
+        Gate::authorize('create', Client::class);
+
         return Client::create([
             'user_id' => Auth::id(),
             'date_of_birth' => $data['dateOfBirth'],

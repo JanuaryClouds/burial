@@ -10,6 +10,7 @@ use App\Services\AddressService;
 use App\Services\BeneficiaryService;
 use App\Services\PsaClassificationService;
 use App\Traits\Livewire\Address\HasOptions;
+use App\Traits\Livewire\GuardsCitizenCreation;
 use App\Traits\Livewire\HasPlaceholder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -17,6 +18,7 @@ use Livewire\Component;
 
 class Create extends Component
 {
+    use GuardsCitizenCreation;
     use HasOptions, HasPlaceholder;
 
     public BeneficiaryForm $form;

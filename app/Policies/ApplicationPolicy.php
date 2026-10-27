@@ -42,15 +42,7 @@ class ApplicationPolicy
      */
     public function create(User $user): bool
     {
-        if ($user->hasRole('superadmin')) {
-            return true;
-        }
-
-        if ($user->loadMissing('roles')->roles->isEmpty()) {
-            return true;
-        }
-
-        return false;
+        return ! $user->isInternal();
     }
 
     /**

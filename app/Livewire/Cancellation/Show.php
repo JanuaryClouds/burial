@@ -4,11 +4,13 @@ namespace App\Livewire\Cancellation;
 
 use App\Models\Application;
 use App\Models\Cancellation;
+use App\Traits\Livewire\GuardsApplicationView;
 use App\Traits\Livewire\HasPlaceholder;
 use Livewire\Component;
 
 class Show extends Component
 {
+    use GuardsApplicationView;
     use HasPlaceholder;
 
     public Application $application;
