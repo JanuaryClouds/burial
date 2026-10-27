@@ -32,7 +32,7 @@ class Edit extends Component
         $this->authorize('update', $user);
         $this->user = $user;
         $this->form->setUser($user);
-        $this->roleOptions = Role::pluck('name')
+        $this->roleOptions = Role::where('guard_name', 'web')->pluck('name')
             ->filter(fn ($role) => ! in_array($role, ['staff', 'superadmin']))
             ->sort()
             ->mapWithKeys(fn ($role) => [$role => $role])

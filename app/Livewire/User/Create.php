@@ -7,6 +7,7 @@ use App\Services\ActivityLoggerService;
 use App\Services\Auth\UserService;
 use App\Traits\Livewire\HasPlaceholder;
 use Livewire\Component;
+use Spatie\Permission\Models\Role;
 
 class Create extends Component
 {
@@ -18,6 +19,11 @@ class Create extends Component
     }
 
     public CreateUserForm $form;
+
+    public function getRoleOptionsProperty(): array
+    {
+        return Role::where('guard_name', 'web')->whereNotIn('name', ['staff', 'superadmin'])->orderBy('name')->pluck('name')->all();
+    }
 
     public function clearForm()
     {
@@ -33,6 +39,8 @@ class Create extends Component
                 'type' => 'error',
                 'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation'),
             ]);
+
+            return;
         }
 
         try {
