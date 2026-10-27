@@ -11,7 +11,7 @@ class UserPolicy
      */
     public function viewAny(User $user): bool
     {
-        if ($user->hasRole('superadmin')) {
+        if ($user->isSystemAdministrator()) {
             return true;
         }
 
@@ -27,7 +27,7 @@ class UserPolicy
             return true;
         }
 
-        if ($user->hasRole('superadmin')) {
+        if ($user->isSystemAdministrator()) {
             return true;
         }
 
@@ -47,7 +47,7 @@ class UserPolicy
      */
     public function update(User $user, User $model): bool
     {
-        if ($user->hasRole('superadmin')) {
+        if ($user->isSystemAdministrator()) {
             return true;
         }
 

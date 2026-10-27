@@ -7,107 +7,38 @@ use Spatie\Permission\Models\Role;
 
 class RolePolicy
 {
-    /**
-     * Determine whether the user can view any models.
-     */
     public function viewAny(User $user): bool
     {
-        if ($user->cannot('view-roles')) {
-            return false;
-        }
-
-        return true;
+        return $user->isSystemAdministrator();
     }
 
-    /**
-     * Determine whether the user can view the model.
-     */
-    public function view(User $user, Role $role): bool
-    {
-        if ($user->cannot('view-roles')) {
-            return false;
-        }
-
-        if ($role->id == 1) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Determine whether the user can create models.
-     */
     public function create(User $user): bool
     {
-        if ($user->cannot('create-roles')) {
-            return false;
-        }
-
-        return true;
+        return $user->isSystemAdministrator();
     }
 
-    /**
-     * Determine whether the user can update the model.
-     */
+    public function view(User $user, Role $role): bool
+    {
+        return $this->update($user, $role);
+    }
+
     public function update(User $user, Role $role): bool
     {
-        if ($user->cannot('edit-roles')) {
-            return false;
-        }
-
-        if ($role->id == 1) {
-            return false;
-        }
-
-        return true;
+        return $user->isSystemAdministrator() && ! in_array(strtolower($role->name), ['staff', 'cswdo', 'superadmin'], true);
     }
 
-    /**
-     * Determine whether the user can delete the model.
-     */
     public function delete(User $user, Role $role): bool
     {
-        if ($user->cannot('create-roles')) {
-            return false;
-        }
-
-        if ($role->id == 1) {
-            return false;
-        }
-
-        return true;
+        return $this->update($user, $role);
     }
 
-    /**
-     * Determine whether the user can restore the model.
-     */
     public function restore(User $user, Role $role): bool
     {
-        if ($user->cannot('create-roles')) {
-            return false;
-        }
-
-        if ($role->id == 1) {
-            return false;
-        }
-
-        return true;
+        return $this->update($user, $role);
     }
 
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
     public function forceDelete(User $user, Role $role): bool
     {
-        if ($user->cannot('create-roles')) {
-            return false;
-        }
-
-        if ($role->id == 1) {
-            return false;
-        }
-
-        return true;
+        return $this->update($user, $role);
     }
 }
