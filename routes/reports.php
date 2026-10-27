@@ -9,11 +9,12 @@ use Illuminate\Support\Facades\Route;
 Route::name('report.')
     ->prefix('report')
     ->controller(ReportController::class)
+    ->middleware('can:view-reports')
     ->group(function () {
         Route::match(['get', 'post'], '/', 'index')
             ->name('index');
 
-        Route::post('/print/{startDate?}/{endDate?}', 'print')
+        Route::post('/print/{startDate?}/{endDate?}', 'print')->middleware('can:create-reports')
             ->name('print');
 
         // Route::match(['get', 'post'], '/checks', [ReportController::class, 'cheques'])

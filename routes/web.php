@@ -40,7 +40,7 @@ Route::middleware(['auth', 'active.check'])
             ->name('dashboard');
 
         Route::get('/applications/export', [ExportController::class, 'applications'])
-            ->middleware('permission:Create Report')
+            ->middleware('can:create-reports')
             ->name('applications.export.all');
 
         require __DIR__.'/application.php';
