@@ -4,6 +4,7 @@ namespace App\Livewire\Remark;
 
 use App\Models\Recommendation;
 use App\Models\WorkflowHistory;
+use App\Services\RemarkService;
 use App\Traits\Livewire\HasPlaceholder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
@@ -31,11 +32,11 @@ class Index extends Component
         $this->id = $id;
 
         if ($this->modelClass && $this->id) {
-            abort_unless(auth()->user()?->hasAnyRole(['staff', 'superadmin']), 403);
             abort_unless(in_array($this->modelClass, [Recommendation::class, WorkflowHistory::class], true), 403);
             $this->model = $this->modelClass::where('uuid', $this->id)->first();
 
             if ($this->model) {
+                abort_unless(app(RemarkService::class)->canRead($this->model), 403);
                 $this->remarks = $this->model
                     ->remarks()
                     ->with('user')
@@ -60,6 +61,10 @@ class Index extends Component
 
     public function render()
     {
+        if ($this->model) {
+            abort_unless(app(RemarkService::class)->canRead($this->model), 403);
+        }
+
         return view('livewire.remark.index');
     }
 }

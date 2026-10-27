@@ -27,17 +27,18 @@ class RemarkService
      */
     public function store(array $data, Model $model): Remark
     {
-        abort_unless(auth()->user()?->hasAnyRole(['staff', 'superadmin']), 403);
+        abort_unless($this->canRead($model) && (auth()->user()->hasOfficeAccess() || $model instanceof WorkflowHistory), 403);
         $run = $model instanceof Recommendation ? $model
             : ($model instanceof WorkflowHistory ? $model->recommendation()->firstOrFail() : null);
-        abort_unless($run, 403);
+        abort_unless($run !== null, 403);
 
         return DB::transaction(function () use ($data, $model, $run) {
             $application = app(ApplicationProcessingService::class)->lock($run->application_uuid, $run->claimant_assignment_uuid);
+            abort_unless($this->canWrite($model), 403);
             abort_unless($application->isActive(), 403);
 
             return Remark::create([
-                'remarkable_id' => $model->uuid,
+                'remarkable_id' => $model->getKey(),
                 'remarkable_type' => get_class($model),
                 'content' => $data['content'],
                 'user_id' => Auth::id(),
@@ -47,7 +48,7 @@ class RemarkService
 
     public function canWrite(?Model $model): bool
     {
-        if (! auth()->user()?->hasAnyRole(['staff', 'superadmin'])) {
+        if (! $this->canRead($model)) {
             return false;
         }
         $run = $model instanceof Recommendation ? $model
@@ -57,7 +58,23 @@ class RemarkService
         }
         $application = Application::find($run->application_uuid);
 
-        return $application && $application->current_claimant_assignment_uuid === $run->claimant_assignment_uuid && $application->isActive();
+        return $application && (auth()->user()->hasOfficeAccess() || $application->current_recommendation_uuid === $run->uuid)
+            && $application->current_claimant_assignment_uuid === $run->claimant_assignment_uuid && $application->isActive()
+            && (auth()->user()->hasOfficeAccess() || $model instanceof WorkflowHistory);
+    }
+
+    public function canRead(?Model $model): bool
+    {
+        $user = auth()->user();
+        if (! $user || ! $user->isInternal()) {
+            return false;
+        }
+        $run = $model instanceof Recommendation ? $model
+            : ($model instanceof WorkflowHistory ? $model->recommendation()->first() : null);
+        $application = $run ? Application::find($run->application_uuid) : null;
+
+        return $application && app(ApplicationAccessService::class)->view($user, $application)
+            && ($user->hasOfficeAccess() || $application->current_recommendation_uuid === $run->uuid);
     }
 
     public function edit()
