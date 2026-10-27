@@ -33,6 +33,12 @@ class FuneralAssistanceType extends Model
         return $this->hasMany(Recommendation::class, 'funeral_assistance_type_uuid', 'uuid');
     }
 
+    /** @return HasMany<DocumentTemplate, $this> */
+    public function documentTemplates(): HasMany
+    {
+        return $this->hasMany(DocumentTemplate::class, 'funeral_assistance_type_uuid', 'uuid')->orderBy('name')->orderBy('uuid');
+    }
+
     /**
      * Summary of workflow
      *

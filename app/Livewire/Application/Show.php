@@ -70,6 +70,7 @@ class Show extends Component
             'client.user', 'client.address', 'beneficiary.religion', 'relationship',
             'assessment', 'activeRecommendation.workflow', 'activeRecommendation.funeralAssistanceType',
             'activeRecommendation.modeOfAssistance', 'currentInterviews', 'workflowStage',
+            'activeRecommendation.funeralAssistanceType.documentTemplates',
             'referral', 'rejection', 'cancellation', 'closure',
             'claimantAssignments.client:uuid,user_id',
         ]);
