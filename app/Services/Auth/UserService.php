@@ -4,6 +4,10 @@ namespace App\Services\Auth;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\ValidationException;
+use Spatie\Permission\Models\Role;
 
 class UserService
 {
@@ -49,59 +53,70 @@ class UserService
 
     public function store(array $data)
     {
-        $user = User::create([
-            'first_name' => $data['firstName'],
-            'middle_name' => $data['middleName'],
-            'last_name' => $data['lastName'],
-            'suffix' => $data['suffix'],
-            'email' => $data['email'],
-            'contact_number' => $data['contactNumber'],
-            'is_active' => true,
-            'password' => bcrypt($data['password']),
-        ]);
+        abort_unless(auth()->user()?->isSystemAdministrator(), 403);
+        $roles = $this->selectedRoles($data['roles'] ?? []);
 
-        $user->assignRole('staff');
+        return DB::transaction(function () use ($data, $roles) {
+            $user = User::create([
+                'first_name' => $data['firstName'], 'middle_name' => $data['middleName'] ?? null,
+                'last_name' => $data['lastName'], 'suffix' => $data['suffix'] ?? null,
+                'email' => $data['email'], 'contact_number' => $data['contactNumber'],
+                'is_active' => true, 'password' => $data['password'],
+            ]);
+            $user->syncRoles(array_merge(['staff'], $roles));
 
-        return $user;
+            return $user;
+        });
     }
 
     public function update(array $data, User $user)
     {
-        if (Auth::id() !== $user->id) {
-            $data['newPassword'] == $user->password;
+        Gate::authorize('update', $user);
+        $admin = auth()->user()->isSystemAdministrator();
+        $selected = $this->selectedRoles($data['roles'] ?? []);
+        $current = $user->roles()->whereNotIn('name', ['staff', 'superadmin'])->pluck('name')->all();
+        if (! $admin) {
+            sort($selected);
+            sort($current);
+            abort_unless($selected === $current, 403);
         }
 
-        $user->update([
-            'first_name' => $data['firstName'],
-            'middle_name' => $data['middleName'],
-            'last_name' => $data['lastName'],
-            'suffix' => $data['suffix'],
-            'email' => $data['email'],
-            'contact_number' => $data['contactNumber'],
-            'password' => $data['newPassword'] ?? $user->password,
-            'is_active' => $data['isActive'],
-        ]);
+        return DB::transaction(function () use ($data, $user, $admin, $selected) {
+            $attributes = [
+                'first_name' => $data['firstName'], 'middle_name' => $data['middleName'] ?? null,
+                'last_name' => $data['lastName'], 'suffix' => $data['suffix'] ?? null,
+                'email' => $data['email'], 'contact_number' => $data['contactNumber'],
+            ];
+            if (filled($data['newPassword'] ?? null)) {
+                $attributes['password'] = $data['newPassword'];
+            }
+            if ($admin) {
+                $attributes['is_active'] = $data['isActive'];
+                $protected = $user->roles()->whereIn('name', ['staff', 'superadmin'])->pluck('name')->all();
+                if ($user->isInternal() || $selected) {
+                    $protected[] = 'staff';
+                }
+                $user->syncRoles(array_unique(array_merge($protected, $selected)));
+            }
+            $user->update($attributes);
 
-        $user->save();
+            return $user;
+        });
+    }
 
-        // if (! isset($data['roles']) || empty($data['roles']) || $data['roles'] == []) {
-        //     $user->roles()->detach();
-        // } else {
-        //     if (! in_array($staffRole->id, $data['roles'])) {
-        //         $user->roles()->detach();
-        //     } else {
-        //         $user->roles()->sync($data['roles']);
-        //     }
-        // }
-
-        foreach ($data['roles'] as $roleName => $value) {
-            if ($value == true || $value == 'true') {
-                $user->assignRole($roleName);
-            } else {
-                $user->removeRole($roleName);
+    private function selectedRoles(array $input): array
+    {
+        $available = Role::where('guard_name', 'web')->whereNotIn('name', ['staff', 'superadmin'])->pluck('name')->all();
+        $selected = [];
+        foreach ($input as $name => $value) {
+            if (! in_array($name, $available, true) || ! in_array($value, [true, false, null, 'true', 'false', $name], true)) {
+                throw ValidationException::withMessages(['roles' => 'Choose valid operational roles.']);
+            }
+            if (in_array($value, [true, 'true', $name], true)) {
+                $selected[] = $name;
             }
         }
 
-        return $user;
+        return $selected;
     }
 }

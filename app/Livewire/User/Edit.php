@@ -14,6 +14,11 @@ class Edit extends Component
 {
     use HasPlaceholder;
 
+    public function hydrate(): void
+    {
+        $this->authorize('update', $this->user);
+    }
+
     public EditUserForm $form;
 
     public ?User $user = null;
@@ -24,6 +29,7 @@ class Edit extends Component
 
     public function mount(User $user)
     {
+        $this->authorize('update', $user);
         $this->user = $user;
         $this->form->setUser($user);
         $this->roleOptions = Role::pluck('name')

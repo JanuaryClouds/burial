@@ -12,6 +12,11 @@ class Create extends Component
 {
     use HasPlaceholder;
 
+    public function boot(): void
+    {
+        abort_unless(auth()->user()?->isSystemAdministrator(), 403);
+    }
+
     public CreateUserForm $form;
 
     public function clearForm()

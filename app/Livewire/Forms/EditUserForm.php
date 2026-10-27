@@ -50,7 +50,7 @@ class EditUserForm extends Form
         $this->email = $user->email;
         $this->contactNumber = $user->contact_number;
         $this->isActive = $user->is_active;
-        $this->roles = $user->roles()->pluck('name')
+        $this->roles = $user->roles()->whereNotIn('name', ['staff', 'superadmin'])->pluck('name')
             ->mapWithKeys(fn ($role) => [$role => $role])
             ->toArray();
     }
