@@ -35,6 +35,9 @@ class CreateUserForm extends Form
     #[Validate('nullable|boolean')]
     public bool $isActive = true;
 
+    #[Validate('array')]
+    public array $roles = [];
+
     public function setUser(User $user)
     {
         $this->firstName = $user->first_name;
