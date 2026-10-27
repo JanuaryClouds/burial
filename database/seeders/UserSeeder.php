@@ -6,9 +6,11 @@ use App\Models\User;
 use App\Services\CentralClientService;
 use Exception;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use RuntimeException;
+use Spatie\Permission\Models\Role;
 
 class UserSeeder extends Seeder
 {
@@ -32,8 +34,7 @@ class UserSeeder extends Seeder
                 }
 
                 foreach ($uatClients as $uatClient) {
-                    User::firstOrCreate([
-                        'email' => $uatClient['email'],
+                    User::firstOrCreate(['email' => $uatClient['email']], [
                         'citizen_uuid' => $uatClient['user_id'],
                         'first_name' => $uatClient['firstname'],
                         'middle_name' => $uatClient['middlename'] ?? null,
@@ -69,8 +70,7 @@ class UserSeeder extends Seeder
                 ];
 
                 foreach ($uatClientUserIds as $index => $userId) {
-                    User::firstOrCreate([
-                        'email' => 'client'.($index + 1).'@tlcportal.com',
+                    User::firstOrCreate(['email' => 'client'.($index + 1).'@tlcportal.com'], [
                         'citizen_uuid' => $userId,
                         'first_name' => 'Client',
                         'middle_name' => null,
@@ -89,5 +89,58 @@ class UserSeeder extends Seeder
                 'citizen_uuid' => fn () => Str::uuid()->toString(),
             ]);
         }
+
+        $this->seedInternalUsers();
+    }
+
+    private function seedInternalUsers(): void
+    {
+        $password = config('app.admin_password');
+        if (! is_string($password) || blank($password)) {
+            throw new RuntimeException('Configure ADMIN_PASSWORD before seeding internal testing accounts.');
+        }
+
+        // Fixed example.org identities make authorization scenarios repeatable.
+        // These fixtures reset only their own role assignments, never portal clients.
+        $accounts = [
+            'staff1' => ['Staff Only', []],
+            'staff2' => ['CSWDO Read Only', ['CSWDO']],
+            'staff3' => ['CSWDO Assessor', ['CSWDO', 'assessor']],
+            'staff4' => ['CSWDO Reporter', ['CSWDO', 'reporter']],
+            'staff5' => ['CSWDO Releasing and Closure', ['CSWDO', 'Releasing', 'Closer']],
+            'cswdo-interview' => ['CSWDO Interviewer', ['CSWDO', 'interviewer']],
+            'cswdo-assessment' => ['CSWDO Assessment Officer', ['CSWDO', 'assessment-officer']],
+            'cswdo-recommendation' => ['CSWDO Recommendation Officer', ['CSWDO', 'recommender']],
+            'cswdo-referral' => ['CSWDO Referral Officer', ['CSWDO', 'referral-officer']],
+            'cswdo-rejection' => ['CSWDO Rejection Officer', ['CSWDO', 'rejection-officer']],
+            'cswdo-full' => ['CSWDO Full Operations', ['CSWDO', 'assessor', 'reporter', 'rejection-officer', 'Releasing', 'Closer']],
+            'workflow-admin' => ['Workflow Admin', ['Admin']],
+            'workflow-maricar' => ['Workflow Maricar', ['maricar']],
+            'workflow-emma' => ['Workflow Emma', ['emma']],
+            'workflow-nikki' => ['Workflow Nikki', ['nikki']],
+            'workflow-bao' => ['Workflow BAO', ['bao']],
+            'workflow-budget' => ['Workflow Budget', ['Budget']],
+            'workflow-accounting' => ['Workflow Accounting', ['Accounting']],
+            'workflow-treasury' => ['Workflow Treasury', ['Treasury']],
+            'workflow-releasing' => ['Workflow Releasing', ['Releasing']],
+        ];
+
+        // Validate prerequisites before touching any internal fixture assignments.
+        foreach (array_unique(array_merge(['staff'], ...array_column($accounts, 1))) as $role) {
+            Role::findByName($role, 'web');
+        }
+        DB::transaction(function () use ($accounts, $password) {
+            foreach ($accounts as $login => [$label, $roles]) {
+                $user = User::firstOrCreate(['email' => $login.'@example.org'], [
+                    'first_name' => $label, 'last_name' => 'Test User',
+                    'is_active' => true, 'password' => $password,
+                ]);
+                if (filled($user->citizen_uuid)) {
+                    throw new RuntimeException('An internal fixture email belongs to a portal citizen. No internal fixture roles were changed.');
+                }
+                $user->syncRoles(array_merge(['staff'], $roles));
+                $user->syncPermissions([]);
+            }
+        });
     }
 }

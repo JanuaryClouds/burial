@@ -38,6 +38,10 @@ class Handler extends ExceptionHandler
             return redirect()->route(Auth::check() ? 'dashboard' : 'landing.page')
                 ->with('error', 'You do not have permission to access this page.');
         } elseif ($exception instanceof NotFoundHttpException) {
+            if ($request->routeIs('application.templates.download', 'funeral_assistance_types.templates.download')) {
+                return parent::render($request, $exception);
+            }
+
             if ($request->expectsJson()) {
                 return response()->json([
                     'message' => 'The page you requested could not be found.',

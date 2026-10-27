@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
+/** @property string|null $current_claimant_assignment_uuid */
 class Application extends Model
 {
     /** @use HasFactory<ApplicationFactory> */

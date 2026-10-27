@@ -8,12 +8,24 @@ use App\Models\Workflow;
 use App\View\Components\PageNavigation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class PageNavigationTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+        config(['database.default' => 'navigation_testing',
+            'database.connections.navigation_testing' => ['driver' => 'sqlite', 'database' => ':memory:', 'prefix' => ''],
+            'cache.default' => 'array']);
+        foreach (['genders', 'relationships', 'civilStatus', 'religions', 'nationalities', 'educations', 'districts', 'assistances', 'modes'] as $lookup) {
+            Cache::put($lookup, collect(), 3600);
+        }
+    }
+
     private function navigation(string $name, array $parameters = [], ?User $user = null, ?string $label = null): PageNavigation
     {
         $request = Request::create(route($name, $parameters));

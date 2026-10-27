@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::controller(InterviewController::class)
     ->name('interview.')
+    ->middleware('can:view-record-index')
     ->prefix('interview')
     ->group(function () {
         Route::get('/', 'index')->name('index');

@@ -24,13 +24,13 @@
         <!--begin::Wrapper-->
         <div class="d-flex align-items-center justify-content-end flex-wrap gap-3">
             <!-- begin::Theme mode -->
-            @role('staff')
+            @can('search-applications')
                 <a href="{{ route('application.search') }}"
                     class="btn btn-icon btn-custom btn-active-color-primary menu-dropdown" data-bs-toggle="tooltip"
                     data-bs-placement="bottom" title="Search Application">
                     <x-icon.keen :icon="'scan-barcode'" :size="'1'" :pathsCount="8" />
                 </a>
-            @endrole
+            @endcan
 
             <livewire:notification.button />
 

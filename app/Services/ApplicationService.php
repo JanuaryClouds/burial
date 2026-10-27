@@ -99,6 +99,7 @@ class ApplicationService
      */
     public function print(Application $application)
     {
+        Gate::authorize('office-access');
         $application->loadMissing(['activeRecommendation', 'client', 'beneficiary.sex', 'beneficiary.address', 'assessment', 'relationship', 'referral']);
 
         $client = $application->client;
@@ -228,6 +229,8 @@ class ApplicationService
 
     public function certificate(Application $application)
     {
+        Gate::authorize('office-access');
+        $application->loadMissing(['client.user', 'beneficiary']);
         $pdf = Pdf::loadView('pdf.certificate', [
             'title' => $application->client->fullname()."'s Certificate",
             'client' => $application->client,

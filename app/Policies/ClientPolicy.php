@@ -12,11 +12,7 @@ class ClientPolicy
      */
     public function viewAny(User $user): bool
     {
-        if ($user->roles()->count() > 0) {
-            return true;
-        }
-
-        return false;
+        return $user->hasOfficeAccess();
     }
 
     /**
@@ -24,8 +20,12 @@ class ClientPolicy
      */
     public function view(User $user, Client $client): bool
     {
-        if ($user->roles()->count() > 0) {
+        if ($user->hasOfficeAccess()) {
             return true;
+        }
+
+        if ($user->isInternal()) {
+            return false;
         }
 
         if ($user->id == $client->user_id) {
@@ -40,15 +40,7 @@ class ClientPolicy
      */
     public function create(User $user): bool
     {
-        if ($user->hasRole('superadmin')) {
-            return true;
-        }
-
-        if ($user->roles()->count() == 0) {
-            return true;
-        }
-
-        return false;
+        return ! $user->isInternal();
     }
 
     /**

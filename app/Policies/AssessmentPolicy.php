@@ -4,22 +4,18 @@ namespace App\Policies;
 
 use App\Models\Application;
 use App\Models\User;
-use Spatie\Permission\Models\Permission;
+use App\Services\ApplicationAccessService;
 
 class AssessmentPolicy
 {
     public function viewAny(User $user): bool
     {
-        return $user->hasAnyDirectPermission(Permission::where('name', 'like', '% Assessment')->pluck('name')->all());
+        return $user->canOfficeAction('View Any Assessment');
     }
 
-    public function view(User $user): bool
+    public function view(User $user, ?Application $application = null): bool
     {
-        if ($user->loadMissing('roles')->roles->isNotEmpty()) {
-            return true;
-        }
-
-        return false;
+        return $application ? $user->isInternal() && app(ApplicationAccessService::class)->view($user, $application) : $user->hasOfficeAccess();
     }
 
     public function create(User $user, Application $application): bool
@@ -40,6 +36,6 @@ class AssessmentPolicy
             return true;
         }
 
-        return $user->hasDirectPermission('Create Assessment');
+        return $user->canOfficeAction('Create Assessment');
     }
 }

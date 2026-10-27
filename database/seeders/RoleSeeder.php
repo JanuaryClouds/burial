@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Spatie\Permission\Contracts\Role as RoleContract;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -13,18 +14,18 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
-        $staffRole = Role::firstOrCreate(['name' => 'staff']);
-        $superadminRole = Role::firstOrCreate(['name' => 'superadmin']);
-        $reporterRole = Role::firstOrCreate(['name' => 'reporter']);
-        $assessorRole = Role::firstOrCreate(['name' => 'assessor']);
-        $lguAdminRole = Role::firstOrCreate(['name' => 'lgu admin']);
-        $maricarRole = Role::firstOrCreate(['name' => 'maricar']);
-        $emmaRole = Role::firstOrCreate(['name' => 'emma']);
-        $nikkiRole = Role::firstOrCreate(['name' => 'nikki']);
-        $baoRole = Role::firstOrCreate(['name' => 'bao']);
-        $budgetRole = Role::firstOrCreate(['name' => 'budget']);
-        $accountingRole = Role::firstOrCreate(['name' => 'accounting']);
-        $treasuryRole = Role::firstOrCreate(['name' => 'treasury']);
+        $staffRole = Role::findOrCreate('staff', 'web');
+        Role::findOrCreate('superadmin', 'web');
+        $reporterRole = Role::findOrCreate('reporter', 'web');
+        $assessorRole = Role::findOrCreate('assessor', 'web');
+        $lguAdminRole = Role::findOrCreate('Admin', 'web');
+        $maricarRole = Role::findOrCreate('maricar', 'web');
+        $emmaRole = Role::findOrCreate('emma', 'web');
+        $nikkiRole = Role::findOrCreate('nikki', 'web');
+        $baoRole = Role::findOrCreate('bao', 'web');
+        $budgetRole = Role::findOrCreate('Budget', 'web');
+        $accountingRole = Role::findOrCreate('Accounting', 'web');
+        $treasuryRole = Role::findOrCreate('Treasury', 'web');
 
         $permissionSeeder = new PermissionSeeder;
 
@@ -36,15 +37,26 @@ class RoleSeeder extends Seeder
             $permissionSeeder->referralPermissions()
         ));
         $this->syncPermission($lguAdminRole, ['Workflow Admin']);
-        $this->syncPermission($maricarRole, ['Workflow Admin']);
-        $this->syncPermission($emmaRole, ['Workflow Admin']);
-        $this->syncPermission($nikkiRole, ['Workflow Admin']);
-        $this->syncPermission($baoRole, ['Workflow Admin']);
+        $this->syncPermission($maricarRole, ['Workflow Maricar']);
+        $this->syncPermission($emmaRole, ['Workflow Emma']);
+        $this->syncPermission($nikkiRole, ['Workflow Nikki']);
+        $this->syncPermission($baoRole, ['Workflow Bao']);
         $this->syncPermission($budgetRole, ['Workflow Budget']);
         $this->syncPermission($accountingRole, ['Workflow Accounting']);
         $this->syncPermission($treasuryRole, ['Workflow Treasury']);
-        $this->syncPermission($staffRole, ['Workflow Releasing']);
-        $this->syncPermission($staffRole, $permissionSeeder->closurePermissions());
+        Role::findOrCreate('CSWDO', 'web')->syncPermissions([]);
+        $this->syncPermission($staffRole, []);
+        $this->syncPermission(Role::findOrCreate('Releasing', 'web'), ['Workflow Releasing']);
+        $this->syncPermission(Role::findOrCreate('Closer', 'web'), $permissionSeeder->closurePermissions());
+        foreach ([
+            'interviewer' => $permissionSeeder->interviewPermissions(),
+            'assessment-officer' => $permissionSeeder->assessmentPermissions(),
+            'recommender' => $permissionSeeder->recommendationPermissions(),
+            'referral-officer' => $permissionSeeder->referralPermissions(),
+            'rejection-officer' => $permissionSeeder->rejectionPermissions(),
+        ] as $name => $permissions) {
+            $this->syncPermission(Role::findOrCreate($name, 'web'), $permissions);
+        }
     }
 
     public static function queryPermission(string $column, string $permissionName): array
@@ -59,7 +71,7 @@ class RoleSeeder extends Seeder
         return $permission;
     }
 
-    protected function syncPermission(Role $role, array $permissions): void
+    protected function syncPermission(RoleContract $role, array $permissions): void
     {
         $role->syncPermissions(array_values($permissions));
     }

@@ -53,7 +53,7 @@ class RejectionPolicy
             return false;
         }
 
-        return $user->hasRole('rejection.create');
+        return $user->canOfficeAction('Create Rejection');
     }
 
     /**

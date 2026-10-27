@@ -9,9 +9,10 @@ Route::name('beneficiary.')
     ->controller(BeneficiaryController::class)
     ->group(function () {
         Route::get('/', 'index')
+            ->middleware('can:view-record-index')
             ->name('index');
 
-        Route::get('/create', 'create')
+        Route::get('/create', 'create')->middleware('can:create,App\Models\Beneficiary')
             ->name('create');
 
         // Route::post('/store', 'store')

@@ -14,11 +14,7 @@ class InterviewPolicy
      */
     public function viewAny(User $user): bool
     {
-        if ($user->loadMissing('roles')->roles->isNotEmpty()) {
-            return true;
-        }
-
-        return false;
+        return $user->canOfficeAction('View Any Interview');
     }
 
     /**
@@ -26,8 +22,14 @@ class InterviewPolicy
      */
     public function view(User $user, Interview $interview): bool
     {
-        if ($user->loadMissing('roles')->roles->isNotEmpty()) {
+        if ($user->hasOfficeAccess()) {
             return true;
+        }
+
+        if ($user->isInternal()) {
+            $application = $interview->claimantAssignment()->first()?->application()->first();
+
+            return $application && $user->can('view', $application) && $interview->claimant_assignment_uuid === $application->current_claimant_assignment_uuid;
         }
 
         return $user->id == $interview->client->user_id;
@@ -56,7 +58,7 @@ class InterviewPolicy
             return true;
         }
 
-        return $user->can('Create Interview');
+        return $user->canOfficeAction('Create Interview');
     }
 
     /**
@@ -83,7 +85,7 @@ class InterviewPolicy
             return false;
         }
 
-        return $user->id !== $clientUserId && ($user->hasRole('superadmin') || $user->can('Create Interview'));
+        return $user->id !== $clientUserId && $user->canOfficeAction('Create Interview');
     }
 
     public function update(User $user, Interview $interview): bool

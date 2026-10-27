@@ -6,12 +6,15 @@ use App\Models\Application;
 use App\Models\DocumentRequirement;
 use App\Services\ApplicationService;
 use App\Services\InterviewService;
+use App\Traits\Livewire\GuardsApplicationView;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
 class Show extends Component
 {
+    use GuardsApplicationView;
+
     public Application $application;
 
     private ApplicationService $services;
@@ -67,6 +70,7 @@ class Show extends Component
             'client.user', 'client.address', 'beneficiary.religion', 'relationship',
             'assessment', 'activeRecommendation.workflow', 'activeRecommendation.funeralAssistanceType',
             'activeRecommendation.modeOfAssistance', 'currentInterviews', 'workflowStage',
+            'activeRecommendation.funeralAssistanceType.documentTemplates',
             'referral', 'rejection', 'cancellation', 'closure',
             'claimantAssignments.client:uuid,user_id',
         ]);
@@ -75,7 +79,7 @@ class Show extends Component
         $history = $this->application->claimantAssignments->sortBy('sequence');
         if ($history->count() > 1) {
             $history->load(['interviews', 'assignedBy', 'relationship']);
-            if (auth()->user()->hasAnyRole(['staff', 'superadmin'])) {
+            if (auth()->user()->hasOfficeAccess()) {
                 $history->load(['assessments', 'recommendations.workflow']);
             }
         }

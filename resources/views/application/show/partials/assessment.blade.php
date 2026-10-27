@@ -1,6 +1,6 @@
 <x-card>
 	<x-slot:header>Assessment</x-slot:header>
-	@can('view', [\App\Models\Assessment::class])
+	@can('view', [\App\Models\Assessment::class, $application])
         <div class="mb-5" id="interview">
             @if ($inlineApplicationDetails ?? false)
                 @include('interview.partials.latest', ['canComplete' => $canCompleteInterview])

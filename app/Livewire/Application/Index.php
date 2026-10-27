@@ -5,6 +5,7 @@ namespace App\Livewire\Application;
 use App\Models\Application;
 use App\Services\ApplicationService;
 use App\Services\DataTableService;
+use App\Traits\Livewire\GuardsRecordIndex;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -26,6 +27,8 @@ class Index extends Component
 
     public array $applicationsPerStatusCount;
 
+    use GuardsRecordIndex;
+
     public function mount()
     {
         $this->dataTableId = (string) Str::uuid();
@@ -35,7 +38,7 @@ class Index extends Component
     public function loadData()
     {
         $this->applications = Application::index(
-            Auth::user()->roles->isNotEmpty() ? null : Auth::user()->id
+            Auth::user()->hasOfficeAccess() ? null : Auth::user()->id
         )
             ->orderBy('tracking_no', 'desc')
             ->get();
@@ -68,7 +71,7 @@ class Index extends Component
 
         $this->columns = app(DataTableService::class)->getColumns($this->mappedApplications);
 
-        if (Auth::user()->roles->isNotEmpty()) {
+        if (Auth::user()->hasOfficeAccess()) {
             $this->applicationsPerStatus = app(ApplicationService::class)
                 ->groupByStatus($this->applications);
 

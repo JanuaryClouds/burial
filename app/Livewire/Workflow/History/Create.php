@@ -5,6 +5,7 @@ namespace App\Livewire\Workflow\History;
 use App\Livewire\Forms\RemarkForm;
 use App\Models\Application;
 use App\Services\WorkflowHistoryService;
+use App\Traits\Livewire\GuardsApplicationView;
 use App\Traits\Livewire\HasPlaceholder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -14,6 +15,12 @@ use Livewire\Component;
 
 class Create extends Component
 {
+    public function boot(): void
+    {
+        abort_unless(auth()->user()?->isInternal(), 403);
+    }
+
+    use GuardsApplicationView;
     use HasPlaceholder;
 
     public Application $application;
@@ -79,7 +86,7 @@ class Create extends Component
         $position = $currentStage ? $currentStage->position : 0;
         $this->stages = $version ? $version->stages()->with('permission')->orderBy('position')->get()
             ->filter(fn ($stage) => $stage->position === $position + 1 || ($position > 0 && $stage->position < $position))
-            ->filter(fn ($stage) => auth()->user()?->hasRole('superadmin') || ($stage->permission && auth()->user()?->can($stage->permission->name)))
+            ->filter(fn ($stage) => $stage->permission && auth()->user()?->canWorkflowPermission($stage->permission->name))
             ->map(fn ($stage) => ['uuid' => $stage->uuid, 'name' => $stage->name]) : collect();
         $this->showForm = ! $this->paused && $this->stages->isNotEmpty() &&
             $this->application->isActive();

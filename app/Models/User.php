@@ -2,17 +2,74 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, HasRoles, Notifiable;
+
+    public function isInternal(): bool
+    {
+        return $this->accessRoles()->isNotEmpty();
+    }
+
+    public function isSystemAdministrator(): bool
+    {
+        return $this->accessRoles()->contains('name', 'superadmin');
+    }
+
+    public function hasOfficeAccess(): bool
+    {
+        return $this->accessRoles()->contains(fn ($role) => in_array($role->name, ['CSWDO', 'superadmin'], true));
+    }
+
+    /** Read fresh assignments so polling and subsequent actions observe revoked access. */
+    public function effectivePermissionNames(): array
+    {
+        $roles = $this->accessRoles();
+        $roles->loadMissing('permissions');
+        $this->loadMissing('permissions');
+
+        return $this->permissions->pluck('name')->merge(
+            $roles->flatMap(fn ($role) => $role->permissions->pluck('name'))
+        )->unique()->values()->all();
+    }
+
+    /** @return Collection<int, Role> */
+    private function accessRoles(): Collection
+    {
+        $key = 'burial.access_roles.'.$this->id;
+        if (! request()->attributes->get($key) || ! $this->relationLoaded('roles')) {
+            $this->load('roles');
+            $this->unsetRelation('permissions');
+            request()->attributes->set($key, true);
+        }
+
+        return $this->roles;
+    }
+
+    public function canOfficeAction(string $permission): bool
+    {
+        return $this->isSystemAdministrator() || ($this->hasOfficeAccess() && in_array($permission, $this->effectivePermissionNames(), true));
+    }
+
+    public function canSearchApplications(): bool
+    {
+        return $this->hasOfficeAccess() || ($this->isInternal() && collect($this->effectivePermissionNames())->contains(fn ($name) => str_starts_with($name, 'Workflow ')));
+    }
+
+    public function canWorkflowPermission(string $permission): bool
+    {
+        return $this->isSystemAdministrator() || ($this->isInternal() && in_array($permission, $this->effectivePermissionNames(), true));
+    }
 
     protected $fillable = [
         'citizen_uuid',

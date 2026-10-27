@@ -6,11 +6,13 @@ use App\Models\Application;
 use App\Models\Beneficiary;
 use App\Models\Client;
 use App\Services\ApplicationService;
+use App\Traits\Livewire\GuardsApplicationView;
 use App\Traits\Livewire\HasPlaceholder;
 use Livewire\Component;
 
 class Summary extends Component
 {
+    use GuardsApplicationView;
     use HasPlaceholder;
 
     public Application $application;
@@ -42,6 +44,10 @@ class Summary extends Component
 
     public function render()
     {
+        $this->authorize('view', $this->application);
+        $this->application->loadMissing(['client.user', 'client.address', 'beneficiary', 'relationship']);
+        $this->client = $this->application->client;
+        $this->beneficiary = $this->application->beneficiary;
         $this->application->loadCount('claimantAssignments');
 
         return view('livewire.application.summary', ['hasClaimantChanges' => $this->application->claimant_assignments_count > 1]);

@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\Application;
 use App\Models\User;
+use App\Services\ApplicationAccessService;
 
 class ApplicationPolicy
 {
@@ -17,11 +18,7 @@ class ApplicationPolicy
 
     public function viewAny(User $user): bool
     {
-        if ($user->loadMissing('roles')->roles->isNotEmpty()) {
-            return true;
-        }
-
-        return false;
+        return $user->hasOfficeAccess();
     }
 
     /**
@@ -29,15 +26,7 @@ class ApplicationPolicy
      */
     public function view(User $user, Application $application): bool
     {
-        if ($user->loadMissing('roles')->roles->isNotEmpty()) {
-            return true;
-        }
-
-        if ($user->id === $application->client->user_id || $application->claimantAssignments()->whereHas('client', fn ($q) => $q->where('user_id', $user->id))->exists()) {
-            return true;
-        }
-
-        return false;
+        return app(ApplicationAccessService::class)->view($user, $application);
     }
 
     /**
@@ -45,15 +34,7 @@ class ApplicationPolicy
      */
     public function create(User $user): bool
     {
-        if ($user->hasRole('superadmin')) {
-            return true;
-        }
-
-        if ($user->loadMissing('roles')->roles->isEmpty()) {
-            return true;
-        }
-
-        return false;
+        return ! $user->isInternal();
     }
 
     /**
@@ -169,7 +150,7 @@ class ApplicationPolicy
             return true;
         }
 
-        return $user->hasPermissionTo('Create Rejection');
+        return $user->canOfficeAction('Create Rejection');
     }
 
     /**
@@ -201,7 +182,7 @@ class ApplicationPolicy
             return true;
         }
 
-        return $user->hasPermissionTo('Create Referral');
+        return $user->canOfficeAction('Create Referral');
     }
 
     /**
@@ -225,6 +206,6 @@ class ApplicationPolicy
             return true;
         }
 
-        return $user->hasPermissionTo('Create Closure');
+        return $user->canOfficeAction('Create Closure');
     }
 }

@@ -53,7 +53,13 @@
 				:required="true" />
 		</div>
 	</div>
-	<p class="text-muted text-center small">Configure user's role in their profile after saving</p>
+	<p class="text-muted">Every CMS-created user receives staff membership. Assign CSWDO and operational roles explicitly.</p>
+    <div class="row">
+        @foreach ($this->roleOptions as $roleName)
+            <div class="col-md-4"><x-form.check wire:model="form.roles.{{ $roleName }}" :name="'form.roles.'.$roleName" :label="$roleName" :value="$roleName" /></div>
+        @endforeach
+    </div>
+    @error('roles') <p class="text-danger">{{ $message }}</p> @enderror
 	<div class="d-flex justify-content-end align-items-center gap-4">
 		<x-button wire:click='clearForm'
 			class="btn-sm btn-light">

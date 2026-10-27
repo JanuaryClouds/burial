@@ -5,6 +5,7 @@ namespace App\Livewire\Client;
 use App\Models\Client;
 use App\Services\ClientService;
 use App\Services\DataTableService;
+use App\Traits\Livewire\GuardsRecordIndex;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -27,6 +28,8 @@ class Index extends Component
 
     public Collection $clientsPerMonth;
 
+    use GuardsRecordIndex;
+
     public function mount()
     {
         $this->dataTableId = (string) Str::uuid();
@@ -36,7 +39,7 @@ class Index extends Component
     public function loadData()
     {
         $this->clients = Client::index(
-            Auth::user()->roles()->count() > 0 ? null : Auth::id()
+            Auth::user()->hasOfficeAccess() ? null : Auth::id()
         )
             ->orderBy('created_at', 'desc')
             ->get();

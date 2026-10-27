@@ -34,6 +34,7 @@ class WorkflowHistoryService
             app(WorkflowVersionService::class)->lockGroup($version);
             $version = $version->newQuery()->whereKey($version->uuid)->lockForUpdate()->firstOrFail();
             $application = Application::whereKey($run->application_uuid)->lockForUpdate()->firstOrFail();
+            abort_unless(auth()->user()?->can('view', $application), 403);
             if ($application->current_claimant_assignment_uuid !== $run->claimant_assignment_uuid ||
                 $application->current_recommendation_uuid !== $run->uuid ||
                 $application->current_workflow_stage_uuid !== $data['expected_stage_uuid']) {
@@ -62,7 +63,7 @@ class WorkflowHistoryService
                 throw ValidationException::withMessages(['reason' => 'A reason is required when returning to an earlier stage.']);
             }
             abort_unless(auth()->user() && (auth()->user()->hasRole('superadmin') ||
-                ($target->permission && auth()->user()->can($target->permission->name))), 403);
+                ($target->permission && auth()->user()->canWorkflowPermission($target->permission->name))), 403);
             $values = app(WorkflowCustomFieldService::class)->validateValues($target, $data['custom_values'] ?? []);
             $history = WorkflowHistory::create([
                 'recommendation_uuid' => $run->uuid, 'from_stage_uuid' => $current?->uuid,

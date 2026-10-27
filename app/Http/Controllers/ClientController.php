@@ -33,6 +33,8 @@ class ClientController extends Controller
 
     public function index()
     {
+        $this->authorize('view-record-index');
+
         return view('client.index', [
             'pageTitle' => 'Clients',
         ]);

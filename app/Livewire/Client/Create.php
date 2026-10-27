@@ -14,6 +14,7 @@ use App\Services\ClientService;
 use App\Services\ClientSocialInfoService;
 use App\Services\PsaClassificationService;
 use App\Traits\Livewire\Address\HasOptions;
+use App\Traits\Livewire\GuardsCitizenCreation;
 use App\Traits\Livewire\HasPlaceholder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -22,6 +23,7 @@ use Livewire\Component;
 
 class Create extends Component
 {
+    use GuardsCitizenCreation;
     use HasOptions, HasPlaceholder;
 
     public ?Client $previousRecord = null;

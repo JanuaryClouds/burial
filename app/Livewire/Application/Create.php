@@ -8,6 +8,7 @@ use App\Models\DocumentRequirement;
 use App\Services\ActivityLoggerService;
 use App\Services\ApplicationService;
 use App\Services\ImageService;
+use App\Traits\Livewire\GuardsCitizenCreation;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -20,6 +21,7 @@ use Livewire\WithFileUploads;
 
 class Create extends Component
 {
+    use GuardsCitizenCreation;
     use WithFileUploads;
 
     public Collection $clientOptions;

@@ -62,9 +62,9 @@
                 <strong class="d-block mb-2">The claimant for this application has changed</strong>
             </x-slot:title>
             Refer to Claimant History for the former and current claimants and the replacement details.
-            @hasanyrole('staff|superadmin')
+            @can('office-access')
                 <span class="d-block mt-2">Review the retained documents before continuing processing.</span>
-            @endhasanyrole
+            @endcan
             <div class="mt-3">
                 @if (Route::currentRouteName() === 'application.show')
                     <a href="#claimant-history" class="btn btn-sm btn-warning">View Claimant History</a>

@@ -29,6 +29,7 @@ class Index extends Component
     #[On('interviewCreated')]
     public function refresh()
     {
+        $this->authorizeClientAccess();
         $this->interviews = $this->client->interviews()->with(['client', 'claimantAssignment'])
             ->when($this->assignmentUuid, fn ($q) => $q->where('claimant_assignment_uuid', $this->assignmentUuid))
             ->orderByDesc('schedule')->limit(1)->get();
@@ -46,11 +47,21 @@ class Index extends Component
 
     public function render()
     {
+        $this->authorizeClientAccess();
         $latest = $this->interviews->first();
 
         return view('livewire.interview.index', [
             'latestInterview' => $latest,
             'canComplete' => $latest && auth()->user()->can('complete', $latest),
         ]);
+    }
+
+    private function authorizeClientAccess(): void
+    {
+        if (auth()->user()?->hasOfficeAccess() || auth()->user()?->can('view', $this->client)) {
+            return;
+        }
+        $application = $this->client->application()->first();
+        abort_unless($application && $this->assignmentUuid === $application->current_claimant_assignment_uuid && auth()->user()?->can('view', $application), 403);
     }
 }

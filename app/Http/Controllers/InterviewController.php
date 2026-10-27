@@ -33,7 +33,7 @@ class InterviewController extends Controller
         $allData = [];
         $allDataColumns = [];
 
-        if (auth()->user()->hasRole('staff')) {
+        if (auth()->user()->hasOfficeAccess()) {
             $allData = $this->interviewServices->index(null);
             $allDataColumns = $this->dataTableServices->getColumns($allData);
         }

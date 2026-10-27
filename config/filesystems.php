@@ -30,6 +30,13 @@ return [
 
     'disks' => [
 
+        'document_templates' => [
+            'driver' => 'local',
+            'root' => storage_path('app/private/document-templates'),
+            'visibility' => 'private',
+            'throw' => true,
+        ],
+
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app'),

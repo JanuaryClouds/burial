@@ -20,6 +20,12 @@ class Edit extends Component
 {
     use HasOptions, HasPlaceholder;
 
+    public function hydrate(): void
+    {
+        $this->beneficiary->refresh();
+        $this->authorize('update', $this->beneficiary);
+    }
+
     public Beneficiary $beneficiary;
 
     public Address $address;
@@ -30,6 +36,8 @@ class Edit extends Component
 
     public function mount(Beneficiary $beneficiary)
     {
+        $this->authorize('update', $beneficiary);
+
         $this->beneficiary = $beneficiary;
         $this->address = $beneficiary->address;
 
@@ -192,6 +200,8 @@ class Edit extends Component
 
     public function render()
     {
+        $this->authorize('update', $this->beneficiary);
+
         return view('livewire.beneficiary.edit');
     }
 }

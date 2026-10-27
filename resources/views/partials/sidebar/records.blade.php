@@ -1,3 +1,4 @@
+@can('view-record-index')
 {{-- <!--begin:records-->
 <div data-kt-menu-trigger="{default: 'click'}"
 	data-kt-menu-placement="right-start"
@@ -56,3 +57,10 @@
 	'iconPathsCount' => 3,
 	'label' => 'Beneficiaries',
 ])
+
+@endcan
+@can('search-applications')
+    @cannot('office-access')
+        @include('components.sidebar.link', ['route' => route('application.search'), 'activeLink' => 'application.search', 'icon' => 'scan-barcode', 'iconPathsCount' => 8, 'label' => 'Search Application'])
+    @endcannot
+@endcan

@@ -27,6 +27,7 @@ class ReportController extends Controller
 
     public function index(Request $request)
     {
+        $this->authorize('view-reports');
         if ($request->input('startDate')) {
             $startDate = Carbon::parse($request->input('startDate'))->format('Y-m-d\TH:i');
         } else {
@@ -100,6 +101,7 @@ class ReportController extends Controller
         string $startDate,
         string $endDate,
     ) {
+        $this->authorize('create-reports');
         $documentName = config('constants.title.main').'-'.config('constants.title.sub').'-'.
             'report-'.$startDate.'-to-'.$endDate.'.pdf';
 

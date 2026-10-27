@@ -25,6 +25,8 @@ class Show extends Component
 
     public function render()
     {
+        $this->authorize('view', $this->beneficiary);
+
         return view('livewire.beneficiary.show');
     }
 }

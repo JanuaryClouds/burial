@@ -26,6 +26,10 @@ class Show extends Component
 
     public function render()
     {
+        $application = $this->recommendation->application()->firstOrFail();
+        abort_unless(auth()->user()?->isInternal() && auth()->user()->can('view', $application), 403);
+        abort_unless(auth()->user()->hasOfficeAccess() || $application->current_recommendation_uuid === $this->recommendation->uuid, 403);
+
         return view('livewire.recommendation.show');
     }
 }

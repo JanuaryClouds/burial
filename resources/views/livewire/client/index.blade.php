@@ -1,11 +1,11 @@
 <div class="d-flex flex-column gap-6"
 	wire:poll.10s="loadData">
 	{{-- start::Statistics --}}
-	@role('staff')
+	@can('office-access')
 		<div>
 			@include('client.index.partials.statistics')
 		</div>
-	@endrole
+	@endcan
 	{{-- end::Statistics --}}
 
 	{{-- start::Index --}}
@@ -16,7 +16,7 @@
 				'data' => $mappedClients,
 				'dataTableId' => $dataTableId,
 			])
-			@unlessrole('staff')
+			@if (! auth()->user()->isInternal())
 				<x-slot:footer>
 					<a href="{{ route('client.create') }}"
 						class="btn btn-sm btn-primary">
@@ -24,16 +24,16 @@
 						New Client
 					</a>
 				</x-slot:footer>
-			@endunlessrole
+			@endif
 		</x-card>
 	</div>
 	{{-- end::Index --}}
 
 	{{-- start::charts --}}
-	@role('staff')
+	@can('office-access')
 		<div>
 			@include('client.index.partials.charts')
 		</div>
-	@endrole
+	@endcan
 	{{-- end::charts --}}
 </div>

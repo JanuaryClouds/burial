@@ -1,4 +1,4 @@
-<div class="d-flex flex-column gap-6" wire:poll.30s="refreshApplication">
+<div class="d-flex flex-column gap-6" wire:poll.30s>
     <div class="row">
         <div class="col-12 col-lg-9" id="application-summary">
             {{-- Application Summary --}}
@@ -17,12 +17,12 @@
         </div>
     </div>
 
-    @if ($claimantHistory->count() > 1)
+    @if ($claimantHistory->count() > 1 && (! auth()->user()->isInternal() || auth()->user()->hasOfficeAccess()))
         @include('application.show.partials.claimant-history')
 
     @endif
 
-    @hasanyrole('staff|superadmin')
+    @if (auth()->user()->isInternal())
         <div class="row">
             <div class="col-12 col-lg-6" id="assessment">
                 {{-- Assessment --}}
@@ -45,7 +45,12 @@
                 </div>
             </div>
         @endif
-    @endhasanyrole
+        @can('office-access')
+            <div id="printable-documents">
+                @include('application.show.partials.printable-documents')
+            </div>
+        @endcan
+    @endif
     <div id="documents" wire:ignore>
         <x-card>
             {{-- Documents --}}

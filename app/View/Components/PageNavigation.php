@@ -41,6 +41,11 @@ class PageNavigation extends Component
 
         foreach ($sections as $prefix => [$plural, $singular, $administrative]) {
             $index = $this->link($plural, $prefix.'.index');
+            if ($prefix === 'application' && str_starts_with($name ?? '', 'application.') && $request->user()?->isInternal() && ! $request->user()->hasOfficeAccess()) {
+                $index = $request->user()->canSearchApplications()
+                    ? $this->link('Search Applications', 'application.search')
+                    : $this->link('Dashboard', 'dashboard');
+            }
             $ancestors = $administrative ? [$system] : [];
 
             if ($name === $prefix.'.index') {
@@ -83,7 +88,7 @@ class PageNavigation extends Component
         }
 
         if ($name === 'application.search') {
-            return [$this->link('Applications', 'application.index'), $this->current('Search Applications')];
+            return [$request->user() && ! $request->user()->hasOfficeAccess() ? $this->link('Dashboard', 'dashboard') : $this->link('Applications', 'application.index'), $this->current('Search Applications')];
         }
 
         if ($name === 'beneficiary.family.edit') {

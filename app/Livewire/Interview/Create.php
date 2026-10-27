@@ -6,6 +6,7 @@ use App\Models\Client;
 use App\Models\Interview;
 use App\Services\ActivityLoggerService;
 use App\Services\InterviewService;
+use App\Traits\Livewire\GuardsOfficeForm;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Locked;
@@ -15,6 +16,13 @@ use Livewire\Component;
 
 class Create extends Component
 {
+    use GuardsOfficeForm;
+
+    public function bootOfficeAccess(): void
+    {
+        abort_unless(auth()->user()?->canOfficeAction('Create Interview'), 403);
+    }
+
     public Client $client;
 
     #[Locked]

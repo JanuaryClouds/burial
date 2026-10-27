@@ -4,6 +4,7 @@ namespace App\Livewire\Workflow\History;
 
 use App\Models\Application;
 use App\Models\WorkflowHistory;
+use App\Traits\Livewire\GuardsApplicationView;
 use App\Traits\Livewire\HasPlaceholder;
 use Illuminate\Database\Eloquent\Collection;
 use Livewire\Attributes\Computed;
@@ -12,6 +13,12 @@ use Livewire\Component;
 
 class Index extends Component
 {
+    public function boot(): void
+    {
+        abort_unless(auth()->user()?->isInternal(), 403);
+    }
+
+    use GuardsApplicationView;
     use HasPlaceholder;
 
     public Application $application;
@@ -37,6 +44,7 @@ class Index extends Component
 
         return $this->application
             ->recommendations()
+            ->when(! auth()->user()->hasOfficeAccess(), fn ($query) => $query->whereKey($this->application->current_recommendation_uuid))
             ->oldest()
             ->with([
                 'claimantAssignment',
@@ -53,6 +61,7 @@ class Index extends Component
 
     public function showRemarks(?string $modelClass, ?string $uuid)
     {
+        $this->authorize('view', $this->application);
         $this->dispatch('load-remarks', modelClass: null, id: null);
 
         $this->dispatch('load-remarks', modelClass: (string) 'App\\Models\\'.$modelClass, id: $uuid);
@@ -62,7 +71,8 @@ class Index extends Component
     {
         $this->application->loadMissing('client');
         $this->authorize('view', $this->application);
-        $history = WorkflowHistory::whereHas('recommendation', fn ($query) => $query->where('application_uuid', $this->application->uuid))->whereKey($uuid)->firstOrFail();
+        $history = WorkflowHistory::whereHas('recommendation', fn ($query) => $query->where('application_uuid', $this->application->uuid)
+            ->when(! auth()->user()->hasOfficeAccess(), fn ($q) => $q->whereKey($this->application->current_recommendation_uuid)))->whereKey($uuid)->firstOrFail();
         $this->dispatch('load-details', historyUuid: $history->uuid);
     }
 
