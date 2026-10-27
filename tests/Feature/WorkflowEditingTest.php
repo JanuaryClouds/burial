@@ -494,6 +494,7 @@ class WorkflowEditingTest extends TestCase
         $run = $this->recommend($this->application(), $version);
         $stages = $version->stages()->orderBy('position')->get();
         $staff = User::create(['email' => 'staff@example.test']);
+        $staff->assignRole(Role::findOrCreate('staff', 'web'));
         $staff->givePermissionTo('Workflow Review');
         $this->actingAs($staff);
         $this->log($run, $stages[0]->uuid);

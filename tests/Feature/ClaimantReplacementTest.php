@@ -522,11 +522,13 @@ class ClaimantReplacementTest extends TestCase
             $this->assertLessThanOrEqual(30, count($queries), 'Application rendering exceeded its query budget.');
             $this->assertLessThanOrEqual(2, count($queries) - $unique, 'Repeated queries returned to application rendering.');
             DB::flushQueryLog();
-            $page->call('refreshApplication')->assertSee('Change Claimant')->assertDontSee('Search by name, email, or account ID');
+            $page->call('$refresh')->assertSee('Change Claimant')->assertDontSee('Search by name, email, or account ID');
             $queries = DB::getQueryLog();
             $unique = collect($queries)->map(fn ($query) => json_encode([$query['query'], $query['bindings']]))->unique()->count();
             $this->assertLessThanOrEqual(30, count($queries), 'Polling exceeded its query budget.');
             $this->assertLessThanOrEqual(2, count($queries) - $unique, 'Polling repeats identical queries.');
+            $applicationReads = collect($queries)->filter(fn ($query) => preg_match('/^select \* from ["`]?applications["`]? where /i', $query['query']));
+            $this->assertCount(1, $applicationReads, 'Polling should use the freshly hydrated application instead of fetching it again.');
             $this->actingAs($this->admin->fresh());
             DB::flushQueryLog();
             $this->get(route('application.show', $application))->assertOk();
@@ -538,6 +540,26 @@ class ClaimantReplacementTest extends TestCase
             DB::disableQueryLog();
             DB::flushQueryLog();
         }
+    }
+
+    public function test_tracker_slip_modal_preserves_its_bootstrap_root_during_polling(): void
+    {
+        $application = $this->application();
+        $page = Livewire::test(Show::class, ['application' => $application]);
+        $qrCode = $page->get('qrCode');
+        $barcode = $page->get('barcode');
+        $assertModal = function (string $html) use ($application): void {
+            $this->assertSame(1, preg_match_all('/<div\b[^>]*\bid="tracker-slip-modal"[^>]*>/', $html, $matches));
+            $this->assertStringContainsString('wire:ignore.self', $matches[0][0]);
+            $this->assertStringContainsString('wire:key="tracker-slip-'.$application->uuid.'"', $matches[0][0]);
+            $this->assertStringContainsString('data-bs-target="#tracker-slip-modal"', $html);
+        };
+        $assertModal($page->html());
+        $application->client->user->update(['first_name' => 'Updated During Poll']);
+        $page->call('$refresh')->assertSee('Updated During Poll');
+        $assertModal($page->html());
+        $this->assertSame($qrCode, $page->get('qrCode'));
+        $this->assertSame($barcode, $page->get('barcode'));
     }
 
     public function test_claimant_change_page_has_separate_summary_and_form_and_requires_superadmin(): void
