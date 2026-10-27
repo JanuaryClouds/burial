@@ -13,6 +13,7 @@ class RoleService
      */
     public function store(array $data): RoleContract
     {
+        $this->authorizeName($data['name']);
         if (empty($data['guard_name'])) {
             $data['guard_name'] = 'web';
         }
@@ -25,6 +26,8 @@ class RoleService
 
     public function update(array $data, Role $role): Role
     {
+        $this->authorizeName($role->name);
+        $this->authorizeName($data['name']);
         $role->syncPermissions(array_keys($data['permissions']));
 
         $role->update([
@@ -39,6 +42,14 @@ class RoleService
      */
     public function destroyRole(Role $role): bool
     {
+        $this->authorizeName($role->name);
+
         return $role->delete();
+    }
+
+    private function authorizeName(string $name): void
+    {
+        abort_unless(auth()->user()?->isSystemAdministrator(), 403);
+        abort_if(in_array(strtolower(trim($name)), ['staff', 'cswdo', 'superadmin'], true), 403);
     }
 }
