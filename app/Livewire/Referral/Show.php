@@ -4,11 +4,13 @@ namespace App\Livewire\Referral;
 
 use App\Models\Application;
 use App\Models\Referral;
+use App\Traits\Livewire\GuardsApplicationView;
 use App\Traits\Livewire\HasPlaceholder;
 use Livewire\Component;
 
 class Show extends Component
 {
+    use GuardsApplicationView;
     use HasPlaceholder;
 
     public Application $application;

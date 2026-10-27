@@ -26,15 +26,7 @@ class ApplicationPolicy
      */
     public function view(User $user, Application $application): bool
     {
-        if ($user->loadMissing('roles')->roles->isNotEmpty()) {
-            return true;
-        }
-
-        if ($user->id === $application->client->user_id || $application->claimantAssignments()->whereHas('client', fn ($q) => $q->where('user_id', $user->id))->exists()) {
-            return true;
-        }
-
-        return false;
+        return app(ApplicationAccessService::class)->view($user, $application);
     }
 
     /**

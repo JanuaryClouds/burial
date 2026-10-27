@@ -6,12 +6,15 @@ use App\Models\Application;
 use App\Models\DocumentRequirement;
 use App\Services\ApplicationService;
 use App\Services\InterviewService;
+use App\Traits\Livewire\GuardsApplicationView;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
 class Show extends Component
 {
+    use GuardsApplicationView;
+
     public Application $application;
 
     private ApplicationService $services;
