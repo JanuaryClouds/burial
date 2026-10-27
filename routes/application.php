@@ -11,6 +11,7 @@ Route::name('application.')
     ->prefix('application')
     ->group(function () {
         Route::get('/', [ApplicationController::class, 'index'])
+            ->middleware('can:view-record-index')
             ->name('index');
 
         Route::get('/create', [ApplicationController::class, 'create'])
@@ -18,7 +19,7 @@ Route::name('application.')
             ->name('create');
 
         Route::get('/search', [ApplicationController::class, 'search'])
-            ->middleware('can:viewAny,\App\Models\Application')
+            ->middleware('can:search-applications')
             ->name('search');
 
         Route::prefix('/{application}')
