@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ApplicationController;
+use App\Http\Controllers\DocumentTemplateController;
 use App\Http\Controllers\ImageController;
 use App\Livewire\Assessment\Create as AssessmentCreate;
 use App\Livewire\Recommendation\Create as RecommendationCreate;
@@ -65,16 +66,20 @@ Route::name('application.')
 
                 Route::controller(ApplicationController::class)
                     ->group(function () {
+                        Route::get('/templates/{template}/download', [DocumentTemplateController::class, 'download'])
+                            ->middleware(['can:view,application', 'can:office-access'])
+                            ->name('templates.download');
+
                         Route::get('/tracker-slip', 'codes')
                             ->middleware('can:view,application')
                             ->name('tracker-slip');
 
                         Route::get('/print', 'print')
-                            ->middleware(['can:view,application', 'role:staff|superadmin'])
+                            ->middleware(['can:view,application', 'can:office-access'])
                             ->name('print');
 
                         Route::get('/certificate', 'certificate')
-                            ->middleware(['can:view,application', 'role:staff|superadmin'])
+                            ->middleware(['can:view,application', 'can:office-access'])
                             ->name('certificate');
                     });
             });

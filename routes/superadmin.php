@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\UserController;
 use App\Http\Controllers\DocumentRequirementController;
+use App\Http\Controllers\DocumentTemplateController;
 use App\Http\Controllers\FuneralAssistanceTypeController;
 use App\Http\Controllers\ModeOfAssistanceController;
 use App\Http\Controllers\RoleController;
@@ -32,6 +33,9 @@ Route::middleware('role:superadmin')
 
                 Route::get('/{funeralAssistanceType}/edit', 'edit')
                     ->name('edit');
+
+                Route::get('/{funeralAssistanceType}/templates/{template}/download', [DocumentTemplateController::class, 'original'])
+                    ->name('templates.download');
             });
 
         Route::controller(ModeOfAssistanceController::class)
