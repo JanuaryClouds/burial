@@ -48,6 +48,8 @@ class Edit extends Component
                 'type' => 'error',
                 'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation'),
             ]);
+
+            return;
         }
 
         try {
