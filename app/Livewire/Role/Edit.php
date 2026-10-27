@@ -13,6 +13,11 @@ use Spatie\Permission\Models\Role;
 
 class Edit extends Component
 {
+    public function boot(): void
+    {
+        abort_unless(auth()->user()?->isSystemAdministrator(), 403);
+    }
+
     use HasPlaceholder;
 
     public ?Role $role = null;
@@ -27,6 +32,7 @@ class Edit extends Component
 
     public function mount(Role $role)
     {
+        $this->authorize('update', $role);
         $this->role = $role;
 
         $this->permissionsOptions = Permission::orderBy('name', 'asc')

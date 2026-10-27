@@ -9,6 +9,11 @@ use Spatie\Permission\Models\Role;
 
 class Index extends Component
 {
+    public function boot(): void
+    {
+        abort_unless(auth()->user()?->isSystemAdministrator(), 403);
+    }
+
     public Collection $roles;
 
     public Collection $mappedRoles;
@@ -25,7 +30,7 @@ class Index extends Component
     public function loadData()
     {
         $this->roles = Role::select('id', 'name')
-            ->whereNotIn('name', ['superadmin', 'staff'])
+            ->whereNotIn('name', ['superadmin', 'staff', 'CSWDO'])
             ->get();
 
         $this->mappedRoles = $this->roles
