@@ -1,5 +1,13 @@
 <div class="d-flex flex-column gap-6" wire:poll.10s="loadData">
 
+    @if (auth()->user()->isInternal() && ! auth()->user()->hasOfficeAccess())
+        @can('search-applications')
+            <livewire:application.search />
+        @else
+            <x-card>Your account has no operational access assigned. Please contact a superadmin.</x-card>
+        @endcan
+    @else
+
     @if ($isStaffDashboard)
         <div class="row dashboard-overview">
             <div class="col-12 col-lg-7">
@@ -32,5 +40,6 @@
             @include('dashboard.partials.charts')
         </div>
         {{-- end::Charts --}}
+    @endif
     @endif
 </div>

@@ -30,7 +30,7 @@ class ReferralController extends Controller
 
         $allData = [];
         $allDataColumns = [];
-        if (auth()->user()->hasRole('staff')) {
+        if (auth()->user()->hasOfficeAccess()) {
             $allData = $this->referralServices->index();
             $allDataColumns = $this->dataTableServices->getColumns($allData);
         }

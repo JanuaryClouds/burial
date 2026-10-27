@@ -19,7 +19,7 @@
                     @if ($assignment->reason)
                         <p class="mb-0"><strong>Reason:</strong> {{ $assignment->reason }}</p>
                     @endif
-                    @if ($assignment->ended_at && auth()->user()->hasAnyRole(['staff', 'superadmin']))
+                    @if ($assignment->ended_at && auth()->user()->hasOfficeAccess())
                         <div class="border-top pt-3 mt-1 d-flex flex-column gap-3">
                             <h5 class="mb-0">Previous processing cycle <span class="text-muted fs-7">(read-only)</span></h5>
                             @foreach ($assignment->interviews as $interview)

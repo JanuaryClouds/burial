@@ -75,7 +75,7 @@ class Show extends Component
         $history = $this->application->claimantAssignments->sortBy('sequence');
         if ($history->count() > 1) {
             $history->load(['interviews', 'assignedBy', 'relationship']);
-            if (auth()->user()->hasAnyRole(['staff', 'superadmin'])) {
+            if (auth()->user()->hasOfficeAccess()) {
                 $history->load(['assessments', 'recommendations.workflow']);
             }
         }

@@ -25,7 +25,7 @@ class ReferralPolicy
             return false;
         }
 
-        return $user->can('Create Referral');
+        return $user->canOfficeAction('Create Referral');
     }
 
     /**

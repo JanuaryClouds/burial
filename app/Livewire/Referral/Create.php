@@ -6,12 +6,20 @@ use App\Livewire\Forms\ReferralForm;
 use App\Models\Application;
 use App\Services\ActivityLoggerService;
 use App\Services\ApplicationProcessingService;
+use App\Traits\Livewire\GuardsOfficeForm;
 use App\Traits\Livewire\HasPlaceholder;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 class Create extends Component
 {
+    use GuardsOfficeForm;
+
+    public function bootOfficeAccess(): void
+    {
+        abort_unless(auth()->user()?->canOfficeAction('Create Referral'), 403);
+    }
+
     use HasPlaceholder;
 
     public Application $application;

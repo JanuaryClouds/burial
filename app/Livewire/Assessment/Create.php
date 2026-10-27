@@ -7,6 +7,7 @@ use App\Models\Application;
 use App\Models\Assessment;
 use App\Services\ActivityLoggerService;
 use App\Services\AssessmentService;
+use App\Traits\Livewire\GuardsOfficeForm;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Locked;
@@ -14,6 +15,13 @@ use Livewire\Component;
 
 class Create extends Component
 {
+    use GuardsOfficeForm;
+
+    public function bootOfficeAccess(): void
+    {
+        abort_unless(auth()->user()?->canOfficeAction('Create Assessment'), 403);
+    }
+
     public Application $application;
 
     #[Locked]

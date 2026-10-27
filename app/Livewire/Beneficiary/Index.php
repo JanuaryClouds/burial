@@ -5,6 +5,7 @@ namespace App\Livewire\Beneficiary;
 use App\Models\Beneficiary;
 use App\Services\BeneficiaryService;
 use App\Services\DataTableService;
+use App\Traits\Livewire\GuardsRecordIndex;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -33,6 +34,8 @@ class Index extends Component
 
     public Collection $beneficiariesPerMonth;
 
+    use GuardsRecordIndex;
+
     public function mount()
     {
         $this->dataTableId = (string) Str::uuid();
@@ -42,7 +45,7 @@ class Index extends Component
     public function loadData()
     {
         $this->beneficiaries = Beneficiary::index(
-            Auth::user()->roles()->count() > 0 ? null : Auth::id()
+            Auth::user()->hasOfficeAccess() ? null : Auth::id()
         )
             ->orderBy('created_at', 'desc')
             ->get();

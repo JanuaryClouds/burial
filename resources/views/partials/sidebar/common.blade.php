@@ -5,7 +5,7 @@
 	'iconPathsCount' => 2,
 	'label' => 'Dashboard',
 ])
-@unlessrole('staff')
+@if (! auth()->user()->isInternal())
 	@include('components.sidebar.link', [
 		'route' => route('client.create'),
 		'activeLink' => '',
@@ -14,4 +14,4 @@
 		'label' => 'Apply',
 		'description' => 'Apply as Applicant',
 	])
-@endunlessrole
+@endif

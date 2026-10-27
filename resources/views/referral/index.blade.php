@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('content')
 	<div class="d-flex flex-column gap-4">
-		@role('staff')
+		@can('office-access')
 			<div class="card multicolor-border">
 				<div class="card-header">
 					<h5 class="card-title">All Referrals</h5>
@@ -27,6 +27,6 @@
 					])
 				</div>
 			</div>
-		@endrole
+		@endcan
 	</div>
 @endsection

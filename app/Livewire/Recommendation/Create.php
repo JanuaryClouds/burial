@@ -9,6 +9,7 @@ use App\Models\ModeOfAssistance;
 use App\Models\Recommendation;
 use App\Models\Workflow;
 use App\Services\RecommendationService;
+use App\Traits\Livewire\GuardsOfficeForm;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
@@ -16,6 +17,13 @@ use Livewire\Component;
 
 class Create extends Component
 {
+    use GuardsOfficeForm;
+
+    public function bootOfficeAccess(): void
+    {
+        abort_unless(auth()->user()?->canOfficeAction('Create Recommendation'), 403);
+    }
+
     public Application $application;
 
     public array $funeralAssistanceTypes = [];

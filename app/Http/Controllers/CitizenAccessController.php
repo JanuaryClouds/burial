@@ -149,7 +149,7 @@ class CitizenAccessController extends Controller
             $token = $user->createToken('fileserver')->plainTextToken;
         }
 
-        $redirect = auth()->user()->hasRole('staff')
+        $redirect = auth()->user()->isInternal()
             ? route('dashboard')
             : (auth()->user()->clients()->exists() ? route('dashboard') : route('client.create'));
 

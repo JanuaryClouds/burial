@@ -15,11 +15,7 @@ class BeneficiaryPolicy
      */
     public function viewAny(User $user): bool
     {
-        if ($user->roles()->count() > 0) {
-            return true;
-        }
-
-        return false;
+        return $user->hasOfficeAccess();
     }
 
     /**
@@ -27,8 +23,12 @@ class BeneficiaryPolicy
      */
     public function view(User $user, Beneficiary $beneficiary): bool
     {
-        if ($user->roles()->count() > 0) {
+        if ($user->hasOfficeAccess()) {
             return true;
+        }
+
+        if ($user->isInternal()) {
+            return false;
         }
 
         if ($user->id == $beneficiary->created_by) {
@@ -43,11 +43,7 @@ class BeneficiaryPolicy
      */
     public function create(User $user): bool
     {
-        if ($user->roles()->count() == 0) {
-            return true;
-        }
-
-        return false;
+        return ! $user->isInternal();
     }
 
     /**

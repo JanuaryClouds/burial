@@ -1,12 +1,12 @@
 <div class='d-flex flex-column gap-6'
 	wire:poll.10s='loadData'>
-	@role('staff')
+	@can('office-access')
 		{{-- start::Statistics --}}
 		<div>
 			@include('beneficiary.index.partials.statistics')
 		</div>
 		{{-- end::Statistics --}}
-	@endrole
+	@endcan
 
 	{{-- start::Index --}}
 	<div>
@@ -15,7 +15,7 @@
 				'columns' => $columns,
 				'dataTableId' => $dataTableId,
 			])
-			@unlessrole('staff')
+			@if (! auth()->user()->isInternal())
 				<x-slot:footer>
 					<a href="{{ route('beneficiary.create') }}"
 						class="btn btn-sm btn-primary">
@@ -23,16 +23,16 @@
 						New Beneficiary
 					</a>
 				</x-slot:footer>
-			@endunlessrole
+			@endif
 		</x-card>
 	</div>
 	{{-- end::Index --}}
 
-	@role('staff')
+	@can('office-access')
 		{{-- start::Charts --}}
 		<div>
 			@include('beneficiary.index.partials.charts')
 		</div>
 		{{-- end::Charts --}}
-	@endrole
+	@endcan
 </div>

@@ -71,10 +71,10 @@ class DashboardTest extends TestCase
             'beneficiary_uuid' => $beneficiary->uuid, 'relationship_id' => 1]);
     }
 
-    public function test_staff_and_superadmin_without_staff_role_see_activity_and_both_charts(): void
+    public function test_cswdo_and_superadmin_without_staff_role_see_activity_and_both_charts(): void
     {
         $application = $this->application();
-        foreach (['staff', 'superadmin'] as $role) {
+        foreach (['CSWDO', 'superadmin'] as $role) {
             $this->actingAs($this->user($role));
             Livewire::test(Dashboard::class)
                 ->assertSee('Recently submitted applications')
@@ -91,7 +91,7 @@ class DashboardTest extends TestCase
 
     public function test_recent_list_is_limited_and_sorted_by_submission_then_uuid(): void
     {
-        $this->actingAs($this->user('staff'));
+        $this->actingAs($this->user('CSWDO'));
         $applications = collect(range(1, 22))->map(function ($index) {
             $application = $this->application();
             $application->forceFill(['created_at' => now()->startOfDay()->addMinutes(intdiv($index, 2))])->saveQuietly();
@@ -111,7 +111,7 @@ class DashboardTest extends TestCase
 
     public function test_empty_state_and_poll_refresh_include_a_new_submission(): void
     {
-        $this->actingAs($this->user('staff'));
+        $this->actingAs($this->user('CSWDO'));
         $component = Livewire::test(Dashboard::class)->assertSee('No applications submitted yet');
         $application = $this->application();
         $component->call('loadData')->assertSee($application->tracking_no)

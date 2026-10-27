@@ -6,11 +6,19 @@ use App\Livewire\Forms\ClosureForm;
 use App\Models\Application;
 use App\Services\ActivityLoggerService;
 use App\Services\ApplicationProcessingService;
+use App\Traits\Livewire\GuardsOfficeForm;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 class Create extends Component
 {
+    use GuardsOfficeForm;
+
+    public function bootOfficeAccess(): void
+    {
+        abort_unless(auth()->user()?->canOfficeAction('Create Closure'), 403);
+    }
+
     public Application $application;
 
     #[Locked]

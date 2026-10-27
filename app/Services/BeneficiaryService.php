@@ -186,6 +186,8 @@ class BeneficiaryService
      */
     public function store(array $data): Beneficiary
     {
+        Gate::authorize('create', Beneficiary::class);
+
         return Beneficiary::create([
             'first_name' => $data['firstName'],
             'middle_name' => $data['middleName'],

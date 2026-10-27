@@ -14,6 +14,12 @@ use Livewire\Component;
 
 class Create extends Component
 {
+    public function boot(): void
+    {
+        abort_unless(auth()->user()?->isInternal(), 403);
+    }
+
+    use GuardsApplicationView;
     use HasPlaceholder;
 
     public Application $application;

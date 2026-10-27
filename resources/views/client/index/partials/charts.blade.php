@@ -1,5 +1,5 @@
 <div class='row'>
-	@role('staff')
+	@can('office-access')
 		<div class="col-12 col-md-6">
 			<x-card>
 				<x-slot:header>Clients Per Month</x-slot:header>
@@ -8,5 +8,5 @@
 					chartType="line" />
 			</x-card>
 		</div>
-	@endrole
+	@endcan
 </div>

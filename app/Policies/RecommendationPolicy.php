@@ -4,16 +4,13 @@ namespace App\Policies;
 
 use App\Models\Application;
 use App\Models\User;
+use App\Services\ApplicationAccessService;
 
 class RecommendationPolicy
 {
-    public function view(User $user): bool
+    public function view(User $user, ?Application $application = null): bool
     {
-        if ($user->loadMissing('roles')->roles->isNotEmpty()) {
-            return true;
-        }
-
-        return false;
+        return $application ? $user->isInternal() && app(ApplicationAccessService::class)->view($user, $application) : $user->hasOfficeAccess();
     }
 
     public function create(User $user, Application $application): bool
@@ -50,6 +47,6 @@ class RecommendationPolicy
             return true;
         }
 
-        return $user->can('Create Recommendation');
+        return $user->canOfficeAction('Create Recommendation');
     }
 }

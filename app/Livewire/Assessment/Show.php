@@ -19,6 +19,10 @@ class Show extends Component
 
     public function render()
     {
+        $application = $this->assessment->application()->firstOrFail();
+        abort_unless(auth()->user()?->isInternal() && auth()->user()->can('view', $application), 403);
+        abort_unless(auth()->user()->hasOfficeAccess() || $application->current_claimant_assignment_uuid === $this->assessment->claimant_assignment_uuid, 403);
+
         return view('livewire.assessment.show');
     }
 }

@@ -12,7 +12,7 @@ class ReportPolicy
             return true;
         }
 
-        return $user->hasPermissionTo('report.view');
+        return $user->canOfficeAction('View Report');
     }
 
     public function create(User $user): bool
@@ -21,6 +21,6 @@ class ReportPolicy
             return true;
         }
 
-        return $user->hasPermissionTo('report.create');
+        return $user->canOfficeAction('Create Report');
     }
 }
