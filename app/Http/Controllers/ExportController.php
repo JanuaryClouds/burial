@@ -15,6 +15,7 @@ class ExportController extends Controller
 
     public function applications()
     {
+        $this->authorize('create-reports');
         $templatePath = storage_path('app/templates/burial-assistances-template.xlsx');
         $spreadsheet = IOFactory::load($templatePath);
 

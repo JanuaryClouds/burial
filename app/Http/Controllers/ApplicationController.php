@@ -32,6 +32,8 @@ class ApplicationController extends Controller
      */
     public function index()
     {
+        $this->authorize('view-record-index');
+
         return view('application.index', [
             'pageTitle' => 'Applications',
         ]);
@@ -136,6 +138,8 @@ class ApplicationController extends Controller
      */
     public function search()
     {
+        $this->authorize('search-applications');
+
         return view('application.search', [
             'pageTitle' => 'Search Application',
         ]);

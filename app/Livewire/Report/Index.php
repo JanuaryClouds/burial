@@ -11,6 +11,11 @@ use Livewire\Component;
 
 class Index extends Component
 {
+    public function boot(): void
+    {
+        $this->authorize('view-reports');
+    }
+
     #[Validate('required|date|before_or_equal:endDate')]
     public ?string $startDate = null;
 

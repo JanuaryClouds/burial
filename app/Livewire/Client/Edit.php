@@ -26,6 +26,12 @@ class Edit extends Component
 {
     use HasOptions, HasPlaceholder;
 
+    public function hydrate(): void
+    {
+        $this->client->refresh();
+        $this->authorize('update', $this->client);
+    }
+
     public Client $client;
 
     public ClientDemographic $demographic;
@@ -44,6 +50,8 @@ class Edit extends Component
 
     public function mount(Client $client)
     {
+        $this->authorize('update', $client);
+
         $psaServices = app(PsaClassificationService::class);
 
         $this->client = $client;
@@ -227,6 +235,8 @@ class Edit extends Component
 
     public function render()
     {
+        $this->authorize('update', $this->client);
+
         return view('livewire.client.edit');
     }
 }

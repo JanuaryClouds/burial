@@ -8,6 +8,7 @@ Route::name('client.')
     ->prefix('client')
     ->group(function () {
         Route::get('/', 'index')
+            ->middleware('can:view-record-index')
             ->name('index');
 
         Route::get('/create', 'create')

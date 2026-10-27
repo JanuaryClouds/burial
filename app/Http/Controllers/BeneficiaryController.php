@@ -22,6 +22,8 @@ class BeneficiaryController extends Controller
 
     public function index()
     {
+        $this->authorize('view-record-index');
+
         return view('beneficiary.index', [
             'pageTitle' => 'Beneficiaries',
         ]);
@@ -29,6 +31,8 @@ class BeneficiaryController extends Controller
 
     public function create()
     {
+        $this->authorize('create', Beneficiary::class);
+
         return view('beneficiary.create', [
             'pageTitle' => 'Register a Beneficiary',
         ]);

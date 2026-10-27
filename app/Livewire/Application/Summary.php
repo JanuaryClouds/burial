@@ -6,11 +6,13 @@ use App\Models\Application;
 use App\Models\Beneficiary;
 use App\Models\Client;
 use App\Services\ApplicationService;
+use App\Traits\Livewire\GuardsApplicationView;
 use App\Traits\Livewire\HasPlaceholder;
 use Livewire\Component;
 
 class Summary extends Component
 {
+    use GuardsApplicationView;
     use HasPlaceholder;
 
     public Application $application;
