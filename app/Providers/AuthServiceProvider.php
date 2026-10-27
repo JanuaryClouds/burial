@@ -25,6 +25,7 @@ use App\Policies\RolePolicy;
 use App\Policies\UserPolicy;
 use App\Policies\WorkflowHistoryPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Gate;
 use Spatie\Permission\Models\Role;
 
 class AuthServiceProvider extends ServiceProvider
@@ -54,6 +55,10 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Gate::define('office-access', fn (User $user) => $user->hasOfficeAccess());
+        Gate::define('search-applications', fn (User $user) => $user->canSearchApplications());
+        Gate::define('view-record-index', fn (User $user) => ! $user->isInternal() || $user->hasOfficeAccess());
+        Gate::define('view-reports', fn (User $user) => $user->canOfficeAction('View Report') || $user->canOfficeAction('View Any Report'));
+        Gate::define('create-reports', fn (User $user) => $user->canOfficeAction('Create Report'));
     }
 }
