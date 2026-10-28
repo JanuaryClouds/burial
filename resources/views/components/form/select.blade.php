@@ -57,15 +57,10 @@
 			@endforeach
 		</select>
 	</div>
-	@php
-		$modifiedAttributes = new \Illuminate\View\ComponentAttributeBag(
-		    collect($attributes->whereStartsWith('wire:model')->getAttributes())
-		        ->map(fn($value) => $value . '_display')
-		        ->all(),
-		);
-	@endphp
-	<input {{ $modifiedAttributes }}
-		type="hidden"
+	{{-- Display labels are not automatically Livewire properties. Address forms
+	     populate their labels in their selection hooks. Keep the native form
+	     field without inventing e.g. demographicsForm.sexId_display bindings. --}}
+	<input type="hidden"
 		name="{{ $name }}_display"
 		id="{{ $id ?? $name }}_display">
 	<input type="hidden"
