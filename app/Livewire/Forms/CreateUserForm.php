@@ -3,6 +3,7 @@
 namespace App\Livewire\Forms;
 
 use App\Models\User;
+use App\Services\Auth\PasswordPolicy;
 use Livewire\Attributes\Validate;
 use Livewire\Form;
 
@@ -23,7 +24,6 @@ class CreateUserForm extends Form
     #[Validate('required|email|unique:users,email')]
     public ?string $email = null;
 
-    #[Validate('required|string|max:255')]
     public ?string $password = null;
 
     #[Validate('required|string|same:password')]
@@ -37,6 +37,11 @@ class CreateUserForm extends Form
 
     #[Validate('array')]
     public array $roles = [];
+
+    protected function rules(): array
+    {
+        return ['password' => PasswordPolicy::rules()];
+    }
 
     public function setUser(User $user)
     {
