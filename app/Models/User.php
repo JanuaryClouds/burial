@@ -81,6 +81,7 @@ class User extends Authenticatable
         'contact_number',
         'password',
         'is_active',
+        'password_change_required',
     ];
 
     protected $hidden = [
@@ -89,6 +90,8 @@ class User extends Authenticatable
     ];
 
     protected $casts = [
+        'is_active' => 'boolean',
+        'password_change_required' => 'boolean',
         'first_name' => 'encrypted',
         'middle_name' => 'encrypted',
         'last_name' => 'encrypted',
@@ -97,6 +100,15 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    protected static function booted(): void
+    {
+        static::updated(function (User $user): void {
+            if ($user->wasChanged('is_active') && ! $user->is_active) {
+                $user->tokens()->delete();
+            }
+        });
+    }
 
     /**
      * Summary of fullname

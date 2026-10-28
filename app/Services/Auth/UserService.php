@@ -33,9 +33,6 @@ class UserService
     public function index()
     {
         return User::select(['id', 'first_name', 'middle_name', 'last_name', 'email', 'contact_number', 'is_active'])
-            ->whereDoesntHave('roles', function ($query) {
-                $query->where('name', 'superadmin');
-            })
             ->get()
             ->map(function ($user) {
                 return [
@@ -53,7 +50,14 @@ class UserService
 
     public function store(array $data)
     {
+        app(AccountAccess::class)->assertWritable();
         abort_unless(auth()->user()?->isSystemAdministrator(), 403);
+        abort_if(filled($data['citizen_uuid'] ?? null), 403);
+        Validator::make($data, [
+            'email' => ['required', 'email', Rule::unique('users', 'email')],
+            'password' => PasswordPolicy::rules(),
+            'confirmPassword' => ['required', 'same:password'],
+        ])->validate();
         $roles = $this->selectedRoles($data['roles'] ?? []);
 
         return DB::transaction(function () use ($data, $roles) {
@@ -71,9 +75,18 @@ class UserService
 
     public function update(array $data, User $user)
     {
+        app(AccountAccess::class)->assertWritable();
+        foreach (['password', 'newPassword', 'new_password', 'currentPassword', 'current_password', 'confirmNewPassword', 'password_confirmation', 'citizen_uuid', 'password_change_required'] as $field) {
+            abort_if(filled($data[$field] ?? null), 403, 'Use your own password-change form.');
+        }
         Gate::authorize('update', $user);
         $admin = auth()->user()->isSystemAdministrator();
         $selected = $this->selectedRoles($data['roles'] ?? []);
+        abort_if(filled($user->citizen_uuid) && ($selected || $user->isInternal()), 403, 'Portal accounts cannot be converted into staff accounts.');
+        Validator::make($data, [
+            'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($user->id)],
+            'isActive' => ['sometimes', 'boolean'],
+        ])->validate();
         $current = $user->roles()->whereNotIn('name', ['staff', 'superadmin'])->pluck('name')->all();
         if (! $admin) {
             sort($selected);
