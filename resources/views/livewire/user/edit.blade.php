@@ -37,31 +37,10 @@
 				:required="true" />
 		</div>
 	</div>
-	<div class="row">
-		@if (Auth::id() === $user->id)
-			<div class="col-12 col-md-4">
-				<x-form.input wire:model.live.blur='form.currentPassword'
-					name="form.currentPassword"
-					label="Current Password"
-					type="password" />
-			</div>
-			<div class="col-12 col-md-4">
-				<x-form.input wire:model.live.blur='form.newPassword'
-					name="form.newPassword"
-					label="New Password"
-					type="password" />
-			</div>
-			<div class="col-12 col-md-4">
-				<x-form.input wire:model.live.blur='form.confirmNewPassword'
-					name="form.confirmNewPassword"
-					label="Confirm Password"
-					type="password" />
-			</div>
-		@endif
-	</div>
+
 	@role('superadmin')
 		<x-form.check wire:model='form.isActive'
-			name="form.isActive"
+			name="form.isActive" :disabled="auth()->id() === $user->id"
 			:checked="$user->is_active"
 			label="Active" />
 		<div class="row">
