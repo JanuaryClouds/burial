@@ -2,7 +2,7 @@
     <x-slot:header>Client's Relationship to the Beneficiary</x-slot:header>
     @if ($beneficiaryUuid && $clientUuid)
         <x-form.select wire:model.live="relationshipId" name="relationshipId"
-            label="Client\'s Relationship to the Beneficiary" :required="true" :options="$relationships ?? []" />
+            label="Clients Relationship to the Beneficiary" :required="true" :options="$relationships ?? []" />
     @else
         <x-alert>
             <x-slot:icon>
