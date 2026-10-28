@@ -6,16 +6,25 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Spatie\Permission\Models\Role;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class UserService
 {
     public function login(array $data)
     {
-        if (Auth::attempt($data)) {
+        if (Auth::attempt([...$data, 'citizen_uuid' => null, 'is_active' => true])) {
             $user = Auth::user();
-            Auth::login($user);
+            if (! app(AccountAccess::class)->isInternal($user)) {
+                Auth::logout();
+                throw new \RuntimeException('Invalid login credentials.');
+            }
+            session(['account.staff_hash' => $user->getAuthPassword()]);
 
             return $user;
         }
@@ -65,7 +74,7 @@ class UserService
                 'first_name' => $data['firstName'], 'middle_name' => $data['middleName'] ?? null,
                 'last_name' => $data['lastName'], 'suffix' => $data['suffix'] ?? null,
                 'email' => $data['email'], 'contact_number' => $data['contactNumber'],
-                'is_active' => true, 'password' => $data['password'],
+                'is_active' => true, 'password' => $data['password'], 'password_change_required' => true,
             ]);
             $user->syncRoles(array_merge(['staff'], $roles));
 
@@ -95,16 +104,24 @@ class UserService
         }
 
         return DB::transaction(function () use ($data, $user, $admin, $selected) {
+            // All administrator status changes use the same ordered lock set.
+            $administrators = User::whereHas('roles', fn ($q) => $q->where('name', 'superadmin'))
+                ->orderBy('id')->lockForUpdate()->get();
+            $user = User::whereKey($user->id)->lockForUpdate()->firstOrFail();
+            app(AccountAccess::class)->assertWritable();
+            abort_if(filled($user->citizen_uuid) && ($selected || $user->isInternal()), 403);
             $attributes = [
                 'first_name' => $data['firstName'], 'middle_name' => $data['middleName'] ?? null,
                 'last_name' => $data['lastName'], 'suffix' => $data['suffix'] ?? null,
                 'email' => $data['email'], 'contact_number' => $data['contactNumber'],
             ];
-            if (filled($data['newPassword'] ?? null)) {
-                $attributes['password'] = $data['newPassword'];
-            }
             if ($admin) {
-                $attributes['is_active'] = $data['isActive'];
+                $active = (bool) ($data['isActive'] ?? $user->is_active);
+                if (! $active && $user->is_active) {
+                    abort_if($user->id === auth()->id(), 403, 'You cannot deactivate your own account.');
+                    abort_if($administrators->contains('id', $user->id) && $administrators->where('is_active', true)->count() <= 1, 403, 'The last active superadmin cannot be deactivated.');
+                }
+                $attributes['is_active'] = $active;
                 $protected = $user->roles()->whereIn('name', ['staff', 'superadmin'])->pluck('name')->all();
                 if ($user->isInternal() || $selected) {
                     $protected[] = 'staff';
