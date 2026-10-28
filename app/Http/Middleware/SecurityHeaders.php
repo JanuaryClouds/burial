@@ -15,35 +15,30 @@ class SecurityHeaders
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $nonce = base64_encode(random_bytes(16));
+        // Nonces belong to documents, never users or sessions.
+        $nonce = base64_encode(random_bytes(32));
+        $request->attributes->set('csp_nonce', $nonce);
+        // Debugbar detects this binding when it injects its own trusted scripts.
+        // This does not require Vite or rewrite arbitrary response HTML.
+        app()->instance('csp-nonce', $nonce);
         view()->share('nonce', $nonce);
 
         $response = $next($request);
 
-        // $response->headers->set('X-Frame-Options', 'DENY');
-        // $response->headers->set('X-Content-Type-Options', 'nosniff');
-        // $response->headers->set('Referrer-Policy', 'strict-origin');
-        // $response->headers->set(
-        //     'Permissions-Policy',
-        //     'camera=(), microphone=(), geolocation=(), payment=(), usb=(), accelerometer=(), gyroscope=(), magnetometer=()'
-        // );
-
-        // $csp = "default-src 'self'; "
-        //     ."script-src 'self' 'nonce-$nonce' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://cdn.datatables.net; "
-        //     ."style-src 'self' 'unsafe-inline' https://cdn.datatables.net https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; "
-        //     ."connect-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://cdn.datatables.net https://code.jquery.com; "
-        //     ."font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com; "
-        //     ."img-src 'self' data:; " // TODO Update when fileserver API is working
-        //     ."form-action 'self'; "
-        //     ."object-src 'none'; "
-        //     ."frame-ancestors 'none'; "
-        //     ."base-uri 'self';";
-
-        // $isProduction = config('app.env') === 'production';
-        // $cspHeader = $isProduction ? 'Content-Security-Policy' : 'Content-Security-Policy-Report-Only';
-        // $response->headers->set($cspHeader, $csp);
-
-        // $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+        if (! str_contains(strtolower($response->headers->get('Content-Type', '')), 'text/html')) {
+            return $response;
+        }
+        $mode = config('csp.mode', 'report-only');
+        if ($mode === 'off') {
+            return $response;
+        }
+        $directives = config('csp.directives', []);
+        $directives['script-src'][] = "'nonce-{$nonce}'";
+        $policy = collect($directives)->map(fn ($sources, $directive) => $directive.' '.implode(' ', $sources))->implode('; ');
+        $header = $mode === 'enforce' ? 'Content-Security-Policy' : 'Content-Security-Policy-Report-Only';
+        $response->headers->set($header, $policy.';');
+        // Shared HTML caches must not reuse a document nonce for another visitor.
+        $response->headers->set('Cache-Control', 'private, no-store');
 
         return $response;
     }
