@@ -171,7 +171,17 @@ class UserController extends Controller
 
         try {
             $user = User::find($user->id);
-            $user = $this->userServices->update($request->validated(), $user);
+            $data = $request->validated();
+            $roles = array_key_exists('roles', $data)
+                ? Role::whereIn('id', $data['roles'] ?? [])->pluck('name')
+                : $user->roles()->whereNotIn('name', ['staff', 'superadmin'])->pluck('name');
+            $user = $this->userServices->update([
+                'firstName' => $data['first_name'], 'middleName' => $data['middle_name'] ?? null,
+                'lastName' => $data['last_name'], 'suffix' => $data['suffix'] ?? null,
+                'email' => $user->email, 'contactNumber' => $data['contact_number'],
+                'isActive' => $data['is_active'] ?? $user->is_active,
+                'roles' => $roles->mapWithKeys(fn ($role) => [$role => true])->all(),
+            ], $user);
 
             return redirect()->route('user.edit', $user)->with('success', 'User updated successfully.');
         } catch (Exception $e) {
@@ -182,7 +192,14 @@ class UserController extends Controller
     public function store(CreateUserRequest $request)
     {
         try {
-            $user = $this->userServices->storeUser($request->validated());
+            $data = $request->validated();
+            $user = $this->userServices->store([
+                'firstName' => $data['first_name'], 'middleName' => $data['middle_name'] ?? null,
+                'lastName' => $data['last_name'], 'suffix' => $data['suffix'] ?? null,
+                'email' => $data['email'], 'contactNumber' => $data['contact_number'],
+                'password' => $data['password'], 'confirmPassword' => $request->input('password_confirmation'),
+                'roles' => [],
+            ]);
 
             return redirect()->route('user.edit', $user)->with('success', 'User created successfully.');
         } catch (Exception $e) {
