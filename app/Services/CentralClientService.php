@@ -82,6 +82,9 @@ class CentralClientService
         }
 
         $user = User::firstWhere($key === 'uuid' ? 'citizen_uuid' : $key, $value);
+        if ($user && $user->isInternal()) {
+            return null;
+        }
         $userEmail = $user?->email ?? '';
         if (config('services.portal.users.enable.get')) {
             if (! Str::endsWith($userEmail, [
@@ -99,6 +102,9 @@ class CentralClientService
 
         if ($user) {
             if (! empty($citizenData)) {
+                if (User::where('email', $citizenData[0]['email'])->whereKeyNot($user->id)->exists()) {
+                    return null;
+                }
                 $user->fill([
                     'first_name' => $citizenData[0]['firstname'],
                     'middle_name' => $citizenData[0]['middlename'],

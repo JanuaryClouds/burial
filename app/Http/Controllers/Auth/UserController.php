@@ -7,10 +7,12 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
+use App\Services\Auth\AccountAccess;
 use App\Services\Auth\UserService;
 use App\Services\DataTableService;
 use Exception;
 use Illuminate\Support\Facades\Auth;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
@@ -25,10 +27,10 @@ class UserController extends Controller
         $browser = request()->header('User-Agent');
         try {
 
-            if (! Auth::attempt($request->validated())) {
+            if (! Auth::attempt([...$request->validated(), 'citizen_uuid' => null])) {
                 return back()
                     ->withErrors(['error' => 'Invalid username or password.'])
-                    ->withInput();
+                    ->withInput($request->only('email'));
             }
 
             $user = Auth::user();
@@ -46,7 +48,7 @@ class UserController extends Controller
                 return redirect()->back()->with('warning', 'Your account is inactive. Please contact the superadmin.');
             }
 
-            if ($user->roles()->count() == 0) {
+            if (! app(AccountAccess::class)->isInternal($user)) {
                 activity()
                     ->causedBy($user)
                     ->withProperties(['ip' => $ip, 'browser' => $browser])
@@ -59,8 +61,11 @@ class UserController extends Controller
                 return redirect()->route('landing.page')->with('warning', 'You do not have permission to access this page');
             }
 
-            $token = $user->createToken('fileserver')->plainTextToken;
-            session(['api_token' => $token]);
+            session(['account.staff_hash' => $user->getAuthPassword()]);
+            if ($user->password_change_required) {
+                return redirect()->route('user.password');
+            }
+            session(['api_token' => $user->createToken('fileserver')->plainTextToken]);
 
             return redirect()
                 ->route('dashboard');
@@ -79,7 +84,7 @@ class UserController extends Controller
         if (auth()->check()) {
             $user = auth()->user();
             $accessLevel = $user->roles()->exists() ? 'Staff' : 'Client';
-            $redirect = $user->clients()->exists() ? route('dashboard') : route('general.intake.form');
+            $redirect = route('dashboard');
 
             return response()->json([
                 'success' => true,
@@ -98,7 +103,7 @@ class UserController extends Controller
     public function logout()
     {
         $user = Auth::user();
-        $user->tokens()->delete();
+        $user?->tokens()->delete();
 
         Auth::logout();
         request()->session()->invalidate();
@@ -124,7 +129,7 @@ class UserController extends Controller
                 request()->session()->invalidate();
                 request()->session()->regenerateToken();
 
-                return redirect(config('services.portal.endpoint'));
+                return redirect(config('services.portal.endpoint') ?: route('landing.page'));
             } else {
                 return redirect()->route('dashboard');
             }
@@ -142,7 +147,7 @@ class UserController extends Controller
 
     public function show(User $user)
     {
-        $this->authorize('show', $user);
+        $this->authorize('view', $user);
 
         return view('user.show', [
             'pageTitle' => $user->fullname(),

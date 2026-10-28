@@ -87,11 +87,12 @@ class CitizenAccessController extends Controller
 
     public function sso()
     {
+        abort_if(auth()->user()?->isInternal(), 403, 'Staff accounts must use the staff login.');
         if (config('services.portal.users.enable.get')) {
             $ssoRequest = request('payload');
             $signature = request('signature');
 
-            if (empty($ssoRequest) || empty($signature)) {
+            if (! is_string($ssoRequest) || ! is_string($signature) || $ssoRequest === '' || $signature === '') {
                 activity()
                     ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
                     ->log('Missing SSO parameters.');
@@ -116,9 +117,10 @@ class CitizenAccessController extends Controller
                 return redirect()->back()->with('error', 'Login Failed.');
             }
 
-            $payload = json_decode(base64_decode($ssoRequest), true);
+            $decoded = base64_decode(strtr($ssoRequest, '-_', '+/'), true);
+            $payload = $decoded === false ? null : json_decode($decoded, true);
 
-            if (! is_array($payload) || empty($payload['citizen_uuid'])) {
+            if (! is_array($payload) || ! is_string($payload['citizen_uuid'] ?? null) || $payload['citizen_uuid'] === '') {
                 activity()
                     ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
                     ->log('Incomplete SSO payload.');
