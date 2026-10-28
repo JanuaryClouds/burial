@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\FuneralAssistanceType;
 use App\Models\Workflow;
+use App\Services\Auth\AccountAccess;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -11,6 +12,7 @@ class FuneralAssistanceTypeService
 {
     public function store(array $data): FuneralAssistanceType
     {
+        app(AccountAccess::class)->assertWritable();
         $hint = filled($data['workflowUuid'] ?? null) ? Workflow::whereKey($data['workflowUuid'])->firstOrFail() : null;
 
         return DB::transaction(function () use ($data, $hint) {
@@ -25,6 +27,7 @@ class FuneralAssistanceTypeService
 
     public function update(array $data, FuneralAssistanceType $type): bool
     {
+        app(AccountAccess::class)->assertWritable();
         $hint = filled($data['workflowUuid'] ?? null) ? Workflow::whereKey($data['workflowUuid'])->firstOrFail() : null;
 
         return DB::transaction(function () use ($data, $type, $hint) {

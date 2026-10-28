@@ -6,6 +6,7 @@ use App\Models\Application;
 use App\Models\ApplicationClaimantAssignment;
 use App\Models\Client;
 use App\Models\SystemSetting;
+use App\Services\Auth\AccountAccess;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
@@ -15,6 +16,7 @@ class ClaimantReplacementService
 {
     public function replace(string $applicationUuid, array $data): ApplicationClaimantAssignment
     {
+        app(AccountAccess::class)->assertWritable();
         abort_unless(auth()->user()?->hasRole('superadmin'), 403);
         Validator::make($data, [
             'client_uuid' => ['required', 'uuid', 'exists:clients,uuid'],

@@ -5,6 +5,7 @@ namespace App\Livewire\System\Settings;
 use App\Livewire\Forms\SystemSettingsForm;
 use App\Models\SystemSetting;
 use App\Services\ActivityLoggerService;
+use App\Services\Auth\AccountAccess;
 use App\Traits\Livewire\HasPlaceholder;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
@@ -26,6 +27,7 @@ class Edit extends Component
 
     public function save()
     {
+        app(AccountAccess::class)->assertWritable();
         abort_unless(auth()->user()?->hasRole('superadmin'), 403);
         try {
             $this->form->validate();

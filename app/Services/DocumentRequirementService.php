@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\DocumentRequirement;
+use App\Services\Auth\AccountAccess;
 
 class DocumentRequirementService
 {
@@ -16,6 +17,8 @@ class DocumentRequirementService
      */
     public function store(array $data): DocumentRequirement
     {
+        app(AccountAccess::class)->assertWritable();
+
         return DocumentRequirement::create([
             'name' => $data['name'],
             'description' => $data['description'] ?? null,
@@ -31,6 +34,7 @@ class DocumentRequirementService
      */
     public function update(DocumentRequirement $document, array $data): DocumentRequirement
     {
+        app(AccountAccess::class)->assertWritable();
         $document->update([
             'name' => $data['name'],
             'description' => $data['description'] ?? null,

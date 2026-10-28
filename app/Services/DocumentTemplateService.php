@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\DocumentTemplate;
 use App\Models\FuneralAssistanceType;
+use App\Services\Auth\AccountAccess;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -15,6 +16,7 @@ class DocumentTemplateService
 {
     public function save(FuneralAssistanceType $type, string $name, UploadedFile $upload, ?string $templateUuid = null): DocumentTemplate
     {
+        app(AccountAccess::class)->assertWritable();
         $this->authorize();
         Validator::make(compact('name', 'upload'), [
             'name' => ['required', 'string', 'max:255'],
@@ -58,6 +60,7 @@ class DocumentTemplateService
 
     public function remove(FuneralAssistanceType $type, string $templateUuid): void
     {
+        app(AccountAccess::class)->assertWritable();
         $this->authorize();
         $path = DB::transaction(function () use ($type, $templateUuid) {
             $template = $type->documentTemplates()->lockForUpdate()->findOrFail($templateUuid);
