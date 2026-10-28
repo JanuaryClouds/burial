@@ -6,6 +6,7 @@ use App\Models\Application;
 use App\Models\ApplicationClaimantAssignment;
 use App\Models\Client;
 use App\Models\Interview;
+use App\Services\Auth\AccountAccess;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -40,6 +41,7 @@ class InterviewService
      */
     public function store(array $data, string $clientUuid, ?string $expectedAssignmentUuid = null): Interview
     {
+        app(AccountAccess::class)->assertWritable();
         Validator::make($data, ['schedule' => ['required', 'date', 'after_or_equal:now']])->validate();
 
         return DB::transaction(function () use ($data, $clientUuid, $expectedAssignmentUuid) {
@@ -68,6 +70,7 @@ class InterviewService
 
     public function done(string $uuid): Interview
     {
+        app(AccountAccess::class)->assertWritable();
         $hint = Interview::findOrFail($uuid);
 
         return DB::transaction(function () use ($hint) {

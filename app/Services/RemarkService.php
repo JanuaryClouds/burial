@@ -6,6 +6,7 @@ use App\Models\Application;
 use App\Models\Recommendation;
 use App\Models\Remark;
 use App\Models\WorkflowHistory;
+use App\Services\Auth\AccountAccess;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -27,6 +28,7 @@ class RemarkService
      */
     public function store(array $data, Model $model): Remark
     {
+        app(AccountAccess::class)->assertWritable();
         abort_unless($this->canRead($model) && (auth()->user()->hasOfficeAccess() || $model instanceof WorkflowHistory), 403);
         $run = $model instanceof Recommendation ? $model
             : ($model instanceof WorkflowHistory ? $model->recommendation()->firstOrFail() : null);

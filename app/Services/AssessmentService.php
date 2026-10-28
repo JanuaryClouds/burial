@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Assessment;
+use App\Services\Auth\AccountAccess;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
@@ -11,6 +12,7 @@ class AssessmentService
 {
     public function store(array $data, string $applicationUuid): Assessment
     {
+        app(AccountAccess::class)->assertWritable();
         Validator::make($data, [
             'expected_assignment_uuid' => ['required', 'uuid'],
             'problem_presented' => ['required', 'string', 'max:65535'],
