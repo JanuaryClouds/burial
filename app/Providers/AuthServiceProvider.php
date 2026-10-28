@@ -24,6 +24,7 @@ use App\Policies\RejectionPolicy;
 use App\Policies\RolePolicy;
 use App\Policies\UserPolicy;
 use App\Policies\WorkflowHistoryPolicy;
+use App\Services\Auth\AccountAccess;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use Spatie\Permission\Models\Role;
@@ -55,6 +56,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Gate::before(fn (User $user, string $ability, array $arguments) => app(AccountAccess::class)->before($user, $ability, $arguments));
         Gate::define('office-access', fn (User $user) => $user->hasOfficeAccess());
         Gate::define('search-applications', fn (User $user) => $user->canSearchApplications());
         Gate::define('view-record-index', fn (User $user) => ! $user->isInternal() || $user->hasOfficeAccess());
