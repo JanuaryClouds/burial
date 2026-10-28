@@ -109,7 +109,7 @@
     <div class="header-offset"></div>
 </div>
 
-<script nonce={{ $nonce ?? '' }}>
+<script nonce="{{ $nonce ?? '' }}">
     function darkMode() {
         const header = document.getElementById('main-header-web');
         const pageTitle = document.getElementById('pageTitle');
