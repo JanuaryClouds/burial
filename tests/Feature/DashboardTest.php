@@ -50,7 +50,7 @@ class DashboardTest extends TestCase
 
     private function user(?string $role = null): User
     {
-        $user = User::create(['first_name' => 'Dashboard', 'last_name' => 'User',
+        $user = User::create(['citizen_uuid' => $role ? null : (string) Str::uuid(), 'first_name' => 'Dashboard', 'last_name' => 'User',
             'email' => Str::uuid().'@example.test', 'password' => 'test-password', 'is_active' => true]);
         if ($role) {
             $user->assignRole(Role::findOrCreate($role, 'web'));
@@ -145,5 +145,64 @@ class DashboardTest extends TestCase
         $this->assertStringContainsString('mailto:cswdotaguigcity@gmail.com', Blade::render('<x-page-footer />'));
         $settings->delete();
         $this->assertStringContainsString('mailto:cswdotaguigcity@gmail.com', Blade::render('<x-page-footer />'));
+    }
+
+    private function captureDashboardQueries(\Closure $callback): array
+    {
+        DB::enableQueryLog();
+        DB::flushQueryLog();
+        try {
+            $callback();
+
+            return DB::getQueryLog();
+        } finally {
+            DB::disableQueryLog();
+            DB::flushQueryLog();
+        }
+    }
+
+    private function assertSingleApplicationGraphLoad(array $queries): void
+    {
+        $applicationQueries = collect($queries)->filter(fn ($query) => preg_match('/^select .* from ["`]?applications["`]?(?:\s|$)/i', $query['query']));
+        $this->assertCount(1, $applicationQueries, 'The dashboard loaded or restored applications more than once in one request.');
+        $graphQueries = collect($queries)->filter(fn ($query) => preg_match('/^select .* from ["`]?(?:applications|clients|interviews|beneficiaries|relationships|assessments|recommendations|workflows|referrals|rejections|cancellations|closures|workflow_stages)["`]?(?:\s|$)/i', $query['query']));
+        $unique = $graphQueries->map(fn ($query) => json_encode([$query['query'], $query['bindings']]))->unique();
+        $this->assertSame($graphQueries->count(), $unique->count(), 'The dashboard repeated queries in its application graph.');
+    }
+
+    public function test_initial_load_and_polls_query_the_application_graph_once_for_staff_and_citizens(): void
+    {
+        foreach (['CSWDO', null] as $role) {
+            $user = $this->user($role);
+            $first = $this->application($user);
+            $this->application();
+            $this->actingAs($user);
+            $component = null;
+            $queries = $this->captureDashboardQueries(function () use (&$component) {
+                $component = Livewire::test(Dashboard::class);
+            });
+            $this->assertSingleApplicationGraphLoad($queries);
+            $component->assertSee($first->tracking_no);
+            $new = $this->application($user);
+            $queries = $this->captureDashboardQueries(fn () => $component->call('loadData'));
+            $this->assertSingleApplicationGraphLoad($queries);
+            $component->assertSee($new->tracking_no);
+            $queries = $this->captureDashboardQueries(fn () => $component->call('$refresh'));
+            $this->assertSingleApplicationGraphLoad($queries);
+        }
+    }
+
+    public function test_poll_after_office_access_revocation_clears_data_without_querying_applications(): void
+    {
+        $application = $this->application();
+        $user = $this->user('staff');
+        $user->assignRole(Role::findOrCreate('CSWDO', 'web'));
+        $this->actingAs($user);
+        $component = Livewire::test(Dashboard::class)->assertSee($application->tracking_no);
+        $user->removeRole('CSWDO');
+        $queries = $this->captureDashboardQueries(fn () => $component->call('loadData'));
+        $component->assertDontSee($application->tracking_no)->assertSee('no operational access')
+            ->assertSet('applicationsPerStatusCount', []);
+        $this->assertFalse(collect($queries)->contains(fn ($query) => str_contains($query['query'], 'from "applications"')));
     }
 }

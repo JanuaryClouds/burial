@@ -12,7 +12,10 @@ use Livewire\Component;
 
 class Dashboard extends Component
 {
-    public Collection $applications;
+    // Do not serialize the eager-loaded graph into Livewire's public snapshot.
+    private Collection $applications;
+
+    private bool $dataLoaded = false;
 
     public Collection $mappedApplications;
 
@@ -34,6 +37,13 @@ class Dashboard extends Component
 
     public function loadData()
     {
+        // mount/actions are followed by render in the same request. Share that
+        // query result only for this component instance, never across requests.
+        if ($this->dataLoaded) {
+            return;
+        }
+        $this->dataLoaded = true;
+
         if (Auth::user()->isInternal() && ! Auth::user()->hasOfficeAccess()) {
             $this->applications = $this->mappedApplications = $this->columns = collect();
             $this->applicationsPerStatus = $this->applicationsPerRelationship = collect();
