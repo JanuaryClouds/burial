@@ -3,9 +3,15 @@
 namespace App\Policies;
 
 use App\Models\User;
+use App\Services\Auth\AccountAccess;
 
 class UserPolicy
 {
+    public function changePassword(User $user, User $model): bool
+    {
+        return $user->id === $model->id && app(AccountAccess::class)->isInternal($user) && (bool) $user->is_active;
+    }
+
     /**
      * Determine whether the user can view any models.
      */
