@@ -117,6 +117,49 @@ class UserService
         });
     }
 
+    public function changePassword(User $user, array $data): void
+    {
+        $user = $user->fresh(['roles']);
+        $access = app(AccountAccess::class);
+        abort_unless($user && auth()->id() === $user->id && $access->isInternal($user) && $access->isActive($user), 403);
+        $key = 'account.password.'.$user->id;
+        if (RateLimiter::tooManyAttempts($key, 5)) {
+            throw ValidationException::withMessages(['currentPassword' => 'Too many attempts. Please wait one minute.']);
+        }
+        RateLimiter::hit($key, 60);
+        Validator::make($data, [
+            'currentPassword' => ['required', 'string'],
+            'newPassword' => PasswordPolicy::rules(),
+            'confirmNewPassword' => ['required', 'same:newPassword'],
+        ])->validate();
+        if (! Hash::check($data['currentPassword'], $user->password)) {
+            throw ValidationException::withMessages(['currentPassword' => 'The current password is incorrect.']);
+        }
+        if (Hash::check($data['newPassword'], $user->password)) {
+            throw ValidationException::withMessages(['newPassword' => 'Choose a password different from your current password.']);
+        }
+        try {
+            DB::transaction(function () use ($user, $data, $access) {
+                $locked = User::whereKey($user->id)->lockForUpdate()->firstOrFail();
+                abort_unless($access->isActive($locked) && $access->isInternal($locked), 403);
+                if (! Hash::check($data['currentPassword'], $locked->password)) {
+                    throw ValidationException::withMessages(['currentPassword' => 'The current password is incorrect.']);
+                }
+                $locked->forceFill(['password' => $data['newPassword'], 'password_change_required' => false])->save();
+                $locked->tokens()->delete();
+                activity('account-management')->causedBy($locked)->performedOn($locked)->log('Owner changed password');
+            });
+        } catch (ValidationException|HttpException $exception) {
+            throw $exception;
+        } catch (\Throwable $exception) {
+            activity('account-management')->causedBy($user)->withProperties(['exception_type' => $exception::class])->log('Password change failed');
+            throw ValidationException::withMessages(['newPassword' => 'The password could not be changed. Please try again.']);
+        }
+        Auth::logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+    }
+
     private function selectedRoles(array $input): array
     {
         $available = Role::where('guard_name', 'web')->whereNotIn('name', ['staff', 'superadmin'])->pluck('name')->all();
