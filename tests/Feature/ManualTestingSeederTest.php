@@ -3,10 +3,15 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use App\Models\Workflow;
+use App\Services\Auth\AccountAccess;
+use App\Services\Auth\SeederAccountContext;
 use Database\Seeders\AdminSeeder;
 use Database\Seeders\PermissionSeeder;
 use Database\Seeders\RoleSeeder;
 use Database\Seeders\UserSeeder;
+use Database\Seeders\WorkflowSeeder;
+use Database\Seeders\WorkflowStageSeeder;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -14,6 +19,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Tests\TestCase;
 
 class ManualTestingSeederTest extends TestCase
@@ -24,7 +30,7 @@ class ManualTestingSeederTest extends TestCase
         config(['database.default' => 'manual_seed_testing',
             'database.connections.manual_seed_testing' => ['driver' => 'sqlite', 'database' => ':memory:', 'prefix' => '', 'foreign_key_constraints' => true],
             'cache.default' => 'array', 'app.key' => 'base64:'.base64_encode(str_repeat('s', 32)),
-            'app.admin_password' => 'manual-test-password', 'services.portal.users.seeder.from_portal' => false]);
+            'app.admin_password' => 'Manual Test Password 9!', 'services.portal.users.seeder.from_portal' => false]);
         foreach (['genders', 'relationships', 'civilStatus', 'religions', 'nationalities', 'educations', 'districts', 'assistances', 'modes'] as $lookup) {
             Cache::put($lookup, collect(), 3600);
         }
@@ -64,7 +70,7 @@ class ManualTestingSeederTest extends TestCase
             $this->assertSame(['Workflow '.$stage], $user->effectivePermissionNames());
             $this->assertTrue($user->canSearchApplications());
         }
-        $this->assertTrue(Hash::check('manual-test-password', $staff->password));
+        $this->assertTrue(Hash::check('Manual Test Password 9!', $staff->password));
         $this->assertSame(0, Role::findByName('staff', 'web')->permissions()->count());
         $this->assertSame(0, Role::findByName('CSWDO', 'web')->permissions()->count());
     }
@@ -129,5 +135,42 @@ class ManualTestingSeederTest extends TestCase
         }
         $this->assertSame($before, $citizen->fresh()->getAttributes());
         $this->assertFalse($citizen->fresh()->isInternal());
+    }
+
+    public function test_invalid_initial_password_is_named_without_exposing_it_or_creating_accounts(): void
+    {
+        $secret = 'weak-test-secret';
+        config(['app.admin_password' => $secret]);
+        foreach ([UserSeeder::class, AdminSeeder::class] as $seeder) {
+            try {
+                $this->seed($seeder);
+                $this->fail('Invalid initial password was accepted.');
+            } catch (\RuntimeException $exception) {
+                $this->assertStringContainsString('ADMIN_PASSWORD', $exception->getMessage());
+                $this->assertStringContainsString('uppercase', $exception->getMessage());
+                $this->assertStringNotContainsString($secret, $exception->getMessage());
+            }
+            $this->assertSame(0, User::count());
+        }
+        Http::assertNothingSent();
+    }
+
+    public function test_workflow_seeders_support_initial_password_accounts_without_clearing_the_flag(): void
+    {
+        $this->seed([UserSeeder::class, AdminSeeder::class]);
+        $admin = User::role('superadmin')->firstOrFail();
+        $hash = $admin->password;
+        $citizen = User::where('email', 'client1@tlcportal.com')->firstOrFail();
+        $this->actingAs($citizen);
+        $this->seed([WorkflowSeeder::class, WorkflowStageSeeder::class]);
+        $this->assertSame(1, Workflow::count());
+        $this->assertNotNull(Workflow::firstOrFail()->published_at);
+        $this->assertSame($citizen->id, auth()->id());
+        $this->assertTrue($admin->fresh()->password_change_required);
+        $this->assertSame($hash, $admin->fresh()->password);
+        $this->assertFalse(SeederAccountContext::permits($admin));
+        $this->actingAs($admin->fresh());
+        $this->expectException(HttpException::class);
+        app(AccountAccess::class)->assertWritable();
     }
 }

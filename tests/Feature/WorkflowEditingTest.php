@@ -13,6 +13,7 @@ use App\Models\Recommendation;
 use App\Models\User;
 use App\Models\Workflow;
 use App\Models\WorkflowHistory;
+use App\Services\Auth\SeederAccountContext;
 use App\Services\RecommendationService;
 use App\Services\WorkflowHistoryService;
 use App\Services\WorkflowVersionAudit;
@@ -711,6 +712,25 @@ class WorkflowEditingTest extends TestCase
             'funeral_assistance_type_uuid' => $type->uuid, 'recommended_by' => auth()->id()]);
         $this->assertSame($run->uuid, $application->fresh()->current_recommendation_uuid);
         $this->assertSame($version->uuid, $run->workflow_uuid);
+    }
+
+    public function test_processing_factories_and_history_seeder_preserve_initial_password_restriction(): void
+    {
+        Schema::table('users', fn (Blueprint $table) => $table->boolean('password_change_required')->default(false));
+        auth()->user()->forceFill(['password_change_required' => true])->save();
+        $actor = auth()->user();
+        $version = Workflow::factory()->create();
+        $type = $this->type($version);
+        $first = $this->application();
+        $run = Recommendation::factory()->create(['application_uuid' => $first->uuid, 'funeral_assistance_type_uuid' => $type->uuid, 'recommended_by' => $actor->id]);
+        WorkflowHistory::factory()->create(['recommendation_uuid' => $run->uuid, 'processed_by' => $actor->id]);
+        $second = $this->application();
+        Recommendation::factory()->create(['application_uuid' => $second->uuid, 'funeral_assistance_type_uuid' => $type->uuid, 'recommended_by' => $actor->id]);
+        (new WorkflowHistorySeeder)->run();
+        $this->assertSame(2, WorkflowHistory::count());
+        $this->assertTrue($actor->fresh()->password_change_required);
+        $this->assertSame($actor->id, auth()->id());
+        $this->assertFalse(SeederAccountContext::permits($actor));
     }
 
     public function test_recommendation_form_preselects_the_suggestion_and_allows_an_override(): void

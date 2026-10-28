@@ -570,7 +570,9 @@ class ClaimantReplacementTest extends TestCase
         $response->assertOk()->assertSee('Application Summary')->assertSee('Search by name, email, or account ID');
         $this->assertSame(1, substr_count($response->getContent(), 'Search by name, email, or account ID'));
         $response->assertDontSee('wire:poll.30s="refreshApplication"', false);
-        $this->actingAs($this->user('Unrelated')->fresh());
+        $unrelated = $this->user('Unrelated');
+        $unrelated->update(['citizen_uuid' => (string) Str::uuid()]);
+        $this->actingAs($unrelated->fresh());
         $this->withoutExceptionHandling();
         $this->expectException(AuthorizationException::class);
         $this->get(route('application.change-claimant', $application));

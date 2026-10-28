@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Services\Auth\PasswordPolicy;
 use App\Services\CentralClientService;
 use Exception;
 use Illuminate\Database\Seeder;
@@ -19,6 +20,11 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+        $emails = array_map(fn ($login) => $login.'@example.org', array_keys($this->internalAccounts()));
+        if (User::whereIn('email', $emails)->count() < count($emails)) {
+            // Fail before portal requests or citizen inserts when the initial secret is invalid.
+            PasswordPolicy::validateSeedPassword(config('app.admin_password'));
+        }
         $centralClientServices = new CentralClientService;
 
         $uatClients = [];
@@ -93,16 +99,11 @@ class UserSeeder extends Seeder
         $this->seedInternalUsers();
     }
 
-    private function seedInternalUsers(): void
+    private function internalAccounts(): array
     {
-        $password = config('app.admin_password');
-        if (! is_string($password) || blank($password)) {
-            throw new RuntimeException('Configure ADMIN_PASSWORD before seeding internal testing accounts.');
-        }
-
         // Fixed example.org identities make authorization scenarios repeatable.
         // These fixtures reset only their own role assignments, never portal clients.
-        $accounts = [
+        return [
             'staff1' => ['Staff Only', []],
             'staff2' => ['CSWDO Read Only', ['CSWDO']],
             'staff3' => ['CSWDO Assessor', ['CSWDO', 'assessor']],
@@ -124,6 +125,12 @@ class UserSeeder extends Seeder
             'workflow-treasury' => ['Workflow Treasury', ['Treasury']],
             'workflow-releasing' => ['Workflow Releasing', ['Releasing']],
         ];
+    }
+
+    private function seedInternalUsers(): void
+    {
+        $password = config('app.admin_password');
+        $accounts = $this->internalAccounts();
 
         // Validate prerequisites before touching any internal fixture assignments.
         foreach (array_unique(array_merge(['staff'], ...array_column($accounts, 1))) as $role) {
@@ -131,9 +138,12 @@ class UserSeeder extends Seeder
         }
         DB::transaction(function () use ($accounts, $password) {
             foreach ($accounts as $login => [$label, $roles]) {
+                if (! User::where('email', $login.'@example.org')->exists()) {
+                    PasswordPolicy::validateSeedPassword($password);
+                }
                 $user = User::firstOrCreate(['email' => $login.'@example.org'], [
                     'first_name' => $label, 'last_name' => 'Test User',
-                    'is_active' => true, 'password' => $password,
+                    'is_active' => true, 'password' => $password, 'password_change_required' => true,
                 ]);
                 if (filled($user->citizen_uuid)) {
                     throw new RuntimeException('An internal fixture email belongs to a portal citizen. No internal fixture roles were changed.');
