@@ -6,6 +6,7 @@ use App\Models\DocumentRequirement;
 use App\Models\FuneralAssistanceType;
 use App\Models\SystemSetting;
 use App\Models\User;
+use App\Services\Auth\AccountAccess;
 use App\Services\CentralClientService;
 use App\Services\ImageService;
 use Illuminate\Http\Request;
@@ -137,21 +138,21 @@ class CitizenAccessController extends Controller
                 return redirect()->route('landing.page')->with('error', 'User not found.');
             }
 
-            if (! $user->is_active) {
-                return redirect()->back()->with('warning', 'Your account is inactive. Please contact the superadmin.');
-            }
         } else {
             $user = User::where('citizen_uuid', request('citizen_uuid'))->firstOrFail();
         }
 
+        abort_unless(app(AccountAccess::class)->isCitizen($user), 403, 'Staff accounts must use the staff login.');
+        abort_if(Auth::check() && Auth::id() !== $user->id, 403, 'Sign out before switching accounts.');
+
         if (! Auth::check()) {
             Auth::login($user);
-            $token = $user->createToken('fileserver')->plainTextToken;
+            if ($user->is_active) {
+                $user->createToken('fileserver');
+            }
         }
 
-        $redirect = auth()->user()->isInternal()
-            ? route('dashboard')
-            : (auth()->user()->clients()->exists() ? route('dashboard') : route('client.create'));
+        $redirect = ! $user->is_active || $user->clients()->exists() ? route('dashboard') : route('client.create');
 
         return redirect()->to($redirect);
     }
