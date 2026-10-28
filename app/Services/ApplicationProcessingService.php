@@ -7,6 +7,7 @@ use App\Models\Cancellation;
 use App\Models\Closure;
 use App\Models\Referral;
 use App\Models\Rejection;
+use App\Services\Auth\AccountAccess;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
@@ -15,6 +16,7 @@ class ApplicationProcessingService
     /** Must be called inside the writer's transaction. */
     public function lock(string $uuid, ?string $expected): Application
     {
+        app(AccountAccess::class)->assertWritable();
         $application = Application::whereKey($uuid)->lockForUpdate()->firstOrFail();
         $application->assertAssignment($expected);
         abort_if($application->isFormerClaimant(auth()->id()), 403);

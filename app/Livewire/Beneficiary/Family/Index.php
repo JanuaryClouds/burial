@@ -6,6 +6,7 @@ use App\Livewire\Forms\BeneficiaryFamilyForm;
 use App\Models\Beneficiary;
 use App\Models\BeneficiaryFamily;
 use App\Services\ActivityLoggerService;
+use App\Services\Auth\AccountAccess;
 use App\Traits\Livewire\HasPlaceholder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -40,6 +41,7 @@ class Index extends Component
 
     public function save()
     {
+        app(AccountAccess::class)->assertWritable();
         $this->authorize('create', [BeneficiaryFamily::class, $this->beneficiary]);
         try {
             $this->form->validate();
@@ -86,23 +88,23 @@ class Index extends Component
 
     public function removeFamilyMember(string $uuid)
     {
-        $member = BeneficiaryFamily::firstWhere('uuid', $uuid);
+        app(AccountAccess::class)->assertWritable();
+        $member = $this->beneficiary->family()->with(['beneficiary.application', 'beneficiary.user'])->findOrFail($uuid);
+        $this->authorize('delete', $member);
 
         try {
             DB::transaction(function () use ($member) {
-                if ($member) {
-                    $member->delete();
+                $member->delete();
 
-                    ActivityLoggerService::logSuccess('Successfully removed family member from beneficiary', [
-                        'beneficiary_uuid' => $this->beneficiary->uuid,
-                        'member_uuid' => $member->uuid,
-                    ]);
+                ActivityLoggerService::logSuccess('Successfully removed family member from beneficiary', [
+                    'beneficiary_uuid' => $this->beneficiary->uuid,
+                    'member_uuid' => $member->uuid,
+                ]);
 
-                    $this->dispatch('notification:toast', [
-                        'type' => 'success',
-                        'text' => 'Family member removed successfully',
-                    ]);
-                }
+                $this->dispatch('notification:toast', [
+                    'type' => 'success',
+                    'text' => 'Family member removed successfully',
+                ]);
             });
         } catch (\Throwable $th) {
             $this->dispatch('notification:toast', [

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Beneficiary;
+use App\Services\Auth\AccountAccess;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -165,6 +166,7 @@ class BeneficiaryService
 
     public function update(Beneficiary $beneficiary, array $data): Beneficiary
     {
+        app(AccountAccess::class)->assertWritable();
         Gate::authorize('update', $beneficiary);
         $beneficiary->update([
             'first_name' => $data['firstName'],
@@ -186,6 +188,7 @@ class BeneficiaryService
      */
     public function store(array $data): Beneficiary
     {
+        app(AccountAccess::class)->assertWritable();
         Gate::authorize('create', Beneficiary::class);
 
         return Beneficiary::create([
