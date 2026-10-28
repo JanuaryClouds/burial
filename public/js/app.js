@@ -7,6 +7,8 @@
 
 "use strict";
 
+import './image-viewer.js';
+
 import updateDistrict from './districts.js';
 import initSelect2 from './select2.js';
 import randomizeMulticolorBorder from './multicolorBorder.js';

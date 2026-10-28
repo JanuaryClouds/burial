@@ -4,11 +4,7 @@
 			{{ Str::title(Str::replace('_', ' ', $alt)) }}
 		</h5>
 		<x-button
-			onclick="window.open(
-			'{{ $src . '/webView' }}',
-			'imageViewer',
-			'width=1000,height=800,resizable=yes,scrollbars=yes'
-		)"
+			data-image-viewer-url="{{ $src . '/webView' }}"
 			class="btn-sm btn-primary"
 			title="View on a new Window"
 			toggle="tooltip"
