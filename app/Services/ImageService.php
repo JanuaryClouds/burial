@@ -9,154 +9,108 @@ use Illuminate\Support\Str;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\FileExtension;
 use Intervention\Image\ImageManager;
-use Laravel\Sanctum\PersonalAccessToken;
+use RuntimeException;
 
 class ImageService
 {
-    protected $serverUrl;
+    protected string $serverUrl;
 
-    protected $serverApi;
+    protected string $serverApi;
+
+    protected bool $mock;
 
     public function __construct()
     {
-        $this->serverUrl = config('services.fileserver.endpoint');
-        $this->serverApi = config('services.fileserver.api');
+        $this->mock = (bool) config('services.fileserver.mock');
+        if ($this->mock && ! app()->environment('local', 'testing')) {
+            throw new RuntimeException('Mock fileserver is only available locally or in tests.');
+        }
+        $port = filter_var(config('services.fileserver.mock_port'), FILTER_VALIDATE_INT, ['options' => ['min_range' => 1024, 'max_range' => 65535]]);
+        if ($this->mock && $port === false) {
+            throw new RuntimeException('Invalid mock fileserver port.');
+        }
+        $this->serverUrl = $this->mock ? 'http://127.0.0.1:'.$port : rtrim((string) config('services.fileserver.endpoint'), '/');
+        $this->serverApi = $this->mock ? '/upload' : '/'.ltrim((string) config('services.fileserver.api'), '/');
     }
 
-    public function get(string $filename)
+    private function request()
     {
-        $filename = basename($filename);
+        // Never redirect an upload carrying credentials to another host.
+        return Http::connectTimeout(5)->timeout(15)->withoutRedirecting();
+    }
 
+    private function requireEndpoint(): void
+    {
+        if ($this->serverUrl === '') {
+            throw new RuntimeException('File server is not configured.');
+        }
+    }
+
+    public function get(string $filename): ?string
+    {
         if (! config('services.fileserver.enable.get')) {
-            $filename = 'test.png';
-        }
-
-        if (empty($this->serverUrl)) {
-            throw new \RuntimeException('File server is not configured');
-        }
-
-        $url = $this->serverUrl.'/burial/'.$filename;
-
-        $request = Http::get($url);
-        if ($request->failed()) {
             return null;
         }
+        $this->requireEndpoint();
+        $response = $this->request()->get($this->serverUrl.'/burial/'.rawurlencode(basename($filename)));
+        if ($response->status() === 404) {
+            return null;
+        }
+        if (! $response->successful()) {
+            throw new RuntimeException('File download failed.');
+        }
 
-        return $request->body();
+        return app(ImagePayload::class)->decrypt($response->body());
     }
 
     public function post(string $filename, $file)
     {
         app(AccountAccess::class)->assertWritable();
-
-        if (config('services.fileserver.enable.post') == false) {
-            $ip = request()->ip();
-            $browser = request()->header('User-Agent');
-
-            activity()
-                ->causedBy(Auth::user())
-                ->withProperties([
-                    'ip' => $ip,
-                    'browser' => $browser,
-                    'filename' => $filename,
-                ])
+        if (! config('services.fileserver.enable.post')) {
+            activity()->causedBy(Auth::user())
+                ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent'), 'filename' => $filename])
                 ->log('File upload service skipped');
 
             return true;
         }
-
-        if (! $file->isValid()) {
-            throw new \RuntimeException($filename.' is not a valid file.');
+        if (! $file->isValid() || ! in_array($file->getMimeType(), ['image/jpeg', 'image/png', 'image/webp'], true)) {
+            throw new RuntimeException($filename.' is not a valid image file.');
         }
-
-        $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
-        if (! in_array($file->getMimeType(), $allowedMimeTypes, true)) {
-            throw new \RuntimeException($filename.' is not a valid image file.');
-        }
-
-        $image = ImageManager::usingDriver(Driver::class)->decode($file);
-        $file = $image->encodeUsingFileExtension(FileExtension::JPG);
-        if (app()->isLocal()) {
-            $filename = 'test-'.$filename;
-        }
-
+        $jpeg = (string) ImageManager::usingDriver(Driver::class)->decode($file)->encodeUsingFileExtension(FileExtension::JPG);
         $filename = Str::slug($filename).'.jpg.enc';
-
-        $url = $this->serverUrl;
-
-        if (empty($url)) {
-            throw new \RuntimeException('File server is not configured');
-        }
-
-        $duplicateCheck = Http::get($url.'/burial/'.$filename);
-        if ($duplicateCheck->successful()) {
-            throw new \RuntimeException($filename.' already exists.');
-        }
-
+        $this->requireEndpoint();
         if (! Auth::check()) {
-            throw new \RuntimeException('You are not logged in.');
+            throw new RuntimeException('You are not logged in.');
         }
-
-        if (Auth::user()->tokens()->count() === 0) {
-            throw new \RuntimeException('No token found. You cannot upload images without a token.');
+        if ($this->mock) {
+            $token = (string) config('services.fileserver.mock_token');
+            if ($token === '') {
+                throw new RuntimeException('Mock fileserver token is not configured.');
+            }
+        } else {
+            // Preserve the remote server's existing, undocumented token protocol.
+            $personalAccessToken = Auth::user()->tokens()->first();
+            if ($personalAccessToken === null) {
+                throw new RuntimeException('No token found. You cannot upload images without a token.');
+            }
+            $token = $personalAccessToken->token.now()->format('Ymd');
         }
-
-        $fileContents = $file;
-        $encKey = config('services.fileserver.enc_key');
-        if (empty($encKey)) {
-            throw new \RuntimeException('Encryption key is empty.');
+        $payload = app(ImagePayload::class)->encrypt($jpeg);
+        $duplicateCheck = $this->request()->get($this->serverUrl.'/burial/'.rawurlencode($filename));
+        if ($duplicateCheck->successful()) {
+            throw new RuntimeException($filename.' already exists.');
         }
-
-        $key = base64_decode(str_replace('base64:', '', $encKey));
-        if (strlen($key) !== 32) {
-            throw new \RuntimeException('Encryption key is invalid. It must be 32 bytes.');
+        if ($duplicateCheck->status() !== 404) {
+            throw new RuntimeException('File existence check failed.');
         }
-
-        $iv = random_bytes(16);
-        $cipher = 'AES-256-CBC';
-
-        $encrypted = openssl_encrypt(
-            $fileContents,
-            $cipher,
-            $key,
-            OPENSSL_RAW_DATA,
-            $iv
-        );
-
-        if ($encrypted === false) {
-            throw new \RuntimeException('Failed to encrypt file.');
-        }
-
-        $hmac = hash_hmac('sha256', $encrypted, $key, true);
-        $payload = $iv.$hmac.$encrypted;
-        // This only works in production
-        /** @var PersonalAccessToken $personalAccessToken */
-        $personalAccessToken = Auth::user()->tokens()->first();
-
-        if ($personalAccessToken == null) {
-            throw new \RuntimeException('No token found. You cannot upload images without a token.');
-        }
-
-        $token = $personalAccessToken->token.now()->format('Ymd');
-
-        $response = Http::asMultipart()
-            ->timeout(15)
-            ->retry(3, 200)
-            ->attach('file', $payload, $filename)
-            ->post($this->serverUrl.$this->serverApi, [
-                'token' => $token,
-            ]);
-
-        if ($response->failed() || (isset($response->json()['status']) && $response->json()['status'] === 'error')) {
-            $ip = request()->ip();
-            $browser = request()->header('User-Agent');
-
-            activity()
-                ->causedBy(Auth::user())
-                ->withProperties(['ip' => $ip, 'browser' => $browser])
+        // No automatic retry: the server may have stored a timed-out upload.
+        $response = $this->request()->asMultipart()->attach('file', $payload, $filename)
+            ->post($this->serverUrl.$this->serverApi, ['token' => $token]);
+        if (! $response->successful() || $response->json('status') === 'error') {
+            activity()->causedBy(Auth::user())
+                ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent')])
                 ->log('Failed to upload file: '.$filename);
-
-            throw new \RuntimeException("{$response->status()}: Failed to upload file: ".$filename);
+            throw new RuntimeException($response->status().': Failed to upload file: '.$filename);
         }
 
         return true;

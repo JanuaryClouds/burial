@@ -392,7 +392,7 @@ class ClaimantReplacementTest extends TestCase
         $images->shouldReceive('get')->once()->with((app()->isLocal() ? 'test-' : '').$application->tracking_no.'-death-certificate.jpg.enc')->andReturn('retained-image');
         $controller = new ImageController($images);
         $this->actingAs($former);
-        $this->assertSame('retained-image', $controller->get($application->fresh(), 'death_certificate'));
+        $this->assertSame('retained-image', $controller->get($application->fresh(), 'death_certificate')->getContent());
         try {
             $controller->get($application->fresh(), 'another-application-death_certificate');
             $this->fail('Invalid document key accepted.');
