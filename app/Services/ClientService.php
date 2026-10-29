@@ -14,6 +14,7 @@ use App\Models\FuneralAssistance;
 use App\Models\ModeOfAssistance;
 use App\Models\SystemSetting;
 use App\Models\User;
+use App\Services\Auth\AccountAccess;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -118,6 +119,7 @@ class ClientService
      */
     public function store(array $data): Client
     {
+        app(AccountAccess::class)->assertWritable();
         Gate::authorize('create', Client::class);
 
         return Client::create([
@@ -129,6 +131,7 @@ class ClientService
 
     public function update(Client $client, array $data): Client
     {
+        app(AccountAccess::class)->assertWritable();
         Gate::authorize('update', $client);
         $client->update([
             'date_of_birth' => $data['dateOfBirth'],
@@ -205,6 +208,8 @@ class ClientService
      */
     public function storeClient(array $data, User $user, array $images)
     {
+        app(AccountAccess::class)->assertWritable();
+
         return DB::transaction(function () use ($data, $user, $images) {
             $tracking_no = $this->generateTrackingNo();
 

@@ -1,3 +1,22 @@
+function escapeTableText(value) {
+	const div = document.createElement('div');
+	div.textContent = String(value ?? '');
+	return div.innerHTML;
+}
+
+function sameOriginTableUrl(value) {
+	if (typeof value !== 'string' || !value.trim() || value.trim() === '#') return null;
+	try {
+		const url = new URL(value, window.location.origin);
+		if (!['http:', 'https:'].includes(url.protocol) || url.origin !== window.location.origin || url.username || url.password) {
+			return null;
+		}
+		return url.href;
+	} catch {
+		return null;
+	}
+}
+
 function selectDataTables() {
 	let dataTables = $('.data-table');
 	if (dataTables.length == 0) return;
@@ -9,32 +28,34 @@ function selectDataTables() {
 }
 
 function initDataTable(dataTable) {
-	let columns = dataTable.data('columns') || [];
+	if (!dataTable.length || $.fn.DataTable.isDataTable(dataTable[0])) return;
+	let columns = (dataTable.data('columns') || []).map(column => ({
+		...column,
+		// DataTables also uses display output for responsive detail rows.
+		render: (value, type) => ['display', 'filter'].includes(type)
+			? escapeTableText(value) : (value ?? ''),
+	}));
+	// DataTables merges the table's data attributes after explicit options.
+	dataTable.data('columns', columns);
 	let route = dataTable.data('route') ?? '#';
 	let dataset = dataTable.data('rows') || [];
 	let dataSrc = dataTable.data('src') || null;
 	let countPerPage = dataTable.data('count-per-page') || 10;
 
-	const escapeHtml = (str) => {
-		const div = document.createElement('div');
-		div.textContent = str;
-		return div.innerHTML;
-	}
-
 	if (dataTable.hasClass('with-status')) {
 		const statusColumn = columns.find(column => column.data === 'status');
 
 		if (statusColumn) {
-			statusColumn.render = (_, __, row) => {
-				const rawStatus = row.status.label || 'pending';
-				const badgeClass = row.status.badgeColor || 'primary';
-				const status = escapeHtml(rawStatus);
-				return `
-					<span class="badge badge-${badgeClass}">
-						${status.toUpperCase()}
-					</span>
-				`;
-			}
+			statusColumn.render = (value, type) => {
+				const label = String(value && typeof value === 'object' ? (value.label ?? 'pending') : (value ?? 'pending'));
+				if (type !== 'display') return type === 'filter' ? escapeTableText(label) : label;
+				const colors = ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark'];
+				const color = colors.includes(value?.badgeColor) ? value.badgeColor : 'primary';
+				const badge = document.createElement('span');
+				badge.className = `badge badge-${color}`;
+				badge.textContent = label.toUpperCase();
+				return badge.outerHTML;
+			};
 		}
 	}
 
@@ -46,30 +67,25 @@ function initDataTable(dataTable) {
 			actionsColumn.searchable = false;
 			actionsColumn.className = 'text-center';
 
-			actionsColumn.render = (_, __, row) => {
-				const routeValue = row.show_route || '#';
-				const isValidPath = routeValue.startsWith('/') && !routeValue.startsWith('//');
-				const isSameOrigin = routeValue.startsWith(window.location.origin);
-				if (!isValidPath && !isSameOrigin) {
-					console.warn(`Invalid route: ${routeValue}`);
-					return '';
-				}
-				const safeRoute = encodeURI(routeValue);
-				if (safeRoute === '#' || safeRoute === '' || safeRoute === undefined ||
-					safeRoute === null) return '';
-				return ` 
-						<a href="${safeRoute}" class="btn btn-sm btn-primary hover-scale">
-							<i class="ki-duotone ki-eye pe-1">
-								<span class="path1"></span>
-								<span class="path2"></span>
-								<span class="path3"></span>
-							</i>
-							View
-						</a>
-					`;
-				}
-			}
+			actionsColumn.render = (value, type) => {
+				if (type !== 'display') return '';
+				const url = sameOriginTableUrl(value);
+				if (!url) return '';
+				const link = document.createElement('a');
+				link.href = url;
+				link.className = 'btn btn-sm btn-primary hover-scale';
+				link.innerHTML = `
+					<i class="ki-duotone ki-eye pe-1">
+						<span class="path1"></span>
+						<span class="path2"></span>
+						<span class="path3"></span>
+					</i>
+					View
+				`;
+				return link.outerHTML;
+			};
 		}
+	}
 	
 	dataTable.DataTable({
 		responsive: true,
@@ -122,15 +138,10 @@ function initDataTable(dataTable) {
 	});
 
 
-	$('.data-table').on('click', 'a', function(e) {
+	dataTable.off('click.burialTable', 'a').on('click.burialTable', 'a', function(e) {
 		e.preventDefault();
-		const url = $(this).attr('href');
-		if (url && url !== '#') {
-			const isValidPath = url.startsWith('/') && !url.startsWith('//');
-			const isSameOrigin = url.startsWith(window.location.origin);
-			if (!isValidPath && !isSameOrigin) {
-				return;
-			}
+		const url = sameOriginTableUrl($(this).attr('href'));
+		if (url) {
 	
 			triggerLoading(0.3);
 			setTimeout(() => {
@@ -143,16 +154,15 @@ function initDataTable(dataTable) {
 function refreshDataTable() {
     Livewire.on('refresh-dataTable', (event) => {
         const data = event[0];
-        const selector = `#dataTable-${data.dataTableId}`;
+        const element = document.getElementById(`dataTable-${data.dataTableId}`);
+        if (!element) return;
+        const dataTable = $(element);
 
-        if (!$.fn.DataTable.isDataTable(selector)) {
-            // console.warn(`DataTable not initialized: ${selector}`);
-            // return;
-
-			initDataTable(data.dataTableId);
+        if (!$.fn.DataTable.isDataTable(element)) {
+			initDataTable(dataTable);
         }
     
-        const table = $(selector).DataTable();
+        const table = dataTable.DataTable();
     
         // Preserve the current table state.
         const currentPage = table.page();

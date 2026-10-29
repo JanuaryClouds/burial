@@ -292,7 +292,8 @@ class AccessControlTest extends TestCase
         $service = app(UserService::class);
         $data = $this->profileData($this->user(), []);
         $data['email'] = Str::uuid().'@example.test';
-        $data['password'] = 'test-password';
+        $data['password'] = 'Initial Strong 9!';
+        $data['confirmPassword'] = 'Initial Strong 9!';
         $user = $service->store($data);
         $this->assertTrue($user->hasRole('staff'));
         $this->assertFalse($user->hasRole('CSWDO'));
@@ -375,7 +376,8 @@ class AccessControlTest extends TestCase
         $role->givePermissionTo('Create Assessment');
         $data = $this->profileData($this->user(), ['CSWDO' => true, 'Assessor' => true]);
         $data['email'] = Str::uuid().'@example.test';
-        $data['password'] = 'test-password';
+        $data['password'] = 'Initial Strong 9!';
+        $data['confirmPassword'] = 'Initial Strong 9!';
         $user = app(UserService::class)->store($data);
         $this->assertTrue($user->hasAllRoles(['staff', 'CSWDO', 'Assessor']));
         $this->assertTrue($user->canOfficeAction('Create Assessment'));
@@ -388,7 +390,7 @@ class AccessControlTest extends TestCase
         Livewire::test(\App\Livewire\User\Create::class)->assertSee('CSWDO')
             ->set('form.firstName', 'Office')->set('form.lastName', 'User')
             ->set('form.email', $email)->set('form.contactNumber', '09123456789')
-            ->set('form.password', 'test-password')->set('form.confirmPassword', 'test-password')
+            ->set('form.password', 'Initial Strong 9!')->set('form.confirmPassword', 'Initial Strong 9!')
             ->set('form.roles.CSWDO', true)->call('save')->assertHasNoErrors();
         $this->assertTrue(User::where('email', $email)->firstOrFail()->hasAllRoles(['staff', 'CSWDO']));
     }

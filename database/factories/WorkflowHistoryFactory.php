@@ -6,6 +6,7 @@ use App\Models\Recommendation;
 use App\Models\User;
 use App\Models\WorkflowHistory;
 use App\Models\WorkflowStage;
+use App\Services\Auth\SeederAccountContext;
 use App\Services\WorkflowHistoryService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -30,13 +31,13 @@ class WorkflowHistoryFactory extends Factory
                 $run = Recommendation::with(['application.activeRecommendation.workflow', 'application.workflowStage'])->findOrFail($model->recommendation_uuid);
                 $target = WorkflowStage::with('customFields')->findOrFail($model->to_stage_uuid ?? $run->application->toStage()?->uuid);
 
-                return app(WorkflowHistoryService::class)->store([
+                return SeederAccountContext::run(fn () => app(WorkflowHistoryService::class)->store([
                     'recommendation_uuid' => $run->uuid,
                     'expected_stage_uuid' => $run->application->current_workflow_stage_uuid,
                     'to_stage_uuid' => $target->uuid,
                     'custom_values' => self::sampleValues($target),
                     'date_in' => $model->date_in, 'date_out' => $model->date_out, 'reason' => $model->reason,
-                ]);
+                ]));
             };
             $results = $models instanceof WorkflowHistory ? $store($models) : new Collection($models->map($store)->all());
             $this->callAfterCreating($results instanceof WorkflowHistory ? new Collection([$results]) : $results, $parent);

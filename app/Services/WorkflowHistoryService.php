@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Application;
 use App\Models\Recommendation;
 use App\Models\WorkflowHistory;
+use App\Services\Auth\AccountAccess;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -13,6 +14,7 @@ class WorkflowHistoryService
 {
     public function store(array $data): WorkflowHistory
     {
+        app(AccountAccess::class)->assertWritable();
         Validator::make($data, [
             'recommendation_uuid' => ['required', 'uuid', 'exists:recommendations,uuid'],
             'expected_stage_uuid' => ['present', 'nullable', 'uuid'],

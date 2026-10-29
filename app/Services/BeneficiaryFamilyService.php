@@ -4,11 +4,13 @@ namespace App\Services;
 
 use App\Models\Beneficiary;
 use App\Models\BeneficiaryFamily;
+use App\Services\Auth\AccountAccess;
 
 class BeneficiaryFamilyService
 {
     public function store(array $data, Beneficiary $beneficiary)
     {
+        app(AccountAccess::class)->assertWritable();
         if (is_array($data['fam_name']) && count($data['fam_name']) > 0) {
             foreach ($data['fam_name'] as $index => $name) {
                 BeneficiaryFamily::create([
@@ -30,6 +32,7 @@ class BeneficiaryFamilyService
      */
     public function update(array $data, BeneficiaryFamily $member): void
     {
+        app(AccountAccess::class)->assertWritable();
         $data = [
             'name' => $data['fam_name'] ?? null,
             'sex_id' => $data['fam_sex_id'] ?? null,

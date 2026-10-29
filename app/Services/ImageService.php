@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Services\Auth\AccountAccess;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
@@ -46,6 +47,24 @@ class ImageService
 
     public function post(string $filename, $file)
     {
+        app(AccountAccess::class)->assertWritable();
+
+        if (config('services.fileserver.enable.post') == false) {
+            $ip = request()->ip();
+            $browser = request()->header('User-Agent');
+
+            activity()
+                ->causedBy(Auth::user())
+                ->withProperties([
+                    'ip' => $ip,
+                    'browser' => $browser,
+                    'filename' => $filename,
+                ])
+                ->log('File upload service skipped');
+
+            return true;
+        }
+
         if (! $file->isValid()) {
             throw new \RuntimeException($filename.' is not a valid file.');
         }
@@ -119,22 +138,6 @@ class ImageService
         }
 
         $token = $personalAccessToken->token.now()->format('Ymd');
-
-        if (! config('services.fileserver.enable.post')) {
-            $ip = request()->ip();
-            $browser = request()->header('User-Agent');
-
-            activity()
-                ->causedBy(Auth::user())
-                ->withProperties([
-                    'ip' => $ip,
-                    'browser' => $browser,
-                    'filename' => $filename,
-                ])
-                ->log('File upload service skipped');
-
-            return true;
-        }
 
         $response = Http::asMultipart()
             ->timeout(15)

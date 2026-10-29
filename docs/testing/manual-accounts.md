@@ -6,6 +6,18 @@ These are development/UAT fixtures. They are not an upgrade procedure for existi
 
 All internal test accounts initially use the configured `ADMIN_PASSWORD`. No new hard-coded password is supplied. Existing password hashes are preserved on reruns, including the superadmin's. Accounts must be active to log in through `/admin/login`.
 
+For newly created internal accounts, `ADMIN_PASSWORD` must meet the account policy
+(12 characters, uppercase, lowercase, number, symbol, maximum 72 bytes). Their
+owners must change it at first login. Reruns do not reset an existing password or
+its first-login flag. Citizens continue to use the portal; their UAT credentials
+are preserved. See [account management](../architecture/account-management.md).
+
+If seeding reports an invalid `ADMIN_PASSWORD`, set a unique compliant initial
+password in your environment. Refresh any cached configuration before retrying
+(locally, `php artisan config:clear`; use your normal configuration-cache deployment
+step on Hostinger). The seeder reports the unmet rules without printing the secret
+and checks it before creating citizen fixtures or contacting the portal.
+
 ## Office and access-boundary accounts
 
 All addresses in the following table end in **@example.org**, and every account receives `staff` membership.

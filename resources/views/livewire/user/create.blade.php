@@ -54,6 +54,7 @@
 		</div>
 	</div>
 	<p class="text-muted">Every CMS-created user receives staff membership. Assign CSWDO and operational roles explicitly.</p>
+    <p class="text-muted">The initial password requires 12 characters, uppercase and lowercase letters, a number, and a symbol (maximum 72 bytes). Spaces are allowed. The owner must change it at first login.</p>
     <div class="row">
         @foreach ($this->roleOptions as $roleName)
             <div class="col-md-4"><x-form.check wire:model="form.roles.{{ $roleName }}" :name="'form.roles.'.$roleName" :label="$roleName" :value="$roleName" /></div>

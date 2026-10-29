@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Application;
 use App\Models\FuneralAssistanceType;
 use App\Models\Workflow;
+use App\Services\Auth\AccountAccess;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -14,6 +15,7 @@ class WorkflowVersionService
 {
     public function publish(array $data, ?Workflow $base = null): Workflow
     {
+        app(AccountAccess::class)->assertWritable();
         abort_unless(auth()->user()?->hasRole('superadmin'), 403);
 
         return DB::transaction(function () use ($data, $base) {
@@ -109,6 +111,7 @@ class WorkflowVersionService
 
     public function setAvailability(Workflow $version, bool $active): void
     {
+        app(AccountAccess::class)->assertWritable();
         abort_unless(auth()->user()?->hasRole('superadmin'), 403);
         DB::transaction(function () use ($version, $active) {
             $this->lockGroup($version);

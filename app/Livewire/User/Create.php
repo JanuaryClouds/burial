@@ -6,6 +6,7 @@ use App\Livewire\Forms\CreateUserForm;
 use App\Services\ActivityLoggerService;
 use App\Services\Auth\UserService;
 use App\Traits\Livewire\HasPlaceholder;
+use Illuminate\Validation\ValidationException;
 use Livewire\Component;
 use Spatie\Permission\Models\Role;
 
@@ -35,6 +36,7 @@ class Create extends Component
         try {
             $this->form->validate();
         } catch (\Exception $e) {
+            $this->form->reset('password', 'confirmPassword');
             $this->dispatch('notification:toast', [
                 'type' => 'error',
                 'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation'),
@@ -56,15 +58,19 @@ class Create extends Component
             ]);
 
             $this->form->reset();
+        } catch (ValidationException $exception) {
+            $this->form->reset('password', 'confirmPassword');
+            foreach ($exception->errors() as $key => $messages) {
+                $this->addError('form.'.$key, $messages[0]);
+            }
         } catch (\Throwable $th) {
             $this->dispatch('notification:alert', [
                 'type' => 'error',
                 'text' => app()->hasDebugModeEnabled() ? $th->getMessage() : config('constants.errors.unknown'),
             ]);
 
-            ActivityLoggerService::logException($th, 'Failed to save new user');
-
-            report($th);
+            activity('account-management')->causedBy(auth()->user())
+                ->withProperties(['exception_type' => $th::class])->log('Account creation failed');
         }
     }
 

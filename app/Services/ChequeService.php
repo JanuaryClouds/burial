@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Cheque;
+use App\Services\Auth\AccountAccess;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -11,6 +12,7 @@ class ChequeService
 {
     public function save(string $applicationUuid, string $expectedAssignmentUuid, array $data, ?string $chequeUuid = null): Cheque
     {
+        app(AccountAccess::class)->assertWritable();
         abort_unless(auth()->user()?->hasRole('superadmin'), 403);
         Validator::make($data, [
             'obr_number' => ['required', 'string', 'max:255'],

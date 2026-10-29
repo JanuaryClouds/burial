@@ -8,6 +8,7 @@ use App\Models\ModeOfAssistance;
 use App\Models\Recommendation;
 use App\Models\User;
 use App\Models\Workflow;
+use App\Services\Auth\SeederAccountContext;
 use App\Services\RecommendationService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -40,12 +41,12 @@ class RecommendationFactory extends Factory
                 $application = Application::findOrFail($model->application_uuid);
                 $uuid = Workflow::selectable()->whereKey($model->workflow_uuid)->value('uuid') ??
                     Workflow::selectable()->value('uuid');
-                $run = app(RecommendationService::class)->store([
+                $run = SeederAccountContext::run(fn () => app(RecommendationService::class)->store([
                     'workflow_uuid' => $uuid, 'funeral_assistance_type_uuid' => $model->funeral_assistance_type_uuid,
                     'amount_extended' => $model->amount_extended, 'mode_of_assistance_id' => $model->mode_of_assistance_id,
                     'expected_recommendation_uuid' => $application->current_recommendation_uuid,
                     'expected_assignment_uuid' => $application->current_claimant_assignment_uuid,
-                ], $application->uuid);
+                ], $application->uuid));
                 if ($model->created_at) {
                     $run->update(['created_at' => $model->created_at]);
                 }

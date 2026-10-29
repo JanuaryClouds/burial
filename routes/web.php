@@ -26,6 +26,7 @@ Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
 Route::middleware(['auth', 'active.check'])
     ->group(function () {
+        Route::view('/profile/password', 'user.password')->name('user.password');
         Route::get('/user/{user}', [UserController::class, 'show'])
             ->name('user.show');
 

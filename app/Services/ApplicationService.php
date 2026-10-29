@@ -8,6 +8,7 @@ use App\Models\Beneficiary;
 use App\Models\Client;
 use App\Models\ModeOfAssistance;
 use App\Models\SystemSetting;
+use App\Services\Auth\AccountAccess;
 use Barcode\Facades\Barcode;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Carbon;
@@ -246,6 +247,8 @@ class ApplicationService
 
     public function store(Client $client, Beneficiary $beneficiary, ?int $relationshipId = null)
     {
+        app(AccountAccess::class)->assertWritable();
+
         return DB::transaction(function () use ($client, $beneficiary, $relationshipId) {
             $client = Client::whereKey($client->uuid)->lockForUpdate()->firstOrFail();
             $beneficiary = Beneficiary::whereKey($beneficiary->uuid)->lockForUpdate()->firstOrFail();

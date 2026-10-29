@@ -24,6 +24,10 @@ class Handler extends ExceptionHandler
         'password_confirmation',
         'custom_values',
         'customValues',
+        'currentPassword',
+        'newPassword',
+        'confirmNewPassword',
+        'confirmPassword',
     ];
 
     public function render($request, Throwable $exception)

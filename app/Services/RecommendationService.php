@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Application;
 use App\Models\Recommendation;
 use App\Models\Workflow;
+use App\Services\Auth\AccountAccess;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
@@ -14,6 +15,7 @@ class RecommendationService
 {
     public function store(array $data, string $applicationUuid): Recommendation
     {
+        app(AccountAccess::class)->assertWritable();
         Validator::make($data, [
             'workflow_uuid' => ['required', 'uuid', 'exists:workflows,uuid'],
             'funeral_assistance_type_uuid' => ['required', 'uuid', 'exists:funeral_assistance_types,uuid,deleted_at,NULL'],

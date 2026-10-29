@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>DataTables escaping regression checks</title>
+<link rel="stylesheet" href="../../public/metronic/plugins/custom/datatables/datatables.bundle.css">
+<body>
+<h1>DataTables escaping regression checks</h1>
+<p>Serve this fixture from the repository root using a static test server. It uses no application or database.</p>
+<pre id="results">Running…</pre>
+<div id="tables"></div>
+<script src="../../public/metronic/plugins/global/plugins.bundle.js"></script>
+<script src="../../public/metronic/plugins/custom/datatables/datatables.bundle.js"></script>
+<script type="module">
+import { initDataTable, refreshDataTable } from '../../public/js/datatable.js';
+
+const results = [];
+const check = (name, condition) => {
+    results.push({ name, passed: Boolean(condition) });
+    if (!condition) throw new Error(name);
+};
+const callbacks = {};
+window.Livewire = { on: (name, callback) => { callbacks[name] = callback; } };
+window.triggerLoading = () => {};
+window.tableScriptExecuted = false;
+const payload = '<img src=x onerror="window.tableScriptExecuted=true">';
+const columns = [{ data: 'name' }, { data: 'amount' }, { data: 'empty' }, { data: 'status' }, { data: 'show_route' }];
+const rows = [
+    { name: payload, amount: 20, empty: null, status: { label: '<svg onload="window.tableScriptExecuted=true">', badgeColor: 'success" onclick="window.tableScriptExecuted=true' }, show_route: '/application/one?name=" onmouseover="bad' },
+    { name: `O'Neil & "Family" <literal>`, amount: 3, empty: '', status: 'Draft', show_route: `${location.origin}.evil.test/application` },
+    { name: 'Alpha', amount: 10, empty: null, status: { label: 'approved', badgeColor: 'success' }, show_route: `${location.origin}/application/two` },
+];
+function table(id, data = rows, ajax = false) {
+    const element = document.createElement('table');
+    element.id = `dataTable-${id}`;
+    element.className = 'data-table with-status with-actions';
+    element.style.width = '100%';
+    element.innerHTML = '<thead><tr><th>Name</th><th>Amount</th><th>Empty</th><th>Status</th><th></th></tr></thead><tbody></tbody>';
+    document.getElementById('tables').append(element);
+    $(element).data({ columns, rows: data, route: ajax ? '/fixture-rows' : '#', src: ajax ? 'data' : null, 'count-per-page': 2 });
+    return $(element);
+}
+function hasNoInjectedElements(element) {
+    return !element.querySelector('img, svg, script, [onerror], [onload], [onclick], [onmouseover]');
+}
+
+try {
+    const element = table('initial');
+    initDataTable(element);
+    const api = element.DataTable();
+    check('Initial HTML-like data is literal text', api.cell(0, 0).node().textContent === payload && hasNoInjectedElements(element[0]));
+    check('Quotes and ampersands remain readable', api.cell(1, 0).node().textContent === rows[1].name);
+    check('Numbers and empty values render correctly', api.cell(0, 1).node().textContent === '20' && api.cell(0, 2).node().textContent === '');
+    check('Status labels cannot insert HTML or attributes', api.cell(0, 3).node().querySelector('span').className === 'badge badge-primary' && hasNoInjectedElements(api.cell(0, 3).node()));
+    check('String statuses stay readable', api.cell(1, 3).node().textContent === 'DRAFT');
+    check('Valid status colors survive', api.cell(2, 3).node().querySelector('.badge-success') !== null);
+    const link = api.cell(0, 4).node().querySelector('a');
+    check('Same-origin links use safe attributes', link?.origin === location.origin && !link.hasAttribute('onmouseover'));
+    check('Origin-prefix spoofing is rejected', api.cell(1, 4).node().querySelector('a') === null);
+    for (const value of ['javascript:alert(1)', 'data:text/html,bad', '//evil.test/path', '/\\evil.test/path', `${location.origin}@evil.test/path`, `${location.origin}/`.replace('http:', 'https:'), '', '#', null, 12]) {
+        const renderer = api.settings()[0].aoColumns[4].mRender;
+        check(`Reject unsafe action URL: ${String(value)}`, renderer(value, 'display') === '');
+    }
+    api.search('onerror').draw();
+    check('Search matches literal HTML-like content', api.rows({ search: 'applied' }).count() === 1);
+    api.search('').order([1, 'asc']).draw();
+    check('Numeric sorting uses raw values', api.rows({ order: 'applied' }).data().toArray().map(row => row.amount).join(',') === '3,10,20');
+    api.page(1).draw(false);
+    check('Pagination remains functional', api.page.info().page === 1);
+    const exported = api.buttons.exportData({ modifier: { order: 'index' } }).body;
+    check('Excel export retains readable text', exported.some(row => row[0] === rows[1].name) && exported.some(row => row[0] === payload));
+    // Exercise the responsive extension's actual hidden-column renderer.
+    const detail = $.fn.dataTable.Responsive.defaults.details.renderer(api, 0, [{ hidden: true, columnIndex: 0, rowIndex: 0, title: 'Name', data: api.cell(0, 0).render('display'), className: '' }]);
+    check('Responsive details keep values escaped', detail[0].textContent.includes(payload) && hasNoInjectedElements(detail[0]));
+    initDataTable(element);
+    check('Repeated initialization is harmless', element.DataTable().settings().length === 1);
+    refreshDataTable();
+    callbacks['refresh-dataTable']([{ dataTableId: 'initial', rows }]);
+    check('Livewire refresh preserves state and escaping', api.page.info().page === 1 && api.order()[0][0] === 1 && api.cell(0, 0).node().textContent === payload && hasNoInjectedElements(element[0]));
+    const deferred = table('deferred', []);
+    callbacks['refresh-dataTable']([{ dataTableId: 'deferred', rows }]);
+    check('Refresh initializes a previously uninitialized table', deferred.DataTable().rows().count() === rows.length && hasNoInjectedElements(deferred[0]));
+    callbacks['refresh-dataTable']([{ dataTableId: 'missing', rows }]);
+    check('Refresh of a removed table is harmless', true);
+    const ajaxElement = table('ajax', [], true);
+    const loaded = new Promise(resolve => ajaxElement.one('init.dt', resolve));
+    $.ajaxTransport('+*', options => options.url.startsWith('/fixture-rows') ? {
+        send: (_, complete) => complete(200, 'OK', { text: JSON.stringify({ data: rows }) }, 'Content-Type: application/json'), abort: () => {},
+    } : undefined);
+    initDataTable(ajaxElement);
+    await loaded;
+    check('AJAX-loaded values use the same escaping', ajaxElement.DataTable().cell(0, 0).node().textContent === payload && hasNoInjectedElements(ajaxElement[0]));
+    await new Promise(resolve => setTimeout(resolve, 50));
+    check('Injected scripts never executed', window.tableScriptExecuted === false);
+} catch (error) {
+    if (!results.some(result => !result.passed)) results.push({ name: error.stack, passed: false });
+} finally {
+    window.datatableTestResults = results;
+    document.getElementById('results').textContent = JSON.stringify(results, null, 2);
+    document.title = results.every(result => result.passed) ? 'PASS: DataTables security' : 'FAIL: DataTables security';
+}
+</script>
+</body>
+</html>

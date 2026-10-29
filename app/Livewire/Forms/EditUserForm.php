@@ -29,15 +29,6 @@ class EditUserForm extends Form
     #[Validate('nullable|boolean')]
     public bool $isActive = true;
 
-    #[Validate('nullable|string|max:255|password')]
-    public ?string $currentPassword = null;
-
-    #[Validate('nullable|string|max:255|required_with:currentPassword')]
-    public ?string $newPassword = null;
-
-    #[Validate('nullable|string|max:255|same:newPassword|required_with:currentPassword')]
-    public ?string $confirmNewPassword = null;
-
     #[Validate('nullable|array')]
     public array $roles = [];
 

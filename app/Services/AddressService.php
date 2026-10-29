@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Address;
+use App\Services\Auth\AccountAccess;
 use Illuminate\Database\Eloquent\Model;
 
 class AddressService
@@ -14,6 +15,7 @@ class AddressService
 
     public function store(array $data, Model $model): Address
     {
+        app(AccountAccess::class)->assertWritable();
         $psa = app(PsaClassificationService::class);
 
         $address = Address::create([
@@ -41,6 +43,7 @@ class AddressService
 
     public function update(Address $address, array $data): Address
     {
+        app(AccountAccess::class)->assertWritable();
         $psa = app(PsaClassificationService::class);
 
         $address->update([
@@ -61,6 +64,7 @@ class AddressService
 
     public function destroy(string $uuid)
     {
+        app(AccountAccess::class)->assertWritable();
         //
     }
 }

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
+use Laravel\Sanctum\Contracts\HasAbilities;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
@@ -15,6 +16,12 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, HasRoles, Notifiable;
+
+    /** Web sessions have no token; Sanctum cookie sessions use a TransientToken. */
+    public function currentAccessToken(): ?HasAbilities
+    {
+        return $this->accessToken;
+    }
 
     public function isInternal(): bool
     {
@@ -81,6 +88,7 @@ class User extends Authenticatable
         'contact_number',
         'password',
         'is_active',
+        'password_change_required',
     ];
 
     protected $hidden = [
@@ -89,6 +97,8 @@ class User extends Authenticatable
     ];
 
     protected $casts = [
+        'is_active' => 'boolean',
+        'password_change_required' => 'boolean',
         'first_name' => 'encrypted',
         'middle_name' => 'encrypted',
         'last_name' => 'encrypted',
@@ -97,6 +107,15 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    protected static function booted(): void
+    {
+        static::updated(function (User $user): void {
+            if ($user->wasChanged('is_active') && ! $user->is_active) {
+                $user->tokens()->delete();
+            }
+        });
+    }
 
     /**
      * Summary of fullname

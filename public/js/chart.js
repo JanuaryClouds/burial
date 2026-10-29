@@ -1,3 +1,49 @@
+function getChartPalette() {
+    const styles = getComputedStyle(document.documentElement);
+
+    return Array.from({ length: 16 }, (_, index) =>
+        styles.getPropertyValue(`--chart-color-${index + 1}`).trim()
+    ).filter(Boolean);
+}
+
+/* Chart.js draws onto canvas, so CSS colors must be applied to each dataset.
+ * Keep a label-to-color map per chart so filtering/reordering retains colors.
+ */
+const taguigPalettePlugin = {
+    id: 'taguigPalette',
+    beforeUpdate(chart) {
+        const palette = getChartPalette();
+        if (!palette.length) return;
+
+        if (chart.config.type === 'line') {
+            chart.data.datasets.forEach(dataset => {
+                dataset.borderColor = palette[0];
+                dataset.backgroundColor = palette[0];
+                dataset.pointBackgroundColor = palette[0];
+            });
+            return;
+        }
+
+        const colorsByLabel = chart.$taguigColors || (chart.$taguigColors = new Map());
+        const colors = chart.data.labels.map(label => {
+            const key = String(label);
+            if (!colorsByLabel.has(key)) {
+                const index = colorsByLabel.size;
+                // Extend large category lists without cycling the original colors.
+                const color = palette[index] ||
+                    `hsl(${((index - palette.length) * 137.508 + 12) % 360}, 55%, ${index % 2 ? 42 : 58}%)`;
+                colorsByLabel.set(key, color);
+            }
+            return colorsByLabel.get(key);
+        });
+
+        chart.data.datasets.forEach(dataset => {
+            dataset.backgroundColor = colors;
+            dataset.borderColor = '#ffffff';
+        });
+    }
+};
+
 function checkCharts() {
     window.renderedCharts = window.renderedCharts || [];
     const canvases = document.querySelectorAll('canvas')
@@ -60,15 +106,12 @@ function renderPieChart(chartData, chartId, chartLabels, chartTitle) {
     const piChart = document.getElementById(chartId);
     if (piChart) {
         const chart = new Chart(piChart, {
-            type: 'pie', 
+            type: 'pie',
+            plugins: [taguigPalettePlugin],
             data: {
                 labels: chartLabels,
                 datasets: [{
                     data: chartData,
-                    backgroundColor: [
-                        '#fbbf24', '#f87171', '#60a5fa', '#34d399', '#a78bfa',
-                        '#f472b6', '#38bdf8', '#4ade80', '#facc15', '#818cf8'
-                    ],
                     borderWidth: 1
                 }]
             },
@@ -99,12 +142,12 @@ function renderLineChart(chartData, chartId, chartLabels, chartTitle) {
     if (lineChart) {
         const chart = new Chart(lineChart, {
             type: 'line',
+            plugins: [taguigPalettePlugin],
             data: {
                 labels: chartLabels,
                 datasets: [{
                     data: chartData,
                     fill: false,
-                    borderColor: '#3b82f6',
                     tension: 0.1
                 }],
                 borderWidth: 1
@@ -148,14 +191,11 @@ function renderBarChart(chartData, chartId, chartLabels, chartTitle) {
     if (barChart) {
         const chart = new Chart(barChart, {
             type: 'bar',
+            plugins: [taguigPalettePlugin],
             data: {
                 labels: chartLabels,
                 datasets: [{
                     data: chartData,
-                    backgroundColor: 
-                        ['#3b82f6', '#f87171', '#34d399', '#fbbf24', '#a78bfa',
-                            '#f472b6', '#38bdf8', '#4ade80', '#facc15', '#818cf8',
-                            '#e879f9', '#60a5fa', '#faccd2', '#f47236', '#428cf8'],
                     borderWidth: 1
                 }],
             },

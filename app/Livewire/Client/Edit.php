@@ -40,7 +40,7 @@ class Edit extends Component
 
     public Address $address;
 
-    public ClientDemographicsForm $demographicForm;
+    public ClientDemographicsForm $demographicsForm;
 
     public ClientSocialInfoForm $socialInfoForm;
 
@@ -60,7 +60,7 @@ class Edit extends Component
         $this->socialInfo = $client->socialInfo;
 
         $this->form->setClient($this->client);
-        $this->demographicForm->setDemographics($this->client);
+        $this->demographicsForm->setDemographics($this->client);
         $this->socialInfoForm->setSocialInfo($this->client);
         $this->addressForm->setAddress($this->client);
 
@@ -174,7 +174,7 @@ class Edit extends Component
         try {
             $this->form->validate();
             $this->addressForm->validate();
-            $this->demographicForm->validate();
+            $this->demographicsForm->validate();
             $this->socialInfoForm->validate();
         } catch (ValidationException $e) {
             $this->dispatch('notification:toast', [
@@ -202,7 +202,7 @@ class Edit extends Component
 
                 app(ClientDemographicsService::class)->update(
                     $this->client->demographic,
-                    $this->demographicForm->all()
+                    $this->demographicsForm->all()
                 );
 
                 app(ClientSocialInfoService::class)->update(

@@ -5,6 +5,7 @@ namespace App\Livewire\Beneficiary\Family;
 use App\Livewire\Forms\BeneficiaryFamilyForm;
 use App\Models\BeneficiaryFamily;
 use App\Services\ActivityLoggerService;
+use App\Services\Auth\AccountAccess;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Nette\Schema\ValidationException;
@@ -26,6 +27,7 @@ class Edit extends Component
 
     public function save()
     {
+        app(AccountAccess::class)->assertWritable();
         $this->member->loadMissing('beneficiary');
         $this->authorize('update', $this->member);
         try {

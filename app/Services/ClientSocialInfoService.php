@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Client;
 use App\Models\ClientSocialInfo;
+use App\Services\Auth\AccountAccess;
 
 class ClientSocialInfoService
 {
@@ -19,6 +20,8 @@ class ClientSocialInfoService
 
     public function store(array $data, Client $client)
     {
+        app(AccountAccess::class)->assertWritable();
+
         return ClientSocialInfo::create([
             'client_uuid' => $client->uuid,
             'civil_id' => $data['civilId'],
@@ -36,6 +39,7 @@ class ClientSocialInfoService
 
     public function update(ClientSocialInfo $clientSocialInfo, array $data): ClientSocialInfo
     {
+        app(AccountAccess::class)->assertWritable();
         $clientSocialInfo->update([
             'civil_id' => $data['civilId'],
             'education_id' => $data['educationId'],

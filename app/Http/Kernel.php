@@ -69,6 +69,7 @@ class Kernel extends HttpKernel
             SubstituteBindings::class,
             SecurityHeaders::class,
             Maintenance::class,
+            CheckUserIfActive::class,
         ],
 
         'api' => [

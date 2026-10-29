@@ -16,4 +16,14 @@ class TrimStrings extends Middleware
         'password',
         'password_confirmation',
     ];
+
+    protected function transform($key, $value)
+    {
+        // Livewire nests update properties and action parameters in its JSON body.
+        if (request()->header('X-Livewire') !== null || preg_match('/(?:^|\.)(?:currentPassword|newPassword|confirmNewPassword|confirmPassword)$/', $key)) {
+            return $value;
+        }
+
+        return parent::transform($key, $value);
+    }
 }

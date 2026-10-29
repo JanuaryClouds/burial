@@ -5,6 +5,7 @@ namespace App\Livewire\User;
 use App\Livewire\Forms\EditUserForm;
 use App\Models\User;
 use App\Services\ActivityLoggerService;
+use App\Services\Auth\AccountAccess;
 use App\Services\Auth\UserService;
 use App\Traits\Livewire\HasPlaceholder;
 use Livewire\Component;
@@ -23,8 +24,6 @@ class Edit extends Component
 
     public ?User $user = null;
 
-    public ?string $currentPassword = null;
-
     public array $roleOptions = [];
 
     public function mount(User $user)
@@ -41,6 +40,7 @@ class Edit extends Component
 
     public function save()
     {
+        app(AccountAccess::class)->assertWritable();
         try {
             $this->form->validate();
         } catch (\Exception $e) {
@@ -60,7 +60,7 @@ class Edit extends Component
 
             $this->dispatch('notification:alert', [
                 'type' => 'success',
-                'text' => 'Successfully created updated user',
+                'text' => 'Successfully updated user',
             ]);
 
             ActivityLoggerService::logSuccess('Successfully updated user', [

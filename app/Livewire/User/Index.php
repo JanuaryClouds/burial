@@ -29,7 +29,7 @@ class Index extends Component
 
     public function loadData()
     {
-        $this->users = User::index()
+        $this->users = User::with('roles')
             ->get();
 
         $this->mappedUsers = $this->users
@@ -37,7 +37,7 @@ class Index extends Component
                 return [
                     'id' => $user->id,
                     'name' => $user->fullname(),
-                    'role' => $user->roles()->count() > 0 ? 'Staff' : 'Client',
+                    'role' => $user->roles->contains('name', 'superadmin') ? 'Superadmin' : ($user->roles->isNotEmpty() ? 'Staff' : 'Client'),
                     'active' => $user->is_active,
                     'email' => $user->email,
                     'contact_number' => $user->contact_number,

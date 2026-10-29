@@ -3,6 +3,7 @@
 namespace App\Livewire\Notification;
 
 use App\Models\Notification;
+use App\Services\Auth\AccountAccess;
 use App\Traits\Livewire\HasPlaceholder;
 use Carbon\Carbon;
 use Livewire\Component;
@@ -49,6 +50,7 @@ class Index extends Component
 
     public function markAsRead($id)
     {
+        app(AccountAccess::class)->assertWritable();
         Notification::where('id', $id)
             ->where('notifiable_id', auth()->user()->id)
             ->update(['read_at' => now()]);

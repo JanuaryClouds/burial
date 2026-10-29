@@ -19,6 +19,9 @@
 					<div class="container-xxl">
 						<div class="d-flex flex-column gap-6">
 							<x-page-navigation :current-label="$pageTitle ?? null" />
+                            @if (auth()->check() && ! auth()->user()->is_active && ! auth()->user()->isInternal())
+                                <x-callout class="border-warning bg-light-warning">{{ \App\Services\Auth\AccountAccess::READ_ONLY_MESSAGE }}</x-callout>
+                            @endif
 							@yield('content')
 							@if ($errors->any())
 								<div class="alert alert-warning alert-dismissible fade show"
