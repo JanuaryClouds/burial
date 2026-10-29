@@ -295,6 +295,8 @@ class AccountManagementTest extends TestCase
         $admin = $this->account('superadmin');
         $staff = $this->account('staff');
         $this->signIn($admin);
+        $this->snapshot('/user/'.$admin->id.'/edit', 'user.change-password');
+        $this->get('/user/'.$staff->id.'/edit')->assertOk()->assertDontSee('name="currentPassword"', false);
         foreach ([fn () => app(UserService::class)->update([...$this->profile($staff), 'newPassword' => 'Replacement 9!'], $staff),
             fn () => app(UserService::class)->changePassword($staff, ['currentPassword' => self::PASSWORD, 'newPassword' => 'Replacement 9!', 'confirmNewPassword' => 'Replacement 9!'])] as $attempt) {
             try {
