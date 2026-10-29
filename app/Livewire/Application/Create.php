@@ -126,7 +126,7 @@ class Create extends Component
                         continue;
                     }
 
-                    $filename = $application->tracking_no.'-'.Str::replace($key, '_', '-');
+                    $filename = $application->tracking_no.'-'.Str::replace('_', '-', $key);
                     $imageService->post($filename, $file);
                 }
 
