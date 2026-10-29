@@ -90,7 +90,7 @@ Run commands from the repository root after cloning. Examples use PowerShell, ma
 
 ## External services
 
-Local data and mock citizen access do not make every feature self-contained. Obtain development endpoints and credentials from the maintainer for the flows you need.
+Local data and mock citizen access do not make every feature self-contained. A local file server mock is available below; other integrations require development endpoints and credentials from their maintainers.
 
 | Service | Environment settings | Purpose |
 | --- | --- | --- |
@@ -98,6 +98,7 @@ Local data and mock citizen access do not make every feature self-contained. Obt
 | Portal notifications | `PORTAL_NOTIFICATION_ENABLE_POST`, `PORTAL_NOTIFICATION_ENDPOINT`, `PORTAL_NOTIFICATION_API_KEY` | Citizen notifications |
 | SMS | `SMS_ENABLE_POST`, `SMS_ENDPOINT`, `SMS_API_KEY` | SMS delivery |
 | File server | `FILESERVER_ENABLE_GET`, `FILESERVER_ENABLE_POST`, `FILESERVER_ENDPOINT`, `FILESERVER_API`, `FILESERVER_ENCRYPTION_KEY` | Image retrieval and encrypted uploads |
+| Local mock file server | `FILESERVER_MOCK`, `FILESERVER_MOCK_TOKEN`, `FILESERVER_MOCK_PORT`, `FILESERVER_MOCK_DUPLICATES` | Standalone PHP storage; see [local setup and checks](docs/fileserver-mock.md) |
 | PSA classification | `PSA_CLASSIFICATION`, `PSA_CLASSIFICATION_ENDPOINT`, `PSA_CLASSIFICATION_VERSION`, `PSA_CLASSIFICATION_API_KEY` | Geographic address options |
 | Disbursement | `DISBURSEMENT_SYSTEM_ENABLE_GET`, `DISBURSEMENT_SYSTEM_ENABLE_POST`, `DISBURSEMENT_SYSTEM_ENDPOINT`, `DISBURSEMENT_SYSTEM_API_KEY` | Disbursement integration configuration |
 
