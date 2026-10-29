@@ -5,6 +5,7 @@
 /public/storage
 /storage/*.key
 /storage/logs
+/storage/app/private/fileserver-mock/
 /vendor
 .env
 .env.backup
