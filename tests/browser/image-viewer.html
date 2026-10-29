@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Document viewer regression checks</title>
+<style>.d-none,[hidden]{display:none!important}body{font:16px sans-serif;margin:2rem}[data-document-slot]{padding:1rem;margin:1rem 0;border:1px solid #ccc}img{max-width:100px}</style>
+<h1>Document viewer regression checks</h1>
+<pre id="results">Running…</pre>
+<div id="fixture" data-document-gallery><p data-document-empty hidden>No uploaded documents available.</p></div>
+<script type="module" nonce="image-viewer-fixture">
+const results = [];
+const check = (name, condition) => {
+    results.push({ name, passed: Boolean(condition) });
+    document.querySelector('#results').textContent = JSON.stringify(results, null, 2);
+    if (!condition) throw new Error(name);
+};
+const waitFor = async (condition) => {
+    for (let i = 0; i < 100; i++) {
+        if (condition()) return;
+        await new Promise(resolve => setTimeout(resolve, 20));
+    }
+    throw new Error('Timed out waiting for viewer');
+};
+const canvas = document.createElement('canvas');
+canvas.width = canvas.height = 2;
+const jpeg = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg'));
+const calls = {};
+let aborted = false;
+window.fetch = async (url, options) => {
+    const key = new URL(url).pathname;
+    calls[key] = (calls[key] || 0) + 1;
+    if (key === '/pending') return new Promise((resolve, reject) => options.signal.addEventListener('abort', () => {
+        aborted = true;
+        reject(new DOMException('Aborted', 'AbortError'));
+    }));
+    if (key === '/network') throw new TypeError('Synthetic offline response');
+    if (key === '/missing') return new Response('', { status: 404 });
+    if (key === '/offline') return new Response('', { status: 502 });
+    if (key === '/denied') return new Response('', { status: 403 });
+    if (key === '/login') return new Response('<html>Login</html>', { headers: { 'Content-Type': 'text/html' } });
+    if (key === '/corrupt') return new Response('bad image', { headers: { 'Content-Type': 'image/jpeg' } });
+    return new Response(jpeg, { headers: { 'Content-Type': 'image/jpeg' } });
+};
+const fixture = document.querySelector('#fixture');
+const add = (key) => {
+    const slot = document.createElement('div');
+    slot.hidden = true;
+    slot.dataset.documentSlot = '';
+    slot.innerHTML = `<div data-document-viewer><h2>${key}</h2><button class="d-none" data-image-viewer-url="/${key}/webView">Open</button><p data-document-message hidden></p><img class="d-none" data-document-image-src="/${key}" alt="${key}"></div>`;
+    fixture.append(slot);
+    return slot;
+};
+try {
+    const { initImageViewers } = await import('/image-viewer.js');
+    check('Empty gallery shows its empty state', !fixture.querySelector('[data-document-empty]').hidden);
+    const valid = add('valid');
+    const missing = add('missing');
+    const failures = ['offline', 'denied', 'network', 'login', 'corrupt'].map(add);
+    await waitFor(() => valid.dataset.documentState === 'ready' && missing.dataset.documentState === 'missing' && failures.every(slot => slot.dataset.documentState === 'unavailable'));
+    check('Existing JPEG and popup button are visible', !valid.hidden && !valid.querySelector('img').classList.contains('d-none') && !valid.querySelector('button').classList.contains('d-none'));
+    check('Missing document hides its entire grid slot', missing.hidden && missing.querySelector('img').classList.contains('d-none'));
+    check('Failures show a message without a broken image or popup', failures.every(slot => !slot.hidden && !slot.querySelector('p').hidden && slot.querySelector('img').classList.contains('d-none') && slot.querySelector('button').classList.contains('d-none')));
+    check('One HTTP request per viewer', Object.values(calls).every(count => count === 1));
+    initImageViewers();
+    document.dispatchEvent(new Event('livewire:navigated'));
+    check('Reinitialization and navigation do not refetch existing viewers', Object.values(calls).every(count => count === 1));
+    let opened;
+    window.open = (url) => { opened = url; };
+    valid.querySelector('button').click();
+    check('Popup still opens the authorized application URL', opened === location.origin + '/valid/webView');
+    const pending = add('pending');
+    await waitFor(() => calls['/pending'] === 1);
+    pending.remove();
+    await waitFor(() => aborted);
+    check('Removing a viewer aborts its pending request', aborted);
+    valid.remove();
+    failures.forEach(slot => slot.remove());
+    await waitFor(() => !fixture.querySelector('[data-document-empty]').hidden);
+    check('All-missing gallery shows its empty state', !fixture.querySelector('[data-document-empty]').hidden);
+    document.title = `${results.length} viewer checks passed`;
+    document.querySelector('#results').dataset.passed = 'true';
+} catch (error) {
+    document.querySelector('#results').textContent += '\nFAILED: ' + error.message;
+    document.title = 'Viewer checks FAILED';
+    throw error;
+}
+</script>
+</html>

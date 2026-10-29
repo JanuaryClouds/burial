@@ -81,6 +81,11 @@ return [
     ],
 
     'fileserver' => [
+        'mock' => env('FILESERVER_MOCK', false),
+        'mock_token' => env('FILESERVER_MOCK_TOKEN', ''),
+        'mock_port' => env('FILESERVER_MOCK_PORT', 8099),
+        'mock_duplicates' => env('FILESERVER_MOCK_DUPLICATES', 'reject'),
+        'mock_max_upload_kb' => env('FILESERVER_MOCK_MAX_UPLOAD_KB', 32768),
         'enable' => [
             'get' => env('FILESERVER_ENABLE_GET', false),
             'post' => env('FILESERVER_ENABLE_POST', false),
