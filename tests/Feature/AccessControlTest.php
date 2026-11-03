@@ -69,6 +69,58 @@ class AccessControlTest extends TestCase
         parent::tearDown();
     }
 
+    public function test_record_table_rendering_uses_no_queries_and_preserves_empty_columns(): void
+    {
+        foreach ([
+            \App\Livewire\Application\Index::class, \App\Livewire\Client\Index::class, \App\Livewire\Beneficiary\Index::class,
+            \App\Livewire\User\Index::class, \App\Livewire\Role\Index::class, \App\Livewire\Workflow\Index::class,
+            \App\Livewire\DocumentRequirement\Index::class, \App\Livewire\FuneralAssistanceType\Index::class,
+            \App\Livewire\ModeOfAssistance\Index::class, \App\Livewire\ActivityLog\Index::class,
+        ] as $component) {
+            $table = Livewire::test($component);
+            $columns = $table->get('columns');
+            $this->assertNotEmpty($columns);
+            $this->assertTrue($columns->contains('data', 'show_route'));
+            DB::enableQueryLog();
+            DB::flushQueryLog();
+            $html = \Illuminate\Support\Facades\Blade::render(
+                '<x-data-table data-table-id="query-check" :columns="$columns" :data="$rows" :card-fields="$fields" />',
+                ['columns' => $columns, 'rows' => collect(), 'fields' => ['primary' => 'name']]
+            );
+            $this->assertSame([], DB::getQueryLog(), 'Presentation must not query the database.');
+            $this->assertStringContainsString('data-responsive-data-table', $html);
+            DB::disableQueryLog();
+        }
+    }
+
+    public function test_application_index_refresh_fetches_the_index_once(): void
+    {
+        $this->application();
+        $index = Livewire::test(Index::class)->instance();
+        $budgets = [];
+        for ($refresh = 0; $refresh < 2; $refresh++) {
+            DB::enableQueryLog();
+            DB::flushQueryLog();
+            $index->loadData();
+            $queries = collect(DB::getQueryLog());
+            $budgets[] = $queries->count();
+            $indexReads = $queries->filter(fn ($query) => str_starts_with($query['query'], 'select * from "applications"'));
+            $this->assertCount(1, $indexReads, 'Cards and charts must reuse the parent index collection.');
+            DB::disableQueryLog();
+        }
+        $this->assertSame($budgets[0], $budgets[1]);
+    }
+
+    public function test_legacy_record_indexes_use_responsive_tables_without_ajax_refetching(): void
+    {
+        foreach (['interview.index', 'referral.index'] as $route) {
+            $this->get(route($route))->assertOk()
+                ->assertSee('data-responsive-data-table', false)
+                ->assertSee('data-columns=', false)
+                ->assertDontSee('data-src="allData"', false);
+        }
+    }
+
     private function user(array $roles = [], array $permissions = []): User
     {
         $user = User::create(['first_name' => 'Access', 'last_name' => 'User', 'email' => Str::uuid().'@example.test', 'password' => 'test-password', 'is_active' => true]);
