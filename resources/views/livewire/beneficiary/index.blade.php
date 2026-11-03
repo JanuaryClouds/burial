@@ -11,10 +11,8 @@
 	{{-- start::Index --}}
 	<div>
 		<x-card>
-			@include('partials.dataTable.index', [
-				'columns' => $columns,
-				'dataTableId' => $dataTableId,
-			])
+			<x-data-table :columns="$columns" :data="$mappedBeneficiaries" :data-table-id="$dataTableId"
+                :card-fields="['primary' => 'name', 'secondary' => 'age', 'tertiary' => 'place_of_birth', 'badge' => 'application', 'date' => 'recorded']" />
 			@if (! auth()->user()->isInternal())
 				<x-slot:footer>
 					<a href="{{ route('beneficiary.create') }}"
