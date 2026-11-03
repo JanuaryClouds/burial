@@ -343,3 +343,49 @@ h1, h2, h3, h4, h5, h6 {
         display: none !important;
     }
 }
+
+/* Record indexes share one DataTables engine between cards and desktop rows. */
+.record-data-table { min-width: 0; }
+.record-data-table-toolbar { display:flex; gap:1rem; align-items:end; flex-wrap:wrap; margin-bottom:1.5rem; }
+.record-data-table-toolbar label { display:grid; gap:.35rem; font-weight:500; min-width:0; }
+.record-data-table-search { flex:1 1 12rem; }
+.record-data-table-sort { flex:1 1 12rem; }
+.record-data-table-desktop, .record-data-table .dt-buttons { display:none; }
+.record-data-table-cards { display:grid; grid-template-columns:minmax(0,1fr); gap:1rem; }
+.record-data-card { display:flex; flex-direction:column; gap:.5rem; min-width:0; padding:1.5rem; border:1px solid var(--bs-border-color); border-radius:.75rem; background:var(--bs-body-bg); color:var(--bs-body-color); overflow-wrap:anywhere; }
+.record-data-card .badge { white-space:normal; text-align:left; overflow-wrap:anywhere; max-width:100%; }
+.record-data-card p, .record-data-card h3 { margin:0; color:inherit; }
+.record-data-card-footer { display:flex; align-items:center; flex-wrap:wrap; gap:.75rem; margin-top:auto; padding-top:1.5rem; font-size:.9rem; }
+a.record-data-card:hover { border-color:var(--bs-primary); color:var(--bs-body-color); }
+a.record-data-card:focus-visible { outline:3px solid var(--bs-primary); outline-offset:3px; }
+.record-data-table-footer { display:flex; flex-wrap:wrap; align-items:center; gap:1rem; margin-top:1.5rem; }
+.record-data-table-pagination { display:flex; gap:.25rem; margin-left:auto; }
+.record-data-table-pagination .btn { padding:.5rem .65rem; }
+.record-data-table-actions[open] { display:flex; flex-wrap:wrap; gap:.5rem; }
+.record-data-table-empty { grid-column:1/-1; text-align:center; padding:2rem; }
+@media (min-width:768px) { .record-data-table-cards { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (min-width:992px) {
+    .record-data-table-cards, .record-data-table-sort { display:none !important; }
+    .record-data-table-desktop { display:block; }
+    .record-data-table-desktop table { table-layout:fixed; width:100% !important; }
+    .record-data-table-desktop th, .record-data-table-desktop td { white-space:normal !important; overflow-wrap:anywhere; }
+}
+
+/* Phone controls stack without changing the tablet or desktop toolbar. */
+@media (max-width:767.98px) {
+    .record-data-table-toolbar { display:grid; grid-template-columns:minmax(0,1fr) minmax(5rem,auto); }
+    .record-data-table-search { grid-column:1/-1; }
+    .record-data-table-footer { display:flex; flex-direction:column; align-items:stretch; }
+    .record-data-table-actions { width:100%; min-width:0; }
+    .record-data-table-actions summary { display:block; width:100%; white-space:normal; overflow-wrap:anywhere; }
+    .record-data-table-actions[open] { display:block; }
+    .record-data-table-actions > button { width:100%; white-space:normal; overflow-wrap:anywhere; margin-top:.5rem; }
+    .record-data-table-info { width:100%; text-align:center; overflow-wrap:anywhere; }
+    .record-data-table-pagination { width:100%; margin-left:0; justify-content:center; flex-wrap:wrap; }
+}
+
+/* Dedicated canvas parents let Chart.js resize both dimensions reliably. */
+.chart-plot { position:relative; width:100%; min-width:0; height:360px; }
+.chart-grid > [class*="col-"] { min-width:0; display:flex; }
+.chart-grid > [class*="col-"] > .card { width:100%; }
+@media (max-width:767.98px) { .chart-plot { height:340px; } }

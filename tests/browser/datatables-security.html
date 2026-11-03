@@ -1,6 +1,9 @@
 <!doctype html>
 <html lang="en">
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../../public/metronic/css/style.bundle.css">
+<link rel="stylesheet" href="../../public/css/app.css">
 <title>DataTables escaping regression checks</title>
 <link rel="stylesheet" href="../../public/metronic/plugins/custom/datatables/datatables.bundle.css">
 <body>
@@ -20,7 +23,8 @@ const check = (name, condition) => {
 };
 const callbacks = {};
 window.Livewire = { on: (name, callback) => { callbacks[name] = callback; } };
-window.triggerLoading = () => {};
+window.cardLoaderCalls = 0;
+window.triggerLoading = () => { window.cardLoaderCalls++; };
 window.tableScriptExecuted = false;
 const payload = '<img src=x onerror="window.tableScriptExecuted=true">';
 const columns = [{ data: 'name' }, { data: 'amount' }, { data: 'empty' }, { data: 'status' }, { data: 'show_route' }];
@@ -90,6 +94,109 @@ try {
     await loaded;
     check('AJAX-loaded values use the same escaping', ajaxElement.DataTable().cell(0, 0).node().textContent === payload && hasNoInjectedElements(ajaxElement[0]));
     await new Promise(resolve => setTimeout(resolve, 50));
+
+    // Responsive cards use exactly the same engine and raw rows as desktop.
+    const root = document.createElement('section');
+    root.className = 'record-data-table'; root.dataset.responsiveDataTable = '';
+    root.dataset.cardFields = JSON.stringify({ primary: 'name', secondary: 'amount', tertiary: 'empty', badge: 'status' });
+    root.innerHTML = '<div data-table-toolbar></div><div class="record-data-table-desktop"></div><div class="record-data-table-cards" data-table-cards></div><div data-table-footer></div>';
+    document.getElementById('tables').append(root);
+    const responsiveTable = table('cards');
+    root.querySelector('.record-data-table-desktop').append(responsiveTable[0]);
+    initDataTable(responsiveTable);
+    const responsiveApi = responsiveTable.DataTable();
+    const cardNodes = () => [...root.querySelectorAll('.record-data-card')];
+    check('Cards use current DataTables page', cardNodes().length === 2);
+    check('Unsafe destination produces a noninteractive card', cardNodes()[1].tagName === 'ARTICLE');
+    check('Card values remain escaped', hasNoInjectedElements(root) && root.textContent.includes(payload));
+    check('Whole card is the record link', cardNodes()[0].tagName === 'A' && !cardNodes()[0].querySelector('a,button'));
+    const desktopVisible = getComputedStyle(root.querySelector('.record-data-table-desktop')).display !== 'none';
+    check('Breakpoint uses desktop table at lg', desktopVisible === matchMedia('(min-width:992px)').matches);
+    if (!desktopVisible) {
+        const grid = getComputedStyle(root.querySelector('[data-table-cards]')).gridTemplateColumns.split(' ').length;
+        check('Card grid follows md breakpoint', grid === (matchMedia('(min-width:768px)').matches ? 2 : 1));
+    }
+    responsiveApi.order([1, 'asc']).draw();
+    check('Cards follow numeric sorting', cardNodes()[0].textContent.includes('3'));
+    const sortControl = root.querySelector('.record-data-table-sort select');
+    sortControl.value = '1:desc'; sortControl.dispatchEvent(new Event('change'));
+    check('Mobile sort control updates engine', responsiveApi.order()[0][1] === 'desc');
+    const searchControl = root.querySelector('input[type=search]');
+    searchControl.value = 'Alpha'; searchControl.dispatchEvent(new Event('input'));
+    await new Promise(resolve => setTimeout(resolve, 250));
+    check('Shared search filters cards', cardNodes().length === 1 && cardNodes()[0].textContent.includes('Alpha'));
+    responsiveApi.search('missing').draw();
+    check('Filtered empty state is distinct', root.querySelector('[data-table-cards]').textContent.includes('No matching records'));
+    responsiveApi.search('').order([1, 'asc']).draw();
+    const perPage = root.querySelectorAll('[data-table-toolbar] select')[1];
+    perPage.value = '5'; perPage.dispatchEvent(new Event('change'));
+    check('Page size changes both presentations', responsiveApi.page.len() === 5 && cardNodes().length === 3);
+    responsiveApi.page.len(2).page(1).draw(false);
+    callbacks['refresh-data-table']([{ dataTableId: 'cards', rows }]);
+    check('Canonical refresh preserves page sort and length', responsiveApi.page() === 1 && responsiveApi.page.len() === 2 && responsiveApi.order()[0][0] === 1);
+    callbacks['refresh-dataTable']([{ dataTableId: 'cards', rows: [rows[2]] }]);
+    check('Refresh clamps disappeared last page', responsiveApi.page() === 0 && cardNodes().length === 1);
+    callbacks['refresh-data-table']([{ dataTableId: 'cards', rows: [] }]);
+    check('Empty parent refresh clears cards', cardNodes().length === 0 && root.querySelector('[data-table-cards]').textContent.includes('No records'));
+    callbacks['refresh-data-table']([{ dataTableId: 'cards', rows }]);
+    const exportRows = responsiveApi.buttons.exportData({ columns: [0,1,2,3], modifier: { search: 'applied', order: 'applied', page: 'all' } });
+    check('Export spans pages and excludes destination', exportRows.body.length === 3 && exportRows.body.every(row => row.length === 4));
+    initDataTable(responsiveTable);
+    searchControl.focus();
+    responsiveApi.draw(false);
+    check('Parent redraw preserves search focus', document.activeElement === searchControl);
+    const focusableCard = root.querySelector('a.record-data-card');
+    if (!desktopVisible) focusableCard.focus();
+    check('Card badges preserve uppercase display', [...root.querySelectorAll('.record-data-card .badge')].every(badge => badge.textContent === badge.textContent.toUpperCase()));
+    check('Record card is keyboard focusable', focusableCard.tabIndex === 0 && (desktopVisible || document.activeElement === focusableCard));
+    check('Responsive initialization stays idempotent', root.querySelectorAll('input[type=search]').length === 1);
+    if (innerWidth < 768) {
+        const searchBox = root.querySelector('.record-data-table-search').getBoundingClientRect();
+        const sortBox = root.querySelector('.record-data-table-sort').getBoundingClientRect();
+        const lengthBox = root.querySelector('.record-data-table-length').getBoundingClientRect();
+        const toolbarBox = root.querySelector('[data-table-toolbar]').getBoundingClientRect();
+        check('Phone search fills its own row', Math.abs(searchBox.width - toolbarBox.width) < 2 && searchBox.bottom < sortBox.top);
+        check('Phone sort and per-page share a row', Math.abs(sortBox.top - lengthBox.top) < 2);
+        const footerBox = root.querySelector('[data-table-footer]').getBoundingClientRect();
+        check('Phone footer controls fill the width', ['.record-data-table-actions', '.record-data-table-info', '.record-data-table-pagination'].every(selector => Math.abs(root.querySelector(selector).getBoundingClientRect().width - footerBox.width) < 2));
+        check('Phone record count and pagination are centered', getComputedStyle(root.querySelector('.record-data-table-info')).textAlign === 'center' && getComputedStyle(root.querySelector('nav')).justifyContent === 'center');
+    }
+    const loaderCalls = window.cardLoaderCalls;
+    focusableCard.href = location.href.split('#')[0] + '#card-loader-check';
+    focusableCard.click();
+    check('Card click invokes existing loader', window.cardLoaderCalls === loaderCalls + 1);
+    await new Promise(resolve => setTimeout(resolve, 350));
+    check('Card navigation follows loader', location.hash === '#card-loader-check');
+    document.documentElement.setAttribute('data-bs-theme', 'dark');
+    check('Dark mode cards retain themed background', getComputedStyle(cardNodes()[0]).backgroundColor !== 'rgba(0, 0, 0, 0)');
+    document.documentElement.setAttribute('data-bs-theme', 'light');
+    const summaryRoot = root.cloneNode(false);
+    summaryRoot.dataset.cardFields = JSON.stringify({ primary: 'name', secondary: 'amount', labels: { amount: 'Version <literal>' } });
+    summaryRoot.innerHTML = '<div data-table-toolbar></div><div class="record-data-table-desktop"></div><div class="record-data-table-cards" data-table-cards></div><div data-table-footer></div>';
+    document.getElementById('tables').append(summaryRoot);
+    const summaryTable = table('summary-only', [{ name: 'Role or lookup record', amount: 0 }]);
+    summaryRoot.querySelector('.record-data-table-desktop').append(summaryTable[0]);
+    initDataTable(summaryTable);
+    check('Summary supports rows without record destinations', summaryRoot.querySelector('.record-data-card').tagName === 'ARTICLE');
+    check('Numeric summary fields have safe contextual labels', summaryRoot.textContent.includes('Version <literal>: 0') && !summaryRoot.querySelector('literal'));
+    check('Missing optional summary fields stay absent', !summaryRoot.textContent.includes('undefined') && !summaryRoot.textContent.includes('[object Object]'));
+    summaryRoot.remove();
+    root.remove();
+    await new Promise(resolve => setTimeout(resolve, 10));
+    check('Removed responsive component is destroyed', !$.fn.DataTable.isDataTable(responsiveTable[0]));
+    if (new URLSearchParams(location.search).has('keep')) {
+        document.getElementById('tables').append(root);
+        initDataTable(responsiveTable);
+        window.responsiveFixtureApi = responsiveTable.DataTable();
+        window.responsiveFixtureRoot = root;
+        if (new URLSearchParams(location.search).has('preview')) {
+            document.body.prepend(root);
+            root.style.padding = '1rem';
+            [...document.body.children].filter(child => child !== root).forEach(child => child.hidden = true);
+            window.scrollTo(0, 0);
+        }
+    }
+
     check('Injected scripts never executed', window.tableScriptExecuted === false);
 } catch (error) {
     if (!results.some(result => !result.passed)) results.push({ name: error.stack, passed: false });

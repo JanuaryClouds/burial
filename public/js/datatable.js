@@ -1,3 +1,5 @@
+import { mountResponsiveDataTable } from './responsive-data-table.js';
+
 function escapeTableText(value) {
 	const div = document.createElement('div');
 	div.textContent = String(value ?? '');
@@ -29,6 +31,7 @@ function selectDataTables() {
 
 function initDataTable(dataTable) {
 	if (!dataTable.length || $.fn.DataTable.isDataTable(dataTable[0])) return;
+	const responsiveRoot = dataTable[0].closest('[data-responsive-data-table]');
 	let columns = (dataTable.data('columns') || []).map(column => ({
 		...column,
 		// DataTables also uses display output for responsive detail rows.
@@ -88,7 +91,7 @@ function initDataTable(dataTable) {
 	}
 	
 	dataTable.DataTable({
-		responsive: true,
+		responsive: !responsiveRoot,
 		ordering: true,
 		columns: columns,
 		order: [],
@@ -108,7 +111,7 @@ function initDataTable(dataTable) {
 				}
 			}
 		} : undefined,
-		dom:
+		dom: responsiveRoot ? 'tB' :
 			// First row: buttons on the left, filter on the right
 			"<'row mb-2'<'col-sm-6 d-flex align-items-center'l><'col-sm-6 d-flex justify-content-end'f<'me-5'>B>>" +
 			// Table
@@ -119,6 +122,13 @@ function initDataTable(dataTable) {
 				extend: 'excel',
 				text: 'Export to Excel',
 				className: '',
+                ...(responsiveRoot ? {
+                    exportOptions: {
+                        columns: columns.map((column, index) => column.data !== 'show_route' ? index : null)
+                            .filter(index => index !== null),
+                        modifier: { search: 'applied', order: 'applied', page: 'all' },
+                    },
+                } : {}),
 			},
 			// {
 			//     extend: 'print',
@@ -137,6 +147,7 @@ function initDataTable(dataTable) {
 		}
 	});
 
+	if (responsiveRoot) mountResponsiveDataTable(dataTable.DataTable(), responsiveRoot, sameOriginTableUrl);
 
 	dataTable.off('click.burialTable', 'a').on('click.burialTable', 'a', function(e) {
 		e.preventDefault();
@@ -151,9 +162,12 @@ function initDataTable(dataTable) {
 	})
 }
 
+let refreshListenersInstalled = false;
 function refreshDataTable() {
-    Livewire.on('refresh-dataTable', (event) => {
-        const data = event[0];
+    if (refreshListenersInstalled) return;
+    refreshListenersInstalled = true;
+    const refresh = (event) => {
+        const data = Array.isArray(event) ? event[0] : event;
         const element = document.getElementById(`dataTable-${data.dataTableId}`);
         if (!element) return;
         const dataTable = $(element);
@@ -188,7 +202,9 @@ function refreshDataTable() {
         } else if (pageInfo.pages > 0) {
             table.page(pageInfo.pages - 1).draw('page');
         }
-    });
+    };
+    Livewire.on('refresh-dataTable', refresh);
+    Livewire.on('refresh-data-table', refresh);
 }
 
 export { selectDataTables, initDataTable, refreshDataTable }
