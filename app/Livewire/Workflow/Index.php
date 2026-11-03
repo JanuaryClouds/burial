@@ -3,7 +3,6 @@
 namespace App\Livewire\Workflow;
 
 use App\Models\Workflow;
-use App\Services\DataTableService;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -49,7 +48,13 @@ class Index extends Component
                 ];
             });
 
-        $this->columns = app(DataTableService::class)->getColumns($this->mappedWorkflows);
+        $this->columns = collect([
+            ['data' => 'name'],
+            ['data' => 'version'],
+            ['data' => 'status'],
+            ['data' => 'assigned_funeral_assistance_types'],
+            ['data' => 'show_route'],
+        ]);
 
         $this->dispatch('refresh-dataTable', [
             'dataTableId' => $this->dataTableId,
