@@ -7,11 +7,8 @@
 					<h5 class="card-title">All Referrals</h5>
 				</div>
 				<div class="card-body">
-					@include('partials.dataTable.index', [
-						'data' => $allData,
-						'columns' => $allDataColumns,
-						'src' => 'allData',
-					])
+					<x-data-table :columns="$allDataColumns" :data="$allData" data-table-id="referral-all"
+                        :card-fields="['primary' => 'client', 'secondary' => 'referral_to', 'tertiary' => 'remarks']" />
 				</div>
 			</div>
 		@else
@@ -20,11 +17,8 @@
 					<h5 class="card-title">My Referrals</h5>
 				</div>
 				<div class="card-body">
-					@include('partials.dataTable.index', [
-						'data' => $personalData,
-						'columns' => $personalDataColumns,
-						'src' => 'personalData',
-					])
+					<x-data-table :columns="$personalDataColumns" :data="$personalData" data-table-id="referral-personal"
+                        :card-fields="['primary' => 'client', 'secondary' => 'referral_to', 'tertiary' => 'remarks']" />
 				</div>
 			</div>
 		@endcan
