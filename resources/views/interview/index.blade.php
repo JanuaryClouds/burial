@@ -7,11 +7,8 @@
 					<h5 class="card-title">All Interviews</h5>
 				</div>
 				<div class="card-body">
-					@include('partials.dataTable.index', [
-						'columns' => $allDataColumns,
-						'data' => $allData,
-						'src' => 'allData',
-					])
+					<x-data-table :columns="$allDataColumns" :data="$allData" data-table-id="interview-all"
+                        :card-fields="['primary' => 'client', 'secondary' => 'remarks', 'badge' => 'status', 'date' => 'schedule']" />
 				</div>
 			</div>
 		@else
@@ -20,11 +17,8 @@
 					<h5 class="card-title">My Interviews</h5>
 				</div>
 				<div class="card-body">
-					@include('partials.dataTable.index', [
-						'columns' => $personalDataColumns,
-						'data' => $personalData,
-						'src' => 'personalData',
-					])
+					<x-data-table :columns="$personalDataColumns" :data="$personalData" data-table-id="interview-personal"
+                        :card-fields="['primary' => 'client', 'secondary' => 'remarks', 'badge' => 'status', 'date' => 'schedule']" />
 				</div>
 			</div>
 		@endcan
