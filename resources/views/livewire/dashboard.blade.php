@@ -24,11 +24,8 @@
         {{-- start::Datatable --}}
         <div>
             <x-card>
-                @include('partials.dataTable.index', [
-                    'columns' => $columns,
-                    'data' => $mappedApplications,
-                    'dataTableId' => $dataTableId,
-                ])
+                <x-data-table :columns="$columns" :data="$mappedApplications" :data-table-id="$dataTableId"
+                    :card-fields="['primary' => 'tracking_no', 'secondary' => 'client', 'tertiary' => 'beneficiary', 'badge' => 'status', 'date' => 'application_date']" />
             </x-card>
         </div>
         {{-- end::Datatable --}}

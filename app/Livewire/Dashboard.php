@@ -4,7 +4,6 @@ namespace App\Livewire;
 
 use App\Models\Application;
 use App\Services\ApplicationService;
-use App\Services\DataTableService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -94,7 +93,14 @@ class Dashboard extends Component
                     ];
                 });
 
-            $this->columns = app(DataTableService::class)->getColumns($this->mappedApplications);
+            $this->columns = collect([
+                ['data' => 'tracking_no'],
+                ['data' => 'client'],
+                ['data' => 'beneficiary'],
+                ['data' => 'application_date'],
+                ['data' => 'status'],
+                ['data' => 'show_route'],
+            ]);
 
             $this->dispatch('refresh-dataTable', [
                 'dataTableId' => $this->dataTableId,
