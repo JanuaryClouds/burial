@@ -70,7 +70,7 @@ class ReportController extends Controller
                 ];
             });
 
-        $columns = $this->dataTableServices->getColumns($mappedApplications, []);
+        $columns = collect([['data' => 'tracking_number'], ['data' => 'client'], ['data' => 'relationship_with_beneficiary'], ['data' => 'beneficiary'], ['data' => 'age'], ['data' => 'PWD'], ['data' => 'status']]);
 
         $applicationsPerStatus = $this->applicationServices->groupByStatus($applications);
 
