@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Controllers\Auth\PasswordRecoveryController;
 use App\Http\Controllers\Auth\UserController;
 use App\Http\Controllers\CitizenAccessController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExportController;
+use App\Http\Middleware\RecoveryPrivacy;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [CitizenAccessController::class, 'index'])
@@ -23,6 +25,13 @@ Route::post('/login/check', [UserController::class, 'login'])
     ->middleware('throttle:3,1')
     ->name('login.check');
 Route::post('/logout', [UserController::class, 'logout'])->name('logout');
+
+Route::controller(PasswordRecoveryController::class)->middleware(RecoveryPrivacy::class)->group(function () {
+    Route::get('/admin/forgot-password', 'forgot')->name('password.request');
+    Route::post('/admin/forgot-password', 'send')->name('password.email');
+    Route::get('/admin/reset-password/{token}', 'form')->name('password.reset');
+    Route::post('/admin/reset-password', 'reset')->middleware('throttle:password-reset')->name('password.update');
+});
 
 Route::middleware(['auth', 'active.check'])
     ->group(function () {

@@ -45,6 +45,8 @@ class SystemController extends Controller
 
     public function showLog(Activity $log)
     {
+        $log->load(['causer', 'subject']);
+
         return view('system.log.show', [
             'pageTitle' => $log->created_at->format('F j, Y g:i A'),
             'log' => $log,

@@ -108,6 +108,8 @@ After changing environment settings, clear cached configuration with `php artisa
 
 ## Project map
 
+For queue-free SMTP configuration, Mailpit, password recovery, and superadmin manual retries, see [Email setup and operations](docs/email.md).
+
 | Location | Responsibility |
 | --- | --- |
 | `routes/web.php`, `routes/*.php` | Entry points and routes grouped by feature |

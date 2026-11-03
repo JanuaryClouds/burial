@@ -50,6 +50,7 @@
 									class="btn btn-primary w-100">Login
 								</button>
 							</div>
+							<div class="mt-4 text-center"><a href="{{ route('password.request') }}">Forgot your password?</a></div>
 							<div class="mt-6 text-sm-center  ">
 								<p class="text-muted"> If you need assistance, contact your administrator</p>
 							</div>
