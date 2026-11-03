@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row g-5 chart-grid">
 	<div class="col-12 col-lg-6">
 		<x-card>
 			<x-slot:header>Beneficiaries Per Age Group</x-slot:header>

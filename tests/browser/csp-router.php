@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Spatie\Permission\Models\Role;
-use Tests\Browser\CspProbe;
+use Tests\Support\CspProbe;
 
 // Test-only PHP server router. Its database and sessions must live in a fresh
 // burial-csp-* directory under the OS temp directory. No shared DB is available.

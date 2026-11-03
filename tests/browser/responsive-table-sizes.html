@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Responsive table viewport checks</title>
+<h1>Responsive table viewport checks</h1>
+<pre id="results">Running…</pre>
+<script type="module">
+const results = [];
+for (const width of [375, 576, 768, 991, 992, 1280]) {
+    const frame = document.createElement('iframe');
+    frame.width = width; frame.height = 1000;
+    frame.src = './datatables-security.html?keep=1';
+    document.body.append(frame);
+    await new Promise(resolve => frame.addEventListener('load', resolve, { once: true }));
+    for (let attempt = 0; attempt < 100 && !frame.contentWindow.datatableTestResults; attempt++) {
+        await new Promise(resolve => setTimeout(resolve, 50));
+    }
+    const checks = frame.contentWindow.datatableTestResults;
+    results.push({ width, actualWidth: frame.contentWindow.innerWidth, checks: checks?.length,
+        failures: checks ? checks.filter(check => !check.passed) : ['Fixture did not finish'] });
+    const api = frame.contentWindow.responsiveFixtureApi;
+    if (api) {
+        api.search('Alpha').order([1, 'desc']).page.len(5).draw();
+        const initialRequests = frame.contentWindow.performance.getEntriesByType('resource').length;
+        for (const resizedWidth of [375, 992, 768, 1280, width]) {
+            frame.width = resizedWidth;
+            await new Promise(resolve => setTimeout(resolve, 30));
+            const root = frame.contentWindow.responsiveFixtureRoot;
+            const desktop = frame.contentWindow.getComputedStyle(root.querySelector('.record-data-table-desktop')).display !== 'none';
+            if (desktop !== (resizedWidth >= 992) || api.search() !== 'Alpha' || api.page.len() !== 5 || api.order()[0][1] !== 'desc') {
+                results[results.length - 1].failures.push({ name: 'Resize state and presentation', passed: false });
+            }
+        }
+        if (frame.contentWindow.performance.getEntriesByType('resource').length !== initialRequests) {
+            results[results.length - 1].failures.push({ name: 'Resize must issue no requests', passed: false });
+        }
+    }
+    frame.remove();
+}
+document.getElementById('results').textContent = JSON.stringify(results, null, 2);
+document.title = results.every(result => result.actualWidth === result.width && !result.failures.length) ? 'PASS' : 'FAIL';
+</script>
+</html>

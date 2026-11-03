@@ -27,11 +27,8 @@
 					No Data
 				</p>
 			@else
-				@include('partials.dataTable.index', [
-					'columns' => $columns,
-					'classes' => 'with-actions',
-					'src' => 'data',
-				])
+				<x-data-table :columns="$columns" :data="$data" :data-table-id="'cms-' . $resource"
+                    :card-fields="['primary' => 'name', 'secondary' => $columns->pluck('data')->reject(fn ($key) => in_array($key, ['name', 'show_route']))->first()]" />
 			@endif
 		</div>
 	</div>

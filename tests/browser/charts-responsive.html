@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Responsive chart checks</title>
+<h1>Responsive chart checks</h1>
+<pre id="results">Running…</pre>
+<script type="module">
+const results = [];
+for (const width of [375, 576, 768, 991, 992, 1280]) {
+    const frame = document.createElement('iframe');
+    frame.width = width; frame.height = 1050;
+    frame.src = './charts-responsive-frame.html';
+    document.body.append(frame);
+    await new Promise(resolve => frame.addEventListener('load', resolve, { once: true }));
+    for (let attempt = 0; attempt < 200 && !frame.contentWindow.chartResults; attempt++) await new Promise(resolve => setTimeout(resolve, 50));
+    const checks = frame.contentWindow.chartResults;
+    results.push({ width, actualWidth: frame.contentWindow.innerWidth, checks: checks?.length,
+        failures: checks ? checks.filter(check => !check.passed) : ['Fixture did not finish'] });
+    frame.remove();
+}
+document.getElementById('results').textContent = JSON.stringify(results, null, 2);
+document.title = results.every(result => result.width === result.actualWidth && !result.failures.length) ? 'PASS' : 'FAIL';
+</script>
+</html>

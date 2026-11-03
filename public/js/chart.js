@@ -46,11 +46,11 @@ const taguigPalettePlugin = {
 
 function checkCharts() {
     window.renderedCharts = window.renderedCharts || [];
-    const canvases = document.querySelectorAll('canvas')
+    const canvases = document.querySelectorAll('canvas[data-chart-type][data-chart-data][data-chart-labels]')
 
     canvases.forEach(canvas => {
         const chartId = canvas.id;
-        if (!chartId) return;
+        if (!chartId || Chart.getChart(canvas)) return;
 
         const chartData = JSON.parse(canvas.dataset.chartData);
         const chartLabels = JSON.parse(canvas.dataset.chartLabels);
@@ -117,6 +117,7 @@ function renderPieChart(chartData, chartId, chartLabels, chartTitle) {
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: !document.getElementById(chartId).closest('.chart-plot'),
                 plugins: {
                     whiteBackground: {
                         color: '#ffffff'
@@ -154,6 +155,7 @@ function renderLineChart(chartData, chartId, chartLabels, chartTitle) {
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: !document.getElementById(chartId).closest('.chart-plot'),
                 scales: {
                     y: {
                         ticks: {
@@ -201,28 +203,21 @@ function renderBarChart(chartData, chartId, chartLabels, chartTitle) {
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: !document.getElementById(chartId).closest('.chart-plot'),
                 plugins: {
                     whiteBackground: {
                         color: '#ffffff'
                     },
-                    legend: {
-                        display: true,
-                        labels: {
-                            generateLabels: function(chart) {
-                                return chart.data.labels.map((label, index) => ({
-                                    text: label,
-                                    fillStyle: chart.data.datasets[0].backgroundColor[index],
-                                    index,
-                                }));
-                            }
-                        },
-                    },
+                    // Category names already appear on the axis. A duplicate
+                    // legend consumed almost the entire plot on small screens.
+                    legend: { display: false },
                     title: {
                         display: !!chartTitle,
                         text: chartTitle
                     },
                 },
                 scales: {
+                    x: { ticks: { minRotation: 0, maxRotation: 45 } },
                     y: {
                         title: {
                             display: true,
@@ -241,11 +236,18 @@ function renderBarChart(chartData, chartId, chartLabels, chartTitle) {
     }
 }
 
+let chartRefreshInstalled = false;
 function refreshChart() {
+    if (chartRefreshInstalled) return;
+    chartRefreshInstalled = true;
     Livewire.on('refresh-chart', (event) => {
         let data = event[0];
         let chart = Chart.getChart(data.chartId);
 
+        if (!chart) {
+            checkCharts();
+            chart = Chart.getChart(data.chartId);
+        }
         if (!chart) return;
 
         chart.data.datasets[0].data = data.chartData.count;

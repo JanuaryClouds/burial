@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../../public/metronic/css/style.bundle.css">
+<link rel="stylesheet" href="../../public/css/app.css">
+<div class="row g-5 chart-grid m-0">
+    <div class="col-12 col-md-6"><div class="card"><div class="card-header">Applications Per Status</div><div class="card-body"><div class="chart-plot"><canvas id="pie" data-chart-type="pie" data-chart-data="[6,13,1,1]" data-chart-labels='["Pending","Processing","Closed","Assessment"]'></canvas></div></div></div></div>
+    <div class="col-12 col-md-6"><div class="card"><div class="card-header">Applications Per Relationship</div><div class="card-body"><div class="chart-plot"><canvas id="bar" data-chart-type="bar" data-chart-data="[4,4,10,5,2,1,1,1]" data-chart-labels='["Mother","Daughter","Grandmother","Grandfather","Son","Uncle","Aunt","Father"]'></canvas></div></div></div></div>
+</div>
+<!-- Same version already used by the application's page scripts. -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
+<script type="module">
+import { checkCharts, refreshChart } from '../../public/js/chart.js';
+const results = [];
+const check = (name, passed) => results.push({ name, passed: Boolean(passed) });
+const callbacks = {};
+window.Livewire = { on: (name, callback) => { callbacks[name] = callback; } };
+try {
+    Chart.defaults.animation = false;
+    checkCharts(); refreshChart(); refreshChart();
+    await new Promise(resolve => setTimeout(resolve, 150));
+    const pie = Chart.getChart('pie'), bar = Chart.getChart('bar');
+    check('Pie and bar share a consistent height', pie.height === bar.height && bar.height >= 340);
+    check('Mobile bar has usable plotting space', bar.chartArea.height > 200);
+    check('Bar legend does not duplicate axis categories', bar.options.plugins.legend.display === false);
+    check('Bar quantities survive layout changes', bar.data.datasets[0].data.join(',') === '4,4,10,5,2,1,1,1');
+    const originalColor = bar.data.datasets[0].backgroundColor[0];
+    checkCharts();
+    check('Repeated initialization retains chart instances', Chart.getChart('bar') === bar);
+    for (const size of [280, 640, 320]) {
+        document.querySelectorAll('.chart-plot').forEach(node => node.style.width = `${size}px`);
+        await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+        await new Promise(resolve => setTimeout(resolve, 100));
+        check(`Both charts resize to ${size}px (${pie.width}, ${bar.width})`, Math.abs(pie.width - size) < 1 && Math.abs(bar.width - size) < 1);
+        check(`Bar stays readable at ${size}px`, bar.chartArea.height > 200);
+    }
+    callbacks['refresh-chart']([{ chartId: 'bar', chartData: { labels: ['Mother', 'Daughter'], count: [9, 3] } }]);
+    check('Livewire refresh updates existing chart', Chart.getChart('bar') === bar && bar.data.datasets[0].data[0] === 9);
+    check('Category colors remain stable', bar.data.datasets[0].backgroundColor[0] === originalColor);
+    check('Chart remains exportable to PNG', bar.toBase64Image().startsWith('data:image/png'));
+    document.querySelectorAll('.chart-plot').forEach(node => node.style.removeProperty('width'));
+} catch (error) { results.push({ name: error.stack, passed: false }); }
+window.chartResults = results;
+</script>
+</html>

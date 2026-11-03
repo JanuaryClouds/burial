@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row g-5 chart-grid">
 	<div class="col-12 col-md-6">
 		<x-card>
 			<x-slot:header>Applications Per Status</x-slot:header>

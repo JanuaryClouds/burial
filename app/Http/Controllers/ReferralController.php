@@ -26,13 +26,13 @@ class ReferralController extends Controller
         $pageTitle = 'Referrals';
 
         $personalData = $this->referralServices->index(auth()->user()->id);
-        $personalDataColumns = $this->dataTableServices->getColumns($personalData, ['client']);
+        $personalDataColumns = collect([['data' => 'referral_to'], ['data' => 'remarks']]);
 
         $allData = [];
         $allDataColumns = [];
         if (auth()->user()->hasOfficeAccess()) {
             $allData = $this->referralServices->index();
-            $allDataColumns = $this->dataTableServices->getColumns($allData);
+            $allDataColumns = collect([['data' => 'client'], ['data' => 'referral_to'], ['data' => 'remarks']]);
         }
 
         if (request()->expectsJson()) {

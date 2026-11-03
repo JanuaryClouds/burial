@@ -3,7 +3,6 @@
 namespace App\Livewire\User;
 
 use App\Models\User;
-use App\Services\DataTableService;
 use Illuminate\Support\Collection;
 use Livewire\Component;
 
@@ -45,8 +44,14 @@ class Index extends Component
                 ];
             });
 
-        $this->columns = app(DataTableService::class)
-            ->getColumns($this->mappedUsers, ['id']);
+        $this->columns = collect([
+            ['data' => 'name'],
+            ['data' => 'role'],
+            ['data' => 'active'],
+            ['data' => 'email'],
+            ['data' => 'contact_number'],
+            ['data' => 'show_route'],
+        ]);
 
         $this->dispatch('refresh-dataTable', [
             'dataTableId' => $this->dataTableId,

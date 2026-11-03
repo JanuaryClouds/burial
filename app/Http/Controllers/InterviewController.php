@@ -28,14 +28,14 @@ class InterviewController extends Controller
         $pageTitle = 'Appointment Interviews';
 
         $personalData = $this->interviewServices->index(auth()->user()->id);
-        $personalDataColumns = $this->dataTableServices->getColumns($personalData, ['client']);
+        $personalDataColumns = collect([['data' => 'schedule'], ['data' => 'status'], ['data' => 'remarks']]);
 
         $allData = [];
         $allDataColumns = [];
 
         if (auth()->user()->hasOfficeAccess()) {
             $allData = $this->interviewServices->index(null);
-            $allDataColumns = $this->dataTableServices->getColumns($allData);
+            $allDataColumns = collect([['data' => 'client'], ['data' => 'schedule'], ['data' => 'status'], ['data' => 'remarks']]);
         }
 
         if (request()->ajax()) {

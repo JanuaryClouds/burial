@@ -3,7 +3,6 @@
 namespace App\Livewire\FuneralAssistanceType;
 
 use App\Models\FuneralAssistanceType;
-use App\Services\DataTableService;
 use Illuminate\Support\Collection;
 use Livewire\Component;
 
@@ -38,8 +37,12 @@ class Index extends Component
                 ];
             });
 
-        $this->columns = app(DataTableService::class)
-            ->getColumns($this->mappedFuneralAssistanceTypes, ['uuid']);
+        $this->columns = collect([
+            ['data' => 'name'],
+            ['data' => 'description'],
+            ['data' => 'workflow'],
+            ['data' => 'show_route'],
+        ]);
 
         $this->dispatch('refresh-dataTable', [
             'dataTableId' => $this->dataTableId,

@@ -4,7 +4,6 @@ namespace App\Livewire\Application;
 
 use App\Models\Application;
 use App\Services\ApplicationService;
-use App\Services\DataTableService;
 use App\Traits\Livewire\GuardsRecordIndex;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -69,7 +68,14 @@ class Index extends Component
             'rows' => $this->mappedApplications,
         ]);
 
-        $this->columns = app(DataTableService::class)->getColumns($this->mappedApplications);
+        $this->columns = collect([
+            ['data' => 'tracking_no'],
+            ['data' => 'client'],
+            ['data' => 'beneficiary'],
+            ['data' => 'application_date'],
+            ['data' => 'status'],
+            ['data' => 'show_route'],
+        ]);
 
         if (Auth::user()->hasOfficeAccess()) {
             $this->applicationsPerStatus = app(ApplicationService::class)

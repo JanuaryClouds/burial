@@ -70,6 +70,8 @@ document.addEventListener('livewire:init', () => {
     // the most reliable place to initialize select2 for freshly added selects.
     Livewire.hook('morphed', ({ el }) => {
         requestAnimationFrame(() => {
+            checkCharts();
+            selectDataTables();
             initSelect2(el);
             autoMarginColumns();
         });
@@ -84,6 +86,8 @@ document.addEventListener('livewire:init', () => {
 });
 
 document.addEventListener('livewire:navigated', () => {
+    checkCharts();
+    selectDataTables();
     initSelect2();
     autoMarginColumns();
 });

@@ -4,7 +4,6 @@ namespace App\Livewire\Beneficiary;
 
 use App\Models\Beneficiary;
 use App\Services\BeneficiaryService;
-use App\Services\DataTableService;
 use App\Traits\Livewire\GuardsRecordIndex;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -68,7 +67,14 @@ class Index extends Component
                 ];
             });
 
-        $this->columns = app(DataTableService::class)->getColumns($this->mappedBeneficiaries);
+        $this->columns = collect([
+            ['data' => 'name'],
+            ['data' => 'age'],
+            ['data' => 'place_of_birth'],
+            ['data' => 'application'],
+            ['data' => 'recorded'],
+            ['data' => 'show_route'],
+        ]);
 
         $this->dispatch('refresh-dataTable', [
             'dataTableId' => $this->dataTableId,

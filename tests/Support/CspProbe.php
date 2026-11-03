@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Browser;
+namespace Tests\Support;
 
 use Livewire\Component;
 
@@ -24,6 +24,6 @@ class CspProbe extends Component
 
     public function render()
     {
-        return view()->file(__DIR__.'/csp-probe.blade.php');
+        return view()->file(dirname(__DIR__).'/browser/csp-probe.blade.php');
     }
 }
