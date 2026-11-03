@@ -8,9 +8,16 @@
 						label="Action" />
 				</div>
 				<div class="col-6">
-					<x-form.display :contents="$log->causer ? $log->causer->fullname() : 'N/A'"
+					<x-form.display :contents="$log->causer ? $log->causer->fullname().' (#'.$log->causer_id.')' : ($log->causer_id ? 'Account #'.$log->causer_id.' (unavailable)' : 'Not recorded')"
 						label="Done By" />
 				</div>
+
+                @if($log->log_name === 'account-management' && $log->subject_type === (new \App\Models\User)->getMorphClass() && $log->subject_id)
+                <div class="col-12">
+                    <x-form.display label="Affected Account"
+                        :contents="$log->subject ? $log->subject->fullname().' (#'.$log->subject_id.')' : 'Account #'.$log->subject_id.' (unavailable)'" />
+                </div>
+                @endif
 				<div class="col-12">
 					<x-form.display :contents="$log->description"
 						label="Description" />
