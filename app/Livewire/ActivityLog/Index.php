@@ -2,7 +2,6 @@
 
 namespace App\Livewire\ActivityLog;
 
-use App\Services\DataTableService;
 use Illuminate\Support\Collection;
 use Livewire\Component;
 use Spatie\Activitylog\Models\Activity;
@@ -42,8 +41,12 @@ class Index extends Component
                 ];
             });
 
-        $this->columns = app(DataTableService::class)
-            ->getColumns($this->mappedLogs, ['id']);
+        $this->columns = collect([
+            ['data' => 'description'],
+            ['data' => 'source'],
+            ['data' => 'logged_at'],
+            ['data' => 'show_route'],
+        ]);
 
         $this->dispatch('refresh-dataTable', [
             'dataTableId' => 'activity-logs-table',
