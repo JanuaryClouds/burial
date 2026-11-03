@@ -1,11 +1,8 @@
 <div wire:poll.10s='loadData'
 	class="d-flex flex-column gap-6">
 	<x-card>
-		@include('partials.dataTable.index', [
-			'dataTableId' => $dataTableId,
-			'columns' => $columns,
-			'data' => $mappedDocuments,
-		])
+		<x-data-table :columns="$columns" :data="$mappedDocuments" :data-table-id="$dataTableId"
+            :card-fields="['primary' => 'name', 'secondary' => 'source', 'date' => 'updated_at']" />
 	</x-card>
 	<x-card>
 		<x-slot:header>

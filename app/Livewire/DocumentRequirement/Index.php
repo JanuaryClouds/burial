@@ -3,7 +3,6 @@
 namespace App\Livewire\DocumentRequirement;
 
 use App\Models\DocumentRequirement;
-use App\Services\DataTableService;
 use Illuminate\Support\Collection;
 use Livewire\Component;
 
@@ -38,7 +37,12 @@ class Index extends Component
                 ];
             });
 
-        $this->columns = app(DataTableService::class)->getColumns($this->mappedDocuments, ['id']);
+        $this->columns = collect([
+            ['data' => 'name'],
+            ['data' => 'source'],
+            ['data' => 'updated_at'],
+            ['data' => 'show_route'],
+        ]);
 
         $this->dispatch('refresh-dataTable', [
             'dataTableId' => $this->dataTableId,
