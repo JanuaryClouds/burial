@@ -5,7 +5,16 @@
 	class="overflow-x-hidden">
 
 <head>
-	@include('partials.page.head')
+    @if($recoveryPage ?? false)
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="referrer" content="no-referrer">
+        <title>Password recovery</title>
+        <link rel="stylesheet" href="{{ asset('metronic/css/style.bundle.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    @else
+        @include('partials.page.head')
+    @endif
 </head>
 
 <body id="kt_body"
@@ -14,11 +23,17 @@
 	<div class="d-flex flex-column flex-root"
 		id="kt_app_root">
 		@include('partials.theme.script')
-		<x-loader />
+        @unless($recoveryPage ?? false)<x-loader />@endunless
 		@yield('content')
 	</div>
-	@include('components.notification.alert')
-	@include('partials.page.scripts')
+    @unless($recoveryPage ?? false)
+        @include('components.notification.alert')
+        @include('partials.page.scripts')
+    @endunless
+    @if($recoveryPage ?? false)
+        <script nonce="{{ $nonce ?? '' }}" src="{{ asset('js/immediate-mail.js') }}" defer></script>
+        <script nonce="{{ $nonce ?? '' }}" src="{{ asset('js/password-visibility.js') }}" defer></script>
+    @endif
 </body>
 
 </html>

@@ -40,3 +40,4 @@
 @livewireScripts(['nonce' => $nonce ?? ''])
 
 @stack('scripts')
+<script nonce="{{ $nonce ?? '' }}" src="{{ asset('js/password-visibility.js') }}" defer></script>
