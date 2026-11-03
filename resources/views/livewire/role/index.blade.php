@@ -1,11 +1,8 @@
 <div class="d-flex flex-column gap-6"
 	wire:poll.10s='loadData'>
 	<x-card>
-		@include('partials.dataTable.index', [
-			'columns' => $columns,
-			'data' => $mappedRoles,
-			'dataTableId' => $dataTableId,
-		])
+		<x-data-table :columns="$columns" :data="$mappedRoles" :data-table-id="$dataTableId"
+            :card-fields="['primary' => 'name']" />
 		<x-slot:footer>
 			<a href="{{ route('role.create') }}"
 				class="btn btn-primary">

@@ -2,7 +2,6 @@
 
 namespace App\Livewire\Role;
 
-use App\Services\DataTableService;
 use Illuminate\Support\Collection;
 use Livewire\Component;
 use Spatie\Permission\Models\Role;
@@ -42,8 +41,10 @@ class Index extends Component
                 ];
             });
 
-        $this->columns = app(DataTableService::class)
-            ->getColumns($this->mappedRoles, ['id']);
+        $this->columns = collect([
+            ['data' => 'name'],
+            ['data' => 'show_route'],
+        ]);
 
         $this->dispatch('refresh-dataTable', [
             'dataTableId' => $this->dataTableId,
