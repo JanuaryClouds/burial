@@ -164,7 +164,9 @@ class UserService
                 }
                 $locked->forceFill(['password' => $data['newPassword'], 'password_change_required' => false])->save();
                 $locked->tokens()->delete();
-                activity('account-management')->causedBy($locked)->performedOn($locked)->log('Owner changed password');
+                activity('account-management')->causedBy($locked)->performedOn($locked)
+                    ->withProperties(['method' => 'authenticated_password_change'])
+                    ->log('Owner changed password');
             });
         } catch (ValidationException|HttpException $exception) {
             throw $exception;
