@@ -4,7 +4,6 @@ namespace App\Livewire\Client;
 
 use App\Models\Client;
 use App\Services\ClientService;
-use App\Services\DataTableService;
 use App\Traits\Livewire\GuardsRecordIndex;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -58,7 +57,13 @@ class Index extends Component
                 ];
             });
 
-        $this->columns = app(DataTableService::class)->getColumns($this->mappedClients);
+        $this->columns = collect([
+            ['data' => 'name'],
+            ['data' => 'address'],
+            ['data' => 'recorded_at'],
+            ['data' => 'application_tracking_no'],
+            ['data' => 'show_route'],
+        ]);
 
         $this->dispatch('refresh-dataTable', [
             'dataTableId' => $this->dataTableId,

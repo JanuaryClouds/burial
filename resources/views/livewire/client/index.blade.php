@@ -11,11 +11,8 @@
 	{{-- start::Index --}}
 	<div>
 		<x-card>
-			@include('partials.dataTable.index', [
-				'columns' => $columns,
-				'data' => $mappedClients,
-				'dataTableId' => $dataTableId,
-			])
+			<x-data-table :columns="$columns" :data="$mappedClients" :data-table-id="$dataTableId"
+                :card-fields="['primary' => 'name', 'secondary' => 'address', 'tertiary' => 'application_tracking_no', 'date' => 'recorded_at']" />
 			@if (! auth()->user()->isInternal())
 				<x-slot:footer>
 					<a href="{{ route('client.create') }}"
