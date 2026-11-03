@@ -1,11 +1,8 @@
 <div class="d-flex flex-column gap-6"
 	wire:poll.10s='loadData'>
 	<x-card>
-		@include('partials.dataTable.index', [
-			'columns' => $columns,
-			'data' => $mappedModeOfAssistances,
-			'dataTableId' => $dataTableId,
-		])
+		<x-data-table :columns="$columns" :data="$mappedModeOfAssistances" :data-table-id="$dataTableId"
+            :card-fields="['primary' => 'name']" />
 	</x-card>
 	<x-card>
 		<x-slot:header>Create New Mode of Assistance</x-slot:header>

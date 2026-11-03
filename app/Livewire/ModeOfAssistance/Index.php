@@ -3,7 +3,6 @@
 namespace App\Livewire\ModeOfAssistance;
 
 use App\Models\ModeOfAssistance;
-use App\Services\DataTableService;
 use Illuminate\Support\Collection;
 use Livewire\Component;
 
@@ -36,8 +35,10 @@ class Index extends Component
                 ];
             });
 
-        $this->columns = app(DataTableService::class)
-            ->getColumns($this->mappedModeOfAssistances, ['id']);
+        $this->columns = collect([
+            ['data' => 'name'],
+            ['data' => 'show_route'],
+        ]);
 
         $this->dispatch('refresh-dataTable', [
             'dataTableId' => $this->dataTableId,
