@@ -3,16 +3,21 @@
 use App\Http\Controllers\Auth\UserController;
 use App\Http\Controllers\DocumentRequirementController;
 use App\Http\Controllers\DocumentTemplateController;
+use App\Http\Controllers\FailedEmailController;
 use App\Http\Controllers\FuneralAssistanceTypeController;
 use App\Http\Controllers\ModeOfAssistanceController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SystemController;
 use App\Http\Controllers\WorkflowController;
 use App\Http\Controllers\WorkflowStageController;
+use App\Http\Middleware\RecoveryPrivacy;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('role:superadmin')
     ->group(function () {
+        Route::get('/system/failed-emails', [FailedEmailController::class, 'index'])->middleware(RecoveryPrivacy::class)->name('system.failed-emails.index');
+        Route::post('/system/failed-emails/{delivery}/retry', [FailedEmailController::class, 'retry'])
+            ->middleware(['throttle:mail-retry', RecoveryPrivacy::class])->name('system.failed-emails.retry');
         Route::controller(DocumentRequirementController::class)
             ->prefix('document-requirements')
             ->name('document_requirements.')
