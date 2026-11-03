@@ -1,4 +1,4 @@
-<div class='row'>
+<div class="row g-5 chart-grid">
 	@can('office-access')
 		<div class="col-12 col-md-6">
 			<x-card>
