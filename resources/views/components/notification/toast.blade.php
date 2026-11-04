@@ -2,7 +2,7 @@
     <script nonce="{{ $nonce ?? '' }}">
         iziToast.success({
             title: 'Success',
-            message: @json(session('success')),
+            message: @json(e(session('success'))),
             position: 'bottomRight',
             icon: 'fas fa-check-circle',
             backgroundColor: '#ffc83dff',
@@ -12,7 +12,7 @@
     <script nonce="{{ $nonce ?? '' }}">
         iziToast.error({
             title: 'Error',
-            message: @json(session('error')),
+            message: @json(e(session('error'))),
             position: 'bottomRight',
             messageColor: '#ffffffff',
             icon: 'fas fa-times-circle',
@@ -23,7 +23,7 @@
     <script nonce="{{ $nonce ?? '' }}">
         iziToast.info({
             title: 'Info',
-            message: @json(session('info')),
+            message: @json(e(session('info'))),
             messageColor: '#000000ff',
             position: 'bottomRight',
             icon: 'fas fa-info-circle',
