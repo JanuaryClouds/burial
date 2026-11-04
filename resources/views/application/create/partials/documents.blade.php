@@ -11,18 +11,16 @@
 				</div>
 			</x-callout>
 			<div class="row">
-				@foreach ($documents as $document)
+				@error('images')
+                    <p class="text-danger">{{ $message }}</p>
+                @enderror
+				@foreach ($applicableDocuments as $document)
 					@php
-						$beneficiaryReligion = \App\Models\Beneficiary::where('uuid', $beneficiaryUuid)->with('religion')->first();
 
 						$displayName = $document['name'];
 
-						if ($document['for_muslim'] && $beneficiaryReligion->religion->name === 'Islam') {
+						if ($document['for_muslim']) {
 						    $displayName .= ' (For Muslim Citizen Only)';
-						}
-
-						if ($document['for_muslim'] && $beneficiaryReligion->religion->name !== 'Islam') {
-						    continue;
 						}
 
 						$nameKey = str_replace(' ', '_', strtolower($document['name']));
