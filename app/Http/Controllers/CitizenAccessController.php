@@ -141,6 +141,7 @@ class CitizenAccessController extends Controller
             }
 
         } else {
+            abort_unless(app()->environment('local', 'testing'), 403, 'Login failed.');
             $user = User::where('citizen_uuid', request('citizen_uuid'))->firstOrFail();
         }
 
