@@ -25,6 +25,9 @@ document.querySelectorAll('form[data-immediate-mail]').forEach((form) => {
             } else if (response.ok && result.sent) {
                 completed = true;
                 button.textContent = 'Sent';
+            } else if (response.ok && result.retryable === false) {
+                completed = true;
+                button.textContent = 'Cannot retry';
             }
         } catch (_) {
             status.textContent = 'The request could not be completed. Check your connection before trying again.';

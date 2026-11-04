@@ -40,6 +40,7 @@ Route::middleware('role:superadmin')
                     ->name('edit');
 
                 Route::get('/{funeralAssistanceType}/templates/{template}/download', [DocumentTemplateController::class, 'original'])
+                    ->middleware('throttle:document-downloads')
                     ->name('templates.download');
             });
 

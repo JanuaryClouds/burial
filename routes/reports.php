@@ -15,6 +15,7 @@ Route::name('report.')
             ->name('index');
 
         Route::post('/print/{startDate?}/{endDate?}', 'print')->middleware('can:create-reports')
+            ->middleware('throttle:document-generation')
             ->name('print');
 
         // Route::match(['get', 'post'], '/checks', [ReportController::class, 'cheques'])

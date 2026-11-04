@@ -18,7 +18,9 @@ class ImmediateMailService
 
     public function record(string $recipient, MessagePayload $payload): MailDelivery
     {
-        if (! isset(self::HANDLERS[$payload->type()]) || ! filter_var($recipient, FILTER_VALIDATE_EMAIL)) {
+        $recipient = trim($recipient);
+        app(SharedEmailLogs::class)->normalize($recipient);
+        if (! isset(self::HANDLERS[$payload->type()])) {
             throw new \InvalidArgumentException('Invalid mail message.');
         }
 
@@ -61,7 +63,7 @@ class ImmediateMailService
             abort_unless($retry
                 ? (in_array($row->status, ['failed', 'uncertain'], true) || $stale || $abandoned)
                 : $row->status === 'pending', 409, 'This email is already being sent or cannot be retried.');
-            abort_if($row->failure_code === 'ineligible', 409, 'This recovery request is no longer eligible.');
+            abort_if(in_array($row->failure_code, ['ineligible', 'suppressed', 'invalid_recipient'], true), 409, 'This email cannot be retried. Correct the address and start a new request.');
             if ($stale) {
                 $row->attempts()->where('claim', $row->claim)->where('status', 'sending')
                     ->update(['status' => 'uncertain', 'failure_code' => 'interrupted', 'finished_at' => now()]);
@@ -87,6 +89,9 @@ class ImmediateMailService
             // Deliberately never report raw mail exceptions: transports can include secrets or message content.
             $status = 'failed';
             $code = match (true) {
+                $exception instanceof SuppressedRecipient => 'suppressed',
+                $exception instanceof InvalidMailRecipient => 'invalid_recipient',
+                $exception instanceof SharedEmailLogsUnavailable => 'shared_logs_unavailable',
                 $exception instanceof IneligibleMessage => 'ineligible',
                 $exception instanceof \LogicException => 'configuration',
                 default => 'transport',
@@ -98,7 +103,7 @@ class ImmediateMailService
                 ->update(['status' => $status, 'failure_code' => $code, 'sent_at' => $status === 'sent' ? now() : null, 'updated_at' => now()]);
             if ($updated) {
                 MailDeliveryAttempt::where('claim', $claim)->update(['status' => $status, 'failure_code' => $code, 'finished_at' => now()]);
-                if ($status === 'sent' || $code === 'ineligible') {
+                if ($status === 'sent' || in_array($code, ['ineligible', 'suppressed', 'invalid_recipient'], true)) {
                     MailDelivery::whereKey($delivery->id)->where('claim', $claim)->update(['payload' => null]);
                 }
             }

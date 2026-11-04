@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Services\Auth\PasswordRecoveryService;
 use App\Services\Auth\UserService;
 use App\Services\Mail\ImmediateMailService;
+use App\Services\Mail\MockEmailLogs;
 use App\Services\Mail\PasswordResetMessage;
 use App\Services\Mail\PasswordResetPayload;
 use Illuminate\Support\Facades\Artisan;
@@ -31,6 +32,8 @@ class PasswordRecoveryTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        config(['email_logs.mock' => true, 'database.connections.email_logs_mock.database' => ':memory:']);
+        app(MockEmailLogs::class)->initialize();
         config(['database.default' => 'recovery_testing',
             'database.connections.recovery_testing' => ['driver' => 'sqlite', 'database' => ':memory:', 'prefix' => '', 'foreign_key_constraints' => true],
             'cache.default' => 'array', 'session.driver' => 'array', 'hashing.bcrypt.rounds' => 4,
@@ -46,6 +49,7 @@ class PasswordRecoveryTest extends TestCase
 
     protected function tearDown(): void
     {
+        DB::purge('email_logs_mock');
         Livewire::flushState();
         DB::purge('recovery_testing');
         parent::tearDown();
@@ -313,6 +317,40 @@ class PasswordRecoveryTest extends TestCase
         }
     }
 
+    public function test_suppression_and_outages_are_recorded_without_leaking_to_the_public_response(): void
+    {
+        $user = $this->account();
+        app(MockEmailLogs::class)->append($user->email, 'Complaint', 'mock-complaint');
+        $this->postJson(route('password.email'), ['email' => $user->email])->assertOk()->assertExactJson(['message' => PasswordRecoveryController::MESSAGE]);
+        $delivery = MailDelivery::sole();
+        $this->assertSame('suppressed', $delivery->failure_code);
+        $this->assertNull($delivery->payload);
+        $this->assertCount(0, Mail::mailer('array')->getSymfonyTransport()->messages());
+        $this->actingAs($this->account('superadmin'));
+        $this->get(route('system.failed-emails.index'))->assertOk()->assertDontSee(route('system.failed-emails.retry', $delivery), false);
+        $this->postJson(route('system.failed-emails.retry', $delivery))->assertStatus(409);
+
+        $user = $this->account();
+        DB::connection('email_logs_mock')->getSchemaBuilder()->drop('email_logs');
+        $delivery = app(ImmediateMailService::class)->deliver($this->record($user));
+        $this->assertSame('shared_logs_unavailable', $delivery->failure_code);
+        app(MockEmailLogs::class)->initialize();
+        $this->postJson(route('system.failed-emails.retry', $delivery))->assertOk()->assertJson(['sent' => true]);
+    }
+
+    public function test_retry_rechecks_shared_suppression_after_an_initial_transport_failure(): void
+    {
+        $user = $this->account();
+        $this->failTransport();
+        $delivery = app(ImmediateMailService::class)->deliver($this->record($user));
+        $this->assertSame('transport', $delivery->failure_code);
+        app(MockEmailLogs::class)->append($user->email, 'Bounce', 'mock-permanent', 'Permanent', 'NoEmail');
+        Mail::purge('array');
+        $this->actingAs($this->account('superadmin'))->postJson(route('system.failed-emails.retry', $delivery))->assertOk()->assertJson(['sent' => false, 'retryable' => false]);
+        $this->assertSame('suppressed', $delivery->fresh()->failure_code);
+        $this->assertCount(0, Mail::mailer('array')->getSymfonyTransport()->messages());
+    }
+
     public function test_mailpit_smtp_smoke_when_explicitly_enabled(): void
     {
         if (getenv('BURIAL_MAILPIT_SMOKE') !== '1') {
@@ -324,6 +362,10 @@ class PasswordRecoveryTest extends TestCase
         $user = $this->account();
         $this->postJson(route('password.email'), ['email' => $user->email])->assertOk();
         $this->assertSame('sent', MailDelivery::firstOrFail()->status);
+        $mockSend = DB::connection('email_logs_mock')->table('email_logs')->where('recipient', $user->email)->sole();
+        $this->assertSame('Send', $mockSend->event_type);
+        $this->assertSame('burial', $mockSend->site_tag);
+        $this->assertNotEmpty($mockSend->message_id);
         // Force a local connection refusal, then restore the real Mailpit transport for retry.
         config(['mail.mailers.smtp.port' => 1, 'mail.mailers.smtp.timeout' => 1]);
         Mail::purge('smtp');
@@ -333,5 +375,20 @@ class PasswordRecoveryTest extends TestCase
         Mail::purge('smtp');
         $this->actingAs($this->account('superadmin'))->postJson(route('system.failed-emails.retry', $delivery))
             ->assertOk()->assertJson(['sent' => true]);
+        $this->assertSame(2, DB::connection('email_logs_mock')->table('email_logs')->where('recipient', $user->email)->count());
+
+        $blocked = $this->account();
+        app(MockEmailLogs::class)->append($blocked->email, 'Complaint', 'mock-mailpit-complaint');
+        $delivery = app(ImmediateMailService::class)->deliver($this->record($blocked));
+        $this->assertSame('suppressed', $delivery->failure_code);
+        $this->assertSame(0, DB::connection('email_logs_mock')->table('email_logs')->where('recipient', $blocked->email)->where('event_type', 'Send')->count());
+
+        $unavailable = $this->account();
+        DB::connection('email_logs_mock')->getSchemaBuilder()->drop('email_logs');
+        $delivery = app(ImmediateMailService::class)->deliver($this->record($unavailable));
+        $this->assertSame('shared_logs_unavailable', $delivery->failure_code);
+        app(MockEmailLogs::class)->initialize();
+        $this->postJson(route('system.failed-emails.retry', $delivery))->assertOk()->assertJson(['sent' => true]);
+        $this->assertSame(1, DB::connection('email_logs_mock')->table('email_logs')->where('recipient', $unavailable->email)->where('event_type', 'Send')->count());
     }
 }

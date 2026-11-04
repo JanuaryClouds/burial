@@ -66,6 +66,7 @@ class ImageService
     public function post(string $filename, $file)
     {
         app(AccountAccess::class)->assertWritable();
+        app(ImageUploadValidator::class)->validate($file);
         if (! config('services.fileserver.enable.post')) {
             activity()->causedBy(Auth::user())
                 ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent'), 'filename' => $filename])

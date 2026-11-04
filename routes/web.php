@@ -51,6 +51,7 @@ Route::middleware(['auth', 'active.check'])
 
         Route::get('/applications/export', [ExportController::class, 'applications'])
             ->middleware('can:create-reports')
+            ->middleware('throttle:document-generation')
             ->name('applications.export.all');
 
         require __DIR__.'/application.php';

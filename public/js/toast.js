@@ -1,5 +1,6 @@
 export default function toast() {
     toastr.options = {
+        "escapeHtml": true,
         "closeButton": false,
         "debug": false,
         "newestOnTop": true,

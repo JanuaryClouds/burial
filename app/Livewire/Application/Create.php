@@ -8,6 +8,7 @@ use App\Models\DocumentRequirement;
 use App\Services\ActivityLoggerService;
 use App\Services\ApplicationService;
 use App\Services\ImageService;
+use App\Services\ImageUploadValidator;
 use App\Traits\Livewire\GuardsCitizenCreation;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -46,6 +47,9 @@ class Create extends Component
     public $images = [];
 
     public bool $agreedToTerms = false;
+
+    // Private state lasts only for this Livewire request and cannot be supplied by the browser.
+    private ?Collection $applicableDocumentCache = null;
 
     public function mount()
     {
@@ -102,7 +106,9 @@ class Create extends Component
     {
         try {
             $this->validate();
+            $this->validateImages();
         } catch (ValidationException $e) {
+            $this->setErrorBag($e->validator->errors());
             $this->dispatch('notification:toast', [
                 'type' => 'error',
                 'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation'),
@@ -160,6 +166,38 @@ class Create extends Component
 
     public function render()
     {
-        return view('livewire.application.create');
+        return view('livewire.application.create', ['applicableDocuments' => $this->applicableDocuments()]);
+    }
+
+    private function applicableDocuments(): Collection
+    {
+        if ($this->applicableDocumentCache !== null) {
+            return $this->applicableDocumentCache;
+        }
+        $beneficiary = $this->beneficiaryUuid
+            ? Beneficiary::with('religion')->where('created_by', Auth::id())->find($this->beneficiaryUuid)
+            : null;
+        $isMuslim = $beneficiary?->religion?->name === 'Islam';
+
+        // Re-read CMS configuration; public Livewire properties are not an authority.
+        return $this->applicableDocumentCache = DocumentRequirement::index()->where('is_active', true)->get()
+            ->filter(fn ($document) => ! $document->for_muslim || $isMuslim);
+    }
+
+    private function validateImages(): void
+    {
+        if (! is_array($this->images)) {
+            throw ValidationException::withMessages(['images' => 'Please upload one image per document field.']);
+        }
+        $allowed = $this->applicableDocuments()->map(fn ($document) => str_replace(' ', '_', strtolower($document->name)))->all();
+        foreach ($this->images as $key => $file) {
+            if (! in_array($key, $allowed, true)) {
+                throw ValidationException::withMessages(['images' => 'An uploaded document is no longer applicable. Please reload the form.']);
+            }
+            if ($file === null) {
+                continue;
+            }
+            app(ImageUploadValidator::class)->validate($file, 'images.'.$key);
+        }
     }
 }

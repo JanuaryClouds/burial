@@ -35,7 +35,8 @@ class FailedEmailController extends Controller
         $message = $result->status === 'sent' ? 'Email accepted by the mail service.' : $result->failureDescription();
 
         return $request->expectsJson()
-            ? response()->json(['message' => $message, 'sent' => $result->status === 'sent'])
+            ? response()->json(['message' => $message, 'sent' => $result->status === 'sent',
+                'retryable' => $result->status === 'failed' && ! in_array($result->failure_code, ['ineligible', 'suppressed', 'invalid_recipient'], true)])
             : back()->with($result->status === 'sent' ? 'success' : 'error', $message);
     }
 }

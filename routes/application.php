@@ -40,7 +40,7 @@ Route::name('application.')
                     ->name('image.')
                     ->controller(ImageController::class)
                     ->group(function () {
-                        Route::get('/{filename}', 'get')
+                        Route::get('/{filename}', 'get')->middleware('throttle:document-downloads')
                             ->where('filename', '[a-zA-Z0-9_\-\.]+')
                             ->name('get');
 
@@ -69,18 +69,22 @@ Route::name('application.')
                     ->group(function () {
                         Route::get('/templates/{template}/download', [DocumentTemplateController::class, 'download'])
                             ->middleware(['can:view,application', 'can:office-access'])
+                            ->middleware('throttle:document-generation')
                             ->name('templates.download');
 
                         Route::get('/tracker-slip', 'codes')
                             ->middleware('can:view,application')
+                            ->middleware('throttle:document-generation')
                             ->name('tracker-slip');
 
                         Route::get('/print', 'print')
                             ->middleware(['can:view,application', 'can:office-access'])
+                            ->middleware('throttle:document-generation')
                             ->name('print');
 
                         Route::get('/certificate', 'certificate')
                             ->middleware(['can:view,application', 'can:office-access'])
+                            ->middleware('throttle:document-generation')
                             ->name('certificate');
                     });
             });
