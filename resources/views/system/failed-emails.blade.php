@@ -22,7 +22,7 @@
                         </details>
                     </td>
                     <td>
-                        @if($delivery->failure_code !== 'ineligible')
+                        @if(! in_array($delivery->failure_code, ['ineligible', 'suppressed', 'invalid_recipient'], true))
                         <form method="POST" action="{{ route('system.failed-emails.retry', $delivery) }}" data-immediate-mail data-uncertain="{{ $uncertain ? 'true' : 'false' }}">
                             @csrf
                             <button type="submit" class="btn btn-sm btn-primary">Retry email</button>
