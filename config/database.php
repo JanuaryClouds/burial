@@ -36,6 +36,27 @@ return [
 
     'connections' => [
 
+        'email_logs_db' => [
+            'driver' => 'mysql',
+            'host' => env('EMAIL_LOGS_DB_HOST'),
+            'port' => env('EMAIL_LOGS_DB_PORT', 3306),
+            'database' => env('EMAIL_LOGS_DB_DATABASE'),
+            'username' => env('EMAIL_LOGS_DB_USERNAME'),
+            'password' => env('EMAIL_LOGS_DB_PASSWORD'),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'strict' => true,
+            'options' => [PDO::ATTR_TIMEOUT => 5],
+        ],
+
+        'email_logs_mock' => [
+            'driver' => 'sqlite',
+            'database' => storage_path('app/private/email-logs-mock/email-logs.sqlite'),
+            'prefix' => '',
+            'foreign_key_constraints' => true,
+        ],
+
         'sqlite' => [
             'driver' => 'sqlite',
             'url' => env('DATABASE_URL'),
