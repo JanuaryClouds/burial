@@ -1,6 +1,6 @@
 <?php
 
-// Intentionally standalone: no Laravel bootstrap, database, or encryption key.
+// Standalone, loopback only. Never boot Laravel or read production credentials.
 if (PHP_SAPI !== 'cli-server' || ! in_array($_SERVER['REMOTE_ADDR'] ?? '', ['127.0.0.1', '::1'], true)) {
     http_response_code(404);
     exit;
@@ -23,57 +23,109 @@ header('X-Content-Type-Options: nosniff');
 
 try {
     $root = getenv('BURIAL_MOCK_ROOT');
-    $token = getenv('BURIAL_MOCK_TOKEN');
+    $secret = getenv('BURIAL_MOCK_TOKEN');
     $policy = getenv('BURIAL_MOCK_DUPLICATES');
-    $maxBytes = filter_var(getenv('BURIAL_MOCK_MAX_BYTES') ?: 32 * 1024 * 1024, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 32 * 1024 * 1024]]);
-    if (! $root || ! $token || $maxBytes === false || ! in_array($policy, ['reject', 'overwrite'], true)) {
+    $maxBytes = filter_var(getenv('BURIAL_MOCK_MAX_BYTES') ?: 30 * 1024 * 1024, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 30 * 1024 * 1024]]);
+    date_default_timezone_set(getenv('BURIAL_MOCK_TIMEZONE') ?: 'Asia/Manila');
+    if (! $root || ! $secret || $maxBytes === false || ! in_array($policy, ['reject', 'overwrite'], true)) {
         respond(500, ['status' => 'error', 'message' => 'Mock server is not configured.']);
     }
-    $storage = new MockFileserverStorage($root);
-    $path = rawurldecode(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? '');
+    $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
     $method = $_SERVER['REQUEST_METHOD'];
-    if ($method === 'GET' && str_starts_with($path, '/burial/')) {
-        $name = substr($path, 8);
-        if (! MockFileserverStorage::validName($name)) {
+    if ($path !== '/apiburial/' || ! in_array($method, ['GET', 'POST'], true)) {
+        respond(404, ['status' => 'error', 'message' => 'Endpoint not found.']);
+    }
+    // Allow Base64 expansion, but bound parsing before reading the body.
+    if ((int) ($_SERVER['CONTENT_LENGTH'] ?? 0) > 42 * 1024 * 1024) {
+        respond(400, ['status' => 'error', 'message' => 'Upload too large.']);
+    }
+    $params = $method === 'GET' ? $_GET : $_POST;
+    if ($method === 'POST' && str_starts_with(strtolower($_SERVER['CONTENT_TYPE'] ?? ''), 'application/json')) {
+        $params = json_decode(file_get_contents('php://input'), true);
+        if (! is_array($params)) {
+            respond(400, ['status' => 'error', 'message' => 'Invalid JSON.']);
+        }
+    }
+    $token = $params['token'] ?? null;
+    if (! is_string($token) || $token === '') {
+        respond(401, ['status' => 'error', 'message' => 'Token required.']);
+    }
+    if (! hash_equals(date('Ymd').$secret, $token)) {
+        respond(403, ['status' => 'error', 'message' => 'Invalid or expired token.']);
+    }
+    $action = $params['action'] ?? null;
+    $allowed = $method === 'GET' ? ['view', 'download', 'list'] : ['upload', 'delete'];
+    if (! is_string($action) || ! in_array($action, $allowed, true)) {
+        respond(400, ['status' => 'error', 'message' => 'Invalid action or method.']);
+    }
+    $folder = $params['folder'] ?? '';
+    if (! is_string($folder) || ($folder !== '' && ! MockFileserverStorage::validName($folder))) {
+        respond(400, ['status' => 'error', 'message' => 'Invalid folder.']);
+    }
+    $rootStorage = new MockFileserverStorage($root);
+    $storage = $rootStorage->folder($folder);
+    if ($action === 'list') {
+        $limit = filter_var($params['limit'] ?? 100, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 1000]]);
+        if ($limit === false) {
+            respond(400, ['status' => 'error', 'message' => 'Invalid limit.']);
+        }
+        $all = $storage->files();
+        $files = array_slice($all, 0, $limit);
+        respond(200, ['status' => 'success', 'folder' => $folder, 'count' => count($files), 'total_count' => count($all), 'files' => $files]);
+    }
+    if ($action !== 'upload') {
+        $name = $params['file'] ?? null;
+        if (! is_string($name) || ! MockFileserverStorage::validName($name)) {
             respond(400, ['status' => 'error', 'message' => 'Invalid filename.']);
+        }
+        if ($action === 'delete') {
+            if (! $storage->delete($name)) {
+                respond(404, ['status' => 'error', 'message' => 'File not found.']);
+            }
+            respond(200, ['status' => 'success', 'file' => $name, 'folder' => $folder]);
         }
         $bytes = $storage->read($name);
         if ($bytes === null) {
             respond(404, ['status' => 'error', 'message' => 'File not found.']);
         }
-        header('Content-Type: application/octet-stream');
+        // Opaque-byte behavior remains deliberate until upstream .enc support is confirmed.
+        $mime = (new finfo(FILEINFO_MIME_TYPE))->buffer($bytes);
+        header('Content-Type: '.(in_array($mime, ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'], true) ? $mime : 'application/octet-stream'));
+        header('Content-Disposition: '.($action === 'download' ? 'attachment' : 'inline').'; filename="'.$name.'"');
         header('Content-Length: '.strlen($bytes));
         echo $bytes;
         exit;
     }
-    if ($path !== '/upload' || $method !== 'POST') {
-        respond(404, ['status' => 'error', 'message' => 'Endpoint not found.']);
+    if (isset($params['file_data'])) {
+        $name = $params['file_name'] ?? null;
+        $data = $params['file_data'];
+        if (! is_string($data)) {
+            respond(400, ['status' => 'error', 'message' => 'Invalid Base64.']);
+        }
+        $data = preg_replace('/\Adata:[^,]*;base64,/', '', $data);
+        $bytes = base64_decode($data, true);
+        if ($bytes === false) {
+            respond(400, ['status' => 'error', 'message' => 'Invalid Base64.']);
+        }
+    } else {
+        $file = $_FILES['file'] ?? null;
+        if (! is_array($file) || ($file['error'] ?? null) !== UPLOAD_ERR_OK || ! is_uploaded_file($file['tmp_name'])) {
+            respond(400, ['status' => 'error', 'message' => 'Invalid upload.']);
+        }
+        $name = $file['name'];
+        $bytes = file_get_contents($file['tmp_name']);
     }
-    if ((int) ($_SERVER['CONTENT_LENGTH'] ?? 0) > 34 * 1024 * 1024) {
-        respond(413, ['status' => 'error', 'message' => 'Upload too large.']);
+    if (! is_string($name) || ! MockFileserverStorage::validName($name) || ! is_string($bytes) || strlen($bytes) > $maxBytes) {
+        respond(400, ['status' => 'error', 'message' => 'Invalid filename or upload size.']);
     }
-    if (! is_string($_POST['token'] ?? null) || ! hash_equals($token, $_POST['token'])) {
-        respond(401, ['status' => 'error', 'message' => 'Invalid token.']);
+    if (! in_array(strtolower(pathinfo($name, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png', 'webp', 'pdf', 'enc'], true)) {
+        respond(400, ['status' => 'error', 'message' => 'Disallowed extension.']);
     }
-    $file = $_FILES['file'] ?? null;
-    if (! is_array($file) || ! is_int($file['error'] ?? null)) {
-        respond(400, ['status' => 'error', 'message' => 'One file is required.']);
-    }
-    if (in_array($file['error'], [UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE], true) || ($file['size'] ?? 0) > $maxBytes) {
-        respond(413, ['status' => 'error', 'message' => 'Upload too large.']);
-    }
-    if ($file['error'] !== UPLOAD_ERR_OK || ! is_uploaded_file($file['tmp_name']) || ! MockFileserverStorage::validName($file['name'])) {
-        respond(400, ['status' => 'error', 'message' => 'Invalid upload.']);
-    }
-    $storage->cleanup();
-    $bytes = file_get_contents($file['tmp_name']);
-    if ($bytes === false) {
-        throw new RuntimeException('Cannot read upload.');
-    }
-    if (! $storage->write($file['name'], $bytes, $policy === 'overwrite')) {
+    $rootStorage->cleanup();
+    if (! $storage->write($name, $bytes, $policy === 'overwrite')) {
         respond(409, ['status' => 'error', 'message' => 'File already exists.']);
     }
-    respond(201, ['status' => 'success', 'filename' => $file['name']]);
+    respond(200, ['status' => 'success', 'file' => $name, 'folder' => $folder, 'reencoded' => false]);
 } catch (Throwable) {
     respond(500, ['status' => 'error', 'message' => 'Mock storage failed.']);
 }
