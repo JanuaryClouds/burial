@@ -19,6 +19,21 @@ class DocumentRequirement extends Model
         'is_active',
     ];
 
+    public function uploadKey(): string
+    {
+        return str_replace(' ', '_', strtolower($this->name));
+    }
+
+    /** Stable across display-name edits; one level, independent of applications. */
+    public function storageFolder(): string
+    {
+        if (! $this->exists || ! $this->getKey()) {
+            throw new \RuntimeException('A saved document requirement is required for storage.');
+        }
+
+        return 'document-requirement-'.$this->getKey();
+    }
+
     public static function burial()
     {
         return [

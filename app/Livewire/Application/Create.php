@@ -14,7 +14,6 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Rule;
 use Livewire\Component;
@@ -132,8 +131,9 @@ class Create extends Component
                         continue;
                     }
 
-                    $filename = $application->tracking_no.'-'.Str::replace('_', '-', $key);
-                    $imageService->post($filename, $file);
+                    $document = $this->applicableDocuments()->first(fn ($document) => $document->uploadKey() === $key);
+                    abort_unless($document, 422);
+                    $imageService->postDocument($application, $document, $file);
                 }
 
                 ActivityLoggerService::logSuccess('Successfully created application', [
@@ -189,7 +189,7 @@ class Create extends Component
         if (! is_array($this->images)) {
             throw ValidationException::withMessages(['images' => 'Please upload one image per document field.']);
         }
-        $allowed = $this->applicableDocuments()->map(fn ($document) => str_replace(' ', '_', strtolower($document->name)))->all();
+        $allowed = $this->applicableDocuments()->map(fn ($document) => $document->uploadKey())->all();
         foreach ($this->images as $key => $file) {
             if (! in_array($key, $allowed, true)) {
                 throw ValidationException::withMessages(['images' => 'An uploaded document is no longer applicable. Please reload the form.']);

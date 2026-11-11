@@ -17,12 +17,10 @@ class ImageController extends Controller
     public function get(Application $application, string $filename)
     {
         abort_unless(auth()->user()?->can('view', $application), 403);
-        $document = DocumentRequirement::query()->get()->first(fn ($document) => str_replace(' ', '_', strtolower($document->name)) === $filename);
+        $document = DocumentRequirement::query()->get()->first(fn ($document) => $document->uploadKey() === $filename);
         abort_unless($document, 404);
-        $name = $application->tracking_no.'-'.$document->name;
-
         try {
-            $jpeg = $this->imageService->get(Str::slug($name).'.jpg.enc');
+            $jpeg = $this->imageService->getDocument($application, $document);
         } catch (\Exception) {
             // Do not log requests or payloads containing credentials/documents.
             abort(502, 'Image is temporarily unavailable.');
@@ -43,7 +41,7 @@ class ImageController extends Controller
         if (! Auth::user()?->can('view', $application)) {
             abort(403);
         }
-        abort_unless(DocumentRequirement::query()->get()->contains(fn ($document) => str_replace(' ', '_', strtolower($document->name)) === $filename), 404);
+        abort_unless(DocumentRequirement::query()->get()->contains(fn ($document) => $document->uploadKey() === $filename), 404);
 
         return view('application.image', [
             'src' => $src,
