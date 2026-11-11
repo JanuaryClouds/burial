@@ -23,6 +23,46 @@ class MockFileserverStorage
         return (bool) preg_match('/\A[a-zA-Z0-9][a-zA-Z0-9_.-]{0,199}\z/D', $name);
     }
 
+    public function folder(string $folder): self
+    {
+        if ($folder === '') {
+            return $this;
+        }
+        if (! self::validName($folder)) {
+            throw new RuntimeException('Invalid mock folder.');
+        }
+
+        return new self($this->root.'/'.$folder);
+    }
+
+    public function delete(string $name): bool
+    {
+        if (! self::validName($name)) {
+            throw new RuntimeException('Invalid mock filename.');
+        }
+
+        return $this->locked(function () use ($name) {
+            $path = $this->root.'/'.$name;
+
+            return ! is_link($path) && is_file($path) && unlink($path);
+        });
+    }
+
+    public function files(): array
+    {
+        return $this->locked(function () {
+            $files = [];
+            foreach (new \DirectoryIterator($this->root) as $file) {
+                if (! $file->isLink() && $file->isFile() && self::validName($file->getFilename())) {
+                    $files[] = ['name' => $file->getFilename(), 'type' => 'file', 'size' => $file->getSize(), 'modified' => $file->getMTime()];
+                }
+            }
+            usort($files, fn ($a, $b) => strcmp($a['name'], $b['name']));
+
+            return $files;
+        });
+    }
+
     private function locked(callable $callback): mixed
     {
         $path = $this->root.'/.lock';
@@ -113,6 +153,13 @@ class MockFileserverStorage
         return $this->locked(function () use ($hours, $dryRun) {
             $deleted = [];
             foreach (new \DirectoryIterator($this->root) as $file) {
+                if (! $file->isLink() && $file->isDir() && self::validName($file->getFilename())) {
+                    foreach ($this->folder($file->getFilename())->cleanup($hours, $dryRun) as $name) {
+                        $deleted[] = $file->getFilename().'/'.$name;
+                    }
+
+                    continue;
+                }
                 if ($file->isLink() || ! $file->isFile() || ! self::validName($file->getFilename()) || $file->getMTime() >= time() - $hours * 3600) {
                     continue;
                 }

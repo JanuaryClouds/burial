@@ -83,21 +83,21 @@ return [
         'mock_token' => env('FILESERVER_MOCK_TOKEN', ''),
         'mock_port' => env('FILESERVER_MOCK_PORT', 8099),
         'mock_duplicates' => env('FILESERVER_MOCK_DUPLICATES', 'reject'),
-        'mock_max_upload_kb' => env('FILESERVER_MOCK_MAX_UPLOAD_KB', 32768),
+        'mock_max_upload_kb' => env('FILESERVER_MOCK_MAX_UPLOAD_KB', 30720),
         'enable' => [
             'get' => env('FILESERVER_GET_ENABLE', env('FILESERVER_ENABLE_GET', false)),
             'post' => env('FILESERVER_POST_ENABLE', env('FILESERVER_ENABLE_POST', false)),
         ],
-        // Method-specific settings for the forthcoming fileserver client update.
+        // Complete API URLs and undated system secrets; both methods use the same API contract.
         'get' => [
-            'endpoint' => env('FILESERVER_GET_ENDPOINT', ''),
-            'key' => env('FILESERVER_GET_API_KEY', ''),
+            'endpoint' => env('FILESERVER_GET_ENDPOINT', env('FILESERVER_ENDPOINT', '')),
+            'key' => env('FILESERVER_GET_API_KEY', env('FILESERVER_API_KEY', '')),
         ],
         'post' => [
-            'endpoint' => env('FILESERVER_POST_ENDPOINT', ''),
-            'key' => env('FILESERVER_POST_API_KEY', ''),
+            'endpoint' => env('FILESERVER_POST_ENDPOINT', env('FILESERVER_ENDPOINT', '')),
+            'key' => env('FILESERVER_POST_API_KEY', env('FILESERVER_API_KEY', '')),
         ],
-        // Legacy client contract: base URL and upload path, not an API key.
+        // Deprecated compatibility keys; the client no longer appends an upload path.
         'endpoint' => env('FILESERVER_ENDPOINT', ''),
         'api' => env('FILESERVER_API'),
         'enc_key' => env('FILESERVER_ENCRYPTION_KEY', ''),

@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateApplicationRequest;
 use App\Models\Application;
 use App\Models\Beneficiary;
 use App\Models\Client;
+use App\Models\DocumentRequirement;
 use App\Services\ApplicationService;
 use App\Services\BeneficiaryFamilyService;
 use App\Services\BeneficiaryService;
@@ -87,9 +88,13 @@ class ApplicationController extends Controller
 
             // Upload any submitted document images (skipped gracefully when the fileserver is disabled)
             $uploadError = false;
+            $documents = DocumentRequirement::query()->where('is_active', true)->get();
+            $beneficiary->loadMissing('religion');
             foreach ($request->file('images', []) as $fieldName => $uploadedFile) {
                 try {
-                    $this->imageServices->post($application->tracking_no.'-'.$fieldName, $uploadedFile);
+                    $document = $documents->first(fn ($document) => $document->uploadKey() === $fieldName);
+                    abort_unless($document && (! $document->for_muslim || $beneficiary->religion?->name === 'Islam'), 422);
+                    $this->imageServices->postDocument($application, $document, $uploadedFile);
                 } catch (\Throwable $th) {
                     report($th);
                     $uploadError = true;

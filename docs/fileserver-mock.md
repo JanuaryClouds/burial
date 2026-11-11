@@ -1,76 +1,91 @@
 # Local fileserver
 
-The development mock runs as a separate PHP HTTP server. It stores and returns
-opaque bytes; **Burial encrypts and decrypts images**, and keeps the encryption
-key. The mock never connects to a database or to the production fileserver.
-It models an assumed API, not verified behavior of the real server.
+The standalone PHP mock binds only to loopback, runs only in local/testing, and
+never connects to a database or the real fileserver. Burial owns image encryption
+and decryption. This mock tests the new request contract, not upstream encryption
+compatibility.
 
 ## Setup
 
-In your local `.env`, use:
-
 ```dotenv
-APP_ENV=local
 FILESERVER_MOCK=true
 FILESERVER_MOCK_PORT=8099
 FILESERVER_MOCK_TOKEN=replace-with-a-local-only-secret
 FILESERVER_MOCK_DUPLICATES=reject
-FILESERVER_MOCK_MAX_UPLOAD_KB=32768
-FILESERVER_ENABLE_GET=true
-FILESERVER_ENABLE_POST=true
+FILESERVER_MOCK_MAX_UPLOAD_KB=30720
+FILESERVER_GET_ENABLE=true
+FILESERVER_POST_ENABLE=true
 FILESERVER_ENCRYPTION_KEY=base64:replace-with-a-base64-encoded-32-byte-key
 ```
 
-Generate a local mock token with `php -r "echo bin2hex(random_bytes(32)), PHP_EOL;"`.
-Generate a **development** encryption key with
-`php -r "echo 'base64:', base64_encode(random_bytes(32)), PHP_EOL;"`.
-Keep existing keys if you need to read previously encrypted files. Do not run
-`key:generate` for this: the fileserver key is separate from `APP_KEY`.
-Keep both secrets in `.env`; never commit them.
+Preserve existing encryption keys to read existing documents. Keep secrets in
+`.env`. If configuration is cached, run `php artisan config:clear`, then start
+`php artisan fileserver:mock` in a second terminal. Restart after config changes.
+The application and mock must use the same timezone (`config('app.timezone')` is
+passed to the server). Standalone router launches default to Asia/Manila.
 
-If configuration was cached, run `php artisan config:clear`. Start the server in
-a second terminal:
+## Request contract
 
-```powershell
-php artisan fileserver:mock
-```
+Every request uses `/apiburial/` and requires `token = YYYYMMDD + mock secret`,
+including view, download, and list. Missing tokens return 401; incorrect or expired
+tokens return 403. Old `/upload` and `/burial/{filename}` routes return 404.
 
-Keep your normal Laragon application running. The mock always binds to
-`127.0.0.1`, on the configured port; Ctrl+C stops it. Stop it before changing its
-token, port or duplicate policy, then start it again. No Node tooling is needed.
-The application and mock must run on the same machine/network namespace.
+| Method | action | Other parameters | Response |
+| --- | --- | --- | --- |
+| POST multipart | upload | token, optional folder, file | 200 JSON: status, file, folder, reencoded |
+| POST JSON | upload | token, optional folder, file_name, file_data | Same; file_data is strict Base64, optionally a Base64 data URI |
+| GET | view | token, optional folder, file | Bytes with inline disposition, or 404 |
+| GET | download | token, optional folder, file | Bytes with attachment disposition, or 404 |
+| GET | list | token, optional folder, optional limit | status, folder, count, total_count, files |
+| POST JSON/form | delete | token, optional folder, file | 200 JSON, or 404 |
 
-Mock mode ignores `FILESERVER_ENDPOINT` and `FILESERVER_API`. Enabling mock mode
-in an environment other than `local` or `testing` fails rather than contacting
-production. Uploads still require a logged-in, writable Burial account, but do
-not need a personal access token. Existing enable flags apply: disabled uploads
-retain their existing skip-and-log behavior; disabled downloads now return 404
-without a network request, rather than requesting a remote `test.png`.
+Folders are single directory names, case-sensitive where the host filesystem is;
+use consistent lowercase names such as `deathcertificates`. Folder and file names
+must start with an ASCII letter/digit, contain only letters, digits, underscores,
+periods or hyphens, and be at most 200 characters. Paths, traversal, symlinks, and
+internal files are excluded. Listing is sorted by name; limit defaults to 100 and
+accepts 1–1000. Count is the number returned; total_count is the full folder count.
+Invalid requests, extensions, Base64, and uploads over 30 MiB return 400.
+The configurable limit accepts 1–30720 KiB. Duplicates return 409 by default;
+`FILESERVER_MOCK_DUPLICATES=overwrite` permits direct API replacement.
 
-## API and storage
+## Explicit differences from the real server
 
-| Request | Behavior |
-| --- | --- |
-| `POST /upload` | Multipart `token` and `file`; static local token; 201 JSON with `status: success` and `filename` |
-| `GET /burial/{filename}` | Original bytes as `application/octet-stream`, or 404 |
+The mock preserves bytes unchanged, accepts `.enc` in addition to jpg/jpeg/png/
+webp/pdf, preserves submitted filenames, and returns `reencoded: false`.
+The reference shows timestamp-prefixed filenames and image re-encoding but does
+not fully specify naming, extension policy, or byte preservation. Real `.enc`
+acceptance remains unverified. Mock success is not evidence of remote support.
+There is no optional encryption switch or plaintext fallback.
 
-The mock does not inspect image content or decrypt anything. The maximum file
-size defaults to 32 MiB. `FILESERVER_MOCK_MAX_UPLOAD_KB` accepts 1–32768 KiB;
-lower it to simulate oversized uploads. Filenames must start with an ASCII letter or digit, contain only
-letters, digits, underscores, periods or hyphens, and be at most 200 characters.
-Errors use JSON with `status: error`: 400 invalid upload/name, 401 invalid token,
-409 duplicate, 413 oversized upload, 500 storage/configuration failure.
-Downloads are deliberately unauthenticated, matching the reported external API;
-the mock is a development tool, not a deployable storage service.
+Burial uses the same authenticated upload/download contract for mock and remote
+storage. `FILESERVER_MOCK` chooses the destination; GET/POST flags control the
+operations. Both submission flows resolve server-side `DocumentRequirement`
+records and use `document-requirement-{id}` folders with tracking-number filenames.
+Folders are single-level and stable across display-name edits.
 
-Storage is `storage/app/private/fileserver-mock`, excluded from Git. It is outside
-the mock document root. Duplicate writes reject by default. To experiment with
-replacement via Postman, set `FILESERVER_MOCK_DUPLICATES=overwrite` and restart.
-Burial's own existence check continues rejecting duplicates in either mode.
-All reads, writes and cleanup share a lock; readers never receive partial writes.
+The `application_document_files` table records the actual returned filename and
+folder. Apply its new migration through the reviewed deployment process before
+using document uploads/fetching. Mock and remote references are separate. If no
+reference exists, fetching tries the requirement folder and then the historical
+flat filename on 404 only. A saved reference is authoritative: a missing file
+there does not fall back to another location. Legacy flat files still depend on
+their original requirement labels; no files are automatically moved.
 
-Files older than seven days are removed on startup and before authenticated
-uploads, not by a background timer. To inspect or run cleanup explicitly:
+For remote configuration, see the [deployment guide](deployment-environment.md#fileserver).
+The mock's deterministic names do not establish the real server's naming behavior;
+remote timestamp-prefixed names are supported through saved references.
+Browser image routes still authorize the application and proxy decrypted JPEGs
+with private/no-store and nosniff headers; tokens stay server-side. Missing files
+return 404, upstream failures/corruption return generic 502. Disabled uploads keep
+the existing skip-and-log behavior. Uploads are not automatically retried.
+
+## Storage and cleanup
+
+Files live under `storage/app/private/fileserver-mock`, outside the document root.
+Reads, writes, deletes and listings use storage locks. Cleanup includes valid
+folders, skips links and internal files, and removes files older than seven days
+on startup and before authenticated uploads. Empty folders are retained.
 
 ```powershell
 php artisan fileserver:mock-cleanup --dry-run
@@ -78,64 +93,17 @@ php artisan fileserver:mock-cleanup
 php artisan fileserver:mock-cleanup --hours=0 --dry-run
 ```
 
-Only valid filenames directly inside the mock directory are considered; links,
-nested directories and internal lock/temp files are excluded. `--hours=0` without
-`--dry-run` removes all mock files older than the current second. This never
-deletes remote files. Cleanup only runs in local/testing environments.
+Cleanup runs only locally/in tests and never touches remote files. Review dry-run
+output before intentionally clearing mock documents.
 
-## Image encryption and viewing
-
-New `.jpg.enc` uploads contain `BURIAL-IMAGE-V1` plus a newline, followed by
-Laravel's AES-256-GCM encrypted-string envelope. That authenticates the IV,
-ciphertext and tag. Existing binary AES-CBC files remain readable by verifying
-their ciphertext HMAC before decryption. Their historical unauthenticated-IV
-weakness remains; they are not rewritten automatically. Plain, unencrypted
-remote JPEGs are not accepted as encrypted documents.
-
-The Burial image endpoint authorizes the application before contacting storage,
-then decrypts and returns JPEG bytes with private/no-store and nosniff headers.
-Missing/disabled images return 404. Connection failures, upstream errors and
-corruption return a generic 502. The image window uses the existing view.
-The Documents gallery fetches each image once and displays its viewer only after
-successful decoding. Missing images hide the entire grid slot; service failures
-show an unavailable message instead of a broken image. If every image is missing,
-the gallery displays an empty state. No inline script handlers or additional
-server-side existence probes are used.
-Uploads have no automatic retries because a timed-out request might have stored
-the file already. A failed existence check stops uploading unless it was a 404.
-
-## Manual checks
-
-1. Use a synthetic image and an authorized local account to submit an application.
-2. Open its documents and separate image window; both should display the image.
-3. Fetch the corresponding mock URL directly. It should return encrypted bytes,
-   not a viewable image. Local filenames start with `test-`.
-4. Try the Burial image URL as an unrelated account; access must be denied.
-5. Stop the mock; existing images should return 502. Restart it to recover.
-6. Upload the same filename directly with Postman to test reject/overwrite modes.
-
-Automated verification:
+## Verification
 
 ```powershell
 php artisan test --compact tests/Feature/ImagePayloadTest.php tests/Feature/MockFileserverTest.php tests/Feature/ImageDeliveryTest.php
 ```
 
-Tests use temporary mock storage, ephemeral loopback ports and an isolated SQLite
-database where needed, not shared records or production credentials.
-HTTP size-boundary tests use a lowered 32 KiB limit. A full 32 MiB upload timed out
-on the current Windows environment after transmitting its body, so that size has
-not been verified end to end here.
-
-The isolated viewer browser fixture uses synthetic responses, no database and an
-enforced CSP. Run `php -S 127.0.0.1:8108 -t tests/browser tests/browser/image-viewer-router.php`
-and open `http://127.0.0.1:8108/`. It checks successful/missing/unavailable images,
-one request per viewer, navigation reinitialization, popup dispatch and removal
-of pending viewers. Stop the fixture server with Ctrl+C.
-
-## Returning to the real fileserver
-
-Stop the mock, set `FILESERVER_MOCK=false`, restore the remote endpoint/API settings
-and enable flags, and clear cached configuration if necessary. The remote token
-hash-plus-date protocol remains unchanged. Local mock files are not migrated.
-Preserve the encryption key associated with any real files. Remote acceptance of
-`.enc` files and byte preservation still require integration verification.
+Tests use temporary storage, ephemeral loopback ports, synthetic documents and
+isolated SQLite where required. Size-boundary tests lower the limit to 32 KiB;
+they do not establish full 30 MiB end-to-end support. Production credentials are
+unnecessary; reference metadata tests use isolated SQLite. To return to the real service, stop the mock, set
+`FILESERVER_MOCK=false`, and configure the new remote API URLs/system secrets while preserving encryption keys.
