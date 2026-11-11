@@ -51,7 +51,7 @@ class UserSeeder extends Seeder
                         'password' => bcrypt(Str::random(32)),
                     ]);
                 }
-            } else {
+            } elseif (config('services.portal.users.seeder.preset')) {
                 $uatClientUserIds = [
                     'fcf7c561-138b-4880-abae-e1ead49cfb94',
                     '319f4c59-4899-4bd6-9297-1411962fce7d',
