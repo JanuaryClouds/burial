@@ -29,7 +29,7 @@ Use `composer install` to preserve committed PHP dependency versions.
 
 ## Local setup
 
-See the [Maintainer environment and deployment guide](docs/deployment-environment.md) for required and optional settings, integration prerequisites, and the mapping between the updated `.env.example` names and current runtime configuration. The config accepts the renamed settings; separate fileserver endpoints and API keys await the client update.
+See the [Maintainer environment and deployment guide](docs/deployment-environment.md) for required and optional settings, integration prerequisites, and the mapping between the updated `.env.example` names and current runtime configuration. Fileserver uploads and retrieval use the new authenticated action API; the mock flag selects local versus remote storage.
 
 Run commands from the repository root after cloning. Examples use PowerShell, matching the Laragon development environment.
 
@@ -99,12 +99,12 @@ Local data and mock citizen access do not make every feature self-contained. A l
 | TLC Portal / SSO | `PORTAL_ENDPOINT`, `PORTAL_USERS_GET_ENABLE`, `PORTAL_USERS_GET_ENDPOINT`, `PORTAL_USERS_GET_API_KEY`, `PORTAL_USERS_SSO_SECRET_KEY` | Citizen lookup and signed portal entry |
 | Portal notifications | `PORTAL_NOTIFICATION_POST_ENABLE`, `PORTAL_NOTIFICATION_POST_ENDPOINT`, `PORTAL_NOTIFICATION_POST_API_KEY` | Citizen notifications |
 | SMS | `SMS_POST_ENABLE`, `SMS_POST_ENDPOINT`, `SMS_POST_API_KEY` | SMS delivery |
-| File server | `FILESERVER_GET_ENABLE`, `FILESERVER_POST_ENABLE`, `FILESERVER_ENDPOINT`, `FILESERVER_API`, `FILESERVER_ENCRYPTION_KEY` | Image retrieval and encrypted uploads |
+| File server | `FILESERVER_GET_ENABLE`, `FILESERVER_POST_ENABLE`, `FILESERVER_GET_ENDPOINT`, `FILESERVER_GET_API_KEY`, `FILESERVER_POST_ENDPOINT`, `FILESERVER_POST_API_KEY`, `FILESERVER_ENCRYPTION_KEY` | Image retrieval and encrypted uploads |
 | Local mock file server | `FILESERVER_MOCK`, `FILESERVER_MOCK_TOKEN`, `FILESERVER_MOCK_PORT`, `FILESERVER_MOCK_DUPLICATES` | Standalone PHP storage; see [local setup and checks](docs/fileserver-mock.md) |
 | PSA classification | `PSA_CLASSIFICATION_GET_ENABLE`, `PSA_CLASSIFICATION_GET_ENDPOINT`, `PSA_CLASSIFICATION_GET_VERSION`, `PSA_CLASSIFICATION_GET_API_KEY` | Geographic address options |
 | Disbursement | `DISBURSEMENT_SYSTEM_ENABLE_GET`, `DISBURSEMENT_SYSTEM_ENABLE_POST`, `DISBURSEMENT_SYSTEM_ENDPOINT`, `DISBURSEMENT_SYSTEM_API_KEY` | Disbursement integration configuration |
 
-Image upload code requires a file server, encryption key, and an authenticated user token. Disabling integration flags does not provide a complete local upload replacement. PSA address lookups require the enabled external service; disabling it does not supply local address data. Some configured integrations may be incomplete or unused in current flows.
+Image upload code requires a file server, encryption key, a configured system secret, and a writable authenticated account. Apply the document-file metadata migration before enabling document storage; see the deployment guide. Disabling integration flags does not provide a complete local upload replacement. PSA address lookups require the enabled external service; disabling it does not supply local address data. Some configured integrations may be incomplete or unused in current flows.
 
 After changing environment settings, clear cached configuration with `php artisan config:clear`.
 

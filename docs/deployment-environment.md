@@ -2,7 +2,7 @@
 
 This guide accompanies the sectioned [`.env.example`](../.env.example). It explains what a deployment needs and records the differences between that template and the current implementation. Reviewed against the repository on November 11, 2026.
 
-**Configuration status:** `config/services.php` reads the new integration names, with legacy names as fallbacks. Explicit new values (including blank endpoints and `false` flags) take precedence. Existing internal config paths remain compatible with current clients. Fileserver method-specific endpoints and API keys are exposed as `services.fileserver.get` and `.post`, but the upload/fetch client still uses the legacy URL/authentication contract described below.
+**Configuration status:** `config/services.php` reads the new integration names, with legacy names as fallbacks. Explicit new values (including blank endpoints and `false` flags) take precedence. Existing internal config paths remain compatible with current clients. Fileserver uploads and retrieval now consume `services.fileserver.post` and `.get` using the same authenticated action-based API contract as the mock.
 
 ## How to read the template
 
@@ -36,7 +36,7 @@ Keep real credentials in the deployment environment, outside version control. Qu
 
 ## Integration name transition
 
-Use the updated example names. The legacy column lists supported fallbacks for existing deployments, except where noted. Keep legacy fileserver URL/path settings until its client update ships. Omitted capability groups are not configurable operations: Portal users support GET and notifications support POST.
+Use the updated example names. The legacy column lists supported fallbacks for existing deployments, except where noted. Fileserver URLs must include the complete new API path; the old upload-path setting is no longer used. Omitted capability groups are not configurable operations: Portal users support GET and notifications support POST.
 
 | Updated example | Legacy fallback | Notes |
 | --- | --- | --- |
@@ -50,8 +50,8 @@ Use the updated example names. The legacy column lists supported fallbacks for e
 | `PORTAL_USERS_SEEDER` | None | Controls preset citizen seeding. Explicit `false` skips presets. When absent, the legacy preset default remains true. Legacy `PORTAL_USERS_SEED_FROM_PORTAL=true` still selects remote seeding instead. |
 | `FILESERVER_GET_ENABLE` | `FILESERVER_ENABLE_GET` | Controls image retrieval through `get()`. |
 | `FILESERVER_POST_ENABLE` | `FILESERVER_ENABLE_POST` | Controls uploads. |
-| `FILESERVER_GET_ENDPOINT`, `FILESERVER_POST_ENDPOINT` | `FILESERVER_ENDPOINT` plus `FILESERVER_API` | No direct split-endpoint support yet; see the fileserver details below. |
-| `FILESERVER_GET_API_KEY`, `FILESERVER_POST_API_KEY` | No equivalent | Current remote requests do not use static method-specific API keys. |
+| `FILESERVER_GET_ENDPOINT`, `FILESERVER_POST_ENDPOINT` | `FILESERVER_ENDPOINT` | Complete API URL, including `/apiburial/` or the direct script; repeat the same URL for both methods. `FILESERVER_API` is no longer consumed. |
+| `FILESERVER_GET_API_KEY`, `FILESERVER_POST_API_KEY` | `FILESERVER_API_KEY` | Undated system secret; repeat the same secret for both methods. |
 | `SMS_POST_ENABLE` | `SMS_ENABLE_POST` | Controls sending SMS. |
 | `SMS_POST_ENDPOINT` | `SMS_ENDPOINT` | SMS submission URL. |
 | `SMS_POST_API_KEY` | `SMS_API_KEY` | SMS credential. |
@@ -70,19 +70,67 @@ Obtain the Portal return/logout URL, citizen lookup endpoint and API key, agreed
 
 ## Fileserver
 
-Obtain the storage host, upload route, authentication contract, and byte-preservation requirements from the fileserver owner. The split endpoint/key design is represented in config, but still needs client implementation and real-service verification.
+Configure the full API URL and undated system secret supplied by the fileserver
+owner. Use identical endpoint/key values for GET and POST:
 
-Current behavior in `ImageService` is:
+```dotenv
+FILESERVER_MOCK=false
+FILESERVER_GET_ENABLE=true
+FILESERVER_GET_ENDPOINT=https://files.example.invalid/apiburial/
+FILESERVER_GET_API_KEY=replace-with-system-secret
+FILESERVER_POST_ENABLE=true
+FILESERVER_POST_ENDPOINT=https://files.example.invalid/apiburial/
+FILESERVER_POST_API_KEY=replace-with-system-secret
+```
 
-- `FILESERVER_ENDPOINT` is the base URL; GET requests append `/burial/{filename}`.
-- `FILESERVER_API` is an upload **path**, appended to that base URL. It is not an API key.
-- Remote GET requests carry no API key. Remote uploads submit a token derived from the authenticated user's stored personal access token plus the current date, preserving the existing protocol.
-- Uploads issue a GET existence check before POST, even with `FILESERVER_ENABLE_GET=false`. A provider with POST-only access will therefore need a client change before uploads can work.
-- Disabled retrieval returns missing-image behavior; disabled uploads validate the input, then skip storage and log the skip. They do not create local document storage.
+The URL is used exactly as supplied: no `/burial/{filename}`, `/x`, or legacy
+upload path is appended. The direct PHP-script URL is also supported. Do not put
+a token or query string in the configured URL. Do not include the date in the
+secret: Burial prepends the current `YYYYMMDD` for every request, including
+retrieval and upload existence checks. Align `APP_TIMEZONE` with the server's
+calendar date. User personal access tokens are no longer consulted for storage.
 
-`FILESERVER_ENCRYPTION_KEY` is **required for encrypted image uploads and reads**, despite its placement under Optional in the example. Use a base64-encoded 32-byte key, optionally prefixed with `base64:`. This is separate from `APP_KEY`. Preserve the existing key for stored documents; replacing it does not re-encrypt old files.
+Both destinations use multipart POST `action=upload` and GET `action=download`,
+with `token`, `folder`, and `file` parameters as appropriate. Set
+`FILESERVER_MOCK=true` only locally/in tests to select the loopback server instead;
+it uses the independent `FILESERVER_MOCK_TOKEN`. GET and POST flags still control
+capabilities. Upload preflight makes an authenticated GET using the POST URL/key,
+even if `FILESERVER_GET_ENABLE=false`; the upstream API must allow that check.
+Disabled retrieval makes no network request; disabled uploads retain validation
+and skip-and-log behavior. Redirects and automatic retries are disabled.
 
-For isolated local storage, see [Local fileserver](fileserver-mock.md). `FILESERVER_MOCK=true` is allowed only in local/testing. Supply a nonempty `FILESERVER_MOCK_TOKEN`; defaults are port `8099`, duplicate policy `reject` (`overwrite` is also supported), and maximum `32768` KiB (accepted range 1â€“32768). Mock mode substitutes its own endpoint and upload token. Enable the current GET/POST flags and provide the image encryption key as well.
+New documents use the single-level `document-requirement-{id}` folder and submit
+`{tracking-number}.jpg.enc`. The returned `file` and `folder` are validated and
+saved in `application_document_files`; fetching uses that saved location, so
+server timestamp prefixes do not break retrieval. Mock and remote references are
+separate. An existing reference is not overwritten. When no reference exists,
+fetching tries the deterministic requirement location and then the historical flat
+filename, using the authenticated new API for both. This does not migrate or move
+old remote files, and does not discover files previously renamed without a saved
+reference. Existing references that return 404 do not fall back to another file.
+
+Deploy the new `2026_11_11_120000_create_application_document_files_table.php`
+migration before enabling the integration. It only creates metadata storage;
+it does not copy files or credentials. Apply it through the normal reviewed
+migration process. The migration has only been exercised in isolated test databases,
+not against the shared application database. Requirement/application deletion is
+restricted when file references exist; deleting a row never deletes upstream bytes.
+A successful upstream write followed by a database failure/transaction rollback
+can leave an unreferenced file; do not blindly retry or delete remote documents.
+
+`FILESERVER_ENCRYPTION_KEY` remains required for uploads and encrypted reads.
+Use a base64-encoded 32-byte key, optionally prefixed with `base64:`. Preserve the
+existing key; it is separate from `APP_KEY`. Encryption/decryption is unchanged;
+there is no encryption toggle or plaintext fallback. Remote `.enc` acceptance and
+byte preservation are still unverified. The reference's `reencoded: true` example
+must be clarified before claiming real encrypted uploads work end to end.
+
+The browser continues to use Burial's authorized image route. System secrets
+and upstream URLs are never sent to the browser. Connection failures return
+sanitized messages instead of exceptions containing token-bearing request URLs.
+
+See [Local fileserver](fileserver-mock.md) for mock setup. Defaults are port 8099,
+duplicate policy `reject`, and maximum 30720 KiB (accepted range 1–30720).
 
 ## SMS and geographic classifications
 
@@ -121,9 +169,9 @@ Other framework/package driver-specific options remain in `config/`; this guide 
 ## Deployment procedure
 
 1. Install the locked Composer dependencies and check platform requirements as described in the [README](../README.md). Point the web root to `public/` and make `storage/` and `bootstrap/cache/` writable.
-2. Prepare the deployment environment with the application/database settings and credentials for the capabilities actually used. Supply the new integration names; retain legacy fileserver URL/path settings until the client is updated. Preserve existing application and image encryption keys.
+2. Prepare the deployment environment with the application/database settings and credentials for the capabilities actually used. Supply the new integration names and complete fileserver API URLs and system secrets. Preserve existing application and image encryption keys.
 3. Back up the application database and review pending migrations through the deployment process. Do not use the demo seeders to initialize production or migrate the externally owned email-log database.
 4. After installing the environment, run `php artisan config:clear`, then `php artisan config:cache` for deployment. These commands apply configuration; they do not make unsupported new variable names work. Avoid publishing configuration dumps containing secrets.
 5. Verify staff login, Portal signed entry/return, geographic address lookup, a synthetic document upload and authorized fetch, and enabled notification/SMS delivery using agreed test recipients. Verify recovery SMTP and suppression-log connectivity separately. Confirm actual upstream requests when checking disabled capabilities, given the upload-existence-check limitation.
 
-Future configuration changes should update `config/`, every consuming service, `.env.example`, this guide, and affected integration documentation together. Complete the fileserver authentication/URL client update before relying on its split endpoint/key settings.
+Future configuration changes should update `config/`, every consuming service, `.env.example`, this guide, and affected integration documentation together. Verify actual remote byte preservation before claiming encrypted fileserver compatibility.
