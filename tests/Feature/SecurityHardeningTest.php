@@ -2,7 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Http\Controllers\ApplicationController;
+use App\Http\Requests\StoreApplicationRequest;
 use App\Livewire\Application\Create;
+use App\Models\Application;
 use App\Models\Beneficiary;
 use App\Models\Client;
 use App\Models\DocumentRequirement;
@@ -163,6 +166,51 @@ class SecurityHardeningTest extends TestCase
             ->call('save')->assertHasNoErrors();
         $this->assertSame(1, DB::table('applications')->count());
         Http::assertNothingSent();
+    }
+
+    public function test_both_submission_flows_upload_to_the_same_requirement_folder(): void
+    {
+        config([
+            'services.fileserver.mock' => true, 'services.fileserver.mock_token' => 'mock-only',
+            'services.fileserver.enable.post' => true,
+            'services.fileserver.enc_key' => 'base64:'.base64_encode(str_repeat('i', 32)),
+        ]);
+        $document = DocumentRequirement::create(['name' => 'Death Certificate', 'source' => 'Registry', 'is_active' => true]);
+        foreach (['livewire', 'controller'] as $flow) {
+            $user = $this->citizen();
+            $this->actingAs($user);
+            $client = Client::create(['user_id' => $user->id, 'date_of_birth' => '1980-01-01', 'contact_number' => '09123456789']);
+            $beneficiary = Beneficiary::create(['first_name' => 'Test', 'last_name' => 'Beneficiary', 'sex_id' => 1, 'religion_id' => 1,
+                'date_of_birth' => '1960-01-01', 'date_of_death' => '2026-01-01', 'created_by' => $user->id]);
+            $file = UploadedFile::fake()->image('death.png', 10, 10);
+            Http::fake(fn ($request) => $request->method() === 'GET'
+                ? Http::response('', 404)
+                : Http::response(['status' => 'success', 'file' => 'stored.jpg.enc', 'folder' => $document->storageFolder()]));
+            if ($flow === 'livewire') {
+                Livewire::test(Create::class)->set('clientUuid', $client->uuid)->set('beneficiaryUuid', $beneficiary->uuid)
+                    ->set('relationshipId', '1')->set('images.death_certificate', $file)
+                    ->call('save')->assertHasNoErrors();
+            } else {
+                $request = \Mockery::mock(StoreApplicationRequest::class)->makePartial();
+                $request->shouldReceive('validated')->once()->andReturn([
+                    'client_uuid' => $client->uuid, 'beneficiary_uuid' => $beneficiary->uuid, 'relationship_id' => 1,
+                ]);
+                $request->shouldReceive('file')->once()->with('images', [])->andReturn(['death_certificate' => $file]);
+                $response = app(ApplicationController::class)->store($request);
+                $this->assertSame(route('application.index'), $response->getTargetUrl());
+            }
+            $application = Application::where('client_uuid', $client->uuid)->firstOrFail();
+            Http::assertSentCount(2);
+            Http::assertSent(fn ($request) => $request->method() === 'GET'
+                && $request['folder'] === $document->storageFolder()
+                && $request['file'] === $application->tracking_no.'.jpg.enc'
+                && $request['token'] === now()->format('Ymd').'mock-only');
+            Http::assertSent(fn ($request) => $request->method() === 'POST'
+                && $request->hasFile('folder', $document->storageFolder())
+                && $request->hasFile('action', 'upload')
+                && $request->hasFile('token', now()->format('Ymd').'mock-only')
+                && $request->hasFile('file', null, $application->tracking_no.'.jpg.enc'));
+        }
     }
 
     public function test_rate_buckets_are_shared_between_routes_and_independent_between_users(): void

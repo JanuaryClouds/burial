@@ -387,9 +387,9 @@ class ClaimantReplacementTest extends TestCase
         $application = $this->application();
         $former = User::findOrFail($application->client()->value('user_id'));
         $this->replace($application);
-        DocumentRequirement::create(['name' => 'Death Certificate', 'source' => 'Registry']);
+        $document = DocumentRequirement::create(['name' => 'Death Certificate', 'source' => 'Registry']);
         $images = \Mockery::mock(ImageService::class);
-        $images->shouldReceive('get')->once()->with((app()->isLocal() ? 'test-' : '').$application->tracking_no.'-death-certificate.jpg.enc')->andReturn('retained-image');
+        $images->shouldReceive('getDocument')->once()->withArgs(fn ($record, $requirement) => $record->uuid === $application->uuid && $requirement->id === $document->id)->andReturn('retained-image');
         $controller = new ImageController($images);
         $this->actingAs($former);
         $this->assertSame('retained-image', $controller->get($application->fresh(), 'death_certificate')->getContent());

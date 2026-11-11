@@ -72,4 +72,21 @@ class ServicesConfigurationTest extends TestCase
         self::assertSame('https://files.invalid', $config['fileserver']['endpoint']);
         self::assertSame('/upload', $config['fileserver']['api']);
     }
+
+    public function test_fileserver_shared_url_and_secret_are_fallbacks_and_explicit_method_settings_win(): void
+    {
+        $config = $this->configuration([
+            'FILESERVER_ENDPOINT' => 'https://files.invalid/apiburial/', 'FILESERVER_API_KEY' => 'shared-system-secret',
+        ]);
+        foreach (['get', 'post'] as $method) {
+            self::assertSame(['endpoint' => 'https://files.invalid/apiburial/', 'key' => 'shared-system-secret'], $config['fileserver'][$method]);
+        }
+        $config = $this->configuration([
+            'FILESERVER_ENDPOINT' => 'https://files.invalid/apiburial/', 'FILESERVER_API_KEY' => 'shared-system-secret',
+            'FILESERVER_GET_ENDPOINT' => '', 'FILESERVER_GET_API_KEY' => '',
+            'FILESERVER_POST_ENDPOINT' => 'https://files.invalid/api.php', 'FILESERVER_POST_API_KEY' => 'post-system-secret',
+        ]);
+        self::assertSame(['endpoint' => '', 'key' => ''], $config['fileserver']['get']);
+        self::assertSame(['endpoint' => 'https://files.invalid/api.php', 'key' => 'post-system-secret'], $config['fileserver']['post']);
+    }
 }
