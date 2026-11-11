@@ -68,6 +68,9 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+    // Deployment metadata; this does not establish a redirect allowlist.
+    'production_urls' => array_values(array_filter(array_map('trim', explode(',', (string) env('APP_PRODUCTION_URLS', ''))))),
+
     'asset_url' => env('ASSET_URL'),
 
     /*

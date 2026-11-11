@@ -14,7 +14,7 @@ class PsaClassificationService
 
     public function __construct()
     {
-        if (! config('services.psa_classification')) {
+        if (! config('services.psa_classification.get')) {
             throw new \Exception('PSA Classification not enabled');
         }
 

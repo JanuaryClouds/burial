@@ -56,27 +56,25 @@ return [
         'endpoint' => env('PORTAL_ENDPOINT', ''),
         'users' => [
             'enable' => [
-                'get' => env('PORTAL_USERS_ENABLE_GET', false),
-                'post' => env('PORTAL_USERS_ENABLE_POST', false),
+                'get' => env('PORTAL_USERS_GET_ENABLE', env('PORTAL_USERS_ENABLE_GET', false)),
             ],
-            'endpoint' => env('PORTAL_USERS_ENDPOINT', ''),
-            'key' => env('PORTAL_USERS_API_KEY', ''),
-            'sampleUuid' => env('PORTAL_USERS_SAMPLE_UUID', false),
+            'endpoint' => env('PORTAL_USERS_GET_ENDPOINT', env('PORTAL_USERS_ENDPOINT', '')),
+            'key' => env('PORTAL_USERS_GET_API_KEY', env('PORTAL_USERS_API_KEY', '')),
             'mock' => env('PORTAL_MOCK', false),
             'seeder' => [
+                'preset' => (bool) env('PORTAL_USERS_SEEDER', true),
                 'from_portal' => env('PORTAL_USERS_SEED_FROM_PORTAL', false),
             ],
         ],
         'sso' => [
-            'secret' => env('SSO_SECRET_KEY', ''),
+            'secret' => env('PORTAL_USERS_SSO_SECRET_KEY', env('SSO_SECRET_KEY', '')),
         ],
         'notification' => [
             'enable' => [
-                'get' => env('PORTAL_NOTIFICATION_ENABLE_GET', false),
-                'post' => env('PORTAL_NOTIFICATION_ENABLE_POST', false),
+                'post' => env('PORTAL_NOTIFICATION_POST_ENABLE', env('PORTAL_NOTIFICATION_ENABLE_POST', false)),
             ],
-            'endpoint' => env('PORTAL_NOTIFICATION_ENDPOINT', ''),
-            'key' => env('PORTAL_NOTIFICATION_API_KEY', ''),
+            'endpoint' => env('PORTAL_NOTIFICATION_POST_ENDPOINT', env('PORTAL_NOTIFICATION_ENDPOINT', '')),
+            'key' => env('PORTAL_NOTIFICATION_POST_API_KEY', env('PORTAL_NOTIFICATION_API_KEY', '')),
         ],
     ],
 
@@ -87,9 +85,19 @@ return [
         'mock_duplicates' => env('FILESERVER_MOCK_DUPLICATES', 'reject'),
         'mock_max_upload_kb' => env('FILESERVER_MOCK_MAX_UPLOAD_KB', 32768),
         'enable' => [
-            'get' => env('FILESERVER_ENABLE_GET', false),
-            'post' => env('FILESERVER_ENABLE_POST', false),
+            'get' => env('FILESERVER_GET_ENABLE', env('FILESERVER_ENABLE_GET', false)),
+            'post' => env('FILESERVER_POST_ENABLE', env('FILESERVER_ENABLE_POST', false)),
         ],
+        // Method-specific settings for the forthcoming fileserver client update.
+        'get' => [
+            'endpoint' => env('FILESERVER_GET_ENDPOINT', ''),
+            'key' => env('FILESERVER_GET_API_KEY', ''),
+        ],
+        'post' => [
+            'endpoint' => env('FILESERVER_POST_ENDPOINT', ''),
+            'key' => env('FILESERVER_POST_API_KEY', ''),
+        ],
+        // Legacy client contract: base URL and upload path, not an API key.
         'endpoint' => env('FILESERVER_ENDPOINT', ''),
         'api' => env('FILESERVER_API'),
         'enc_key' => env('FILESERVER_ENCRYPTION_KEY', ''),
@@ -97,17 +105,16 @@ return [
 
     'sms' => [
         'enable' => [
-            'post' => env('SMS_ENABLE_POST', false),
+            'post' => env('SMS_POST_ENABLE', env('SMS_ENABLE_POST', false)),
         ],
-        'endpoint' => env('SMS_ENDPOINT', ''),
-        'key' => env('SMS_API_KEY', ''),
+        'endpoint' => env('SMS_POST_ENDPOINT', env('SMS_ENDPOINT', '')),
+        'key' => env('SMS_POST_API_KEY', env('SMS_API_KEY', '')),
     ],
 
     'psa_classification' => [
-        'get' => env('PSA_CLASSIFICATION', false),
-        'post' => false,
-        'endpoint' => env('PSA_CLASSIFICATION_ENDPOINT', ''),
-        'version' => env('PSA_CLASSIFICATION_VERSION', ''),
-        'api_key' => env('PSA_CLASSIFICATION_API_KEY', ''),
+        'get' => env('PSA_CLASSIFICATION_GET_ENABLE', env('PSA_CLASSIFICATION', false)),
+        'endpoint' => env('PSA_CLASSIFICATION_GET_ENDPOINT', env('PSA_CLASSIFICATION_ENDPOINT', '')),
+        'version' => env('PSA_CLASSIFICATION_GET_VERSION', env('PSA_CLASSIFICATION_VERSION', '')),
+        'api_key' => env('PSA_CLASSIFICATION_GET_API_KEY', env('PSA_CLASSIFICATION_API_KEY', '')),
     ],
 ];
