@@ -22,7 +22,6 @@ Route::get('/admin/login', [UserController::class, 'loginPage'])
     ->name('admin.login');
 
 Route::post('/login/check', [UserController::class, 'login'])
-    ->middleware('throttle:3,1')
     ->name('login.check');
 Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 

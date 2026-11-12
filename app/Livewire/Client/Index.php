@@ -40,6 +40,7 @@ class Index extends Component
         $this->clients = Client::index(
             Auth::user()->hasOfficeAccess() ? null : Auth::id()
         )
+            ->withOnly(['user', 'address', 'application'])
             ->orderBy('created_at', 'desc')
             ->get();
 
