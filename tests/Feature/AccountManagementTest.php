@@ -92,6 +92,46 @@ class AccountManagementTest extends TestCase
         $this->getJson($url)->assertForbidden();
     }
 
+    public function test_client_index_does_not_query_unused_beneficiaries_on_mount_or_refresh(): void
+    {
+        $staff = $this->account('superadmin');
+        $owner = $this->account();
+        $clients = collect();
+        for ($i = 0; $i < 2; $i++) {
+            $client = Client::create(['user_id' => $owner->id, 'date_of_birth' => '1980-01-01', 'contact_number' => '09123456789']);
+            Address::create(['addressable_type' => Client::class, 'addressable_id' => $client->uuid,
+                'region_code' => '13', 'region_name' => 'NCR', 'municipality_code' => '137607', 'municipality_name' => 'Taguig',
+                'barangay_code' => '137607001', 'barangay_name' => 'Test', 'street' => 'Main', 'house_number' => '1']);
+            $clients->push($client);
+        }
+        $beneficiary = Beneficiary::create(['first_name' => 'Test', 'last_name' => 'Beneficiary', 'sex_id' => 1, 'religion_id' => 1,
+            'date_of_birth' => '1960-01-01', 'date_of_death' => '2026-01-01', 'created_by' => $owner->id]);
+        $application = Application::create(['client_uuid' => $clients[0]->uuid, 'beneficiary_uuid' => $beneficiary->uuid, 'relationship_id' => 1]);
+        $this->actingAs($staff);
+
+        DB::enableQueryLog();
+        DB::flushQueryLog();
+        try {
+            $component = Livewire::test(\App\Livewire\Client\Index::class);
+            $queries = collect(DB::getQueryLog());
+            $this->assertCount(0, $queries->filter(fn ($query) => preg_match('/from ["`]?beneficiaries["`]?/i', $query['query'])));
+            $rows = $component->get('mappedClients')->keyBy('uuid');
+            $this->assertCount(2, $rows);
+            $this->assertSame($owner->fullname(), $rows[$clients[0]->uuid]['name']);
+            $this->assertSame('Test, Taguig, NCR', $rows[$clients[0]->uuid]['address']);
+            $this->assertSame($application->tracking_no, $rows[$clients[0]->uuid]['application_tracking_no']);
+            $this->assertSame('DRAFT', $rows[$clients[1]->uuid]['application_tracking_no']);
+            $component->assertSet('totalClientsCount', 1)->assertSet('currentMonthClientsCount', 1);
+
+            DB::flushQueryLog();
+            $component->call('loadData')->assertSet('totalClientsCount', 1)->assertDispatched('refresh-dataTable');
+            $this->assertCount(0, collect(DB::getQueryLog())->filter(fn ($query) => preg_match('/from ["`]?beneficiaries["`]?/i', $query['query'])));
+        } finally {
+            DB::disableQueryLog();
+            DB::flushQueryLog();
+        }
+    }
+
     private const PASSWORD = 'Initial Strong 9!';
 
     protected function setUp(): void
