@@ -7,7 +7,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
-use App\Services\Auth\AccountAccess;
+use App\Services\Auth\LoginService;
 use App\Services\Auth\UserService;
 use App\Services\DataTableService;
 use Exception;
@@ -23,60 +23,14 @@ class UserController extends Controller
 
     public function login(LoginRequest $request)
     {
-        $ip = request()->ip();
-        $browser = request()->header('User-Agent');
-        try {
-
-            if (! Auth::attempt([...$request->validated(), 'citizen_uuid' => null])) {
-                return back()
-                    ->withErrors(['error' => 'Invalid username or password.'])
-                    ->withInput($request->only('email'));
-            }
-
-            $user = Auth::user();
-
-            if (! $user->is_active) {
-                Auth::logout();
-                $request->session()->invalidate();
-                $request->session()->regenerateToken();
-
-                activity()
-                    ->causedBy($user)
-                    ->withProperties(['ip' => $ip, 'browser' => $browser])
-                    ->log('Inactive account login attempt');
-
-                return redirect()->back()->with('warning', 'Your account is inactive. Please contact the superadmin.');
-            }
-
-            if (! app(AccountAccess::class)->isInternal($user)) {
-                activity()
-                    ->causedBy($user)
-                    ->withProperties(['ip' => $ip, 'browser' => $browser])
-                    ->log('Client attempted to access admin panel');
-
-                Auth::logout();
-                $request->session()->invalidate();
-                $request->session()->regenerateToken();
-
-                return redirect()->route('landing.page')->with('warning', 'You do not have permission to access this page');
-            }
-
-            session(['account.staff_hash' => $user->getAuthPassword()]);
-            if ($user->password_change_required) {
-                return redirect()->route('user.password');
-            }
-            session(['api_token' => $user->createToken('fileserver')->plainTextToken]);
-
-            return redirect()
-                ->route('dashboard');
-        } catch (Exception $e) {
-            activity()
-                ->causedBy(null)
-                ->withProperties(['ip' => $ip, 'browser' => $browser])
-                ->log('Unsuccessful login attempt');
-
-            return redirect()->back()->with('error', 'Unable to login'.(app()->hasDebugModeEnabled() ? ': '.$e->getMessage() : ''));
+        $result = app(LoginService::class)->attempt($request->validated());
+        if (isset($result['redirect'])) {
+            return redirect()->to($result['redirect']);
         }
+
+        return back()->withErrors(['error' => $result['message']])
+            ->withInput($request->only('email'))
+            ->with('login_recovery', $result['failures'] >= 3);
     }
 
     public function checkSession()
