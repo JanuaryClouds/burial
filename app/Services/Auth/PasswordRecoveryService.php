@@ -61,6 +61,7 @@ class PasswordRecoveryService
                 $this->invalid();
             }
         });
+        app(LoginService::class)->clear($data['email']);
     }
 
     private function invalid(): never

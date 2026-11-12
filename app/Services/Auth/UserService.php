@@ -18,18 +18,12 @@ class UserService
 {
     public function login(array $data)
     {
-        if (Auth::attempt([...$data, 'citizen_uuid' => null, 'is_active' => true])) {
-            $user = Auth::user();
-            if (! app(AccountAccess::class)->isInternal($user)) {
-                Auth::logout();
-                throw new \RuntimeException('Invalid login credentials.');
-            }
-            session(['account.staff_hash' => $user->getAuthPassword()]);
-
-            return $user;
+        $result = app(LoginService::class)->attempt($data);
+        if (! isset($result['redirect'])) {
+            throw new \RuntimeException($result['message']);
         }
 
-        throw new \RuntimeException('Invalid login credentials.');
+        return Auth::user();
     }
 
     public function logout(): void
