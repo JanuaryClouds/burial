@@ -107,20 +107,22 @@ class BeneficiaryService
         return $beneficiaries
             ->filter(fn (Beneficiary $beneficiary) => $beneficiary->application)
             ->map(function (Beneficiary $beneficiary) {
+                if (! $beneficiary->date_of_birth || ! $beneficiary->date_of_death) {
+                    return null;
+                }
+
                 return [
                     'uuid' => $beneficiary->uuid,
-                    'date_of_birth' => $beneficiary->date_of_birth,
-                    'date_of_death' => $beneficiary->date_of_death,
+                    // Carbon returns a signed difference: measure from birth to death.
+                    'age_in_days' => Carbon::parse($beneficiary->date_of_birth)
+                        ->diffInDays(Carbon::parse($beneficiary->date_of_death), false),
                 ];
             })
-            ->filter(function ($beneficiary) {
-                return Carbon::parse($beneficiary['date_of_death'])
-                    ->diffInDays(Carbon::parse($beneficiary['date_of_birth'])) <= 28;
-            })
+            ->filter(fn ($beneficiary) => $beneficiary !== null
+                && $beneficiary['age_in_days'] >= 0
+                && $beneficiary['age_in_days'] <= 28)
             ->groupBy(function ($beneficiary) {
-                $age = Carbon::parse($beneficiary['date_of_death'])->diffInDays(
-                    Carbon::parse($beneficiary['date_of_birth'])
-                );
+                $age = $beneficiary['age_in_days'];
 
                 if ($age <= 7) {
                     return 'Perinatal';
