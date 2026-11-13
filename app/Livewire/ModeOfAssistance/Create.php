@@ -10,6 +10,11 @@ use Livewire\Component;
 
 class Create extends Component
 {
+    public function boot(): void
+    {
+        abort_unless(auth()->user()?->isSystemAdministrator(), 403);
+    }
+
     use HasPlaceholder;
 
     public ModeOfAssistanceForm $form;

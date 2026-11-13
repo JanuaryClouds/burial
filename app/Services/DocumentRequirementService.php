@@ -18,6 +18,7 @@ class DocumentRequirementService
     public function store(array $data): DocumentRequirement
     {
         app(AccountAccess::class)->assertWritable();
+        abort_unless(auth()->user()?->isSystemAdministrator(), 403);
 
         return DocumentRequirement::create([
             'name' => $data['name'],
@@ -35,6 +36,7 @@ class DocumentRequirementService
     public function update(DocumentRequirement $document, array $data): DocumentRequirement
     {
         app(AccountAccess::class)->assertWritable();
+        abort_unless(auth()->user()?->isSystemAdministrator(), 403);
         $document->update([
             'name' => $data['name'],
             'description' => $data['description'] ?? null,

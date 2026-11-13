@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Services\Auth\AccountAccess;
+use App\Services\Auth\AccountSession;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -53,6 +54,18 @@ class CheckUserIfActive
         $authenticatedUser->setRawAttributes($user->getAttributes(), true);
         $authenticatedUser->setRelations($user->getRelations());
         auth()->setUser($authenticatedUser);
+
+        if (! $tokenRequest && ! app(AccountSession::class)->valid($user, $request)) {
+            auth('web')->logoutCurrentDevice();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            $message = 'Your account was signed in from another browser or device. Please sign in again.';
+
+            return $request->expectsJson()
+                ? response()->json(['message' => $message], 401)
+                : redirect()->route($internal ? 'admin.login' : 'landing.page')->with('warning', $message);
+        }
 
         if ($internal && ! $tokenRequest && ! $request->routeIs('logout', 'sso.logout')) {
             $hash = $request->session()->get('account.staff_hash');

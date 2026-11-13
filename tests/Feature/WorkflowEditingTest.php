@@ -80,6 +80,7 @@ class WorkflowEditingTest extends TestCase
             $table->string('email')->nullable();
             $table->timestamps();
         });
+        (require database_path('migrations/data/2026_11_13_120000_add_active_session_token_to_users_table.php'))->up();
         foreach (['roles', 'permissions'] as $name) {
             Schema::create($name, function (Blueprint $table) {
                 $table->id();

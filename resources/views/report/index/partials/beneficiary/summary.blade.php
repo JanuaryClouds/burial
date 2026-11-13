@@ -20,10 +20,10 @@
 							<td>Total PWD Beneficiaries:</td>
 							<td>{{ $beneficiariesPwd }}</td>
 						</tr>
-						@foreach ($beneficiariesNatality as $group)
+						@foreach (['Perinatal', 'Neonatal'] as $name)
 							<tr>
-								<td>{{ $group['name'] }}</td>
-								<td>{{ $group['count'] }}</td>
+								<td>{{ $name }}</td>
+								<td>{{ $beneficiariesNatality->firstWhere('name', $name)['count'] ?? 0 }}</td>
 							</tr>
 						@endforeach
 					</tbody>

@@ -92,6 +92,7 @@ class User extends Authenticatable
     ];
 
     protected $hidden = [
+        'active_session_token',
         'password',
         'remember_token',
     ];

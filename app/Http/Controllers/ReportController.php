@@ -10,6 +10,7 @@ use App\Services\ApplicationService;
 use App\Services\BeneficiaryService;
 use App\Services\ClientService;
 use App\Services\DataTableService;
+use App\Services\ReportChartValidator;
 use App\Services\ReportService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
@@ -105,7 +106,7 @@ class ReportController extends Controller
         $documentName = config('constants.title.main').'-'.config('constants.title.sub').'-'.
             'report-'.$startDate.'-to-'.$endDate.'.pdf';
 
-        $charts = $request->input('charts', []);
+        $charts = app(ReportChartValidator::class)->validate($request->input('charts', []));
 
         $applications = Application::index(null, $startDate, $endDate)
             ->orderBy('tracking_no', 'asc')
@@ -159,6 +160,7 @@ class ReportController extends Controller
             'beneficiariesAgeGroups' => $beneficiariesAgeGroups,
             'clientsPerRegion' => $clientsPerRegion,
         ])
+            ->setOption('isRemoteEnabled', false)
             ->setPaper('letter', 'portrait');
 
         return $pdf->stream("cheques-{$startDate}-to-{$endDate}.pdf");
