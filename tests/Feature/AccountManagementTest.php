@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Http\Controllers\Auth\UserController;
 use App\Livewire\Beneficiary\Family\Index;
 use App\Livewire\Client\Edit;
+use App\Livewire\DocumentRequirement\Create;
 use App\Livewire\Notification\Index as Notifications;
 use App\Models\Address;
 use App\Models\Application;
@@ -18,12 +19,15 @@ use App\Models\SystemSetting;
 use App\Models\User;
 use App\Services\ApplicationProcessingService;
 use App\Services\Auth\AccountAccess;
+use App\Services\Auth\AccountSession;
 use App\Services\Auth\PasswordPolicy;
 use App\Services\Auth\SeederAccountContext;
 use App\Services\Auth\UserService;
 use App\Services\CentralClientService;
 use App\Services\ClientService;
+use App\Services\DocumentRequirementService;
 use App\Services\ImageService;
+use App\Services\ModeOfAssistanceService;
 use App\Services\PsaClassificationService;
 use App\Services\WorkflowVersionService;
 use Database\Seeders\AdminSeeder;
@@ -47,6 +51,118 @@ use Tests\TestCase;
 
 class AccountManagementTest extends TestCase
 {
+    public function test_report_charts_reject_urls_and_malformed_images_and_render_valid_canvas_pngs(): void
+    {
+        $this->signIn($this->account('superadmin'));
+        $file = UploadedFile::fake()->image('chart.png', 20, 10);
+        $png = 'data:image/png;base64,'.base64_encode(file_get_contents($file->getRealPath()));
+        $url = route('report.print', ['startDate' => '2026-01-01', 'endDate' => '2026-01-02']);
+        foreach (['http://127.0.0.1/private', 'https://example.org/chart.png', 'file:///etc/passwd',
+            'data:image/svg+xml;base64,'.base64_encode('<svg/>'), 'data:image/png;base64,invalid',
+            'data:image/png;base64,'.base64_encode('not a png'),
+            'data:image/png;base64,'.str_repeat('A', 2796227)] as $invalid) {
+            $this->postJson($url, ['charts' => ['applications-per-status' => $invalid, 'beneficiaries-per-age-group' => $png]])
+                ->assertUnprocessable()->assertJsonValidationErrors('charts.applications-per-status');
+        }
+        $this->postJson($url, ['charts' => ['applications-per-status' => $png]])->assertUnprocessable();
+        $this->postJson($url, ['charts' => ['applications-per-status' => $png, 'beneficiaries-per-age-group' => $png, 'extra' => $png]])->assertUnprocessable();
+        $response = $this->post($url, ['charts' => ['applications-per-status' => $png, 'beneficiaries-per-age-group' => $png]])->assertOk();
+        $this->assertStringStartsWith('%PDF-', $response->getContent());
+        $this->assertFalse(app('dompdf')->getOptions()->isRemoteEnabled());
+    }
+
+    public function test_lookup_forms_and_services_recheck_admin_after_role_removal(): void
+    {
+        $user = $this->account('superadmin');
+        $this->signIn($user);
+        $documents = app(DocumentRequirementService::class);
+        $modes = app(ModeOfAssistanceService::class);
+        $document = $documents->store(['name' => 'Test requirement', 'source' => 'Registry']);
+        $mode = $modes->store(['name' => 'Test mode']);
+        $components = [
+            Livewire::test(Create::class),
+            Livewire::test(\App\Livewire\DocumentRequirement\Edit::class, ['document' => $document]),
+            Livewire::test(\App\Livewire\ModeOfAssistance\Create::class),
+            Livewire::test(\App\Livewire\ModeOfAssistance\Edit::class, ['modeOfAssistance' => $mode]),
+        ];
+        $documents->update($document, ['name' => 'Updated requirement', 'source' => 'Registry', 'isRequired' => true]);
+        $modes->update(['name' => 'Updated mode'], $mode);
+        $user->removeRole('superadmin');
+        foreach ($components as $index => $component) {
+            $component->call($index === 1 ? 'update' : 'save')->assertForbidden();
+        }
+        foreach ([fn () => $documents->store(['name' => 'Unauthorized', 'source' => 'X']),
+            fn () => $documents->update($document, ['name' => 'Unauthorized', 'source' => 'X']),
+            fn () => $modes->store(['name' => 'Unauthorized']),
+            fn () => $modes->update(['name' => 'Unauthorized'], $mode)] as $write) {
+            try {
+                $write();
+                $this->fail('Revoked admin wrote lookup settings.');
+            } catch (HttpException $exception) {
+                $this->assertSame(403, $exception->getStatusCode());
+            }
+        }
+        $this->assertSame('Updated requirement', $document->fresh()->name);
+        $this->assertEquals(1, $document->fresh()->is_required);
+        $this->assertSame('Updated mode', $mode->fresh()->name);
+        $this->assertDatabaseMissing('document_requirements', ['name' => 'Unauthorized']);
+        $this->assertDatabaseMissing('mode_of_assistances', ['name' => 'Unauthorized']);
+    }
+
+    public function test_new_staff_login_invalidates_previous_session_but_failed_login_does_not(): void
+    {
+        $user = $this->account('superadmin');
+        $credentials = ['email' => $user->email, 'password' => self::PASSWORD];
+        $this->post(route('login.check'), $credentials)->assertRedirect(route('dashboard'));
+        $first = session('account.session_token');
+        $this->getJson(route('checksession'))->assertOk();
+        $this->post(route('login.check'), ['email' => $user->email, 'password' => 'wrong'])->assertSessionHasErrors();
+        $this->assertSame($first, session('account.session_token'));
+
+        $this->post(route('login.check'), $credentials)->assertRedirect(route('dashboard'));
+        $second = session('account.session_token');
+        $this->assertNotSame($first, $second);
+        $this->getJson(route('checksession'))->assertOk();
+        $this->withSession(['account.session_token' => $first])->getJson(route('checksession'))
+            ->assertUnauthorized()->assertJsonPath('message', 'Your account was signed in from another browser or device. Please sign in again.');
+        $this->assertGuest();
+        $this->assertSame(hash('sha256', $second), $user->fresh()->active_session_token);
+    }
+
+    public function test_new_citizen_sso_login_invalidates_previous_browser(): void
+    {
+        $user = $this->account();
+        $url = route('sso', ['citizen_uuid' => $user->citizen_uuid]);
+        $this->get($url)->assertRedirect();
+        $first = session('account.session_token');
+        // Simulate a separate unauthenticated browser, preserving the old token.
+        auth()->forgetUser();
+        session()->flush();
+        $this->get($url)->assertRedirect();
+        $second = session('account.session_token');
+        $this->assertNotSame($first, $second);
+        $this->getJson(route('checksession'))->assertOk();
+        $this->withSession(['account.session_token' => $first])->get(route('dashboard'))
+            ->assertRedirect(route('landing.page'))->assertSessionHas('warning');
+        $this->assertSame(hash('sha256', $second), $user->fresh()->active_session_token);
+    }
+
+    public function test_legacy_session_can_claim_account_only_once_and_session_regeneration_keeps_access(): void
+    {
+        $user = $this->account('superadmin');
+        $this->signIn($user);
+        $user->forceFill(['active_session_token' => null])->save();
+        session()->forget('account.session_token');
+        $this->getJson(route('checksession'))->assertOk();
+        $token = session('account.session_token');
+        $this->assertTrue(app(AccountSession::class)->valid($user, request()));
+        $this->assertSame($token, session('account.session_token'));
+        session()->regenerate();
+        $this->getJson(route('checksession'))->assertOk();
+        $this->assertSame($token, session('account.session_token'));
+        $this->withSession(['account.session_token' => null])->getJson(route('checksession'))->assertUnauthorized();
+    }
+
     public function test_client_edit_demographic_fields_bind_to_existing_form_properties(): void
     {
         $citizen = $this->account();
