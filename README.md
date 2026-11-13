@@ -9,6 +9,9 @@ Taguig City CSWDO application for managing funeral assistance requests, includin
 - Immutable workflow versions, pinned recommendation processing runs, and workflow history. See [Workflow versioning](docs/architecture/workflow-versioning.md) for publishing, pauses, and migration procedures.
 - GIS forms, certificates, QR/barcode documents, PDF reports, and Excel exports.
 - Portal citizen records, notifications, SMS, encrypted image storage, and geographic address lookups.
+- One active browser session per account: a successful staff login or citizen SSO login replaces the previous session, which is rejected on its next request. Tabs sharing a session remain signed in. Personal API tokens are separate from browser sessions.
+
+Existing installations must apply `2026_11_13_120000_add_active_session_token_to_users_table` before running this session enforcement code. Existing browser sessions are enrolled on their first request; subsequent logins replace them. The active session marker is stored in the application database and works with the file session driver.
 
 General flow: client and beneficiary registration → application → interview and assessment → recommendation or referral → assistance processing → closure. A **client** is the applicant/claimant; a **beneficiary** is the deceased person.
 
