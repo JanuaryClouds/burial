@@ -12,6 +12,11 @@ use Livewire\Component;
 
 class Edit extends Component
 {
+    public function boot(): void
+    {
+        abort_unless(auth()->user()?->isSystemAdministrator(), 403);
+    }
+
     public DocumentRequirement $document;
 
     #[Validate]
