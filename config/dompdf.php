@@ -296,7 +296,7 @@ return [
          * @var bool
          */
         'enable_html5_parser' => true,
-        'isRemoteEnabled' => true,
+        'isRemoteEnabled' => false,
         'isHtml5ParserEnabled' => true,
     ],
 
