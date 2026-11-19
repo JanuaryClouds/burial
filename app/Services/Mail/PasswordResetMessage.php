@@ -33,10 +33,7 @@ class PasswordResetMessage
 
             return $payload['token'];
         });
-        $base = rtrim(config('app.url'), '/');
-        if (! filter_var($base, FILTER_VALIDATE_URL) || (app()->isProduction() && ! str_starts_with($base, 'https://'))) {
-            throw new \LogicException('Invalid mail URL configuration.');
-        }
+        $base = MailUrl::base();
         $url = $base.'/admin/reset-password/'.rawurlencode($token).'?'.http_build_query(['email' => $delivery->recipient]);
 
         return new PasswordRecoveryMail($url, (int) config('auth.passwords.users.expire', 60));
