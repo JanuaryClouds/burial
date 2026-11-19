@@ -27,7 +27,8 @@ Keep real credentials in the deployment environment, outside version control. Qu
 | `DEBUGBAR_ENABLED` | Optional Debugbar switch; the example disables it. |
 | `APP_TIMEZONE` | Optional, currently defaults to `UTC`; set explicitly if the deployment needs a different application timezone. |
 | `DB_CONNECTION`, `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` | Application database connection. Use the intended MySQL database and issued credentials; the example's root account and database name are local placeholders. |
-| `ADMIN_PASSWORD` | Needed when account seeders create internal accounts, subject to the application's password policy. It is an initial seeding secret, not a runtime override of existing passwords. Do not run demo seeders as production provisioning. |
+| `SUPERADMIN_EMAIL_ADDRESS`, `SUPERADMIN_PASSWORD` | Superadmin seeding credentials. A valid email is required; the password must meet the account policy for new accounts. Existing passwords are preserved. Changing the email does not rename or remove previous accounts. Refresh cached configuration after changes. |
+| `ADMIN_PASSWORD` | Needed when account seeders create demo staff accounts, subject to the application's password policy. It is an initial seeding secret, not a runtime override of existing passwords. Do not run demo seeders as production provisioning. |
 | `CSWDO_DEPT_HEAD`, `CSWDO_SOCIAL_WELFARE_OFFICER`, `CSWDO_DEPARTMENT_EMAIL` | Supply the department's approved values. The system-setting seeder also reads these values into stored settings; changing the environment alone does not rewrite database records. |
 | `CSWDO_WORK_HOURS_START`, `CSWDO_WORK_HOURS_END` | Department working hours. Config defaults are 7 and 16; the example explicitly selects 8 and 16. |
 | `CSP_MODE` | Set explicitly to `report-only`, `enforce`, or `off`. Default when absent is `report-only`. Validate application and external-service compatibility before enforcement. |

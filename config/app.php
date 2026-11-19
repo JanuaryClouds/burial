@@ -41,6 +41,8 @@ return [
 
     'env' => env('APP_ENV', 'production'),
     'admin_password' => env('ADMIN_PASSWORD'),
+    'superadmin_email_address' => env('SUPERADMIN_EMAIL_ADDRESS'),
+    'superadmin_password' => env('SUPERADMIN_PASSWORD'),
 
     /*
     |--------------------------------------------------------------------------
