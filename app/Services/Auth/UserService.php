@@ -51,80 +51,86 @@ class UserService
             });
     }
 
+    /** Ordinary staff provisioning must use invitations. Seeders create bootstrap users directly. */
     public function store(array $data)
     {
-        app(AccountAccess::class)->assertWritable();
-        abort_unless(auth()->user()?->isSystemAdministrator(), 403);
-        abort_if(filled($data['citizen_uuid'] ?? null), 403);
-        Validator::make($data, [
-            'email' => ['required', 'email', Rule::unique('users', 'email')],
-            'password' => PasswordPolicy::rules(),
-            'confirmPassword' => ['required', 'same:password'],
-        ])->validate();
-        $roles = $this->selectedRoles($data['roles'] ?? []);
-
-        return DB::transaction(function () use ($data, $roles) {
-            $user = User::create([
-                'first_name' => $data['firstName'], 'middle_name' => $data['middleName'] ?? null,
-                'last_name' => $data['lastName'], 'suffix' => $data['suffix'] ?? null,
-                'email' => $data['email'], 'contact_number' => $data['contactNumber'],
-                'is_active' => true, 'password' => $data['password'], 'password_change_required' => true,
-            ]);
-            $user->syncRoles(array_merge(['staff'], $roles));
-
-            return $user;
-        });
+        abort(403, 'Create an email invitation instead.');
     }
 
     public function update(array $data, User $user)
     {
         app(AccountAccess::class)->assertWritable();
-        foreach (['password', 'newPassword', 'new_password', 'currentPassword', 'current_password', 'confirmNewPassword', 'password_confirmation', 'citizen_uuid', 'password_change_required'] as $field) {
-            abort_if(filled($data[$field] ?? null), 403, 'Use your own password-change form.');
-        }
         Gate::authorize('update', $user);
-        $admin = auth()->user()->isSystemAdministrator();
-        $selected = $this->selectedRoles($data['roles'] ?? []);
-        abort_if(filled($user->citizen_uuid) && ($selected || $user->isInternal()), 403, 'Portal accounts cannot be converted into staff accounts.');
-        Validator::make($data, [
-            'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($user->id)],
-            'isActive' => ['sometimes', 'boolean'],
-        ])->validate();
-        $current = $user->roles()->whereNotIn('name', ['staff', 'superadmin'])->pluck('name')->all();
-        if (! $admin) {
-            sort($selected);
-            sort($current);
-            abort_unless($selected === $current, 403);
+        foreach (['password', 'newPassword', 'new_password', 'currentPassword', 'current_password', 'confirmNewPassword', 'password_confirmation', 'citizen_uuid', 'password_change_required'] as $field) {
+            abort_if(array_key_exists($field, $data), 403, 'Use your own password-change form.');
         }
 
-        return DB::transaction(function () use ($data, $user, $admin, $selected) {
-            // All administrator status changes use the same ordered lock set.
+        return DB::transaction(function () use ($data, $user) {
+            // Keep the existing ordered lock set for last-administrator protection.
             $administrators = User::whereHas('roles', fn ($q) => $q->where('name', 'superadmin'))
                 ->orderBy('id')->lockForUpdate()->get();
-            $user = User::whereKey($user->id)->lockForUpdate()->firstOrFail();
-            app(AccountAccess::class)->assertWritable();
-            abort_if(filled($user->citizen_uuid) && ($selected || $user->isInternal()), 403);
-            $attributes = [
-                'first_name' => $data['firstName'], 'middle_name' => $data['middleName'] ?? null,
-                'last_name' => $data['lastName'], 'suffix' => $data['suffix'] ?? null,
-                'email' => $data['email'], 'contact_number' => $data['contactNumber'],
-            ];
-            if ($admin) {
-                $active = (bool) ($data['isActive'] ?? $user->is_active);
-                if (! $active && $user->is_active) {
-                    abort_if($user->id === auth()->id(), 403, 'You cannot deactivate your own account.');
-                    abort_if($administrators->contains('id', $user->id) && $administrators->where('is_active', true)->count() <= 1, 403, 'The last active superadmin cannot be deactivated.');
+            $locked = User::whereKey($user->id)->lockForUpdate()->firstOrFail();
+            $actor = app(AccountAccess::class)->assertWritable();
+            Gate::authorize('update', $locked);
+            $owner = $actor->id === $locked->id;
+            $admin = $actor->isSystemAdministrator();
+            abort_if(isset($data['email']) && $data['email'] !== $locked->email, 403, 'Account email cannot be changed.');
+            $fields = ['firstName' => 'first_name', 'middleName' => 'middle_name', 'lastName' => 'last_name',
+                'suffix' => 'suffix', 'contactNumber' => 'contact_number'];
+            $attributes = [];
+            foreach ($fields as $input => $column) {
+                if (array_key_exists($input, $data)) {
+                    abort_if(! $owner && $data[$input] !== $locked->$column, 403, 'Only the owner can edit their profile.');
+                    if ($owner) {
+                        $attributes[$column] = $data[$input];
+                    }
+                }
+            }
+            if ($owner) {
+                Validator::make(array_merge($locked->only(array_values($fields)), $attributes), [
+                    'first_name' => ['required', 'string', 'max:255'], 'last_name' => ['required', 'string', 'max:255'],
+                    'middle_name' => ['nullable', 'string', 'max:255'], 'suffix' => ['nullable', 'string', 'max:64'],
+                    'contact_number' => ['required', 'string', 'max:32'],
+                ])->validate();
+            }
+            $selected = array_key_exists('roles', $data) ? $this->selectedRoles($data['roles']) : null;
+            $current = $locked->roles()->whereNotIn('name', ['staff', 'superadmin'])->pluck('name')->all();
+            if (! $admin) {
+                if ($selected !== null) {
+                    sort($selected);
+                    sort($current);
+                    abort_unless($selected === $current, 403);
+                }
+                abort_if(array_key_exists('isActive', $data) && (bool) $data['isActive'] !== (bool) $locked->is_active, 403);
+            } else {
+                abort_if(filled($locked->citizen_uuid) && ($selected || $locked->isInternal()), 403, 'Portal accounts cannot become staff.');
+                Validator::make($data, ['isActive' => ['sometimes', 'boolean']])->validate();
+                $active = (bool) ($data['isActive'] ?? $locked->is_active);
+                if (! $active && $locked->is_active) {
+                    abort_if($owner, 403, 'You cannot deactivate your own account.');
+                    abort_if($administrators->contains('id', $locked->id) && $administrators->where('is_active', true)->count() <= 1,
+                        403, 'The last active superadmin cannot be deactivated.');
+                    if ($locked->isInternal()) {
+                        app(SuperadminMfa::class)->protect($actor, (string) ($data['mfa_code'] ?? ''), fn () => null);
+                        app(SuperadminMfa::class)->revoke($locked);
+                        \App\Models\SuperadminMfaCredential::where('user_id', $locked->id)->get()->each(
+                            fn ($credential) => $credential->forceFill(['version' => (string) \Illuminate\Support\Str::uuid()])->save()
+                        );
+                        app(SuperadminMfa::class)->audit($actor, 'Internal account disabled', ['target_id' => $locked->id]);
+                    }
                 }
                 $attributes['is_active'] = $active;
-                $protected = $user->roles()->whereIn('name', ['staff', 'superadmin'])->pluck('name')->all();
-                if ($user->isInternal() || $selected) {
-                    $protected[] = 'staff';
+                if ($selected !== null) {
+                    $protected = $locked->roles()->whereIn('name', ['staff', 'superadmin'])->pluck('name')->all();
+                    if ($locked->isInternal() || $selected) {
+                        $protected[] = 'staff';
+                    }
+                    $locked->syncRoles(array_unique(array_merge($protected, $selected)));
                 }
-                $user->syncRoles(array_unique(array_merge($protected, $selected)));
             }
-            $user->update($attributes);
+            $locked->update($attributes);
 
-            return $user;
+            return $locked;
         });
     }
 
