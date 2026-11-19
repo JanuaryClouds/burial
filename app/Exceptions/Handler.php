@@ -45,7 +45,9 @@ class Handler extends ExceptionHandler
             return redirect()->route(Auth::check() ? 'dashboard' : 'landing.page')
                 ->with('error', 'You do not have permission to access this page.');
         } elseif ($exception instanceof NotFoundHttpException) {
-            if ($request->routeIs('application.templates.download', 'funeral_assistance_types.templates.download')) {
+            // Missing document images are expected while uploads are incomplete.
+            // Resource requests must not redirect or flash errors onto the next page.
+            if ($request->routeIs('application.image.get', 'application.templates.download', 'funeral_assistance_types.templates.download')) {
                 return parent::render($request, $exception);
             }
 

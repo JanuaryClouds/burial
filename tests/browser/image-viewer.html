@@ -24,8 +24,10 @@ const canvas = document.createElement('canvas');
 canvas.width = canvas.height = 2;
 const jpeg = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg'));
 const calls = {};
+const accepts = [];
 let aborted = false;
 window.fetch = async (url, options) => {
+    accepts.push(options.headers?.Accept);
     const key = new URL(url).pathname;
     calls[key] = (calls[key] || 0) + 1;
     if (key === '/pending') return new Promise((resolve, reject) => options.signal.addEventListener('abort', () => {
@@ -60,6 +62,7 @@ try {
     check('Missing document hides its entire grid slot', missing.hidden && missing.querySelector('img').classList.contains('d-none'));
     check('Failures show a message without a broken image or popup', failures.every(slot => !slot.hidden && !slot.querySelector('p').hidden && slot.querySelector('img').classList.contains('d-none') && slot.querySelector('button').classList.contains('d-none')));
     check('One HTTP request per viewer', Object.values(calls).every(count => count === 1));
+    check('Image requests ask for non-redirecting status responses', accepts.every(value => value === 'application/json'));
     initImageViewers();
     document.dispatchEvent(new Event('livewire:navigated'));
     check('Reinitialization and navigation do not refetch existing viewers', Object.values(calls).every(count => count === 1));
