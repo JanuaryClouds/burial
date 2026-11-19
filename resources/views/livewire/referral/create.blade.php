@@ -1,4 +1,4 @@
-<div>
+<div data-status-loading="save">
 	<div class="row">
 		<div class="col-12 d-flex flex-column gap-4">
 			<x-form.input wire:model='form.referred_to'
@@ -26,7 +26,7 @@
 					Are you sure you want to refer this application to <span class="fw-bold">{{ $form->referred_to }}</span>?
 				</p>
 				<x-slot:footer>
-					<x-button wire:click="save"
+					<x-button wire:click="save" wire:loading.attr="disabled" wire:target="save"
 						class="btn-sm btn-danger">
 						<x-icon.font-awesome class="fa-exclamation-triangle" />
 						Refer
