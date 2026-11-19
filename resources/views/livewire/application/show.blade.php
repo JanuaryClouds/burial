@@ -1,4 +1,4 @@
-<div class="d-flex flex-column gap-6" wire:poll.30s>
+<div data-status-loading="markAsDone" class="d-flex flex-column gap-6" wire:poll.30s>
     <div class="row">
         <div class="col-12 col-lg-9" id="application-summary">
             {{-- Application Summary --}}
