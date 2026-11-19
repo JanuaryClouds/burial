@@ -47,6 +47,8 @@ class SystemSettingController extends Controller
             return redirect()
                 ->back()
                 ->with('success', 'Successfully updated system settings.');
+        } catch (\Illuminate\Validation\ValidationException $exception) {
+            throw $exception;
         } catch (\Throwable $th) {
             activity()
                 ->causedBy(auth()->user())

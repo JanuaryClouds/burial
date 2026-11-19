@@ -3,34 +3,31 @@
 namespace App\Services;
 
 use App\Models\SystemSetting;
+use App\Services\Auth\AccountAccess;
+use App\Services\Auth\SuperadminMfa;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class SystemSettingService
 {
-    /**
-     * Summary of update
-     *
-     * @param  array  $data  validated form request
-     * @return void
-     */
-    public function update(array $data)
+    public function update(array $data): void
     {
-        abort_unless(auth()->user()?->hasRole('superadmin'), 403);
-        Validator::make($data, ['claimant_change_limit' => ['sometimes', 'required', 'integer', 'min:0', 'max:4294967295']])->validate();
-        $settings = SystemSetting::first();
-
-        if ($settings === null) {
-            throw new \RuntimeException('System settings record not found');
-        }
-
-        foreach (config('system_setting') as $key => $setting) {
-            foreach ($data as $formKey => $value) {
-                if ($key === $formKey) {
-                    $settings->$formKey = $value;
-                }
-            }
-        }
-
-        $settings->save();
+        $actor = app(AccountAccess::class)->assertWritable();
+        abort_unless($actor->hasRole('superadmin'), 403);
+        $validated = Validator::make($data, [
+            'maintenance_mode' => ['sometimes', 'boolean'],
+            'claimant_change_limit' => ['sometimes', 'required', 'integer', 'min:0', 'max:4294967295'],
+            'social_welfare_officer' => ['sometimes', 'required', 'string', 'max:255'],
+            'dept_head' => ['sometimes', 'required', 'string', 'max:255'],
+            'department_email' => ['sometimes', 'required', 'email', 'max:255'],
+        ])->validate();
+        DB::transaction(function () use ($actor, $validated, $data) {
+            $settings = SystemSetting::query()->lockForUpdate()->firstOrFail();
+            app(SuperadminMfa::class)->protect($actor, (string) ($data['mfa_code'] ?? ''), function () use ($settings, $validated, $actor) {
+                $before = $settings->only(array_keys($validated));
+                $settings->update($validated);
+                app(SuperadminMfa::class)->audit($actor, 'System settings updated', ['before' => $before, 'after' => $validated]);
+            });
+        });
     }
 }

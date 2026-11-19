@@ -22,7 +22,7 @@ class UpdateSystemSettingsRequest extends FormRequest
      */
     public function rules(): array
     {
-        $rules = [];
+        $rules = ['mfa_code' => ['required', 'string', 'size:6']];
 
         foreach (config('system_setting') as $key => $setting) {
             if ($setting['type'] === 'boolean') {

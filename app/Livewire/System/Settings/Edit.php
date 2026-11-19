@@ -6,8 +6,9 @@ use App\Livewire\Forms\SystemSettingsForm;
 use App\Models\SystemSetting;
 use App\Services\ActivityLoggerService;
 use App\Services\Auth\AccountAccess;
+use App\Services\SystemSettingService;
 use App\Traits\Livewire\HasPlaceholder;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Livewire\Component;
 
 class Edit extends Component
@@ -17,6 +18,8 @@ class Edit extends Component
     public ?SystemSetting $settings = null;
 
     public SystemSettingsForm $form;
+
+    public string $mfaCode = '';
 
     public function mount()
     {
@@ -32,6 +35,7 @@ class Edit extends Component
         try {
             $this->form->validate();
         } catch (\Exception $e) {
+            $this->reset('mfaCode');
             $this->dispatch('notification:toast', [
                 'type' => 'error',
                 'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation'),
@@ -41,22 +45,27 @@ class Edit extends Component
         }
 
         try {
-            DB::transaction(function () {
-                $this->settings->update([
+            try {
+                app(SystemSettingService::class)->update([
                     'maintenance_mode' => $this->form->maintenanceMode,
                     'claimant_change_limit' => $this->form->claimantChangeLimit,
                     'social_welfare_officer' => $this->form->socialWelfareOfficer,
                     'dept_head' => $this->form->deptHead,
                     'department_email' => $this->form->deptEmail,
+                    'mfa_code' => $this->mfaCode,
                 ]);
+            } finally {
+                $this->reset('mfaCode');
+            }
 
-                $this->dispatch('notification:alert', [
-                    'type' => 'success',
-                    'text' => 'Successfully updated settings',
-                ]);
+            $this->dispatch('notification:alert', [
+                'type' => 'success',
+                'text' => 'Successfully updated settings',
+            ]);
 
-                ActivityLoggerService::logSuccess('Successfully updated system settings');
-            });
+            ActivityLoggerService::logSuccess('Successfully updated system settings');
+        } catch (ValidationException $exception) {
+            throw $exception;
         } catch (\Throwable $th) {
             $this->dispatch('notification:alert', [
                 'type' => 'error',
