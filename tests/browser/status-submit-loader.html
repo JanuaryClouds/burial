@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Status submission loader checks</title>
+<body>
+<h1>Status submission loader checks</h1>
+<pre id="results">Running…</pre>
+<div id="status-form" data-status-loading="save submit markAsDone"></div>
+<script type="module">
+const results = [];
+const check = (name, condition) => {
+    results.push({ name, passed: Boolean(condition) });
+    if (!condition) throw new Error(name);
+};
+let hook, registrations = 0, visible = false;
+window.Livewire = { hook: (name, callback) => { registrations++; hook = callback; } };
+window.triggerLoading = () => { visible = true; };
+window.hideLoading = () => { visible = false; };
+function start(method, element = document.getElementById('status-form')) {
+    let success = () => {}, finish = () => {};
+    hook({ component: { el: element }, commit: { calls: method ? [{ method }] : [] },
+        succeed: callback => { success = callback; }, respond: callback => { finish = callback; } });
+    return { success: effects => success({ effects }), finish };
+}
+try {
+    const { default: initialize } = await import('../../public/js/status-submit-loader.js');
+    initialize(); initialize();
+    check('Loader hooks are installed once', registrations === 1);
+    start('$refresh').finish();
+    start().finish();
+    check('Polling and field updates do not open the overlay', !visible);
+    start('save', document.createElement('div')).finish();
+    check('Unmarked forms retain their existing behavior', !visible);
+    const validation = start('save');
+    check('Submitting a status action opens the overlay', visible);
+    validation.success({ errors: { reason: ['Required'] } }); validation.finish();
+    check('Validation responses release the overlay', !visible);
+    const networkFailure = start('save'); networkFailure.finish();
+    check('Network failures release the overlay without a success callback', !visible);
+    const first = start('save'), second = start('submit');
+    first.finish();
+    check('Overlapping submissions keep the overlay until both finish', visible);
+    second.finish();
+    check('Last completed request releases the overlay', !visible);
+    const interview = start('markAsDone');
+    check('Interview completion uses the overlay', visible);
+    interview.success({}); interview.finish();
+    const redirect = start('save'); redirect.success({ redirect: '/application/example' }); redirect.finish();
+    check('Successful redirects retain the overlay during navigation', visible);
+    document.dispatchEvent(new Event('livewire:navigated'));
+    check('Completed Livewire navigation clears the overlay', !visible);
+    document.title = 'PASS: Status submission loader';
+} catch (error) {
+    if (!results.some(result => !result.passed)) results.push({ name: error.stack, passed: false });
+    document.title = 'FAIL: Status submission loader';
+} finally {
+    window.statusLoaderTestResults = results;
+    document.getElementById('results').textContent = JSON.stringify(results, null, 2);
+}
+</script>
+</body>
+</html>
