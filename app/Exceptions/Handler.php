@@ -29,6 +29,8 @@ class Handler extends ExceptionHandler
         'newPassword',
         'confirmNewPassword',
         'confirmPassword',
+        'mfa_code',
+        'mfaCode',
     ];
 
     public function render($request, Throwable $exception)
