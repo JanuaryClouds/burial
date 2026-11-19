@@ -1,4 +1,4 @@
-<div class="d-flex flex-column gap-6"
+<div data-status-loading="save" class="d-flex flex-column gap-6"
 	wire:poll.60s>
 	{{-- start::Form --}}
 	<div class="row">
@@ -22,7 +22,7 @@
 					<p class="fs-4">Are you sure you want to cancel this application?</p>
 				</div>
 				<x-slot:footer>
-					<x-button wire:click="save"
+					<x-button wire:click="save" wire:loading.attr="disabled" wire:target="save"
 						class="btn-sm btn-danger">
 						<x-icon.font-awesome class="fa-stop" />
 						Cancel Application
