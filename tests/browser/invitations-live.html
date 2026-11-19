@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Invitation refresh checks</title>
+<body>
+<pre id="results">Running…</pre>
+<p data-invitation-refresh-status></p><p data-invitation-action-status></p>
+<div id="fixture" data-refresh-url="/staff-invitations">
+    <table class="data-table" data-dom-rows="true" data-columns='[{"data":"email"},{"data":"state"},{"data":"roles"}]'>
+        <thead><tr><th>Email</th><th>Status</th><th>Roles</th></tr></thead><tbody></tbody>
+    </table>
+</div>
+<script src="../../public/metronic/plugins/global/plugins.bundle.js"></script>
+<script src="../../public/metronic/plugins/custom/datatables/datatables.bundle.js"></script>
+<script src="../../public/js/immediate-mail.js"></script>
+<script type="module">
+const results = [];
+const check = (name, condition) => { results.push({ name, passed: !!condition }); if (!condition) throw Error(name); };
+const waitFor = async condition => {
+    const end = Date.now() + 5000;
+    while (!condition()) { if (Date.now() > end) throw Error('Timed out'); await new Promise(requestAnimationFrame); }
+};
+let accepted = false, offline = false, version = '1', posts = 0;
+const html = () => `<tr data-invitation-id="1" data-invitation-version="${version}" data-invitation-pending="${!accepted}"><td>staff@example.test</td><td>${accepted ? 'Accepted' : 'Pending'}</td><td>${accepted ? 'Staff only' : `<form action="/staff-invitations/1" method="POST" data-immediate-mail data-refresh-invitations><input name="action" type="hidden" value="roles"><select name="roles[]" multiple><option value="CSWDO" selected>CSWDO</option><option value="Budget">Budget</option></select><button type="submit">Save roles</button><p data-mail-status></p></form>`}</td></tr>`;
+window.fetch = async (url, options) => {
+    if (offline) throw Error('Offline');
+    if (options.method === 'POST') { posts++; return { ok: true, status: 200, json: async () => ({ message: 'Roles saved', redirect: '/must-not-navigate' }) }; }
+    return { ok: true, json: async () => ({ html: html() }) };
+};
+try {
+    const { mountInvitationsLive } = await import('../../public/js/invitations-live.js');
+    const { refresh } = mountInvitationsLive(document.getElementById('fixture'));
+    await waitFor(() => document.querySelector('tbody form'));
+    check('Initial snapshot loads pending invitation controls', !!document.querySelector('tbody select'));
+    const select = document.querySelector('tbody select');
+    $(select).val(['Budget']).trigger('change');
+    version = '2'; await refresh(true);
+    check('Pending refresh preserves unsaved role selections', document.querySelector('tbody select') === select && select.selectedOptions[0].value === 'Budget');
+    const form = select.form;
+    form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    await waitFor(() => document.querySelector('[data-invitation-action-status]').textContent === 'Roles saved');
+    await waitFor(() => document.querySelector('tbody select') !== select);
+    check('Updated rows bind save actions without a page reload', posts === 1 && location.pathname.endsWith('invitations-live.html'));
+    offline = true; await refresh(true);
+    check('A failed refresh disables stale invitation actions', document.querySelector('tbody button').disabled && document.querySelector('tbody select').disabled);
+    offline = false; await refresh(true);
+    check('Successful refresh restores pending actions', !document.querySelector('tbody button').disabled);
+    const current = document.querySelector('tbody select');
+    $(current).val(['Budget']).trigger('change');
+    accepted = true; version = '3'; await refresh(true);
+    check('Acceptance removes actions even while role edits are unsaved', !document.querySelector('tbody form') && document.querySelector('tbody').textContent.includes('Accepted'));
+    check('Freshness and outcome feedback remain visible', document.querySelector('[data-invitation-refresh-status]').textContent.includes('Up to date'));
+    document.title = 'PASS: Invitation refresh';
+} catch (error) {
+    if (!results.some(result => !result.passed)) results.push({ name: error.stack, passed: false });
+    document.title = 'FAIL: Invitation refresh';
+} finally {
+    window.invitationLiveTestResults = results;
+    document.getElementById('results').textContent = JSON.stringify(results, null, 2);
+}
+</script>
+</body>
+</html>
