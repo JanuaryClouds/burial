@@ -5,7 +5,7 @@
 	Funeral Assistance System | CSWDO Taguig
 </x-slot:pageSubTitle>
 
-<div class="d-flex flex-column gap-6">
+<div data-status-loading="save" class="d-flex flex-column gap-6">
 	<div class="row">
 		<div class="col-12 col-lg-8">
 			{{-- Application Summary to help the social worker write the assessment --}}
@@ -45,6 +45,7 @@
 					required />
 				<x-slot:footer>
 					<x-button wire:click='save'
+                        wire:loading.attr="disabled" wire:target="save"
 						class="btn-sm btn-success">
 						<x-icon.font-awesome class="fa-floppy-disk" />
 						Save
