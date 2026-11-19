@@ -103,6 +103,10 @@ class PageNavigation extends Component
             return [$system, $this->current('Users')];
         }
 
+        if ($name === 'user.invitations.index') {
+            return [$system, $this->link('Users', 'user.index'), $this->current('Staff invitations')];
+        }
+
         if ($name === 'user.show' || $name === 'user.edit') {
             // The users index is restricted to superadmins; account pages are not.
             $ancestors = $request->user()?->hasRole('superadmin')
@@ -116,6 +120,7 @@ class PageNavigation extends Component
 
         return match ($name) {
             'system.settings' => [$system, $this->current('Settings')],
+            'system.failed-emails.index' => [$system, $this->current('Emails')],
             'system.logs.index' => [$system, $this->current('Logs')],
             'system.logs.show' => [$system, $this->link('Logs', 'system.logs.index'), $this->current('Log details')],
             default => [],
