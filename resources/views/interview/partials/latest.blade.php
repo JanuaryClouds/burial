@@ -10,6 +10,6 @@
             <div><button type="button" class="btn btn-sm btn-success mt-2" wire:click="markAsDone('{{ $latestInterview->uuid }}')" wire:loading.attr="disabled">Mark As Done</button></div>
         @endif
     @else
-        <p class="text-muted mb-0">No interview scheduled for the current claimant.</p>
+        <p class="text-muted mb-0">{{ ($applicationEnded ?? false) ? 'No interview was recorded before this application ended.' : 'No interview scheduled for the current claimant.' }}</p>
     @endif
 </div>

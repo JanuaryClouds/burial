@@ -13,6 +13,9 @@
 			@if ($application->rejection)
 				Application has been rejected
 			@endif
+            @if ($application->closure && ! $application->referral && ! $application->cancellation && ! $application->rejection)
+                Application has been closed
+            @endif
 		</p>
 	</x-card.unauthorized>
 @endcan

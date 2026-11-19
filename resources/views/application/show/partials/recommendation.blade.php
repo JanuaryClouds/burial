@@ -16,6 +16,11 @@
 					</a>
 				</x-slot:footer>
 			@endcan
+		@elseif (! $application->isActive())
+            <x-alert>
+                <x-slot:icon><x-icon.font-awesome class="fa-box-archive fs-2" /></x-slot:icon>
+                No recommendation was recorded before this application ended.
+            </x-alert>
 		@else
 			@if ($application->assessment)
 				<x-alert>
