@@ -58,6 +58,8 @@ Run commands from the repository root after cloning. Examples use PowerShell, ma
    DB_PASSWORD=
 
    ADMIN_PASSWORD=replace-with-a-local-development-password
+   SUPERADMIN_EMAIL_ADDRESS=superadmin@example.org
+   SUPERADMIN_PASSWORD="Replace With Unique Password 9!"
    PORTAL_MOCK=true
    PORTAL_USERS_GET_ENABLE=false
    PORTAL_USERS_SEEDER=true
@@ -83,7 +85,7 @@ Run commands from the repository root after cloning. Examples use PowerShell, ma
    php artisan db:seed
    ```
 
-   The default seeder creates configuration, roles, permissions, workflow stages, and randomized demo records. It creates `superadmin@example.org` and sample staff accounts using `ADMIN_PASSWORD`. Set that variable before seeding. This is a development/demo dataset, not a production initialization procedure. Repeated seeding against existing data has not been verified as safe.
+   The default seeder creates configuration, roles, permissions, workflow stages, and randomized demo records. `AdminSeeder` requires `SUPERADMIN_EMAIL_ADDRESS` and uses `SUPERADMIN_PASSWORD` for a new superadmin. Sample staff accounts use the separate `ADMIN_PASSWORD`. Set these variables before seeding; initial passwords must meet the account password policy. Existing passwords are preserved on reruns. This is a development/demo dataset, not a production initialization procedure. Repeated seeding against existing data has not been verified as safe.
 
 5. Run the application:
 
@@ -92,6 +94,18 @@ Run commands from the repository root after cloning. Examples use PowerShell, ma
    ```
 
    Open `http://127.0.0.1:8000/admin/login` for staff login. With `PORTAL_MOCK=true`, the landing page provides local citizen entry links from seeded users. Mock access is for local development. For a Laragon virtual host, point its document root at `public/` and set `APP_URL` to its URL.
+
+## Superadmin security
+
+**Superadmin MFA is mandatory:** authenticator-app TOTP is required at every login and for each system-settings save, internal-account disabling, and superadmin role change. Single-use recovery codes permit restricted authenticator replacement only. See [Superadmin MFA operations](docs/superadmin-mfa.md) for enrollment, recovery, emergency reset, and deployment requirements.
+
+The login flow is password verification followed by a code from a compatible authenticator app before granting application access or issuing application API tokens. Enrollment generates a unique random secret per account, presents it as a QR code, and requires a valid code before activation. Store the secret encrypted; never commit secrets, enrollment QR codes, or recovery codes to the repository or logs.
+
+TOTP uses the shared secret and fixed time windows, normally 30 seconds; the server does not contact the authenticator provider. It works in local development and production when the secret and algorithm settings match and device/server clocks are synchronized. Time zones do not need to match. Enroll separate secrets for development and production. Verification allows only a small clock tolerance, rate-limit failed attempts, and prevent reuse of an accepted time step. See [RFC 6238](https://www.rfc-editor.org/rfc/rfc6238.html) and [OWASP MFA guidance](https://cheatsheetseries.owasp.org/cheatsheets/Multifactor_Authentication_Cheat_Sheet.html).
+
+The implementation includes single-use recovery codes stored as hashes and a documented server-console recovery process for lost authenticators. Password recovery must not remove or bypass MFA. Changes to MFA methods and protected security settings require fresh verification and are audited.
+
+For production, give each authorized administrator an individual account with a monitored, organization-controlled email address, preferably dedicated to administration. Protect the mailbox with MFA because it receives password-recovery messages. Avoid shared superadmin logins or reliance on a maintainer's personal mailbox; document account ownership, recovery, and handover when maintainers change. Configure `SUPERADMIN_EMAIL_ADDRESS` and `SUPERADMIN_PASSWORD` through the environment and refresh cached configuration after changes. These are seeding settings, not runtime login overrides. Changing the password setting does not reset existing passwords; changing the email setting can create a separate superadmin on the next seed rather than rename the previous account. Do not use the demo seeding workflow as a production provisioning procedure.
 
 ## External services
 
