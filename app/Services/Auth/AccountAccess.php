@@ -49,6 +49,7 @@ class AccountAccess
         $user = $this->freshForRequest(auth()->user());
         abort_unless($user !== null, 403);
         auth()->setUser($user);
+        app(SuperadminMfa::class)->assertVerified($user);
         abort_if(filled($user->citizen_uuid) && $user->isInternal(), 403);
         abort_if($user->isInternal() && ! $this->isActive($user), 403);
         if ($this->needsPasswordChange($user)) {
@@ -65,6 +66,9 @@ class AccountAccess
         abort_if(filled($actor->citizen_uuid) && $actor->isInternal(), 403);
         abort_if($this->needsPasswordChange($actor) && ! SeederAccountContext::permits($actor), 403, 'Change your initial password before continuing.');
         auth()->setUser($actor);
+        if (! SeederAccountContext::permits($actor)) {
+            app(SuperadminMfa::class)->assertVerified($actor);
+        }
 
         return $actor;
     }
@@ -72,6 +76,9 @@ class AccountAccess
     /** A denial layer: existing ownership and operational policies still decide access. */
     public function before(User $user, string $ability, array $arguments): ?bool
     {
+        if (! SeederAccountContext::permits($user) && ! app(SuperadminMfa::class)->hasProof($user)) {
+            return false;
+        }
         if (filled($user->citizen_uuid) && $user->isInternal()) {
             return false;
         }
