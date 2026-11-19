@@ -1,4 +1,4 @@
-<div>
+<div data-status-loading="submit">
     @if ($workflowLabel)
         <div class="alert {{ $paused ? 'alert-warning' : 'alert-info' }}">
             Assigned workflow: <strong>{{ $workflowLabel }}</strong>.
