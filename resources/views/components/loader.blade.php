@@ -1,4 +1,5 @@
 <div id="splashScreen"
+    role="status" aria-label="Submitting, please wait" aria-hidden="true"
     style="
         position: fixed; inset: 0; z-index: -1; display: flex; opacity: 0; align-items: center; justify-content: center; overflow: hidden;
         max-width: 100vw;
@@ -66,8 +67,11 @@
 <script nonce="{{ $nonce ?? '' }}">
     document.addEventListener('DOMContentLoaded', () => {
         const splash = document.getElementById('splashScreen');
+        let hideTimer;
 
         window.triggerLoading = function(duration = 1) {
+            clearTimeout(hideTimer);
+            splash.setAttribute('aria-hidden', 'false');
             splash.style.zIndex = "9999";
             splash.style.opacity = "1";
             splash.style.transition = `opacity ${duration}s ease`;
@@ -75,9 +79,11 @@
         }
 
         window.hideLoading = function(duration = 1) {
+            clearTimeout(hideTimer);
+            splash.setAttribute('aria-hidden', 'true');
             splash.style.opacity = "0";
             splash.style.transition = `opacity ${duration}s ease`;
-            setTimeout(() => {
+            hideTimer = setTimeout(() => {
                 splash.style.zIndex = "-1";
             }, duration * 1000);
             return;
