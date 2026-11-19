@@ -26,11 +26,33 @@ class Edit extends Component
 
     public array $roleOptions = [];
 
+    public string $mfaCode = '';
+
+    public function changeSuperadmin(bool $grant): void
+    {
+        try {
+            app(UserService::class)->setSuperadmin($this->user, $grant, $this->mfaCode);
+            $this->user->refresh();
+            $this->dispatch('notification:alert', [
+                'type' => 'success',
+                'title' => $grant ? 'Superadmin access granted' : 'Superadmin access removed',
+                'text' => $grant ? 'This account now has superadmin access.' : 'This account no longer has superadmin access.',
+            ]);
+        } finally {
+            $this->reset('mfaCode');
+        }
+    }
+
     public function mount(User $user)
     {
         $this->authorize('update', $user);
         $this->user = $user;
-        $this->form->setUser($user);
+        if (auth()->id() === $user->id) {
+            $this->form->setUser($user);
+        } else {
+            $this->form->isActive = $user->is_active;
+            $this->form->roles = $user->roles()->whereNotIn('name', ['staff', 'superadmin'])->pluck('name')->mapWithKeys(fn ($role) => [$role => $role])->all();
+        }
         $this->roleOptions = Role::where('guard_name', 'web')->pluck('name')
             ->filter(fn ($role) => ! in_array($role, ['staff', 'superadmin']))
             ->sort()
@@ -41,9 +63,18 @@ class Edit extends Component
     public function save()
     {
         app(AccountAccess::class)->assertWritable();
+        $owner = auth()->id() === $this->user->id;
         try {
-            $this->form->validate();
+            if ($owner) {
+                $this->form->validate();
+            } else {
+                foreach (['firstName', 'middleName', 'lastName', 'suffix', 'email', 'contactNumber'] as $field) {
+                    abort_if($this->form->$field !== null, 403, 'Only the owner can edit their profile.');
+                }
+                $this->validate(['form.isActive' => 'boolean', 'form.roles' => 'array']);
+            }
         } catch (\Exception $e) {
+            $this->reset('mfaCode');
             $this->dispatch('notification:toast', [
                 'type' => 'error',
                 'text' => app()->hasDebugModeEnabled() ? $e->getMessage() : config('constants.errors.validation'),
@@ -54,7 +85,7 @@ class Edit extends Component
 
         try {
             app(UserService::class)->update(
-                $this->form->all(),
+                ($owner ? $this->form->all() : ['isActive' => $this->form->isActive, 'roles' => $this->form->roles]) + ['mfa_code' => $this->mfaCode],
                 $this->user
             );
 
@@ -66,6 +97,8 @@ class Edit extends Component
             ActivityLoggerService::logSuccess('Successfully updated user', [
                 'id' => $this->user->id,
             ]);
+        } catch (\Illuminate\Validation\ValidationException $exception) {
+            throw $exception;
         } catch (\Throwable $th) {
             $this->dispatch('notification:alert', [
                 'type' => 'error',
@@ -75,6 +108,8 @@ class Edit extends Component
             ActivityLoggerService::logException($th, 'Failed to updated user');
 
             report($th);
+        } finally {
+            $this->reset('mfaCode');
         }
     }
 
