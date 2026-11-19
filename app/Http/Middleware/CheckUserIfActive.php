@@ -56,7 +56,7 @@ class CheckUserIfActive
         auth()->setUser($authenticatedUser);
 
         if (! $tokenRequest && ! app(AccountSession::class)->valid($user, $request)) {
-            auth('web')->logoutCurrentDevice();
+            \App\Services\Auth\SuperadminMfa::logoutCurrentBrowser();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
@@ -78,6 +78,18 @@ class CheckUserIfActive
                     ? response()->json(['message' => 'Please sign in again.'], 401)
                     : redirect()->route('admin.login')->with('info', 'Please sign in again.');
             }
+        }
+
+        if (! $request->routeIs('logout', 'sso.logout') && ! app(\App\Services\Auth\SuperadminMfa::class)->hasProof($authenticatedUser)) {
+            if ($request->hasSession()) {
+                \App\Services\Auth\SuperadminMfa::logoutCurrentBrowser();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+            }
+
+            return $request->expectsJson()
+                ? response()->json(['message' => 'Sign in and verify your authenticator.'], 403)
+                : redirect()->route('admin.login')->with('warning', 'Sign in and verify your authenticator.');
         }
 
         if ($access->needsPasswordChange($user) && ! $request->routeIs('user.password', 'logout', 'sso.logout')) {
