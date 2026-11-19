@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Spatie\Permission\Models\Role;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -177,6 +176,36 @@ class UserService
         Auth::logout();
         request()->session()->invalidate();
         request()->session()->regenerateToken();
+    }
+
+    public function setSuperadmin(User $target, bool $grant, #[\SensitiveParameter] string $code): User
+    {
+        app(AccountAccess::class)->assertWritable();
+
+        return DB::transaction(function () use ($target, $grant, $code) {
+            $administrators = User::whereHas('roles', fn ($q) => $q->where('name', 'superadmin'))->orderBy('id')->lockForUpdate()->get();
+            $locked = User::whereKey($target->id)->lockForUpdate()->firstOrFail();
+            $actor = app(AccountAccess::class)->assertWritable();
+            abort_unless($actor->hasRole('superadmin') && $actor->id !== $locked->id, 403);
+            abort_unless(blank($locked->citizen_uuid) && $locked->isInternal(), 403, 'Only internal accounts can be superadmins.');
+            abort_if($grant && ! $locked->is_active, 403, 'Activate this account before promotion.');
+            abort_if($locked->hasRole('superadmin') === $grant, 409, 'This account already has the requested role state.');
+            abort_if(! $grant && $locked->is_active && $administrators->where('is_active', true)->count() <= 1, 403, 'The last active superadmin cannot be demoted.');
+
+            return app(SuperadminMfa::class)->protect($actor, $code, function () use ($locked, $actor, $grant) {
+                if ($grant) {
+                    $locked->assignRole('superadmin');
+                } else {
+                    $locked->removeRole('superadmin');
+                }
+                $mfa = app(SuperadminMfa::class);
+                $mfa->revoke($locked);
+                $credential = $mfa->credential($locked);
+                $credential->forceFill(['version' => (string) \Illuminate\Support\Str::uuid()])->save();
+                $mfa->audit($actor, $grant ? 'Superadmin role granted' : 'Superadmin role removed', ['target_id' => $locked->id]);
+                return $locked;
+            });
+        });
     }
 
     private function selectedRoles(array $input): array

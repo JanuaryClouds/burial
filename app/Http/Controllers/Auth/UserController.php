@@ -4,13 +4,13 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
-use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use App\Services\Auth\LoginService;
 use App\Services\Auth\UserService;
 use App\Services\DataTableService;
 use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Role;
 
@@ -124,18 +124,25 @@ class UserController extends Controller
         $this->authorize('update', $user);
 
         try {
-            $user = User::find($user->id);
             $data = $request->validated();
-            $roles = array_key_exists('roles', $data)
-                ? Role::whereIn('id', $data['roles'] ?? [])->pluck('name')
-                : $user->roles()->whereNotIn('name', ['staff', 'superadmin'])->pluck('name');
-            $user = $this->userServices->update([
-                'firstName' => $data['first_name'], 'middleName' => $data['middle_name'] ?? null,
-                'lastName' => $data['last_name'], 'suffix' => $data['suffix'] ?? null,
-                'email' => $user->email, 'contactNumber' => $data['contact_number'],
-                'isActive' => $data['is_active'] ?? $user->is_active,
-                'roles' => $roles->mapWithKeys(fn ($role) => [$role => true])->all(),
-            ], $user);
+            $owner = auth()->id() === $user->id;
+            $changes = [];
+            $changes['mfa_code'] = $data['mfa_code'] ?? '';
+            if ($owner) {
+                foreach (['first_name' => 'firstName', 'middle_name' => 'middleName', 'last_name' => 'lastName',
+                    'suffix' => 'suffix', 'contact_number' => 'contactNumber'] as $source => $target) {
+                    if (array_key_exists($source, $data)) {
+                        $changes[$target] = $data[$source];
+                    }
+                }
+            }
+            if (array_key_exists('roles', $data)) {
+                $changes['roles'] = Role::whereIn('id', $data['roles'] ?? [])->pluck('name')->mapWithKeys(fn ($role) => [$role => true])->all();
+            }
+            if (array_key_exists('is_active', $data)) {
+                $changes['isActive'] = $data['is_active'];
+            }
+            $user = $this->userServices->update($changes, $user);
 
             return redirect()->route('user.edit', $user)->with('success', 'User updated successfully.');
         } catch (Exception $e) {
