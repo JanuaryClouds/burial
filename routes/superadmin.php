@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\InvitationController;
 use App\Http\Controllers\Auth\UserController;
 use App\Http\Controllers\DocumentRequirementController;
 use App\Http\Controllers\DocumentTemplateController;
@@ -15,6 +16,11 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('role:superadmin')
     ->group(function () {
+        Route::middleware(RecoveryPrivacy::class)->group(function () {
+            Route::get('/staff-invitations', [InvitationController::class, 'index'])->name('user.invitations.index');
+            Route::post('/staff-invitations', [InvitationController::class, 'store'])->middleware('throttle:invitation-admin')->name('user.invitations.store');
+            Route::post('/staff-invitations/{invitation}', [InvitationController::class, 'manage'])->middleware('throttle:invitation-admin')->name('user.invitations.manage');
+        });
         Route::get('/system/failed-emails', [FailedEmailController::class, 'index'])->middleware(RecoveryPrivacy::class)->name('system.failed-emails.index');
         Route::post('/system/failed-emails/{delivery}/retry', [FailedEmailController::class, 'retry'])
             ->middleware(['throttle:mail-retry', RecoveryPrivacy::class])->name('system.failed-emails.retry');

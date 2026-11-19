@@ -143,21 +143,8 @@ class UserController extends Controller
         }
     }
 
-    public function store(CreateUserRequest $request)
+    public function store(Request $request)
     {
-        try {
-            $data = $request->validated();
-            $user = $this->userServices->store([
-                'firstName' => $data['first_name'], 'middleName' => $data['middle_name'] ?? null,
-                'lastName' => $data['last_name'], 'suffix' => $data['suffix'] ?? null,
-                'email' => $data['email'], 'contactNumber' => $data['contact_number'],
-                'password' => $data['password'], 'confirmPassword' => $request->input('password_confirmation'),
-                'roles' => [],
-            ]);
-
-            return redirect()->route('user.edit', $user)->with('success', 'User created successfully.');
-        } catch (Exception $e) {
-            return redirect()->back()->with('error', $e->getMessage());
-        }
+        abort(403, 'Create an email invitation instead.');
     }
 }

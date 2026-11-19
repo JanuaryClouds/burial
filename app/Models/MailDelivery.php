@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Services\Mail\ImmediateMailService;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
@@ -27,13 +29,32 @@ class MailDelivery extends Model
         return $this->hasMany(MailDeliveryAttempt::class);
     }
 
+    /** @return BelongsTo<UserInvitation, $this> */
+    public function invitation(): BelongsTo
+    {
+        return $this->belongsTo(UserInvitation::class, 'user_invitation_id');
+    }
+
+    public function canRetry(): bool
+    {
+        $mail = app(ImmediateMailService::class);
+        $interrupted = ($this->status === 'pending' && $this->created_at->lt($mail->interruptedBefore()))
+            || ($this->status === 'sending' && $this->claimed_at?->lt($mail->interruptedBefore()));
+
+        return (in_array($this->status, ['failed', 'uncertain'], true) || $interrupted)
+            && ! in_array($this->failure_code, ['ineligible', 'suppressed', 'invalid_recipient'], true)
+            && ($this->type !== 'user_invitation' || $this->invitation?->isPending());
+    }
+
     public function failureDescription(): string
     {
         return match ($this->failure_code) {
             'suppressed' => 'Sending is blocked by a permanent bounce or spam complaint. Correct the email address and start a new request.',
             'invalid_recipient' => 'The recipient address is invalid. Correct the email address and start a new request.',
             'shared_logs_unavailable' => 'The shared email suppression check is unavailable. Sending was stopped; retry after the connection is restored.',
-            'ineligible' => 'This recovery request is no longer eligible. Ask the user to request a new link.',
+            'ineligible' => $this->type === 'user_invitation'
+                ? 'This invitation is no longer eligible. Check its status in Invitations.'
+                : 'This recovery request is no longer eligible. Ask the user to request a new link.',
             'interrupted' => 'The outcome is uncertain. This email may already have been delivered. Retrying may send a duplicate.',
             'configuration' => 'Email configuration is unavailable or invalid.',
             default => 'The email could not be sent. Check the mail service before retrying.',
