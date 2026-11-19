@@ -23,12 +23,14 @@ The PHP lock file currently resolves Laravel 13 and Livewire 4. The UI uses Blad
 
 The project runs within Hostinger's hosting restrictions and does not use Node.js or npm commands for setup, development, or deployment. Existing package and Vite configuration files are not part of the supported workflow.
 
-- **PHP 8.4.1+ (64-bit)** for the locked development dependencies, including PHPUnit 13. The root `composer.json` PHP constraint alone does not reflect this requirement.
+- **PHP 8.4.27+ (64-bit)**. Shared Hostinger uses PHP 8.4.27; Composer resolves dependencies against that version through `config.platform.php`, including when local PHP is newer. Run `composer check-platform-reqs --lock` on the host to check its actual PHP version and extensions.
 - **Composer 2** and the extensions checked by `composer check-platform-reqs --lock`. Include PDO MySQL for the default database and GD for image processing.
 - **MySQL** for the default configuration. Other configured database drivers have not been verified for this project.
 - Writable `storage/` and `bootstrap/cache/` directories.
 
 Use `composer install` to preserve committed PHP dependency versions.
+
+See [PHP 8.4.27 compatibility](docs/php-8.4-compatibility.md) for the shared-host target, package requirements, verification results, and Hostinger checks.
 
 ## Local setup
 
