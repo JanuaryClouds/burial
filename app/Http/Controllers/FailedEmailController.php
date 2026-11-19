@@ -15,15 +15,15 @@ class FailedEmailController extends Controller
         abort_unless($actor->isSystemAdministrator(), 403);
     }
 
-    public function index(ImmediateMailService $mail)
+    public function index(Request $request, ImmediateMailService $mail)
     {
         $this->authorizeAdmin();
-        $deliveries = MailDelivery::with(['attempts' => fn ($q) => $q->latest('id')])
-            ->where(function ($query) use ($mail) {
-                $query->whereIn('status', ['failed', 'uncertain'])
-                    ->orWhere(fn ($q) => $q->where('status', 'pending')->where('created_at', '<', $mail->interruptedBefore()))
-                    ->orWhere(fn ($q) => $q->where('status', 'sending')->where('claimed_at', '<', $mail->interruptedBefore()));
-            })->latest('id')->paginate(20);
+        $filters = $request->validate(['status' => 'nullable|in:pending,sending,sent,failed,uncertain',
+            'type' => 'nullable|in:password_reset,user_invitation,mfa_security']);
+        $deliveries = MailDelivery::with(['attempts' => fn ($q) => $q->latest('id'), 'invitation'])
+            ->when($filters['status'] ?? null, fn ($q, $status) => $q->where('status', $status))
+            ->when($filters['type'] ?? null, fn ($q, $type) => $q->where('type', $type))
+            ->latest('id')->get();
 
         return response()->view('system.failed-emails', compact('deliveries'))->header('Cache-Control', 'no-store');
     }
