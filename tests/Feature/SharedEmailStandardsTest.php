@@ -12,6 +12,7 @@ use Illuminate\Mail\Events\MessageSending;
 use Illuminate\Mail\Mailable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -26,6 +27,9 @@ class SharedEmailStandardsTest extends TestCase
         parent::setUp();
         config(['email_logs.mock' => true, 'database.connections.email_logs_mock.database' => ':memory:',
             'mail.default' => 'array', 'mail.from.address' => 'burial@example.test']);
+        foreach (['genders', 'relationships', 'civilStatus', 'religions', 'nationalities', 'educations', 'districts', 'assistances', 'modes'] as $lookup) {
+            Cache::put($lookup, collect(), 3600);
+        }
         app(MockEmailLogs::class)->initialize();
     }
 

@@ -3,6 +3,7 @@
 // Test worker: only a temporary SQLite fixture is accepted. Never uses the application database.
 require dirname(__DIR__, 2).'/vendor/autoload.php';
 
+use App\Models\SuperadminMfaCredential;
 use App\Models\User;
 use App\Models\Workflow;
 use App\Services\WorkflowVersionService;
@@ -24,10 +25,16 @@ config([
         'busy_timeout' => 10000, 'transaction_mode' => 'IMMEDIATE',
     ],
     'cache.default' => 'array',
+    'session.driver' => 'array',
     'app.key' => 'base64:'.base64_encode(str_repeat('w', 32)),
 ]);
 DB::statement('PRAGMA busy_timeout=10000');
-auth()->setUser(User::firstOrFail());
+$actor = User::firstOrFail();
+auth()->setUser($actor);
+request()->setLaravelSession(app('session.store'));
+$credential = SuperadminMfaCredential::where('user_id', $actor->id)->firstOrFail();
+session(['account.staff_hash' => $actor->getAuthPassword(),
+    'mfa.proof' => ['user_id' => $actor->id, 'version' => $credential->version]]);
 $base = Workflow::findOrFail($baseUuid);
 $data = ['name' => $base->name, 'description' => 'Concurrent revision', 'stages' => $base->stages()->with('customFields')->orderBy('position')->get()
     ->map(fn ($stage) => ['name' => $stage->name, 'description' => $stage->description, 'permission_id' => (string) $stage->permission_id,

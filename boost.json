@@ -1,0 +1,18 @@
+{
+    "agents": [
+        "codex"
+    ],
+    "cloud": false,
+    "packages": [
+        "spatie/laravel-activitylog"
+    ],
+    "skills": [
+        "infer-conventions",
+        "laravel-best-practices",
+        "testing-best-practices",
+        "scout-development",
+        "livewire-development",
+        "activitylog-development",
+        "laravel-security"
+    ]
+}

@@ -62,7 +62,7 @@ class WorkflowEditingTest extends TestCase
         foreach (glob(database_path('migrations/custom_fields/*.php')) as $path) {
             (require $path)->up();
         }
-        $user = User::create(['email' => 'editor@example.test']);
+        $user = User::create(['email' => 'editor@example.test', 'password' => 'Workflow fixture Password 9!']);
         $user->assignRole(Role::findOrCreate('superadmin', 'web'));
         $this->actingAs($user);
     }
@@ -78,9 +78,12 @@ class WorkflowEditingTest extends TestCase
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('email')->nullable();
+            $table->string('password')->nullable();
             $table->timestamps();
         });
         (require database_path('migrations/data/2026_11_13_120000_add_active_session_token_to_users_table.php'))->up();
+        (require database_path('migrations/system/2026_07_10_000003_create_personal_access_tokens_table.php'))->up();
+        (require database_path('migrations/system/2026_11_19_120000_create_superadmin_mfa_credentials.php'))->up();
         foreach (['roles', 'permissions'] as $name) {
             Schema::create($name, function (Blueprint $table) {
                 $table->id();
@@ -799,7 +802,7 @@ class WorkflowEditingTest extends TestCase
             foreach (glob(database_path('migrations/custom_fields/*.php')) as $path) {
                 (require $path)->up();
             }
-            $actor = User::create(['email' => 'concurrency@example.test']);
+            $actor = User::create(['email' => 'concurrency@example.test', 'password' => 'Workflow fixture Password 9!']);
             $actor->assignRole(Role::findOrCreate('superadmin', 'web'));
             $this->actingAs($actor);
             $base = app(WorkflowVersionService::class)->publish($this->customDefinition());

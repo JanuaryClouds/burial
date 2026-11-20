@@ -5,7 +5,7 @@
     "keywords": ["laravel", "framework"],
     "license": "MIT",
     "require": {
-        "php": "^8.4.27",
+        "php": "^8.4.28",
         "barryvdh/laravel-dompdf": "^3.1.2",
         "guzzlehttp/guzzle": "^8.1.0",
         "intervention/image-laravel": "^4.1.1",
@@ -29,6 +29,7 @@
         "fruitcake/laravel-debugbar": "^4.4",
         "jaydeep/laravel-guarddog": "^1.1",
         "larastan/larastan": "^3.10.0",
+        "laravel/boost": "^2.10",
         "laravel/pint": "^1.30.3",
         "laravel/sail": "^1.18",
         "mockery/mockery": "^1.4.4",
@@ -74,7 +75,7 @@
     },
     "config": {
         "platform": {
-            "php": "8.4.27"
+            "php": "8.4.28"
         },
         "optimize-autoloader": true,
         "preferred-install": "dist",

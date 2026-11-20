@@ -16,6 +16,7 @@ use App\Models\Recommendation;
 use App\Models\User;
 use App\Models\Workflow;
 use App\Models\WorkflowHistory;
+use App\Services\Auth\InvitationService;
 use App\Services\Auth\UserService;
 use App\Services\RemarkService;
 use App\Services\RoleReconciliationService;
@@ -24,6 +25,7 @@ use App\Services\WorkflowVersionService;
 use App\View\Components\PageNavigation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
@@ -72,7 +74,7 @@ class AccessControlTest extends TestCase
     public function test_record_table_rendering_uses_no_queries_and_preserves_empty_columns(): void
     {
         foreach ([
-            \App\Livewire\Application\Index::class, \App\Livewire\Client\Index::class, \App\Livewire\Beneficiary\Index::class,
+            Index::class, \App\Livewire\Client\Index::class, \App\Livewire\Beneficiary\Index::class,
             \App\Livewire\User\Index::class, \App\Livewire\Role\Index::class, \App\Livewire\Workflow\Index::class,
             \App\Livewire\DocumentRequirement\Index::class, \App\Livewire\FuneralAssistanceType\Index::class,
             \App\Livewire\ModeOfAssistance\Index::class, \App\Livewire\ActivityLog\Index::class,
@@ -83,7 +85,7 @@ class AccessControlTest extends TestCase
             $this->assertTrue($columns->contains('data', 'show_route'));
             DB::enableQueryLog();
             DB::flushQueryLog();
-            $html = \Illuminate\Support\Facades\Blade::render(
+            $html = Blade::render(
                 '<x-data-table data-table-id="query-check" :columns="$columns" :data="$rows" :card-fields="$fields" />',
                 ['columns' => $columns, 'rows' => collect(), 'fields' => ['primary' => 'name']]
             );
@@ -342,16 +344,15 @@ class AccessControlTest extends TestCase
     public function test_cms_creates_staff_without_automatic_cswdo_and_assigns_selected_roles(): void
     {
         $service = app(UserService::class);
-        $data = $this->profileData($this->user(), []);
-        $data['email'] = Str::uuid().'@example.test';
-        $data['password'] = 'Initial Strong 9!';
-        $data['confirmPassword'] = 'Initial Strong 9!';
-        $user = $service->store($data);
+        $email = Str::uuid().'@example.test';
+        $invitation = app(InvitationService::class)->create($email, []);
+        $this->assertDatabaseMissing('users', ['email' => $email]);
+        $user = app(InvitationService::class)->accept($invitation->token, $this->invitationDetails());
         $this->assertTrue($user->hasRole('staff'));
         $this->assertFalse($user->hasRole('CSWDO'));
-        $service->update($this->profileData($user, ['CSWDO' => true]), $user);
+        $service->update(['roles' => ['CSWDO' => true]], $user);
         $this->assertTrue($user->fresh()->hasRole('CSWDO'));
-        $service->update($this->profileData($user, []), $user);
+        $service->update(['roles' => []], $user);
         $this->assertSame(['staff'], $user->fresh()->roles->pluck('name')->all());
     }
 
@@ -426,25 +427,31 @@ class AccessControlTest extends TestCase
     {
         $role = Role::findOrCreate('Assessor', 'web');
         $role->givePermissionTo('Create Assessment');
-        $data = $this->profileData($this->user(), ['CSWDO' => true, 'Assessor' => true]);
-        $data['email'] = Str::uuid().'@example.test';
-        $data['password'] = 'Initial Strong 9!';
-        $data['confirmPassword'] = 'Initial Strong 9!';
-        $user = app(UserService::class)->store($data);
+        $email = Str::uuid().'@example.test';
+        $invitation = app(InvitationService::class)->create($email, ['CSWDO', 'Assessor']);
+        $this->assertDatabaseMissing('users', ['email' => $email]);
+        $user = app(InvitationService::class)->accept($invitation->token, $this->invitationDetails());
         $this->assertTrue($user->hasAllRoles(['staff', 'CSWDO', 'Assessor']));
         $this->assertTrue($user->canOfficeAction('Create Assessment'));
         $this->assertFalse($user->canOfficeAction('Create Recommendation'));
     }
 
-    public function test_cms_creation_form_lists_cswdo_and_saves_explicit_membership(): void
+    public function test_cms_invitation_form_lists_cswdo_and_acceptance_saves_explicit_membership(): void
     {
         $email = Str::uuid().'@example.test';
-        Livewire::test(\App\Livewire\User\Create::class)->assertSee('CSWDO')
-            ->set('form.firstName', 'Office')->set('form.lastName', 'User')
-            ->set('form.email', $email)->set('form.contactNumber', '09123456789')
-            ->set('form.password', 'Initial Strong 9!')->set('form.confirmPassword', 'Initial Strong 9!')
-            ->set('form.roles.CSWDO', true)->call('save')->assertHasNoErrors();
+        $this->get(route('user.invitations.index'))->assertOk()->assertSee('CSWDO');
+        $invitation = app(InvitationService::class)->create($email, ['CSWDO']);
+        $this->assertDatabaseMissing('users', ['email' => $email]);
+        auth()->logout();
+        $this->post(route('invitation.accept', $invitation->token), $this->invitationDetails())
+            ->assertRedirect(route('admin.login'))->assertSessionHasNoErrors();
         $this->assertTrue(User::where('email', $email)->firstOrFail()->hasAllRoles(['staff', 'CSWDO']));
+    }
+
+    private function invitationDetails(): array
+    {
+        return ['first_name' => 'Office', 'last_name' => 'User', 'contact_number' => '09123456789',
+            'password' => 'Owner password 9!', 'password_confirmation' => 'Owner password 9!'];
     }
 
     public function test_department_navigation_returns_to_search_instead_of_the_record_index(): void
