@@ -164,12 +164,10 @@ php vendor/phpunit/phpunit/phpunit --no-configuration --bootstrap vendor/autoloa
 
 The unit suite currently contains only the starter assertion; passing it does not verify application behavior.
 
-Before running feature tests, create a separate testing database and configure `.env.testing` with its connection details and an application key. Confirm it targets that testing database. `phpunit.xml` does not enable an in-memory database, and some tests create users without automatic database reset. Disable outbound notification, SMS, and disbursement calls in the testing environment.
+For the default suite, `phpunit.xml` forces the default connection to in-memory SQLite and clears `DB_URL`. Tests build their own disposable schemas; no manual database migration or seeding is needed. Keep a testing application key in `.env.testing` and disable outbound notification, SMS, and disbursement calls. Optional MySQL concurrency modes use explicitly configured, disposable databases; follow their test-specific instructions. Artisan commands run with `--env=testing` outside PHPUnit do not inherit these SQLite overrides, so verify their target connection separately.
 
 ```powershell
-php artisan migrate --env=testing
-php artisan db:seed --env=testing
-php artisan test
+php artisan test --compact
 ```
 
 Feature tests cover beneficiary family composition rendering and a live PSA region lookup. The disbursement test body is commented out and does not validate disbursement behavior. The PSA test needs a configured, reachable service. The suite is not a comprehensive regression check.
