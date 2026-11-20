@@ -68,7 +68,7 @@ export default function initSelect2(root = document) {
                 const livewireId = element.id.replace('_select', '');
                 const valueInput = document.getElementById(livewireId);
 
-                if (valueInput) {
+                if (valueInput && valueInput !== element) {
                     valueInput.value = value;
                     valueInput.dispatchEvent(new Event('input', {
                         bubbles: true

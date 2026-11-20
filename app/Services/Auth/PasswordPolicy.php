@@ -8,12 +8,12 @@ use Illuminate\Validation\Rules\Password;
 
 class PasswordPolicy
 {
-    public static function validateSeedPassword(mixed $password): void
+    public static function validateSeedPassword(mixed $password, string $setting = 'ADMIN_PASSWORD'): void
     {
-        $validator = Validator::make(['password' => $password], ['password' => self::rules()], [], ['password' => 'ADMIN_PASSWORD']);
+        $validator = Validator::make(['password' => $password], ['password' => self::rules()], [], ['password' => $setting]);
         if ($validator->fails()) {
             throw new \RuntimeException('Cannot create internal accounts: '.implode(' ', $validator->errors()->all())
-                .' Update ADMIN_PASSWORD in your environment and refresh cached configuration before retrying. Existing passwords are not reset.');
+                ." Update {$setting} in your environment and refresh cached configuration before retrying. Existing passwords are not reset.");
         }
     }
 

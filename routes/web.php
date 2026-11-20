@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\InvitationController;
 use App\Http\Controllers\Auth\PasswordRecoveryController;
 use App\Http\Controllers\Auth\UserController;
 use App\Http\Controllers\CitizenAccessController;
@@ -24,6 +25,18 @@ Route::get('/admin/login', [UserController::class, 'loginPage'])
 Route::post('/login/check', [UserController::class, 'login'])
     ->name('login.check');
 Route::post('/logout', [UserController::class, 'logout'])->name('logout');
+
+Route::middleware(RecoveryPrivacy::class)->group(function () {
+    Route::get('/admin/mfa', [\App\Http\Controllers\Auth\MfaController::class, 'show'])->name('mfa.show')->block(30, 10);
+    Route::post('/admin/mfa', [\App\Http\Controllers\Auth\MfaController::class, 'submit'])->name('mfa.submit')->block(30, 10);
+    Route::match(['get', 'post'], '/profile/mfa', [\App\Http\Controllers\Auth\MfaController::class, 'manage'])
+        ->middleware('auth')->name('mfa.manage')->block(30, 10);
+});
+
+Route::middleware([RecoveryPrivacy::class, 'guest', 'throttle:invitation-accept'])->group(function () {
+    Route::get('/admin/invitations/{token}', [InvitationController::class, 'form'])->name('invitation.form');
+    Route::post('/admin/invitations/{token}', [InvitationController::class, 'accept'])->name('invitation.accept');
+});
 
 Route::controller(PasswordRecoveryController::class)->middleware(RecoveryPrivacy::class)->group(function () {
     Route::get('/admin/forgot-password', 'forgot')->name('password.request');

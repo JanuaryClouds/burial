@@ -30,6 +30,8 @@ class ManualTestingSeederTest extends TestCase
         config(['database.default' => 'manual_seed_testing',
             'database.connections.manual_seed_testing' => ['driver' => 'sqlite', 'database' => ':memory:', 'prefix' => '', 'foreign_key_constraints' => true],
             'cache.default' => 'array', 'app.key' => 'base64:'.base64_encode(str_repeat('s', 32)),
+            'app.superadmin_email_address' => 'superadmin@example.org',
+            'app.superadmin_password' => 'Separate Admin Password 9!',
             'app.admin_password' => 'Manual Test Password 9!', 'services.portal.users.seeder.from_portal' => false]);
         foreach (['genders', 'relationships', 'civilStatus', 'religions', 'nationalities', 'educations', 'districts', 'assistances', 'modes'] as $lookup) {
             Cache::put($lookup, collect(), 3600);
@@ -44,6 +46,35 @@ class ManualTestingSeederTest extends TestCase
     {
         DB::purge('manual_seed_testing');
         parent::tearDown();
+    }
+
+    public function test_superadmin_uses_configured_credentials_and_preserves_existing_password(): void
+    {
+        config(['app.superadmin_email_address' => '  Maintainer@Example.org  ']);
+        $this->seed(AdminSeeder::class);
+        $admin = User::where('email', 'maintainer@example.org')->firstOrFail();
+        $this->assertTrue($admin->hasAllRoles(['superadmin', 'staff']));
+        $this->assertTrue(Hash::check('Separate Admin Password 9!', $admin->password));
+        $this->assertTrue($admin->password_change_required);
+        $hash = $admin->password;
+        config(['app.superadmin_password' => null]);
+        $this->seed(AdminSeeder::class);
+        $this->assertSame($hash, $admin->fresh()->password);
+        $this->assertSame(1, User::count());
+    }
+
+    public function test_superadmin_requires_a_valid_configured_email(): void
+    {
+        foreach ([null, '', 'invalid-address'] as $email) {
+            config(['app.superadmin_email_address' => $email]);
+            try {
+                $this->seed(AdminSeeder::class);
+                $this->fail('Invalid superadmin email was accepted.');
+            } catch (\RuntimeException $exception) {
+                $this->assertStringContainsString('SUPERADMIN_EMAIL_ADDRESS', $exception->getMessage());
+            }
+            $this->assertSame(0, User::count());
+        }
     }
 
     public function test_seeded_internal_accounts_cover_office_and_department_boundaries(): void
@@ -86,7 +117,7 @@ class ManualTestingSeederTest extends TestCase
         $adminPassword = User::where('email', 'superadmin@example.org')->firstOrFail()->password;
         $staff->assignRole('CSWDO');
         $staff->givePermissionTo('Create Assessment');
-        config(['app.admin_password' => 'changed-default-password']);
+        config(['app.admin_password' => 'changed-default-password', 'app.superadmin_password' => 'changed-admin-password']);
         $this->seed([PermissionSeeder::class, RoleSeeder::class, UserSeeder::class, AdminSeeder::class]);
         $this->assertSame(41, User::count());
         $this->assertSame($snapshot, User::where('email', 'like', '%@tlcportal.com')->orderBy('email')->get()->mapWithKeys(fn ($user) => [$user->email => $user->getAttributes()])->all());
@@ -140,13 +171,13 @@ class ManualTestingSeederTest extends TestCase
     public function test_invalid_initial_password_is_named_without_exposing_it_or_creating_accounts(): void
     {
         $secret = 'weak-test-secret';
-        config(['app.admin_password' => $secret]);
+        config(['app.admin_password' => $secret, 'app.superadmin_password' => $secret]);
         foreach ([UserSeeder::class, AdminSeeder::class] as $seeder) {
             try {
                 $this->seed($seeder);
                 $this->fail('Invalid initial password was accepted.');
             } catch (\RuntimeException $exception) {
-                $this->assertStringContainsString('ADMIN_PASSWORD', $exception->getMessage());
+                $this->assertStringContainsString($seeder === AdminSeeder::class ? 'SUPERADMIN_PASSWORD' : 'ADMIN_PASSWORD', $exception->getMessage());
                 $this->assertStringContainsString('uppercase', $exception->getMessage());
                 $this->assertStringNotContainsString($secret, $exception->getMessage());
             }

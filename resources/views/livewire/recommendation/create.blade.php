@@ -1,7 +1,7 @@
 <x-slot:pageTitle>{{ $application->tracking_no }} | Create Recommendation</x-slot:pageTitle>
 <x-slot:pageSubTitle>Funeral Assistance System | CSWDO Taguig</x-slot:pageSubTitle>
 
-<div class="d-flex flex-column gap-6">
+<div data-status-loading="save" class="d-flex flex-column gap-6">
 	<div class="row">
 		<div class="col-12 col-lg-8">
 			{{-- Application Summary to help the social worker write the recommendation --}}

@@ -1,4 +1,4 @@
-<div class="border border-gray-300 rounded p-5 mt-3">
+<div data-status-loading="save" class="border border-gray-300 rounded p-5 mt-3">
     <h4 class="mb-4">Change Claimant</h4>
     <p>Remaining changes: {{ $remaining }}. The replacement must have an existing account and a complete, unused client draft.</p>
     <div class="d-flex flex-column">

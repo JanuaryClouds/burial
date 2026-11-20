@@ -1,4 +1,4 @@
-<div class="d-flex flex-column gap-3 mb-5">
+<div data-status-loading="save" class="d-flex flex-column gap-3 mb-5">
     @if ($completed)
         <p class="text-muted mb-0">The interview for this claimant is complete.</p>
     @elseif ($scheduled)

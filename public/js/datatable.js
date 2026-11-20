@@ -32,7 +32,11 @@ function selectDataTables() {
 function initDataTable(dataTable) {
 	if (!dataTable.length || $.fn.DataTable.isDataTable(dataTable[0])) return;
 	const responsiveRoot = dataTable[0].closest('[data-responsive-data-table]');
-	let columns = (dataTable.data('columns') || []).map(column => ({
+	// Blade-rendered cells retain their forms and escaped content as DOM nodes.
+    const domRows = dataTable.data('dom-rows') === true;
+	let columns = (dataTable.data('columns') || []).map((column, index) => domRows ? ({
+        ...column, data: index,
+    }) : ({
 		...column,
 		// DataTables also uses display output for responsive detail rows.
 		render: (value, type) => ['display', 'filter'].includes(type)
@@ -45,7 +49,7 @@ function initDataTable(dataTable) {
 	let dataSrc = dataTable.data('src') || null;
 	let countPerPage = dataTable.data('count-per-page') || 10;
 
-	if (dataTable.hasClass('with-status')) {
+	if (!domRows && dataTable.hasClass('with-status')) {
 		const statusColumn = columns.find(column => column.data === 'status');
 
 		if (statusColumn) {
@@ -62,7 +66,7 @@ function initDataTable(dataTable) {
 		}
 	}
 
-	if (dataTable.hasClass('with-actions')) {
+	if (!domRows && dataTable.hasClass('with-actions')) {
 		const actionsColumn = columns.find(column => column.data === 'show_route');
 
 		if (actionsColumn) {
@@ -91,13 +95,14 @@ function initDataTable(dataTable) {
 	}
 	
 	dataTable.DataTable({
-		responsive: !responsiveRoot,
+		responsive: !responsiveRoot && !domRows,
 		ordering: true,
 		columns: columns,
 		order: [],
 		pageLength: countPerPage,
 		lengthMenu: [...new Set([countPerPage, 10, 25, 50, 100])].sort((a, b) => a - b),
-		data: route === '#' || !dataSrc ? dataset : undefined,
+		data: domRows ? undefined : (route === '#' || !dataSrc ? dataset : undefined),
+        language: { emptyTable: dataTable.attr('data-empty-message') || 'No records found.' },
 		ajax: route !== '#' && dataSrc ? {
 			url: route,
 			type: 'GET',

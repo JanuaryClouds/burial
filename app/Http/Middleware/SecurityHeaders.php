@@ -15,6 +15,11 @@ class SecurityHeaders
      */
     public function handle(Request $request, Closure $next): Response
     {
+        // Never collect MFA request bodies, credential queries, or enrollment views in Debugbar.
+        if (app()->bound('debugbar') && ($request->routeIs('mfa.*') || $request->has('mfa_code')
+            || $request->header('X-Livewire') !== null || auth()->user()?->hasRole('superadmin'))) {
+            app('debugbar')->disable();
+        }
         // Nonces belong to documents, never users or sessions.
         $nonce = base64_encode(random_bytes(32));
         $request->attributes->set('csp_nonce', $nonce);

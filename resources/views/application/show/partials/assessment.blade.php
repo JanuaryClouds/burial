@@ -3,11 +3,11 @@
 	@can('view', [\App\Models\Assessment::class, $application])
         <div class="mb-5" id="interview">
             @if ($inlineApplicationDetails ?? false)
-                @include('interview.partials.latest', ['canComplete' => $canCompleteInterview])
+                @include('interview.partials.latest', ['canComplete' => $canCompleteInterview, 'applicationEnded' => ! $application->isActive()])
             @else
                 <livewire:interview.index :client="$application->client" :assignment-uuid="$application->current_claimant_assignment_uuid" />
             @endif
-            @if (! $application->finishedInterview() && ! $application->current_recommendation_uuid)
+            @if ($application->isActive() && ! $application->finishedInterview() && ! $application->current_recommendation_uuid)
                 @can('create', [\App\Models\Interview::class, $application->client])
                     <livewire:interview.create :client="$application->client" :key="'interview-create-'.$application->current_claimant_assignment_uuid" />
                 @endcan
@@ -20,6 +20,11 @@
             @else
                 <livewire:assessment.show :assessment="$application->assessment" defer />
             @endif
+		@elseif (! $application->isActive())
+            <x-alert>
+                <x-slot:icon><x-icon.font-awesome class="fa-box-archive fs-2" /></x-slot:icon>
+                No assessment was recorded before this application ended.
+            </x-alert>
 		@else
 			@if ($application->finishedInterview())
 				@can('create', [\App\Models\Assessment::class, $application])

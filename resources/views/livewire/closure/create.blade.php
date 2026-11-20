@@ -1,4 +1,4 @@
-<div class="d-flex flex-column gap-4">
+<div data-status-loading="save" class="d-flex flex-column gap-4">
 	<x-form.textarea wire:model='form.reason'
 		name="form.reason"
 		label="Reason to Close Application"

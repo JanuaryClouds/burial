@@ -1,4 +1,4 @@
-<div class="d-flex flex-column gap-3"
+<div data-status-loading="save" class="d-flex flex-column gap-3"
 	wire:ignore>
 	<x-form.textarea wire:model='form.reason'
 		name="form.reason"

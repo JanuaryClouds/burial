@@ -14,7 +14,8 @@ use Illuminate\Support\Str;
 class ImmediateMailService
 {
     /** Registered message handlers reconstruct mail from encrypted, typed data. */
-    private const HANDLERS = ['password_reset' => PasswordResetMessage::class];
+    private const HANDLERS = ['password_reset' => PasswordResetMessage::class, 'user_invitation' => InvitationMessage::class,
+        'mfa_security' => MfaSecurityMessage::class];
 
     public function record(string $recipient, MessagePayload $payload): MailDelivery
     {
@@ -40,6 +41,7 @@ class ImmediateMailService
     {
         app(AccountAccess::class)->assertWritable();
         abort_unless(auth()->id() === $actor->id && $actor->fresh(['roles'])?->isSystemAdministrator(), 403);
+        abort_if($delivery->type === 'user_invitation' && ! $delivery->invitation?->isPending(), 409, 'This invitation is no longer pending.');
 
         return $this->deliver($delivery, $actor->id, true);
     }

@@ -604,6 +604,44 @@ class ClaimantReplacementTest extends TestCase
         $this->assertSame('done', $interview->fresh()->status);
     }
 
+    public function test_ended_applications_show_historical_empty_states_instead_of_processing_prompts(): void
+    {
+        foreach (['rejection', 'cancellation', 'referral', 'closure'] as $outcome) {
+            $application = $this->application();
+            $data = match ($outcome) {
+                'rejection' => ['rejected_by' => $this->admin->id],
+                'cancellation' => ['cancelled_by' => $application->client->user_id],
+                'referral' => ['referred_to' => 'Another office'],
+                'closure' => ['closed_by' => $this->admin->id, 'closed_at' => now()],
+            };
+            $application->{$outcome}()->create(['reason' => 'Recorded outcome', ...$data]);
+            Livewire::test(Show::class, ['application' => $application->fresh()])
+                ->assertSee('No assessment was recorded before this application ended.')
+                ->assertSee('No recommendation was recorded before this application ended.')
+                ->assertSee('No interview was recorded before this application ended.')
+                ->assertDontSee("Complete the current claimant's interview before making an assessment.", false)
+                ->assertDontSee('Set an interview first before making a recommendation.')
+                ->assertDontSee('Make an Assessment')->assertDontSee('Make a Recommendation')
+                ->assertDontSee('Schedule Interview')->assertDontSee('Mark As Done');
+        }
+    }
+
+    public function test_closing_application_preserves_recorded_assessment_and_active_prompts_still_work(): void
+    {
+        $application = $this->application();
+        Livewire::test(Show::class, ['application' => $application->fresh()])
+            ->assertSee("Complete the current claimant's interview before making an assessment.", false)
+            ->assertSee('Set an interview first before making a recommendation.');
+        $this->interview($application);
+        $assessment = $this->assessment($application->fresh());
+        $application->closure()->create(['closed_by' => $this->admin->id, 'closed_at' => now(), 'reason' => 'Recorded closure']);
+        Livewire::test(Show::class, ['application' => $application->fresh()])
+            ->assertSee($assessment->problem_presented)
+            ->assertDontSee('No assessment was recorded before this application ended.')
+            ->assertSee('No recommendation was recorded before this application ended.')
+            ->assertDontSee('Make a Recommendation')->assertDontSee('Mark As Done');
+    }
+
     public function test_cached_display_state_cannot_bypass_fresh_processing_authorization(): void
     {
         $application = $this->application();

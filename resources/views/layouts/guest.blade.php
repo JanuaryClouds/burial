@@ -9,7 +9,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="referrer" content="no-referrer">
-        <title>Password recovery</title>
+        <title>{{ $guestPageTitle ?? 'Password recovery' }}</title>
         <link rel="stylesheet" href="{{ asset('metronic/css/style.bundle.css') }}">
         <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     @else

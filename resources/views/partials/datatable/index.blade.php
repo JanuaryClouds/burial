@@ -6,6 +6,8 @@
     'src' => null,
     'countPerPage' => 10,
     'dataTableId',
+    'bodyView' => null,
+    'emptyMessage' => 'No records found.',
 ])
 @php
 	if ($columns->isNotEmpty()) {
@@ -26,7 +28,7 @@
 	    );
 	}
 @endphp
-<div class="table-responsive overflow-x-hidden"
+<div class="table-responsive {{ $bodyView ? '' : 'overflow-x-hidden' }}"
 	wire:ignore>
 	<table class="table data-table {{ $classes }}"
 		id="dataTable-{{ $dataTableId }}"
@@ -35,6 +37,8 @@
 		data-columns='@json($columns)'
 		data-rows='@json($data)'
 		data-src="{{ $src }}"
+		data-dom-rows="{{ $bodyView ? 'true' : 'false' }}"
+        data-empty-message="{{ $emptyMessage }}"
 		data-count-per-page="{{ $countPerPage }}">
 		<thead class="border-bottom border-bottom-1 border-gray-200 fw-bold">
 			@include('partials.dataTable.head', [
@@ -42,10 +46,14 @@
 			])
 		</thead>
 		<tbody>
+			@if($bodyView)
+                @include($bodyView)
+            @else
 			@include('partials.dataTable.body', [
 				'columns' => $columns,
 				'rows' => $data,
 			])
+            @endif
 		</tbody>
 	</table>
 </div>

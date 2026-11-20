@@ -25,10 +25,25 @@ class Maintenance
                 return $next($request);
             }
 
+            // The public sign-in form submits through Livewire. Only the login
+            // component may pass this maintenance exception; Livewire still
+            // verifies the signed snapshot and allowed actions downstream.
+            $components = $request->input('components');
+            if ($request->isMethod('post') && app(\Livewire\Mechanisms\HandleRequests\HandleRequests::class)->isLivewireRoute()
+                && is_array($components) && count($components) > 0
+                && collect($components)->every(fn ($component) => is_array($component)
+                    && is_string($component['snapshot'] ?? null)
+                    && data_get(json_decode($component['snapshot'], true), 'memo.name') === 'auth.login')) {
+                return $next($request);
+            }
+
             if ($request->routeIs([
                 'landing.page',
                 'login',
                 'login.check',
+                'admin.login',
+                'mfa.show',
+                'mfa.submit',
                 'sso',
                 'sso.logout',
             ])) {

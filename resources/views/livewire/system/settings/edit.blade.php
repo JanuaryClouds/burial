@@ -35,6 +35,10 @@
 		label="Maintenance Mode" />
 	{{-- end::Maintenane Mode --}}
 
+    <label class="form-label" for="settings-mfa">Fresh authenticator code</label>
+    <input id="settings-mfa" class="form-control" wire:model="mfaCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6">
+    @error('mfa_code') <p class="text-danger">{{ $message }}</p> @enderror
+    <p>Every settings save requires a new code. If you just used this code, wait for the next one.</p>
 	<div class="d-flex justify-content-end align-items-center gap-2">
 		<a href={{ route('system.index') }}
 			class="btn btn-sm btn-light">

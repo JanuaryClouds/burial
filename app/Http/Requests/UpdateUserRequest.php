@@ -17,6 +17,9 @@ class UpdateUserRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
+        if (auth()->id() !== $this->route('user')?->id) {
+            return;
+        }
         $this->merge([
             'first_name' => $this->clean($this->first_name),
             'middle_name' => $this->clean($this->middle_name),
@@ -53,12 +56,16 @@ class UpdateUserRequest extends FormRequest
      */
     public function rules(): array
     {
+        $owner = auth()->id() === $this->route('user')?->id;
+
         return [
-            'first_name' => 'required|string|max:255',
-            'middle_name' => 'nullable|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'suffix' => 'nullable|string|max:64',
-            'contact_number' => 'required|string|max:11',
+            'mfa_code' => ['sometimes', 'nullable', 'string', 'max:128'],
+            'email' => ['prohibited'],
+            'first_name' => $owner ? 'required|string|max:255' : 'prohibited',
+            'middle_name' => $owner ? 'nullable|string|max:255' : 'prohibited',
+            'last_name' => $owner ? 'required|string|max:255' : 'prohibited',
+            'suffix' => $owner ? 'nullable|string|max:64' : 'prohibited',
+            'contact_number' => $owner ? 'required|string|max:32' : 'prohibited',
             'is_active' => 'nullable|boolean',
             'roles' => 'nullable|array',
             'roles.*' => 'exists:roles,id',

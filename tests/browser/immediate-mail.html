@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Immediate mail form regression checks</title>
+<body>
+<h1>Immediate mail form regression checks</h1>
+<pre id="results">Running…</pre>
+<form method="POST" action="/staff-invitations/42" data-immediate-mail>
+    <input type="hidden" name="action" value="roles">
+    <select name="roles[]" multiple><option value="CSWDO" selected>CSWDO</option><option value="Accounting" selected>Accounting</option></select>
+    <button type="submit">Save roles</button>
+    <p data-mail-status></p>
+</form>
+<script type="module">
+const results = [];
+const check = (name, condition) => {
+    results.push({ name, passed: Boolean(condition) });
+    if (!condition) throw new Error(name);
+};
+const form = document.querySelector('form');
+const calls = [];
+window.fetch = async (url, options) => {
+    calls.push({ url, action: options.body.get('action'), roles: options.body.getAll('roles[]') });
+    return { ok: true, json: async () => ({ message: 'Invitation updated.' }) };
+};
+try {
+    await import('../../public/js/immediate-mail.js');
+    const submit = async () => {
+        form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+        // Wait for the fetch and response promises without navigating away.
+        while (form.dataset.sending === 'true') await new Promise(requestAnimationFrame);
+    };
+    check('Hidden action input reproduces the native property collision', form.action instanceof HTMLInputElement);
+    await submit();
+    check('Save roles posts to the invitation URL', calls[0].url === '/staff-invitations/42');
+    check('Save roles preserves the requested operation', calls[0].action === 'roles');
+    check('Multiple selected roles are submitted', calls[0].roles.join(',') === 'CSWDO,Accounting');
+    check('Successful response is displayed', form.querySelector('[data-mail-status]').textContent === 'Invitation updated.');
+    form.querySelectorAll('option').forEach(option => { option.selected = false; });
+    await submit();
+    check('Clearing all roles submits an empty selection', calls[1].roles.length === 0);
+    form.elements.namedItem('action').value = 'renew';
+    await submit();
+    check('Renew uses the same correct endpoint', calls[2].url === '/staff-invitations/42' && calls[2].action === 'renew');
+    form.elements.namedItem('action').value = 'revoke';
+    await submit();
+    check('Revoke uses the same correct endpoint', calls[3].url === '/staff-invitations/42' && calls[3].action === 'revoke');
+} catch (error) {
+    if (!results.some(result => !result.passed)) results.push({ name: error.stack, passed: false });
+} finally {
+    window.immediateMailTestResults = results;
+    document.getElementById('results').textContent = JSON.stringify(results, null, 2);
+    document.title = results.every(result => result.passed) ? 'PASS: Immediate mail forms' : 'FAIL: Immediate mail forms';
+}
+</script>
+</body>
+</html>

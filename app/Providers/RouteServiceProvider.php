@@ -24,6 +24,11 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        RateLimiter::for('invitation-admin', fn (Request $request) => Limit::perMinute(10)->by($request->user()?->id ?: $request->ip()));
+        RateLimiter::for('invitation-accept', fn (Request $request) => [
+            Limit::perMinute(60)->by('ip:'.$request->ip()),
+            Limit::perMinute(10)->by('token:'.hash('sha256', (string) $request->route('token'))),
+        ]);
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });

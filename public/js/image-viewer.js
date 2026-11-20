@@ -40,6 +40,8 @@ async function loadImage(image) {
         if (url.origin !== window.location.origin) throw new Error('Invalid image origin');
         const response = await fetch(url.href, {
             credentials: 'same-origin', cache: 'no-store', redirect: 'error', signal: state.controller.signal,
+            // Request status responses without page redirects; successful images remain JPEGs.
+            headers: { Accept: 'application/json' },
         });
         if (!image.isConnected || requests.get(image) !== state) return;
         if (response.status === 404) {

@@ -23,7 +23,7 @@ class EditUserForm extends Form
     #[Validate('required|email|max:255')]
     public ?string $email = null;
 
-    #[Validate('required|string|max:255')]
+    #[Validate('required|string|max:32')]
     public ?string $contactNumber = null;
 
     #[Validate('nullable|boolean')]

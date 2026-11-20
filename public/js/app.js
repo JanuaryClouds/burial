@@ -8,6 +8,7 @@
 "use strict";
 
 import './image-viewer.js';
+import initStatusSubmitLoader from './status-submit-loader.js';
 
 import updateDistrict from './districts.js';
 import initSelect2 from './select2.js';
@@ -17,6 +18,7 @@ import theme from './theme.js';
 import initDashboard from './dashboard.js';
 import autoMarginColumns from './autoMarginColumns.js';
 import sweetAlert from './sweetAlert2.js';
+import initSuperadminAccess from './superadmin-access.js';
 import toast from './toast.js';
 import { selectDataTables, refreshDataTable } from './datatable.js';
 
@@ -43,10 +45,12 @@ document.addEventListener('DOMContentLoaded', () => {
 window.initSelect2 = initSelect2;
 
 document.addEventListener('livewire:init', () => {
+    initStatusSubmitLoader();
     initDashboard();
     autoMarginColumns();
     refreshChart();
     sweetAlert();
+    initSuperadminAccess();
     toast();
     selectDataTables();
     refreshDataTable();

@@ -54,6 +54,12 @@ class LoginService
             }
 
             Auth::getProvider()->rehashPasswordIfRequired($user, $data);
+            if ($user->hasRole('superadmin')) {
+                app(SuperadminMfa::class)->begin($user);
+                Cache::forget($key);
+
+                return ['redirect' => route('mfa.show')];
+            }
             Auth::login($user);
             session()->regenerate();
             session(['account.staff_hash' => $user->getAuthPassword()]);

@@ -4,7 +4,7 @@ These are development/UAT fixtures. They are not an upgrade procedure for existi
 
 `DatabaseSeeder` creates permissions and roles before users. To seed only the account fixtures on an initialized development database, run PermissionSeeder, RoleSeeder, UserSeeder, and AdminSeeder in that order. RoleSeeder synchronizes permissions for its predefined roles; UserSeeder resets the example.org fixtures below to their listed roles and removes their direct permissions. Rerunning these seeders discards manual access changes made to those fixtures.
 
-All internal test accounts initially use the configured `ADMIN_PASSWORD`. No new hard-coded password is supplied. Existing password hashes are preserved on reruns, including the superadmin's. Accounts must be active to log in through `/admin/login`.
+Demo staff accounts initially use `ADMIN_PASSWORD`; the superadmin uses `SUPERADMIN_EMAIL_ADDRESS` and `SUPERADMIN_PASSWORD`. No new hard-coded password is supplied. Existing password hashes are preserved on reruns, including the superadmin's. Accounts must be active to log in through `/admin/login`.
 
 For newly created internal accounts, `ADMIN_PASSWORD` must meet the account policy
 (12 characters, uppercase, lowercase, number, symbol, maximum 72 bytes). Their
@@ -36,7 +36,7 @@ All addresses in the following table end in **@example.org**, and every account 
 | `cswdo-rejection` | CSWDO + rejection-officer: rejection actions only |
 | `cswdo-full` | CSWDO + assessor + reporter + rejection-officer + Releasing + Closer: complete office action coverage without CMS access |
 
-`superadmin@example.org` retains the superadmin and staff roles. It remains responsible for CMS/system setup and support. None of the internal accounts can use citizen creation flows.
+The account at `SUPERADMIN_EMAIL_ADDRESS` receives the superadmin and staff roles. Its initial `SUPERADMIN_PASSWORD` must meet the same password policy as staff. Changing the configured email can create a separate account on the next seed; it does not rename the previous account. It remains responsible for CMS/system setup and support. None of the internal accounts can use citizen creation flows.
 
 ## Departmental workflow accounts
 

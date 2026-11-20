@@ -111,7 +111,7 @@ class AccountManagementTest extends TestCase
 
     public function test_new_staff_login_invalidates_previous_session_but_failed_login_does_not(): void
     {
-        $user = $this->account('superadmin');
+        $user = $this->account('staff');
         $credentials = ['email' => $user->email, 'password' => self::PASSWORD];
         $this->post(route('login.check'), $credentials)->assertRedirect(route('dashboard'));
         $first = session('account.session_token');
@@ -191,6 +191,26 @@ class AccountManagementTest extends TestCase
         $component->set('demographicsForm.sexId', $newSex)->call('save')->assertHasNoErrors();
         $this->assertSame($newSex, $client->demographic()->firstOrFail()->sex_id);
         $this->assertSame('NCR', $client->address()->firstOrFail()->region_name);
+    }
+
+    public function test_missing_document_does_not_flash_a_page_error_on_application_subpages(): void
+    {
+        $owner = $this->account();
+        $client = Client::create(['user_id' => $owner->id, 'date_of_birth' => '1980-01-01', 'contact_number' => '09123456789']);
+        $beneficiary = Beneficiary::create(['first_name' => 'Test', 'last_name' => 'Beneficiary', 'sex_id' => 1, 'religion_id' => 1,
+            'date_of_birth' => '1960-01-01', 'date_of_death' => '2026-01-01', 'created_by' => $owner->id]);
+        $application = Application::create(['client_uuid' => $client->uuid, 'beneficiary_uuid' => $beneficiary->uuid, 'relationship_id' => 1]);
+        DocumentRequirement::create(['name' => 'Death Certificate', 'source' => 'Registry']);
+        $staff = $this->account('CSWDO');
+        $staff->assignRole(Role::findOrCreate('rejection-officer', 'web'));
+        $this->signIn($staff);
+        config(['services.fileserver.enable.get' => false]);
+
+        // fetch() defaults to */*, rather than requesting JSON.
+        $this->get(route('application.image.get', [$application, 'death_certificate']), ['Accept' => '*/*'])
+            ->assertNotFound()->assertSessionMissing('error');
+        $this->get(route('application.close', $application))->assertOk()->assertSessionMissing('error')
+            ->assertDontSee('The page you requested could not be found.');
     }
 
     public function test_image_popup_renders_the_existing_view_and_keeps_access_checks(): void
@@ -496,8 +516,8 @@ class AccountManagementTest extends TestCase
     {
         $admin = $this->account('superadmin');
         $this->signIn($admin);
-        $data = [...$this->profile($this->account('staff')), 'email' => Str::uuid().'@example.org', 'password' => self::PASSWORD, 'confirmPassword' => self::PASSWORD];
-        $new = app(UserService::class)->store($data);
+        $new = $this->account('staff');
+        $new->update(['password_change_required' => true]);
         $this->assertNull($new->citizen_uuid);
         $this->assertTrue($new->password_change_required);
         auth()->logout();
@@ -547,14 +567,14 @@ class AccountManagementTest extends TestCase
         $other = $this->account('superadmin');
         $other->createToken('test');
         $this->signIn($admin);
-        app(UserService::class)->update([...$this->profile($other), 'isActive' => false], $other);
+        app(UserService::class)->update(['isActive' => false, 'mfa_code' => \OTPHP\TOTP::create('JBSWY3DPEHPK3PXP')->at(now()->timestamp)], $other);
         $this->assertFalse($other->fresh()->is_active);
         $this->assertSame(0, $other->tokens()->count());
-        app(UserService::class)->update($this->profile($other), $other->fresh());
+        app(UserService::class)->update(['isActive' => true], $other->fresh());
         $this->signIn($other->fresh());
         $this->get('/dashboard')->assertOk();
         $this->expectException(HttpException::class);
-        app(UserService::class)->update([...$this->profile($other), 'isActive' => false], $other->fresh());
+        app(UserService::class)->update(['isActive' => false], $other->fresh());
     }
 
     public function test_citizen_cannot_be_promoted_and_admin_seeder_rejects_citizen_collision(): void
@@ -570,6 +590,7 @@ class AccountManagementTest extends TestCase
             $this->assertSame(403, $e->getStatusCode());
         }
         $citizen->update(['email' => 'superadmin@example.org']);
+        config(['app.superadmin_email_address' => 'superadmin@example.org']);
         try {
             $this->seed(AdminSeeder::class);
             $this->fail('Seeder converted a citizen.');
@@ -635,7 +656,7 @@ class AccountManagementTest extends TestCase
         $admin = $this->account('superadmin');
         $citizen = $this->account(null, false);
         $this->signIn($admin);
-        app(UserService::class)->update($this->profile($citizen), $citizen);
+        app(UserService::class)->update(['isActive' => true], $citizen);
         $this->signIn($citizen->fresh());
         $client = app(ClientService::class)->store(['dateOfBirth' => '1980-01-01', 'contactNumber' => '09123456789']);
         $this->assertSame($citizen->id, $client->user_id);
@@ -692,14 +713,13 @@ class AccountManagementTest extends TestCase
         $this->signIn($this->account('superadmin'));
         $email = Str::uuid().'@example.org';
         $this->post('/_test/accounts', ['first_name' => 'Created', 'last_name' => 'Staff', 'email' => $email,
-            'contact_number' => '09123456789', 'password' => self::PASSWORD, 'password_confirmation' => self::PASSWORD])->assertRedirect();
-        $staff = User::where('email', $email)->firstOrFail();
-        $this->assertNull($staff->citizen_uuid);
-        $this->assertTrue($staff->password_change_required);
-        $this->post('/_test/accounts/'.$staff->id, ['first_name' => 'Corrected', 'last_name' => 'Staff', 'contact_number' => '09123456789'])->assertRedirect();
-        $this->assertSame('Corrected', $staff->fresh()->first_name);
-        $this->postJson('/_test/accounts/'.$staff->id, ['first_name' => 'Forbidden', 'last_name' => 'Staff', 'contact_number' => '09123456789',
-            'password' => 'Replacement 9!', 'password_confirmation' => 'Replacement 9!'])->assertUnprocessable();
+            'contact_number' => '09123456789', 'password' => self::PASSWORD, 'password_confirmation' => self::PASSWORD])->assertForbidden();
+        $this->assertFalse(User::where('email', $email)->exists());
+        $staff = $this->account('staff');
+        $this->postJson('/_test/accounts/'.$staff->id, ['first_name' => 'Forbidden', 'contact_number' => '09123456789'])
+            ->assertUnprocessable();
+        $this->assertNotSame('Forbidden', $staff->fresh()->first_name);
+        $this->postJson('/_test/accounts/'.$staff->id, ['password' => 'Replacement 9!', 'password_confirmation' => 'Replacement 9!'])->assertUnprocessable();
         $this->assertTrue(Hash::check(self::PASSWORD, $staff->fresh()->password));
     }
 
