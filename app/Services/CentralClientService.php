@@ -110,7 +110,7 @@ class CentralClientService
                     'middle_name' => $citizenData[0]['middlename'],
                     'last_name' => $citizenData[0]['lastname'],
                     'suffix' => $citizenData[0]['suffix'],
-                    'email' => $citizenData[0]['email'],
+                    // 'email' => $citizenData[0]['email'],
                     'contact_number' => $citizenData[0]['contact_number'],
                 ]);
 
