@@ -1,0 +1,6 @@
+body { font: 16px/1.6 Arial, sans-serif; color: #222; margin: 2rem; }
+main { max-width: 760px; margin: auto; }
+.code { font: bold 18px/1.8 monospace; overflow-wrap: anywhere; border: 1px solid #777; padding: 1rem; }
+nav { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 2rem; }
+button { cursor: pointer; padding: .6rem 1rem; }
+@media print { nav { display: none; } body { margin: 0; } }

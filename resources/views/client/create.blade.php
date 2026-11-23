@@ -1,5 +1,8 @@
 @extends('layouts.app')
 @section('content')
+    @can('view-walk-in-claim')
+        <div class="alert alert-info">Already applied at CSWDO in person? <a href="{{ route('walk-in.claim') }}">Link your walk-in records</a> using your private claim code.</div>
+    @endcan
 	<div class="d-flex flex-column gap-6">
 		{{-- start::Documents --}}
 		<x-card>
