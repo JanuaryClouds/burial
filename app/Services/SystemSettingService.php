@@ -16,6 +16,7 @@ class SystemSettingService
         abort_unless($actor->hasRole('superadmin'), 403);
         $validated = Validator::make($data, [
             'maintenance_mode' => ['sometimes', 'boolean'],
+            'walk_in_intake_enabled' => ['sometimes', 'required', 'boolean'],
             'claimant_change_limit' => ['sometimes', 'required', 'integer', 'min:0', 'max:4294967295'],
             'social_welfare_officer' => ['sometimes', 'required', 'string', 'max:255'],
             'dept_head' => ['sometimes', 'required', 'string', 'max:255'],

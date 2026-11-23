@@ -20,13 +20,19 @@ class SystemSetting extends Model
     protected $fillable = [
         'uuid',
         'maintenance_mode',
+        'walk_in_intake_enabled',
         'claimant_change_limit',
         'social_welfare_officer',
         'dept_head',
         'department_email',
     ];
 
-    protected $casts = ['claimant_change_limit' => 'integer'];
+    protected $casts = ['claimant_change_limit' => 'integer', 'walk_in_intake_enabled' => 'boolean'];
+
+    public static function walkInIntakeEnabled(): bool
+    {
+        return (bool) self::query()->first()?->walk_in_intake_enabled;
+    }
 
     public static function exceptAttributes()
     {

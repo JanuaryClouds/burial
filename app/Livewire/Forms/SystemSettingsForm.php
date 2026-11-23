@@ -8,6 +8,9 @@ use Livewire\Form;
 
 class SystemSettingsForm extends Form
 {
+    #[Validate('required|boolean')]
+    public bool $walkInIntakeEnabled = false;
+
     #[Validate('sometimes|')]
     public ?bool $maintenanceMode;
 
@@ -23,9 +26,10 @@ class SystemSettingsForm extends Form
     #[Validate('required|email|max:255')]
     public ?string $deptEmail;
 
-    public function setSettings(?SystemSetting $settings)
+    public function setSettings(SystemSetting $settings): void
     {
-        $this->claimantChangeLimit = $settings?->claimant_change_limit ?? 1;
+        $this->walkInIntakeEnabled = (bool) $settings->walk_in_intake_enabled;
+        $this->claimantChangeLimit = $settings->claimant_change_limit;
         $this->maintenanceMode = $settings->maintenance_mode;
         $this->socialWelfareOfficer = $settings->social_welfare_officer;
         $this->deptHead = $settings->dept_head;

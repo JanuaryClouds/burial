@@ -1,4 +1,8 @@
 <div class="d-flex flex-column gap-2">
+    <x-form.check wire:model="form.walkInIntakeEnabled" name="walkInIntakeEnabled"
+        :checked="$form->walkInIntakeEnabled" label="Enable Walk-in Intake" />
+    <p class="text-muted">Allow authorized staff to record walk-in applicants and citizens to link their walk-in records. When disabled, walk-in pages and actions are unavailable. Existing application records and processing history are preserved.</p>
+    @error('form.walkInIntakeEnabled') <p class="text-danger">{{ $message }}</p> @enderror
     <label class="form-label" for="claimant-limit">Claimant changes allowed per application (0 disables changes)</label>
     <input id="claimant-limit" class="form-control" type="number" min="0" step="1" wire:model="form.claimantChangeLimit">
     @error('form.claimantChangeLimit') <p class="text-danger">{{ $message }}</p> @enderror

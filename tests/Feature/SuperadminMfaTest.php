@@ -35,6 +35,30 @@ class SuperadminMfaTest extends TestCase
 {
     private ?string $mysqlDatabase = null;
 
+    public function test_walk_in_setting_defaults_disabled_and_requires_superadmin_with_fresh_code(): void
+    {
+        $admin = $this->account();
+        $this->actingAs($admin);
+        $this->assertFalse(SystemSetting::walkInIntakeEnabled());
+        $this->invalid(fn () => app(SystemSettingService::class)->update(['walk_in_intake_enabled' => true]));
+        Livewire::test(SettingsEdit::class)->set('form.walkInIntakeEnabled', true)->set('mfaCode', $this->code())->call('save')->assertHasNoErrors();
+        $this->assertTrue(SystemSetting::walkInIntakeEnabled());
+        $this->travel(30)->seconds();
+        Livewire::test(SettingsEdit::class)->set('form.walkInIntakeEnabled', false)->set('mfaCode', $this->code())->call('save')->assertHasNoErrors();
+        $this->assertFalse(SystemSetting::walkInIntakeEnabled());
+        $staff = $this->account('CSWDO');
+        $this->actingAs($staff);
+        $this->getJson(route('system.settings'))->assertForbidden();
+        Livewire::test(SettingsEdit::class)->assertForbidden();
+        try {
+            app(SystemSettingService::class)->update(['walk_in_intake_enabled' => true, 'mfa_code' => '123456']);
+            $this->fail('A staff account enabled walk-in intake.');
+        } catch (HttpException $exception) {
+            $this->assertSame(403, $exception->getStatusCode());
+        }
+        $this->assertFalse(SystemSetting::walkInIntakeEnabled());
+    }
+
     private const PASSWORD = 'Mfa Test Password 9!';
 
     private const SECRET = 'JBSWY3DPEHPK3PXP';

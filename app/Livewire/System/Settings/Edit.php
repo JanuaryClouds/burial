@@ -21,9 +21,14 @@ class Edit extends Component
 
     public string $mfaCode = '';
 
+    public function boot(): void
+    {
+        abort_unless(auth()->user()?->hasRole('superadmin'), 403);
+    }
+
     public function mount()
     {
-        $this->settings = SystemSetting::first();
+        $this->settings = SystemSetting::firstOrFail();
 
         $this->form->setSettings($this->settings);
     }
@@ -48,6 +53,7 @@ class Edit extends Component
             try {
                 app(SystemSettingService::class)->update([
                     'maintenance_mode' => $this->form->maintenanceMode,
+                    'walk_in_intake_enabled' => $this->form->walkInIntakeEnabled,
                     'claimant_change_limit' => $this->form->claimantChangeLimit,
                     'social_welfare_officer' => $this->form->socialWelfareOfficer,
                     'dept_head' => $this->form->deptHead,
