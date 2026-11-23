@@ -43,6 +43,7 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(MessageSending::class, [OutgoingMailPolicy::class, 'sending']);
         Event::listen(MessageSent::class, [OutgoingMailPolicy::class, 'sent']);
         RateLimiter::for('password-reset', fn ($request) => Limit::perMinute(5)->by((string) $request->ip()));
+        RateLimiter::for('walk-in-claim', fn ($request) => Limit::perMinute(5)->by('walk-in-claim:'.$request->user()?->id));
         RateLimiter::for('mail-retry', fn ($request) => Limit::perMinute(5)->by((string) $request->user()?->id));
         Model::preventLazyLoading(! app()->isProduction());
         Livewire::addPersistentMiddleware([CheckUserIfActive::class, RoleMiddleware::class]);

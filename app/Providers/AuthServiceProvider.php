@@ -11,6 +11,7 @@ use App\Models\Interview;
 use App\Models\Recommendation;
 use App\Models\Referral;
 use App\Models\Rejection;
+use App\Models\SystemSetting;
 use App\Models\User;
 use App\Models\WorkflowHistory;
 use App\Policies\AssessmentPolicy;
@@ -62,5 +63,12 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('view-record-index', fn (User $user) => ! $user->isInternal() || $user->hasOfficeAccess());
         Gate::define('view-reports', fn (User $user) => $user->canOfficeAction('View Report') || $user->canOfficeAction('View Any Report'));
         Gate::define('create-reports', fn (User $user) => $user->canOfficeAction('Create Report'));
+        Gate::define('walk-in-enabled', fn (User $user) => SystemSetting::walkInIntakeEnabled());
+        Gate::define('walk-in-intake', fn (User $user) => SystemSetting::walkInIntakeEnabled() && $user->canOfficeAction('Create Walk-in Intake'));
+        Gate::define('view-walk-in-claim', fn (User $user) => SystemSetting::walkInIntakeEnabled() && app(AccountAccess::class)->isCitizen($user)
+            && app(AccountAccess::class)->isActive($user));
+        Gate::define('claim-walk-in', fn (User $user) => SystemSetting::walkInIntakeEnabled() && app(AccountAccess::class)->isCitizen($user)
+            && app(AccountAccess::class)->isActive($user)
+            && session('citizen.sso_uuid') === $user->citizen_uuid);
     }
 }
