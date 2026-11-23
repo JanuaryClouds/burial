@@ -74,7 +74,7 @@ class ReferralController extends Controller
                 $ip = request()->ip();
                 $browser = request()->header('User-Agent');
 
-                if ($client->user->citizen_uuid) {
+                if ($client->user?->citizen_uuid) {
                     $this->notificationServices->send(
                         $client->user->citizen_uuid,
                         'referral',

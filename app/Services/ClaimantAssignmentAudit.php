@@ -31,7 +31,13 @@ class ClaimantAssignmentAudit
         foreach (DB::table('assessments')->select($assessmentKey)->groupBy($assessmentKey)->havingRaw('COUNT(*) > 1')->pluck($assessmentKey) as $uuid) {
             $errors[] = "Application/assignment {$uuid} has multiple assessments; resolve before backfill.";
         }
-        if (DB::table('applications as a')->leftJoin('clients as c', 'c.uuid', '=', 'a.client_uuid')->leftJoin('users as u', 'u.id', '=', 'c.user_id')->whereNull('u.id')->exists()) {
+        $missingAccount = DB::table('applications as a')->leftJoin('clients as c', 'c.uuid', '=', 'a.client_uuid')
+            ->leftJoin('users as u', 'u.id', '=', 'c.user_id')->whereNull('u.id');
+        if (Schema::hasTable('walk_in_intakes')) {
+            $missingAccount->whereNotExists(fn ($query) => $query->selectRaw('1')->from('walk_in_intakes as w')
+                ->whereColumn('w.uuid', 'c.walk_in_intake_uuid')->whereColumn('w.application_uuid', 'a.uuid')->whereNull('c.user_id'));
+        }
+        if ($missingAccount->exists()) {
             $errors[] = 'An application has no valid client account.';
         }
         foreach (['assessments', 'recommendations'] as $table) {

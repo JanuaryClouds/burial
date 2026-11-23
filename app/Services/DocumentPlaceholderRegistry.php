@@ -23,7 +23,7 @@ class DocumentPlaceholderRegistry
                             'fullname' => $model?->fullname(),
                             'address' => $model?->fullAddress(),
                             'date_of_birth' => $this->date($model?->date_of_birth),
-                            default => $person === 'client' ? $model?->user?->{$field} : $model?->{$field},
+                            default => $person === 'client' ? $model?->identity($field) : $model?->{$field},
                         };
                     },
                 ];

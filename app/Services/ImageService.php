@@ -7,7 +7,9 @@ use App\Models\ApplicationDocumentFile;
 use App\Models\DocumentRequirement;
 use App\Services\Auth\AccountAccess;
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Intervention\Image\Drivers\Gd\Driver;
@@ -23,7 +25,8 @@ class ImageService
 
     public function __construct()
     {
-        $this->mock = (bool) config('services.fileserver.mock');
+        $this->mock = (bool) config('services.fileserver.mock')
+            || (app()->isLocal() && ! config('services.fileserver.enable.post'));
         if ($this->mock && ! app()->environment('local', 'testing')) {
             throw new RuntimeException('Mock fileserver is only available locally or in tests.');
         }
@@ -64,7 +67,7 @@ class ImageService
         return now()->format('Ymd').$secret;
     }
 
-    private function destination(): string
+    public function destination(): string
     {
         return $this->mock ? 'mock' : 'remote';
     }
@@ -89,7 +92,7 @@ class ImageService
 
     public function getDocument(Application $application, DocumentRequirement $document): ?string
     {
-        if (! config('services.fileserver.enable.get')) {
+        if (! config('services.fileserver.enable.get') && ! ($this->mock && app()->isLocal())) {
             return null;
         }
         $reference = $this->reference($application, $document)->first();
@@ -112,9 +115,25 @@ class ImageService
         return true;
     }
 
+    /** @return array{storage: string, folder: string, file_name: string} */
+    public function stageWalkInDocument(DocumentRequirement $document, UploadedFile $file): array
+    {
+        Gate::authorize('walk-in-intake');
+        if (! config('services.fileserver.enable.post') && ! ($this->mock && app()->isLocal())) {
+            throw new RuntimeException('Document uploads must be enabled before submitting a walk-in application.');
+        }
+
+        $location = $this->upload('walk-in-'.Str::uuid(), $file, $document->storageFolder());
+        if ($location === null) {
+            throw new RuntimeException('The required document was not uploaded.');
+        }
+
+        return $location;
+    }
+
     public function get(string $filename, string $folder = ''): ?string
     {
-        if (! config('services.fileserver.enable.get')) {
+        if (! config('services.fileserver.enable.get') && ! ($this->mock && app()->isLocal())) {
             return null;
         }
         $this->validateLocation($filename, $folder);
@@ -144,16 +163,16 @@ class ImageService
         }
     }
 
-    private function upload(string $filename, $file, string $folder, ?Application $application = null, ?DocumentRequirement $document = null): void
+    private function upload(string $filename, $file, string $folder, ?Application $application = null, ?DocumentRequirement $document = null): ?array
     {
         app(AccountAccess::class)->assertWritable();
         app(ImageUploadValidator::class)->validate($file);
-        if (! config('services.fileserver.enable.post')) {
+        if (! config('services.fileserver.enable.post') && ! ($this->mock && app()->isLocal())) {
             activity()->causedBy(Auth::user())
                 ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent'), 'filename' => $filename])
                 ->log('File upload service skipped');
 
-            return;
+            return null;
         }
         if (! $file->isValid() || ! in_array($file->getMimeType(), ['image/jpeg', 'image/png', 'image/webp'], true)) {
             throw new RuntimeException('Invalid image file.');
@@ -194,5 +213,7 @@ class ImageService
                 'storage' => $this->destination(), 'folder' => $storedFolder, 'file_name' => $storedName,
             ]);
         }
+
+        return ['storage' => $this->destination(), 'folder' => $storedFolder, 'file_name' => $storedName];
     }
 }

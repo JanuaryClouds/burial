@@ -32,6 +32,9 @@ try {
     }
     $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
     $method = $_SERVER['REQUEST_METHOD'];
+    if ($path === '/health' && $method === 'GET') {
+        respond(200, ['status' => 'success', 'service' => 'burial-fileserver-mock']);
+    }
     if ($path !== '/apiburial/' || ! in_array($method, ['GET', 'POST'], true)) {
         respond(404, ['status' => 'error', 'message' => 'Endpoint not found.']);
     }

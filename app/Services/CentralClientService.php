@@ -87,12 +87,32 @@ class CentralClientService
         }
         $userEmail = $user?->email ?? '';
         if (config('services.portal.users.enable.get')) {
-            if (! Str::endsWith($userEmail, [
+            if (! (app()->environment('local', 'testing') && config('services.portal.users.mock') && Str::endsWith($userEmail, [
                 '@example.com',
                 '@example.org',
                 '@example.net',
-            ])) {
+            ]))) {
                 $citizenData = $this->fetchFromPortal($key, $value);
+                $record = $citizenData[0] ?? [];
+                if (isset($record['user_id']) && $record['user_id'] !== $value) {
+                    return null;
+                }
+                if (isset($record['email']) && User::where('email', $record['email'])->when($user, fn ($query) => $query->whereKeyNot($user->id))->exists()) {
+                    return null;
+                }
+                foreach (['user_id', 'firstname', 'lastname', 'email', 'contact_number'] as $field) {
+                    if (! is_string($record[$field] ?? null) || trim($record[$field]) === '') {
+                        throw new RuntimeException('The Portal returned incomplete account information.');
+                    }
+                }
+                foreach (['middlename', 'suffix'] as $field) {
+                    if (isset($record[$field]) && ! is_string($record[$field])) {
+                        throw new RuntimeException('The Portal returned invalid account information.');
+                    }
+                }
+                if ($record['user_id'] !== $value || ($user && $user->email !== $record['email'])) {
+                    return null;
+                }
             }
 
             if (! empty($citizenData) && $remember) {
@@ -107,9 +127,9 @@ class CentralClientService
                 }
                 $user->fill([
                     'first_name' => $citizenData[0]['firstname'],
-                    'middle_name' => $citizenData[0]['middlename'],
+                    'middle_name' => $citizenData[0]['middlename'] ?? null,
                     'last_name' => $citizenData[0]['lastname'],
-                    'suffix' => $citizenData[0]['suffix'],
+                    'suffix' => $citizenData[0]['suffix'] ?? null,
                     // 'email' => $citizenData[0]['email'],
                     'contact_number' => $citizenData[0]['contact_number'],
                 ]);

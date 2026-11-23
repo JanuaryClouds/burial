@@ -343,10 +343,10 @@ class ClientService
                         'id' => Str::uuid(),
                         'client_id' => $client->id,
                         'burial_assistance_id' => $burialAssistance->id,
-                        'first_name' => $client->user?->first_name,
-                        'middle_name' => $client->user?->middle_name ?? null,
-                        'last_name' => $client->user?->last_name,
-                        'suffix' => $client->user?->suffix ?? null,
+                        'first_name' => $client->identity('first_name'),
+                        'middle_name' => $client->identity('middle_name'),
+                        'last_name' => $client->identity('last_name'),
+                        'suffix' => $client->identity('suffix'),
                         'date_of_birth' => $client->date_of_birth,
                         'address' => $client->house_no.' '.$client->street,
                         'barangay_id' => $client->barangay_id,
@@ -430,7 +430,7 @@ class ClientService
                 ],
                 [
                     '13. PhilHealth Number' => $client->socialInfo?->philhealth ?? 'N/A',
-                    '14. Contact Number' => $client->user?->contact_number ?? 'N/A',
+                    '14. Contact Number' => $client->contact_number ?? 'N/A',
                 ],
             ],
             'beneficiary' => [

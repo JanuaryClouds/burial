@@ -155,6 +155,8 @@ class CitizenAccessController extends Controller
             }
         }
 
+        session(['citizen.sso_uuid' => $user->citizen_uuid]);
+
         $redirect = ! $user->is_active || $user->clients()->exists() ? route('dashboard') : route('client.create');
 
         return redirect()->to($redirect);

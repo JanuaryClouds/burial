@@ -10,6 +10,7 @@ class PermissionSeeder extends Seeder
     public function run(): void
     {
         $basePermissions = array_merge(
+            ['Create Walk-in Intake'],
             $this->interviewPermissions(),
             $this->assessmentPermissions(),
             $this->recommendationPermissions(),

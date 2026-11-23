@@ -50,7 +50,8 @@ class ChangeClaimant extends Component
         $this->application->loadMissing('client.user');
         $this->authorize('changeClaimant', $this->application);
         // Names are encrypted. Search after decryption, rather than SQL LIKE on ciphertext.
-        $candidates = trim($this->search) === '' ? collect() : Client::unused()->where('user_id', '!=', $this->application->client->user_id)
+        $candidates = trim($this->search) === '' ? collect() : Client::unused()
+            ->when($this->application->client->user_id !== null, fn ($query) => $query->where('user_id', '!=', $this->application->client->user_id))
             ->whereHas('user')->with('user')->orderByDesc('created_at')->lazy(100)
             ->filter(fn ($client) => str_contains(
                 mb_strtolower($client->fullname().' '.$client->user->email.' '.$client->user_id), mb_strtolower(trim($this->search))

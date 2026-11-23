@@ -108,6 +108,13 @@ class MockFileserverTest extends TestCase
         $this->assertSame(404, $this->client->post('/upload')->getStatusCode());
     }
 
+    public function test_health_endpoint_identifies_running_mock_without_credentials_or_storage_details(): void
+    {
+        $response = $this->client->get('/health');
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame(['status' => 'success', 'service' => 'burial-fileserver-mock'], json_decode((string) $response->getBody(), true));
+    }
+
     public function test_json_upload_folders_listing_view_and_deletion(): void
     {
         $params = ['token' => now()->format('Ymd').'local-test-secret', 'folder' => 'deathcertificates'];
@@ -184,6 +191,22 @@ class MockFileserverTest extends TestCase
         $this->assertSame(IMAGETYPE_JPEG, getimagesizefromstring($jpeg)[2]);
         $this->assertSame(app(ImagePayload::class)->decrypt($stored), $jpeg);
         $this->assertNull($service->get('missing.jpg.enc'));
+    }
+
+    public function test_local_service_uses_real_mock_when_primary_upload_and_download_are_disabled(): void
+    {
+        app()->instance('env', 'local');
+        config(['services.fileserver.mock' => false, 'services.fileserver.enable.post' => false, 'services.fileserver.enable.get' => false]);
+        $actor = new User;
+        auth()->setUser($actor);
+        $access = \Mockery::mock(AccountAccess::class);
+        $access->shouldReceive('assertWritable')->once()->andReturn($actor);
+        $this->app->instance(AccountAccess::class, $access);
+        $service = new ImageService;
+        $this->assertSame('mock', $service->destination());
+        $this->assertTrue($service->post('local-fallback', UploadedFile::fake()->image('sample.png', 20, 20)));
+        $jpeg = $service->get('local-fallback.jpg.enc');
+        $this->assertSame(IMAGETYPE_JPEG, getimagesizefromstring($jpeg)[2]);
     }
 
     public function test_document_uploads_share_requirement_folders_and_survive_requirement_renaming(): void

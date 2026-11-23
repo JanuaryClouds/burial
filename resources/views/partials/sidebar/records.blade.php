@@ -59,6 +59,9 @@
 ])
 
 @endcan
+@can('view-walk-in-claim')
+    @include('components.sidebar.link', ['route' => route('walk-in.claim'), 'activeLink' => 'walk-in.claim', 'icon' => 'some-files', 'iconPathsCount' => 2, 'label' => 'Link My Walk-in Records'])
+@endcan
 @can('search-applications')
     @cannot('office-access')
         @include('components.sidebar.link', ['route' => route('application.search'), 'activeLink' => 'application.search', 'icon' => 'scan-barcode', 'iconPathsCount' => 8, 'label' => 'Search Application'])

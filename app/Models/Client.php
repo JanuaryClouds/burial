@@ -20,6 +20,21 @@ class Client extends Model
 
     protected $table = 'clients';
 
+    protected $casts = ['identity_snapshot' => 'encrypted:array'];
+
+    /** @return BelongsTo<WalkInIntake, $this> */
+    public function walkInIntake(): BelongsTo
+    {
+        return $this->belongsTo(WalkInIntake::class, 'walk_in_intake_uuid', 'uuid');
+    }
+
+    public function identity(string $field): ?string
+    {
+        return $this->identity_snapshot !== null
+            ? ($this->identity_snapshot[$field] ?? null)
+            : $this->user?->{$field};
+    }
+
     public function claimantAssignments(): HasMany
     {
         return $this->hasMany(ApplicationClaimantAssignment::class, 'client_uuid', 'uuid');
@@ -180,16 +195,10 @@ class Client extends Model
      */
     public function fullname(): string
     {
-        $user = $this->user;
-
-        if (! $user) {
-            return '';
-        }
-
-        return $user->first_name.' '.
-            ($user->middle_name ? Str::limit($user->middle_name, 1, '.').' ' : '').
-            $user->last_name.
-            ($user->suffix ? ' '.$user->suffix : '');
+        return trim($this->identity('first_name').' '.
+            ($this->identity('middle_name') ? Str::limit($this->identity('middle_name'), 1, '.').' ' : '').
+            $this->identity('last_name').
+            ($this->identity('suffix') ? ' '.$this->identity('suffix') : ''));
     }
 
     /**

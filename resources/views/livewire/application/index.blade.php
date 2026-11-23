@@ -26,6 +26,13 @@
 						Scan Barcode
 					</a>
 				@endcan
+
+                @can('walk-in-intake')
+                    <a href="{{ route('walk-in.index') }}" class="btn btn-primary">
+                        <x-icon.font-awesome class="fa-person-walking" />
+                        Walk-in Intake
+                    </a>
+                @endcan
 				@if (! auth()->user()->isInternal())
 					<a href="{{ route('application.create') }}"
 						class="btn btn-primary">

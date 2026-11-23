@@ -212,7 +212,10 @@ class Beneficiary extends Model
             'religion',
         ])
             ->when($userId, function ($query) use ($userId) {
-                $query->where('created_by', $userId);
+                $query->where(function ($query) use ($userId) {
+                    $query->where('created_by', $userId)
+                        ->orWhereHas('application.claimantAssignments.client', fn ($client) => $client->where('user_id', $userId));
+                });
             })
             ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
                 $query->whereBetween('created_at', [$startDate, $endDate]);

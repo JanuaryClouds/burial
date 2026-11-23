@@ -6,6 +6,7 @@
 <h1>Status submission loader checks</h1>
 <pre id="results">Running…</pre>
 <div id="status-form" data-status-loading="save submit markAsDone"></div>
+<div id="intake-form" data-status-loading="save submit" data-status-loading-dialog="true"></div>
 <script type="module">
 const results = [];
 const check = (name, condition) => {
@@ -49,6 +50,25 @@ try {
     check('Successful redirects retain the overlay during navigation', visible);
     document.dispatchEvent(new Event('livewire:navigated'));
     check('Completed Livewire navigation clears the overlay', !visible);
+    let popup = null, spinning = false;
+    window.Swal = {
+        fire: options => { popup = { dataset: {} }; options.didOpen(); },
+        getPopup: () => popup,
+        showLoading: () => { spinning = true; },
+        close: () => { popup = null; spinning = false; },
+    };
+    const intake = document.getElementById('intake-form');
+    const draft = start('save', intake);
+    check('Draft review opens a SweetAlert spinner', popup?.dataset.statusSubmitLoading === 'true' && spinning && !visible);
+    draft.success({}); draft.finish();
+    check('Draft completion closes the SweetAlert spinner', popup === null && !spinning);
+    const failedDraft = start('save', intake); failedDraft.finish();
+    check('Failed draft requests close the SweetAlert spinner', popup === null);
+    const unrelatedAlert = start('save', intake);
+    popup = { dataset: {} };
+    unrelatedAlert.finish();
+    check('Completion does not dismiss an unrelated alert', popup !== null);
+    popup = null;
     document.title = 'PASS: Status submission loader';
 } catch (error) {
     if (!results.some(result => !result.passed)) results.push({ name: error.stack, passed: false });

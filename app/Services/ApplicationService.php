@@ -245,6 +245,21 @@ class ApplicationService
         return $pdf->stream($application->tracking_no.'-certificate.pdf');
     }
 
+    public function storeWalkIn(Client $client, Beneficiary $beneficiary, int $relationshipId): Application
+    {
+        app(AccountAccess::class)->assertWritable();
+        Gate::authorize('walk-in-intake');
+        $intake = $client->walkInIntake;
+        abort_unless($intake && ! $intake->application_uuid && $client->user_id === null
+            && $beneficiary->created_by === $intake->encoded_by, 403);
+        app(WalkInIntakeService::class)->authorize($intake);
+        if ($client->isUsed(true) || $beneficiary->application()->exists()) {
+            throw ValidationException::withMessages(['intake' => 'This intake has already been submitted.']);
+        }
+
+        return Application::create(['client_uuid' => $client->uuid, 'beneficiary_uuid' => $beneficiary->uuid, 'relationship_id' => $relationshipId]);
+    }
+
     public function store(Client $client, Beneficiary $beneficiary, ?int $relationshipId = null)
     {
         app(AccountAccess::class)->assertWritable();

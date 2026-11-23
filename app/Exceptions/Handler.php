@@ -23,6 +23,7 @@ class Handler extends ExceptionHandler
         'password',
         'password_confirmation',
         'token',
+        'claim_code',
         'custom_values',
         'customValues',
         'currentPassword',
