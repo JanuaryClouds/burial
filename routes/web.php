@@ -1,11 +1,13 @@
 <?php
 
 use App\Http\Controllers\Auth\InvitationController;
+use App\Http\Controllers\Auth\MfaController;
 use App\Http\Controllers\Auth\PasswordRecoveryController;
 use App\Http\Controllers\Auth\UserController;
 use App\Http\Controllers\CitizenAccessController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExportController;
+use App\Http\Controllers\WalkInIntakeController;
 use App\Http\Middleware\RecoveryPrivacy;
 use Illuminate\Support\Facades\Route;
 
@@ -27,9 +29,9 @@ Route::post('/login/check', [UserController::class, 'login'])
 Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
 Route::middleware(RecoveryPrivacy::class)->group(function () {
-    Route::get('/admin/mfa', [\App\Http\Controllers\Auth\MfaController::class, 'show'])->name('mfa.show')->block(30, 10);
-    Route::post('/admin/mfa', [\App\Http\Controllers\Auth\MfaController::class, 'submit'])->name('mfa.submit')->block(30, 10);
-    Route::match(['get', 'post'], '/profile/mfa', [\App\Http\Controllers\Auth\MfaController::class, 'manage'])
+    Route::get('/admin/mfa', [MfaController::class, 'show'])->name('mfa.show')->block(30, 10);
+    Route::post('/admin/mfa', [MfaController::class, 'submit'])->name('mfa.submit')->block(30, 10);
+    Route::match(['get', 'post'], '/profile/mfa', [MfaController::class, 'manage'])
         ->middleware('auth')->name('mfa.manage')->block(30, 10);
 });
 
