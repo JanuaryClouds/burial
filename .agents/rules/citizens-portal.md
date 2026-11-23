@@ -23,4 +23,4 @@ The TLC Portal is maintained by a separate city LGU team. It owns citizen creden
 
 - [SSO controller](../../app/Http/Controllers/CitizenAccessController.php), [Portal client](../../app/Services/CentralClientService.php), [account classification](../../app/Services/Auth/AccountAccess.php), and [configuration](../../config/services.php).
 - [Deployment environment](../../docs/deployment-environment.md) describes configuration names and capabilities.
-- Current code does not fully enforce these requirements: it can reuse an existing citizen after an empty Portal lookup, does not explicitly reject every immutable-email mismatch, and has fixture-email exceptions to fetching. Error responses also differ by failure path. These are compliance gaps to assess in a separately authorized code change, not exceptions to the intended rules.
+- Portal synchronization rejects incomplete profiles, UUID mismatches, and immutable-email mismatches before establishing the SSO session used for walk-in claiming. Fixture-email shortcuts are restricted to local/testing mock mode. Error responses still differ by failure path.
