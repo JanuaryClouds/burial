@@ -14,6 +14,7 @@ Submitted application images use an external LGU fileserver because shared Hosti
 6. Keep encryption and decryption in the application. Preserve the fileserver encryption key and supported existing payload readers; do not add a plaintext fallback.
 7. Record and reuse the fileserver's returned filename and folder. The remote server may rename files; do not reconstruct its generated names or overwrite saved references with guesses. Keep mock and remote references separate.
 8. If any required document upload fails, preserve the citizen's draft and prevent application submission until all required uploads succeed. Do not create a submitted application with a warning as a substitute. A deliberately skipped upload is not proof of remote storage and cannot satisfy a required upload. Do not automatically retry uploads or silently overwrite documents.
+9. Walk-in submission requires environment-safe storage. In `local`, primary uploads must be disabled and the configured loopback fileserver mock must respond to its health check; images are optional, and provided images use the mock even when primary uploads are disabled. Outside `local`, primary uploads must be enabled, the mock must be disabled and offline, and required document images remain mandatory. Enforce these conditions on the server as well as in the UI. Provided images always require normal validation and successful storage; do not create references for omitted images.
 
 ## Constraints and references
 
