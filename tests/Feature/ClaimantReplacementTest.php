@@ -44,6 +44,8 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Livewire\Livewire;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use Spatie\Activitylog\Models\Activity;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
@@ -151,6 +153,92 @@ class ClaimantReplacementTest extends TestCase
     {
         return app(AssessmentService::class)->store(['expected_assignment_uuid' => $application->current_claimant_assignment_uuid,
             'problem_presented' => 'Funeral costs', 'swa' => 'Needs assistance'], $application->uuid);
+    }
+
+    public function test_excel_histories_preserve_former_claimant_cheque_fields_and_exclude_passwords(): void
+    {
+        $application = $this->application();
+        $this->interview($application);
+        $this->assessment($application);
+        $permission = Permission::findOrCreate('Workflow Releasing', 'web');
+        $workflow = app(WorkflowVersionService::class)->publish(['name' => 'Assistance', 'description' => 'Process', 'stages' => [
+            ['name' => 'Releasing', 'description' => 'Release', 'permission_id' => (string) $permission->id,
+                'custom_fields' => [
+                    ['name' => 'cheque', 'label' => 'Cheque number', 'input_type' => 'text', 'required' => true],
+                    ['name' => 'secret', 'label' => 'Private password', 'input_type' => 'password', 'required' => true],
+                ]],
+        ]]);
+        $type = FuneralAssistanceType::create(['name' => 'Burial', 'description' => 'Burial', 'workflow_uuid' => $workflow->uuid]);
+        $run = app(RecommendationService::class)->store(['workflow_uuid' => $workflow->uuid, 'funeral_assistance_type_uuid' => $type->uuid,
+            'amount_extended' => 1000, 'mode_of_assistance_id' => 1, 'expected_recommendation_uuid' => null,
+            'expected_assignment_uuid' => $application->current_claimant_assignment_uuid], $application->uuid);
+        $stage = $workflow->stages()->firstOrFail();
+        $fields = $stage->customFields->keyBy('name');
+        app(WorkflowHistoryService::class)->store(['recommendation_uuid' => $run->uuid, 'expected_stage_uuid' => null,
+            'to_stage_uuid' => $stage->uuid, 'date_in' => today(), 'date_out' => today(),
+            'custom_values' => [$fields['cheque']->uuid => '000019', $fields['secret']->uuid => 'confidential']]);
+        $replacement = $this->replace($application);
+        $response = $this->get(route('applications.export.all', ['claimant_changes' => 1, 'workflow_history' => 1, 'barangay' => 'Bagumbayan']))->assertDownload();
+        $path = $response->baseResponse->getFile()->getPathname();
+        try {
+            $book = IOFactory::load($path);
+            $history = $book->getSheetByName('Workflow History');
+            $this->assertSame('Cheque number: 000019', $history->getCell('L9')->getValue());
+            $this->assertSame($run->uuid, $history->getCell('D9')->getValue());
+            $this->assertEquals(1, $history->getCell('B9')->getValue());
+            $this->assertSame($replacement->reason, $book->getSheetByName('Claimant Changes')->getCell('H9')->getValue());
+            $this->assertSame($replacement->uuid, $application->fresh()->current_claimant_assignment_uuid);
+        } finally {
+            unlink($path);
+        }
+    }
+
+    public function test_applications_excel_attributes_only_the_current_assessment_to_its_audited_author(): void
+    {
+        $application = $this->application();
+        $this->interview($application);
+        $originalAssessment = $this->assessment($application);
+        $reporter = $this->user('Report Generator');
+        $reporter->assignRole(Role::findOrCreate('superadmin', 'web'));
+        $this->actingAs($reporter);
+        $this->assertSame($this->admin->fullname(), $this->exportedApplicationRow()[2]);
+
+        $replacementClient = $this->draft($this->user('Replacement'));
+        $replacementClient->address->update(['barangay_name' => 'New Barangay']);
+        $this->replace($application, $replacementClient);
+        $row = $this->exportedApplicationRow(['barangay' => 'New Barangay']);
+        $this->assertNull($row[2]);
+        $this->assertSame($replacementClient->fullname(), $row[3]);
+        $this->assertSame('New Barangay', $row[9]);
+        $this->assertStringContainsString('New Barangay', $row[10]);
+        $this->assertSame($replacementClient->contact_number, $row[11]);
+
+        $application->refresh();
+        $this->interview($application);
+        $newAssessment = $this->assessment($application);
+        $this->actingAs($this->admin);
+        $this->assertSame($reporter->fullname(), $this->exportedApplicationRow()[2]);
+
+        activity('success')->causedBy($this->admin)
+            ->withProperties(['details' => ['assessment_uuid' => $newAssessment->uuid]])
+            ->log('Created assessment');
+        $this->assertNull($this->exportedApplicationRow()[2]);
+
+        Activity::query()->where('description', 'Created assessment')
+            ->where('properties->details->assessment_uuid', $newAssessment->uuid)->delete();
+        $this->assertNull($this->exportedApplicationRow()[2]);
+        $this->assertNotNull($originalAssessment->fresh());
+    }
+
+    private function exportedApplicationRow(array $filters = []): array
+    {
+        $response = $this->get(route('applications.export.all', $filters))->assertDownload();
+        $path = $response->baseResponse->getFile()->getPathname();
+        try {
+            return IOFactory::load($path)->getSheet(0)->rangeToArray('A9:P9')[0];
+        } finally {
+            unlink($path);
+        }
     }
 
     public function test_replacement_preserves_history_and_requires_entirely_fresh_processing(): void
