@@ -35,6 +35,7 @@ class Client extends Model
             : $this->user?->{$field};
     }
 
+    /** @return HasMany<ApplicationClaimantAssignment, $this> */
     public function claimantAssignments(): HasMany
     {
         return $this->hasMany(ApplicationClaimantAssignment::class, 'client_uuid', 'uuid');

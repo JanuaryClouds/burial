@@ -18,6 +18,7 @@ class Recommendation extends Model
 
     protected $table = 'recommendations';
 
+    /** @return BelongsTo<ApplicationClaimantAssignment, $this> */
     public function claimantAssignment(): BelongsTo
     {
         return $this->belongsTo(ApplicationClaimantAssignment::class, 'claimant_assignment_uuid', 'uuid');

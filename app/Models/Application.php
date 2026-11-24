@@ -62,6 +62,19 @@ class Application extends Model
     |
     */
 
+    /** @return BelongsTo<ApplicationClaimantAssignment, $this> */
+    public function currentClaimantAssignment(): BelongsTo
+    {
+        return $this->belongsTo(ApplicationClaimantAssignment::class, 'current_claimant_assignment_uuid', 'uuid');
+    }
+
+    /** @return HasOne<WalkInIntake, $this> */
+    public function walkInIntake(): HasOne
+    {
+        return $this->hasOne(WalkInIntake::class, 'application_uuid', 'uuid');
+    }
+
+    /** @return HasMany<ApplicationClaimantAssignment, $this> */
     public function claimantAssignments(): HasMany
     {
         return $this->hasMany(ApplicationClaimantAssignment::class, 'application_uuid', 'uuid');
