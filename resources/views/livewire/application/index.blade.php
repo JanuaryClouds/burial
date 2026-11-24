@@ -33,6 +33,7 @@
                         Walk-in Intake
                     </a>
                 @endcan
+                @include('components.record-export-trigger')
 				@if (! auth()->user()->isInternal())
 					<a href="{{ route('application.create') }}"
 						class="btn btn-primary">
