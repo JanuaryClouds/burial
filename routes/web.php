@@ -63,10 +63,12 @@ Route::middleware(['auth', 'active.check'])
         Route::get('/dashboard', [DashboardController::class, 'index'])
             ->name('dashboard');
 
-        Route::get('/applications/export', [ExportController::class, 'applications'])
-            ->middleware('can:create-reports')
-            ->middleware('throttle:document-generation')
-            ->name('applications.export.all');
+        foreach (['applications', 'clients', 'beneficiaries'] as $report) {
+            Route::get($report.'/export', [ExportController::class, 'download'])
+                ->defaults('report', $report)
+                ->middleware(['can:create-reports', 'throttle:document-generation'])
+                ->name($report.'.export.all');
+        }
 
         require __DIR__.'/application.php';
         Route::prefix('walk-in')->name('walk-in.')->middleware('can:walk-in-enabled')->controller(WalkInIntakeController::class)->group(function () {

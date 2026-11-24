@@ -29,21 +29,25 @@ class ApplicationClaimantAssignment extends Model
         static::deleting(fn () => throw new \LogicException('Claimant assignment history must be preserved.'));
     }
 
+    /** @return BelongsTo<Application, $this> */
     public function application(): BelongsTo
     {
         return $this->belongsTo(Application::class, 'application_uuid', 'uuid');
     }
 
+    /** @return BelongsTo<User, $this> */
     public function assignedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'assigned_by');
     }
 
+    /** @return BelongsTo<Relationship, $this> */
     public function relationship(): BelongsTo
     {
         return $this->belongsTo(Relationship::class);
     }
 
+    /** @return BelongsTo<Client, $this> */
     public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class, 'client_uuid', 'uuid');

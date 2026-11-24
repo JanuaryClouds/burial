@@ -4,10 +4,9 @@
 	crossorigin="anonymous"
 	referrerpolicy="no-referrer"></script>
 
+{{-- Metronic includes Bootstrap. Loading a second copy registers duplicate modal handlers. --}}
 <script nonce="{{ $nonce ?? '' }}"
-	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"
-	integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y"
-	crossorigin="anonymous"></script>
+	src="{{ asset('metronic/plugins/global/plugins.bundle.js') }}"></script>
 
 <script nonce="{{ $nonce ?? '' }}"
 	src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"
@@ -31,9 +30,6 @@
 
 <script nonce="{{ $nonce ?? '' }}"
 	src="{{ asset('metronic/js/scripts.bundle.js') }}"></script>
-<script nonce="{{ $nonce ?? '' }}"
-	src="{{ asset('metronic/plugins/global/plugins.bundle.js') }}"></script>
-
 <script nonce="{{ $nonce ?? '' }}"
 	src="{{ asset('metronic/plugins/custom/datatables/datatables.bundle.js') }}"></script>
 
