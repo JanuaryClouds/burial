@@ -2,153 +2,42 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Client;
-use App\Models\User;
-use Carbon\Carbon;
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use App\Models\FuneralAssistanceType;
+use App\Models\Sex;
+use App\Services\RecordExcelExport;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ExportController extends Controller
 {
-    public function __construct(
-    ) {}
-
-    public function applications()
+    public function download(Request $request, RecordExcelExport $export, string $report): BinaryFileResponse|RedirectResponse|JsonResponse
     {
         $this->authorize('create-reports');
-        $templatePath = storage_path('app/templates/burial-assistances-template.xlsx');
-        $spreadsheet = IOFactory::load($templatePath);
+        $applications = $report === 'applications';
+        $beneficiaries = $report === 'beneficiaries';
+        $filters = $request->validate([
+            'from' => ['nullable', 'date_format:Y-m-d'],
+            'until' => ['nullable', 'date_format:Y-m-d', Rule::when($request->filled('from'), 'after_or_equal:from')],
+            'status' => ['nullable', Rule::in(RecordExcelExport::STATUSES)],
+            'barangay' => ['nullable', 'string', 'max:150'],
+            'assistance' => [Rule::prohibitedIf(! $applications), 'nullable', 'uuid', Rule::exists(FuneralAssistanceType::class, 'uuid')],
+            'sex' => [Rule::prohibitedIf(! $beneficiaries), 'nullable', 'integer', Rule::exists(Sex::class, 'id')],
+            'pwd' => [Rule::prohibitedIf(! $beneficiaries), 'nullable', 'boolean'],
+            'workflow_history' => [Rule::prohibitedIf(! $applications), 'sometimes', 'boolean'],
+            'claimant_changes' => [Rule::prohibitedIf(! $applications), 'sometimes', 'boolean'],
+        ]);
+        $path = $export->generate($report, array_filter($filters, fn ($value) => $value !== null), $request->user());
+        if ($path === null) {
+            $message = 'No records match these export filters.';
 
-        $sheet = $spreadsheet->getActiveSheet();
-        $row = 4;
-
-        $query = Client::with([
-            'claimant',
-            'claimant.cheque',
-            'claimant.barangay',
-            'claimant.processLogs',
-            'claimant.relationship',
-            'claimant.burialAssistance',
-            'claimant.burialAssistance.claimantChanges.oldClaimant',
-            'claimant.burialAssistance.claimantChanges.newClaimant',
-            'beneficiary',
-        ])
-            ->whereHas('claimant');
-
-        $clients = $query->orderBy('tracking_no', 'asc')->get();
-        $users = User::select([
-            'id',
-            'first_name',
-            'middle_name',
-            'last_name',
-            'suffix',
-        ])->get()->keyBy('id');
-
-        foreach ($clients as $client) {
-            $beneficiary = $client->beneficiary;
-            $burialAssistance = $client->claimant->burialAssistance;
-
-            $dob = $beneficiary->date_of_birth ? Carbon::parse($beneficiary->date_of_birth) : null;
-            $dod = $beneficiary->date_of_death ? Carbon::parse($beneficiary->date_of_death) : null;
-            $encoder = $users->get($burialAssistance->encoder);
-            $initialChecker = $users->get($burialAssistance->initial_checker);
-            $age = ($dob && $dod) ? round($dob->diffInYears($dod), 0, PHP_ROUND_HALF_DOWN) : null;
-            $approvedChange = $burialAssistance->claimantChanges->where('status', 'approved')->first();
-            $newClaimant = null;
-            $firstClaimant = $burialAssistance->originalClaimant();
-
-            if ($approvedChange) {
-                $newClaimant = $approvedChange->newClaimant;
-                $firstClaimant = $approvedChange->oldClaimant;
-            }
-
-            $status = $burialAssistance->status;
-            if ($status == 'approved') {
-                $status = 'For Pickup';
-            }
-
-            $sheet->setCellValue("A{$row}", $client->tracking_no);
-            $sheet->setCellValue("B{$row}", $burialAssistance?->application_date);
-            $sheet->setCellValue("C{$row}", $burialAssistance?->swa);
-            $sheet->setCellValue("D{$row}", $encoder ? $encoder->first_name.' '.$encoder->last_name : '');
-            $sheet->setCellValue("E{$row}", $firstClaimant?->last_name);
-            $sheet->setCellValue("F{$row}", $firstClaimant?->first_name);
-            $sheet->setCellValue("G{$row}", $firstClaimant?->middle_name);
-            $sheet->setCellValue("H{$row}", $firstClaimant?->suffix);
-            $sheet->setCellValue("I{$row}", $beneficiary?->last_name);
-            $sheet->setCellValue("J{$row}", $beneficiary?->first_name);
-            $sheet->setCellValue("K{$row}", $beneficiary?->middle_name);
-            $sheet->setCellValue("L{$row}", $beneficiary?->suffix);
-            $sheet->setCellValue("M{$row}", $firstClaimant?->relationship?->name);
-            $sheet->setCellValue("N{$row}", $beneficiary?->date_of_birth);
-            $sheet->setCellValue("O{$row}", $age);
-            $sheet->setCellValue("P{$row}", $beneficiary->sex?->name);
-            $sheet->setCellValue("Q{$row}", $firstClaimant?->barangay?->name);
-            $sheet->setCellValue("R{$row}", $firstClaimant?->fullAddress);
-            $sheet->setCellValue("S{$row}", $burialAssistance?->funeraria);
-            $sheet->setCellValue("T{$row}", $burialAssistance?->amount);
-            $sheet->setCellValue("U{$row}", $beneficiary?->date_of_death);
-            $sheet->setCellValue("V{$row}", $firstClaimant?->contact_number ?? '');
-            // $sheet->setCellValue("W{$row}", $processLogService->getLog($firstClaimant, 1)?->date_out);
-            // $sheet->setCellValue("X{$row}", $processLogService->getLog($firstClaimant, 1)?->date_in);
-            // $sheet->setCellValue("Y{$row}", $processLogService->getLog($firstClaimant, 1)?->extra_data['comments/recommendation'] ?? '');
-            // $sheet->setCellValue("Z{$row}", $processLogService->getLog($firstClaimant, 2)?->date_in);
-            // $sheet->setCellValue("AA{$row}", $processLogService->getLog($firstClaimant, 3)?->extra_data['compiled_documents'] ?? '');
-            // $sheet->setCellValue("AB{$row}", $processLogService->getLog($firstClaimant, 3)?->date_out ?? '');
-            // $sheet->setCellValue("AC{$row}", $processLogService->getLog($firstClaimant, 3)?->date_in ?? '');
-            // $sheet->setCellValue("AD{$row}", $processLogService->getLog($firstClaimant, 4)?->date_out ?? '');
-            // $sheet->setCellValue("AE{$row}", $processLogService->getLog($firstClaimant, 4)?->date_in ?? '');
-            // $sheet->setCellValue("AF{$row}", $processLogService->getLog($firstClaimant, 4)?->extra_data['inputs_and_recommendations'] ?? '');
-            // $sheet->setCellValue("AG{$row}", $processLogService->getLog($firstClaimant, 5)?->date_out ?? '');
-            // $sheet->setCellValue("AH{$row}", $processLogService->getLog($firstClaimant, 5)?->date_in ?? '');
-            // $sheet->setCellValue("AI{$row}", $processLogService->getLog($firstClaimant, 6)?->date_out ?? '');
-            // $sheet->setCellValue("AJ{$row}", $processLogService->getLog($firstClaimant, 6)?->date_in ?? '');
-            // $sheet->setCellValue("AK{$row}", $processLogService->getLog($firstClaimant, 7)?->date_out ?? '');
-            // $sheet->setCellValue("AL{$row}", $processLogService->getLog($firstClaimant, 7)?->date_in ?? '');
-            // $sheet->setCellValue("AM{$row}", $processLogService->getLog($firstClaimant, 8)?->date_in ?? '');
-            // $sheet->setCellValue("AN{$row}", $processLogService->getLog($firstClaimant, 9)?->date_in ?? '');
-            // $sheet->setCellValue("AO{$row}", $processLogService->getLog($firstClaimant, 9)?->extra_data['OBR']['oBR_number'] ?? '');
-            // $sheet->setCellValue("AP{$row}", $processLogService->getLog($firstClaimant, 9)?->extra_data['OBR']['date'] ?? '');
-            // $sheet->setCellValue("AQ{$row}", $processLogService->getLog($firstClaimant, 10)?->date_in ?? '');
-            // $sheet->setCellValue("AR{$row}", $processLogService->getLog($firstClaimant, 11)?->date_in ?? '');
-            // $sheet->setCellValue("AS{$row}", $processLogService->getLog($firstClaimant, 11)?->extra_data['cheque_number'] ?? ''); // does not work
-            // $sheet->setCellValue("AT{$row}", $processLogService->getLog($firstClaimant, 12)?->extra_data['date_issued'] ?? '');
-            // $sheet->setCellValue("AU{$row}", $processLogService->getLog($firstClaimant, 13)?->date_in ?? '');
-            // Change of Claimants start here if it exists
-            if ($approvedChange && $newClaimant) {
-                $sheet->setCellValue("AV{$row}", $newClaimant->last_name);
-                $sheet->setCellValue("AW{$row}", $newClaimant->first_name);
-                $sheet->setCellValue("AX{$row}", $newClaimant->middle_name);
-                $sheet->setCellValue("AY{$row}", $newClaimant->suffix);
-                $sheet->setCellValue("AZ{$row}", $approvedChange->reason_for_change);
-                // $sheet->setCellValue("BA{$row}", $processLogService->getLog($newClaimant, 4)?->date_out ?? '');
-                // $sheet->setCellValue("BB{$row}", $processLogService->getLog($newClaimant, 4)?->date_in ?? '');
-                // $sheet->setCellValue("BC{$row}", $processLogService->getLog($newClaimant, 4)?->extra_data['inputs_and_recommendations'] ?? '');
-                // $sheet->setCellValue("BD{$row}", $processLogService->getLog($newClaimant, 5)?->date_out ?? '');
-                // $sheet->setCellValue("BE{$row}", $processLogService->getLog($newClaimant, 5)?->date_in ?? '');
-                // $sheet->setCellValue("BF{$row}", $processLogService->getLog($newClaimant, 6)?->date_out ?? '');
-                // $sheet->setCellValue("BG{$row}", $processLogService->getLog($newClaimant, 6)?->date_in ?? '');
-                // $sheet->setCellValue("BH{$row}", $processLogService->getLog($newClaimant, 7)?->date_out ?? '');
-                // $sheet->setCellValue("BI{$row}", $processLogService->getLog($newClaimant, 7)?->date_in ?? '');
-                // $sheet->setCellValue("BJ{$row}",
-                //     ($processLogService->getLog($newClaimant, 9)?->date_in ?? '').' / '.
-                //         ($processLogService->getLog($newClaimant, 8)?->date_in ?? '').' / '.
-                //         ($processLogService->getLog($newClaimant, 10)?->date_in ?? '')
-                // );
-            }
-            $sheet->setCellValue("BK{$row}", $status);
-            $sheet->setCellValue("BL{$row}", $burialAssistance?->remarks ?? '');
-            $sheet->setCellValue("BM{$row}", $initialChecker ? $initialChecker->first_name.' '.$initialChecker->last_name : '');
-            $row++;
+            return $request->expectsJson()
+                ? response()->json(['message' => $message], 404)
+                : back()->with('export_message', $message);
         }
 
-        $filename = 'burial-assistances-database-export-'.now()->format('YmdHis').'.xlsx';
-
-        return response()->streamDownload(function () use ($spreadsheet) {
-            $writer = new Xlsx($spreadsheet);
-            $writer->save('php://output');
-        }, $filename, [
-            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        ]);
+        return response()->download($path, $report.'-'.now()->format('Ymd-His').'.xlsx', ['Cache-Control' => 'private, no-store'])->deleteFileAfterSend();
     }
 }
