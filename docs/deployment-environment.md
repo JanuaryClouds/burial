@@ -94,14 +94,12 @@ calendar date. User personal access tokens are no longer consulted for storage.
 Both destinations use multipart POST `action=upload` and GET `action=download`,
 with `token`, `folder`, and `file` parameters as appropriate. Set
 `FILESERVER_MOCK=true` only locally/in tests to select the loopback server instead;
-it uses the independent `FILESERVER_MOCK_TOKEN`. GET and POST flags still control
-capabilities. Upload preflight makes an authenticated GET using the POST URL/key,
+it uses the independent `FILESERVER_MOCK_TOKEN`. In local/testing the mock flag controls storage: disabled skips images; enabled requires the mock. Real GET/POST flags do not enable real calls there. Production ignores the mock flag and follows real GET/POST configuration. Upload preflight makes an authenticated GET using the POST URL/key,
 even if `FILESERVER_GET_ENABLE=false`; the upstream API must allow that check.
-Disabled retrieval makes no network request; disabled uploads retain validation
-and skip-and-log behavior. Redirects and automatic retries are disabled.
+Disabled production retrieval makes no network request; disabled production uploads block submissions needing required or selected images. See [environment-aware submission and scheduling](environment-aware-submissions.md). Redirects and automatic retries are disabled.
 
 New documents use the single-level `document-requirement-{id}` folder and submit
-`{tracking-number}.jpg.enc`. The returned `file` and `folder` are validated and
+a generated `.jpg.enc` filename. The returned `file` and `folder` are validated and
 saved in `application_document_files`; fetching uses that saved location, so
 server timestamp prefixes do not break retrieval. Mock and remote references are
 separate. An existing reference is not overwritten. When no reference exists,
