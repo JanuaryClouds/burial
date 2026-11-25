@@ -19,7 +19,7 @@ class SmsService
 
     public function send(string $number, string $message): bool
     {
-        if (! config('services.sms.enable.post')) {
+        if (app()->environment('local', 'testing') || ! config('services.sms.enable.post')) {
             $ip = request()->ip();
             $browser = request()->header('User-Agent');
 
@@ -45,10 +45,10 @@ class SmsService
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
         ])
-            ->timeout(10)
+            ->connectTimeout(3)->timeout(10)->withoutRedirecting()
             ->post($this->endpoint.'/'.$this->apiKey.'/'.urlencode($number).'/'.urlencode($message));
 
-        if ($response->failed()) {
+        if (! $response->successful()) {
             throw new RuntimeException('Unable to send an SMS message');
         }
 

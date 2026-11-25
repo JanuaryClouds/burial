@@ -193,10 +193,10 @@ class MockFileserverTest extends TestCase
         $this->assertNull($service->get('missing.jpg.enc'));
     }
 
-    public function test_local_service_uses_real_mock_when_primary_upload_and_download_are_disabled(): void
+    public function test_local_service_uses_explicit_mock_when_primary_upload_and_download_are_disabled(): void
     {
         app()->instance('env', 'local');
-        config(['services.fileserver.mock' => false, 'services.fileserver.enable.post' => false, 'services.fileserver.enable.get' => false]);
+        config(['services.fileserver.mock' => true, 'services.fileserver.enable.post' => false, 'services.fileserver.enable.get' => false]);
         $actor = new User;
         auth()->setUser($actor);
         $access = \Mockery::mock(AccountAccess::class);

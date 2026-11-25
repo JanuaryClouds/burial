@@ -26,7 +26,16 @@ class NotificationService
             throw new \RuntimeException('Cannot find a user with that citizen UUID');
         }
 
-        if (config('services.portal.notification.enable.post')) {
+        $this->recordInternal($user, $title, $message);
+        $this->sendPortal($citizenUuid, $type, $title, $message);
+
+        return true;
+    }
+
+    public function sendPortal(string $citizenUuid, ?string $type, string $title, string $message): void
+    {
+        $user = User::where('citizen_uuid', $citizenUuid)->firstOrFail();
+        if (! app()->environment('local', 'testing') && config('services.portal.notification.enable.post')) {
             $endpoint = config('services.portal.notification.endpoint');
             $key = config('services.portal.notification.key');
 
@@ -44,14 +53,18 @@ class NotificationService
                 'title' => 'CSWDO '.$title,
                 'message' => $message,
             ]))
-                ->timeout(5)
+                ->connectTimeout(3)->timeout(5)->withoutRedirecting()
                 ->post($endpoint);
 
-            if ($response->failed()) {
+            if (! $response->successful()) {
                 throw new \RuntimeException('Failed to send notification'.(app()->isLocal() ? ': '.$response->body() : ''));
             }
         }
 
+    }
+
+    public function recordInternal(User $user, string $title, string $message): void
+    {
         Notification::create([
             'id' => (string) Str::uuid(),
             'notifiable_id' => $user->id,
@@ -62,6 +75,5 @@ class NotificationService
             ]),
         ]);
 
-        return true;
     }
 }

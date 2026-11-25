@@ -66,7 +66,10 @@ class WalkInIntakeTest extends TestCase
             DB::connection('walk_in_test_server')->statement('CREATE DATABASE `'.$this->mysqlDatabase.'` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci');
             config(['database.connections.walk_in_testing' => [...$connection, 'database' => $this->mysqlDatabase, 'url' => null]]);
         }
+        config(['services.sms.enable.post' => true, 'services.sms.endpoint' => 'https://sms.test/send', 'services.sms.key' => 'test',
+            'services.portal.notification.enable.post' => true, 'services.portal.notification.endpoint' => 'https://portal-notification.test/send', 'services.portal.notification.key' => 'test']);
         Http::preventStrayRequests();
+        Http::fake(['https://sms.test/*' => Http::response([], 200), 'https://portal-notification.test/*' => Http::response([], 200)]);
         Http::fake(['http://127.0.0.1:18991/health' => fn () => $this->mockOnline
             ? Http::response(['service' => 'burial-fileserver-mock']) : Http::response([], 404)]);
         foreach (['genders', 'relationships', 'civilStatus', 'religions', 'nationalities', 'educations', 'districts', 'assistances', 'modes'] as $lookup) {
@@ -214,6 +217,7 @@ class WalkInIntakeTest extends TestCase
 
     public function test_missing_required_document_prevents_submission_and_preserves_draft(): void
     {
+        $this->app->instance('env', 'production');
         $this->staff();
         $document = DocumentRequirement::create(['name' => 'Death Certificate', 'source' => 'Registry', 'is_required' => true, 'is_active' => true]);
         $draft = app(WalkInIntakeService::class)->saveDraft(null, $this->payload(), null);
@@ -229,6 +233,7 @@ class WalkInIntakeTest extends TestCase
 
     public function test_partial_upload_failure_preserves_successful_reference_and_retry_only_uploads_missing_document(): void
     {
+        $this->app->instance('env', 'production');
         $this->staff();
         $first = DocumentRequirement::create(['name' => 'First Evidence', 'source' => 'Registry', 'is_required' => true, 'is_active' => true]);
         $second = DocumentRequirement::create(['name' => 'Second Evidence', 'source' => 'Registry', 'is_required' => true, 'is_active' => true]);
@@ -410,6 +415,7 @@ class WalkInIntakeTest extends TestCase
 
     public function test_disabled_uploads_do_not_count_as_successful_storage(): void
     {
+        $this->app->instance('env', 'production');
         $this->staff();
         config(['services.fileserver.enable.post' => false]);
         $document = DocumentRequirement::create(['name' => 'Required Evidence', 'source' => 'Registry', 'is_required' => true, 'is_active' => true]);
@@ -501,6 +507,7 @@ class WalkInIntakeTest extends TestCase
 
     public function test_documents_from_another_storage_environment_cannot_satisfy_submission(): void
     {
+        $this->app->instance('env', 'production');
         $this->staff();
         $document = DocumentRequirement::create(['name' => 'Required Evidence', 'source' => 'Registry', 'is_required' => true, 'is_active' => true]);
         $draft = app(WalkInIntakeService::class)->saveDraft(null, $this->payload(), null);
@@ -536,7 +543,7 @@ class WalkInIntakeTest extends TestCase
         config(['services.fileserver.enable.post' => false]);
         DocumentRequirement::create(['name' => 'Local Evidence', 'source' => 'Registry', 'is_required' => true, 'is_active' => true]);
         Livewire::test(Intake::class)->set('data', $this->payload())->call('save')
-            ->assertSee('Document uploads are optional in local development.')
+            ->assertSee('Images are optional and will not be stored in local/testing')
             ->set('reviewed', true)->call('submit')->assertHasNoErrors()->assertRedirect(route('walk-in.receipt'));
         $this->assertSame(1, Application::count());
         $this->assertSame(0, ApplicationDocumentFile::count());
@@ -577,7 +584,7 @@ class WalkInIntakeTest extends TestCase
         $this->staff();
         app()->instance('env', 'local');
         $this->mockOnline = true;
-        config(['services.fileserver.enable.post' => false, 'services.fileserver.mock' => false]);
+        config(['services.fileserver.enable.post' => false, 'services.fileserver.mock' => true]);
         $document = DocumentRequirement::create(['name' => 'Optional Evidence', 'source' => 'Registry', 'is_required' => true, 'is_active' => true]);
         Http::fake(['http://127.0.0.1:18991/apiburial/*' => fn ($request) => $request->method() === 'GET'
             ? Http::response([], 404) : Http::response(['status' => 'success', 'file' => 'mock-renamed.jpg.enc', 'folder' => 'mock-folder'])]);
@@ -591,16 +598,16 @@ class WalkInIntakeTest extends TestCase
         Http::assertNotSent(fn ($request) => str_starts_with($request->url(), 'https://files.test/'));
     }
 
-    #[TestWith(['local', true, false, 'primary fileserver upload service is enabled'])]
-    #[TestWith(['local', false, false, 'fileserver mock is offline'])]
-    #[TestWith(['production', true, true, 'fileserver mock is enabled or running'])]
-    #[TestWith(['production', false, false, 'primary fileserver upload service is disabled'])]
+    #[TestWith(['local', true, false, 'fileserver mock is offline'])]
+    #[TestWith(['testing', false, false, 'fileserver mock is offline'])]
+    #[TestWith(['production', false, false, 'Document uploads are disabled'])]
     public function test_blocked_fileserver_state_preserves_draft_and_warns_in_the_form(string $environment, bool $primary, bool $online, string $message): void
     {
         $this->staff();
         app()->instance('env', $environment);
         $this->mockOnline = $online;
-        config(['services.fileserver.enable.post' => $primary]);
+        config(['services.fileserver.enable.post' => $primary, 'services.fileserver.mock' => true]);
+        DocumentRequirement::create(['name' => 'Required Evidence', 'source' => 'Registry', 'is_required' => true, 'is_active' => true]);
         Livewire::test(Intake::class)->assertSee($message)->set('data', $this->payload())->call('save')
             ->assertHasNoErrors()->set('reviewed', true)->call('submit')->assertHasErrors('fileserver');
         $this->assertSame(1, WalkInIntake::count());
@@ -612,7 +619,7 @@ class WalkInIntakeTest extends TestCase
     {
         $this->staff();
         app()->instance('env', 'local');
-        config(['services.fileserver.enable.post' => false]);
+        config(['services.fileserver.enable.post' => false, 'services.fileserver.mock' => true]);
         $form = Livewire::test(Intake::class)->set('data', $this->payload())->call('save')
             ->assertSee('fileserver mock is offline')->set('reviewed', true)->call('submit')->assertHasErrors('fileserver');
         $this->mockOnline = true;

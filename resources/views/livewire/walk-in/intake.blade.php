@@ -74,7 +74,7 @@
             @if ($requiresDocuments)
                 <p>Upload required images before submission. Successfully saved documents remain with this draft if another upload fails.</p>
             @else
-                <p class="text-muted">Document uploads are optional in local development. The fileserver mock must be online; any selected images will be uploaded to the mock.</p>
+                <p class="text-muted">Images are optional and will not be stored in local/testing because the fileserver mock is disabled.</p>
             @endif
             @foreach ($documents as $document)
                 <div class="mb-4" wire:key="document-{{ $document->id }}">

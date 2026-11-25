@@ -25,11 +25,7 @@ class ImageService
 
     public function __construct()
     {
-        $this->mock = (bool) config('services.fileserver.mock')
-            || (app()->isLocal() && ! config('services.fileserver.enable.post'));
-        if ($this->mock && ! app()->environment('local', 'testing')) {
-            throw new RuntimeException('Mock fileserver is only available locally or in tests.');
-        }
+        $this->mock = app(FileserverPolicy::class)->mock();
         $port = filter_var(config('services.fileserver.mock_port'), FILTER_VALIDATE_INT, ['options' => ['min_range' => 1024, 'max_range' => 65535]]);
         if ($this->mock && $port === false) {
             throw new RuntimeException('Invalid mock fileserver port.');
@@ -51,6 +47,10 @@ class ImageService
         if (! is_array($url) || ! in_array($url['scheme'] ?? '', ['http', 'https'], true) || empty($url['host'])
             || isset($url['user']) || isset($url['pass']) || isset($url['query']) || isset($url['fragment'])) {
             throw new RuntimeException('File server endpoint is not configured correctly.');
+        }
+
+        if (! app(FileserverPolicy::class)->development() && in_array(strtolower($url['host']), ['127.0.0.1', 'localhost', '[::1]', '::1'], true)) {
+            throw new RuntimeException('Production fileserver endpoints cannot use the loopback mock.');
         }
 
         // This is the complete API URL, including /apiburial/ or the direct script.
@@ -92,7 +92,7 @@ class ImageService
 
     public function getDocument(Application $application, DocumentRequirement $document): ?string
     {
-        if (! config('services.fileserver.enable.get') && ! ($this->mock && app()->isLocal())) {
+        if (! app(FileserverPolicy::class)->enabled('get')) {
             return null;
         }
         $reference = $this->reference($application, $document)->first();
@@ -110,20 +110,24 @@ class ImageService
 
     public function postDocument(Application $application, DocumentRequirement $document, $file): bool
     {
-        $this->upload($application->tracking_no, $file, $document->storageFolder(), $application, $document);
-
-        return true;
+        return $this->upload($application->tracking_no, $file, $document->storageFolder(), $application, $document) !== null;
     }
 
     /** @return array{storage: string, folder: string, file_name: string} */
     public function stageWalkInDocument(DocumentRequirement $document, UploadedFile $file): array
     {
         Gate::authorize('walk-in-intake');
-        if (! config('services.fileserver.enable.post') && ! ($this->mock && app()->isLocal())) {
+        if (! app(FileserverPolicy::class)->enabled('post')) {
             throw new RuntimeException('Document uploads must be enabled before submitting a walk-in application.');
         }
 
-        $location = $this->upload('walk-in-'.Str::uuid(), $file, $document->storageFolder());
+        return $this->stageDocument($document, $file);
+    }
+
+    /** @return array{storage: string, folder: string, file_name: string} */
+    public function stageDocument(DocumentRequirement $document, UploadedFile $file): array
+    {
+        $location = $this->upload('document-'.Str::uuid(), $file, $document->storageFolder());
         if ($location === null) {
             throw new RuntimeException('The required document was not uploaded.');
         }
@@ -133,7 +137,7 @@ class ImageService
 
     public function get(string $filename, string $folder = ''): ?string
     {
-        if (! config('services.fileserver.enable.get') && ! ($this->mock && app()->isLocal())) {
+        if (! app(FileserverPolicy::class)->enabled('get')) {
             return null;
         }
         $this->validateLocation($filename, $folder);
@@ -150,9 +154,7 @@ class ImageService
 
     public function post(string $filename, $file, string $folder = ''): bool
     {
-        $this->upload($filename, $file, $folder);
-
-        return true;
+        return $this->upload($filename, $file, $folder) !== null;
     }
 
     private function validateLocation(mixed $filename, mixed $folder): void
@@ -167,7 +169,7 @@ class ImageService
     {
         app(AccountAccess::class)->assertWritable();
         app(ImageUploadValidator::class)->validate($file);
-        if (! config('services.fileserver.enable.post') && ! ($this->mock && app()->isLocal())) {
+        if (! app(FileserverPolicy::class)->enabled('post')) {
             activity()->causedBy(Auth::user())
                 ->withProperties(['ip' => request()->ip(), 'browser' => request()->header('User-Agent'), 'filename' => $filename])
                 ->log('File upload service skipped');

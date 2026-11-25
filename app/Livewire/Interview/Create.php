@@ -4,10 +4,12 @@ namespace App\Livewire\Interview;
 
 use App\Models\Client;
 use App\Models\Interview;
-use App\Services\ActivityLoggerService;
+use App\Models\InterviewSchedulingRequest;
+use App\Services\InterviewSchedulingService;
 use App\Services\InterviewService;
 use App\Traits\Livewire\GuardsOfficeForm;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Carbon;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
@@ -35,15 +37,25 @@ class Create extends Component
 
     public bool $scheduled;
 
-    public function boot(InterviewService $interviewService)
+    #[Locked]
+    public ?string $pendingRequestUuid = null;
+
+    public bool $confirmUncertain = false;
+
+    public function boot(InterviewService $interviewService): void
     {
         $this->services = $interviewService;
     }
 
-    public function mount(Client $client)
+    public function mount(Client $client): void
     {
         $this->client = $client;
         $this->expectedAssignmentUuid = $client->application()->value('current_claimant_assignment_uuid');
+        $pending = app(InterviewSchedulingService::class)->latest($client->uuid, $this->expectedAssignmentUuid);
+        if ($pending) {
+            $this->pendingRequestUuid = $pending->uuid;
+            $this->schedule = $pending->schedule->format('Y-m-d\TH:i');
+        }
 
         $this->scheduled = $this->client->interviews()
             ->where('claimant_assignment_uuid', $this->expectedAssignmentUuid)
@@ -51,7 +63,7 @@ class Create extends Component
             ->exists();
     }
 
-    public function save()
+    public function save(): void
     {
         try {
             $this->validate();
@@ -65,37 +77,45 @@ class Create extends Component
         }
 
         try {
-            DB::transaction(function () {
-                $interview = $this->services->store(
-                    ['schedule' => $this->schedule],
-                    $this->client->uuid,
-                    $this->expectedAssignmentUuid
-                );
-
-                $this->dispatch('notification:alert', [
-                    'type' => 'success',
-                    'text' => 'Interview scheduled successfully',
-                ]);
-
-                $this->reset('schedule');
-                $this->dispatch('interviewCreated');
-
-                ActivityLoggerService::logSuccess('Successfully created an Interview for a client', [
-                    'client_uuid' => $this->client->uuid,
-                    'interview_uuid' => $interview->uuid,
-                    'interview_schedule' => $interview->schedule,
-                ]);
-            });
-        } catch (\Throwable $th) {
-            $this->dispatch('notification:alert', [
-                'type' => 'error',
-                'text' => app()->hasDebugModeEnabled() ? $th->getMessage() : config('constants.errors.unknown'),
-            ]);
-
-            ActivityLoggerService::logException($th, 'Unable to create interview');
-
-            report($th);
+            $this->services->store(['schedule' => $this->schedule], $this->client->uuid, $this->expectedAssignmentUuid);
+            $this->success();
+        } catch (ValidationException $exception) {
+            $this->setErrorBag($exception->validator->errors());
+            $this->pendingRequestUuid = app(InterviewSchedulingService::class)->latest($this->client->uuid, $this->expectedAssignmentUuid)?->uuid;
+        } catch (QueryException) {
+            $this->pendingRequestUuid = app(InterviewSchedulingService::class)->latest($this->client->uuid, $this->expectedAssignmentUuid)?->uuid;
+            $this->addError('schedule', 'Scheduling could not finish. Saved notification outcomes are preserved; retry without changing the slot.');
         }
+    }
+
+    public function retry(): void
+    {
+        abort_unless($this->pendingRequestUuid !== null, 404);
+        $request = InterviewSchedulingRequest::findOrFail($this->pendingRequestUuid);
+        abort_unless($request->client_uuid === $this->client->uuid && $request->claimant_assignment_uuid === $this->expectedAssignmentUuid, 403);
+        if (Carbon::parse($this->schedule)->format('Y-m-d H:i:s') !== $request->schedule->format('Y-m-d H:i:s')) {
+            $this->addError('schedule', 'The slot changed. Use Schedule Interview to start a new request; accepted messages cannot be recalled.');
+
+            return;
+        }
+        try {
+            app(InterviewSchedulingService::class)->resume($request->uuid, $this->confirmUncertain);
+            $this->success();
+        } catch (ValidationException $exception) {
+            $this->setErrorBag($exception->validator->errors());
+        } catch (QueryException) {
+            $this->addError('schedule', 'Scheduling could not be finalized. Saved notification outcomes are preserved; retry without changing the slot.');
+        }
+    }
+
+    private function success(): void
+    {
+        $this->pendingRequestUuid = null;
+        $this->confirmUncertain = false;
+        $this->reset('schedule');
+        $this->scheduled = true;
+        $this->dispatch('interviewCreated');
+        $this->dispatch('notification:alert', ['type' => 'success', 'text' => 'Interview scheduled successfully']);
     }
 
     #[On('interviewCreated')]

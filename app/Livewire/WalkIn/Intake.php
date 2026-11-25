@@ -9,8 +9,8 @@ use App\Models\Relationship;
 use App\Models\Religion;
 use App\Models\Sex;
 use App\Models\WalkInIntake;
+use App\Services\FileserverPolicy;
 use App\Services\PsaClassificationService;
-use App\Services\WalkInFileserverService;
 use App\Services\WalkInIntakeService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\QueryException;
@@ -172,7 +172,7 @@ class Intake extends Component
             'duplicates' => $intake && $this->readyForReview ? $service->duplicates($intake) : collect(),
             'documents' => $service->applicableDocuments($this->data),
             'requiresDocuments' => $service->requiresDocuments(),
-            'fileserverWarning' => app(WalkInFileserverService::class)->submissionWarning(),
+            'fileserverWarning' => app(FileserverPolicy::class)->warning($this->images !== [] || ($service->requiresDocuments() && $service->applicableDocuments($this->data)->contains('is_required', true))),
             'options' => [
                 'sex' => Sex::pluck('name', 'id')->all(),
                 'religion' => Religion::pluck('name', 'id')->all(),

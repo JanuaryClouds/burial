@@ -59,9 +59,8 @@ acceptance remains unverified. Mock success is not evidence of remote support.
 There is no optional encryption switch or plaintext fallback.
 
 Burial uses the same authenticated upload/download contract for mock and remote
-storage. `FILESERVER_MOCK` chooses the destination; GET/POST flags control the
-operations. Both submission flows resolve server-side `DocumentRequirement`
-records and use `document-requirement-{id}` folders with tracking-number filenames.
+storage. In local/testing, `FILESERVER_MOCK` explicitly selects the mock; when off, image storage is skipped. Production ignores the mock flag and follows real GET/POST settings. Both submission flows resolve server-side `DocumentRequirement`
+records and use `document-requirement-{id}` folders with generated encrypted filenames.
 Folders are single-level and stable across display-name edits.
 
 The `application_document_files` table records the actual returned filename and
@@ -77,8 +76,7 @@ The mock's deterministic names do not establish the real server's naming behavio
 remote timestamp-prefixed names are supported through saved references.
 Browser image routes still authorize the application and proxy decrypted JPEGs
 with private/no-store and nosniff headers; tokens stay server-side. Missing files
-return 404, upstream failures/corruption return generic 502. Disabled uploads keep
-the existing skip-and-log behavior. Uploads are not automatically retried.
+return 404, upstream failures/corruption return generic 502. Local/testing with the mock disabled skips image storage and waives images; an enabled mock enforces mandatory images. Production follows real capability flags. See [environment behavior](environment-aware-submissions.md). Uploads are not automatically retried.
 
 ## Storage and cleanup
 

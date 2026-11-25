@@ -7,8 +7,8 @@ use App\Http\Requests\UpdateApplicationRequest;
 use App\Models\Application;
 use App\Models\Beneficiary;
 use App\Models\Client;
-use App\Models\DocumentRequirement;
 use App\Services\ApplicationService;
+use App\Services\ApplicationSubmissionService;
 use App\Services\BeneficiaryFamilyService;
 use App\Services\BeneficiaryService;
 use App\Services\ClientService;
@@ -84,29 +84,16 @@ class ApplicationController extends Controller
                 ->where('created_by', Auth::user()->id)
                 ->firstOrFail();
 
-            $application = $this->services->store($client, $beneficiary, $validated['relationship_id'] ?? null);
-
-            // Upload any submitted document images (skipped gracefully when the fileserver is disabled)
-            $uploadError = false;
-            $documents = DocumentRequirement::query()->where('is_active', true)->get();
-            $beneficiary->loadMissing('religion');
-            foreach ($request->file('images', []) as $fieldName => $uploadedFile) {
-                try {
-                    $document = $documents->first(fn ($document) => $document->uploadKey() === $fieldName);
-                    abort_unless($document && (! $document->for_muslim || $beneficiary->religion?->name === 'Islam'), 422);
-                    $this->imageServices->postDocument($application, $document, $uploadedFile);
-                } catch (\Throwable $th) {
-                    report($th);
-                    $uploadError = true;
-                }
-            }
+            $submission = app(ApplicationSubmissionService::class);
+            $draft = $submission->prepare($client->uuid, $beneficiary->uuid, (int) $validated['relationship_id']);
+            $application = $submission->submit($draft->uuid, $draft->version, $request->file('images', []));
 
             // Clear session UUIDs
             session()->forget(['client_uuid', 'beneficiary_uuid']);
 
             return redirect()->route('application.index')
                 ->with('success', 'Application submitted successfully! Your tracking number is: '.$application->tracking_no
-                    .($uploadError ? ' However, some documents failed to upload.' : ''));
+                );
         } catch (\Exception $e) {
             activity()
                 ->causedBy(Auth::user())
