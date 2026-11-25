@@ -1,4 +1,7 @@
 <x-card>
+    @if ($skipImages)
+        <p class="alert alert-info">Images are optional and will not be stored in this local/testing environment because the fileserver mock is disabled.</p>
+    @endif
 	<x-slot:header>Documents</x-slot:header>
 	@if ($clientUuid && $beneficiaryUuid && $relationshipId)
 		<div class="d-flex flex-column gap-4">
@@ -15,6 +18,9 @@
                     <p class="text-danger">{{ $message }}</p>
                 @enderror
 				@foreach ($applicableDocuments as $document)
+                    @if (isset($savedDocuments[$document->id]))
+                        <p class="text-success">{{ $document->name }} is saved with this draft. Leave its upload empty to reuse it.</p>
+                    @endif
 					@php
 
 						$displayName = $document['name'];
