@@ -9,7 +9,7 @@
 		will automatically disqualify your application. Bringing the original copy of the submitted documents will be
 		required for the interview and assessment.
 	</p>
-	@if ($clientUuid && $beneficiaryUuid && $relationshipId && count($images) !== 0)
+	@if ($clientUuid && $beneficiaryUuid && $relationshipId && $documentsReady)
 		<p>
 			Please tick checkbox below to confirm that you have read and understood the terms and conditions and that you agree
 			to the
@@ -54,7 +54,7 @@
 						Relationship
 					</li>
 				@endif
-				@if (count($images) == 0)
+				@if (!$documentsReady)
 					<li>
 						<x-icon.font-awesome class="fa-xmark" />
 						Documents
