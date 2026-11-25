@@ -353,6 +353,15 @@ h1, h2, h3, h4, h5, h6 {
 .record-data-table-desktop, .record-data-table .dt-buttons { display:none; }
 .record-data-table-cards { display:grid; grid-template-columns:minmax(0,1fr); gap:1rem; }
 .record-data-card { display:flex; flex-direction:column; gap:.5rem; min-width:0; padding:1.5rem; border:1px solid var(--bs-border-color); border-radius:.75rem; background:var(--bs-body-bg); color:var(--bs-body-color); overflow-wrap:anywhere; }
+.badge.bg-secondary,
+.badge.badge-secondary,
+.badge.text-bg-secondary,
+.badge.bg-info,
+.badge.badge-info,
+.badge.text-bg-info {
+    color: #ffffff !important;
+}
+
 .record-data-card .badge { white-space:normal; text-align:left; overflow-wrap:anywhere; max-width:100%; }
 .record-data-card p, .record-data-card h3 { margin:0; color:inherit; }
 .record-data-card-footer { display:flex; align-items:center; flex-wrap:wrap; gap:.75rem; margin-top:auto; padding-top:1.5rem; font-size:.9rem; }
