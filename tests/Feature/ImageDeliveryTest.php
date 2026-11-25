@@ -40,6 +40,7 @@ class ImageDeliveryTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->app->instance('env', 'production');
         config([
             'cache.default' => 'array',
             'database.default' => 'images_testing',
@@ -142,6 +143,7 @@ class ImageDeliveryTest extends TestCase
 
     public function test_duplicate_check_failure_stops_upload_and_is_not_retried(): void
     {
+        $this->app->instance('env', 'testing');
         config(['services.fileserver.mock' => true, 'services.fileserver.mock_token' => 'mock-only']);
         $access = \Mockery::mock(AccountAccess::class);
         $access->shouldReceive('assertWritable')->once()->andReturn($this->actor);
@@ -159,6 +161,7 @@ class ImageDeliveryTest extends TestCase
 
     public function test_mock_document_route_fetches_from_requirement_folder_with_server_side_token(): void
     {
+        $this->app->instance('env', 'testing');
         config(['services.fileserver.mock' => true, 'services.fileserver.mock_token' => 'mock-only', 'services.fileserver.mock_port' => 8099]);
         $this->actor->shouldReceive('can')->once()->with('view', $this->application)->andReturn(true);
         $file = UploadedFile::fake()->image('document.jpg', 10, 10);
@@ -177,6 +180,7 @@ class ImageDeliveryTest extends TestCase
 
     public function test_folder_fetch_failure_does_not_fall_back_to_historical_files(): void
     {
+        $this->app->instance('env', 'testing');
         config(['services.fileserver.mock' => true, 'services.fileserver.mock_token' => 'mock-only']);
         $this->actor->shouldReceive('can')->once()->andReturn(true);
         Http::fake(['*' => Http::response('', 403)]);
@@ -312,7 +316,7 @@ class ImageDeliveryTest extends TestCase
         config(['services.fileserver.mock' => true]);
         $this->artisan('fileserver:mock')->assertFailed();
         $this->artisan('fileserver:mock-cleanup', ['--dry-run' => true])->assertFailed();
-        $this->expectException(\RuntimeException::class);
-        new ImageService;
+        $this->assertSame('remote', (new ImageService)->destination());
+        Http::assertNothingSent();
     }
 }
