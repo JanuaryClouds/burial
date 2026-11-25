@@ -2,19 +2,19 @@
 
 namespace App\Livewire\Application;
 
+use App\Models\ApplicationSubmissionDraft;
 use App\Models\Beneficiary;
 use App\Models\Client;
 use App\Models\DocumentRequirement;
-use App\Services\ActivityLoggerService;
-use App\Services\ApplicationService;
-use App\Services\ImageService;
+use App\Services\ApplicationSubmissionService;
+use App\Services\FileserverPolicy;
 use App\Services\ImageUploadValidator;
 use App\Traits\Livewire\GuardsCitizenCreation;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use Livewire\Attributes\Locked;
 use Livewire\Attributes\Rule;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -45,6 +45,12 @@ class Create extends Component
 
     public $images = [];
 
+    #[Locked]
+    public ?string $draftUuid = null;
+
+    #[Locked]
+    public ?int $draftVersion = null;
+
     public bool $agreedToTerms = false;
 
     // Private state lasts only for this Livewire request and cannot be supplied by the browser.
@@ -73,9 +79,43 @@ class Create extends Component
             $this->beneficiaryUuid = session('beneficiary_uuid');
         }
 
+        $draft = ApplicationSubmissionDraft::where('user_id', Auth::id())->whereNull('application_uuid')
+            ->when($this->clientUuid, fn ($query) => $query->where('client_uuid', $this->clientUuid))
+            ->when($this->beneficiaryUuid, fn ($query) => $query->where('beneficiary_uuid', $this->beneficiaryUuid))->latest()->first();
+        if ($draft) {
+            $this->clientUuid = $draft->client_uuid;
+            $this->beneficiaryUuid = $draft->beneficiary_uuid;
+            $this->relationshipId = (string) $draft->relationship_id;
+            $this->draftUuid = $draft->uuid;
+            $this->draftVersion = $draft->version;
+        }
+
         $this->documents = DocumentRequirement::index()
             ->where('is_active', true)
             ->get();
+    }
+
+    public function updatedClientUuid(): void
+    {
+        $this->restoreSelectedDraft();
+    }
+
+    public function updatedBeneficiaryUuid(): void
+    {
+        $this->applicableDocumentCache = null;
+        $this->restoreSelectedDraft();
+    }
+
+    private function restoreSelectedDraft(): void
+    {
+        $this->images = [];
+        $draft = ApplicationSubmissionDraft::where('user_id', Auth::id())->whereNull('application_uuid')
+            ->where('client_uuid', $this->clientUuid)->where('beneficiary_uuid', $this->beneficiaryUuid)->first();
+        $this->draftUuid = $draft?->uuid;
+        $this->draftVersion = $draft?->version;
+        if ($draft) {
+            $this->relationshipId = (string) $draft->relationship_id;
+        }
     }
 
     public function removeImage(string $key)
@@ -92,6 +132,9 @@ class Create extends Component
             'images',
             'client',
             'beneficiary',
+            'draftUuid',
+            'draftVersion',
+            'agreedToTerms',
         ]);
 
         $this->dispatch('notification:alert', [
@@ -105,7 +148,12 @@ class Create extends Component
     {
         try {
             $this->validate();
-            $this->validateImages();
+            if (! $this->agreedToTerms) {
+                throw ValidationException::withMessages(['agreedToTerms' => 'Accept the terms before submitting.']);
+            }
+            if (! app(FileserverPolicy::class)->skip()) {
+                $this->validateImages();
+            }
         } catch (ValidationException $e) {
             $this->setErrorBag($e->validator->errors());
             $this->dispatch('notification:toast', [
@@ -116,57 +164,33 @@ class Create extends Component
             return;
         }
 
-        $imageService = App(ImageService::class);
-
         try {
-            DB::transaction(function () use ($imageService) {
-                $application = app(ApplicationService::class)->store(
-                    Client::findOrFail($this->clientUuid),
-                    Beneficiary::findOrFail($this->beneficiaryUuid),
-                    (int) $this->relationshipId,
-                );
-
-                foreach ($this->images as $key => $file) {
-                    if (! $file) {
-                        continue;
-                    }
-
-                    $document = $this->applicableDocuments()->first(fn ($document) => $document->uploadKey() === $key);
-                    abort_unless($document, 422);
-                    $imageService->postDocument($application, $document, $file);
-                }
-
-                ActivityLoggerService::logSuccess('Successfully created application', [
-                    'application_uuid' => $application->uuid,
-                    'images_submitted' => count($this->images),
-                ]);
-
-                $this->reset();
-
-                session()->forget(['client_uuid', 'beneficiary_uuid']);
-
-                $this->dispatch('notification:alert', [
-                    'type' => 'success',
-                    'text' => 'Your application has been submitted.',
-                ]);
-
-                $this->redirect(route('application.show', $application));
-            });
-        } catch (\Throwable $th) {
-            $this->dispatch('notification:alert', [
-                'type' => 'error',
-                'text' => app()->hasDebugModeEnabled() ? $th->getMessage() : config('constants.errors.unknown'),
-            ]);
-
-            ActivityLoggerService::logException($th, 'Failed to submit application');
-
-            report($th);
+            $service = app(ApplicationSubmissionService::class);
+            $draft = $service->prepare($this->clientUuid, $this->beneficiaryUuid, (int) $this->relationshipId, $this->draftVersion);
+            $this->draftUuid = $draft->uuid;
+            $this->draftVersion = $draft->version;
+            $application = $service->submit($draft->uuid, $this->draftVersion, $this->images);
+            session()->forget(['client_uuid', 'beneficiary_uuid']);
+            $this->dispatch('notification:alert', ['type' => 'success', 'text' => 'Your application has been submitted.']);
+            $this->redirect(route('application.show', $application));
+        } catch (ValidationException $exception) {
+            $this->setErrorBag($exception->validator->errors());
+        } catch (\Throwable $exception) {
+            $this->images = [];
+            $this->addError('images', 'Submission could not finish. Your draft and saved uploads are preserved. Select only missing documents before retrying.');
         }
     }
 
     public function render()
     {
-        return view('livewire.application.create', ['applicableDocuments' => $this->applicableDocuments()]);
+        $documents = $this->applicableDocuments();
+        $saved = $this->draftUuid ? (ApplicationSubmissionDraft::whereKey($this->draftUuid)->where('user_id', Auth::id())->first()->documents ?? []) : [];
+        $skip = app(FileserverPolicy::class)->skip();
+        $ready = $skip || $documents->every(fn ($document) => ! $document->is_required || isset($saved[$document->id]) || isset($this->images[$document->uploadKey()]));
+
+        return view('livewire.application.create', ['applicableDocuments' => $documents,
+            'skipImages' => $skip, 'savedDocuments' => $saved, 'documentsReady' => $ready,
+        ]);
     }
 
     private function applicableDocuments(): Collection
