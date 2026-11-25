@@ -10,7 +10,7 @@ class ImageUploadValidator
 {
     public function validate(mixed $file, string $field = 'image'): void
     {
-        $validator = Validator::make(['upload' => $file], ['upload' => ['required', 'file', 'mimetypes:image/jpeg,image/png,image/webp']]);
+        $validator = Validator::make(['upload' => $file], ['upload' => ['required', 'file', 'max:10240', 'mimetypes:image/jpeg,image/png,image/webp']]);
         if ($validator->fails()) {
             throw ValidationException::withMessages([$field => $validator->errors()->first('upload')]);
         }
