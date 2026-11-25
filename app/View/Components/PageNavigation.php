@@ -119,6 +119,8 @@ class PageNavigation extends Component
         }
 
         return match ($name) {
+            'system.configuration-readiness' => [$system, $this->current('Configuration Readiness')],
+            'system.diagnostics' => [$system, $this->current('System Diagnostics')],
             'system.settings' => [$system, $this->current('Settings')],
             'system.failed-emails.index' => [$system, $this->current('Emails')],
             'system.logs.index' => [$system, $this->current('Logs')],
