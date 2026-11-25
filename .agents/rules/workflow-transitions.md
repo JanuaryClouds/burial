@@ -15,7 +15,7 @@ Applications retain claimant-assignment cycles and recommendations pinned to wor
 7. Preserve custom-field validation against the target stage/version. Password-type values are recoverably encrypted, visible only through authorized history views, and excluded from automatic serialization, success logs, and flashed inputs. Preserve `APP_KEY`.
 8. Claimant replacement preserves application identity, beneficiary, documents, and history, but starts a new claimant cycle with its required interview, assessment, recommendation, and workflow run. Respect replacement limits and payment/terminal-state restrictions. Do not replace claimants by directly updating `applications.client_uuid`.
 9. Former claimants cannot mutate the application. They retain the citizen-facing view and documents, not internal assessments, recommendations, or staff-only remarks. See [business actors](business-actors.md).
-10. Interview scheduling requires successful required notifications; notification failure must not leave a successfully scheduled interview. In production, disabling a required notification channel also blocks scheduling. See [SMS and interview notifications](sms.md) for failure, partial-send, and local/testing constraints.
+10. Interview scheduling requires successful required notifications; notification failure must not leave a successfully scheduled interview. Production linked clients require both SMS and Portal; accountless walk-ins require SMS only. Local/testing skips external sends and permits scheduling. See [SMS and interview notifications](sms.md) for failure, partial-send, and local/testing constraints.
 
 ## References
 
