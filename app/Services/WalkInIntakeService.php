@@ -23,7 +23,7 @@ class WalkInIntakeService
 
     public function requiresDocuments(): bool
     {
-        return ! app()->isLocal();
+        return ! app(FileserverPolicy::class)->skip();
     }
 
     public function authorize(WalkInIntake $intake): void
@@ -139,19 +139,23 @@ class WalkInIntakeService
         app(AccountAccess::class)->assertWritable();
         $intake = WalkInIntake::findOrFail($uuid);
         $this->authorize($intake);
-        $warning = app(WalkInFileserverService::class)->submissionWarning();
-        if ($warning !== null) {
-            throw ValidationException::withMessages(['fileserver' => $warning]);
-        }
         $data = $this->validateData($intake->data, true);
         if (! $reviewed) {
             throw ValidationException::withMessages(['reviewed' => 'Review the applicant information and possible duplicates before submitting.']);
         }
         $documents = $this->applicableDocuments($data);
+        $policy = app(FileserverPolicy::class);
+        if ($policy->skip()) {
+            $images = [];
+        }
+        $warning = $policy->warning($images !== [] || ($this->requiresDocuments() && $documents->contains('is_required', true)));
+        if ($warning !== null) {
+            throw ValidationException::withMessages(['fileserver' => $warning]);
+        }
         $stored = $intake->documents ?? [];
         $destination = app(ImageService::class)->destination();
         foreach ($documents as $document) {
-            if (isset($stored[$document->id]) && $stored[$document->id]['storage'] !== $destination) {
+            if (! $policy->skip() && isset($stored[$document->id]) && $stored[$document->id]['storage'] !== $destination) {
                 throw ValidationException::withMessages(['images' => 'Saved documents belong to a different fileserver environment. Contact the administrator before submitting this intake.']);
             }
         }
@@ -195,7 +199,7 @@ class WalkInIntakeService
             }
             $application = app(ApplicationService::class)->storeWalkIn($client, $beneficiary, (int) $data['relationshipId']);
             foreach ($this->applicableDocuments($data) as $document) {
-                $reference = ($intake->documents ?? [])[$document->id] ?? null;
+                $reference = app(FileserverPolicy::class)->skip() ? null : (($intake->documents ?? [])[$document->id] ?? null);
                 if (! $reference && $this->requiresDocuments() && $document->is_required) {
                     throw ValidationException::withMessages(['images' => 'Required documents changed. Reload and complete the missing uploads.']);
                 }
