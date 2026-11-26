@@ -120,3 +120,11 @@ document.addEventListener('click', (event) => {
     event.preventDefault();
     window.open(url.href, 'imageViewer', 'width=1000,height=800,resizable=yes,scrollbars=yes');
 });
+
+document.addEventListener('livewire:navigating', () => {
+    document.querySelectorAll('img[data-document-image-src]').forEach(image => {
+        const state = requests.get(image);
+        if (state) release(state);
+        requests.delete(image);
+    });
+});
