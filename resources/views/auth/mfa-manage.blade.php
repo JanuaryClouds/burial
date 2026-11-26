@@ -13,7 +13,7 @@
         <button class="btn btn-warning mb-3" type="submit" name="action" value="replace">Replace authenticator</button>
         <button class="btn btn-primary mb-3" type="submit" name="action" value="regenerate">Generate new recovery codes</button>
     </form>
-    <a href="{{ route('dashboard') }}">Back to dashboard</a>
+    <a wire:navigate href="{{ route('dashboard') }}">Back to dashboard</a>
 </div></div>
 </main>
 @endsection
