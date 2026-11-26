@@ -4,7 +4,7 @@
 <div class="row g-6 align-items-stretch">
     @if (auth()->user()->isInternal() && ! auth()->user()->hasOfficeAccess())
         @can('search-applications')
-            <a href="{{ route('application.search') }}" class="btn btn-primary">Search Application</a>
+            <a wire:navigate href="{{ route('application.search') }}" class="btn btn-primary">Search Application</a>
         @else
             <p class="text-muted">Contact a superadmin to assign operational access.</p>
         @endcan
