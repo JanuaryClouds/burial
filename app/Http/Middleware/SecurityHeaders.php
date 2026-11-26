@@ -15,9 +15,9 @@ class SecurityHeaders
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Never collect MFA request bodies, credential queries, or enrollment views in Debugbar.
-        if (app()->bound('debugbar') && ($request->routeIs('mfa.*') || $request->has('mfa_code')
-            || $request->header('X-Livewire') !== null || auth()->user()?->hasRole('superadmin'))) {
+        if (app()->bound('debugbar') && (! app()->environment('local', 'testing')
+            || $request->routeIs('mfa.*', 'admin.login', 'login.check', 'password.*', 'invitation.*', 'sso', 'sso.logout', 'user.password')
+            || $this->containsCredentials($request->all()))) {
             app('debugbar')->disable();
         }
         // Nonces belong to documents, never users or sessions.
@@ -46,5 +46,33 @@ class SecurityHeaders
         $response->headers->set('Cache-Control', 'private, no-store');
 
         return $response;
+    }
+
+    /**
+     * Livewire sends component state as JSON snapshots, alongside nested updates.
+     *
+     * @param  array<array-key, mixed>  $values
+     */
+    private function containsCredentials(array $values): bool
+    {
+        foreach ($values as $key => $value) {
+            $name = strtolower(preg_replace('/[^a-z]/i', '', (string) $key));
+            foreach (['password', 'mfacode', 'secret', 'recoverycode', 'claimcode', 'customvalues'] as $credential) {
+                if (str_contains($name, $credential)) {
+                    return true;
+                }
+            }
+            if (is_array($value) && $this->containsCredentials($value)) {
+                return true;
+            }
+            if ($name === 'snapshot' && is_string($value)) {
+                $snapshot = json_decode($value, true);
+                if (! is_array($snapshot) || $this->containsCredentials($snapshot)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }
