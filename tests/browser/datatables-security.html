@@ -109,6 +109,7 @@ try {
     check('Cards use current DataTables page', cardNodes().length === 2);
     check('Unsafe destination produces a noninteractive card', cardNodes()[1].tagName === 'ARTICLE');
     check('Card values remain escaped', hasNoInjectedElements(root) && root.textContent.includes(payload));
+    check('Ordinary tables keep native record links', !root.querySelector('a.record-data-card').hasAttribute('wire:navigate') && !responsiveTable[0].querySelector('a').hasAttribute('wire:navigate'));
     check('Whole card is the record link', cardNodes()[0].tagName === 'A' && !cardNodes()[0].querySelector('a,button'));
     const desktopVisible = getComputedStyle(root.querySelector('.record-data-table-desktop')).display !== 'none';
     check('Breakpoint uses desktop table at lg', desktopVisible === matchMedia('(min-width:992px)').matches);
@@ -196,6 +197,32 @@ try {
             window.scrollTo(0, 0);
         }
     }
+
+    const spaRoot = document.createElement('section');
+    spaRoot.dataset.responsiveDataTable = '';
+    spaRoot.dataset.cardFields = JSON.stringify({ primary: 'name' });
+    spaRoot.innerHTML = '<div data-table-toolbar></div><div class="record-data-table-desktop"></div><div data-table-cards></div><div data-table-footer></div>';
+    document.getElementById('tables').append(spaRoot);
+    const spaTable = table('spa', [rows[0]]);
+    spaTable.attr('data-navigate-records', 'true');
+    spaRoot.querySelector('.record-data-table-desktop').append(spaTable[0]);
+    initDataTable(spaTable);
+    check('Opted-in desktop actions use SPA navigation', spaTable[0].querySelector('a').hasAttribute('wire:navigate'));
+    const desktopLoaderCalls = window.cardLoaderCalls;
+    document.addEventListener('click', event => {
+        const intercepted = event.defaultPrevented;
+        event.preventDefault();
+        check('SPA desktop links bypass the legacy table handler', !intercepted && window.cardLoaderCalls === desktopLoaderCalls);
+    }, { once: true });
+    spaTable[0].querySelector('a').click();
+    const spaCard = spaRoot.querySelector('a.record-data-card');
+    check('Opted-in mobile cards use SPA navigation', spaCard.hasAttribute('wire:navigate'));
+    const spaLoaderCalls = window.cardLoaderCalls;
+    const click = new MouseEvent('click', { bubbles: true, cancelable: true, button: 0 });
+    spaCard.addEventListener('click', event => event.preventDefault(), { once: true });
+    spaCard.dispatchEvent(click);
+    check('SPA cards bypass the delayed full reload loader', window.cardLoaderCalls === spaLoaderCalls);
+    spaRoot.remove();
 
     check('Injected scripts never executed', window.tableScriptExecuted === false);
 } catch (error) {

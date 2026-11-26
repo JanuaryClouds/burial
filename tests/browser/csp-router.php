@@ -2,6 +2,9 @@
 
 use App\Models\SystemSetting;
 use App\Models\User;
+use App\Services\Auth\AccountSession;
+use App\Services\Auth\SuperadminMfa;
+use App\Services\PsaClassificationService;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Foundation\Bootstrap\LoadConfiguration;
 use Illuminate\Http\Request;
@@ -12,6 +15,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Tests\Support\CspProbe;
 
@@ -42,6 +46,7 @@ $app->afterBootstrapping(LoadConfiguration::class, function ($app) use ($directo
         'queue.default' => 'sync', 'mail.default' => 'array', 'csp.mode' => 'enforce',
         'services.portal.users.mock' => false, 'services.portal.users.enable.get' => false,
         'services.portal.users.enable.post' => false, 'services.portal.notification.enable.post' => false,
+        'services.fileserver.mock' => false,
         'services.fileserver.enable.get' => false, 'services.fileserver.enable.post' => false,
         'services.sms.enable.post' => false, 'services.psa_classification.get' => false,
         'services.disbursement.enable.post' => false, 'services.portal.endpoint' => '',
@@ -50,6 +55,12 @@ $app->afterBootstrapping(LoadConfiguration::class, function ($app) use ($directo
 $kernel = $app->make(Kernel::class);
 $kernel->bootstrap();
 Http::preventStrayRequests();
+$geography = Mockery::mock(PsaClassificationService::class)->makePartial();
+$geography->shouldReceive('getRegionOptions')->andReturn(['13:0:0:0' => 'NCR']);
+$geography->shouldReceive('getProvinceOptions')->andReturn([]);
+$geography->shouldReceive('getMunicipalityOptions')->andReturn(['13:0:137607:0' => 'Taguig']);
+$geography->shouldReceive('getBarangayOptions')->andReturn(['13:0:137607:137607001' => 'Bagumbayan']);
+$app->instance(PsaClassificationService::class, $geography);
 if (! Schema::hasTable('users')) {
     Artisan::call('migrate', ['--database' => 'sqlite', '--force' => true]);
     foreach (['sexes', 'religions', 'relationships', 'mode_of_assistances', 'nationalities', 'civil_statuses', 'educations'] as $table) {
@@ -68,13 +79,35 @@ Route::middleware('web')->group(function () {
         return redirect('/');
     });
     Route::get('/__csp/login', function () {
-        auth()->login(User::firstOrFail());
+        $actor = request()->query('actor', 'superadmin');
+        abort_unless(in_array($actor, ['superadmin', 'citizen', 'office', 'workflow'], true), 404);
+        $user = $actor === 'superadmin' ? User::firstOrFail() : User::where('email', $actor.'@example.org')->first();
+        if (! $user) {
+            $user = User::factory()->create(['first_name' => 'SPA', 'last_name' => ucfirst($actor),
+                'email' => $actor.'@example.org', 'citizen_uuid' => $actor === 'citizen' ? (string) Str::uuid() : null,
+                'is_active' => true, 'password_change_required' => false]);
+            if ($actor !== 'citizen') {
+                $user->assignRole(Role::findOrCreate($actor === 'office' ? 'CSWDO' : 'Treasury', 'web'));
+                if ($actor === 'workflow') {
+                    $user->givePermissionTo(Permission::findOrCreate('Workflow Treasury', 'web'));
+                }
+            }
+        }
+        auth()->login($user);
+        app(AccountSession::class)->start(auth()->user(), request());
         session(['account.staff_hash' => auth()->user()->password]);
+        if ($user->hasRole('superadmin')) {
+            $credential = app(SuperadminMfa::class)->credential($user);
+            if (! $credential->confirmed_at) {
+                $credential->forceFill(['secret' => 'JBSWY3DPEHPK3PXP', 'confirmed_at' => now()])->save();
+            }
+            session(['mfa.proof' => ['user_id' => auth()->id(), 'version' => $credential->version]]);
+        }
 
         return redirect('/dashboard');
     });
     Route::get('/__csp/probe', function () {
-        return Blade::render('@extends("layouts.app") @section("content") <script src="/js/csp-browser-check.js"></script> <livewire:csp-probe defer /> @endsection', ['pageTitle' => 'CSP fixture']);
+        return Blade::render('@extends("layouts.app") @section("content") <script src="/js/csp-browser-check.js" data-navigate-once></script> <livewire:csp-probe defer /> @endsection', ['pageTitle' => 'CSP fixture']);
     })->middleware('auth');
     Route::get('/__csp/tables', function () {
         // This is a fixed authored fixture, not user-provided HTML.
