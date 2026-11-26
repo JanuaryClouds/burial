@@ -50,7 +50,5 @@
         </div></div>
     </div>
 </div>
-@push('scripts')
-    <script nonce="{{ $nonce ?? '' }}" src="{{ asset('js/record-export.js') }}" defer></script>
-@endpush
+
 @endcan
