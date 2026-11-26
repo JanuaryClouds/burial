@@ -9,7 +9,7 @@
 				@php($status = $application->currentStatus())
 				<li class="dashboard-activity-item border-bottom" wire:key="recent-application-{{ $application->uuid }}">
 					<div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
-						<a class="fw-semibold" href="{{ route('application.show', $application) }}">
+						<a class="fw-semibold" wire:navigate href="{{ route('application.show', $application) }}">
 							{{ $application->tracking_no }}
 						</a>
 						<span class="badge badge-light-{{ $status['badgeColor'] }}">{{ ucfirst($status['label']) }}</span>
