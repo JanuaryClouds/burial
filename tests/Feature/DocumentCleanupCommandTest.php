@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
@@ -117,29 +118,32 @@ class DocumentCleanupCommandTest extends TestCase
 
     public function test_reference_created_during_scan_is_rechecked_before_deletion(): void
     {
-        $disk = \Mockery::mock();
-        $disk->shouldReceive('allFiles')->with('templates')->once()->andReturn(['templates/new-reference.docx']);
-        $disk->shouldReceive('allFiles')->with('generated')->once()->andReturn([]);
-        $disk->shouldReceive('exists')->once()->andReturn(true);
-        $disk->shouldReceive('lastModified')->once()->andReturnUsing(function () {
-            $this->reference('templates/new-reference.docx');
+        $this->file('templates/new-reference.docx');
+        $real = Storage::disk('document_templates');
+        $disk = \Mockery::mock(FilesystemAdapter::class, [$real->getDriver(), $real->getAdapter(), $real->getConfig()])->makePartial();
+        $reads = 0;
+        $disk->shouldReceive('lastModified')->twice()->andReturnUsing(function () use (&$reads) {
+            if (++$reads === 2) {
+                $this->reference('templates/new-reference.docx');
+            }
 
             return now()->subDays(2)->getTimestamp();
         });
         $disk->shouldNotReceive('delete');
-        Storage::shouldReceive('disk')->with('document_templates')->once()->andReturn($disk);
+        Storage::set('document_templates', $disk);
         $this->artisan('documents:cleanup')->expectsOutput('Deleted 0 orphaned document file(s).')->assertSuccessful();
+        $real->assertExists('templates/new-reference.docx');
+        $this->assertSame(1, DB::table('document_templates')->count());
     }
 
     public function test_deletion_failure_returns_failure_status(): void
     {
-        $disk = \Mockery::mock();
-        $disk->shouldReceive('allFiles')->with('templates')->once()->andReturn(['templates/orphan.docx']);
-        $disk->shouldReceive('allFiles')->with('generated')->once()->andReturn([]);
-        $disk->shouldReceive('exists')->once()->andReturn(true);
-        $disk->shouldReceive('lastModified')->once()->andReturn(now()->subDays(2)->getTimestamp());
+        $this->file('templates/orphan.docx');
+        $real = Storage::disk('document_templates');
+        $disk = \Mockery::mock(FilesystemAdapter::class, [$real->getDriver(), $real->getAdapter(), $real->getConfig()])->makePartial();
         $disk->shouldReceive('delete')->with('templates/orphan.docx')->once()->andReturn(false);
-        Storage::shouldReceive('disk')->with('document_templates')->once()->andReturn($disk);
+        Storage::set('document_templates', $disk);
         $this->artisan('documents:cleanup')->expectsOutput('Unable to check or delete: templates/orphan.docx')->assertFailed();
+        $real->assertExists('templates/orphan.docx');
     }
 }
