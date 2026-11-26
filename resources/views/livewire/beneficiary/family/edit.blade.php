@@ -49,7 +49,7 @@
 		</div>
 	</div>
 	<div class="d-flex justify-content-end align-items-center gap-2">
-		<a href="{{ route('beneficiary.show', $member->beneficiary) }}"
+		<a wire:navigate href="{{ route('beneficiary.show', $member->beneficiary) }}"
 			class="btn btn-sm btn-light">
 			<x-icon.font-awesome class="fa-xmark" />
 			Cancel

@@ -18,7 +18,7 @@
 		{{-- end::Address --}}
 	</div>
 	<x-slot:footer>
-		<a href="{{ route('beneficiary.show', $beneficiary) }}"
+		<a wire:navigate href="{{ route('beneficiary.show', $beneficiary) }}"
 			class="btn btn-sm btn-light">
 			<x-icon.font-awesome class="fa-xmark" />
 			Cancel
