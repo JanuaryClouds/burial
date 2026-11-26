@@ -398,3 +398,105 @@ a.record-data-card:focus-visible { outline:3px solid var(--bs-primary); outline-
 .chart-grid > [class*="col-"] { min-width:0; display:flex; }
 .chart-grid > [class*="col-"] > .card { width:100%; }
 @media (max-width:767.98px) { .chart-plot { height:340px; } }
+
+/* Match the card borders while leaving Livewire in charge of progress. */
+html #nprogress .bar,
+.spa-navigation-loader__track::before {
+    background: linear-gradient(to right,
+        var(--bs-primary) 0% 50%,
+        var(--bs-warning) 50% 70%,
+        var(--bs-secondary) 70% 100%);
+}
+
+html #nprogress .bar {
+    height: 5px;
+}
+
+html #nprogress .peg {
+    display: none;
+}
+
+.spa-navigation-loader[hidden] {
+    display: none;
+}
+
+.spa-navigation-loader {
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    padding: 2rem 1rem;
+}
+
+.spa-content-loading {
+    min-height: 22rem;
+}
+
+.spa-content-loading > .container-xxl {
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.spa-navigation-loader__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    text-align: center;
+}
+
+.spa-navigation-loader__logos {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.spa-navigation-loader__logos img {
+    width: clamp(72px, 16vw, 96px);
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: contain;
+    border-radius: 50%;
+    padding: 4px;
+    background: white;
+    animation: spa-logo-breathe 1.8s ease-in-out infinite alternate;
+}
+
+.spa-navigation-loader__logos img + img {
+    animation-delay: .45s;
+}
+
+.spa-navigation-loader__track {
+    position: relative;
+    width: 200px;
+    height: 6px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: var(--bs-border-color);
+}
+
+.spa-navigation-loader__track::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    animation: spa-loading-sweep 1.6s ease-in-out infinite;
+}
+
+@keyframes spa-logo-breathe {
+    from { opacity: .65; transform: translateY(0); }
+    to { opacity: 1; transform: translateY(-5px); }
+}
+
+@keyframes spa-loading-sweep {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(100%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .spa-navigation-loader__logos img,
+    .spa-navigation-loader__track::before {
+        animation: none;
+    }
+}

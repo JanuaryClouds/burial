@@ -15,7 +15,8 @@
 			@include('partials.sidebar.index')
 			<div class="wrapper d-flex flex-column flex-row-fluid">
 				@include('partials.header')
-				<div class="content d-flex flex-column flex-column-fluid">
+				<div class="content d-flex flex-column flex-column-fluid position-relative">
+                    <x-spa-loader />
 					<div class="container-xxl">
 						<div class="d-flex flex-column gap-6">
 							<x-page-navigation :current-label="$pageTitle ?? null" />
