@@ -5,13 +5,13 @@
 			<livewire:beneficiary.family.edit :member="$member" />
 		</x-card>
 		<div class="d-flex justify-content-start gap-2">
-			<a href="{{ route('beneficiary.show', $member->beneficiary) }}"
+			<a wire:navigate href="{{ route('beneficiary.show', $member->beneficiary) }}"
 				class="btn btn-sm btn-info">
 				<x-icon.font-awesome class="fa-external-link" />
 				{{ $member->beneficiary->fullname() }}
 			</a>
 			@if ($member->beneficiary->application)
-				<a href="{{ route('application.show', $member->beneficiary->application) }}"
+				<a wire:navigate href="{{ route('application.show', $member->beneficiary->application) }}"
 					class="btn btn-sm btn-info">
 					<x-icon.font-awesome class="fa-external-link" />
 					{{ $member->beneficiary->application->tracking_no }}

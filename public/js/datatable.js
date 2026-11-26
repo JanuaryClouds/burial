@@ -80,6 +80,7 @@ function initDataTable(dataTable) {
 				if (!url) return '';
 				const link = document.createElement('a');
 				link.href = url;
+				if (dataTable.data('navigate-records') === true) link.setAttribute('wire:navigate', '');
 				link.className = 'btn btn-sm btn-primary hover-scale';
 				link.innerHTML = `
 					<i class="ki-duotone ki-eye pe-1">
@@ -155,6 +156,9 @@ function initDataTable(dataTable) {
 	if (responsiveRoot) mountResponsiveDataTable(dataTable.DataTable(), responsiveRoot, sameOriginTableUrl);
 
 	dataTable.off('click.burialTable', 'a').on('click.burialTable', 'a', function(e) {
+		if (e.isDefaultPrevented() || this.hasAttribute('wire:navigate') ||
+			e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey ||
+			this.hasAttribute('download') || (this.target && this.target !== '_self')) return;
 		e.preventDefault();
 		const url = sameOriginTableUrl($(this).attr('href'));
 		if (url) {

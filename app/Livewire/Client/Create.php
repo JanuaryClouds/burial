@@ -228,7 +228,7 @@ class Create extends Component
                     'client_uuid' => $client->uuid,
                 ]);
 
-                $this->redirect(route('beneficiary.create'));
+                $this->redirect(route('beneficiary.create'), navigate: true);
             });
         } catch (\Throwable $th) {
             $this->dispatch('notification:alert', [

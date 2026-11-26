@@ -1,7 +1,7 @@
 @if ($parent)
 	<nav class="page-navigation rounded border bg-body px-5 py-4 shadow-sm"
 		aria-label="Breadcrumb">
-		<a href="{{ $parent['url'] }}"
+		<a @if ($parent['navigate'] ?? false) wire:navigate @endif href="{{ $parent['url'] }}"
 			class="d-flex d-md-none align-items-center gap-2 text-primary fw-semibold"
 			aria-label="{{ 'Back to ' . $parent['label'] }}">
 			<i class="fa-solid fa-arrow-left flex-shrink-0" aria-hidden="true"></i>
@@ -12,7 +12,7 @@
 				<li @class(['breadcrumb-item', 'active' => $loop->last])
 					@if ($loop->last) aria-current="page" @endif>
 					@if (!$loop->last && $item['url'])
-						<a href="{{ $item['url'] }}" class="text-primary">{{ $item['label'] }}</a>
+						<a @if ($item['navigate'] ?? false) wire:navigate @endif href="{{ $item['url'] }}" class="text-primary">{{ $item['label'] }}</a>
 					@else
 						<span class="text-body-secondary">{{ $item['label'] }}</span>
 					@endif

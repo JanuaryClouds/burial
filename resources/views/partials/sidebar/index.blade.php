@@ -10,7 +10,7 @@
 	<!--begin::Logo-->
 	<div class="aside-logo flex-column-auto pt-15"
 		id="kt_aside_logo">
-		<a href="{{ route('dashboard') }}"
+		<a wire:navigate href="{{ route('dashboard') }}"
 			aria-label="Go to dashboard">
 			<img alt="Logo"
 				src="{{ asset('images/CSWDO.webp') }}"

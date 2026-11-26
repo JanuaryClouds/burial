@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\InvitationController;
 use App\Http\Controllers\Auth\UserController;
+use App\Http\Controllers\DocumentCleanupController;
 use App\Http\Controllers\DocumentRequirementController;
 use App\Http\Controllers\DocumentTemplateController;
 use App\Http\Controllers\FailedEmailController;
@@ -9,6 +10,7 @@ use App\Http\Controllers\FuneralAssistanceTypeController;
 use App\Http\Controllers\ModeOfAssistanceController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SystemController;
+use App\Http\Controllers\SystemInspectionController;
 use App\Http\Controllers\WorkflowController;
 use App\Http\Controllers\WorkflowStageController;
 use App\Http\Middleware\RecoveryPrivacy;
@@ -16,6 +18,15 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('role:superadmin')
     ->group(function () {
+        Route::prefix('system/document-cleanup')->name('system.document-cleanup.')->middleware(RecoveryPrivacy::class)->group(function () {
+            Route::get('/', [DocumentCleanupController::class, 'index'])->name('index');
+            Route::post('/preview', [DocumentCleanupController::class, 'preview'])->middleware('throttle:document-cleanup')->name('preview');
+            Route::post('/clean', [DocumentCleanupController::class, 'clean'])->middleware('throttle:document-cleanup')->name('clean');
+        });
+        Route::get('/system/configuration-readiness', [SystemInspectionController::class, 'readiness'])
+            ->middleware(RecoveryPrivacy::class)->name('system.configuration-readiness');
+        Route::get('/system/diagnostics', [SystemInspectionController::class, 'diagnostics'])
+            ->middleware(RecoveryPrivacy::class)->name('system.diagnostics');
         Route::middleware(RecoveryPrivacy::class)->group(function () {
             Route::get('/staff-invitations', [InvitationController::class, 'index'])->name('user.invitations.index');
             Route::post('/staff-invitations', [InvitationController::class, 'store'])->middleware('throttle:invitation-admin')->name('user.invitations.store');

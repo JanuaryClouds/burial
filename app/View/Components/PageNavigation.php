@@ -9,10 +9,10 @@ use Illuminate\View\Component;
 
 class PageNavigation extends Component
 {
-    /** @var array<int, array{label: string, url: ?string}> */
+    /** @var array<int, array{label: string, url: ?string, navigate?: bool}> */
     public array $items;
 
-    /** @var array{label: string, url: ?string}|null */
+    /** @var array{label: string, url: ?string, navigate?: bool}|null */
     public ?array $parent;
 
     public function __construct(Request $request, ?array $items = null, ?string $currentLabel = null)
@@ -119,6 +119,8 @@ class PageNavigation extends Component
         }
 
         return match ($name) {
+            'system.configuration-readiness' => [$system, $this->current('Configuration Readiness')],
+            'system.diagnostics' => [$system, $this->current('System Diagnostics')],
             'system.settings' => [$system, $this->current('Settings')],
             'system.failed-emails.index' => [$system, $this->current('Emails')],
             'system.logs.index' => [$system, $this->current('Logs')],
@@ -129,7 +131,9 @@ class PageNavigation extends Component
 
     private function link(string $label, string $route, mixed $parameters = []): array
     {
-        return ['label' => $label, 'url' => route($route, $parameters)];
+        return ['label' => $label, 'url' => route($route, $parameters), 'navigate' => in_array($route, [
+            'dashboard', 'application.index', 'application.search', 'application.show', 'application.create', 'client.index', 'client.show', 'client.create', 'client.edit', 'beneficiary.index', 'beneficiary.show', 'beneficiary.create', 'beneficiary.edit', 'beneficiary.family.edit',
+        ], true)];
     }
 
     private function current(string $label): array

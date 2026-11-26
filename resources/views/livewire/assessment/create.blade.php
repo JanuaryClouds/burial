@@ -14,17 +14,17 @@
 				<livewire:application.summary :application="$application"
 					defer />
 				<x-slot:footer>
-					<a href="{{ route('application.show', $application) }}"
+					<a wire:navigate href="{{ route('application.show', $application) }}"
 						class="btn btn-sm btn-light">
 						<x-icon.font-awesome class="fa-up-right-from-square" />
 						Show Application
 					</a>
-					<a href="{{ route('client.show', $application->client) }}"
+					<a wire:navigate href="{{ route('client.show', $application->client) }}"
 						class="btn btn-sm btn-light">
 						<x-icon.font-awesome class="fa-up-right-from-square" />
 						Show Client
 					</a>
-					<a href="{{ route('beneficiary.show', $application->beneficiary) }}"
+					<a wire:navigate href="{{ route('beneficiary.show', $application->beneficiary) }}"
 						class="btn btn-sm btn-light">
 						<x-icon.font-awesome class="fa-up-right-from-square" />
 						Show Beneficiary

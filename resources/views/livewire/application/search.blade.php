@@ -53,7 +53,7 @@
 					<x-slot:header>Results</x-slot:header>
 					<livewire:application.summary :application="$application" />
 					<x-slot:footer>
-						<a href="{{ route('application.show', $application) }}"
+						<a wire:navigate href="{{ route('application.show', $application) }}"
 							class="btn btn-sm btn-info"
 							role="button">
 							<x-icon.font-awesome class="fa-up-right-from-square" />

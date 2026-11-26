@@ -33,7 +33,7 @@
 			submitting a client record, for uploading into the system.
 		</p>
 		<x-slot:footer>
-			<a href="{{ route('beneficiary.index') }}"
+			<a wire:navigate href="{{ route('beneficiary.index') }}"
 				class="btn btn-light btn-sm">
 				<x-icon.font-awesome class="fa-xmark" />
 				Cancel

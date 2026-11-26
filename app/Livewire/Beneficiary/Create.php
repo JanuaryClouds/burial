@@ -192,7 +192,7 @@ class Create extends Component
                     'beneficiary_uuid' => $beneficiary->uuid,
                 ]);
 
-                $this->redirect(route('application.create'));
+                $this->redirect(route('application.create'), navigate: true);
             });
         } catch (\Throwable $th) {
             $this->dispatch('notification:alert', [

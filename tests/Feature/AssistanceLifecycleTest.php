@@ -379,7 +379,7 @@ class AssistanceLifecycleTest extends TestCase
     public function test_client_creation_form_persists_complete_draft(): void
     {
         $this->mockGeography();
-        Livewire::test(\App\Livewire\Client\Create::class)
+        $component = Livewire::test(\App\Livewire\Client\Create::class)
             ->set('form', ['dateOfBirth' => '1980-01-01', 'contactNumber' => '09123456789'])
             ->set('addressForm.regionCode', '13:0:0:0')
             ->set('addressForm.municipalityCode', '13:0:137607:0')
@@ -388,6 +388,7 @@ class AssistanceLifecycleTest extends TestCase
             ->set('demographicsForm', ['sexId' => 1, 'nationalityId' => 1, 'religionId' => 1])
             ->set('socialInfoForm', ['civilId' => 1, 'educationId' => 1, 'income' => '5000'])
             ->call('save')->assertRedirect(route('beneficiary.create'));
+        $this->assertTrue($component->effects['redirectUsingNavigate']);
         $client = Client::sole();
         $this->assertEquals($this->owner->id, $client->user_id);
         $this->assertSame($client->uuid, session('client_uuid'));
@@ -399,7 +400,7 @@ class AssistanceLifecycleTest extends TestCase
     public function test_beneficiary_creation_form_persists_address_and_family(): void
     {
         $this->mockGeography();
-        Livewire::test(\App\Livewire\Beneficiary\Create::class)
+        $component = Livewire::test(\App\Livewire\Beneficiary\Create::class)
             ->set('form', ['firstName' => 'Recorded', 'lastName' => 'Beneficiary', 'dateOfBirth' => '1950-01-01',
                 'dateOfDeath' => '2026-01-01', 'sexId' => 1, 'religionId' => 1, 'family' => [
                     ['name' => 'Family Member', 'age' => 40, 'civilId' => '1', 'sexId' => 1, 'relationshipId' => 1, 'occupation' => 'Worker', 'income' => '5000'],
@@ -408,6 +409,7 @@ class AssistanceLifecycleTest extends TestCase
             ->set('addressForm.municipalityCode', '13:0:137607:0')
             ->set('addressForm.barangayCode', '13:0:137607:137607001')
             ->set('addressForm.street', 'Main Street')->set('addressForm.houseNumber', '1')->call('save')->assertRedirect(route('application.create'));
+        $this->assertTrue($component->effects['redirectUsingNavigate']);
         $beneficiary = Beneficiary::sole();
         $this->assertEquals($this->owner->id, $beneficiary->created_by);
         $this->assertSame($beneficiary->uuid, session('beneficiary_uuid'));

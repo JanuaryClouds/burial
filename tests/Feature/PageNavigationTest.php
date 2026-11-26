@@ -133,4 +133,21 @@ class PageNavigationTest extends TestCase
         $this->assertStringNotContainsString($label, $html);
         $this->assertStringContainsString(route('client.show', 'client-123'), $html);
     }
+
+    public function test_breadcrumbs_only_navigate_to_explicit_trial_destinations(): void
+    {
+        $navigation = $this->navigation('client.edit', ['client' => 'record-123']);
+        $html = $navigation->render()->with($navigation->data())->render();
+        $document = new \DOMDocument;
+        @$document->loadHTML($html);
+        $xpath = new \DOMXPath($document);
+
+        $this->assertSame(3, $xpath->query('//a[@*[name()="wire:navigate"]]')->length);
+
+        $navigation = $this->navigation('role.create');
+        $html = $navigation->render()->with($navigation->data())->render();
+        $document = new \DOMDocument;
+        @$document->loadHTML($html);
+        $this->assertSame(0, (new \DOMXPath($document))->query('//a[@*[name()="wire:navigate"]]')->length);
+    }
 }

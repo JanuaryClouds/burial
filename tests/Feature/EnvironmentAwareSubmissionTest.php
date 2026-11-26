@@ -174,9 +174,11 @@ class EnvironmentAwareSubmissionTest extends TestCase
         $owner = $this->citizen();
         $client = $this->client($owner);
         $beneficiary = $this->beneficiary($owner);
-        Livewire::test(Create::class)
+        $component = Livewire::test(Create::class)
             ->set('clientUuid', $client->uuid)->set('beneficiaryUuid', $beneficiary->uuid)->set('relationshipId', '1')
             ->set('agreedToTerms', true)->call('save')->assertHasNoErrors();
+        $component->assertRedirect(route('application.show', Application::sole()));
+        $this->assertTrue($component->effects['redirectUsingNavigate']);
         $this->assertSame(1, Application::count());
         Http::assertNothingSent();
     }

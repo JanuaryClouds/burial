@@ -1,6 +1,22 @@
 @extends('layouts.app')
 @section('content')
 	<div class="d-flex flex-column gap-6">
+        <x-card>
+            <x-slot:header>Environment Setup (Read-only)</x-slot:header>
+            <p>Inspect configuration readiness and local application requirements. These pages do not change settings or contact providers.</p>
+            <div class="row g-4">
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                    <a class="btn btn-lg btn-outline btn-outline-primary w-100 h-100" href="{{ route('system.configuration-readiness') }}">
+                        <x-icon.font-awesome class="fa-external-link" /> Configuration Readiness
+                    </a>
+                </div>
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                    <a class="btn btn-lg btn-outline btn-outline-primary w-100 h-100" href="{{ route('system.diagnostics') }}">
+                        <x-icon.font-awesome class="fa-external-link" /> System Diagnostics
+                    </a>
+                </div>
+            </div>
+        </x-card>
 		{{-- start::CMS Links --}}
 		<x-card>
 			<x-slot:header>Content Management System</x-slot:header>

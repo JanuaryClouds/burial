@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Http\Middleware\SecurityHeaders;
 use App\Models\SystemSetting;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
@@ -11,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
+use PHPUnit\Framework\Attributes\TestWith;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 
@@ -138,5 +140,77 @@ class SecurityHeadersTest extends TestCase
         foreach ($scripts[0] as $script) {
             $this->assertStringContainsString('nonce="'.$nonce.'"', $script);
         }
+    }
+
+    private function profileRequest(Request $request): bool
+    {
+        config(['debugbar.collectors' => [], 'debugbar.storage.enabled' => false]);
+        $debugbar = app('debugbar');
+        $debugbar->enable();
+        app(SecurityHeaders::class)->handle($request, fn () => response()->json(['ok' => true]));
+
+        return $debugbar->isEnabled();
+    }
+
+    public function test_local_superadmins_can_profile_pages_and_operational_livewire_updates(): void
+    {
+        $this->app->instance('env', 'local');
+        $this->actingAs(User::factory()->superadmin()->create());
+        $page = Request::create('/dashboard');
+        $navigation = Request::create('/application');
+        $navigation->headers->set('X-Livewire-Navigate', '');
+        $update = Request::create('/livewire/update', 'POST', ['_token' => 'csrf-fixture', 'components' => [[
+            'snapshot' => json_encode(['data' => ['code' => '2026-0001'], 'memo' => ['name' => 'application.search']]),
+            'updates' => ['code' => '2026-0002'], 'calls' => [['method' => 'search', 'params' => []]],
+        ]]]);
+        $update->headers->set('X-Livewire', '');
+
+        $this->assertTrue($this->profileRequest($page));
+        $this->assertTrue($this->profileRequest($navigation));
+        $this->assertTrue($this->profileRequest($update));
+    }
+
+    #[TestWith(['mfa.show'])]
+    #[TestWith(['mfa.manage'])]
+    #[TestWith(['admin.login'])]
+    #[TestWith(['password.request'])]
+    #[TestWith(['sso'])]
+    #[TestWith(['user.password'])]
+    public function test_sensitive_pages_disable_debugbar_without_needing_submitted_credentials(string $routeName): void
+    {
+        $request = Request::create('/sensitive');
+        $request->setRouteResolver(fn () => Route::getRoutes()->getByName($routeName));
+
+        $this->assertFalse($this->profileRequest($request));
+    }
+
+    #[TestWith([['password' => 'fixture-password']])]
+    #[TestWith([['mfa_code' => '123456']])]
+    #[TestWith([['components' => [['updates' => ['form.currentPassword' => 'fixture-password']]]]])]
+    #[TestWith([['components' => [['calls' => [['params' => [['custom_values' => ['private' => 'fixture-secret']]]]]]]]])]
+    #[TestWith([['components' => [['snapshot' => '{"data":{"mfaCode":"123456"},"memo":{"name":"user.edit"}}']]]])]
+    #[TestWith([['components' => [['snapshot' => 'invalid-json']]]])]
+    public function test_credential_payloads_disable_debugbar_including_livewire_state(array $payload): void
+    {
+        $request = Request::create('/livewire/update', 'POST', $payload);
+        $request->headers->set('X-Livewire', '');
+
+        $this->assertFalse($this->profileRequest($request));
+    }
+
+    public function test_production_cannot_be_profiled_even_when_debugbar_was_enabled(): void
+    {
+        $this->app->instance('env', 'production');
+
+        $this->assertFalse($this->profileRequest(Request::create('/dashboard')));
+    }
+
+    public function test_ordinary_requests_do_not_enable_a_disabled_debugbar(): void
+    {
+        app('debugbar')->disable();
+
+        app(SecurityHeaders::class)->handle(Request::create('/dashboard'), fn () => response()->json(['ok' => true]));
+
+        $this->assertFalse(app('debugbar')->isEnabled());
     }
 }

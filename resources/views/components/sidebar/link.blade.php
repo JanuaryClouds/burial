@@ -1,4 +1,4 @@
-<a href="{{ $route ? $route : '#' }}"
+<a @if ($navigate ?? false) wire:navigate @endif href="{{ $route ? $route : '#' }}"
 	data-kt-menu-trigger="{default: 'click', lg: 'hover'}"
 	data-kt-menu-placement="right-start"
 	@class(['menu-item', 'here' => Route::is($activeLink)])>

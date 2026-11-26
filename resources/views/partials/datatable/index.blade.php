@@ -7,6 +7,7 @@
     'countPerPage' => 10,
     'dataTableId',
     'bodyView' => null,
+    'navigate' => false,
     'emptyMessage' => 'No records found.',
 ])
 @php
@@ -37,6 +38,7 @@
 		data-columns='@json($columns)'
 		data-rows='@json($data)'
 		data-src="{{ $src }}"
+		data-navigate-records="{{ $navigate ? 'true' : 'false' }}"
 		data-dom-rows="{{ $bodyView ? 'true' : 'false' }}"
         data-empty-message="{{ $emptyMessage }}"
 		data-count-per-page="{{ $countPerPage }}">

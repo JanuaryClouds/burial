@@ -13,7 +13,7 @@
         <ol><li>Sign in through the TLC Citizens Portal and open the Funeral Assistance System.</li><li>Select <strong>Link My Walk-in Records</strong>.</li><li>Enter this private code and confirm the account shown is yours.</li></ol>
         <p><strong>Keep this code private.</strong> Anyone with this code and a citizen account could link these records. It is different from your public tracking number.</p>
         <p>Print or securely save this acknowledgment now. The system cannot display this code again. If it is lost or expired, contact CSWDO for verification and a replacement.</p>
-        <nav><button type="button" id="print-receipt">Print Acknowledgment</button> <a href="{{ route('application.show', $intake->application) }}">Open Application</a> <a href="{{ route('walk-in.index') }}">Back to Intakes</a></nav>
+        <nav><button type="button" id="print-receipt">Print Acknowledgment</button> <a wire:navigate href="{{ route('application.show', $intake->application) }}">Open Application</a> <a href="{{ route('walk-in.index') }}">Back to Intakes</a></nav>
     </main>
     <script nonce="{{ $nonce ?? '' }}" src="{{ asset('js/walk-in-receipt.js') }}" defer></script>
 </body>

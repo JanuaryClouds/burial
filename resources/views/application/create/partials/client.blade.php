@@ -5,7 +5,7 @@
 			defer />
 		<x-slot:footer>
 			@if ($clientUuid)
-				<a href="{{ route('client.edit', $clientUuid) }}"
+				<a wire:navigate href="{{ route('client.edit', $clientUuid) }}"
 					class="btn btn-sm btn-light">
 					<x-icon.font-awesome class="fa-pen-to-square" />
 					Edit Client Draft
@@ -31,7 +31,7 @@
 			</x-slot:icon>
 			No Client Selected
 			<x-slot:options>
-				<a href="{{ route('client.create') }}"
+				<a wire:navigate href="{{ route('client.create') }}"
 					class="btn btn-sm btn-primary"
 					role="button">
 					<x-icon.font-awesome class="fa-up-right-from-square" />

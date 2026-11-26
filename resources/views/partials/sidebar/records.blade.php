@@ -37,21 +37,21 @@
 </div>
 <!--end:records--> --}}
 @include('components.sidebar.link', [
-	'route' => route('application.index'),
+	'route' => route('application.index'), 'navigate' => true,
 	'activeLink' => 'application.*',
 	'icon' => 'some-files',
 	'iconPathsCount' => 2,
 	'label' => 'Applications',
 ])
 @include('components.sidebar.link', [
-	'route' => route('client.index'),
+	'route' => route('client.index'), 'navigate' => true,
 	'activeLink' => 'client.*',
 	'icon' => 'people',
 	'iconPathsCount' => 5,
 	'label' => 'Clients',
 ])
 @include('components.sidebar.link', [
-	'route' => route('beneficiary.index'),
+	'route' => route('beneficiary.index'), 'navigate' => true,
 	'activeLink' => 'beneficiary.*',
 	'icon' => 'profile-circle',
 	'iconPathsCount' => 3,
@@ -64,6 +64,6 @@
 @endcan
 @can('search-applications')
     @cannot('office-access')
-        @include('components.sidebar.link', ['route' => route('application.search'), 'activeLink' => 'application.search', 'icon' => 'scan-barcode', 'iconPathsCount' => 8, 'label' => 'Search Application'])
+        @include('components.sidebar.link', ['route' => route('application.search'), 'navigate' => true, 'activeLink' => 'application.search', 'icon' => 'scan-barcode', 'iconPathsCount' => 8, 'label' => 'Search Application'])
     @endcannot
 @endcan

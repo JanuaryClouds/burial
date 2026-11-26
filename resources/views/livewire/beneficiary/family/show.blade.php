@@ -39,7 +39,7 @@
 			</x-button>
 		@endcan
 		@can('update', [\App\Models\BeneficiaryFamily::class, $member->load(['beneficiary.application'])])
-			<a href="{{ route('beneficiary.family.edit', $member) }}"
+			<a wire:navigate href="{{ route('beneficiary.family.edit', $member) }}"
 				class="btn btn-sm btn-light">
 				<i class="fa-solid fa-pencil"></i>
 				Edit
