@@ -65,7 +65,7 @@ export function mountResponsiveDataTable(api, root, safeUrl) {
     // Cards are outside the table's delegated navigation handler.
     listen(cards, 'click', event => {
         const card = event.target.closest('a.record-data-card');
-        if (!card || event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+        if (!card || card.hasAttribute('wire:navigate') || event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
         const url = safeUrl(card.href);
         if (!url) return;
         event.preventDefault();
@@ -88,7 +88,10 @@ export function mountResponsiveDataTable(api, root, safeUrl) {
         api.rows({ page: 'current', search: 'applied', order: 'applied' }).data().toArray().forEach(row => {
             const url = safeUrl(row.show_route);
             const card = element(url ? 'a' : 'article', 'record-data-card');
-            if (url) card.href = url;
+            if (url) {
+                card.href = url;
+                if (api.table().node().dataset.navigateRecords === 'true') card.setAttribute('wire:navigate', '');
+            }
             [['primary', 'h3', 'fs-3 fw-bold'], ['secondary', 'p', 'fw-semibold'], ['tertiary', 'p', 'text-muted']].forEach(([key, tag, css]) => {
                 const value = row[fields[key]];
                 if (value !== null && value !== undefined && value !== '') {
