@@ -9,7 +9,7 @@
 	{{-- start::Index --}}
 	<div>
 		<x-card>
-			<x-data-table :columns="$columns" :data="$mappedApplications" :data-table-id="$dataTableId"
+			<x-data-table :navigate="true" :columns="$columns" :data="$mappedApplications" :data-table-id="$dataTableId"
                 :card-fields="['primary' => 'tracking_no', 'secondary' => 'client', 'tertiary' => 'beneficiary', 'badge' => 'status', 'date' => 'application_date']" />
 			<x-slot:footer>
 				@can('office-access')
@@ -20,7 +20,7 @@
 						Generate Report
 					</a>
                     @endcan
-					<a href="{{ route('application.search') }}"
+					<a wire:navigate href="{{ route('application.search') }}"
 						class="btn btn-primary">
 						<x-icon.font-awesome class="fa-qrcode" />
 						Scan Barcode
@@ -35,7 +35,7 @@
                 @endcan
                 @include('components.record-export-trigger')
 				@if (! auth()->user()->isInternal())
-					<a href="{{ route('application.create') }}"
+					<a wire:navigate href="{{ route('application.create') }}"
 						class="btn btn-primary">
 						<x-icon.font-awesome class="fa-plus" />
 						New Application

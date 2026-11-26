@@ -33,7 +33,7 @@
 					Set an interview first before rejecting the application.
 					@can('create', [\App\Models\Interview::class, $application->client])
 						<x-slot:options>
-							<a href="{{ route('client.show', $application->client) }}"
+							<a wire:navigate href="{{ route('client.show', $application->client) }}"
 								class="btn btn-sm btn-primary">
 								<x-icon.font-awesome class="fa-up-right-from-square" />
 								Show Client

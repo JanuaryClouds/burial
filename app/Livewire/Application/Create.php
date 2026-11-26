@@ -172,7 +172,7 @@ class Create extends Component
             $application = $service->submit($draft->uuid, $this->draftVersion, $this->images);
             session()->forget(['client_uuid', 'beneficiary_uuid']);
             $this->dispatch('notification:alert', ['type' => 'success', 'text' => 'Your application has been submitted.']);
-            $this->redirect(route('application.show', $application));
+            $this->redirect(route('application.show', $application), navigate: true);
         } catch (ValidationException $exception) {
             $this->setErrorBag($exception->validator->errors());
         } catch (\Throwable $exception) {

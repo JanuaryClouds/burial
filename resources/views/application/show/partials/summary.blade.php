@@ -10,11 +10,11 @@
     @endif
     <x-slot:footer>
         @if (! auth()->user()->isInternal() || auth()->user()->hasOfficeAccess())
-            <a href="{{ route('client.show', $application->client) }}" class="btn btn-sm btn-light">
+            <a wire:navigate href="{{ route('client.show', $application->client) }}" class="btn btn-sm btn-light">
                 <x-icon.font-awesome class="fa-up-right-from-square" />
                 Show Client
             </a>
-            <a href="{{ route('beneficiary.show', $application->beneficiary) }}" class="btn btn-sm btn-light">
+            <a wire:navigate href="{{ route('beneficiary.show', $application->beneficiary) }}" class="btn btn-sm btn-light">
                 <x-icon.font-awesome class="fa-up-right-from-square" />
                 Show Beneficiary
             </a>

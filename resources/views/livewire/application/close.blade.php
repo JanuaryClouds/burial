@@ -47,7 +47,7 @@
 			<livewire:closure.show :application="$application"
 				defer />
 			<div class="d-flex justify-content-end">
-				<a href="{{ route('application.show', $application) }}"
+				<a wire:navigate href="{{ route('application.show', $application) }}"
 					class="btn btn-sm btn-primary">
 					<x-icon.font-awesome class="fa-external-link" />
 					Go to Application

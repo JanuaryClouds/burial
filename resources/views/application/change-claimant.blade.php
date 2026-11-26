@@ -5,7 +5,7 @@
             <x-slot:header>Application Summary</x-slot:header>
             <livewire:application.summary :application="$application" />
             <x-slot:footer>
-                <a href="{{ route('application.show', $application) }}" class="btn btn-sm btn-light">Back to Application</a>
+                <a wire:navigate href="{{ route('application.show', $application) }}" class="btn btn-sm btn-light">Back to Application</a>
             </x-slot:footer>
         </x-card>
         <x-card>

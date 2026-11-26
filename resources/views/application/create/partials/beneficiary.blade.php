@@ -5,7 +5,7 @@
 			defer />
 		<x-slot:footer>
 			@if ($beneficiaryUuid)
-				<a href="{{ route('beneficiary.edit', $beneficiaryUuid) }}"
+				<a wire:navigate href="{{ route('beneficiary.edit', $beneficiaryUuid) }}"
 					class="btn btn-sm btn-light">
 					<x-icon.font-awesome class="fa-pencil" />
 					Edit Beneficiary Draft
@@ -31,7 +31,7 @@
 			</x-slot:icon>
 			No Beneficiary Selected
 			<x-slot:options>
-				<a href="{{ route('beneficiary.create') }}"
+				<a wire:navigate href="{{ route('beneficiary.create') }}"
 					class="btn btn-sm btn-primary"
 					role="button">
 					<x-icon.font-awesome class="fa-up-right-from-square" />
