@@ -279,3 +279,8 @@ function collectCharts() {
 }
 
 export {checkCharts, refreshChart, getChartImage, collectCharts};
+
+export function disposeCharts() {
+    for (const chart of Object.values(window.Chart?.instances || {})) chart.destroy();
+    window.renderedCharts = [];
+}
