@@ -20,7 +20,7 @@
 		{{-- end::Social Information --}}
 	</div>
 	<x-slot:footer>
-		<a href="{{ route('client.show', $client) }}"
+		<a wire:navigate href="{{ route('client.show', $client) }}"
 			class="btn btn-sm btn-light"
 			role="button">
 			<x-icon.font-awesome class="fa-xmark" />
