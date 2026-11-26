@@ -22,4 +22,5 @@ yarn-error.log
 /.vscode
 /.notes
 /.bruno
+/.agents/.obsidian
 storage/app/truss/baselines/mysql.json
