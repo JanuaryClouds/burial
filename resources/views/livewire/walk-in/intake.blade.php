@@ -66,7 +66,7 @@
             <h4>Possible Existing Records</h4>
             <p>These are possible matches, not confirmed duplicates. Records will not be merged automatically.</p>
             @forelse ($duplicates as $duplicate)
-                <p wire:key="duplicate-{{ $duplicate->uuid }}"><a href="{{ route('client.show', $duplicate) }}" target="_blank" rel="noopener">{{ $duplicate->fullname() }}</a> · {{ $duplicate->date_of_birth }} · {{ $duplicate->contact_number }}</p>
+                <p wire:key="duplicate-{{ $duplicate->uuid }}"><a wire:navigate href="{{ route('client.show', $duplicate) }}" target="_blank" rel="noopener">{{ $duplicate->fullname() }}</a> · {{ $duplicate->date_of_birth }} · {{ $duplicate->contact_number }}</p>
             @empty
                 <p>No possible matches were found among submitted client records.</p>
             @endforelse

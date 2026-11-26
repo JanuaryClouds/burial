@@ -7,7 +7,7 @@
                             @if (! $intake->application_uuid)
                                 <a href="{{ route('walk-in.edit', $intake) }}">Resume Draft</a>
                             @else
-                                <a href="{{ route('application.show', $intake->application) }}">{{ $intake->application->tracking_no }}</a>
+                                <a wire:navigate href="{{ route('application.show', $intake->application) }}">{{ $intake->application->tracking_no }}</a>
                                 @if (! $intake->claimed_at)
                                     <details class="mt-3"><summary>Replace lost or expired claim code</summary>
                                         <form method="POST" action="{{ route('walk-in.code.replace', $intake) }}" class="mt-3">
