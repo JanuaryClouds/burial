@@ -2,19 +2,27 @@
 
 namespace App\Services;
 
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\Auth;
+use Spatie\Activitylog\Contracts\Activity as ActivityContract;
 use Spatie\Activitylog\Models\Activity;
+use Spatie\Permission\Exceptions\UnauthorizedException;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Throwable;
 
 class ActivityLoggerService
 {
     /**
      * Log Exception Errors such as invalid forms
-     *
-     * @return \Spatie\Activitylog\Contracts\Activity|null
      */
-    public static function logException(Throwable $exception, string $description = 'Application Error'): Activity
+    public static function logException(Throwable $exception, string $description = 'Application Error'): ?ActivityContract
     {
+        if ($exception instanceof AuthorizationException
+            || $exception instanceof UnauthorizedException
+            || ($exception instanceof HttpExceptionInterface && $exception->getStatusCode() === 403)) {
+            return self::logUnauthorized();
+        }
+
         return activity('system-errors')
             ->tap(function (Activity $activity) {
                 if (Auth::check()) {
@@ -38,10 +46,8 @@ class ActivityLoggerService
 
     /**
      * Log unauthorized access and requests
-     *
-     * @return \Spatie\Activitylog\Contracts\Activity|null
      */
-    public static function logUnauthorized(): Activity
+    public static function logUnauthorized(): ?ActivityContract
     {
         return activity('permissions')
             ->tap(function (Activity $activity) {
@@ -50,7 +56,7 @@ class ActivityLoggerService
                 }
             })
             ->withProperties([
-                'url' => request()->fullUrl(),
+                'route' => request()->route()?->getName(),
                 'method' => request()->method(),
                 'ip' => request()->ip(),
                 'user_agent' => request()->userAgent(),
@@ -60,10 +66,8 @@ class ActivityLoggerService
 
     /**
      * Log successful operations
-     *
-     * @return \Spatie\Activitylog\Contracts\Activity|null
      */
-    public static function logSuccess(string $description = 'Success', array $properties = []): Activity
+    public static function logSuccess(string $description = 'Success', array $properties = []): ?ActivityContract
     {
         return activity('success')
             ->tap(function (Activity $activity) {
