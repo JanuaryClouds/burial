@@ -31,8 +31,8 @@ New internal passwords require at least 12 characters, uppercase, lowercase,
 a number, and a symbol. Spaces are preserved. The bcrypt limit is 72 bytes;
 longer values are rejected before hashing. Password changes require the current
 password, matching confirmation, and a different new password. Attempts are
-limited to five per minute per account. No email reset or periodic expiration
-flow is provided. Changes revoke tokens and require sign-in again. Staff sessions
+limited to five per minute per account. Internal accounts also have email-based password recovery; see [Email](../email.md).
+No periodic password expiration is imposed. Changes revoke tokens and require sign-in again. Staff sessions
 retain a password-hash baseline checked on subsequent requests, including Livewire.
 
 ## Deployment
@@ -54,3 +54,14 @@ retain a password-hash baseline checked on subsequent requests, including Livewi
 The shared database migration, seeders, and account reconciliation must not run
 without explicit approval. Automated account tests use isolated SQLite databases
 and block outbound HTTP; MySQL row-lock concurrency requires separate validation.
+
+## Authentication and authorization history
+
+Recognized staff authentication and access-control activity is monitored locally.
+The Activity Logs page remains superadmin-only and separates general activity
+from authentication/authorization history. Rows and details show risk scores and
+reasons; historical entries remain unscored. Staff owners receive medium/high-risk
+alerts through the existing internal notification bell. These alerts have no
+Portal dependency and do not grant access to the full audit page. See
+[Security controls](../security-hardening.md#staff-authentication-monitoring) for
+events, default checks, notification grouping, and operational limitations.

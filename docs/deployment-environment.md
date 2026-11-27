@@ -174,3 +174,40 @@ Other framework/package driver-specific options remain in `config/`; this guide 
 5. Verify staff login, Portal signed entry/return, geographic address lookup, a synthetic document upload and authorized fetch, and enabled notification/SMS delivery using agreed test recipients. Verify recovery SMTP and suppression-log connectivity separately. Confirm actual upstream requests when checking disabled capabilities, given the upload-existence-check limitation.
 
 Future configuration changes should update `config/`, every consuming service, `.env.example`, this guide, and affected integration documentation together. Verify actual remote byte preservation before claiming encrypted fileserver compatibility.
+
+## Authentication monitoring deployment
+
+Install locked Composer dependencies (including `spatie/laravel-suspicious-login`
+1.0.0), deploy the monitoring configuration, services, views, and the new
+`create_login_attempts_table` migration together. Apply that migration only in
+the normal reviewed deployment window; local implementation/tests do not apply
+it to a shared database. Refresh the normal package/config/view caches during
+deployment. No Node/npm commands, workers, jobs, or external lookup credentials
+are needed. Leave `suspicious-login.enabled=false`; staff integration is explicit.
+
+`AUTHENTICATION_MONITORING_ENABLED` defaults to true. Set it to false and rebuild
+the deployment's configuration cache to stop new monitoring and alerts while
+retaining normal login, MFA, existing security audits, and log access. For code
+rollback, restore the preceding code and lockfile together and preserve the new
+table until its audit data is reviewed/backed up. Do not drop monitoring history
+as an incidental rollback step.
+
+`suspicious-login.php` configures local checks, thresholds, the 900-second alert
+grouping window, and `prune_after_days` (365 by default). Trusted proxy settings
+must reflect the real hosting network: a score's IP is Laravel's resolved peer
+address, not an assumed physical device/location. Arbitrary forwarded or
+Cloudflare location headers are not trusted by this feature.
+
+Preview retention cleanup with:
+
+```powershell
+php artisan auth-monitor:prune --dry-run --no-interaction
+```
+
+After the normal operational review/backups, run
+`php artisan auth-monitor:prune --no-interaction`. This deletes authentication
+activities (including classified legacy security entries) and package credential
+attempts at or before the retention cutoff, in batches of 500. It preserves
+general activity and does not delete previously delivered internal notifications.
+No scheduled task is required. Do not run cleanup against a shared database as
+a verification step.
