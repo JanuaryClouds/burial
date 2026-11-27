@@ -1,4 +1,5 @@
 <div id="main-header-web" class="header py-6 py-lg-0 " data-kt-sticky="true" data-kt-sticky-name="header"
+    data-banner-width="1396" data-banner-height="240" data-banner-flagpole-x="665"
     data-kt-sticky-offset="{lg: '300px'}" style="background-color: #00000000;">
     <!--begin::Container-->
     <div class="header-container container-xxl">

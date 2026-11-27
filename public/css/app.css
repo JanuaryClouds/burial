@@ -444,6 +444,7 @@ html #nprogress .peg {
     align-items: center;
     gap: 1.5rem;
     text-align: center;
+    transform: translateX(var(--spa-loader-offset, 0px));
 }
 
 .spa-navigation-loader__logos {
