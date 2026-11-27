@@ -32,6 +32,8 @@ class LoginService
             $now = now()->timestamp;
             $state = Cache::get($key, []);
             if (($state['until'] ?? 0) > $now) {
+                app(AuthenticationAudit::class)->recordForEmail($data['email'], 'Password login cooldown rejected', 'rejected');
+
                 return $this->failure($state['failures'], $state['until'] - $now);
             }
             if (($state['until'] ?? 0) || ($state['expires'] ?? 0) <= $now) {
@@ -50,12 +52,15 @@ class LoginService
                 }
                 Cache::put($key, $state, max(1, ($state['until'] ?? $state['expires']) - $now));
 
+                app(AuthenticationAudit::class)->record($user, 'Password login failed', 'failure', credential: $valid ? null : false);
+
                 return $this->failure($state['failures'], $retry);
             }
 
             Auth::getProvider()->rehashPasswordIfRequired($user, $data);
             if ($user->hasRole('superadmin')) {
                 app(SuperadminMfa::class)->begin($user);
+                app(AuthenticationAudit::class)->record($user, 'Password accepted; MFA pending', actor: $user);
                 Cache::forget($key);
 
                 return ['redirect' => route('mfa.show')];
@@ -67,6 +72,8 @@ class LoginService
                 session(['api_token' => $user->createToken('fileserver')->plainTextToken]);
             }
             Cache::forget($key);
+
+            app(AuthenticationAudit::class)->record($user, 'Staff login completed', actor: $user, credential: true);
 
             return ['redirect' => route($user->password_change_required ? 'user.password' : 'dashboard')];
         });
