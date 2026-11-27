@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
+use App\Services\Auth\AuthenticationAudit;
 use App\Services\Auth\LoginService;
 use App\Services\Auth\UserService;
 use App\Services\DataTableService;
@@ -57,6 +58,7 @@ class UserController extends Controller
     public function logout()
     {
         $user = Auth::user();
+        app(AuthenticationAudit::class)->record($user, 'Staff signed out', actor: $user);
         $user?->tokens()->delete();
 
         Auth::logout();
