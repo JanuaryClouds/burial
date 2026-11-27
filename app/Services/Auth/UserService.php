@@ -2,6 +2,7 @@
 
 namespace App\Services\Auth;
 
+use App\Models\SuperadminMfaCredential;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -9,6 +10,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Spatie\Permission\Models\Role;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -27,6 +29,7 @@ class UserService
 
     public function logout(): void
     {
+        app(AuthenticationAudit::class)->record(Auth::user(), 'Staff signed out', actor: Auth::user());
         Auth::logout();
         request()->session()->invalidate();
         request()->session()->regenerate();
@@ -112,11 +115,14 @@ class UserService
                     if ($locked->isInternal()) {
                         app(SuperadminMfa::class)->protect($actor, (string) ($data['mfa_code'] ?? ''), fn () => null);
                         app(SuperadminMfa::class)->revoke($locked);
-                        \App\Models\SuperadminMfaCredential::where('user_id', $locked->id)->get()->each(
-                            fn ($credential) => $credential->forceFill(['version' => (string) \Illuminate\Support\Str::uuid()])->save()
+                        SuperadminMfaCredential::where('user_id', $locked->id)->get()->each(
+                            fn ($credential) => $credential->forceFill(['version' => (string) Str::uuid()])->save()
                         );
                         app(SuperadminMfa::class)->audit($actor, 'Internal account disabled', ['target_id' => $locked->id]);
                     }
+                }
+                if ($active && ! $locked->is_active) {
+                    app(AuthenticationAudit::class)->record($locked, 'Internal account reactivated', actor: $actor);
                 }
                 $attributes['is_active'] = $active;
                 if ($selected !== null) {
@@ -124,7 +130,11 @@ class UserService
                     if ($locked->isInternal() || $selected) {
                         $protected[] = 'staff';
                     }
-                    $locked->syncRoles(array_unique(array_merge($protected, $selected)));
+                    $roles = array_unique(array_merge($protected, $selected));
+                    if ($locked->roles->pluck('name')->sort()->values()->all() !== collect($roles)->sort()->values()->all()) {
+                        app(AuthenticationAudit::class)->record($locked, 'Internal account roles changed', actor: $actor);
+                    }
+                    $locked->syncRoles($roles);
                 }
             }
             $locked->update($attributes);
@@ -149,6 +159,7 @@ class UserService
             'confirmNewPassword' => ['required', 'same:newPassword'],
         ])->validate();
         if (! Hash::check($data['currentPassword'], $user->password)) {
+            app(AuthenticationAudit::class)->record($user, 'Password change failed', 'failure', actor: $user, credential: false);
             throw ValidationException::withMessages(['currentPassword' => 'The current password is incorrect.']);
         }
         if (Hash::check($data['newPassword'], $user->password)) {
@@ -201,8 +212,9 @@ class UserService
                 $mfa = app(SuperadminMfa::class);
                 $mfa->revoke($locked);
                 $credential = $mfa->credential($locked);
-                $credential->forceFill(['version' => (string) \Illuminate\Support\Str::uuid()])->save();
+                $credential->forceFill(['version' => (string) Str::uuid()])->save();
                 $mfa->audit($actor, $grant ? 'Superadmin role granted' : 'Superadmin role removed', ['target_id' => $locked->id]);
+
                 return $locked;
             });
         });

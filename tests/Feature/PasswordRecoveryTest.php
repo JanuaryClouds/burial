@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use App\Http\Controllers\Auth\PasswordRecoveryController;
-use App\Livewire\ActivityLog\Index;
+use App\Livewire\ActivityLog\Table;
 use App\Models\MailDelivery;
 use App\Models\SystemSetting;
 use App\Models\User;
@@ -230,7 +230,7 @@ class PasswordRecoveryTest extends TestCase
         $this->assertSame($owner->id, $audit->subject_id);
         $this->assertSame('authenticated_password_change', $audit->properties->get('method'));
         $this->actingAs($this->account('superadmin'));
-        $rows = Livewire::test(Index::class)->get('mappedLogs');
+        $rows = Livewire::test(Table::class, ['kind' => 'security'])->get('mappedLogs');
         $this->assertSame($owner->fullname().' (#'.$owner->id.')', $rows->firstWhere('id', $audit->id)['source']);
         $this->assertSame('Affected account: '.$owner->fullname().' (#'.$owner->id.'); actor not recorded', $rows->firstWhere('id', $legacy->id)['source']);
         $this->get(route('system.logs.show', $legacy))->assertOk()->assertSee('Affected Account')->assertSee('Not recorded')->assertSee($owner->fullname());

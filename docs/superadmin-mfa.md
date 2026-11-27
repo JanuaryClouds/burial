@@ -50,3 +50,17 @@ Never log submitted MFA codes, recovery codes, setup keys, QR contents, or sensi
 Run the isolated SQLite MFA suite with `php artisan test tests/Feature/SuperadminMfaTest.php`. It covers restricted login/enrollment, expiry, recovery, replay, throttling, protected service and Livewire actions, token restrictions, password recovery, serialization, and console reset. Its MySQL concurrency test is skipped by default.
 
 To verify row-lock behavior, set `$env:MFA_TEST_MYSQL='1'` in PowerShell and run `php artisan test tests/Feature/SuperadminMfaTest.php --filter=mysql_concurrent`. This creates a randomly named `burial_mfa_test_*` database using the testing MySQL connection, runs simultaneous TOTP use, recovery use, disabling, and demotion attempts, and drops only that database on completion. The configured database user needs create/drop privileges. Remove the temporary environment override afterwards with `Remove-Item Env:MFA_TEST_MYSQL`. No shared-database migrations or seeders are run.
+
+## Suspicious authentication monitoring
+
+Password acceptance with pending MFA is an audit event, not a successful login.
+Only `SuperadminMfa::finish()` after its transaction commits records a completed
+trusted login for risk-history purposes. Genuine failed verification attempts
+remain auditable after rollbacks, with no submitted codes or secrets recorded.
+Enrollment, recovery, code regeneration, initial-password changes, and related
+security audits receive contextual risk scores without becoming trusted logins.
+
+Monitoring does not bypass or add MFA restrictions. Medium/high-risk warnings
+use internal notifications only; the existing MFA security emails continue
+through immediate mail. All these records appear in the lower authentication
+table on the existing superadmin Activity Logs page.

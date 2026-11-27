@@ -311,6 +311,40 @@ class SuperadminMfaTest extends TestCase
         $this->assertSame(4, SystemSetting::first()->claimant_change_limit);
     }
 
+    public function test_guests_see_maintenance_page_instead_of_protected_logs(): void
+    {
+        SystemSetting::first()->update(['maintenance_mode' => true]);
+
+        $this->get(route('system.logs.index'))
+            ->assertRedirect(route('landing.page'));
+        $this->get(route('system.logs.show', ['log' => 1]))
+            ->assertRedirect(route('landing.page'));
+        $this->app->instance('env', 'production');
+        $this->get(route('landing.page'))
+            ->assertServiceUnavailable()
+            ->assertViewIs('error.maintenance')
+            ->assertSee('Under Maintenance');
+        $this->assertGuest();
+    }
+
+    public function test_guests_see_maintenance_page_on_blocked_public_routes(): void
+    {
+        SystemSetting::first()->update(['maintenance_mode' => true]);
+
+        $this->get(route('password.request'))
+            ->assertServiceUnavailable()
+            ->assertViewIs('error.maintenance')
+            ->assertSee('Under Maintenance');
+        $this->assertGuest();
+    }
+
+    public function test_guests_are_redirected_from_logs_without_maintenance(): void
+    {
+        $this->get(route('system.logs.index'))->assertRedirect(route('landing.page'));
+        $this->get(route('system.logs.show', ['log' => 1]))->assertRedirect(route('landing.page'));
+        $this->assertGuest();
+    }
+
     public function test_livewire_login_and_mfa_setup_remain_available_during_maintenance(): void
     {
         $user = $this->account();

@@ -4,6 +4,8 @@ namespace App\Http\Middleware;
 
 use App\Services\Auth\AccountAccess;
 use App\Services\Auth\AccountSession;
+use App\Services\Auth\AuthenticationAudit;
+use App\Services\Auth\SuperadminMfa;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -38,6 +40,7 @@ class CheckUserIfActive
         // A token must never bypass local account status or first-login restrictions.
         $blocked = $blocked || ($tokenRequest && (! $access->isActive($user) || $access->needsPasswordChange($user)));
         if ($blocked) {
+            app(AuthenticationAudit::class)->record($user, 'Internal account access rejected', 'rejected');
             Auth::forgetGuards();
             if ($request->hasSession()) {
                 auth('web')->logout();
@@ -56,7 +59,8 @@ class CheckUserIfActive
         auth()->setUser($authenticatedUser);
 
         if (! $tokenRequest && ! app(AccountSession::class)->valid($user, $request)) {
-            \App\Services\Auth\SuperadminMfa::logoutCurrentBrowser();
+            app(AuthenticationAudit::class)->record($user, 'Staff session replaced', 'invalidated', actor: $user);
+            SuperadminMfa::logoutCurrentBrowser();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
@@ -70,6 +74,7 @@ class CheckUserIfActive
         if ($internal && ! $tokenRequest && ! $request->routeIs('logout', 'sso.logout')) {
             $hash = $request->session()->get('account.staff_hash');
             if (! is_string($hash) || ! hash_equals($user->getAuthPassword(), $hash)) {
+                app(AuthenticationAudit::class)->record($user, 'Staff session invalidated after password change', 'invalidated', actor: $user);
                 auth('web')->logout();
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
@@ -80,9 +85,10 @@ class CheckUserIfActive
             }
         }
 
-        if (! $request->routeIs('logout', 'sso.logout') && ! app(\App\Services\Auth\SuperadminMfa::class)->hasProof($authenticatedUser)) {
+        if (! $request->routeIs('logout', 'sso.logout') && ! app(SuperadminMfa::class)->hasProof($authenticatedUser)) {
+            app(AuthenticationAudit::class)->record($user, 'Staff session missing MFA proof', 'rejected', actor: $user);
             if ($request->hasSession()) {
-                \App\Services\Auth\SuperadminMfa::logoutCurrentBrowser();
+                SuperadminMfa::logoutCurrentBrowser();
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
             }

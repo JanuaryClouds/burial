@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Livewire\ActivityLog\Table;
 use App\Livewire\Application\Index;
 use App\Livewire\Application\Search;
 use App\Livewire\Application\Show;
@@ -74,12 +75,19 @@ class AccessControlTest extends TestCase
     public function test_record_table_rendering_uses_no_queries_and_preserves_empty_columns(): void
     {
         foreach ([
-            Index::class, \App\Livewire\Client\Index::class, \App\Livewire\Beneficiary\Index::class,
-            \App\Livewire\User\Index::class, \App\Livewire\Role\Index::class, \App\Livewire\Workflow\Index::class,
-            \App\Livewire\DocumentRequirement\Index::class, \App\Livewire\FuneralAssistanceType\Index::class,
-            \App\Livewire\ModeOfAssistance\Index::class, \App\Livewire\ActivityLog\Index::class,
-        ] as $component) {
-            $table = Livewire::test($component);
+            [Index::class, []],
+            [\App\Livewire\Client\Index::class, []],
+            [\App\Livewire\Beneficiary\Index::class, []],
+            [\App\Livewire\User\Index::class, []],
+            [\App\Livewire\Role\Index::class, []],
+            [\App\Livewire\Workflow\Index::class, []],
+            [\App\Livewire\DocumentRequirement\Index::class, []],
+            [\App\Livewire\FuneralAssistanceType\Index::class, []],
+            [\App\Livewire\ModeOfAssistance\Index::class, []],
+            [Table::class, ['kind' => 'general']],
+            [Table::class, ['kind' => 'security']],
+        ] as [$component, $parameters]) {
+            $table = Livewire::test($component, $parameters);
             $columns = $table->get('columns');
             $this->assertNotEmpty($columns);
             $this->assertTrue($columns->contains('data', 'show_route'));
