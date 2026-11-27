@@ -18,6 +18,7 @@ class PasswordRecoveryService
 {
     public function request(string $email): void
     {
+        app(AuthenticationAudit::class)->recordForEmail($email, 'Password recovery requested', 'requested');
         $delivery = DB::transaction(function () use ($email) {
             $user = User::with('roles')->where('email', $email)->lockForUpdate()->first();
             if (! $user || ! $user->is_active || ! app(AccountAccess::class)->isInternal($user)) {
@@ -40,27 +41,32 @@ class PasswordRecoveryService
     {
         Validator::make($data, ['email' => ['required', 'email', 'max:254'], 'token' => ['required', 'string', 'max:255'],
             'password' => [...PasswordPolicy::rules(), 'confirmed']])->validate();
-        DB::transaction(function () use ($data) {
-            $user = User::with('roles')->where('email', $data['email'])->lockForUpdate()->first();
-            if (! $user || ! $user->is_active || ! app(AccountAccess::class)->isInternal($user)) {
-                $this->invalid();
-            }
-            $result = Password::broker()->reset($data, function (User $account, string $password) {
-                if (Hash::check($password, $account->password)) {
-                    throw ValidationException::withMessages(['password' => 'Choose a password different from your current password.']);
+        try {
+            DB::transaction(function () use ($data) {
+                $user = User::with('roles')->where('email', $data['email'])->lockForUpdate()->first();
+                if (! $user || ! $user->is_active || ! app(AccountAccess::class)->isInternal($user)) {
+                    $this->invalid();
                 }
-                $account->forceFill(['password' => $password, 'password_change_required' => false,
-                    'remember_token' => Str::random(60)])->save();
-                $account->tokens()->delete();
-                activity('account-management')->causedBy($account)->performedOn($account)
-                    ->withProperties(['method' => 'email_recovery'])
-                    ->log('Owner reset password through email recovery');
-                event(new PasswordReset($account));
+                $result = Password::broker()->reset($data, function (User $account, string $password) {
+                    if (Hash::check($password, $account->password)) {
+                        throw ValidationException::withMessages(['password' => 'Choose a password different from your current password.']);
+                    }
+                    $account->forceFill(['password' => $password, 'password_change_required' => false,
+                        'remember_token' => Str::random(60)])->save();
+                    $account->tokens()->delete();
+                    activity('account-management')->causedBy($account)->performedOn($account)
+                        ->withProperties(['method' => 'email_recovery'])
+                        ->log('Owner reset password through email recovery');
+                    event(new PasswordReset($account));
+                });
+                if ($result !== Password::PASSWORD_RESET) {
+                    $this->invalid();
+                }
             });
-            if ($result !== Password::PASSWORD_RESET) {
-                $this->invalid();
-            }
-        });
+        } catch (ValidationException $exception) {
+            app(AuthenticationAudit::class)->recordForEmail($data['email'], 'Password reset failed', 'failure');
+            throw $exception;
+        }
         app(LoginService::class)->clear($data['email']);
     }
 
