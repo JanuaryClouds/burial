@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use App\Services\Auth\AuthenticationAudit;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
@@ -36,6 +37,11 @@ class Handler extends ExceptionHandler
 
     public function render($request, Throwable $exception)
     {
+        if ($exception instanceof AuthorizationException || $exception instanceof UnauthorizedException
+            || ($exception instanceof HttpExceptionInterface && $exception->getStatusCode() === 403)) {
+            app(AuthenticationAudit::class)->record(auth()->user(), 'Authorization denied', 'denied', actor: auth()->user());
+        }
+
         if ($exception instanceof UnauthorizedException) {
             if ($request->expectsJson()) {
                 return response()->json([
