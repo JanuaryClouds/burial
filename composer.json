@@ -21,6 +21,7 @@
         "simplesoftwareio/simple-qrcode": "^4.2",
         "spatie/laravel-activitylog": "^5.1.0",
         "spatie/laravel-permission": "^8.3.0",
+        "spatie/laravel-suspicious-login": "~1.0.0",
         "spomky-labs/otphp": "~11.4"
     },
     "require-dev": {
