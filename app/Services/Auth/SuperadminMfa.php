@@ -48,6 +48,7 @@ class SuperadminMfa
             || ($pending['expires'] ?? 0) <= now()->timestamp
             || ! hash_equals($user->getAuthPassword(), $pending['password_hash'] ?? '')
             || ! $credential || ! hash_equals($credential->version, $pending['version'] ?? '')) {
+            app(AuthenticationAudit::class)->record($user, 'MFA pending session expired or invalidated', 'rejected');
             session()->forget('mfa.pending');
             throw ValidationException::withMessages(['mfa_code' => 'Your verification session expired. Sign in again.']);
         }
@@ -108,6 +109,7 @@ class SuperadminMfa
         return Cache::lock('mfa.attempt.lock.'.$user->id, 30)->block(5, function () use ($user, $operation) {
             $key = 'mfa.attempt.'.$user->id;
             if (Cache::has($key.'.cooldown') || RateLimiter::tooManyAttempts($key, 5)) {
+                app(AuthenticationAudit::class)->record($user, 'MFA verification cooldown rejected', 'rejected');
                 throw ValidationException::withMessages(['mfa_code' => 'Too many verification attempts. Wait one minute.']);
             }
             try {
@@ -125,14 +127,8 @@ class SuperadminMfa
 
     private function recordFailure(User $user): void
     {
-        // A settings/account service may own an outer transaction. Preserve the audit
-        // after either its rollback or commit, without recording submitted values.
-        if (DB::transactionLevel() > 0) {
-            DB::afterRollBack(fn () => $this->recordFailure($user));
-            DB::afterCommit(fn () => $this->audit($user, 'MFA verification failed'));
-        } else {
-            $this->audit($user, 'MFA verification failed');
-        }
+        app(AuthenticationAudit::class)->record($user, 'MFA verification failed', 'failure',
+            actor: auth()->user(), credential: false, logName: 'superadmin-security');
     }
 
     public function verifyCodeLocked(SuperadminMfaCredential $credential, #[\SensitiveParameter] string $code): void
@@ -246,7 +242,7 @@ class SuperadminMfa
             session(['api_token' => $token->plainTextToken]);
         });
         session()->forget('mfa.pending');
-        $this->audit($user, 'Superadmin completed MFA login');
+        app(AuthenticationAudit::class)->record($user, 'Superadmin completed MFA login', actor: $user, credential: true, logName: 'superadmin-security');
     }
 
     public function recover(#[\SensitiveParameter] string $code): void
