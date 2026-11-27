@@ -22,21 +22,34 @@
 					<x-form.display :contents="$log->description"
 						label="Description" />
 				</div>
-				@foreach ($log->properties as $property => $value)
-					@if (is_array($value))
-						@foreach ($value as $key => $val)
-							<div class="col-12 col-md-6">
-								<x-form.display :contents="$val"
-									label="{{ ucwords(str_replace('_', ' ', $key)) }}" />
-							</div>
-						@endforeach
-					@else
-						<div class="col-12 col-md-6">
-							<x-form.display :contents="$value"
-								label="{{ ucwords(str_replace('_', ' ', $property)) }}" />
-					@endif
-			</div>
-			@endforeach
+                @if($security = $log->properties->get('security'))
+                    <div class="col-6"><x-form.display label="Risk Score" :contents="$security['risk_score'] ?? 'Assessment unavailable'" /></div>
+                    <div class="col-6"><x-form.display label="Risk Level" :contents="isset($security['risk_level']) ? ucfirst($security['risk_level']) : 'Assessment unavailable'" /></div>
+                    <div class="col-6"><x-form.display label="Outcome" :contents="$security['outcome'] ?? 'Not recorded'" /></div>
+                    <div class="col-6"><x-form.display label="Affected Account" :contents="($security['affected_account_name'] ?? 'Account').' (#'.($security['affected_account_id'] ?? 'unavailable').')'" /></div>
+                    <div class="col-6"><x-form.display label="IP Address" :contents="$security['ip_address'] ?? 'Not recorded'" /></div>
+                    <div class="col-6"><x-form.display label="User Agent" :contents="$security['user_agent'] ?? 'Not recorded'" /></div>
+                    <div class="col-12">
+                        <x-form.display label="Risk Reasons" :contents="($security['assessment'] ?? '') === 'unavailable' ? 'Assessment unavailable' : (collect($security['reasons'] ?? [])->pluck('reason')->implode('; ') ?: 'No suspicious signals detected.')" />
+                    </div>
+                @elseif(\App\Services\Auth\AuthenticationLog::isSecurity($log))
+                    <div class="col-12"><x-form.display label="Risk Score" contents="Not assessed" /></div>
+                @endif
+                @foreach($log->properties->except('security') as $property => $value)
+                    @if(is_array($value))
+                        @foreach($value as $key => $item)
+                            <div class="col-12 col-md-6">
+                                <x-form.display :contents="is_array($item) ? json_encode($item, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : $item"
+                                    :label="ucwords(str_replace('_', ' ', (string) $key))" />
+                            </div>
+                        @endforeach
+                    @else
+                        <div class="col-12 col-md-6">
+                            <x-form.display :contents="$value" :label="ucwords(str_replace('_', ' ', $property))" />
+                        </div>
+                    @endif
+                @endforeach
+            </div>
 			<x-slot:footer>
 				<a href="{{ route('system.logs.index') }}"
 					class="btn btn-sm btn-light">
